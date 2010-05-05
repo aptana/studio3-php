@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Aptana PHP EPL
+Bundle-SymbolicName: com.aptana.editor.php.epl
+Bundle-Version: 3.0.0.qualifier
+Bundle-Activator: com.aptana.editor.php.epl.Activator
+Bundle-Vendor: Aptana Inc.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: com.aptana.editor.php.epl,
+ com.aptana.editor.php.model,
+ com.aptana.editor.php.model.env,
+ com.aptana.editor.php.typebinding,
+ org.eclipse.php.internal.core.ast.locator,
+ org.eclipse.php.internal.core.ast.nodes,
+ org.eclipse.php.internal.core.ast.parser,
+ org.eclipse.php.internal.core.ast.visitor,
+ org.eclipse.php.internal.core.phpModel.javacup,
+ org.eclipse.php.internal.core.phpModel.javacup.runtime,
+ org.eclipse.php.internal.core.phpModel.parser,
+ org.eclipse.php.internal.core.phpModel.parser.php4,
+ org.eclipse.php.internal.core.phpModel.parser.php5,
+ org.eclipse.php.internal.core.phpModel.parser.phpdoc,
+ org.eclipse.php.internal.core.phpModel.phpElementData,
+ org.eclipse.php.internal.core.util,
+ org.eclipse.php.internal.core.util.collections,
+ org.eclipse.php.internal.ui.util
+Import-Package: java_cup,
+ java_cup.runtime
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.forms,
+ org.eclipse.jface.text

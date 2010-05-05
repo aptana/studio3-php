@@ -1,0 +1,1 @@
+Important: Change the plug-in version in a case you change the content of this plug-in!

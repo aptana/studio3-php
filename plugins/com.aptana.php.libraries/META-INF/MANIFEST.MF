@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: com.aptana.php.libraries
+Bundle-Version: 3.0.0.1
+Bundle-Vendor: %providerName
+Bundle-ClassPath: trove-2.0.4.jar
+Bundle-Localization: plugin
+Export-Package: gnu.trove,
+ gnu.trove.decorator
