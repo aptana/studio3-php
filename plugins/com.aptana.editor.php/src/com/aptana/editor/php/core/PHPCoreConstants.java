@@ -1,5 +1,7 @@
 package com.aptana.editor.php.core;
 
+import org.eclipse.php.internal.core.PHPVersion;
+
 import com.aptana.editor.php.PHPEditorPlugin;
 
 public interface PHPCoreConstants {
@@ -15,8 +17,9 @@ public interface PHPCoreConstants {
 	//
 	// Project Option values
 	//
-	public static final String PHP4 = "PHP4"; //$NON-NLS-1$
-	public static final String PHP5 = "PHP5"; //$NON-NLS-1$
+	public static final String PHP4 = PHPVersion.PHP4.getAlias();
+	public static final String PHP5 = PHPVersion.PHP5.getAlias();
+	public static final String PHP53 = PHPVersion.PHP5_3.getAlias();
 
 	public static final String ATTR_TOOL_ARGUMENTS = "ATTR_TOOL_ARGUMENTS"; //$NON-NLS-1$
 

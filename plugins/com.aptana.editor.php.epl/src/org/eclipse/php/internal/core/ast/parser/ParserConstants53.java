@@ -7,7 +7,7 @@
 package org.eclipse.php.internal.core.ast.parser;
 
 /** CUP generated interface containing symbol constants. */
-public interface ParserConstants {
+public interface ParserConstants53 {
   /* terminals */
   public static final int T_BOOLEAN_AND = 97;
   public static final int T_INLINE_HTML = 10;

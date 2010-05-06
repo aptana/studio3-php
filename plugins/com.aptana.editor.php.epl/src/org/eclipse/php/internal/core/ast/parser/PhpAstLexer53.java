@@ -1576,58 +1576,58 @@ public class PhpAstLexer53 implements AstLexer {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 63: {
-				return createSymbol(ParserConstants.T_LOGICAL_OR);
+				return createSymbol(ParserConstants53.T_LOGICAL_OR);
 			}
 			case 183:
 				break;
 			case 154: {
-				return createSymbol(ParserConstants.T_REQUIRE);
+				return createSymbol(ParserConstants53.T_REQUIRE);
 			}
 			case 184:
 				break;
 			case 55: {
-				return createFullSymbol(ParserConstants.T_DNUMBER);
+				return createFullSymbol(ParserConstants53.T_DNUMBER);
 			}
 			case 185:
 				break;
 			case 168: {
-				return createSymbol(ParserConstants.T_INTERFACE);
+				return createSymbol(ParserConstants53.T_INTERFACE);
 			}
 			case 186:
 				break;
 			case 47: {
-				return createSymbol(ParserConstants.T_BACKQUATE);
+				return createSymbol(ParserConstants53.T_BACKQUATE);
 			}
 			case 187:
 				break;
 			case 23: {
-				return createSymbol(ParserConstants.T_TIMES);
+				return createSymbol(ParserConstants53.T_TIMES);
 			}
 			case 188:
 				break;
 			case 57: {
-				return createSymbol(ParserConstants.T_INC);
+				return createSymbol(ParserConstants53.T_INC);
 			}
 			case 189:
 				break;
 			case 127: {
-				return createSymbol(ParserConstants.T_UNSET);
+				return createSymbol(ParserConstants53.T_UNSET);
 			}
 			case 190:
 				break;
 			case 27: {
-				return createSymbol(ParserConstants.T_OR);
+				return createSymbol(ParserConstants53.T_OR);
 			}
 			case 191:
 				break;
 			case 17: {
-				return createSymbol(ParserConstants.T_NEKUDOTAIM);
+				return createSymbol(ParserConstants53.T_NEKUDOTAIM);
 			}
 			case 192:
 				break;
 			case 38: {
 				yybegin(ST_IN_SCRIPTING);
-				return createSymbol(ParserConstants.T_BACKQUATE);
+				return createSymbol(ParserConstants53.T_BACKQUATE);
 			}
 			case 193:
 				break;
@@ -1636,12 +1636,12 @@ public class PhpAstLexer53 implements AstLexer {
 			case 194:
 				break;
 			case 59: {
-				return createFullSymbol(ParserConstants.T_VARIABLE);
+				return createFullSymbol(ParserConstants53.T_VARIABLE);
 			}
 			case 195:
 				break;
 			case 77: {
-				return createSymbol(ParserConstants.T_DIV_EQUAL);
+				return createSymbol(ParserConstants53.T_DIV_EQUAL);
 			}
 			case 196:
 				break;
@@ -1649,12 +1649,12 @@ public class PhpAstLexer53 implements AstLexer {
 						 * treat numbers (almost) as strings inside encapsulated
 						 * strings
 						 */
-				return createFullSymbol(ParserConstants.T_NUM_STRING);
+				return createFullSymbol(ParserConstants53.T_NUM_STRING);
 			}
 			case 197:
 				break;
 			case 92: {
-				return createSymbol(ParserConstants.T_OBJECT_OPERATOR);
+				return createSymbol(ParserConstants53.T_OBJECT_OPERATOR);
 			}
 			case 198:
 				break;
@@ -1667,12 +1667,12 @@ public class PhpAstLexer53 implements AstLexer {
 				break;
 			case 49: {
 				popState();
-				return createSymbol(ParserConstants.T_CLOSE_RECT);
+				return createSymbol(ParserConstants53.T_CLOSE_RECT);
 			}
 			case 200:
 				break;
 			case 105: {
-				return createSymbol(ParserConstants.T_SR_EQUAL);
+				return createSymbol(ParserConstants53.T_SR_EQUAL);
 			}
 			case 201:
 				break;
@@ -1683,70 +1683,70 @@ public class PhpAstLexer53 implements AstLexer {
 			case 202:
 				break;
 			case 181: {
-				return createSymbol(ParserConstants.T_NS_C);
+				return createSymbol(ParserConstants53.T_NS_C);
 			}
 			case 203:
 				break;
 			case 171: {
-				return createSymbol(ParserConstants.T_CLASS_C);
+				return createSymbol(ParserConstants53.T_CLASS_C);
 			}
 			case 204:
 				break;
 			case 109: {
-				return createSymbol(ParserConstants.T_SL_EQUAL);
+				return createSymbol(ParserConstants53.T_SL_EQUAL);
 			}
 			case 205:
 				break;
 			case 87: {
 				yypushback(1);
-				return createFullSymbol(ParserConstants.T_ENCAPSED_AND_WHITESPACE);
+				return createFullSymbol(ParserConstants53.T_ENCAPSED_AND_WHITESPACE);
 			}
 			case 206:
 				break;
 			case 115: {
-				return createSymbol(ParserConstants.T_ELSE);
+				return createSymbol(ParserConstants53.T_ELSE);
 			}
 			case 207:
 				break;
 			case 145: {
-				return createSymbol(ParserConstants.T_GLOBAL);
+				return createSymbol(ParserConstants53.T_GLOBAL);
 			}
 			case 208:
 				break;
 			case 123: {
-				return createSymbol(ParserConstants.T_BREAK);
+				return createSymbol(ParserConstants53.T_BREAK);
 			}
 			case 209:
 				break;
 			case 62: {
-				return createSymbol(ParserConstants.T_DO);
+				return createSymbol(ParserConstants53.T_DO);
 			}
 			case 210:
 				break;
 			case 21: {
-				return createSymbol(ParserConstants.T_NOT);
+				return createSymbol(ParserConstants53.T_NOT);
 			}
 			case 211:
 				break;
 			case 118: {
-				return createSymbol(ParserConstants.T_LIST);
+				return createSymbol(ParserConstants53.T_LIST);
 			}
 			case 212:
 				break;
 			case 41: {
 				popState();
-				return createFullSymbol(ParserConstants.T_STRING);
+				return createFullSymbol(ParserConstants53.T_STRING);
 			}
 			case 213:
 				break;
 			case 12: {
 				yybegin(ST_BACKQUOTE);
-				return createSymbol(ParserConstants.T_BACKQUATE);
+				return createSymbol(ParserConstants53.T_BACKQUATE);
 			}
 			case 214:
 				break;
 			case 128: {
-				return createSymbol(ParserConstants.T_CONST);
+				return createSymbol(ParserConstants53.T_CONST);
 			}
 			case 215:
 				break;
@@ -1769,7 +1769,7 @@ public class PhpAstLexer53 implements AstLexer {
 					yybegin(ST_END_HEREDOC);
 					// we need to remove the closing label from the symbol
 					// value.
-					Symbol sym = createFullSymbol(ParserConstants.T_ENCAPSED_AND_WHITESPACE);
+					Symbol sym = createFullSymbol(ParserConstants53.T_ENCAPSED_AND_WHITESPACE);
 					String value = (String) sym.value;
 					sym.value = value.substring(0, value.length()
 							- heredocLength + 1);
@@ -1780,17 +1780,17 @@ public class PhpAstLexer53 implements AstLexer {
 			case 216:
 				break;
 			case 179: {
-				return createSymbol(ParserConstants.T_FUNC_C);
+				return createSymbol(ParserConstants53.T_FUNC_C);
 			}
 			case 217:
 				break;
 			case 33: {
-				return createSymbol(ParserConstants.T_QUESTION_MARK);
+				return createSymbol(ParserConstants53.T_QUESTION_MARK);
 			}
 			case 218:
 				break;
 			case 148: {
-				return createSymbol(ParserConstants.T_DOUBLE_CAST);
+				return createSymbol(ParserConstants53.T_DOUBLE_CAST);
 			}
 			case 219:
 				break;
@@ -1810,54 +1810,54 @@ public class PhpAstLexer53 implements AstLexer {
 				} else {
 					yybegin(ST_HEREDOC);
 				}
-				Symbol sym = createFullSymbol(ParserConstants.T_START_HEREDOC);
+				Symbol sym = createFullSymbol(ParserConstants53.T_START_HEREDOC);
 				sym.value = heredoc;
 				return sym;
 			}
 			case 220:
 				break;
 			case 173: {
-				return createSymbol(ParserConstants.T_ENDFOREACH);
+				return createSymbol(ParserConstants53.T_ENDFOREACH);
 			}
 			case 221:
 				break;
 			case 79: {
 				if (asp_tags) {
 					yybegin(YYINITIAL);
-					return createSymbol(ParserConstants.T_SEMICOLON); /*
+					return createSymbol(ParserConstants53.T_SEMICOLON); /*
 																	 * implicit
 																	 * ';' at
 																	 * php-end
 																	 * tag
 																	 */
 				} else {
-					return createSymbol(ParserConstants.T_INLINE_HTML);
+					return createSymbol(ParserConstants53.T_INLINE_HTML);
 				}
 			}
 			case 222:
 				break;
 			case 142: {
-				return createSymbol(ParserConstants.T_STATIC);
+				return createSymbol(ParserConstants53.T_STATIC);
 			}
 			case 223:
 				break;
 			case 114: {
-				return createSymbol(ParserConstants.T_ECHO);
+				return createSymbol(ParserConstants53.T_ECHO);
 			}
 			case 224:
 				break;
 			case 144: {
-				return createSymbol(ParserConstants.T_RETURN);
+				return createSymbol(ParserConstants53.T_RETURN);
 			}
 			case 225:
 				break;
 			case 157: {
-				return createSymbol(ParserConstants.T_ARRAY_CAST);
+				return createSymbol(ParserConstants53.T_ARRAY_CAST);
 			}
 			case 226:
 				break;
 			case 32: {
-				return createSymbol(ParserConstants.T_TILDA);
+				return createSymbol(ParserConstants53.T_TILDA);
 			}
 			case 227:
 				break;
@@ -1868,23 +1868,23 @@ public class PhpAstLexer53 implements AstLexer {
 				if (!stack.isEmpty()) {
 					popState();
 				}
-				return createSymbol(ParserConstants.T_CURLY_CLOSE);
+				return createSymbol(ParserConstants53.T_CURLY_CLOSE);
 			}
 			case 228:
 				break;
 			case 5: {
-				return createSymbol(ParserConstants.T_NEKUDA);
+				return createSymbol(ParserConstants53.T_NEKUDA);
 			}
 			case 229:
 				break;
 			case 88: {
 				pushState(ST_LOOKING_FOR_VARNAME);
-				return createSymbol(ParserConstants.T_DOLLAR_OPEN_CURLY_BRACES);
+				return createSymbol(ParserConstants53.T_DOLLAR_OPEN_CURLY_BRACES);
 			}
 			case 230:
 				break;
 			case 151: {
-				return createSymbol(ParserConstants.T_DEFAULT);
+				return createSymbol(ParserConstants53.T_DEFAULT);
 			}
 			case 231:
 				break;
@@ -1896,47 +1896,47 @@ public class PhpAstLexer53 implements AstLexer {
 			case 232:
 				break;
 			case 73: {
-				return createSymbol(ParserConstants.T_IS_NOT_EQUAL);
+				return createSymbol(ParserConstants53.T_IS_NOT_EQUAL);
 			}
 			case 233:
 				break;
 			case 69: {
-				return createSymbol(ParserConstants.T_IS_GREATER_OR_EQUAL);
+				return createSymbol(ParserConstants53.T_IS_GREATER_OR_EQUAL);
 			}
 			case 234:
 				break;
 			case 7: {
-				return createSymbol(ParserConstants.T_PLUS);
+				return createSymbol(ParserConstants53.T_PLUS);
 			}
 			case 235:
 				break;
 			case 143: {
-				return createSymbol(ParserConstants.T_SWITCH);
+				return createSymbol(ParserConstants53.T_SWITCH);
 			}
 			case 236:
 				break;
 			case 169: {
-				return createSymbol(ParserConstants.T_NAMESPACE);
+				return createSymbol(ParserConstants53.T_NAMESPACE);
 			}
 			case 237:
 				break;
 			case 26: {
-				return createSymbol(ParserConstants.T_REFERENCE);
+				return createSymbol(ParserConstants53.T_REFERENCE);
 			}
 			case 238:
 				break;
 			case 176: {
-				return createSymbol(ParserConstants.T_METHOD_C);
+				return createSymbol(ParserConstants53.T_METHOD_C);
 			}
 			case 239:
 				break;
 			case 82: {
-				return createSymbol(ParserConstants.T_BOOLEAN_AND);
+				return createSymbol(ParserConstants53.T_BOOLEAN_AND);
 			}
 			case 240:
 				break;
 			case 14: {
-				return createSymbol(ParserConstants.T_SEMICOLON);
+				return createSymbol(ParserConstants53.T_SEMICOLON);
 			}
 			case 241:
 				break;
@@ -1949,17 +1949,17 @@ public class PhpAstLexer53 implements AstLexer {
 			case 39: {
 				heredoc = null;
 				yybegin(ST_IN_SCRIPTING);
-				return createSymbol(ParserConstants.T_END_HEREDOC);
+				return createSymbol(ParserConstants53.T_END_HEREDOC);
 			}
 			case 243:
 				break;
 			case 15: {
-				return createSymbol(ParserConstants.T_MINUS);
+				return createSymbol(ParserConstants53.T_MINUS);
 			}
 			case 244:
 				break;
 			case 175: {
-				return createSymbol(ParserConstants.T_IMPLEMENTS);
+				return createSymbol(ParserConstants53.T_IMPLEMENTS);
 			}
 			case 245:
 				break;
@@ -1968,7 +1968,7 @@ public class PhpAstLexer53 implements AstLexer {
 			case 246:
 				break;
 			case 167: {
-				return createSymbol(ParserConstants.T_ENDSWITCH);
+				return createSymbol(ParserConstants53.T_ENDSWITCH);
 			}
 			case 247:
 				break;
@@ -1983,44 +1983,44 @@ public class PhpAstLexer53 implements AstLexer {
 			case 248:
 				break;
 			case 58: {
-				return createSymbol(ParserConstants.T_PLUS_EQUAL);
+				return createSymbol(ParserConstants53.T_PLUS_EQUAL);
 			}
 			case 249:
 				break;
 			case 31: {
-				return createSymbol(ParserConstants.T_CLOSE_RECT);
+				return createSymbol(ParserConstants53.T_CLOSE_RECT);
 			}
 			case 250:
 				break;
 			case 98: {
-				return createSymbol(ParserConstants.T_LOGICAL_XOR);
+				return createSymbol(ParserConstants53.T_LOGICAL_XOR);
 			}
 			case 251:
 				break;
 			case 45: {
 				yypushback(1);
 				popState();
-				return createSymbol(ParserConstants.T_ENCAPSED_AND_WHITESPACE);
+				return createSymbol(ParserConstants53.T_ENCAPSED_AND_WHITESPACE);
 			}
 			case 252:
 				break;
 			case 70: {
-				return createSymbol(ParserConstants.T_PAAMAYIM_NEKUDOTAYIM);
+				return createSymbol(ParserConstants53.T_PAAMAYIM_NEKUDOTAYIM);
 			}
 			case 253:
 				break;
 			case 172: {
-				return createSymbol(ParserConstants.T_ENDDECLARE);
+				return createSymbol(ParserConstants53.T_ENDDECLARE);
 			}
 			case 254:
 				break;
 			case 150: {
-				return createSymbol(ParserConstants.T_INCLUDE);
+				return createSymbol(ParserConstants53.T_INCLUDE);
 			}
 			case 255:
 				break;
 			case 11: {
-				return createSymbol(ParserConstants.T_NS_SEPARATOR);
+				return createSymbol(ParserConstants53.T_NS_SEPARATOR);
 			}
 			case 256:
 				break;
@@ -2030,104 +2030,104 @@ public class PhpAstLexer53 implements AstLexer {
 			case 257:
 				break;
 			case 60: {
-				return createFullSymbol(ParserConstants.T_CONSTANT_ENCAPSED_STRING);
+				return createFullSymbol(ParserConstants53.T_CONSTANT_ENCAPSED_STRING);
 			}
 			case 258:
 				break;
 			case 72: {
-				return createSymbol(ParserConstants.T_IS_EQUAL);
+				return createSymbol(ParserConstants53.T_IS_EQUAL);
 			}
 			case 259:
 				break;
 			case 132: {
-				return createSymbol(ParserConstants.T_ARRAY);
+				return createSymbol(ParserConstants53.T_ARRAY);
 			}
 			case 260:
 				break;
 			case 30: {
-				return createSymbol(ParserConstants.T_OPEN_RECT);
+				return createSymbol(ParserConstants53.T_OPEN_RECT);
 			}
 			case 261:
 				break;
 			case 137: {
 				yypushback(3);
 				pushState(ST_LOOKING_FOR_PROPERTY);
-				return createFullSymbol(ParserConstants.T_VARIABLE);
+				return createFullSymbol(ParserConstants53.T_VARIABLE);
 			}
 			case 262:
 				break;
 			case 101: {
-				return createSymbol(ParserConstants.T_FOR);
+				return createSymbol(ParserConstants53.T_FOR);
 			}
 			case 263:
 				break;
 			case 164: {
-				return createSymbol(ParserConstants.T_OBJECT_CAST);
+				return createSymbol(ParserConstants53.T_OBJECT_CAST);
 			}
 			case 264:
 				break;
 			case 155: {
-				return createSymbol(ParserConstants.T_PRIVATE);
+				return createSymbol(ParserConstants53.T_PRIVATE);
 			}
 			case 265:
 				break;
 			case 162: {
-				return createSymbol(ParserConstants.T_ABSTRACT);
+				return createSymbol(ParserConstants53.T_ABSTRACT);
 			}
 			case 266:
 				break;
 			case 153: {
-				return createSymbol(ParserConstants.T_FOREACH);
+				return createSymbol(ParserConstants53.T_FOREACH);
 			}
 			case 267:
 				break;
 			case 44: { /* Offset could be treated as a long */
-				return createFullSymbol(ParserConstants.T_NUM_STRING);
+				return createFullSymbol(ParserConstants53.T_NUM_STRING);
 			}
 			case 268:
 				break;
 			case 125: {
-				return createSymbol(ParserConstants.T_THROW);
+				return createSymbol(ParserConstants53.T_THROW);
 			}
 			case 269:
 				break;
 			case 163: {
-				return createSymbol(ParserConstants.T_STRING_CAST);
+				return createSymbol(ParserConstants53.T_STRING_CAST);
 			}
 			case 270:
 				break;
 			case 81: {
-				return createSymbol(ParserConstants.T_AND_EQUAL);
+				return createSymbol(ParserConstants53.T_AND_EQUAL);
 			}
 			case 271:
 				break;
 			case 133: {
-				return createSymbol(ParserConstants.T_WHILE);
+				return createSymbol(ParserConstants53.T_WHILE);
 			}
 			case 272:
 				break;
 			case 103: {
-				return createSymbol(ParserConstants.T_NEW);
+				return createSymbol(ParserConstants53.T_NEW);
 			}
 			case 273:
 				break;
 			case 65: {
-				return createSymbol(ParserConstants.T_DEC);
+				return createSymbol(ParserConstants53.T_DEC);
 			}
 			case 274:
 				break;
 			case 64: {
-				return createSymbol(ParserConstants.T_AS);
+				return createSymbol(ParserConstants53.T_AS);
 			}
 			case 275:
 				break;
 			case 140: {
-				return createSymbol(ParserConstants.T_ELSEIF);
+				return createSymbol(ParserConstants53.T_ELSEIF);
 			}
 			case 276:
 				break;
 			case 80: {
-				return createSymbol(ParserConstants.T_MOD_EQUAL);
+				return createSymbol(ParserConstants53.T_MOD_EQUAL);
 			}
 			case 277:
 				break;
@@ -2138,28 +2138,28 @@ public class PhpAstLexer53 implements AstLexer {
 					yybegin(ST_IN_SCRIPTING);
 					// return T_OPEN_TAG_WITH_ECHO;
 				} else {
-					return createSymbol(ParserConstants.T_INLINE_HTML);
+					return createSymbol(ParserConstants53.T_INLINE_HTML);
 				}
 			}
 			case 278:
 				break;
 			case 107: {
-				return createSymbol(ParserConstants.T_IS_IDENTICAL);
+				return createSymbol(ParserConstants53.T_IS_IDENTICAL);
 			}
 			case 279:
 				break;
 			case 25: {
-				return createSymbol(ParserConstants.T_PRECENT);
+				return createSymbol(ParserConstants53.T_PRECENT);
 			}
 			case 280:
 				break;
 			case 71: {
-				return createSymbol(ParserConstants.T_DOUBLE_ARROW);
+				return createSymbol(ParserConstants53.T_DOUBLE_ARROW);
 			}
 			case 281:
 				break;
 			case 129: {
-				return createSymbol(ParserConstants.T_CATCH);
+				return createSymbol(ParserConstants53.T_CATCH);
 			}
 			case 282:
 				break;
@@ -2172,7 +2172,7 @@ public class PhpAstLexer53 implements AstLexer {
 			case 283:
 				break;
 			case 9: {
-				return createSymbol(ParserConstants.T_DOLLAR);
+				return createSymbol(ParserConstants53.T_DOLLAR);
 			}
 			case 284:
 				break;
@@ -2190,7 +2190,7 @@ public class PhpAstLexer53 implements AstLexer {
 				if (text.equals(heredoc)) {
 					heredoc = null;
 					yybegin(ST_IN_SCRIPTING);
-					return createSymbol(ParserConstants.T_END_HEREDOC);
+					return createSymbol(ParserConstants53.T_END_HEREDOC);
 				} else {
 					yybegin(ST_HEREDOC);
 				}
@@ -2204,42 +2204,42 @@ public class PhpAstLexer53 implements AstLexer {
 			case 286:
 				break;
 			case 22: {
-				return createSymbol(ParserConstants.T_RGREATER);
+				return createSymbol(ParserConstants53.T_RGREATER);
 			}
 			case 287:
 				break;
 			case 4: {
-				return createFullSymbol(ParserConstants.T_LNUMBER);
+				return createFullSymbol(ParserConstants53.T_LNUMBER);
 			}
 			case 288:
 				break;
 			case 139: {
-				return createSymbol(ParserConstants.T_ENDFOR);
+				return createSymbol(ParserConstants53.T_ENDFOR);
 			}
 			case 289:
 				break;
 			case 28: {
-				return createSymbol(ParserConstants.T_KOVA);
+				return createSymbol(ParserConstants53.T_KOVA);
 			}
 			case 290:
 				break;
 			case 56: {
-				return createSymbol(ParserConstants.T_CONCAT_EQUAL);
+				return createSymbol(ParserConstants53.T_CONCAT_EQUAL);
 			}
 			case 291:
 				break;
 			case 131: {
-				return createSymbol(ParserConstants.T_CLASS);
+				return createSymbol(ParserConstants53.T_CLASS);
 			}
 			case 292:
 				break;
 			case 99: {
-				return createSymbol(ParserConstants.T_TRY);
+				return createSymbol(ParserConstants53.T_TRY);
 			}
 			case 293:
 				break;
 			case 124: {
-				return createSymbol(ParserConstants.T_ISSET);
+				return createSymbol(ParserConstants53.T_ISSET);
 			}
 			case 294:
 				break;
@@ -2248,19 +2248,19 @@ public class PhpAstLexer53 implements AstLexer {
 					yybegin(ST_IN_SCRIPTING);
 					// return T_OPEN_TAG;
 				} else {
-					return createSymbol(ParserConstants.T_INLINE_HTML);
+					return createSymbol(ParserConstants53.T_INLINE_HTML);
 				}
 			}
 			case 295:
 				break;
 			case 121: {
-				return createSymbol(ParserConstants.T_ENDIF);
+				return createSymbol(ParserConstants53.T_ENDIF);
 			}
 			case 296:
 				break;
 			case 86: {
 				yybegin(YYINITIAL);
-				return createSymbol(ParserConstants.T_SEMICOLON); /*
+				return createSymbol(ParserConstants53.T_SEMICOLON); /*
 																 * implicit ';'
 																 * at php-end
 																 * tag
@@ -2275,19 +2275,19 @@ public class PhpAstLexer53 implements AstLexer {
 			case 298:
 				break;
 			case 76: {
-				return createSymbol(ParserConstants.T_MUL_EQUAL);
+				return createSymbol(ParserConstants53.T_MUL_EQUAL);
 			}
 			case 299:
 				break;
 			case 111: {
 				yypushback(1);
 				pushState(ST_VAR_OFFSET);
-				return createFullSymbol(ParserConstants.T_VARIABLE);
+				return createFullSymbol(ParserConstants53.T_VARIABLE);
 			}
 			case 300:
 				break;
 			case 24: {
-				return createSymbol(ParserConstants.T_DIV);
+				return createSymbol(ParserConstants53.T_DIV);
 			}
 			case 301:
 				break;
@@ -2300,123 +2300,123 @@ public class PhpAstLexer53 implements AstLexer {
 					yybegin(ST_IN_SCRIPTING);
 					// return T_OPEN_TAG;
 				} else {
-					return createSymbol(ParserConstants.T_INLINE_HTML);
+					return createSymbol(ParserConstants53.T_INLINE_HTML);
 				}
 			}
 			case 302:
 				break;
 			case 130: {
-				return createSymbol(ParserConstants.T_CLONE);
+				return createSymbol(ParserConstants53.T_CLONE);
 			}
 			case 303:
 				break;
 			case 178: {
-				return createSymbol(ParserConstants.T_REQUIRE_ONCE);
+				return createSymbol(ParserConstants53.T_REQUIRE_ONCE);
 			}
 			case 304:
 				break;
 			case 6: {
-				return createFullSymbol(ParserConstants.T_STRING);
+				return createFullSymbol(ParserConstants53.T_STRING);
 			}
 			case 305:
 				break;
 			case 89: {
 				pushState(ST_IN_SCRIPTING);
 				yypushback(yylength() - 1);
-				return createSymbol(ParserConstants.T_CURLY_OPEN_WITH_DOLAR);
+				return createSymbol(ParserConstants53.T_CURLY_OPEN_WITH_DOLAR);
 			}
 			case 306:
 				break;
 			case 102: {
-				return createSymbol(ParserConstants.T_USE);
+				return createSymbol(ParserConstants53.T_USE);
 			}
 			case 307:
 				break;
 			case 19: {
-				return createSymbol(ParserConstants.T_CLOSE_PARENTHESE);
+				return createSymbol(ParserConstants53.T_CLOSE_PARENTHESE);
 			}
 			case 308:
 				break;
 			case 174: {
-				return createSymbol(ParserConstants.T_INSTANCEOF);
+				return createSymbol(ParserConstants53.T_INSTANCEOF);
 			}
 			case 309:
 				break;
 			case 158: {
-				return createSymbol(ParserConstants.T_DIR);
+				return createSymbol(ParserConstants53.T_DIR);
 			}
 			case 310:
 				break;
 			case 10: {
 				yybegin(ST_DOUBLE_QUOTES);
-				return createSymbol(ParserConstants.T_QUATE);
+				return createSymbol(ParserConstants53.T_QUATE);
 			}
 			case 311:
 				break;
 			case 122: {
-				return createSymbol(ParserConstants.T_EMPTY);
+				return createSymbol(ParserConstants53.T_EMPTY);
 			}
 			case 312:
 				break;
 			case 50: {
-				return createSymbol(ParserConstants.T_CURLY_CLOSE);
+				return createSymbol(ParserConstants53.T_CURLY_CLOSE);
 			}
 			case 313:
 				break;
 			case 166: {
-				return createSymbol(ParserConstants.T_LINE);
+				return createSymbol(ParserConstants53.T_LINE);
 			}
 			case 314:
 				break;
 			case 43: {
 				popState();
 				pushState(ST_IN_SCRIPTING);
-				return createFullSymbol(ParserConstants.T_STRING_VARNAME);
+				return createFullSymbol(ParserConstants53.T_STRING_VARNAME);
 			}
 			case 315:
 				break;
 			case 2: {
-				return createSymbol(ParserConstants.T_INLINE_HTML);
+				return createSymbol(ParserConstants53.T_INLINE_HTML);
 			}
 			case 316:
 				break;
 			case 83: {
-				return createSymbol(ParserConstants.T_OR_EQUAL);
+				return createSymbol(ParserConstants53.T_OR_EQUAL);
 			}
 			case 317:
 				break;
 			case 117: {
-				return createSymbol(ParserConstants.T_CASE);
+				return createSymbol(ParserConstants53.T_CASE);
 			}
 			case 318:
 				break;
 			case 165: {
-				return createSymbol(ParserConstants.T_FILE);
+				return createSymbol(ParserConstants53.T_FILE);
 			}
 			case 319:
 				break;
 			case 149: {
-				return createSymbol(ParserConstants.T_EXTENDS);
+				return createSymbol(ParserConstants53.T_EXTENDS);
 			}
 			case 320:
 				break;
 			case 67: {
-				return createSymbol(ParserConstants.T_MINUS_EQUAL);
+				return createSymbol(ParserConstants53.T_MINUS_EQUAL);
 			}
 			case 321:
 				break;
 			case 1: {
-				return createFullSymbol(ParserConstants.T_ENCAPSED_AND_WHITESPACE);
+				return createFullSymbol(ParserConstants53.T_ENCAPSED_AND_WHITESPACE);
 			}
 			case 322:
 				break;
 			case 126: {
-				return createSymbol(ParserConstants.T_FINAL);
+				return createSymbol(ParserConstants53.T_FINAL);
 			}
 			case 323:
 				break;
 			case 152: {
-				return createSymbol(ParserConstants.T_DECLARE);
+				return createSymbol(ParserConstants53.T_DECLARE);
 			}
 			case 324:
 				break;
@@ -2439,7 +2439,7 @@ public class PhpAstLexer53 implements AstLexer {
 					yybegin(ST_END_HEREDOC);
 					// we need to remove the closing label from the symbol
 					// value.
-					Symbol sym = createFullSymbol(ParserConstants.T_ENCAPSED_AND_WHITESPACE);
+					Symbol sym = createFullSymbol(ParserConstants53.T_ENCAPSED_AND_WHITESPACE);
 					String value = (String) sym.value;
 					sym.value = value.substring(0, value.length()
 							- heredocLength + 1);
@@ -2466,52 +2466,52 @@ public class PhpAstLexer53 implements AstLexer {
 			case 326:
 				break;
 			case 156: {
-				return createSymbol(ParserConstants.T_UNSET_CAST);
+				return createSymbol(ParserConstants53.T_UNSET_CAST);
 			}
 			case 327:
 				break;
 			case 135: {
-				return createSymbol(ParserConstants.T_INT_CAST);
+				return createSymbol(ParserConstants53.T_INT_CAST);
 			}
 			case 328:
 				break;
 			case 48: {
-				return createSymbol(ParserConstants.T_CURLY_OPEN);
+				return createSymbol(ParserConstants53.T_CURLY_OPEN);
 			}
 			case 329:
 				break;
 			case 18: {
-				return createSymbol(ParserConstants.T_OPEN_PARENTHESE);
+				return createSymbol(ParserConstants53.T_OPEN_PARENTHESE);
 			}
 			case 330:
 				break;
 			case 147: {
-				return createSymbol(ParserConstants.T_BOOL_CAST);
+				return createSymbol(ParserConstants53.T_BOOL_CAST);
 			}
 			case 331:
 				break;
 			case 104: {
-				return createSymbol(ParserConstants.T_LOGICAL_AND);
+				return createSymbol(ParserConstants53.T_LOGICAL_AND);
 			}
 			case 332:
 				break;
 			case 146: {
-				return createSymbol(ParserConstants.T_PUBLIC);
+				return createSymbol(ParserConstants53.T_PUBLIC);
 			}
 			case 333:
 				break;
 			case 20: {
-				return createSymbol(ParserConstants.T_EQUAL);
+				return createSymbol(ParserConstants53.T_EQUAL);
 			}
 			case 334:
 				break;
 			case 61: {
-				return createSymbol(ParserConstants.T_IF);
+				return createSymbol(ParserConstants53.T_IF);
 			}
 			case 335:
 				break;
 			case 29: {
-				return createSymbol(ParserConstants.T_COMMA);
+				return createSymbol(ParserConstants53.T_COMMA);
 			}
 			case 336:
 				break;
@@ -2522,23 +2522,23 @@ public class PhpAstLexer53 implements AstLexer {
 			case 337:
 				break;
 			case 108: {
-				return createSymbol(ParserConstants.T_IS_NOT_IDENTICAL);
+				return createSymbol(ParserConstants53.T_IS_NOT_IDENTICAL);
 			}
 			case 338:
 				break;
 			case 74: {
-				return createSymbol(ParserConstants.T_IS_SMALLER_OR_EQUAL);
+				return createSymbol(ParserConstants53.T_IS_SMALLER_OR_EQUAL);
 			}
 			case 339:
 				break;
 			case 116: {
-				return createSymbol(ParserConstants.T_EVAL);
+				return createSymbol(ParserConstants53.T_EVAL);
 			}
 			case 340:
 				break;
 			case 66: {
 				pushState(ST_LOOKING_FOR_PROPERTY);
-				return createSymbol(ParserConstants.T_OBJECT_OPERATOR);
+				return createSymbol(ParserConstants53.T_OBJECT_OPERATOR);
 			}
 			case 341:
 				break;
@@ -2549,105 +2549,105 @@ public class PhpAstLexer53 implements AstLexer {
 			case 342:
 				break;
 			case 84: {
-				return createSymbol(ParserConstants.T_BOOLEAN_OR);
+				return createSymbol(ParserConstants53.T_BOOLEAN_OR);
 			}
 			case 343:
 				break;
 			case 141: { /* not a keyword, hust for recognize constans. */
-				return createFullSymbol(ParserConstants.T_DEFINE);
+				return createFullSymbol(ParserConstants53.T_DEFINE);
 			}
 			case 344:
 				break;
 			case 37: {
 				yybegin(ST_IN_SCRIPTING);
-				return createSymbol(ParserConstants.T_QUATE);
+				return createSymbol(ParserConstants53.T_QUATE);
 			}
 			case 345:
 				break;
 			case 68: {
-				return createSymbol(ParserConstants.T_SR);
+				return createSymbol(ParserConstants53.T_SR);
 			}
 			case 346:
 				break;
 			case 160: {
-				return createSymbol(ParserConstants.T_FUNCTION);
+				return createSymbol(ParserConstants53.T_FUNCTION);
 			}
 			case 347:
 				break;
 			case 170: {
-				return createSymbol(ParserConstants.T_PROTECTED);
+				return createSymbol(ParserConstants53.T_PROTECTED);
 			}
 			case 348:
 				break;
 			case 159: {
-				return createSymbol(ParserConstants.T_ENDWHILE);
+				return createSymbol(ParserConstants53.T_ENDWHILE);
 			}
 			case 349:
 				break;
 			case 16: {
-				return createSymbol(ParserConstants.T_LGREATER);
+				return createSymbol(ParserConstants53.T_LGREATER);
 			}
 			case 350:
 				break;
 			case 106: {
-				return createSymbol(ParserConstants.T_VAR);
+				return createSymbol(ParserConstants53.T_VAR);
 			}
 			case 351:
 				break;
 			case 85: {
-				return createSymbol(ParserConstants.T_XOR_EQUAL);
+				return createSymbol(ParserConstants53.T_XOR_EQUAL);
 			}
 			case 352:
 				break;
 			case 13: {
 				pushState(ST_IN_SCRIPTING);
-				return createSymbol(ParserConstants.T_CURLY_OPEN);
+				return createSymbol(ParserConstants53.T_CURLY_OPEN);
 			}
 			case 353:
 				break;
 			case 46: {
-				return createSymbol(ParserConstants.T_QUATE);
+				return createSymbol(ParserConstants53.T_QUATE);
 			}
 			case 354:
 				break;
 			case 161: {
-				return createSymbol(ParserConstants.T_CONTINUE);
+				return createSymbol(ParserConstants53.T_CONTINUE);
 			}
 			case 355:
 				break;
 			case 90: {
 				yypushback(1);
-				return createFullSymbol(ParserConstants.T_ENCAPSED_AND_WHITESPACE);
+				return createFullSymbol(ParserConstants53.T_ENCAPSED_AND_WHITESPACE);
 			}
 			case 356:
 				break;
 			case 100: {
-				return createFullSymbol(ParserConstants.T_EXIT);
+				return createFullSymbol(ParserConstants53.T_EXIT);
 			}
 			case 357:
 				break;
 			case 134: {
-				return createSymbol(ParserConstants.T_PRINT);
+				return createSymbol(ParserConstants53.T_PRINT);
 			}
 			case 358:
 				break;
 			case 182: {
-				return createSymbol(ParserConstants.T_HALT_COMPILER);
+				return createSymbol(ParserConstants53.T_HALT_COMPILER);
 			}
 			case 359:
 				break;
 			case 75: {
-				return createSymbol(ParserConstants.T_SL);
+				return createSymbol(ParserConstants53.T_SL);
 			}
 			case 360:
 				break;
 			case 119: {
-				return createSymbol(ParserConstants.T_GOTO);
+				return createSymbol(ParserConstants53.T_GOTO);
 			}
 			case 361:
 				break;
 			case 177: {
-				return createSymbol(ParserConstants.T_INCLUDE_ONCE);
+				return createSymbol(ParserConstants53.T_INCLUDE_ONCE);
 			}
 			case 362:
 				break;
@@ -2656,7 +2656,7 @@ public class PhpAstLexer53 implements AstLexer {
 			case 363:
 				break;
 			case 34: {
-				return createSymbol(ParserConstants.T_AT);
+				return createSymbol(ParserConstants53.T_AT);
 			}
 			case 364:
 				break;

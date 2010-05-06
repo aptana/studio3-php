@@ -7,10 +7,12 @@ Bundle-Activator: com.aptana.editor.php.epl.Activator
 Bundle-Vendor: Aptana Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: com.aptana.editor.php.epl,
+Export-Package: com.aptana.editor.php.core.ast,
+ com.aptana.editor.php.epl,
  com.aptana.editor.php.model,
  com.aptana.editor.php.model.env,
  com.aptana.editor.php.typebinding,
+ org.eclipse.php.internal.core,
  org.eclipse.php.internal.core.ast.locator,
  org.eclipse.php.internal.core.ast.nodes,
  org.eclipse.php.internal.core.ast.parser,

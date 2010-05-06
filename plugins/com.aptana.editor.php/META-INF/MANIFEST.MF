@@ -18,3 +18,20 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.php.libraries
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Export-Package: com.aptana.editor.php,
+ com.aptana.editor.php.core,
+ com.aptana.editor.php.indexer,
+ com.aptana.editor.php.internal,
+ com.aptana.editor.php.internal.builder,
+ com.aptana.editor.php.internal.builder.preferences,
+ com.aptana.editor.php.internal.contentAssist.preferences,
+ com.aptana.editor.php.internal.editor,
+ com.aptana.editor.php.internal.editor.preferences,
+ com.aptana.editor.php.internal.editor.scanner,
+ com.aptana.editor.php.internal.indexer,
+ com.aptana.editor.php.internal.model,
+ com.aptana.editor.php.internal.model.impl,
+ com.aptana.editor.php.internal.model.impl.env,
+ com.aptana.editor.php.internal.model.utils,
+ com.aptana.editor.php.internal.parser,
+ com.aptana.editor.php.utils
