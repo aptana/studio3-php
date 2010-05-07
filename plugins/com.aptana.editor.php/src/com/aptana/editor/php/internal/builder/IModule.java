@@ -39,16 +39,18 @@ import java.io.InputStream;
 
 /**
  * Abstract module.
+ * 
  * @author Denis Denisenko
  */
 public interface IModule extends IBuildPathResource
 {
-	
+
 	/**
 	 * Gets module contents.
+	 * 
 	 * @return module contents.
 	 */
 	InputStream getContents() throws IOException;
-	
+
 	long getTimeStamp();
 }

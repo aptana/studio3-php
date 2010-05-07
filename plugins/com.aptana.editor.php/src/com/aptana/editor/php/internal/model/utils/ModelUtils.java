@@ -65,14 +65,17 @@ import com.aptana.editor.php.model.IType;
 
 /**
  * ModelUtils.
+ * 
  * @author Denis Denisenko
  */
 public class ModelUtils
 {
-	
+
 	/**
 	 * Converts entry to model element.
-	 * @param entry - entry.
+	 * 
+	 * @param entry
+	 *            - entry.
 	 * @return entry or null.
 	 */
 	public static IModelElement convertEntry(IElementEntry entry)
@@ -93,21 +96,23 @@ public class ModelUtils
 		{
 			return null;
 		}
-//		switch (entry.getCategory())
-//		{
-//			case IPHPIndexConstants.CLASS_CATEGORY:
-//				return new EntryBasedType(entry);
-//			case IPHPIndexConstants.FUNCTION_CATEGORY:
-//				return new EntryBasedMethod(entry);
-//			case IPHPIndexConstants.VAR_CATEGORY:
-//				return new EntryBasedField(entry);
-//			default: return null;
-//		}
+		// switch (entry.getCategory())
+		// {
+		// case IPHPIndexConstants.CLASS_CATEGORY:
+		// return new EntryBasedType(entry);
+		// case IPHPIndexConstants.FUNCTION_CATEGORY:
+		// return new EntryBasedMethod(entry);
+		// case IPHPIndexConstants.VAR_CATEGORY:
+		// return new EntryBasedField(entry);
+		// default: return null;
+		// }
 	}
-	
+
 	/**
 	 * Converts module.
-	 * @param module - module.
+	 * 
+	 * @param module
+	 *            - module.
 	 * @return module.
 	 */
 	public static ISourceModule convertModule(IModule module)
@@ -118,10 +123,12 @@ public class ModelUtils
 		}
 		return new SourceModule(module);
 	}
-	
+
 	/**
 	 * Converts folder.
-	 * @param dir - directory to convert.
+	 * 
+	 * @param dir
+	 *            - directory to convert.
 	 * @return folder.
 	 */
 	public static ISourceFolder convertFolder(IDirectory dir)
@@ -132,10 +139,12 @@ public class ModelUtils
 		}
 		return new SourceFolder(dir);
 	}
-	
+
 	/**
-	 * Converts build-path to a project if possible. 
-	 * @param buildPath - build-path to convert.
+	 * Converts build-path to a project if possible.
+	 * 
+	 * @param buildPath
+	 *            - build-path to convert.
 	 * @return project or null.
 	 */
 	public static ISourceProject convertBuildPath(IBuildPath buildPath)
@@ -144,13 +153,15 @@ public class ModelUtils
 		{
 			return new SourceProject((ProjectBuildPath) buildPath);
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Gets source module by file.
-	 * @param file - file.
+	 * 
+	 * @param file
+	 *            - file.
 	 * @return source module or null
 	 */
 	public static ISourceModule getModule(IFile file)
@@ -160,13 +171,15 @@ public class ModelUtils
 		{
 			return convertModule(module);
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Converts entries to model elements. If utils are unable to convert some entry, such an entry is skipped.
-	 * @param entries - entries to convert.
+	 * 
+	 * @param entries
+	 *            - entries to convert.
 	 * @return model elements
 	 */
 	public static List<IModelElement> convertEntries(List<IElementEntry> entries)
@@ -175,9 +188,9 @@ public class ModelUtils
 		{
 			return Collections.emptyList();
 		}
-		
+
 		List<IModelElement> result = new ArrayList<IModelElement>();
-		
+
 		for (IElementEntry entry : entries)
 		{
 			IModelElement element = convertEntry(entry);
@@ -186,13 +199,15 @@ public class ModelUtils
 				result.add(element);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Converts types to model elements. If utils are unable to convert some entry, such an entry is skipped.
-	 * @param entries - entries to convert.
+	 * 
+	 * @param entries
+	 *            - entries to convert.
 	 * @return model elements
 	 */
 	public static List<IType> convertTypes(List<IElementEntry> entries)
@@ -201,9 +216,9 @@ public class ModelUtils
 		{
 			return Collections.emptyList();
 		}
-		
+
 		List<IType> result = new ArrayList<IType>();
-		
+
 		for (IElementEntry entry : entries)
 		{
 			if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY)
@@ -215,14 +230,16 @@ public class ModelUtils
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * Converts classes (types that are not interfaces) to model elements. 
-	 * If utils are unable to convert some entry, such an entry is skipped.
-	 * @param entries - entries to convert.
+	 * Converts classes (types that are not interfaces) to model elements. If utils are unable to convert some entry,
+	 * such an entry is skipped.
+	 * 
+	 * @param entries
+	 *            - entries to convert.
 	 * @return model elements
 	 */
 	public static List<IType> convertClasses(List<IElementEntry> entries)
@@ -231,13 +248,13 @@ public class ModelUtils
 		{
 			return Collections.emptyList();
 		}
-		
+
 		List<IType> result = new ArrayList<IType>();
-		
+
 		for (IElementEntry entry : entries)
 		{
 			if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY
-					&& !PHPModifier.isInterface(((ClassPHPEntryValue)entry.getValue()).getModifiers()))
+					&& !PHPModifier.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
 			{
 				IModelElement element = convertEntry(entry);
 				if (element != null)
@@ -246,14 +263,15 @@ public class ModelUtils
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * Converts interfaces to model elements. 
-	 * If utils are unable to convert some entry, such an entry is skipped.
-	 * @param entries - entries to convert.
+	 * Converts interfaces to model elements. If utils are unable to convert some entry, such an entry is skipped.
+	 * 
+	 * @param entries
+	 *            - entries to convert.
 	 * @return model elements
 	 */
 	public static List<IType> convertInterfaces(List<IElementEntry> entries)
@@ -262,13 +280,13 @@ public class ModelUtils
 		{
 			return Collections.emptyList();
 		}
-		
+
 		List<IType> result = new ArrayList<IType>();
-		
+
 		for (IElementEntry entry : entries)
 		{
 			if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY
-					&& PHPModifier.isInterface(((ClassPHPEntryValue)entry.getValue()).getModifiers()))
+					&& PHPModifier.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
 			{
 				IModelElement element = convertEntry(entry);
 				if (element != null)
@@ -277,27 +295,31 @@ public class ModelUtils
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Checks whether a type is a super type of another type.
-	 * @param hierarchy - type hierarchy.
-	 * @param possibleSuperType - super type to check.
-	 * @param type - type.
+	 * 
+	 * @param hierarchy
+	 *            - type hierarchy.
+	 * @param possibleSuperType
+	 *            - super type to check.
+	 * @param type
+	 *            - type.
 	 * @return true if super type, false otherwise.
 	 */
-	public static boolean isSuperType(ITypeHierarchy hierarchy,
-			IType possibleSuperType, IType type) {
+	public static boolean isSuperType(ITypeHierarchy hierarchy, IType possibleSuperType, IType type)
+	{
 
 		List<IType> superClass = hierarchy.getSuperclass(type);
-		if (superClass != null) 
+		if (superClass != null)
 		{
-			for (int q = 0; q < superClass.size(); ++q) 
+			for (int q = 0; q < superClass.size(); ++q)
 			{
-				if ((possibleSuperType.equals(superClass.get(q)) || isSuperType(
-						hierarchy, possibleSuperType, superClass.get(q)))) 
+				if ((possibleSuperType.equals(superClass.get(q)) || isSuperType(hierarchy, possibleSuperType,
+						superClass.get(q))))
 				{
 					return true;
 				}
@@ -305,7 +327,7 @@ public class ModelUtils
 		}
 		return false;
 	}
-	
+
 	/**
 	 * ModelUtils private constructor.
 	 */

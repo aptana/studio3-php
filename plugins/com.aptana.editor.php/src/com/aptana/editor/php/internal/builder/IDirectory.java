@@ -45,7 +45,9 @@ public interface IDirectory extends IBuildPathResource
 {
 	/**
 	 * Gets path of a module inside the directory from the root of build-path.
-	 * @param moduleName - module name.
+	 * 
+	 * @param moduleName
+	 *            - module name.
 	 * @return module path.
 	 */
 	IPath getModulePath(String moduleName);

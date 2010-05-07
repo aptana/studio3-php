@@ -14,9 +14,7 @@ public class PHPDocumentProvider extends CompositeDocumentProvider
 
 	protected PHPDocumentProvider()
 	{
-		super(IPHPConstants.CONTENT_TYPE_PHP, 
-				HTMLSourceConfiguration.getDefault(),
-				PHPSourceConfiguration.getDefault(), 
-				PHPPartitionerSwitchStrategy.getDefault());
+		super(IPHPConstants.CONTENT_TYPE_PHP, HTMLSourceConfiguration.getDefault(),
+				PHPSourceConfiguration.getDefault(), PHPPartitionerSwitchStrategy.getDefault());
 	}
 }

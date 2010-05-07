@@ -49,6 +49,7 @@ import com.aptana.editor.php.model.env.SourceMethodElementInfo;
 
 /**
  * EntryBasedMethod
+ * 
  * @author Denis Denisenko
  */
 public class EntryBasedMethod extends AbstractMember implements IMethod
@@ -57,20 +58,22 @@ public class EntryBasedMethod extends AbstractMember implements IMethod
 	 * Value.
 	 */
 	private FunctionPHPEntryValue entryValue;
-	
+
 	/**
 	 * EntryBasedMethod constructor.
-	 * @param methodEntry - method entry.
+	 * 
+	 * @param methodEntry
+	 *            - method entry.
 	 */
 	public EntryBasedMethod(IElementEntry methodEntry)
 	{
 		super(methodEntry);
-		
-//		if (!EntryUtils.isMethod(methodEntry))
-//		{
-//			throw new IllegalArgumentException("method entry required");
-//		}
-		
+
+		// if (!EntryUtils.isMethod(methodEntry))
+		// {
+		// throw new IllegalArgumentException("method entry required");
+		// }
+
 		this.entryValue = (FunctionPHPEntryValue) methodEntry.getValue();
 	}
 
@@ -84,7 +87,7 @@ public class EntryBasedMethod extends AbstractMember implements IMethod
 		{
 			return Collections.emptyList();
 		}
-		
+
 		List<String> result = new ArrayList<String>();
 		result.addAll(keys);
 		return result;
@@ -103,7 +106,7 @@ public class EntryBasedMethod extends AbstractMember implements IMethod
 	 */
 	public ISourceRange getNameRange()
 	{
-		//TODO add name length
+		// TODO add name length
 		return new SourceRange(entryValue.getStartOffset());
 	}
 
@@ -130,7 +133,7 @@ public class EntryBasedMethod extends AbstractMember implements IMethod
 	public List<String> getDirectParameterTypes()
 	{
 		Map<String, Set<Object>> paramsMap = entryValue.getParameters();
-		
+
 		List<String> result = new ArrayList<String>(paramsMap.size());
 		for (Set<Object> paramTypes : paramsMap.values())
 		{
@@ -147,14 +150,15 @@ public class EntryBasedMethod extends AbstractMember implements IMethod
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
-	public int getModifiers() {
+	public int getModifiers()
+	{
 		return entryValue.getModifiers();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -163,19 +167,19 @@ public class EntryBasedMethod extends AbstractMember implements IMethod
 		SourceMethodElementInfo info = new SourceMethodElementInfo();
 		info.setFlags(getFlags());
 		info.setNameSourceStart(getSourceRange().getOffset());
-		
+
 		List<String> parameters = getParameters();
 		if (parameters != null)
 		{
 			info.setArgumentNames(parameters.toArray(new String[parameters.size()]));
 		}
-		
+
 		List<String> directParameterTypes = getDirectParameterTypes();
 		if (directParameterTypes != null)
 		{
 			info.setArgumentInializers(directParameterTypes.toArray(new String[directParameterTypes.size()]));
 		}
-		
+
 		return info;
 	}
 }

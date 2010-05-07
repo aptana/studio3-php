@@ -40,6 +40,7 @@ import com.aptana.editor.php.internal.builder.IModule;
 
 /**
  * Element entry for unpacked index.
+ * 
  * @author Denis Denisenko
  */
 public class UnpackedEntry implements IElementEntry
@@ -48,22 +49,22 @@ public class UnpackedEntry implements IElementEntry
 	 * Element category.
 	 */
 	private int category;
-	
+
 	/**
 	 * Entry path.
 	 */
 	private String entryPath;
-	
+
 	/**
 	 * Entry path.
 	 */
 	private String lowerCaseEntryPath;
-	
+
 	/**
 	 * Entry value.
 	 */
 	private Object value;
-	
+
 	/**
 	 * Entry module.
 	 */
@@ -71,13 +72,17 @@ public class UnpackedEntry implements IElementEntry
 
 	/**
 	 * Entry constructor.
-	 * @param category - category.
-	 * @param entryPath - entry path.
-	 * @param value - entry value.
-	 * @param module - entry module.
+	 * 
+	 * @param category
+	 *            - category.
+	 * @param entryPath
+	 *            - entry path.
+	 * @param value
+	 *            - entry value.
+	 * @param module
+	 *            - entry module.
 	 */
-	public UnpackedEntry(int category, String entryPath, Object value,
-			IModule module)
+	public UnpackedEntry(int category, String entryPath, Object value, IModule module)
 	{
 		super();
 		this.category = category;
@@ -128,7 +133,7 @@ public class UnpackedEntry implements IElementEntry
 	@Override
 	public String toString()
 	{
-		return entryPath + " | " + getValue();
+		return entryPath + " | " + getValue(); //$NON-NLS-1$
 	}
 
 	/**
@@ -140,10 +145,8 @@ public class UnpackedEntry implements IElementEntry
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + category;
-		result = prime * result
-				+ ((entryPath == null) ? 0 : entryPath.hashCode());
-		result = prime * result
-				+ ((module == null) ? 0 : module.hashCode());
+		result = prime * result + ((entryPath == null) ? 0 : entryPath.hashCode());
+		result = prime * result + ((module == null) ? 0 : module.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -177,7 +180,7 @@ public class UnpackedEntry implements IElementEntry
 			{
 				return false;
 			}
-		} 
+		}
 		else if (!entryPath.equals(other.entryPath))
 		{
 			return false;
@@ -188,7 +191,7 @@ public class UnpackedEntry implements IElementEntry
 			{
 				return false;
 			}
-		} 
+		}
 		else if (!module.equals(other.module))
 		{
 			return false;
@@ -199,7 +202,7 @@ public class UnpackedEntry implements IElementEntry
 			{
 				return false;
 			}
-		} 
+		}
 		else if (!value.equals(other.value))
 		{
 			return false;

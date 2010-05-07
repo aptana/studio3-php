@@ -43,6 +43,7 @@ import com.aptana.editor.php.indexer.IReportable;
 
 /**
  * IncludePHPEntryValue
+ * 
  * @author Denis Denisenko
  */
 public class IncludePHPEntryValue implements IReportable
@@ -51,42 +52,42 @@ public class IncludePHPEntryValue implements IReportable
 	 * "Include" type.
 	 */
 	public static int INCLUDE_TYPE = 0;
-	
+
 	/**
 	 * "Include once" type.
 	 */
 	public static int INCLUDE_ONCE_TYPE = 1;
-	
+
 	/**
 	 * "Require" type.
 	 */
 	public static int REQUIRE_TYPE = 2;
-	
+
 	/**
 	 * "Require once" type.
 	 */
 	public static int REQUIRE_ONCE_TYPE = 3;
-	
+
 	/**
 	 * Include path.
 	 */
 	private final String includePath;
-	
+
 	/**
 	 * Start offset.
 	 */
 	private final int startOffset;
-	
+
 	/**
 	 * End offset.
 	 */
 	private final int endOffset;
-	
+
 	/**
 	 * Path start offset.
 	 */
 	private final int pathStartOffset;
-	
+
 	/**
 	 * Entry type.
 	 */
@@ -94,13 +95,17 @@ public class IncludePHPEntryValue implements IReportable
 
 	/**
 	 * IncludePHPEntryValue constructor.
-	 * @param includePath - include path.
-	 * @param startOffset - include start offset.
-	 * @param endOffset - include end offset.
-	 * @param type - type of the entry.
+	 * 
+	 * @param includePath
+	 *            - include path.
+	 * @param startOffset
+	 *            - include start offset.
+	 * @param endOffset
+	 *            - include end offset.
+	 * @param type
+	 *            - type of the entry.
 	 */
-	public IncludePHPEntryValue(String includePath, int startOffset, int endOffset, 
-			int pathStartOffset,int type)
+	public IncludePHPEntryValue(String includePath, int startOffset, int endOffset, int pathStartOffset, int type)
 	{
 		this.includePath = includePath;
 		this.startOffset = startOffset;
@@ -109,16 +114,17 @@ public class IncludePHPEntryValue implements IReportable
 		this.type = type;
 	}
 
-	public IncludePHPEntryValue(DataInputStream di) throws IOException{
-		this.includePath=di.readUTF();
-		this.startOffset=di.readInt();
-		this.endOffset=di.readInt();
-		this.pathStartOffset=di.readInt();
-		this.type=di.readInt();
+	public IncludePHPEntryValue(DataInputStream di) throws IOException
+	{
+		this.includePath = di.readUTF();
+		this.startOffset = di.readInt();
+		this.endOffset = di.readInt();
+		this.pathStartOffset = di.readInt();
+		this.type = di.readInt();
 	}
-	
-	
-	public void store(DataOutputStream da) throws IOException {
+
+	public void store(DataOutputStream da) throws IOException
+	{
 		da.writeInt(this.getKind());
 		da.writeUTF(includePath);
 		da.writeInt(this.startOffset);
@@ -129,6 +135,7 @@ public class IncludePHPEntryValue implements IReportable
 
 	/**
 	 * Gets include path.
+	 * 
 	 * @return include path
 	 */
 	public String getIncludePath()
@@ -139,11 +146,12 @@ public class IncludePHPEntryValue implements IReportable
 	@Override
 	public String toString()
 	{
-		return "Include: " + includePath;
+		return "Include: " + includePath; //$NON-NLS-1$
 	}
 
 	/**
 	 * Gets entry start offset.
+	 * 
 	 * @return entry start offset.
 	 */
 	public int getStartOffset()
@@ -153,15 +161,17 @@ public class IncludePHPEntryValue implements IReportable
 
 	/**
 	 * Gets entry end offset.
+	 * 
 	 * @return entry end offset.
 	 */
 	public int getEndOffset()
 	{
 		return endOffset;
 	}
-	
+
 	/**
 	 * Gets path start offset.
+	 * 
 	 * @return path start offset.
 	 */
 	public int getPathStartOffset()
@@ -171,6 +181,7 @@ public class IncludePHPEntryValue implements IReportable
 
 	/**
 	 * Gets entry type.
+	 * 
 	 * @return entry type.
 	 */
 	public int getType()
@@ -178,9 +189,9 @@ public class IncludePHPEntryValue implements IReportable
 		return type;
 	}
 
-	public int getKind() {
+	public int getKind()
+	{
 		return IPHPIndexConstants.IMPORT_CATEGORY;
 	}
-	
-}
 
+}

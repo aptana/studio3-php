@@ -52,14 +52,17 @@ import com.aptana.editor.php.internal.contentAssist.preferences.IPreferenceConst
 
 /**
  * Indexing utilities.
+ * 
  * @author Denis Denisenko
  */
 public final class ElementsIndexingUtils
 {
-	
+
 	/**
 	 * Gets first name in the path.
-	 * @param path - path.
+	 * 
+	 * @param path
+	 *            - path.
 	 * @return first name
 	 */
 	public static String getFirstNameInPath(String path)
@@ -68,19 +71,21 @@ public final class ElementsIndexingUtils
 		{
 			return null;
 		}
-		
+
 		int delimiterIndex = path.indexOf(IElementsIndex.DELIMITER);
 		if (delimiterIndex == -1)
 		{
 			return path;
 		}
-		
+
 		return path.substring(0, delimiterIndex);
 	}
-	
+
 	/**
 	 * Gets last name in the path.
-	 * @param path - path.
+	 * 
+	 * @param path
+	 *            - path.
 	 * @return first name
 	 */
 	public static String getLastNameInPath(String path)
@@ -89,20 +94,23 @@ public final class ElementsIndexingUtils
 		{
 			return null;
 		}
-		
+
 		int delimiterIndex = path.lastIndexOf(IElementsIndex.DELIMITER);
 		if (delimiterIndex == -1 || delimiterIndex == path.length() - 1)
 		{
 			return path;
 		}
-		
+
 		return path.substring(delimiterIndex + 1, path.length());
 	}
-	
+
 	/**
 	 * Creates the filter that checks whether entry may be included from the specified module.
-	 * @param module - module.
-	 * @param index - index to use for calculations.
+	 * 
+	 * @param module
+	 *            - module.
+	 * @param index
+	 *            - index to use for calculations.
 	 * @return entries filter.
 	 */
 	public static IElementEntriesFilter createIncludeFilter(IModule module, IElementsIndex index)
@@ -111,11 +119,11 @@ public final class ElementsIndexingUtils
 		{
 			return new BuildPathElementEntriesFilter(module);
 		}
-		
-		//getting include entries
+
+		// getting include entries
 		List<IElementEntry> includeEntries = index.getEntries(IPHPIndexConstants.IMPORT_CATEGORY, ""); //$NON-NLS-1$
-		
-		//building fast includes index
+
+		// building fast includes index
 		Map<IModule, Set<String>> includes = new HashMap<IModule, Set<String>>();
 		for (IElementEntry includeEntry : includeEntries)
 		{
@@ -124,14 +132,14 @@ public final class ElementsIndexingUtils
 			{
 				continue;
 			}
-			
+
 			IncludePHPEntryValue value = (IncludePHPEntryValue) val;
 			String includePath = value.getIncludePath();
 			if (includePath == null || includePath.length() == 0)
 			{
 				continue;
 			}
-			
+
 			IModule currentModule = includeEntry.getModule();
 			Set<String> moduleIncludes = includes.get(currentModule);
 			if (moduleIncludes == null)
@@ -141,15 +149,15 @@ public final class ElementsIndexingUtils
 			}
 			moduleIncludes.add(includePath);
 		}
-		
-		//index is built and we may find all the modules, current module includes recursively
+
+		// index is built and we may find all the modules, current module includes recursively
 		Set<IModule> includedModules = new HashSet<IModule>();
 		addModulesIncluded(includes, module, includedModules);
-		
+
 		includedModules.add(module);
 		return new PHPModuleBasedEntriesFilter(includedModules);
 	}
-	
+
 	private static void addModulesIncluded(Map<IModule, Set<String>> index, IModule module, Set<IModule> result)
 	{
 		Set<String> includes = index.get(module);
@@ -157,9 +165,9 @@ public final class ElementsIndexingUtils
 		{
 			return;
 		}
-		
+
 		IBuildPath buildPath = module.getBuildPath();
-		
+
 		for (String include : includes)
 		{
 			try
@@ -169,7 +177,7 @@ public final class ElementsIndexingUtils
 				{
 					continue;
 				}
-				
+
 				IModule includedModule = buildPath.resolveRelativePath(module, path);
 				if (includedModule != null)
 				{
@@ -182,11 +190,11 @@ public final class ElementsIndexingUtils
 			}
 			catch (Throwable th)
 			{
-				//skip
+				// skip
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks whether include-based filtering is enabled.
 	 * 
@@ -194,10 +202,10 @@ public final class ElementsIndexingUtils
 	 */
 	private static boolean includeFilteringEnabled()
 	{
-		return IPreferenceConstants.CONTENT_ASSIST_EXPLICIT_INCLUDE.equals(PHPEditorPlugin.getDefault().getPreferenceStore()
-				.getString(IPreferenceConstants.CONTENT_ASSIST_FILTER_TYPE));
+		return IPreferenceConstants.CONTENT_ASSIST_EXPLICIT_INCLUDE.equals(PHPEditorPlugin.getDefault()
+				.getPreferenceStore().getString(IPreferenceConstants.CONTENT_ASSIST_FILTER_TYPE));
 	}
-	
+
 	/**
 	 * ElementsIndexingUtils private constructor.
 	 */

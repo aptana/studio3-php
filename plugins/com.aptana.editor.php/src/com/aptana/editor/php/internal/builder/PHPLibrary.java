@@ -48,54 +48,61 @@ import org.osgi.framework.Bundle;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
- * 
  * @author Pavel Petrochenko
- *
  */
-public class PHPLibrary  implements IPHPLibrary{
+public class PHPLibrary implements IPHPLibrary
+{
 
 	private final IConfigurationElement element;
 
-	public PHPLibrary(IConfigurationElement element) {
+	public PHPLibrary(IConfigurationElement element)
+	{
 		this.element = element;
-		//super(element);
+		// super(element);
 	}
 
-	public File getPath() {
-		String attribute = element.getAttribute("path");
+	public File getPath()
+	{
+		String attribute = element.getAttribute("path"); //$NON-NLS-1$
 		String namespaceIdentifier = element.getNamespaceIdentifier();
 		Bundle bundle = Platform.getBundle(namespaceIdentifier);
-		if (bundle!=null) {
+		if (bundle != null)
+		{
 			File bundleFile;
-			try {
+			try
+			{
 				bundleFile = getBundleFile(bundle);
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
 				PHPEditorPlugin.logError(e);
 				return null;
 			}
-			return new File(bundleFile,attribute);
+			return new File(bundleFile, attribute);
 		}
 		return null;
 	}
+
 	/**
-	 * Returns a file for the contents of the specified bundle.  Depending 
-	 * on how the bundle is installed the returned file may be a directory or a jar file 
-	 * containing the bundle content.  
+	 * Returns a file for the contents of the specified bundle. Depending on how the bundle is installed the returned
+	 * file may be a directory or a jar file containing the bundle content.
 	 * 
-	 * @param bundle the bundle
+	 * @param bundle
+	 *            the bundle
 	 * @return a file with the contents of the bundle
-	 * @throws IOException if an error occurs during the resolution
-	 * 
+	 * @throws IOException
+	 *             if an error occurs during the resolution
 	 * @since org.eclipse.equinox.common 3.4
 	 */
-	public static File getBundleFile(Bundle bundle) throws IOException {
+	public static File getBundleFile(Bundle bundle) throws IOException
+	{
 		URL rootEntry = bundle.getEntry("/"); //$NON-NLS-1$
 		rootEntry = FileLocator.resolve(rootEntry);
 		if ("file".equals(rootEntry.getProtocol())) //$NON-NLS-1$
 			return new File(rootEntry.getPath());
 		if ("jar".equals(rootEntry.getProtocol())) { //$NON-NLS-1$
 			String path = rootEntry.getPath();
-			if (path.startsWith("file:")) {
+			if (path.startsWith("file:")) { //$NON-NLS-1$
 				// strip off the file: and the !/
 				path = path.substring(5, path.length() - 2);
 				return new File(path);
@@ -104,27 +111,31 @@ public class PHPLibrary  implements IPHPLibrary{
 		throw new IOException("Unknown protocol"); //$NON-NLS-1$
 	}
 
-	public boolean isTurnedOn() {
+	public boolean isTurnedOn()
+	{
 		return LibraryManager.getInstance().isTurnedOn(this);
 	}
 
-	public String getName() {
-		return element.getAttribute("name")+"(built-in)";
+	public String getName()
+	{
+		return element.getAttribute("name") + "(built-in)"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	public URL getIcon() {
+	public URL getIcon()
+	{
 		String namespaceIdentifier = element.getNamespaceIdentifier();
 		Bundle bundle = Platform.getBundle(namespaceIdentifier);
-		return bundle.getResource(element.getAttribute("icon"));
+		return bundle.getResource(element.getAttribute("icon")); //$NON-NLS-1$
 	}
 
-	public List<String> getDirectories() {
+	public List<String> getDirectories()
+	{
 		return Collections.singletonList(getPath().getAbsolutePath());
 	}
 
 	@Override
 	public String getId()
 	{
-		return element.getAttribute("id");
+		return element.getAttribute("id"); //$NON-NLS-1$
 	}
 }

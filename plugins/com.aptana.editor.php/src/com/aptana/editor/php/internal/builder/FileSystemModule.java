@@ -41,6 +41,7 @@ import java.io.InputStream;
 
 /**
  * File system - based module.
+ * 
  * @author Denis Denisenko
  */
 public class FileSystemModule extends AbstractBuildPathResource implements IModule
@@ -49,11 +50,14 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 	 * File.
 	 */
 	private File file;
-	
+
 	/**
 	 * FileSystemModule constructor.
-	 * @param file - file.
-	 * @param buildPath - build path.
+	 * 
+	 * @param file
+	 *            - file.
+	 * @param buildPath
+	 *            - build path.
 	 */
 	public FileSystemModule(File file, IBuildPath buildPath)
 	{
@@ -98,7 +102,8 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 		{
 			if (other.file != null)
 				return false;
-		} else if (!file.equals(other.file))
+		}
+		else if (!file.equals(other.file))
 			return false;
 		return true;
 	}
@@ -113,6 +118,7 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 
 	/**
 	 * Gets file.
+	 * 
 	 * @return file.
 	 */
 	protected File getFile()
@@ -129,8 +135,8 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 		return file.toString();
 	}
 
-	
-	public long getTimeStamp() {
+	public long getTimeStamp()
+	{
 		return file.lastModified();
 	}
 }

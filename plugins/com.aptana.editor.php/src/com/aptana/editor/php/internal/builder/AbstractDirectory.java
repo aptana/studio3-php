@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.IPath;
 
 /**
  * Abstract directory.
+ * 
  * @author Denis Denisenko
  */
 public abstract class AbstractDirectory extends AbstractBuildPathResource implements IDirectory
@@ -45,14 +46,17 @@ public abstract class AbstractDirectory extends AbstractBuildPathResource implem
 
 	/**
 	 * AbstractDirectory constructor.
-	 * @param buildPath - build path.
-	 * @param fullPath - full path.
+	 * 
+	 * @param buildPath
+	 *            - build path.
+	 * @param fullPath
+	 *            - full path.
 	 */
 	public AbstractDirectory(IBuildPath buildPath, String fullPath)
 	{
 		super(buildPath, fullPath);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

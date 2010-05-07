@@ -30,7 +30,8 @@ public class EncodingUtils
 	 * 3. If all the above fails, get ResourcesPlugin.getEncoding(), which actually gets the encoding from the system.
 	 * </pre>
 	 * 
-	 * @param module an {@link IModule}.
+	 * @param module
+	 *            an {@link IModule}.
 	 * @return The module's encoding.
 	 */
 	public static String getModuleEncoding(IModule module)

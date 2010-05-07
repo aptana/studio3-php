@@ -40,7 +40,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 
-
 /**
  * Factory for PHP modules.
  * 
@@ -55,7 +54,7 @@ public final class PHPLocalModuleFactory
 	 * PHP extension.
 	 */
 	private static final String PHP_EXTENSION = "php"; //$NON-NLS-1$
-	
+
 	/**
 	 * PHP content type.
 	 */
@@ -64,32 +63,32 @@ public final class PHPLocalModuleFactory
 	/**
 	 * Gets module by local resource.
 	 * 
-	 * @param resource -
-	 *            resource.
-	 * @param buildPath -
-	 *            build path.
+	 * @param resource
+	 *            - resource.
+	 * @param buildPath
+	 *            - build path.
 	 * @return module
 	 */
 	public static IModule getModule(IResource resource, IBuildPath buildPath)
 	{
-		//igonring inaccesible resources
+		// igonring inaccesible resources
 		if (!resource.isAccessible())
 		{
 			return null;
 		}
-		
-		if (!(resource instanceof IFile) /*|| !resource.exists()*/)
+
+		if (!(resource instanceof IFile) /* || !resource.exists() */)
 		{
 			return null;
 		}
-		
-		//skipping unsynchronized resources.
+
+		// skipping unsynchronized resources.
 		if (!resource.isSynchronized(1))
 		{
 			// FIXME SG: Use resource.refreshLocal(depth, monitor) in these cases (need testing)
-			return null; 
+			return null;
 		}
-		
+
 		IFile file = (IFile) resource;
 		String fileName = file.getName();
 		if (hasValidExtension(fileName))
@@ -103,24 +102,24 @@ public final class PHPLocalModuleFactory
 			}
 			return new LocalModule(file, buildPath);
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
-	 * Gets module by local resource.
-	 * This method does not check for module existence and whether the module resource is synchronized.
+	 * Gets module by local resource. This method does not check for module existence and whether the module resource is
+	 * synchronized.
 	 * 
-	 * @param resource -
-	 *            resource.
-	 * @param buildPath -
-	 *            build path.
+	 * @param resource
+	 *            - resource.
+	 * @param buildPath
+	 *            - build path.
 	 * @return module
 	 */
 	public static IModule getModuleUnsafe(IResource resource, IBuildPath buildPath)
 	{
 		IFile file = (IFile) resource;
-	
+
 		if (hasValidExtension(file.getName()))
 		{
 			return new LocalModule(file, buildPath);
@@ -128,10 +127,12 @@ public final class PHPLocalModuleFactory
 
 		return null;
 	}
-	
+
 	/**
 	 * Whether file has the valid PHP extension.
-	 * @param fileName - file name.
+	 * 
+	 * @param fileName
+	 *            - file name.
 	 * @return true if file extension is a valid PHP extension, false otherwise.
 	 */
 	private static boolean hasValidExtension(String fileName)

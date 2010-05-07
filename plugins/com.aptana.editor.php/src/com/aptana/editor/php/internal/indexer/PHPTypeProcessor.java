@@ -46,6 +46,7 @@ import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
 /**
  * PHPTypeProcessor
+ * 
  * @author Denis Denisenko
  */
 public final class PHPTypeProcessor
@@ -54,53 +55,56 @@ public final class PHPTypeProcessor
 	 * Maximum recursion depth.
 	 */
 	private static final int MAX_REC_DEPTH = 10;
-	
+
 	/**
 	 * Processes encoded types and returns the decoded type names list.
 	 * 
-	 * @param encodedTypes - types to process.
-	 * @param indexer - indexer to use for processing.
-	 * 
+	 * @param encodedTypes
+	 *            - types to process.
+	 * @param indexer
+	 *            - indexer to use for processing.
 	 * @return encoded types and returns the decoded type names list.
 	 */
 	public static Set<String> processTypes(Set<Object> encodedTypes, IElementsIndex indexer)
 	{
 		Set<String> result = new HashSet<String>();
-		
+
 		processTypes(encodedTypes, result, indexer, 0);
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Processes encoded types and returns the decoded types list.
 	 * 
-	 * @param encodedTypes - types to process.
-	 * @param indexer - indexer to use for processing.
-	 * @param depth - current depth.
+	 * @param encodedTypes
+	 *            - types to process.
+	 * @param indexer
+	 *            - indexer to use for processing.
+	 * @param depth
+	 *            - current depth.
 	 * @return
 	 */
-	private static Set<String> processTypes(Set<Object> encodedTypes, IElementsIndex indexer,
-			int depth)
+	private static Set<String> processTypes(Set<Object> encodedTypes, IElementsIndex indexer, int depth)
 	{
 		Set<String> result = new HashSet<String>();
-		
+
 		processTypes(encodedTypes, result, indexer, depth);
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Filters the set of types and returns the custom types only.
 	 * 
-	 * @param types - set of types to choose custom types from.
-	 * 
+	 * @param types
+	 *            - set of types to choose custom types from.
 	 * @return set of custom types.
 	 */
 	public static Set<String> getCustomTypes(Set<String> types)
 	{
 		Set<String> result = new HashSet<String>();
-		
+
 		for (String type : types)
 		{
 			if (!isBuiltInType(type))
@@ -108,13 +112,15 @@ public final class PHPTypeProcessor
 				result.add(type);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets whether type is built-in.
-	 * @param type - type name.
+	 * 
+	 * @param type
+	 *            - type name.
 	 * @return true if built-in, false otherwise.
 	 */
 	public static boolean isBuiltInType(String type)
@@ -139,26 +145,30 @@ public final class PHPTypeProcessor
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Processes types.
-	 * @param encodedTypes - encoded types.
-	 * @param result - result to fill.
-	 * @param indexer - indexer.
-	 * @param depth - current depth.
+	 * 
+	 * @param encodedTypes
+	 *            - encoded types.
+	 * @param result
+	 *            - result to fill.
+	 * @param indexer
+	 *            - indexer.
+	 * @param depth
+	 *            - current depth.
 	 */
-	private static void processTypes(Set<Object> encodedTypes, Set<String> result,
-			IElementsIndex indexer, int depth)
+	private static void processTypes(Set<Object> encodedTypes, Set<String> result, IElementsIndex indexer, int depth)
 	{
 		if (depth >= MAX_REC_DEPTH)
 		{
 			return;
 		}
-		
-		for(Object type : encodedTypes)
+
+		for (Object type : encodedTypes)
 		{
 			if (type != null)
 			{
@@ -169,64 +179,67 @@ public final class PHPTypeProcessor
 				else if (type instanceof VariablePathReference)
 				{
 					VariablePathReference ref = (VariablePathReference) type;
-					
+
 					Set<Object> dispatcherTypes = ref.getDispatcherTypes();
-					procesPathReference(dispatcherTypes, ref.getPath(), result,
-							indexer, depth + 1, false);
+					procesPathReference(dispatcherTypes, ref.getPath(), result, indexer, depth + 1, false);
 				}
 				else if (type instanceof FunctionPathReference)
 				{
 					FunctionPathReference ref = (FunctionPathReference) type;
-					
-					List<IElementEntry> entries = 
-						indexer.getEntries(IPHPIndexConstants.FUNCTION_CATEGORY,
-							ref.getFunctionEntryPath());
+
+					List<IElementEntry> entries = indexer.getEntries(IPHPIndexConstants.FUNCTION_CATEGORY, ref
+							.getFunctionEntryPath());
 					for (IElementEntry entry : entries)
 					{
 						Set<Object> dispatcherTypes = getEntryDispatcherTypes(entry);
 						if (dispatcherTypes != null && !dispatcherTypes.isEmpty())
 						{
-							procesPathReference(dispatcherTypes, ref.getPath(), result,
-									indexer, depth + 1, false);
+							procesPathReference(dispatcherTypes, ref.getPath(), result, indexer, depth + 1, false);
 						}
 					}
 				}
 				else if (type instanceof StaticPathReference)
 				{
 					StaticPathReference ref = (StaticPathReference) type;
-					
+
 					Set<Object> dispatcherTypes = ref.getDispatcherTypes();
-					procesPathReference(dispatcherTypes, ref.getPath(), result,
-							indexer, depth + 1, true);
+					procesPathReference(dispatcherTypes, ref.getPath(), result, indexer, depth + 1, true);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Processes variable call path reference.
-	 * @param ref - reference.
-	 * @param result - result to fill.
-	 * @param indexer - indexer.
-	 * @param depth - current recursion depth.
-	 * @param dispatcherTypes - dispatcher types.
-	 * @param path - call path to process.
-	 * @param staticsOnly - whether to accept static entries only.
+	 * 
+	 * @param ref
+	 *            - reference.
+	 * @param result
+	 *            - result to fill.
+	 * @param indexer
+	 *            - indexer.
+	 * @param depth
+	 *            - current recursion depth.
+	 * @param dispatcherTypes
+	 *            - dispatcher types.
+	 * @param path
+	 *            - call path to process.
+	 * @param staticsOnly
+	 *            - whether to accept static entries only.
 	 */
-	private static void procesPathReference(Set<Object> dispatcherTypes,
-			CallPath path,
-			Set<String> result, IElementsIndex indexer, int depth, boolean staticsOnly)
+	private static void procesPathReference(Set<Object> dispatcherTypes, CallPath path, Set<String> result,
+			IElementsIndex indexer, int depth, boolean staticsOnly)
 	{
 		if (depth >= MAX_REC_DEPTH)
 		{
 			return;
 		}
-		
+
 		if (dispatcherTypes == null || dispatcherTypes.isEmpty())
 		{
 			return;
 		}
-		
+
 		Set<Object> encodedRefTypes = dispatcherTypes;
 		Set<String> decodedRefTypes = processTypes(encodedRefTypes, indexer, depth + 1);
 		Set<String> customRefTypes = getCustomTypes(decodedRefTypes);
@@ -234,21 +247,20 @@ public final class PHPTypeProcessor
 		{
 			return;
 		}
-		
+
 		if (path == null || path.getSize() == 0)
 		{
 			result.addAll(customRefTypes);
 			return;
 		}
 		CallPath.Entry firstPathEntry = path.getEntries().get(0);
-		
-		//reference for all possible dispatcher types
+
+		// reference for all possible dispatcher types
 		for (String type : customRefTypes)
 		{
 			String entryName = firstPathEntry.getName();
 			String entryPath = type + IElementsIndex.DELIMITER + entryName;
-			
-			
+
 			int category = -1;
 			if (firstPathEntry instanceof CallPath.VariableEntry)
 			{
@@ -258,33 +270,31 @@ public final class PHPTypeProcessor
 			{
 				category = IPHPIndexConstants.FUNCTION_CATEGORY;
 			}
-			
-			List<IElementEntry> entries = indexer.getEntries( 
-					category, entryPath);
-			//processing all entries got by the type and the first path entry
+
+			List<IElementEntry> entries = indexer.getEntries(category, entryPath);
+			// processing all entries got by the type and the first path entry
 			for (IElementEntry entry : entries)
 			{
-				//skipping non-static entries if "statics only" flag is on
+				// skipping non-static entries if "statics only" flag is on
 				if (staticsOnly && !isStaticEntry(entry))
 				{
 					continue;
 				}
-				
+
 				Set<Object> entryTypes = getEntryDispatcherTypes(entry);
 				if (entryTypes == null || entryTypes.isEmpty())
 				{
 					continue;
 				}
-				
+
 				CallPath subPath = path.subPath(1);
-				
-				//if we have more of path to process, do it recursively
+
+				// if we have more of path to process, do it recursively
 				if (subPath.getSize() != 0)
 				{
-					procesPathReference(entryTypes, subPath,
-							result, indexer, depth + 1, false);
+					procesPathReference(entryTypes, subPath, result, indexer, depth + 1, false);
 				}
-				//in other case reporting the field types found
+				// in other case reporting the field types found
 				else
 				{
 					processTypes(entryTypes, result, indexer, depth + 1);
@@ -292,10 +302,10 @@ public final class PHPTypeProcessor
 			}
 		}
 	}
-	
+
 	/**
-	 * Gets entry dispatcher types: for variable that are variable types,
-	 * for method that are return types.
+	 * Gets entry dispatcher types: for variable that are variable types, for method that are return types.
+	 * 
 	 * @return types set or null
 	 */
 	private static Set<Object> getEntryDispatcherTypes(IElementEntry entry)
@@ -311,13 +321,15 @@ public final class PHPTypeProcessor
 			FunctionPHPEntryValue entryValue = (FunctionPHPEntryValue) val;
 			return entryValue.getReturnTypes();
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Checks whether entry is static.
-	 * @param entry - entry.
+	 * 
+	 * @param entry
+	 *            - entry.
 	 * @return true if entry is static, false otherwise.
 	 */
 	private static boolean isStaticEntry(IElementEntry entry)
@@ -328,7 +340,7 @@ public final class PHPTypeProcessor
 			int modifiers = ((AbstractPHPEntryValue) entryValue).getModifiers();
 			return PHPModifier.isStatic(modifiers);
 		}
-		
+
 		return false;
 	}
 

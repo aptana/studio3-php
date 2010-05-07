@@ -48,7 +48,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	private PHPCodeScanner codeScanner;
 	private RuleBasedScanner singleLineCommentScanner;
 	private RuleBasedScanner multiLineCommentScanner;
-	private RuleBasedScanner commandScanner;
+	// private RuleBasedScanner commandScanner;
 	private RuleBasedScanner singleQuotedStringScanner;
 	private RuleBasedScanner doubleQuotedStringScanner;
 
@@ -195,15 +195,15 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	// return regexpScanner;
 	// }
 
-	private ITokenScanner getCommandScanner()
-	{
-		if (commandScanner == null)
-		{
-			commandScanner = new RuleBasedScanner();
-			commandScanner.setDefaultReturnToken(getToken("string.interpolated.php")); //$NON-NLS-1$
-		}
-		return commandScanner;
-	}
+	// private ITokenScanner getCommandScanner()
+	// {
+	// if (commandScanner == null)
+	// {
+	// commandScanner = new RuleBasedScanner();
+	//			commandScanner.setDefaultReturnToken(getToken("string.interpolated.php")); //$NON-NLS-1$
+	// }
+	// return commandScanner;
+	// }
 
 	private ITokenScanner getSingleQuotedStringScanner()
 	{

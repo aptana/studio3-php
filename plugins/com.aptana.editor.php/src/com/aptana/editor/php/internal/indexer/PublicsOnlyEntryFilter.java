@@ -43,6 +43,7 @@ import com.aptana.editor.php.indexer.IElementEntry;
 
 /**
  * Filter that removes all private and protected fields and methods.
+ * 
  * @author Denis Denisenko
  */
 public class PublicsOnlyEntryFilter implements IEntryFilter
@@ -54,7 +55,7 @@ public class PublicsOnlyEntryFilter implements IEntryFilter
 	public LinkedHashSet<IElementEntry> filter(Collection<IElementEntry> toFilter)
 	{
 		LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
-		
+
 		for (IElementEntry entry : toFilter)
 		{
 			Object value = entry.getValue();
@@ -71,7 +72,7 @@ public class PublicsOnlyEntryFilter implements IEntryFilter
 				result.add(entry);
 			}
 		}
-		
+
 		return result;
 	}
 }

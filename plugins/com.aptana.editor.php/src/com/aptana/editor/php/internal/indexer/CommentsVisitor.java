@@ -8,8 +8,8 @@ import com.aptana.editor.php.utils.PHPASTVisitorStub;
 
 /**
  * PHP Module comments collector.
+ * 
  * @author Denis Denisenko
- *
  */
 public class CommentsVisitor extends PHPASTVisitorStub
 {
@@ -29,7 +29,8 @@ public class CommentsVisitor extends PHPASTVisitorStub
 	}
 
 	/**
-	 * Gets collected comments. 
+	 * Gets collected comments.
+	 * 
 	 * @return collected comments
 	 */
 	public List<Comment> getComments()

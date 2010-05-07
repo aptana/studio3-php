@@ -9,7 +9,6 @@ import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlineItem;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.lexer.IRange;
 
 /**
@@ -60,7 +59,7 @@ public class PHPSourceEditor extends AbstractThemeableEditor
 	{
 		if (element instanceof CommonOutlineItem)
 		{
-			IParseNode node = ((CommonOutlineItem) element).getReferenceNode();
+			// IParseNode node = ((CommonOutlineItem) element).getReferenceNode();
 			// TODO - Shalom: Set selected element
 			// if (node instanceof IImportContainer)
 			// {

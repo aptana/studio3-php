@@ -12,11 +12,11 @@ public interface IPHPConstants
 	public static final String EMBEDDED_CSS_SCOPE = "source.css.embedded.html"; //$NON-NLS-1$
 	public static final String EMBEDDED_JS_SCOPE = "source.js.embedded.html"; //$NON-NLS-1$
 	// public static final String TOPLEVEL_RHTML_SCOPE = "text.html.ruby"; //$NON-NLS-1$
-	
+
 	public final static String PREFIX = "__php_"; //$NON-NLS-1$
 	public final static String DEFAULT = "__php" + IDocument.DEFAULT_CONTENT_TYPE; //$NON-NLS-1$
 	public static final String COMMAND = PREFIX + "command"; //$NON-NLS-1$
-	
+
 	public static final String PHP_SINGLE_LINE_COMMENT = PREFIX + "singleline_comment"; //$NON-NLS-1$
 	public static final String PHP_MULTI_LINE_COMMENT = PREFIX + "multiline_comment"; //$NON-NLS-1$
 	public static final String PHP_COMMENT = PREFIX + "comment"; //$NON-NLS-1$

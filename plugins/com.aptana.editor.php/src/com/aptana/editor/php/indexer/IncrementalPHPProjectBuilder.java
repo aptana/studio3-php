@@ -43,6 +43,7 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#build(int, java.util.Map,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
+	@SuppressWarnings("unchecked")
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException
 	{
 		// FIXME - SG: Convert from Indexer timer to the builder system.

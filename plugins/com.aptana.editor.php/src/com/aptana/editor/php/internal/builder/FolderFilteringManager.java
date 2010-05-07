@@ -39,7 +39,8 @@ import java.io.File;
 import org.eclipse.core.resources.IFolder;
 
 /**
- * Manager of folders filtering. 
+ * Manager of folders filtering.
+ * 
  * @author Denis Denisenko
  */
 public class FolderFilteringManager
@@ -47,11 +48,16 @@ public class FolderFilteringManager
 	/**
 	 * Folder names to skip.
 	 */
-	private static String[] namesToSkip = new String[]{".svn", "_svn", "cvs"};
-	
+	private static String[] namesToSkip = new String[] { ".svn", //$NON-NLS-1$
+			"_svn", //$NON-NLS-1$
+			"cvs", //$NON-NLS-1$
+			".git" }; //$NON-NLS-1$
+
 	/**
 	 * Gets whether the folder is acceptable.
-	 * @param folder - folder to check.
+	 * 
+	 * @param folder
+	 *            - folder to check.
 	 */
 	public static boolean acceptFolder(IFolder folder)
 	{
@@ -63,13 +69,15 @@ public class FolderFilteringManager
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Gets whether the folder is acceptable.
-	 * @param folder - folder to check.
+	 * 
+	 * @param folder
+	 *            - folder to check.
 	 */
 	public static boolean acceptFolder(File folder)
 	{
@@ -77,7 +85,7 @@ public class FolderFilteringManager
 		{
 			return false;
 		}
-		
+
 		String folderName = folder.getName();
 		for (String toSkip : namesToSkip)
 		{
@@ -86,10 +94,10 @@ public class FolderFilteringManager
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	private FolderFilteringManager()
 	{
 	}

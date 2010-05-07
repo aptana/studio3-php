@@ -58,7 +58,8 @@ import com.aptana.editor.php.internal.builder.IModule;
  * 
  * @author Denis Denisenko
  */
-public class UnpackedElementIndex implements IModifiableElementsIndex {
+public class UnpackedElementIndex implements IModifiableElementsIndex
+{
 	/**
 	 * Entries.
 	 */
@@ -67,8 +68,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	private TObjectLongHashMap<IModule> timeStamps = new TObjectLongHashMap<IModule>();
 
 	/**
-	 * Category->Path->Entries map. Value might be represented by the single
-	 * entry or by the entries list.
+	 * Category->Path->Entries map. Value might be represented by the single entry or by the entries list.
 	 */
 	private TIntObjectHashMap<THashMap<String, Object>> pathToEntries = new TIntObjectHashMap<THashMap<String, Object>>();
 
@@ -87,21 +87,22 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 */
 	private ByteBuffer converter = ByteBuffer.allocate(4);
 
-	public void recordTimeStamp(IModule m, long timeStamp) {
+	public void recordTimeStamp(IModule m, long timeStamp)
+	{
 		timeStamps.put(m, timeStamp);
 	}
 
-	public long getTimeStamp(IModule m) {
+	public long getTimeStamp(IModule m)
+	{
 		return timeStamps.get(m);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized IElementEntry addEntry(int category, String entryPath,
-			Object value, IModule module) {
-		UnpackedEntry entry = new UnpackedEntry(category, entryPath, value,
-				module);
+	public synchronized IElementEntry addEntry(int category, String entryPath, Object value, IModule module)
+	{
+		UnpackedEntry entry = new UnpackedEntry(category, entryPath, value, module);
 
 		// adding entry to the list of a module's entries
 		addEntryToModuleList(module, entry);
@@ -121,10 +122,13 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized void removeModuleEntries(IModule module) {
+	public synchronized void removeModuleEntries(IModule module)
+	{
 		List<UnpackedEntry> entriesToRemove = entries.get(module);
-		if (entriesToRemove != null && !entriesToRemove.isEmpty()) {
-			for (UnpackedEntry entryToRemove : entriesToRemove) {
+		if (entriesToRemove != null && !entriesToRemove.isEmpty())
+		{
+			for (UnpackedEntry entryToRemove : entriesToRemove)
+			{
 				// System.out.println("Removing entry: " + entryToRemove);
 				removeEntriesFromPathToEntries(entryToRemove);
 				removeEntriesFromFirstCharToEntries(entryToRemove);
@@ -145,11 +149,12 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized List<IElementEntry> getEntriesStartingWith(
-			int category, String path) {
+	public synchronized List<IElementEntry> getEntriesStartingWith(int category, String path)
+	{
 		int indexOf = path.lastIndexOf('\\');
 		String namespace = null;
-		if (indexOf != -1) {
+		if (indexOf != -1)
+		{
 			namespace = path.substring(0, indexOf);
 			path = path.substring(indexOf + 1);
 		}
@@ -157,26 +162,35 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 		final List<IElementEntry> toReturn = new ArrayList<IElementEntry>();
 
 		// handling empty path
-		if (lowerCasepath.length() == 0) {
-			if (category == IElementsIndex.ANY_CETEGORY) {
-				entries
-						.forEachValue(new TObjectProcedure<List<UnpackedEntry>>() {
-							public boolean execute(List<UnpackedEntry> list) {
-								toReturn.addAll(list);
-								return true;
-							}
-						});
-			} else {
-				TShortObjectHashMap<Object> map = firstCharToEntries
-						.get(category);
-				if (map != null) {
-					map.forEachValue(new TObjectProcedure<Object>() {
-						public boolean execute(Object obj) {
-							if (obj instanceof IElementEntry) {
+		if (lowerCasepath.length() == 0)
+		{
+			if (category == IElementsIndex.ANY_CETEGORY)
+			{
+				entries.forEachValue(new TObjectProcedure<List<UnpackedEntry>>()
+				{
+					public boolean execute(List<UnpackedEntry> list)
+					{
+						toReturn.addAll(list);
+						return true;
+					}
+				});
+			}
+			else
+			{
+				TShortObjectHashMap<Object> map = firstCharToEntries.get(category);
+				if (map != null)
+				{
+					map.forEachValue(new TObjectProcedure<Object>()
+					{
+						public boolean execute(Object obj)
+						{
+							if (obj instanceof IElementEntry)
+							{
 								toReturn.add((IElementEntry) obj);
-							} else if (obj instanceof Collection) {
-								toReturn
-										.addAll((Collection<IElementEntry>) obj);
+							}
+							else if (obj instanceof Collection)
+							{
+								toReturn.addAll((Collection<IElementEntry>) obj);
 							}
 							return true;
 						}
@@ -185,26 +199,32 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 			}
 		}
 		// handling single character path
-		else if (lowerCasepath.length() == 1) {
+		else if (lowerCasepath.length() == 1)
+		{
 			final short firstCharacter = (short) lowerCasepath.charAt(0);
-			if (category == IElementsIndex.ANY_CETEGORY) {
-				firstCharToEntries
-						.forEachValue(new TObjectProcedure<TShortObjectHashMap<Object>>() {
-							public boolean execute(
-									TShortObjectHashMap<Object> map) {
-								Object objResult = map.get(firstCharacter);
-								if (objResult != null) {
-									addObjRefToList(toReturn, objResult);
-								}
-								return true;
-							}
-						});
-			} else {
-				TShortObjectHashMap<Object> map = firstCharToEntries
-						.get(category);
-				if (map != null) {
+			if (category == IElementsIndex.ANY_CETEGORY)
+			{
+				firstCharToEntries.forEachValue(new TObjectProcedure<TShortObjectHashMap<Object>>()
+				{
+					public boolean execute(TShortObjectHashMap<Object> map)
+					{
+						Object objResult = map.get(firstCharacter);
+						if (objResult != null)
+						{
+							addObjRefToList(toReturn, objResult);
+						}
+						return true;
+					}
+				});
+			}
+			else
+			{
+				TShortObjectHashMap<Object> map = firstCharToEntries.get(category);
+				if (map != null)
+				{
 					Object objResult = map.get(firstCharacter);
-					if (objResult != null) {
+					if (objResult != null)
+					{
 						addObjRefToList(toReturn, objResult);
 					}
 				}
@@ -212,25 +232,32 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 
 		}
 		// handling two characters path
-		else if (lowerCasepath.length() == 2) {
+		else if (lowerCasepath.length() == 2)
+		{
 			final int key = getIntKey(lowerCasepath);
-			if (category == IElementsIndex.ANY_CETEGORY) {
-				firstTwoCharsToEntries
-						.forEachValue(new TObjectProcedure<TIntObjectHashMap<Object>>() {
-							public boolean execute(TIntObjectHashMap<Object> map) {
-								Object objResult = map.get(key);
-								if (objResult != null) {
-									addObjRefToList(toReturn, objResult);
-								}
-								return true;
-							}
-						});
-			} else {
-				TIntObjectHashMap<Object> map = firstTwoCharsToEntries
-						.get(category);
-				if (map != null) {
+			if (category == IElementsIndex.ANY_CETEGORY)
+			{
+				firstTwoCharsToEntries.forEachValue(new TObjectProcedure<TIntObjectHashMap<Object>>()
+				{
+					public boolean execute(TIntObjectHashMap<Object> map)
+					{
+						Object objResult = map.get(key);
+						if (objResult != null)
+						{
+							addObjRefToList(toReturn, objResult);
+						}
+						return true;
+					}
+				});
+			}
+			else
+			{
+				TIntObjectHashMap<Object> map = firstTwoCharsToEntries.get(category);
+				if (map != null)
+				{
 					Object objResult = map.get(key);
-					if (objResult != null) {
+					if (objResult != null)
+					{
 						addObjRefToList(toReturn, objResult);
 					}
 				}
@@ -238,57 +265,74 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 
 		}
 		// handling more then two characters path
-		else if (lowerCasepath.length() > 2) {
+		else if (lowerCasepath.length() > 2)
+		{
 			// handling more then two characters path
 			final int key = getIntKey(lowerCasepath);
-			if (category == IElementsIndex.ANY_CETEGORY) {
-				firstTwoCharsToEntries
-						.forEachValue(new TObjectProcedure<TIntObjectHashMap<Object>>() {
-							public boolean execute(TIntObjectHashMap<Object> map) {
-								Object objResult = map.get(key);
-								if (objResult != null) {
-									addObjRefToListWithPathCheck(toReturn,
-											objResult, lowerCasepath);
-								}
-								return true;
-							}
-						});
-			} else {
-				TIntObjectHashMap<Object> map = firstTwoCharsToEntries
-						.get(category);
-				if (map != null) {
+			if (category == IElementsIndex.ANY_CETEGORY)
+			{
+				firstTwoCharsToEntries.forEachValue(new TObjectProcedure<TIntObjectHashMap<Object>>()
+				{
+					public boolean execute(TIntObjectHashMap<Object> map)
+					{
+						Object objResult = map.get(key);
+						if (objResult != null)
+						{
+							addObjRefToListWithPathCheck(toReturn, objResult, lowerCasepath);
+						}
+						return true;
+					}
+				});
+			}
+			else
+			{
+				TIntObjectHashMap<Object> map = firstTwoCharsToEntries.get(category);
+				if (map != null)
+				{
 					Object objResult = map.get(key);
-					if (objResult != null) {
-						addObjRefToListWithPathCheck(toReturn, objResult,
-								lowerCasepath);
+					if (objResult != null)
+					{
+						addObjRefToListWithPathCheck(toReturn, objResult, lowerCasepath);
 					}
 				}
 			}
 		}
-		if (namespace != null) {
+		if (namespace != null)
+		{
 			ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
-			for (IElementEntry e : toReturn) {
+			for (IElementEntry e : toReturn)
+			{
 				Object value = e.getValue();
-				if (value instanceof AbstractPHPEntryValue) {
+				if (value instanceof AbstractPHPEntryValue)
+				{
 					AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
 					String nameSpace2 = m.getNameSpace();
-					if (nameSpace2 != null && nameSpace2.equals(namespace)) {
+					if (nameSpace2 != null && nameSpace2.equals(namespace))
+					{
 						filter.add(e);
 					}
 				}
 			}
 			return filter;
-		} else {
+		}
+		else
+		{
 			ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
-			for (IElementEntry e : toReturn) {
+			for (IElementEntry e : toReturn)
+			{
 				Object value = e.getValue();
-				if (value instanceof AbstractPHPEntryValue) {
+				if (value instanceof AbstractPHPEntryValue)
+				{
 					AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
-					if (m instanceof NamespacePHPEntryValue) {
+					if (m instanceof NamespacePHPEntryValue)
+					{
 						filter.add(e);
-					} else {
+					}
+					else
+					{
 						String nameSpace2 = m.getNameSpace();
-						if (nameSpace2 == null || nameSpace2.length() == 0) {
+						if (nameSpace2 == null || nameSpace2.length() == 0)
+						{
 							filter.add(e);
 						}
 					}
@@ -300,8 +344,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	}
 
 	/**
-	 * Adds an object reference (that might be an entry or a list of entries) to
-	 * the specified list.
+	 * Adds an object reference (that might be an entry or a list of entries) to the specified list.
 	 * 
 	 * @param list
 	 *            - list to add entries to.
@@ -309,17 +352,21 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 *            - reference.
 	 */
 	@SuppressWarnings("unchecked")
-	private void addObjRefToList(List<IElementEntry> list, Object reference) {
-		if (reference instanceof IElementEntry) {
+	private void addObjRefToList(List<IElementEntry> list, Object reference)
+	{
+		if (reference instanceof IElementEntry)
+		{
 			list.add((IElementEntry) reference);
-		} else if (reference instanceof Collection) {
+		}
+		else if (reference instanceof Collection)
+		{
 			list.addAll((Collection<IElementEntry>) reference);
 		}
 	}
 
 	/**
-	 * Adds an object reference (that might be an entry or a list of entries) to
-	 * the specified list if its lower-case path starts with the path specified.
+	 * Adds an object reference (that might be an entry or a list of entries) to the specified list if its lower-case
+	 * path starts with the path specified.
 	 * 
 	 * @param list
 	 *            - list to add entries to.
@@ -329,17 +376,21 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 *            - lower-case path to compare to
 	 */
 	@SuppressWarnings("unchecked")
-	private void addObjRefToListWithPathCheck(List<IElementEntry> list,
-			Object reference, String lowerCasePath) {
-		if (reference instanceof IElementEntry) {
-			if (((IElementEntry) reference).getLowerCaseEntryPath().startsWith(
-					lowerCasePath)) {
+	private void addObjRefToListWithPathCheck(List<IElementEntry> list, Object reference, String lowerCasePath)
+	{
+		if (reference instanceof IElementEntry)
+		{
+			if (((IElementEntry) reference).getLowerCaseEntryPath().startsWith(lowerCasePath))
+			{
 				list.add((IElementEntry) reference);
 			}
-		} else if (reference instanceof Collection<?>) {
-			for (IElementEntry currentEntry : (Collection<IElementEntry>) reference) {
-				if (currentEntry.getLowerCaseEntryPath().startsWith(
-						lowerCasePath)) {
+		}
+		else if (reference instanceof Collection<?>)
+		{
+			for (IElementEntry currentEntry : (Collection<IElementEntry>) reference)
+			{
+				if (currentEntry.getLowerCaseEntryPath().startsWith(lowerCasePath))
+				{
 					list.add(currentEntry);
 				}
 			}
@@ -350,45 +401,56 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized List<IElementEntry> getEntries(int category, String path) {
+	public synchronized List<IElementEntry> getEntries(int category, String path)
+	{
 		int indexOf = path.lastIndexOf('\\');
 		String namespace = null;
-		if (indexOf != -1) {
+		if (indexOf != -1)
+		{
 			namespace = path.substring(0, indexOf);
 			path = path.substring(indexOf + 1);
 
 		}
 		final String lowerCasePath = path.toLowerCase();
 
-		if (category == IElementsIndex.ANY_CETEGORY) {
+		if (category == IElementsIndex.ANY_CETEGORY)
+		{
 			final List<IElementEntry> result = new ArrayList<IElementEntry>();
 
-			pathToEntries
-					.forEachValue(new TObjectProcedure<THashMap<String, Object>>() {
-						public boolean execute(THashMap<String, Object> map) {
-							Object resultObject = map.get(lowerCasePath);
-							if (resultObject == null) {
-								return true;
-							}
+			pathToEntries.forEachValue(new TObjectProcedure<THashMap<String, Object>>()
+			{
+				public boolean execute(THashMap<String, Object> map)
+				{
+					Object resultObject = map.get(lowerCasePath);
+					if (resultObject == null)
+					{
+						return true;
+					}
 
-							if (resultObject instanceof Collection) {
-								result
-										.addAll((Collection<IElementEntry>) resultObject);
-							} else if (resultObject instanceof IElementEntry) {
-								result.add((IElementEntry) resultObject);
-							}
+					if (resultObject instanceof Collection)
+					{
+						result.addAll((Collection<IElementEntry>) resultObject);
+					}
+					else if (resultObject instanceof IElementEntry)
+					{
+						result.add((IElementEntry) resultObject);
+					}
 
-							return true;
-						}
-					});
-			if (namespace != null) {
+					return true;
+				}
+			});
+			if (namespace != null)
+			{
 				ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
-				for (IElementEntry e : result) {
+				for (IElementEntry e : result)
+				{
 					Object value = e.getValue();
-					if (value instanceof AbstractPHPEntryValue) {
+					if (value instanceof AbstractPHPEntryValue)
+					{
 						AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
 						String nameSpace2 = m.getNameSpace();
-						if (nameSpace2 != null && nameSpace2.equals(namespace)) {
+						if (nameSpace2 != null && nameSpace2.equals(namespace))
+						{
 							filter.add(e);
 						}
 					}
@@ -396,32 +458,43 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 				return filter;
 			}
 			return result;
-		} else {
+		}
+		else
+		{
 			THashMap<String, Object> map = pathToEntries.get(category);
-			if (map == null) {
+			if (map == null)
+			{
 				return Collections.emptyList();
 			}
 
 			final List<IElementEntry> result = new ArrayList<IElementEntry>();
 
 			Object resultObject = map.get(lowerCasePath);
-			if (resultObject == null) {
+			if (resultObject == null)
+			{
 				return Collections.emptyList();
 			}
 
-			if (resultObject instanceof Collection) {
+			if (resultObject instanceof Collection)
+			{
 				result.addAll((Collection<IElementEntry>) resultObject);
-			} else if (resultObject instanceof IElementEntry) {
+			}
+			else if (resultObject instanceof IElementEntry)
+			{
 				result.add((IElementEntry) resultObject);
 			}
-			if (namespace != null) {
+			if (namespace != null)
+			{
 				ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
-				for (IElementEntry e : result) {
+				for (IElementEntry e : result)
+				{
 					Object value = e.getValue();
-					if (value instanceof AbstractPHPEntryValue) {
+					if (value instanceof AbstractPHPEntryValue)
+					{
 						AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
 						String nameSpace2 = m.getNameSpace();
-						if (nameSpace2 != null && nameSpace2.equals(namespace)) {
+						if (nameSpace2 != null && nameSpace2.equals(namespace))
+						{
 							filter.add(e);
 						}
 					}
@@ -435,9 +508,11 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized int size() {
+	public synchronized int size()
+	{
 		int size = 0;
-		for (List<UnpackedEntry> moduleEntries : entries.values()) {
+		for (List<UnpackedEntry> moduleEntries : entries.values())
+		{
 			size += moduleEntries.size();
 		}
 
@@ -447,10 +522,12 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized List<IElementEntry> getModuleEntries(IModule module) {
+	public synchronized List<IElementEntry> getModuleEntries(IModule module)
+	{
 		List<IElementEntry> result = new ArrayList<IElementEntry>();
 		List<UnpackedEntry> moduleEntries = entries.get(module);
-		if (moduleEntries != null) {
+		if (moduleEntries != null)
+		{
 			result.addAll(moduleEntries);
 		}
 
@@ -460,62 +537,71 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized Set<IModule> getModules() {
+	public synchronized Set<IModule> getModules()
+	{
 		return Collections.unmodifiableSet(entries.keySet());
 	}
 
-	public IModule[] getAllModules() {
+	public IModule[] getAllModules()
+	{
 		return timeStamps.keys(new IModule[timeStamps.size()]);
 	}
 
 	/**
-	 * Removes all the entries that have the same path and module as the entry
-	 * specified from the firstTowCharsToEntries.
+	 * Removes all the entries that have the same path and module as the entry specified from the
+	 * firstTowCharsToEntries.
 	 * 
 	 * @param entryToRemove
 	 *            - entry to remove.
 	 */
 	@SuppressWarnings("unchecked")
-	private void removeEntriesFromFirstTwoCharcToEntries(
-			UnpackedEntry entryToRemove) {
-		TIntObjectHashMap<Object> map = firstTwoCharsToEntries
-				.get(entryToRemove.getCategory());
-		if (map == null) {
+	private void removeEntriesFromFirstTwoCharcToEntries(UnpackedEntry entryToRemove)
+	{
+		TIntObjectHashMap<Object> map = firstTwoCharsToEntries.get(entryToRemove.getCategory());
+		if (map == null)
+		{
 			return;
 		}
 
 		// skipping those entries having not enough characters in path
 		String lowerCasePath = entryToRemove.getLowerCaseEntryPath();
-		if (lowerCasePath.length() < 2) {
+		if (lowerCasePath.length() < 2)
+		{
 			return;
 		}
 
 		int key = getIntKey(lowerCasePath);
 
 		Object pathToEntriesValue = map.get(key);
-		if (pathToEntriesValue == null) {
+		if (pathToEntriesValue == null)
+		{
 			return;
 		}
 
-		if (pathToEntriesValue instanceof UnpackedEntry) {
-			if (entryToRemove.equals(pathToEntriesValue)) {
+		if (pathToEntriesValue instanceof UnpackedEntry)
+		{
+			if (entryToRemove.equals(pathToEntriesValue))
+			{
 				map.remove(key);
 			}
-		} else if (pathToEntriesValue instanceof Collection) {
+		}
+		else if (pathToEntriesValue instanceof Collection)
+		{
 			// removing all entries that have the same module as the entry
 			// specified
-			Iterator<IElementEntry> it = ((Collection<IElementEntry>) pathToEntriesValue)
-					.iterator();
-			while (it.hasNext()) {
+			Iterator<IElementEntry> it = ((Collection<IElementEntry>) pathToEntriesValue).iterator();
+			while (it.hasNext())
+			{
 				IElementEntry currentEntry = it.next();
 				if (lowerCasePath.equals(currentEntry.getLowerCaseEntryPath())
-						&& entryToRemove.getModule().equals(
-								currentEntry.getModule())) {
+						&& entryToRemove.getModule().equals(currentEntry.getModule()))
+				{
 					it.remove();
 				}
 			}
 
-			if (((Collection<IElementEntry>) pathToEntriesValue).size() == 0) {
+			if (((Collection<IElementEntry>) pathToEntriesValue).size() == 0)
+			{
 				map.remove(key);
 			}
 		}
@@ -528,7 +614,8 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 *            - lower-case path
 	 * @return integer key
 	 */
-	private int getIntKey(String lowerCasePath) {
+	private int getIntKey(String lowerCasePath)
+	{
 		short firstCharacter = (short) lowerCasePath.charAt(0);
 		short secondCharacter = (short) lowerCasePath.charAt(1);
 		converter.clear();
@@ -541,95 +628,108 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	}
 
 	/**
-	 * Removes all the entries that have the same path and module as the entry
-	 * specified from the firstCharToEntries.
+	 * Removes all the entries that have the same path and module as the entry specified from the firstCharToEntries.
 	 * 
 	 * @param entryToRemove
 	 *            - entry to remove.
 	 */
 	@SuppressWarnings("unchecked")
-	private void removeEntriesFromFirstCharToEntries(UnpackedEntry entryToRemove) {
-		TShortObjectHashMap<Object> map = firstCharToEntries.get(entryToRemove
-				.getCategory());
-		if (map == null) {
+	private void removeEntriesFromFirstCharToEntries(UnpackedEntry entryToRemove)
+	{
+		TShortObjectHashMap<Object> map = firstCharToEntries.get(entryToRemove.getCategory());
+		if (map == null)
+		{
 			return;
 		}
 
 		// skipping those entries having not enough characters in path
 		String lowerCasePath = entryToRemove.getLowerCaseEntryPath();
-		if (lowerCasePath.length() == 0) {
+		if (lowerCasePath.length() == 0)
+		{
 			return;
 		}
 
 		short firstCharacter = (short) lowerCasePath.charAt(0);
 
 		Object pathToEntriesValue = map.get(firstCharacter);
-		if (pathToEntriesValue == null) {
+		if (pathToEntriesValue == null)
+		{
 			return;
 		}
 
-		if (pathToEntriesValue instanceof UnpackedEntry) {
-			if (entryToRemove.equals(pathToEntriesValue)) {
+		if (pathToEntriesValue instanceof UnpackedEntry)
+		{
+			if (entryToRemove.equals(pathToEntriesValue))
+			{
 				map.remove(firstCharacter);
 			}
-		} else if (pathToEntriesValue instanceof Collection) {
-			Iterator<IElementEntry> it = ((Collection<IElementEntry>) pathToEntriesValue)
-					.iterator();
+		}
+		else if (pathToEntriesValue instanceof Collection)
+		{
+			Iterator<IElementEntry> it = ((Collection<IElementEntry>) pathToEntriesValue).iterator();
 			// removing all entries that have the same module as the entry
 			// specified
-			while (it.hasNext()) {
+			while (it.hasNext())
+			{
 				IElementEntry currentEntry = it.next();
 				if (lowerCasePath.equals(currentEntry.getLowerCaseEntryPath())
-						&& entryToRemove.getModule().equals(
-								currentEntry.getModule())) {
+						&& entryToRemove.getModule().equals(currentEntry.getModule()))
+				{
 					it.remove();
 				}
 			}
 
-			if (((Collection<IElementEntry>) pathToEntriesValue).size() == 0) {
+			if (((Collection<IElementEntry>) pathToEntriesValue).size() == 0)
+			{
 				map.remove(firstCharacter);
 			}
 		}
 	}
 
 	/**
-	 * Removes all the entries that have the same path and module as the entry
-	 * specified from the pathToEntries.
+	 * Removes all the entries that have the same path and module as the entry specified from the pathToEntries.
 	 * 
 	 * @param entryToRemove
 	 *            - entry to remove.
 	 */
 	@SuppressWarnings("unchecked")
-	private void removeEntriesFromPathToEntries(UnpackedEntry entryToRemove) {
-		THashMap<String, Object> map = pathToEntries.get(entryToRemove
-				.getCategory());
-		if (map == null) {
+	private void removeEntriesFromPathToEntries(UnpackedEntry entryToRemove)
+	{
+		THashMap<String, Object> map = pathToEntries.get(entryToRemove.getCategory());
+		if (map == null)
+		{
 			return;
 		}
 
-		Object pathToEntriesValue = map.get(entryToRemove
-				.getLowerCaseEntryPath());
-		if (pathToEntriesValue == null) {
+		Object pathToEntriesValue = map.get(entryToRemove.getLowerCaseEntryPath());
+		if (pathToEntriesValue == null)
+		{
 			return;
 		}
 
-		if (pathToEntriesValue instanceof UnpackedEntry) {
-			if (entryToRemove.equals(pathToEntriesValue)) {
+		if (pathToEntriesValue instanceof UnpackedEntry)
+		{
+			if (entryToRemove.equals(pathToEntriesValue))
+			{
 				map.remove(entryToRemove.getLowerCaseEntryPath());
 			}
-		} else if (pathToEntriesValue instanceof Collection) {
+		}
+		else if (pathToEntriesValue instanceof Collection)
+		{
 			// removing all entries that have the same module as the entry
 			// specified
-			Iterator<IElementEntry> it = ((Collection<IElementEntry>) pathToEntriesValue)
-					.iterator();
-			while (it.hasNext()) {
+			Iterator<IElementEntry> it = ((Collection<IElementEntry>) pathToEntriesValue).iterator();
+			while (it.hasNext())
+			{
 				IElementEntry currentEntry = it.next();
-				if (entryToRemove.getModule().equals(currentEntry.getModule())) {
+				if (entryToRemove.getModule().equals(currentEntry.getModule()))
+				{
 					it.remove();
 				}
 			}
 
-			if (((Collection<IElementEntry>) pathToEntriesValue).size() == 0) {
+			if (((Collection<IElementEntry>) pathToEntriesValue).size() == 0)
+			{
 				map.remove(entryToRemove.getLowerCaseEntryPath());
 			}
 		}
@@ -642,36 +742,46 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 *            - entry.
 	 */
 	@SuppressWarnings("unchecked")
-	private void addEntryToFirstTwoCharsToEntriesMap(UnpackedEntry entry) {
-		TIntObjectHashMap<Object> map = firstTwoCharsToEntries.get(entry
-				.getCategory());
-		if (map == null) {
+	private void addEntryToFirstTwoCharsToEntriesMap(UnpackedEntry entry)
+	{
+		TIntObjectHashMap<Object> map = firstTwoCharsToEntries.get(entry.getCategory());
+		if (map == null)
+		{
 			map = new TIntObjectHashMap<Object>();
 			firstTwoCharsToEntries.put(entry.getCategory(), map);
 		}
 
 		// skipping those entries having not enough characters in path
 		String lowerCasePath = entry.getLowerCaseEntryPath();
-		if (lowerCasePath.length() < 2) {
+		if (lowerCasePath.length() < 2)
+		{
 			return;
 		}
 
 		int key = getIntKey(lowerCasePath);
 
 		Object objectResult = map.get(key);
-		if (objectResult == null) {
+		if (objectResult == null)
+		{
 			map.put(key, entry);
-		} else {
-			if (objectResult instanceof IElementEntry) {
-				if (!objectResult.equals(entry)) {
+		}
+		else
+		{
+			if (objectResult instanceof IElementEntry)
+			{
+				if (!objectResult.equals(entry))
+				{
 					IElementEntry oldEntry = (IElementEntry) objectResult;
 					HashSet<IElementEntry> list = new HashSet<IElementEntry>(2);
 					list.add(oldEntry);
 					list.add(entry);
 					map.put(key, list);
 				}
-			} else if (objectResult instanceof Collection<?>) {
-				if (!((HashSet<IElementEntry>) objectResult).contains(entry)) {
+			}
+			else if (objectResult instanceof Collection<?>)
+			{
+				if (!((HashSet<IElementEntry>) objectResult).contains(entry))
+				{
 					((HashSet<IElementEntry>) objectResult).add(entry);
 				}
 			}
@@ -685,36 +795,46 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 *            - entry.
 	 */
 	@SuppressWarnings("unchecked")
-	private void addEntryToFirstCharToEntriesMap(UnpackedEntry entry) {
-		TShortObjectHashMap<Object> map = firstCharToEntries.get(entry
-				.getCategory());
-		if (map == null) {
+	private void addEntryToFirstCharToEntriesMap(UnpackedEntry entry)
+	{
+		TShortObjectHashMap<Object> map = firstCharToEntries.get(entry.getCategory());
+		if (map == null)
+		{
 			map = new TShortObjectHashMap<Object>();
 			firstCharToEntries.put(entry.getCategory(), map);
 		}
 
 		// skipping those entries having not enough characters in path
 		String lowerCasePath = entry.getLowerCaseEntryPath();
-		if (lowerCasePath.length() == 0) {
+		if (lowerCasePath.length() == 0)
+		{
 			return;
 		}
 
 		short firstCharacter = (short) lowerCasePath.charAt(0);
 
 		Object objectResult = map.get(firstCharacter);
-		if (objectResult == null) {
+		if (objectResult == null)
+		{
 			map.put(firstCharacter, entry);
-		} else {
-			if (objectResult instanceof IElementEntry) {
-				if (!objectResult.equals(entry)) {
+		}
+		else
+		{
+			if (objectResult instanceof IElementEntry)
+			{
+				if (!objectResult.equals(entry))
+				{
 					IElementEntry oldEntry = (IElementEntry) objectResult;
 					HashSet<IElementEntry> list = new HashSet<IElementEntry>(2);
 					list.add(oldEntry);
 					list.add(entry);
 					map.put(firstCharacter, list);
 				}
-			} else if (objectResult instanceof Collection<?>) {
-				if (!((Collection<IElementEntry>) objectResult).contains(entry)) {
+			}
+			else if (objectResult instanceof Collection<?>)
+			{
+				if (!((Collection<IElementEntry>) objectResult).contains(entry))
+				{
 					((Collection<IElementEntry>) objectResult).add(entry);
 				}
 			}
@@ -728,32 +848,42 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 *            - entry.
 	 */
 	@SuppressWarnings("unchecked")
-	private void addEntryToPathToEntriesMap(UnpackedEntry entry) {
+	private void addEntryToPathToEntriesMap(UnpackedEntry entry)
+	{
 		int category = entry.getCategory();
 		String entryPathLowerCase = entry.getLowerCaseEntryPath();
 
 		// getting path->entries map, creating the new one if needed
 		THashMap<String, Object> map = pathToEntries.get(category);
-		if (map == null) {
+		if (map == null)
+		{
 			map = new THashMap<String, Object>();
 			pathToEntries.put(category, map);
 		}
 
 		Object pathToEntriesValue = map.get(entryPathLowerCase);
-		if (pathToEntriesValue == null) {
+		if (pathToEntriesValue == null)
+		{
 			map.put(entryPathLowerCase, entry);
-		} else {
-			if (pathToEntriesValue instanceof UnpackedEntry) {
-				if (entry.equals(pathToEntriesValue)) {
+		}
+		else
+		{
+			if (pathToEntriesValue instanceof UnpackedEntry)
+			{
+				if (entry.equals(pathToEntriesValue))
+				{
 					return;
 				}
 				HashSet<UnpackedEntry> val = new HashSet<UnpackedEntry>(2);
 				val.add((UnpackedEntry) pathToEntriesValue);
 				val.add(entry);
 				map.put(entryPathLowerCase, val);
-			} else if (pathToEntriesValue instanceof Collection) {
+			}
+			else if (pathToEntriesValue instanceof Collection)
+			{
 				Collection<UnpackedEntry> val = (Collection<UnpackedEntry>) pathToEntriesValue;
-				if (val.contains(entry)) {
+				if (val.contains(entry))
+				{
 					return;
 				}
 				val.add(entry);
@@ -769,16 +899,19 @@ public class UnpackedElementIndex implements IModifiableElementsIndex {
 	 * @param entry
 	 *            - entry.
 	 */
-	private void addEntryToModuleList(IModule module, UnpackedEntry entry) {
+	private void addEntryToModuleList(IModule module, UnpackedEntry entry)
+	{
 		List<UnpackedEntry> moduleEntries = entries.get(module);
-		if (moduleEntries == null) {
+		if (moduleEntries == null)
+		{
 			moduleEntries = new ArrayList<UnpackedEntry>();
 			entries.put(module, moduleEntries);
 		}
 		moduleEntries.add(entry);
 	}
 
-	public void removeTimeStamp(IModule module) {
+	public void removeTimeStamp(IModule module)
+	{
 		timeStamps.remove(module);
 	}
 }

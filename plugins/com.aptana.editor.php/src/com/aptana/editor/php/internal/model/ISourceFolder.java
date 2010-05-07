@@ -39,9 +39,10 @@ import com.aptana.editor.php.model.IParent;
 
 /**
  * Folder.
+ * 
  * @author Denis Denisenko
  */
 public interface ISourceFolder extends IModelElement, IParent
 {
-	
+
 }

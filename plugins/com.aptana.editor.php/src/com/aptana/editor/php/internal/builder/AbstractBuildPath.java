@@ -48,6 +48,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
  * Abstract build path.
+ * 
  * @author Denis Denisenko
  */
 public abstract class AbstractBuildPath implements IBuildPath
@@ -56,7 +57,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 	 * Listeners.
 	 */
 	private Set<IBuildPathChangeListener> listeners = new HashSet<IBuildPathChangeListener>();
-	
+
 	/**
 	 * Build path dependencies.
 	 */
@@ -67,22 +68,24 @@ public abstract class AbstractBuildPath implements IBuildPath
 	 */
 	public void addBuildPathChangeListener(IBuildPathChangeListener listener)
 	{
-		synchronized (listeners) {
-			listeners.add(listener);	
+		synchronized (listeners)
+		{
+			listeners.add(listener);
 		}
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public synchronized void removeBuildPathChangeListener(IBuildPathChangeListener listener)
 	{
-		synchronized (listeners) {
-			listeners.remove(listener);	
-		}		
+		synchronized (listeners)
+		{
+			listeners.remove(listener);
+		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -106,7 +109,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 	{
 		dependencies.remove(dependency);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -125,12 +128,12 @@ public abstract class AbstractBuildPath implements IBuildPath
 		{
 			return null;
 		}
-		
+
 		if (relativePath.segmentCount() == 0)
 		{
 			return baseModule;
 		}
-		
+
 		IPath basePath = null;
 		if (baseModulePath.segmentCount() <= 1)
 		{
@@ -140,27 +143,27 @@ public abstract class AbstractBuildPath implements IBuildPath
 		{
 			basePath = baseModulePath.removeLastSegments(1);
 		}
-		
+
 		IPath resolvedPath = basePath.append(relativePath);
-		
+
 		if (resolvedPath.segmentCount() == 0)
 		{
 			return null;
 		}
-		
+
 		IModule module = getModuleByPath(resolvedPath);
 		if (module == null && relativePath.segments()[0].startsWith(".")) //$NON-NLS-1$
 		{
 			return null;
 		}
-		
-		//if no module is found relatively to the current file, trying to search it relatively to the project root
+
+		// if no module is found relatively to the current file, trying to search it relatively to the project root
 		if (module == null)
 		{
 			module = getModuleByPath(relativePath);
 		}
-		
-		//if no module found in this build-path, checking the build paths, current build path depends from.
+
+		// if no module found in this build-path, checking the build paths, current build path depends from.
 		if (module == null)
 		{
 			for (IBuildPath currentBuildPath : getDependencies())
@@ -172,10 +175,10 @@ public abstract class AbstractBuildPath implements IBuildPath
 				}
 			}
 		}
-		
+
 		return module;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -195,29 +198,29 @@ public abstract class AbstractBuildPath implements IBuildPath
 		{
 			basePath = baseModulePath.removeLastSegments(1);
 		}
-		
+
 		IPath resolvedPath = basePath.append(relativePath);
-		
+
 		List<IBuildPathResource> result = new ArrayList<IBuildPathResource>();
 		List<IModule> currentBuildPathModules = getModulesByPath(resolvedPath);
 		if (currentBuildPathModules != null)
 		{
 			result.addAll(currentBuildPathModules);
 		}
-		
+
 		List<IDirectory> dirs = getSubdirectoriesByPath(resolvedPath);
 		if (dirs != null)
 		{
 			result.addAll(dirs);
 		}
-		
-		//if no module found in this class, checking the build paths, current build path depends from.
-		//but first getting rid of the "./" and "../" paths
+
+		// if no module found in this class, checking the build paths, current build path depends from.
+		// but first getting rid of the "./" and "../" paths
 		if (relativePath.segmentCount() >= 1 && relativePath.segment(0).startsWith(".")) //$NON-NLS-1$
 		{
 			return result;
 		}
-		
+
 		for (IBuildPath currentBuildPath : getDependencies())
 		{
 			currentBuildPathModules = currentBuildPath.getModulesByPath(relativePath);
@@ -225,32 +228,38 @@ public abstract class AbstractBuildPath implements IBuildPath
 			{
 				result.addAll(currentBuildPathModules);
 			}
-			
+
 			dirs = currentBuildPath.getSubdirectoriesByPath(relativePath);
 			if (dirs != null)
 			{
 				result.addAll(dirs);
 			}
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * Notifies build path modules structure or contents changed before the change.
-	 * @param added - added modules.
-	 * @param changed - changed modules.
-	 * @param removed - removed modules.
-	 * @param addedDirectories - added directories.
-	 * @param removedDirectories - removed directories.
+	 * 
+	 * @param added
+	 *            - added modules.
+	 * @param changed
+	 *            - changed modules.
+	 * @param removed
+	 *            - removed modules.
+	 * @param addedDirectories
+	 *            - added directories.
+	 * @param removedDirectories
+	 *            - removed directories.
 	 */
-	protected void notifyChangedBefore(List<IModule> changed, List<IModule> removed, 
-			List<IDirectory> removedDirectories)
+	protected void notifyChangedBefore(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories)
 	{
-		Set<IBuildPathChangeListener> buildPathListeners=null;
-		synchronized (listeners) {
-			buildPathListeners= new LinkedHashSet<IBuildPathChangeListener>(listeners);	
-		}		 
+		Set<IBuildPathChangeListener> buildPathListeners = null;
+		synchronized (listeners)
+		{
+			buildPathListeners = new LinkedHashSet<IBuildPathChangeListener>(listeners);
+		}
 		for (IBuildPathChangeListener listener : buildPathListeners)
 		{
 			try
@@ -263,23 +272,29 @@ public abstract class AbstractBuildPath implements IBuildPath
 			}
 		}
 	}
-	
+
 	/**
 	 * Notifies build path modules structure or contents changed after the change.
-	 * @param added - added modules.
-	 * @param changed - changed modules.
-	 * @param removed - removed modules.
-	 * @param addedDirectories - added directories.
-	 * @param removedDirectories - removed directories.
+	 * 
+	 * @param added
+	 *            - added modules.
+	 * @param changed
+	 *            - changed modules.
+	 * @param removed
+	 *            - removed modules.
+	 * @param addedDirectories
+	 *            - added directories.
+	 * @param removedDirectories
+	 *            - removed directories.
 	 */
-	protected void notifyChangedAfter(List<IModule> added, List<IModule> changed,
-			List<IModule> removed,
+	protected void notifyChangedAfter(List<IModule> added, List<IModule> changed, List<IModule> removed,
 			List<IDirectory> addedDirectories, List<IDirectory> removedDirectories)
 	{
-		Set<IBuildPathChangeListener> buildPathListeners=null;
-		synchronized (listeners) {
-			buildPathListeners= new LinkedHashSet<IBuildPathChangeListener>(listeners);	
-		}		 
+		Set<IBuildPathChangeListener> buildPathListeners = null;
+		synchronized (listeners)
+		{
+			buildPathListeners = new LinkedHashSet<IBuildPathChangeListener>(listeners);
+		}
 		for (IBuildPathChangeListener listener : buildPathListeners)
 		{
 			try

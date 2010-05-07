@@ -2,7 +2,6 @@ package com.aptana.editor.php.internal.editor.scanner.tokenMap;
 
 import org.eclipse.php.internal.core.PHPVersion;
 
-
 /**
  * A PHP token mapper factory that returns the right {@link IPHPTokenMapper} according to the given {@link PHPVersion}.
  * 

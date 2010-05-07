@@ -38,27 +38,37 @@ import java.util.List;
 
 /**
  * Listener to the changes inside the build path.
+ * 
  * @author Denis Denisenko
  */
 public interface IBuildPathChangeListener
 {
 	/**
 	 * Notifies build path modules structure or contents changed.
-	 * @param changed - changed modules.
-	 * @param removed - removed modules.
-	 * @param removedDirectories - removed directories.
+	 * 
+	 * @param changed
+	 *            - changed modules.
+	 * @param removed
+	 *            - removed modules.
+	 * @param removedDirectories
+	 *            - removed directories.
 	 */
 	void changedBefore(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories);
-	
+
 	/**
 	 * Notifies build path modules structure or contents changed.
-	 * @param added - added modules.
-	 * @param changed - changed modules.
-	 * @param addedDirectories - added directories.
-	 * @param removed - removed modules.
-	 * @param removedDirectories - removed directories.
+	 * 
+	 * @param added
+	 *            - added modules.
+	 * @param changed
+	 *            - changed modules.
+	 * @param addedDirectories
+	 *            - added directories.
+	 * @param removed
+	 *            - removed modules.
+	 * @param removedDirectories
+	 *            - removed directories.
 	 */
 	void changedAfter(List<IModule> added, List<IModule> changed, List<IModule> removed,
-			List<IDirectory> addedDirectories,
-			List<IDirectory> removedDirectories);
+			List<IDirectory> addedDirectories, List<IDirectory> removedDirectories);
 }

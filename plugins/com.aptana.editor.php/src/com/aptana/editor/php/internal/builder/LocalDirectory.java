@@ -35,10 +35,10 @@
 package com.aptana.editor.php.internal.builder;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IResource;
 
 /**
  * Local directory implementation.
+ * 
  * @author Denis Denisenko
  */
 public class LocalDirectory extends AbstractDirectory
@@ -48,11 +48,14 @@ public class LocalDirectory extends AbstractDirectory
 	 * Folder.
 	 */
 	private IContainer resource;
-	
+
 	/**
 	 * LocalDirectory constructor.
-	 * @param container - container.
-	 * @param buildPath - build path.
+	 * 
+	 * @param container
+	 *            - container.
+	 * @param buildPath
+	 *            - build path.
 	 */
 	public LocalDirectory(IContainer container, IBuildPath buildPath)
 	{
@@ -67,16 +70,17 @@ public class LocalDirectory extends AbstractDirectory
 	{
 		return resource.getName();
 	}
-	
+
 	/**
 	 * Gets folder resource.
+	 * 
 	 * @return folder resource.
 	 */
 	public IContainer getContainer()
 	{
 		return resource;
-	}	
-	
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -85,9 +89,9 @@ public class LocalDirectory extends AbstractDirectory
 	{
 		if (resource == null)
 		{
-			return "null";
+			return "null"; //$NON-NLS-1$
 		}
-		
+
 		return resource.getFullPath().toPortableString();
 	}
 }

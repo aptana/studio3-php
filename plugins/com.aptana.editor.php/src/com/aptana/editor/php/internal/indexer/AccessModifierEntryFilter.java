@@ -44,6 +44,7 @@ import com.aptana.editor.php.indexer.IElementEntry;
 
 /**
  * Filter that is aware of methods and fields access modifiers.
+ * 
  * @author Denis Denisenko
  */
 public class AccessModifierEntryFilter implements IEntryFilter
@@ -52,10 +53,12 @@ public class AccessModifierEntryFilter implements IEntryFilter
 	 * Names of root classes.
 	 */
 	private Set<String> rootClasses;
-	
+
 	/**
 	 * AccessModifierEntryFilter constructor.
-	 * @param rootClasses - names of root classes.
+	 * 
+	 * @param rootClasses
+	 *            - names of root classes.
 	 */
 	public AccessModifierEntryFilter(Set<String> rootClasses)
 	{
@@ -68,15 +71,15 @@ public class AccessModifierEntryFilter implements IEntryFilter
 	public LinkedHashSet<IElementEntry> filter(Collection<IElementEntry> toFilter)
 	{
 		LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
-		
+
 		for (IElementEntry entry : toFilter)
 		{
 			Object value = entry.getValue();
 			if (value instanceof FunctionPHPEntryValue || value instanceof VariablePHPEntryValue)
 			{
 				int modifiers = ((AbstractPHPEntryValue) value).getModifiers();
-				if (rootClasses.contains(getClassName(entry))
-						|| PHPModifier.isPublic(modifiers) || PHPModifier.isProtected(modifiers))
+				if (rootClasses.contains(getClassName(entry)) || PHPModifier.isPublic(modifiers)
+						|| PHPModifier.isProtected(modifiers))
 				{
 					result.add(entry);
 				}
@@ -86,13 +89,15 @@ public class AccessModifierEntryFilter implements IEntryFilter
 				result.add(entry);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets entry class name.
-	 * @param entry - entry.
+	 * 
+	 * @param entry
+	 *            - entry.
 	 * @return class name.
 	 */
 	private static String getClassName(IElementEntry entry)

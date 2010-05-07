@@ -36,16 +36,18 @@ package com.aptana.editor.php.internal.model;
 
 import com.aptana.editor.php.model.IModelElementDelta;
 
-
 /**
  * Model delta listener.
+ * 
  * @author Denis Denisenko
  */
 public interface IModelDeltaListener
 {
 	/**
 	 * Notifies delta.
-	 * @param delta - delta.
+	 * 
+	 * @param delta
+	 *            - delta.
 	 */
 	void notify(IModelElementDelta delta);
 }

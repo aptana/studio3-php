@@ -354,8 +354,8 @@ public final class PHPGlobalIndexer {
 				fireChanged(0);
 				if (PHPEditorPlugin.INDEXER_DEBUG)
 				{
-					System.out.println("Indexer handleModulesRemoved [took " + (System.currentTimeMillis() - start)
-							+ "ms)");
+					System.out.println("Indexer handleModulesRemoved [took " + (System.currentTimeMillis() - start) //$NON-NLS-1$
+							+ "ms)"); //$NON-NLS-1$
 				}
 				return Status.OK_STATUS;
 			}
@@ -424,8 +424,8 @@ public final class PHPGlobalIndexer {
 				monitor.done();
 				if (PHPEditorPlugin.INDEXER_DEBUG)
 				{
-					System.out.println("Indexer handleModulesChanged [took " + (System.currentTimeMillis() - start)
-							+ "ms)");
+					System.out.println("Indexer handleModulesChanged [took " + (System.currentTimeMillis() - start) //$NON-NLS-1$
+							+ "ms)"); //$NON-NLS-1$
 				}
 				return Status.OK_STATUS;
 			}
@@ -484,8 +484,8 @@ public final class PHPGlobalIndexer {
 				fireChanged(0);
 				if (PHPEditorPlugin.INDEXER_DEBUG)
 				{
-					System.out.println("Indexer handleModulesAdded [took " + (System.currentTimeMillis() - start)
-							+ "ms)");
+					System.out.println("Indexer handleModulesAdded [took " + (System.currentTimeMillis() - start) //$NON-NLS-1$
+							+ "ms)"); //$NON-NLS-1$
 				}
 				return Status.OK_STATUS;
 			}
@@ -598,7 +598,7 @@ public final class PHPGlobalIndexer {
 		} else {
 			int code = handleIdentifier.hashCode();
 			File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
-			String sm = "" + code;
+			String sm = "" + code; //$NON-NLS-1$
 			while (pathes.get(new File(parent, sm).getAbsolutePath()) != null) {
 				sm += 'l';
 			}
@@ -637,7 +637,7 @@ public final class PHPGlobalIndexer {
 
 	private synchronized void savePathMappings() {
 		File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
-		File pathesFile = new File(parent, "indexMappings");
+		File pathesFile = new File(parent, "indexMappings"); //$NON-NLS-1$
 
 		try {
 			BufferedOutputStream stream = new BufferedOutputStream(
@@ -662,7 +662,7 @@ public final class PHPGlobalIndexer {
 	 * Indexes local modules.
 	 */
 	public void indexLocalModules() {
-		Job initializator = new Job("Initializing Index") {
+		Job initializator = new Job(Messages.PHPGlobalIndexer_initializinIndex) {
 			protected IStatus run(IProgressMonitor monitor) {
 				
 				List<IBuildPath> paths = BuildPathManager.getInstance()
@@ -1013,7 +1013,7 @@ public final class PHPGlobalIndexer {
 				catch (InterruptedException e)
 				{
 				}
-				Job savingJob = new Job("Saving index")
+				Job savingJob = new Job(Messages.PHPGlobalIndexer_savingIndex)
 				{
 					protected IStatus run(IProgressMonitor monitor)
 					{

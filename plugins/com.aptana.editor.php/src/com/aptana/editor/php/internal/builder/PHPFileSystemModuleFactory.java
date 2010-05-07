@@ -41,9 +41,9 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.core.runtime.content.IContentTypeManager.ContentTypeChangeEvent;
 
-
 /**
  * Factory for fyle system - based PHP modules.
+ * 
  * @author Denis Denisenko
  */
 public final class PHPFileSystemModuleFactory
@@ -67,13 +67,14 @@ public final class PHPFileSystemModuleFactory
 					}
 				});
 	}
-	
+
 	/**
 	 * Gets module by local resource.
 	 * 
-	 * @param resource - resource.
-	 * @param buildPath - build path.
-	 * 
+	 * @param resource
+	 *            - resource.
+	 * @param buildPath
+	 *            - build path.
 	 * @return module
 	 */
 	public static IModule getModule(File resource, IBuildPath buildPath)
@@ -111,10 +112,10 @@ public final class PHPFileSystemModuleFactory
 			// return new FileSystemModule(resource, buildPath);
 			// }
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * PHPModuleFactory private constructor.
 	 */

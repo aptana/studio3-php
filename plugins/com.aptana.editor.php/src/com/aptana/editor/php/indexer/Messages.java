@@ -47,6 +47,8 @@ public final class Messages extends NLS
 	 */
 	public static String PHPGlobalIndexer_IndexNew;
 
+	public static String PHPGlobalIndexer_initializinIndex;
+
 	/**
 	 * 
 	 */
@@ -71,6 +73,8 @@ public final class Messages extends NLS
 	 * 
 	 */
 	public static String PHPGlobalIndexer_RemovingModuleIndex2;
+
+	public static String PHPGlobalIndexer_savingIndex;
 
 	/**
 	 * 

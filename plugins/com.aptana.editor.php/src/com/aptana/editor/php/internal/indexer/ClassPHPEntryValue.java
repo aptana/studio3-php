@@ -48,7 +48,8 @@ import com.aptana.editor.php.indexer.IPHPIndexConstants;
  * 
  * @author Denis Denisenko
  */
-public class ClassPHPEntryValue extends AbstractPHPEntryValue {
+public class ClassPHPEntryValue extends AbstractPHPEntryValue
+{
 
 	/**
 	 * Name of the superclass.
@@ -71,8 +72,9 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * @param modifiers
 	 *            - modifiers.
 	 */
-	public ClassPHPEntryValue(int modifiers,String namespace) {
-		super(modifiers,namespace);
+	public ClassPHPEntryValue(int modifiers, String namespace)
+	{
+		super(modifiers, namespace);
 	}
 
 	/**
@@ -85,14 +87,15 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * @param interfaces
 	 *            - interface names.
 	 */
-	public ClassPHPEntryValue(int modifiers, String superClassName,
-			List<String> interfaces,String namespace) {
-		super(modifiers,namespace);
+	public ClassPHPEntryValue(int modifiers, String superClassName, List<String> interfaces, String namespace)
+	{
+		super(modifiers, namespace);
 		this.superClassName = superClassName;
 		this.interfaces = interfaces;
 	}
 
-	public ClassPHPEntryValue(DataInputStream di) throws IOException {
+	public ClassPHPEntryValue(DataInputStream di) throws IOException
+	{
 		super(di);
 		internalRead(di);
 	}
@@ -103,7 +106,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * @param interfaces
 	 *            - interfaces.
 	 */
-	public void setInterfaces(List<String> interfaces) {
+	public void setInterfaces(List<String> interfaces)
+	{
 		this.interfaces = interfaces;
 	}
 
@@ -112,7 +116,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * 
 	 * @return superclass name.
 	 */
-	public String getSuperClassname() {
+	public String getSuperClassname()
+	{
 		return superClassName;
 	}
 
@@ -122,7 +127,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * @param name
 	 *            - superclass name.
 	 */
-	public void setSuperClassName(String superClassname) {
+	public void setSuperClassName(String superClassname)
+	{
 		this.superClassName = superClassname;
 	}
 
@@ -131,7 +137,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * 
 	 * @return interfaces. might be null.
 	 */
-	public List<String> getInterfaces() {
+	public List<String> getInterfaces()
+	{
 		return interfaces;
 	}
 
@@ -139,13 +146,12 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int hashCode() {
+	public int hashCode()
+	{
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((interfaces == null) ? 0 : interfaces.hashCode());
-		result = prime * result
-				+ ((superClassName == null) ? 0 : superClassName.hashCode());
+		result = prime * result + ((interfaces == null) ? 0 : interfaces.hashCode());
+		result = prime * result + ((superClassName == null) ? 0 : superClassName.hashCode());
 		return result;
 	}
 
@@ -153,7 +159,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
 			return true;
 		if (!super.equals(obj))
@@ -161,15 +168,19 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 		if (getClass() != obj.getClass())
 			return false;
 		final ClassPHPEntryValue other = (ClassPHPEntryValue) obj;
-		if (interfaces == null) {
+		if (interfaces == null)
+		{
 			if (other.interfaces != null)
 				return false;
-		} else if (!listsEquals(interfaces, other.interfaces))
+		}
+		else if (!listsEquals(interfaces, other.interfaces))
 			return false;
-		if (superClassName == null) {
+		if (superClassName == null)
+		{
 			if (other.superClassName != null)
 				return false;
-		} else if (!superClassName.equals(other.superClassName))
+		}
+		else if (!superClassName.equals(other.superClassName))
 			return false;
 		return true;
 	}
@@ -179,7 +190,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * 
 	 * @return class end offset.
 	 */
-	public int getEndOffset() {
+	public int getEndOffset()
+	{
 		return endOffset;
 	}
 
@@ -189,7 +201,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 * @param startOffset
 	 *            - offset.
 	 */
-	public void setEndOffset(int endOffset) {
+	public void setEndOffset(int endOffset)
+	{
 		this.endOffset = endOffset;
 	}
 
@@ -202,15 +215,19 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	 *            - list2.
 	 * @return true if equals, false otherwise.
 	 */
-	private boolean listsEquals(List<String> list1, List<String> list2) {
-		if (list1.size() != list2.size()) {
+	private boolean listsEquals(List<String> list1, List<String> list2)
+	{
+		if (list1.size() != list2.size())
+		{
 			return false;
 		}
 
-		for (int i = 0; i < list1.size(); i++) {
+		for (int i = 0; i < list1.size(); i++)
+		{
 			String str1 = list1.get(i);
 			String str2 = list2.get(i);
-			if (!str1.equals(str2)) {
+			if (!str1.equals(str2))
+			{
 				return false;
 			}
 		}
@@ -219,37 +236,45 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue {
 	}
 
 	@Override
-	public int getKind() {
+	public int getKind()
+	{
 		return IPHPIndexConstants.CLASS_CATEGORY;
 	}
 
 	@Override
-	protected void internalWrite(DataOutputStream da) throws IOException {
+	protected void internalWrite(DataOutputStream da) throws IOException
+	{
 		da.writeInt(endOffset);
-		String s = superClassName != null ? superClassName : "";
+		String s = superClassName != null ? superClassName : ""; //$NON-NLS-1$
 		da.writeUTF(s);
 		List<String> emptyList = Collections.emptyList();
 		List<String> inter = interfaces != null ? interfaces : emptyList;
 		da.writeInt(inter.size());
-		for (String i : inter) {
+		for (String i : inter)
+		{
 			da.writeUTF(i);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected void internalRead(DataInputStream di) throws IOException {
+	protected void internalRead(DataInputStream di) throws IOException
+	{
 		endOffset = di.readInt();
 		superClassName = di.readUTF().intern();
 		int sz = di.readInt();
-		if (sz == 0) {
+		if (sz == 0)
+		{
 			interfaces = Collections.emptyList();
 		}
-		if (sz == 1) {
+		if (sz == 1)
+		{
 			interfaces = (List<String>) Collections.singletonList(di.readUTF());
-		} else {
+		}
+		else
+		{
 			ArrayList<String> s = new ArrayList<String>(sz);
-			for (int a = 0; a < sz; a++) {
+			for (int a = 0; a < sz; a++)
+			{
 				s.add(di.readUTF());
 			}
 			interfaces = s;

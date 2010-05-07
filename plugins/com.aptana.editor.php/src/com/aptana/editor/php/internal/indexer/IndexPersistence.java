@@ -57,41 +57,49 @@ import com.aptana.editor.php.indexer.IReportable;
 import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.IModule;
 
-public final class IndexPersistence {
+public final class IndexPersistence
+{
 
 	private static HashMap<Integer, IEntryValueFactory> factories = new HashMap<Integer, IEntryValueFactory>();
 
-	static {
-		IConfigurationElement[] configurationElementsFor = Platform
-				.getExtensionRegistry().getConfigurationElementsFor(
-						"com.aptana.editor.php.indexerEntryValue");
-		for (IConfigurationElement e : configurationElementsFor) {
-			String attribute = e.getAttribute("id");
-			try {
-				IEntryValueFactory vf = (IEntryValueFactory) e
-						.createExecutableExtension("creator");
+	static
+	{
+		IConfigurationElement[] configurationElementsFor = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				"com.aptana.editor.php.indexerEntryValue"); //$NON-NLS-1$
+		for (IConfigurationElement e : configurationElementsFor)
+		{
+			String attribute = e.getAttribute("id"); //$NON-NLS-1$
+			try
+			{
+				IEntryValueFactory vf = (IEntryValueFactory) e.createExecutableExtension("creator"); //$NON-NLS-1$
 				factories.put(Integer.parseInt(attribute), vf);
-			} catch (CoreException e1) {
+			}
+			catch (CoreException e1)
+			{
 				PHPEditorPlugin.logError(e1);
 			}
 		}
 	}
 
-	private IndexPersistence() {
+	private IndexPersistence()
+	{
 
 	}
 
-	public static void load(UnpackedElementIndex index, DataInputStream di,
-			IBuildPath pb) throws IOException {
+	public static void load(UnpackedElementIndex index, DataInputStream di, IBuildPath pb) throws IOException
+	{
 		int readInt = di.readInt();
-		//long l0=System.currentTimeMillis();
-		for (int a = 0; a < readInt; a++) {
+		// long l0=System.currentTimeMillis();
+		for (int a = 0; a < readInt; a++)
+		{
 			IModule m = readModule(di, pb);
-			if (m != null) {
+			if (m != null)
+			{
 				int sz = di.readInt();
-				long ts=di.readLong();
+				long ts = di.readLong();
 				index.recordTimeStamp(m, ts);
-				for (int b = 0; b < sz; b++) {
+				for (int b = 0; b < sz; b++)
+				{
 					int category = di.readInt();
 					String path = di.readUTF();
 					Object value = readValue(di);
@@ -99,27 +107,29 @@ public final class IndexPersistence {
 				}
 			}
 		}
-//		long l1=System.currentTimeMillis();
-//		System.out.println("Index load:"+(l1-l0));
+		// long l1=System.currentTimeMillis();
+		// System.out.println("Index load:"+(l1-l0));
 	}
 
-	public static void store(UnpackedElementIndex index, DataOutputStream da,
-			IBuildPath pb) throws IOException {
+	public static void store(UnpackedElementIndex index, DataOutputStream da, IBuildPath pb) throws IOException
+	{
 		IModule[] array = index.getAllModules();
 		da.writeInt(array.length);
 		int pos = 0;
-		for (IModule m : array) {
-			
+		for (IModule m : array)
+		{
+
 			List<UnpackedEntry> list = index.entries.get(m);
 			if (list == null)
 				list = Collections.emptyList();
 			writeModule(da, m, pb);
-			
+
 			da.writeInt(list.size());
 			da.writeLong(index.getTimeStamp(m));
 			int k = 0;
-			for (UnpackedEntry e : new ArrayList<UnpackedEntry>(list)) {
-				
+			for (UnpackedEntry e : new ArrayList<UnpackedEntry>(list))
+			{
+
 				store(e, da);
 				k++;
 			}
@@ -127,8 +137,8 @@ public final class IndexPersistence {
 		}
 	}
 
-	private static void store(UnpackedEntry entry, DataOutputStream da)
-			throws IOException {
+	private static void store(UnpackedEntry entry, DataOutputStream da) throws IOException
+	{
 		String entryPath = entry.getEntryPath();
 		int category = entry.getCategory();
 		Object value = entry.getValue();
@@ -137,121 +147,149 @@ public final class IndexPersistence {
 		writeValue(da, value);
 	}
 
-	private static void writeValue(DataOutputStream da, Object value)
-			throws IOException {
-		if (value instanceof IReportable) {
+	private static void writeValue(DataOutputStream da, Object value) throws IOException
+	{
+		if (value instanceof IReportable)
+		{
 			IReportable p = (IReportable) value;
 			p.store(da);
 			return;
 		}
-		throw new IllegalStateException("Illegal value:" + value);
+		throw new IllegalStateException("Illegal value:" + value); //$NON-NLS-1$
 	}
 
-	private static Object readValue(DataInputStream di) throws IOException {
+	private static Object readValue(DataInputStream di) throws IOException
+	{
 		int cat = di.readInt();
-		if (cat == IPHPIndexConstants.CLASS_CATEGORY) {
+		if (cat == IPHPIndexConstants.CLASS_CATEGORY)
+		{
 			return new ClassPHPEntryValue(di);
-		} else if (cat == IPHPIndexConstants.VAR_CATEGORY) {
+		}
+		else if (cat == IPHPIndexConstants.VAR_CATEGORY)
+		{
 			return new VariablePHPEntryValue(di);
-		} else if (cat == IPHPIndexConstants.FUNCTION_CATEGORY) {
+		}
+		else if (cat == IPHPIndexConstants.FUNCTION_CATEGORY)
+		{
 			return new FunctionPHPEntryValue(di);
-		} else if (cat == IPHPIndexConstants.IMPORT_CATEGORY) {
+		}
+		else if (cat == IPHPIndexConstants.IMPORT_CATEGORY)
+		{
 			return new IncludePHPEntryValue(di);
 		}
 		IEntryValueFactory entryValueFactory = factories.get(cat);
-		if (entryValueFactory != null) {
+		if (entryValueFactory != null)
+		{
 			return entryValueFactory.createValue(di);
-		} else {
-			throw new IOException("Index corrupted");
+		}
+		else
+		{
+			throw new IOException("Index corrupted"); //$NON-NLS-1$
 		}
 	}
 
-	private static IModule readModule(DataInputStream di, IBuildPath pb)
-			throws IOException {
+	private static IModule readModule(DataInputStream di, IBuildPath pb) throws IOException
+	{
 		String readUTF = di.readUTF();
 		Path pa = new Path(readUTF);
 		return pb.getModuleByPath(pa);
 	}
 
-	private static void writeModule(DataOutputStream da, IModule module,
-			IBuildPath pb) throws IOException {
+	private static void writeModule(DataOutputStream da, IModule module, IBuildPath pb) throws IOException
+	{
 		String portableString = module.getPath().toPortableString();
-		
+
 		da.writeUTF(portableString);
 	}
 
-	public static void writeTypeSet(Set<Object> types, DataOutputStream da)
-			throws IOException {
-		if (types == null) {
+	public static void writeTypeSet(Set<Object> types, DataOutputStream da) throws IOException
+	{
+		if (types == null)
+		{
 			da.writeInt(0);
 			return;
 		}
 		da.writeInt(types.size());
-		for (Object o : types) {
+		for (Object o : types)
+		{
 			writeType(o, da);
 		}
 	}
 
-	public static Set<Object> readTypeSet(DataInputStream di)
-			throws IOException {
+	public static Set<Object> readTypeSet(DataInputStream di) throws IOException
+	{
 		int readInt = di.readInt();
-		if (readInt == 0) {
+		if (readInt == 0)
+		{
 			return Collections.emptySet();
 		}
-		if (readInt == 1) {
+		if (readInt == 1)
+		{
 			return Collections.singleton(readType(di));
 		}
 		HashSet<Object> t = new HashSet<Object>(readInt);
-		for (int a = 0; a < readInt; a++) {
+		for (int a = 0; a < readInt; a++)
+		{
 			t.add(readType(di));
 		}
 		return t;
 	}
 
-	public static Object readType(DataInputStream di) throws IOException {
+	public static Object readType(DataInputStream di) throws IOException
+	{
 		int readInt = di.readInt();
-		if (readInt == -1) {
+		if (readInt == -1)
+		{
 			return null;
 		}
-		if (readInt == 0) {
+		if (readInt == 0)
+		{
 			return di.readUTF().intern();
 		}
-		if (readInt == 1) {
+		if (readInt == 1)
+		{
 			return AbstractPathReference.read(di);
 		}
-		if (readInt == 2) {
+		if (readInt == 2)
+		{
 			int len = di.readInt();
 			Object[] result = new Object[len];
-			for (int a = 0; a < len; a++) {
+			for (int a = 0; a < len; a++)
+			{
 				result[a] = readType(di);
 			}
 			return result;
 		}
-		throw new IllegalArgumentException("Unknown type " + readInt);
+		throw new IllegalArgumentException("Unknown type " + readInt); //$NON-NLS-1$
 	}
 
-	public static void writeType(Object type, DataOutputStream da)
-			throws IOException {
-		if (type == null) {
+	public static void writeType(Object type, DataOutputStream da) throws IOException
+	{
+		if (type == null)
+		{
 			da.writeInt(-1);
 			return;
 		}
-		if (type instanceof String) {
+		if (type instanceof String)
+		{
 			da.writeInt(0);
 			da.writeUTF((String) type);
 			return;
 		}
-		if (type instanceof AbstractPathReference) {
+		if (type instanceof AbstractPathReference)
+		{
 			da.writeInt(1);
 			AbstractPathReference p = (AbstractPathReference) type;
 			p.write(da);
 			return;
 		}
-		if (type instanceof Object[]) {
+		if (type instanceof Object[])
+		{
 			Object[] tps = (Object[]) type;
 			da.writeInt(2);
 			da.writeInt(tps.length);
-			for (int a = 0; a < tps.length; a++) {
+			for (int a = 0; a < tps.length; a++)
+			{
 				writeType(tps[a], da);
 			}
 			return;
@@ -261,11 +299,12 @@ public final class IndexPersistence {
 			Collection<?> col = (Collection<?>) type;
 			da.writeInt(2);
 			da.writeInt(col.size());
-			for (Object obj : col) {
+			for (Object obj : col)
+			{
 				writeType(obj, da);
 			}
 			return;
 		}
-		throw new IllegalArgumentException("Unknown type " + type);
+		throw new IllegalArgumentException("Unknown type " + type); //$NON-NLS-1$
 	}
 }

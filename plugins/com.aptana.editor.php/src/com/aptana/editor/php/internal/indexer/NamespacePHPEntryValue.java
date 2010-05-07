@@ -6,30 +6,36 @@ import java.io.IOException;
 
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
-public class NamespacePHPEntryValue extends AbstractPHPEntryValue{
+public class NamespacePHPEntryValue extends AbstractPHPEntryValue
+{
 
-	public NamespacePHPEntryValue(DataInputStream di) throws IOException {
+	public NamespacePHPEntryValue(DataInputStream di) throws IOException
+	{
 		super(di);
 	}
 
-	public NamespacePHPEntryValue(int modifiers, String namespace) {
+	public NamespacePHPEntryValue(int modifiers, String namespace)
+	{
 		super(modifiers, namespace);
-	
+
 	}
 
 	@Override
-	public int getKind() {
+	public int getKind()
+	{
 		return IPHPIndexConstants.NAMESPACE_CATEGORY;
 	}
 
 	@Override
-	protected void internalRead(DataInputStream di) throws IOException {
-		
+	protected void internalRead(DataInputStream di) throws IOException
+	{
+
 	}
 
 	@Override
-	protected void internalWrite(DataOutputStream da) throws IOException {
-		
+	protected void internalWrite(DataOutputStream da) throws IOException
+	{
+
 	}
 
 }

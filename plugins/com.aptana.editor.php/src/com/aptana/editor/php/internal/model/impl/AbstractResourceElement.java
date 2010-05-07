@@ -50,6 +50,7 @@ import com.aptana.editor.php.model.IParent;
 
 /**
  * Abstract resource element.
+ * 
  * @author Denis Denisenko
  */
 public abstract class AbstractResourceElement extends AbstractModelElement implements IParent
@@ -58,10 +59,12 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 	 * Build-path resource.
 	 */
 	private IBuildPathResource resource;
-	
+
 	/**
 	 * AbstractResourceElement constructor.
-	 * @param resource - resource.
+	 * 
+	 * @param resource
+	 *            - resource.
 	 */
 	public AbstractResourceElement(IBuildPathResource resource)
 	{
@@ -78,12 +81,12 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 		{
 			return false;
 		}
-		
+
 		if (!buildPathExists(buildPath))
 		{
 			return false;
 		}
-		
+
 		if (resource instanceof IDirectory)
 		{
 			return buildPath.getDirectoryByPath(resource.getPath()) != null;
@@ -105,8 +108,7 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((resource == null) ? 0 : resource.hashCode());
+		result = prime * result + ((resource == null) ? 0 : resource.hashCode());
 		return result;
 	}
 
@@ -126,7 +128,8 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 		{
 			if (other.resource != null)
 				return false;
-		} else if (!resource.equals(other.resource))
+		}
+		else if (!resource.equals(other.resource))
 			return false;
 		return true;
 	}
@@ -149,7 +152,7 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 		{
 			return null;
 		}
-		
+
 		IPath modulePath = resource.getPath();
 		IPath directoryPath = modulePath.removeLastSegments(1);
 		if (directoryPath.segmentCount() == 0)
@@ -162,22 +165,21 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 			{
 				IFolder folder = ((WorkspaceFolderBuildpath) buildPath).getFolder();
 				IProject prj = folder.getProject();
-				IBuildPath prjBuildPath = 
-					BuildPathManager.getInstance().getBuildPathByResource(prj);
+				IBuildPath prjBuildPath = BuildPathManager.getInstance().getBuildPathByResource(prj);
 				if (prjBuildPath == null)
 				{
 					return null;
 				}
-				
+
 				IDirectory dir = prjBuildPath.getDirectory(folder);
 				if (dir == null)
 				{
 					return null;
 				}
-				
+
 				return new SourceFolder(dir);
 			}
-			
+
 			return null;
 		}
 		else
@@ -187,30 +189,33 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 			{
 				return null;
 			}
-			
+
 			return new SourceFolder(directory);
 		}
 
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return toDebugString();
 	}
-	
+
 	/**
 	 * Gets resource.
+	 * 
 	 * @return resource.
 	 */
 	protected IBuildPathResource getBPResource()
 	{
 		return resource;
 	}
-	
+
 	/**
 	 * Checks whether build-path exists.
-	 * @param buildPath - build-path.
+	 * 
+	 * @param buildPath
+	 *            - build-path.
 	 * @return true if build-path exists, false otherwise.
 	 */
 	private boolean buildPathExists(IBuildPath buildPath)
@@ -223,7 +228,7 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 		{
 			return ((WorkspaceFolderBuildpath) buildPath).getFolder().exists();
 		}
-		
+
 		return true;
 	}
 }

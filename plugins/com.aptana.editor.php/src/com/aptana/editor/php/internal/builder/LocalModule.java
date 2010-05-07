@@ -40,22 +40,23 @@ import java.io.InputStream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 
-
-
 /**
  * Local module.
+ * 
  * @author Denis Denisenko
  */
 public class LocalModule extends AbstractBuildPathResource implements IModule
-{	
+{
 	/**
 	 * Local file.
 	 */
 	private IFile file;
-	
+
 	/**
 	 * Module constructor.
-	 * @param file - local file.
+	 * 
+	 * @param file
+	 *            - local file.
 	 */
 	public LocalModule(IFile file, IBuildPath buildPath)
 	{
@@ -70,17 +71,18 @@ public class LocalModule extends AbstractBuildPathResource implements IModule
 	{
 		try
 		{
-			
+
 			return file.getContents();
-		} 
+		}
 		catch (CoreException e)
 		{
 			throw new IOException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Gets file.
+	 * 
 	 * @return file.
 	 */
 	public IFile getFile()
@@ -98,7 +100,7 @@ public class LocalModule extends AbstractBuildPathResource implements IModule
 		{
 			return "null"; //$NON-NLS-1$
 		}
-		
+
 		return file.getFullPath().toPortableString();
 	}
 
@@ -139,13 +141,14 @@ public class LocalModule extends AbstractBuildPathResource implements IModule
 		{
 			if (other.file != null)
 				return false;
-		} else if (!file.equals(other.file))
+		}
+		else if (!file.equals(other.file))
 			return false;
 		return true;
 	}
 
-	
-	public long getTimeStamp() {
+	public long getTimeStamp()
+	{
 		return file.getModificationStamp();
 	}
 }

@@ -7,9 +7,11 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.php.internal.core.phpModel.javacup.runtime.Symbol;
 
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.theme.IThemeManager;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.editor.preferences.PHPVersionProvider;
 import com.aptana.editor.php.internal.editor.scanner.tokenMap.IPHPTokenMapper;
 import com.aptana.editor.php.internal.editor.scanner.tokenMap.PHPTokenMapperFactory;
@@ -26,6 +28,8 @@ public class PHPCodeScanner implements ITokenScanner
 	private Queue<QueuedToken> queue;
 	private int fLength;
 	private int fOffset;
+	private IDocument document;
+	private int originalDocumentOffset;
 
 	/**
 	 * Constructs a new PHPCodeScanner
@@ -59,10 +63,10 @@ public class PHPCodeScanner implements ITokenScanner
 	 */
 	public IToken nextToken()
 	{
-		IToken intToken = pop();
-		if (intToken.isEOF())
+		IToken token = pop();
+		if (token.isEOF())
 			return Token.EOF;
-		int sym = (Integer) intToken.getData();
+		Symbol sym = (Symbol) token.getData();
 
 		IPHPTokenMapper tokenMapper = PHPTokenMapperFactory.getMapper(fScanner.getPHPVersion());
 		return tokenMapper.mapToken(sym, this);
@@ -74,8 +78,32 @@ public class PHPCodeScanner implements ITokenScanner
 	 */
 	public void setRange(IDocument document, int offset, int length)
 	{
+		this.document = document;
+		this.originalDocumentOffset = offset;
 		fScanner.setRange(document, offset, length);
 		reset();
+	}
+
+	/**
+	 * Returns the string value in the document that was represented by the given symbol.<br>
+	 * The extraction of the value is done from the document range that was set in the
+	 * {@link #setRange(IDocument, int, int)} call.
+	 * 
+	 * @param sym
+	 * @return A String value extracted from the document
+	 */
+	public String getSymbolValue(Symbol sym)
+	{
+		try
+		{
+			return document.get(originalDocumentOffset + sym.left - PHPTokenScanner.PHP_PREFIX.length(), sym.right
+					- sym.left);
+		}
+		catch (Exception e)
+		{
+			PHPEditorPlugin.logError(e);
+		}
+		return null;
 	}
 
 	public IToken getToken(String tokenName)
@@ -106,10 +134,10 @@ public class PHPCodeScanner implements ITokenScanner
 
 	private IToken pop()
 	{
-		IToken intToken = null;
+		IToken token = null;
 		if (queue == null || queue.isEmpty())
 		{
-			intToken = fScanner.nextToken();
+			token = fScanner.nextToken();
 			fOffset = fScanner.getTokenOffset();
 			fLength = fScanner.getTokenLength();
 		}
@@ -118,15 +146,11 @@ public class PHPCodeScanner implements ITokenScanner
 			QueuedToken queued = queue.poll();
 			fOffset = queued.getOffset();
 			fLength = queued.getLength();
-			intToken = queued.getToken();
+			token = queued.getToken();
 		}
-		if (intToken == null)
+		if (token == null || token.isEOF())
 			return Token.EOF;
-		Integer data = (Integer) intToken.getData();
-		if (data == null)
-			return Token.EOF;
-
-		return intToken;
+		return token;
 	}
 
 	private void push(IToken next)

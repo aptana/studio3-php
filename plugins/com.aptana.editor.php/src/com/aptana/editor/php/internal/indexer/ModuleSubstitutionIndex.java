@@ -44,8 +44,9 @@ import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.internal.builder.IModule;
 
 /**
- * Index that has the special sub-index to handle the module specified,
- * all other sub-indexes are ignored regarding the module entries..
+ * Index that has the special sub-index to handle the module specified, all other sub-indexes are ignored regarding the
+ * module entries..
+ * 
  * @author Denis Denisenko
  */
 public class ModuleSubstitutionIndex implements IElementsIndex
@@ -54,24 +55,26 @@ public class ModuleSubstitutionIndex implements IElementsIndex
 	 * Module to substitute entries for.
 	 */
 	private IModule module;
-	
+
 	/**
 	 * Special module handler.
 	 */
 	private IElementsIndex handler;
-	
+
 	/**
 	 * Main index to user.
 	 */
 	private IElementsIndex mainIndex;
-	
+
 	/**
 	 * ModuleSubstitutionIndex constructor.
-	 * @param module - module to handle.
-	 * @param handler - module handler.
+	 * 
+	 * @param module
+	 *            - module to handle.
+	 * @param handler
+	 *            - module handler.
 	 */
-	public ModuleSubstitutionIndex(IModule module, IElementsIndex handler,
-			IElementsIndex mainIndex)
+	public ModuleSubstitutionIndex(IModule module, IElementsIndex handler, IElementsIndex mainIndex)
 	{
 		this.module = module;
 		this.handler = handler;
@@ -86,10 +89,10 @@ public class ModuleSubstitutionIndex implements IElementsIndex
 
 		List<IElementEntry> result = new ArrayList<IElementEntry>();
 		result.addAll(handler.getEntries(category, path));
-		
+
 		List<IElementEntry> mainEntries = mainIndex.getEntries(category, path);
 		Iterator<IElementEntry> it = mainEntries.iterator();
-		
+
 		while (it.hasNext())
 		{
 			IElementEntry entry = it.next();
@@ -98,24 +101,23 @@ public class ModuleSubstitutionIndex implements IElementsIndex
 				it.remove();
 			}
 		}
-		
+
 		result.addAll(mainEntries);
-		
+
 		return result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized List<IElementEntry> getEntriesStartingWith(
-			int category, String path)
+	public synchronized List<IElementEntry> getEntriesStartingWith(int category, String path)
 	{
 		List<IElementEntry> result = new ArrayList<IElementEntry>();
 		result.addAll(handler.getEntriesStartingWith(category, path));
-		
+
 		List<IElementEntry> mainEntries = mainIndex.getEntriesStartingWith(category, path);
 		Iterator<IElementEntry> it = mainEntries.iterator();
-		
+
 		while (it.hasNext())
 		{
 			IElementEntry entry = it.next();
@@ -124,9 +126,9 @@ public class ModuleSubstitutionIndex implements IElementsIndex
 				it.remove();
 			}
 		}
-		
+
 		result.addAll(mainEntries);
-		
+
 		return result;
 	}
 

@@ -40,52 +40,59 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 
  * @author Pavel Petrochenko
- *
  */
-public class UserLibrary implements IPHPLibrary{
+public class UserLibrary implements IPHPLibrary
+{
 
 	private String name;
-	
-	private List<String>directories;
-	
-	public UserLibrary(String serializedLibrary) {
+
+	private List<String> directories;
+
+	public UserLibrary(String serializedLibrary)
+	{
 		String[] split = serializedLibrary.split(File.pathSeparator);
-		name=split[0].trim();
-		directories=new ArrayList<String>();
-		for (int a=1;a<split.length;a++) {
+		name = split[0].trim();
+		directories = new ArrayList<String>();
+		for (int a = 1; a < split.length; a++)
+		{
 			directories.add(split[a].trim());
 		}
 	}
-	
-	public UserLibrary(String text, String[] dirs) {
-		this.name=text;
-		directories=new ArrayList<String>(Arrays.asList(dirs));
+
+	public UserLibrary(String text, String[] dirs)
+	{
+		this.name = text;
+		directories = new ArrayList<String>(Arrays.asList(dirs));
 	}
 
-	public List<String> getDirectories() {		
+	public List<String> getDirectories()
+	{
 		return new ArrayList<String>(directories);
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public String toString() {
-		StringBuilder bld=new StringBuilder();
+	public String toString()
+	{
+		StringBuilder bld = new StringBuilder();
 		bld.append(name);
 		bld.append(File.pathSeparator);
-		for (String s:directories) {
+		for (String s : directories)
+		{
 			bld.append(s);
 			bld.append(File.pathSeparator);
-		}		
-		bld.deleteCharAt(bld.length()-1);
+		}
+		bld.deleteCharAt(bld.length() - 1);
 		return bld.toString();
 	}
 
 	@Override
-	public int hashCode() {
+	public int hashCode()
+	{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -93,7 +100,8 @@ public class UserLibrary implements IPHPLibrary{
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -101,20 +109,24 @@ public class UserLibrary implements IPHPLibrary{
 		if (getClass() != obj.getClass())
 			return false;
 		UserLibrary other = (UserLibrary) obj;
-		if (name == null) {
+		if (name == null)
+		{
 			if (other.name != null)
 				return false;
-		} else if (!name.equals(other.name))
+		}
+		else if (!name.equals(other.name))
 			return false;
 		return true;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return name;
 	}
 
-	public boolean isTurnedOn() {
+	public boolean isTurnedOn()
+	{
 		return LibraryManager.getInstance().isTurnedOn(this);
 	}
-		
+
 }

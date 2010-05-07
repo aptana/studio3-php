@@ -8,7 +8,8 @@ import com.aptana.editor.php.internal.editor.PHPSourceConfiguration;
  */
 public class PHPSourcePartitionScanner extends SourceConfigurationPartitionScanner
 {
-	public PHPSourcePartitionScanner() {
+	public PHPSourcePartitionScanner()
+	{
 		super(PHPSourceConfiguration.getDefault());
 	}
 }

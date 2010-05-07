@@ -37,17 +37,16 @@ package com.aptana.editor.php.internal.builder;
 import java.util.List;
 
 /**
- * 
  * @author Pavel Petrochenko
- *
  */
-public interface IPHPLibrary {
+public interface IPHPLibrary
+{
 
 	String getId();
-	
+
 	String getName();
-	
-	List<String>getDirectories();
+
+	List<String> getDirectories();
 
 	boolean isTurnedOn();
 }

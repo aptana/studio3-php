@@ -43,6 +43,7 @@ import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
 /**
  * Reference for a call path starting with variable.
+ * 
  * @author Denis Denisenko
  */
 public class VariablePathReference extends AbstractPathReference
@@ -51,13 +52,15 @@ public class VariablePathReference extends AbstractPathReference
 	 * Dispatcher types.
 	 */
 	private Set<Object> dispatcherTypes;
-	
+
 	/**
 	 * FieldReference constructor.
-	 * @param dispatcherTypes - dispatcher types set.
-	 * @param path - call path after the first dispatcher. 
-	 * In example reference for $a->$b->$method() would have all possible $a types as
-	 * dispatcher types and [b, method] as a path. 
+	 * 
+	 * @param dispatcherTypes
+	 *            - dispatcher types set.
+	 * @param path
+	 *            - call path after the first dispatcher. In example reference for $a->$b->$method() would have all
+	 *            possible $a types as dispatcher types and [b, method] as a path.
 	 */
 	public VariablePathReference(Set<Object> dispatcherTypes, CallPath path)
 	{
@@ -65,13 +68,15 @@ public class VariablePathReference extends AbstractPathReference
 		this.dispatcherTypes = dispatcherTypes;
 	}
 
-	public VariablePathReference(DataInputStream di) throws IOException{
+	public VariablePathReference(DataInputStream di) throws IOException
+	{
 		super(readPathOrNull(di));
-		this.dispatcherTypes=IndexPersistence.readTypeSet(di);
+		this.dispatcherTypes = IndexPersistence.readTypeSet(di);
 	}
 
 	/**
 	 * Gets dispatcher types set.
+	 * 
 	 * @return dispatcher types set.
 	 */
 	public Set<Object> getDispatcherTypes()
@@ -80,12 +85,14 @@ public class VariablePathReference extends AbstractPathReference
 	}
 
 	@Override
-	protected int getKind() {
+	protected int getKind()
+	{
 		return IPHPIndexConstants.VAR_CATEGORY;
 	}
 
 	@Override
-	protected void internalWrite(DataOutputStream da) throws IOException {
+	protected void internalWrite(DataOutputStream da) throws IOException
+	{
 		IndexPersistence.writeTypeSet(dispatcherTypes, da);
 	}
 }

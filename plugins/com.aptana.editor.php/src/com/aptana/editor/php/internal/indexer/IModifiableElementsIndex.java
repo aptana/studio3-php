@@ -38,9 +38,9 @@ import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.internal.builder.IModule;
 
-
 /**
  * Modifiable elements index.
+ * 
  * @author Denis Denisenko
  */
 public interface IModifiableElementsIndex extends IElementsIndex
@@ -49,19 +49,23 @@ public interface IModifiableElementsIndex extends IElementsIndex
 	/**
 	 * Adds new entry to the index.
 	 * 
-	 * @param category - entry category.
-	 * @param entryPath - entry path.
-	 * @param value - entry value.
-	 * @param module - entry module.
-	 * 
+	 * @param category
+	 *            - entry category.
+	 * @param entryPath
+	 *            - entry path.
+	 * @param value
+	 *            - entry value.
+	 * @param module
+	 *            - entry module.
 	 * @return entry
 	 */
-	IElementEntry addEntry(int category, String entryPath, Object value,
-			IModule module);
+	IElementEntry addEntry(int category, String entryPath, Object value, IModule module);
 
 	/**
 	 * Removes all entries belonging to the module.
-	 * @param module - module, which entries to remove.
+	 * 
+	 * @param module
+	 *            - module, which entries to remove.
 	 */
 	void removeModuleEntries(IModule module);
 }

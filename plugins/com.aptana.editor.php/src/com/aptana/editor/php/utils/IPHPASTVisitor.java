@@ -109,29 +109,36 @@ import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 
 /**
  * Abstract PHP AST visitor.
+ * 
  * @author Denis Denisenko
  */
 public interface IPHPASTVisitor
 {
 	/**
 	 * Is always called for every node type before any specific node visitor method calls.
-	 * @param node - visiting node. 
+	 * 
+	 * @param node
+	 *            - visiting node.
 	 * @return true if to continue visiting this node and its children, false otherwise.
 	 */
 	public boolean startVisitNode(ASTNode node);
-	
+
 	/**
 	 * Is always called for every node type after any specific node visitor method calls.
-	 * @param node - visiting node.
+	 * 
+	 * @param node
+	 *            - visiting node.
 	 */
 	public void afterEndVisitNode(ASTNode node);
-	
+
 	/**
 	 * Is always called for every node type before any specific node visitor method calls.
-	 * @param node - visiting node.
+	 * 
+	 * @param node
+	 *            - visiting node.
 	 */
 	public void beforeEndVisitNode(ASTNode node);
-	
+
 	public boolean visit(ArrayAccess arrayAccess);
 
 	public boolean visit(ArrayCreation arrayCreation);
@@ -257,11 +264,9 @@ public interface IPHPASTVisitor
 	public boolean visit(Variable variable);
 
 	public boolean visit(WhileStatement whileStatement);
-	
-	
-	/////////
-	
-	
+
+	// ///////
+
 	public void endVisit(ArrayAccess arrayAccess);
 
 	public void endVisit(ArrayCreation arrayCreation);
@@ -389,11 +394,11 @@ public interface IPHPASTVisitor
 	public void endVisit(WhileStatement whileStatement);
 
 	public boolean visit(NamespaceDeclaration node);
-	
+
 	public boolean endVisit(NamespaceDeclaration node);
 
 	public boolean visit(NamespaceName node);
-	
+
 	public boolean endVisit(NamespaceName node);
 
 	public boolean visit(LambdaFunctionDeclaration node);

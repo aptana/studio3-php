@@ -50,33 +50,35 @@ import com.aptana.editor.php.internal.builder.IModule;
  */
 public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 {
-	
+
 	/**
 	 * Build-paths to accept.
 	 */
-	private HashSet<IBuildPath> activeBuildPaths  = new HashSet<IBuildPath>();
-	
+	private HashSet<IBuildPath> activeBuildPaths = new HashSet<IBuildPath>();
+
 	/**
 	 * Build-paths to accept.
 	 */
-	private HashSet<IBuildPath> passiveBuildPaths  = new HashSet<IBuildPath>();
+	private HashSet<IBuildPath> passiveBuildPaths = new HashSet<IBuildPath>();
 
 	/**
 	 * BuildPathElementEntriesFilter constructor.
-	 * @param module - module, which build-path to use.
+	 * 
+	 * @param module
+	 *            - module, which build-path to use.
 	 */
 	public BuildPathElementEntriesFilter(IModule module)
 	{
-		if (module!=null) 
+		if (module != null)
 		{
-			
+
 			IBuildPath buildPath = module.getBuildPath();
 			if (buildPath == null)
 			{
 				activeBuildPaths = null;
 				return;
 			}
-			
+
 			if (buildPath.isPassive())
 			{
 				passiveBuildPaths.add(buildPath);
@@ -85,8 +87,8 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 			{
 				activeBuildPaths.add(buildPath);
 			}
-			
-			if(buildPath.getDependencies() != null)
+
+			if (buildPath.getDependencies() != null)
 			{
 				for (IBuildPath dependency : buildPath.getDependencies())
 				{
@@ -112,9 +114,9 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 	 */
 	public Set<IElementEntry> filter(Collection<IElementEntry> toFilter)
 	{
-		
+
 		LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
-		if (activeBuildPaths==null)
+		if (activeBuildPaths == null)
 		{
 			result.addAll(toFilter);
 			return result;
@@ -124,8 +126,8 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 			for (IElementEntry e : toFilter)
 			{
 				IModule module = e.getModule();
-				boolean added  = false;
-				
+				boolean added = false;
+
 				if (activeBuildPaths.size() != 0)
 				{
 					if (module == null || activeBuildPaths.contains(module.getBuildPath()))
@@ -134,8 +136,8 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 						added = true;
 					}
 				}
-				
-				//checking passive build-paths in case we have some and we did not add this entry yet
+
+				// checking passive build-paths in case we have some and we did not add this entry yet
 				if (passiveBuildPaths.size() != 0 && !added)
 				{
 					for (IBuildPath passiveBuildPath : passiveBuildPaths)
@@ -149,7 +151,7 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 				}
 			}
 		}
-		
+
 		return result;
 	}
 }

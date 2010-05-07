@@ -69,16 +69,22 @@ import com.aptana.editor.php.internal.builder.preferences.ProjectDependencies;
  * 
  * @author Denis Denisenko
  */
-public final class BuildPathManager {
-	
-	private static class Mutex {};
+public final class BuildPathManager
+{
+
+	private static class Mutex
+	{
+	};
+
 	private static Mutex mutex = new Mutex();
+
 	/**
 	 * Projects delta visitor.
 	 * 
 	 * @author Denis Denisenko
 	 */
-	private class ProjectsDeltaVisitor implements IResourceDeltaVisitor {
+	private class ProjectsDeltaVisitor implements IResourceDeltaVisitor
+	{
 		/**
 		 * Added projects to fill.
 		 */
@@ -97,7 +103,8 @@ public final class BuildPathManager {
 		 * @param removed
 		 *            - removed projects list to fill.
 		 */
-		public ProjectsDeltaVisitor(List<IProject> added, List<IProject> removed) {
+		public ProjectsDeltaVisitor(List<IProject> added, List<IProject> removed)
+		{
 			this.added = added;
 			this.removed = removed;
 		}
@@ -105,16 +112,18 @@ public final class BuildPathManager {
 		/**
 		 * {@inheritDoc}
 		 */
-		public boolean visit(IResourceDelta delta) throws CoreException {
+		public boolean visit(IResourceDelta delta) throws CoreException
+		{
 			IResource resource = delta.getResource();
 
 			// ignoring inaccessible resources
-			if (!resource.isAccessible()
-					&& delta.getKind() != IResourceDelta.REMOVED) {
+			if (!resource.isAccessible() && delta.getKind() != IResourceDelta.REMOVED)
+			{
 				return false;
 			}
 
-			if (!(resource instanceof IProject)) {
+			if (!(resource instanceof IProject))
+			{
 				return true;
 			}
 
@@ -158,10 +167,12 @@ public final class BuildPathManager {
 	 * 
 	 * @return build path manager instance.
 	 */
-	public static BuildPathManager getInstance() {
+	public static BuildPathManager getInstance()
+	{
 		synchronized (mutex)
 		{
-			if (instance == null) {
+			if (instance == null)
+			{
 				instance = new BuildPathManager();
 			}
 			return instance;
@@ -169,8 +180,7 @@ public final class BuildPathManager {
 	}
 
 	/**
-	 * Map of all existing build paths. Map from build path resource to build
-	 * path.
+	 * Map of all existing build paths. Map from build path resource to build path.
 	 */
 	private Map<Object, IBuildPath> buildPaths = new HashMap<Object, IBuildPath>();
 
@@ -184,7 +194,8 @@ public final class BuildPathManager {
 	 * 
 	 * @return existing build paths.
 	 */
-	public synchronized List<IBuildPath> getBuildPaths() {
+	public synchronized List<IBuildPath> getBuildPaths()
+	{
 		List<IBuildPath> result = new ArrayList<IBuildPath>();
 		result.addAll(buildPaths.values());
 		return result;
@@ -197,7 +208,8 @@ public final class BuildPathManager {
 	 *            - resource.
 	 * @return build path or null.
 	 */
-	public synchronized IBuildPath getBuildPathByResource(Object resource) {
+	public synchronized IBuildPath getBuildPathByResource(Object resource)
+	{
 		return buildPaths.get(resource);
 	}
 
@@ -208,10 +220,13 @@ public final class BuildPathManager {
 	 *            - resource.
 	 * @return module or null.
 	 */
-	public synchronized IModule getModuleByResource(Object resource) {
-		for (IBuildPath path : buildPaths.values()) {
+	public synchronized IModule getModuleByResource(Object resource)
+	{
+		for (IBuildPath path : buildPaths.values())
+		{
 			IModule module = path.getModule(resource);
-			if (module != null) {
+			if (module != null)
+			{
 				return module;
 			}
 		}
@@ -225,23 +240,26 @@ public final class BuildPathManager {
 	 *            - resource.
 	 * @return module or null.
 	 */
-	public synchronized IDirectory getDirectoryByResource(Object resource) {
-		for (IBuildPath path : buildPaths.values()) {
+	public synchronized IDirectory getDirectoryByResource(Object resource)
+	{
+		for (IBuildPath path : buildPaths.values())
+		{
 			IDirectory directory = path.getDirectory(resource);
-			if (directory != null) {
+			if (directory != null)
+			{
 				return directory;
 			}
 		}
 		return null;
 	}
 
-	public synchronized void addBuildPathChangeListener(
-			IBuildPathsListener listener) {
+	public synchronized void addBuildPathChangeListener(IBuildPathsListener listener)
+	{
 		listeners.add(listener);
 	}
 
-	public synchronized void removeBuildPathChangeListener(
-			IBuildPathsListener listener) {
+	public synchronized void removeBuildPathChangeListener(IBuildPathsListener listener)
+	{
 		listeners.remove(listener);
 	}
 
@@ -252,14 +270,16 @@ public final class BuildPathManager {
 	 *            - build path resource.
 	 * @return added build path or null if build path cannot be created
 	 */
-	public synchronized IBuildPath addBuildPath(Object resource) {
+	public synchronized IBuildPath addBuildPath(Object resource)
+	{
 		IBuildPath path = createBuildPathByResource(resource);
 		internalAddBuldPath(resource, path);
 
 		return path;
 	}
 
-	private void internalAddBuldPath(Object resource, IBuildPath path) {
+	private void internalAddBuldPath(Object resource, IBuildPath path)
+	{
 		buildPaths.put(resource, path);
 
 		List<IBuildPath> added = new ArrayList<IBuildPath>(1);
@@ -274,9 +294,11 @@ public final class BuildPathManager {
 	 * @param resource
 	 *            - build path resource.
 	 */
-	public synchronized void removeBuildPath(Object resource) {
+	public synchronized void removeBuildPath(Object resource)
+	{
 		IBuildPath path = getBuildPathByResource(resource);
-		if (path == null) {
+		if (path == null)
+		{
 			return;
 		}
 
@@ -291,54 +313,61 @@ public final class BuildPathManager {
 	/**
 	 * BuildPathManager private constructor.
 	 */
-	private BuildPathManager() {
-		long l0=System.currentTimeMillis();
+	private BuildPathManager()
+	{
+		long l0 = System.currentTimeMillis();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		indexExternalLibraries();
 		indexLocalProjects(workspace);
 		bindListeners(workspace);
 		if (PHPEditorPlugin.DEBUG)
 		{
-			long l1=System.currentTimeMillis();
-			System.out.println("Indexer init:"+(l1-l0));
+			long l1 = System.currentTimeMillis();
+			System.out.println("Indexer init:" + (l1 - l0)); //$NON-NLS-1$
 		}
 	}
 
-	public void indexExternalLibraries() {
+	public void indexExternalLibraries()
+	{
 		IPHPLibrary[] all = LibraryManager.getInstance().getAllLibraries();
-		for (IPHPLibrary l : all) {
-			for (String s : l.getDirectories()) {
+		for (IPHPLibrary l : all)
+		{
+			for (String s : l.getDirectories())
+			{
 				File path = new File(s);
-				if (path != null) {
-					FileSystemBuildPath fileSystemBuildPath = new FileSystemBuildPath(
-							path);
+				if (path != null)
+				{
+					FileSystemBuildPath fileSystemBuildPath = new FileSystemBuildPath(path);
 					internalAddBuldPath(path, fileSystemBuildPath);
 				}
 			}
 		}
-		LibraryManager.getInstance().addLibraryListener(new ILibraryListener() {
+		LibraryManager.getInstance().addLibraryListener(new ILibraryListener()
+		{
 
-			public void librariesChanged(Set<IPHPLibrary> turnedOn,
-					Set<IPHPLibrary> turnedOf) {
-				try {
-					IWorkspaceRoot root = ResourcesPlugin.getWorkspace()
-							.getRoot();
-					root.accept(new IResourceVisitor() {
-						public boolean visit(IResource resource)
-								throws CoreException {
+			public void librariesChanged(Set<IPHPLibrary> turnedOn, Set<IPHPLibrary> turnedOf)
+			{
+				try
+				{
+					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+					root.accept(new IResourceVisitor()
+					{
+						public boolean visit(IResource resource) throws CoreException
+						{
 							// ignoring inaccessible resources
-							if (!resource.isAccessible()) {
+							if (!resource.isAccessible())
+							{
 								return false;
 							}
 
-							if (resource instanceof IProject) {
-								if (buildPaths.containsKey(resource)) {
+							if (resource instanceof IProject)
+							{
+								if (buildPaths.containsKey(resource))
+								{
 									IProject project = (IProject) resource;
-									ProjectDependencies dependencies = DependenciesManager
-											.getDependencies(project);
+									ProjectDependencies dependencies = DependenciesManager.getDependencies(project);
 
-									handleDependenciesChange(project,
-											dependencies);
+									handleDependenciesChange(project, dependencies);
 								}
 								return false;
 							}
@@ -346,48 +375,57 @@ public final class BuildPathManager {
 							return true;
 						}
 					});
-				} catch (CoreException e) {
+				}
+				catch (CoreException e)
+				{
 					PHPEditorPlugin.logError(e);
 				}
 			}
 
-			public void userLibrariesChanged(UserLibrary[] newLibraries) {
+			public void userLibrariesChanged(UserLibrary[] newLibraries)
+			{
 				Set<IPHPLibrary> emptySet = Collections.emptySet();
 				HashSet<File> files = new HashSet<File>();
-				for (Object o : buildPaths.keySet()) {
-					if (o instanceof File) {
+				for (Object o : buildPaths.keySet())
+				{
+					if (o instanceof File)
+					{
 						files.add((File) o);
 					}
 				}
 				HashSet<File> currrentFiles = new HashSet<File>(files);
-				IPHPLibrary[] current = LibraryManager.getInstance()
-						.getAllLibraries();
-				for (IPHPLibrary l : current) {
+				IPHPLibrary[] current = LibraryManager.getInstance().getAllLibraries();
+				for (IPHPLibrary l : current)
+				{
 					List<String> directories = l.getDirectories();
-					for (String s : directories) {
+					for (String s : directories)
+					{
 						File file = new File(s);
 						files.remove(file);
 					}
 				}
-				for (File f : files) {
+				for (File f : files)
+				{
 					IBuildPath path = getBuildPathByResource(f);
 					removeBuildPath(f);
 					path.close();
 					currrentFiles.remove(f);
 				}
-				for (UserLibrary l : newLibraries) {
+				for (UserLibrary l : newLibraries)
+				{
 					if (!LibraryManager.getInstance().isTurnedOn(l))
 					{
 						continue;
 					}
-					
+
 					List<String> directories = l.getDirectories();
-					for (String s : directories) {
+					for (String s : directories)
+					{
 						File file = new File(s);
 
-						if (!buildPaths.containsKey(file)) {
-							FileSystemBuildPath fileSystemBuildPath = new FileSystemBuildPath(
-									file);
+						if (!buildPaths.containsKey(file))
+						{
+							FileSystemBuildPath fileSystemBuildPath = new FileSystemBuildPath(file);
 							internalAddBuldPath(file, fileSystemBuildPath);
 						}
 					}
@@ -404,21 +442,28 @@ public final class BuildPathManager {
 	 * @param workspace
 	 *            - workspace.
 	 */
-	private void bindListeners(IWorkspace workspace) {
+	private void bindListeners(IWorkspace workspace)
+	{
 		// binding listener to workspace
-		IResourceChangeListener workspaceListener = new IResourceChangeListener() {
+		IResourceChangeListener workspaceListener = new IResourceChangeListener()
+		{
 			/**
 			 * {@inheritDoc}
 			 */
-			public void resourceChanged(IResourceChangeEvent event) {
+			public void resourceChanged(IResourceChangeEvent event)
+			{
 				final List<IProject> added = new ArrayList<IProject>();
 				final List<IProject> removed = new ArrayList<IProject>();
 
 				IResourceDelta delta = event.getDelta();
-				if (delta != null) {
-					try {
+				if (delta != null)
+				{
+					try
+					{
 						delta.accept(new ProjectsDeltaVisitor(added, removed));
-					} catch (CoreException e) {
+					}
+					catch (CoreException e)
+					{
 						PHPEditorPlugin.logError(e);
 					}
 				}
@@ -429,7 +474,8 @@ public final class BuildPathManager {
 						removed.add((IProject) event.getResource());
 					}
 				}
-				if (!added.isEmpty() || !removed.isEmpty()) {
+				if (!added.isEmpty() || !removed.isEmpty())
+				{
 					handleChanged(added, removed);
 				}
 			}
@@ -438,14 +484,16 @@ public final class BuildPathManager {
 		workspace.addResourceChangeListener(workspaceListener);
 
 		// binding listener to project dependencies changes
-		DependenciesManager.addListener(new IProjectDependencyListener() {
+		DependenciesManager.addListener(new IProjectDependencyListener()
+		{
 			/**
 			 * {@inheritDoc}
 			 */
-			public void dependenciesChanged(IProject project,
-					ProjectDependencies dependencies) {
+			public void dependenciesChanged(IProject project, ProjectDependencies dependencies)
+			{
 				// ignoring inaccessible projects
-				if (!project.isAccessible()) {
+				if (!project.isAccessible())
+				{
 					return;
 				}
 
@@ -462,39 +510,47 @@ public final class BuildPathManager {
 	 * @param removed
 	 *            - remove projects.
 	 */
-	public void handleChanged(List<IProject> added, List<IProject> removed) {
+	public void handleChanged(List<IProject> added, List<IProject> removed)
+	{
 		List<IBuildPath> addedPaths = new ArrayList<IBuildPath>();
 		List<IBuildPath> removedPaths = new ArrayList<IBuildPath>();
 
-		if (added.isEmpty() && removed.isEmpty()) {
+		if (added.isEmpty() && removed.isEmpty())
+		{
 			return;
 		}
 
 		List<IProject> toRemove = new ArrayList<IProject>();
 
-		for (IProject addedProject : added) {
+		for (IProject addedProject : added)
+		{
 			IBuildPath path = createBuildPathByResource(addedProject);
-			if (path != null) {
+			if (path != null)
+			{
 				buildPaths.put(addedProject, path);
 				addedPaths.add(path);
 			}
 		}
 
-		for (IProject removedProject : removed) {
+		for (IProject removedProject : removed)
+		{
 			IBuildPath path = getBuildPathByResource(removedProject);
-			if (path != null) {
+			if (path != null)
+			{
 				removedPaths.add(path);
 				toRemove.add(removedProject);
 			}
 		}
 
-		for (IProject toRemoveProject : toRemove) {
+		for (IProject toRemoveProject : toRemove)
+		{
 			IBuildPath path = buildPaths.get(toRemoveProject);
 			buildPaths.remove(toRemoveProject);
 			removeDepencies(path);
 		}
 
-		for (IBuildPath path : removedPaths) {
+		for (IBuildPath path : removedPaths)
+		{
 			path.close();
 		}
 
@@ -514,31 +570,44 @@ public final class BuildPathManager {
 	 * @param removed
 	 *            - removed build paths.
 	 */
-	private void notifyChanged(List<IBuildPath> added, List<IBuildPath> removed) {
-		for (IBuildPathsListener listener : listeners) {
-			try {
+	private void notifyChanged(List<IBuildPath> added, List<IBuildPath> removed)
+	{
+		for (IBuildPathsListener listener : listeners)
+		{
+			try
+			{
 				listener.changed(added, removed);
-			} catch (Throwable th) {
+			}
+			catch (Throwable th)
+			{
 				PHPEditorPlugin.logError("Unable notifying build path change listener", th); //$NON-NLS-1$
 			}
 		}
 	}
 
-	private void indexLocalProjects(IWorkspace workspace) {
+	private void indexLocalProjects(IWorkspace workspace)
+	{
 		// creating build path for each project
 		IWorkspaceRoot root = workspace.getRoot();
-		try {
-			root.accept(new IResourceVisitor() {
-				public boolean visit(IResource resource) throws CoreException {
+		try
+		{
+			root.accept(new IResourceVisitor()
+			{
+				public boolean visit(IResource resource) throws CoreException
+				{
 					// not visiting inaccessible resources
-					if (!resource.isAccessible()) {
+					if (!resource.isAccessible())
+					{
 						return false;
 					}
 
-					if (resource instanceof IProject) {
-						if (!buildPaths.containsKey(resource)) {
+					if (resource instanceof IProject)
+					{
+						if (!buildPaths.containsKey(resource))
+						{
 							IBuildPath path = createBuildPathByResource(resource);
-							if (path != null) {
+							if (path != null)
+							{
 								buildPaths.put(resource, path);
 							}
 						}
@@ -549,7 +618,9 @@ public final class BuildPathManager {
 				}
 
 			});
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPEditorPlugin.logError(e);
 		}
 
@@ -557,25 +628,32 @@ public final class BuildPathManager {
 	}
 
 	/**
-	 * Traverse the accessible projects in the workspace and update their dependencies.
-	 * This operation is needed on startup and when a project is opened.
-	 * @param root The workspace root to visit and update
+	 * Traverse the accessible projects in the workspace and update their dependencies. This operation is needed on
+	 * startup and when a project is opened.
+	 * 
+	 * @param root
+	 *            The workspace root to visit and update
 	 */
 	private void updateProjectsDependencies(IWorkspaceRoot root)
 	{
-		try {
-			root.accept(new IResourceVisitor() {
-				public boolean visit(IResource resource) throws CoreException {
+		try
+		{
+			root.accept(new IResourceVisitor()
+			{
+				public boolean visit(IResource resource) throws CoreException
+				{
 					// ignoring inaccessible resources
-					if (!resource.isAccessible()) {
+					if (!resource.isAccessible())
+					{
 						return false;
 					}
 
-					if (resource instanceof IProject) {
-						if (buildPaths.containsKey(resource)) {
+					if (resource instanceof IProject)
+					{
+						if (buildPaths.containsKey(resource))
+						{
 							IProject project = (IProject) resource;
-							ProjectDependencies dependencies = DependenciesManager
-									.getDependencies(project);
+							ProjectDependencies dependencies = DependenciesManager.getDependencies(project);
 
 							handleDependenciesChange(project, dependencies);
 						}
@@ -585,7 +663,9 @@ public final class BuildPathManager {
 					return true;
 				}
 			});
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPEditorPlugin.logError(e);
 		}
 	}
@@ -597,25 +677,34 @@ public final class BuildPathManager {
 	 *            - resource to create build path from.
 	 * @return new build path or null if resource is not recognized.
 	 */
-	private IBuildPath createBuildPathByResource(Object resource) {
+	private IBuildPath createBuildPathByResource(Object resource)
+	{
 		// ignoring inaccessible resources
-		if (resource instanceof IResource) {
-			if (!((IResource) resource).isAccessible()) {
+		if (resource instanceof IResource)
+		{
+			if (!((IResource) resource).isAccessible())
+			{
 				return null;
 			}
-			if (resource instanceof IProject) {
+			if (resource instanceof IProject)
+			{
 				IProject project = (IProject) resource;
-				try {
+				try
+				{
 
-					if (((IProject) resource).hasNature(PHPNature.NATURE_ID)) {
+					if (((IProject) resource).hasNature(PHPNature.NATURE_ID))
+					{
 						return new ProjectBuildPath(project);
 					}
-				} catch (CoreException e) {
+				}
+				catch (CoreException e)
+				{
 					PHPEditorPlugin.logError("Error in the PHP build", e); //$NON-NLS-1$
 				}
 			}
-		} else if (resource instanceof File && ((File) resource).exists()
-				&& ((File) resource).isDirectory()) {
+		}
+		else if (resource instanceof File && ((File) resource).exists() && ((File) resource).isDirectory())
+		{
 			return new FileSystemBuildPath((File) resource);
 		}
 
@@ -630,62 +719,72 @@ public final class BuildPathManager {
 	 * @param dependencies
 	 *            - dependencies.
 	 */
-	private void handleDependenciesChange(IProject project,
-			ProjectDependencies dependencies) {
+	private void handleDependenciesChange(IProject project, ProjectDependencies dependencies)
+	{
 		IBuildPath path = buildPaths.get(project);
 		if (path == null)
 		{
 			return;
 		}
-		
+
 		path.clearDependencies();
 
-		for (IResource projectDependency : dependencies.getWorkspaceResources()) {
-			if (projectDependency instanceof IProject) {
-				IBuildPath dependencyBuildPath = buildPaths
-						.get(projectDependency);
-				if (dependencyBuildPath != null) {
+		for (IResource projectDependency : dependencies.getWorkspaceResources())
+		{
+			if (projectDependency instanceof IProject)
+			{
+				IBuildPath dependencyBuildPath = buildPaths.get(projectDependency);
+				if (dependencyBuildPath != null)
+				{
 					path.addDependency(dependencyBuildPath);
 				}
-			} else if (projectDependency instanceof IFolder) {
-				IBuildPath dependencyBuildPath = new WorkspaceFolderBuildpath(
-						(IFolder) projectDependency);
+			}
+			else if (projectDependency instanceof IFolder)
+			{
+				IBuildPath dependencyBuildPath = new WorkspaceFolderBuildpath((IFolder) projectDependency);
 				path.addDependency(dependencyBuildPath);
 			}
 		}
-		for (File directoryDependency : dependencies.getDirectories()) {
+		for (File directoryDependency : dependencies.getDirectories())
+		{
 			// IBuildPath dependencyBuildPath =
 			// new FileSystemBuildPath(directoryDependency);
 			IBuildPath dependencyBuildPath = addBuildPath(directoryDependency);
 			// buildPaths.put(directoryDependency, dependencyBuildPath);
 			path.addDependency(dependencyBuildPath);
 		}
-		IPHPLibrary[] allLibraries = LibraryManager.getInstance()
-				.getAllLibraries();
-		HashSet<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays
-				.asList(allLibraries));
-		if (dependencies.isUsesCustomLibs()) {
-			ArrayList<String> notUsedLibrariesIds = dependencies
-					.getNotUsedLibrariesIds();
-			for (String s : notUsedLibrariesIds) {
-				IPHPLibrary library = LibraryManager.getInstance()
-						.getLibrary(s);
-				if (library != null) {
+		IPHPLibrary[] allLibraries = LibraryManager.getInstance().getAllLibraries();
+		HashSet<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays.asList(allLibraries));
+		if (dependencies.isUsesCustomLibs())
+		{
+			ArrayList<String> notUsedLibrariesIds = dependencies.getNotUsedLibrariesIds();
+			for (String s : notUsedLibrariesIds)
+			{
+				IPHPLibrary library = LibraryManager.getInstance().getLibrary(s);
+				if (library != null)
+				{
 					usedLibraries.remove(library);
 				}
 			}
-		} else {
-			for (IPHPLibrary l : allLibraries) {
-				if (!l.isTurnedOn()) {
+		}
+		else
+		{
+			for (IPHPLibrary l : allLibraries)
+			{
+				if (!l.isTurnedOn())
+				{
 					usedLibraries.remove(l);
 				}
 			}
 		}
-		for (IPHPLibrary l : usedLibraries) {
-			for (String s : l.getDirectories()) {
+		for (IPHPLibrary l : usedLibraries)
+		{
+			for (String s : l.getDirectories())
+			{
 				File fl = new File(s);
 				IBuildPath dependency = buildPaths.get(fl);
-				if (dependency != null) {
+				if (dependency != null)
+				{
 					path.addDependency(dependency);
 				}
 			}
@@ -698,8 +797,10 @@ public final class BuildPathManager {
 	 * @param path
 	 *            - path.
 	 */
-	private void removeDepencies(IBuildPath path) {
-		for (IBuildPath currentPath : buildPaths.values()) {
+	private void removeDepencies(IBuildPath path)
+	{
+		for (IBuildPath currentPath : buildPaths.values())
+		{
 			currentPath.removeDependency(path);
 		}
 	}

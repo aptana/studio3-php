@@ -47,10 +47,9 @@ import org.eclipse.core.runtime.IPath;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
- * Workspace folder build-path.
- * As this build-path is mostly used as dependency and never for supporting modules in consistent
- * and parsed state, modules are not cached.
- *  
+ * Workspace folder build-path. As this build-path is mostly used as dependency and never for supporting modules in
+ * consistent and parsed state, modules are not cached.
+ * 
  * @author Denis Denisenko
  */
 public class WorkspaceFolderBuildpath extends AbstractBuildPath
@@ -63,15 +62,17 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 	/**
 	 * WorkspaceFolderBuildpath constructor.
 	 * 
-	 * @param folder - folder to create build path from.
+	 * @param folder
+	 *            - folder to create build path from.
 	 */
 	public WorkspaceFolderBuildpath(IFolder folder)
 	{
 		this.folder = folder;
 	}
-	
+
 	/**
-	 * Gets folder. 
+	 * Gets folder.
+	 * 
 	 * @return folder.
 	 */
 	public IFolder getFolder()
@@ -93,7 +94,7 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 			{
 				return null;
 			}
-			
+
 			return filePath.removeFirstSegments(folderPath.segmentCount()).makeAbsolute();
 		}
 		else if (resource instanceof LocalDirectory)
@@ -105,10 +106,10 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 			{
 				return null;
 			}
-			
+
 			return fldPath.removeFirstSegments(folderPath.segmentCount()).makeAbsolute();
 		}
-		
+
 		return null;
 	}
 
@@ -117,7 +118,7 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 	 */
 	public void close()
 	{
-		//doing nothing.
+		// doing nothing.
 	}
 
 	/**
@@ -134,17 +135,16 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			return null;
 		}
-		
+
 		IPath modulePath = moduleFile.getProjectRelativePath();
 		IPath folderPath = folder.getProjectRelativePath();
-		
+
 		if (!folderPath.isPrefixOf(modulePath))
 		{
 			return null;
 		}
-		
-		return PHPLocalModuleFactory.getModule((IResource) moduleResource, 
-				WorkspaceFolderBuildpath.this);
+
+		return PHPLocalModuleFactory.getModule((IResource) moduleResource, WorkspaceFolderBuildpath.this);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			return null;
 		}
-		
+
 		return PHPLocalModuleFactory.getModule(file, WorkspaceFolderBuildpath.this);
 	}
 
@@ -176,7 +176,7 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 	{
 		return true;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -187,27 +187,27 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			return null;
 		}
-		
+
 		IResource[] innerResources = null;
 		try
 		{
 			innerResources = pathFolder.members();
-		} catch (CoreException e)
+		}
+		catch (CoreException e)
 		{
 			PHPEditorPlugin.logError(e);
 			return null;
 		}
-		
+
 		List<IFile> innerFiles = new ArrayList<IFile>();
 		for (IResource innerResource : innerResources)
 		{
-			if (innerResource instanceof IFile
-					&& ((IFile) innerResource).exists())
+			if (innerResource instanceof IFile && ((IFile) innerResource).exists())
 			{
 				innerFiles.add((IFile) innerResource);
 			}
 		}
-		
+
 		List<IModule> result = new ArrayList<IModule>();
 		for (IFile innerFile : innerFiles)
 		{
@@ -217,10 +217,10 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 				result.add(currentModule);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -231,12 +231,13 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			return null;
 		}
-		
+
 		IResource[] innerResources = null;
 		try
 		{
 			innerResources = pathFolder.members();
-		} catch (CoreException e)
+		}
+		catch (CoreException e)
 		{
 			PHPEditorPlugin.logError(e);
 			return null;
@@ -244,29 +245,28 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		List<IFolder> innerFolders = new ArrayList<IFolder>();
 		for (IResource innerResource : innerResources)
 		{
-			if (innerResource instanceof IFolder
-					&& ((IFolder) innerResource).exists())
+			if (innerResource instanceof IFolder && ((IFolder) innerResource).exists())
 			{
 				innerFolders.add((IFolder) innerResource);
 			}
 		}
-		
+
 		List<IDirectory> result = new ArrayList<IDirectory>();
 		for (IFolder innerFolder : innerFolders)
 		{
-			//ignoring inaccessible resources
+			// ignoring inaccessible resources
 			if (!innerFolder.isAccessible())
 			{
 				continue;
 			}
-			
+
 			IDirectory currentDir = new LocalDirectory(innerFolder, this);
 			result.add(currentDir);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -276,14 +276,13 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			return null;
 		}
-		
+
 		if (!((IFolder) directoryResource).isAccessible())
 		{
 			return null;
 		}
-		
-		return new LocalDirectory((IFolder) directoryResource, 
-				WorkspaceFolderBuildpath.this);
+
+		return new LocalDirectory((IFolder) directoryResource, WorkspaceFolderBuildpath.this);
 	}
 
 	/**
@@ -295,16 +294,16 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			return null;
 		}
-		
+
 		IFolder fld = folder.getFolder(path);
 		if (fld == null || !fld.isAccessible())
 		{
 			return null;
 		}
-		
+
 		return new LocalDirectory(fld, WorkspaceFolderBuildpath.this);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -314,18 +313,18 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			return false;
 		}
-		
+
 		return getModule(((LocalModule) module).getFile()) != null;
 	}
-	
+
 	/**
 	 * Lists local modules.
 	 */
 	private List<IModule> indexLocalModules()
-	{		
+	{
 		final List<IModule> toReturn = new ArrayList<IModule>();
-		
-		//skipping unsynchronized folders.
+
+		// skipping unsynchronized folders.
 		if (!folder.isSynchronized(1))
 		{
 			return toReturn;
@@ -336,53 +335,53 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 			{
 				public boolean visit(IResource resource) throws CoreException
 				{
-					//ignoring inaccessible resources
+					// ignoring inaccessible resources
 					if (!resource.isAccessible())
 					{
 						return false;
 					}
-					
+
 					if (resource instanceof IFolder)
 					{
-						//skipping unsynchronized resources.
+						// skipping unsynchronized resources.
 						if (!resource.isSynchronized(1))
 						{
 							return false;
 						}
-						
-						if( !FolderFilteringManager.acceptFolder((IFolder) resource))
+
+						if (!FolderFilteringManager.acceptFolder((IFolder) resource))
 						{
 							return false;
 						}
 					}
-					
+
 					if (!(resource instanceof IFile))
 					{
 						return true;
 					}
-					
-					IModule module = PHPLocalModuleFactory.getModule(resource, 
-							WorkspaceFolderBuildpath.this);
+
+					IModule module = PHPLocalModuleFactory.getModule(resource, WorkspaceFolderBuildpath.this);
 					if (module != null)
 					{
 						toReturn.add(module);
 					}
-					
+
 					return true;
 				}
-				
+
 			});
-		} 
+		}
 		catch (CoreException e)
 		{
 			PHPEditorPlugin.logError(e);
 			return null;
 		}
-		
+
 		return toReturn;
 	}
 
-	public String getHandleIdentifier() {
-		return 'W'+folder.getFullPath().toPortableString();
+	public String getHandleIdentifier()
+	{
+		return 'W' + folder.getFullPath().toPortableString();
 	}
 }

@@ -40,9 +40,9 @@ import java.io.IOException;
 
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
-
 /**
  * Reference for a call path starting with variable.
+ * 
  * @author Denis Denisenko
  */
 public class FunctionPathReference extends AbstractPathReference
@@ -51,11 +51,14 @@ public class FunctionPathReference extends AbstractPathReference
 	 * Function name.
 	 */
 	private String functionEntryPath;
-	
+
 	/**
 	 * FunctionReference constructor.
-	 * @param functionEntryPath - function entry path like "Class/method".
-	 * @param path - call path.
+	 * 
+	 * @param functionEntryPath
+	 *            - function entry path like "Class/method".
+	 * @param path
+	 *            - call path.
 	 */
 	public FunctionPathReference(String functionEntryPath, CallPath path)
 	{
@@ -63,13 +66,15 @@ public class FunctionPathReference extends AbstractPathReference
 		this.functionEntryPath = functionEntryPath;
 	}
 
-	public FunctionPathReference(DataInputStream di)throws IOException {
+	public FunctionPathReference(DataInputStream di) throws IOException
+	{
 		super(readPathOrNull(di));
-		functionEntryPath=di.readUTF();
+		functionEntryPath = di.readUTF();
 	}
 
 	/**
 	 * Gets function entry.
+	 * 
 	 * @return function entry.
 	 */
 	public String getFunctionEntryPath()
@@ -85,10 +90,7 @@ public class FunctionPathReference extends AbstractPathReference
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((functionEntryPath == null) ? 0 : functionEntryPath
-						.hashCode());
+		result = prime * result + ((functionEntryPath == null) ? 0 : functionEntryPath.hashCode());
 		return result;
 	}
 
@@ -109,25 +111,29 @@ public class FunctionPathReference extends AbstractPathReference
 		{
 			if (other.functionEntryPath != null)
 				return false;
-		} else if (!functionEntryPath.equals(other.functionEntryPath))
+		}
+		else if (!functionEntryPath.equals(other.functionEntryPath))
 			return false;
-		
+
 		if (getPath() == null)
 		{
 			if (other.getPath() != null)
 				return false;
-		} else if (!getPath().compare(other.getPath()))
+		}
+		else if (!getPath().compare(other.getPath()))
 			return false;
 		return true;
 	}
 
 	@Override
-	protected void internalWrite(DataOutputStream da) throws IOException {
+	protected void internalWrite(DataOutputStream da) throws IOException
+	{
 		da.writeUTF(functionEntryPath);
 	}
 
 	@Override
-	protected int getKind() {
+	protected int getKind()
+	{
 		return IPHPIndexConstants.FUNCTION_CATEGORY;
-	}	
+	}
 }

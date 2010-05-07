@@ -45,24 +45,28 @@ public interface IBuildPathResource
 {
 	/**
 	 * Gets module full system path.
-	 * @return module full system path. 
+	 * 
+	 * @return module full system path.
 	 */
 	String getFullPath();
-	
+
 	/**
-	 * Gets module build path. 
+	 * Gets module build path.
+	 * 
 	 * @return module build path.
 	 */
 	IBuildPath getBuildPath();
-	
+
 	/**
 	 * Gets module short name.
+	 * 
 	 * @return module short name.
 	 */
 	String getShortName();
-	
+
 	/**
 	 * Gets path inside the resource build-path, starting from the build-path root.
+	 * 
 	 * @return path.
 	 */
 	IPath getPath();

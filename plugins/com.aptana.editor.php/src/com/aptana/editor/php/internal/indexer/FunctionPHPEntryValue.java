@@ -48,9 +48,9 @@ import java.util.Map.Entry;
 
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
-
 /**
  * PHP entry value for functions.
+ * 
  * @author Denis Denisenko
  */
 public class FunctionPHPEntryValue extends AbstractPHPEntryValue
@@ -59,61 +59,70 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 	 * Whether the function is method.
 	 */
 	private boolean isMethod;
-	
+
 	/**
 	 * Parameters names.
 	 */
 	private String[] parameterNames;
-	
+
 	/**
 	 * Parameter types.
 	 */
 	private Object[] parameterTypes;
-	
+
 	private int[] parameterStartPositions;
-	
+
 	/**
 	 * Indicates whether the parameter is a mandatory one.
 	 */
 	private boolean[] parameterMandatories;
-	
+
 	/**
-	 * Function return types.
-	 * Might be string value in case of direct type value or 
-	 * reference that might be used to count the type indirectly. 
+	 * Function return types. Might be string value in case of direct type value or reference that might be used to
+	 * count the type indirectly.
 	 */
 	private Object returnTypes;
 
 	/**
 	 * FunctionPHPEntryValue constructor.
-	 * @param modifiers - modifiers.
-	 * @param isMethod - if is method.
-	 * @param startPosition - declaration start position.
+	 * 
+	 * @param modifiers
+	 *            - modifiers.
+	 * @param isMethod
+	 *            - if is method.
+	 * @param startPosition
+	 *            - declaration start position.
 	 */
-	public FunctionPHPEntryValue(int modifiers, boolean isMethod, int startPosition,String nameSpace)
+	public FunctionPHPEntryValue(int modifiers, boolean isMethod, int startPosition, String nameSpace)
 	{
-		super(modifiers,nameSpace);
+		super(modifiers, nameSpace);
 		this.setStartOffset(startPosition);
 		this.isMethod = isMethod;
 	}
-	
+
 	/**
 	 * FunctionPHPEntryValue constructor.
 	 * 
-	 * @param modifiers - modifiers.
-	 * @param isMethod - if is method.
-	 * @param parameters - function parameters.
-	 * @param parameterStartPositions - start position of each parameter. 
-	 * @param parameterMandatories - boolean array in the size of the parameters that indicates which of the params is a mandatory one.
-	 * @param startPosition - declaration start position.
-	 * 
-	 * @throws IllegalArgumentException in any case where the parameterMandatories parameter length is different from the expected.
+	 * @param modifiers
+	 *            - modifiers.
+	 * @param isMethod
+	 *            - if is method.
+	 * @param parameters
+	 *            - function parameters.
+	 * @param parameterStartPositions
+	 *            - start position of each parameter.
+	 * @param parameterMandatories
+	 *            - boolean array in the size of the parameters that indicates which of the params is a mandatory one.
+	 * @param startPosition
+	 *            - declaration start position.
+	 * @throws IllegalArgumentException
+	 *             in any case where the parameterMandatories parameter length is different from the expected.
 	 */
-	public FunctionPHPEntryValue(int modifiers, boolean isMethod, 
-			LinkedHashMap<String, Set<Object>> parameters, int[] parameterStartPositions, boolean[] parameterMandatories, int startPosition,String nameSpace)
+	public FunctionPHPEntryValue(int modifiers, boolean isMethod, LinkedHashMap<String, Set<Object>> parameters,
+			int[] parameterStartPositions, boolean[] parameterMandatories, int startPosition, String nameSpace)
 	{
 		super(modifiers, nameSpace);
-		
+
 		if (parameters != null)
 		{
 			if (parameters.size() != 0)
@@ -123,9 +132,9 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 					throw new IllegalArgumentException("Illegal parameter start positions: " + parameterStartPositions); //$NON-NLS-1$
 				}
 			}
-			
+
 			this.parameterStartPositions = parameterStartPositions;
-			
+
 			if (parameterMandatories == null || parameters.size() != parameterMandatories.length)
 			{
 				// IdeLog.log(PHPPlugin.getDefault(), IStatus.WARNING,
@@ -154,7 +163,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 			this.parameterMandatories = parameterMandatories;
 			parameterNames = new String[parameters.size()];
 			parameterTypes = new Object[parameters.size()];
-			
+
 			int i = 0;
 			for (Entry<String, Set<Object>> entry : parameters.entrySet())
 			{
@@ -180,26 +189,31 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 		this.setStartOffset(startPosition);
 		this.isMethod = isMethod;
 	}
-	
-	public FunctionPHPEntryValue(DataInputStream di) throws IOException {
+
+	public FunctionPHPEntryValue(DataInputStream di) throws IOException
+	{
 		super(di);
 		internalRead(di);
 	}
 
 	/**
 	 * Sets function return type.
-	 * @param type - might be string value in case of direct type value or 
-	 * reference that might be used to count the type indirectly.
+	 * 
+	 * @param type
+	 *            - might be string value in case of direct type value or reference that might be used to count the type
+	 *            indirectly.
 	 */
 	public void setReturnType(Object type)
 	{
 		returnTypes = type;
 	}
-	
+
 	/**
 	 * Sets function return types.
-	 * @param type - might be string value in case of direct type value or 
-	 * reference that might be used to count the type indirectly.
+	 * 
+	 * @param type
+	 *            - might be string value in case of direct type value or reference that might be used to count the type
+	 *            indirectly.
 	 */
 	public void setReturnTypes(Set<Object> types)
 	{
@@ -217,11 +231,12 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets return type.
-	 * @return string value in case of direct type value or 
-	 * reference that might be used to count the type indirectly. null means unknown type.
+	 * 
+	 * @return string value in case of direct type value or reference that might be used to count the type indirectly.
+	 *         null means unknown type.
 	 */
 	public Set<Object> getReturnTypes()
 	{
@@ -229,16 +244,16 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 		{
 			return Collections.emptySet();
 		}
-		
+
 		if (returnTypes instanceof Object[])
 		{
-			Object[] returnTypesArray = (Object[]) returnTypes; 
+			Object[] returnTypesArray = (Object[]) returnTypes;
 			THashSet<Object> result = new THashSet<Object>(returnTypesArray.length);
 			for (int i = 0; i < returnTypesArray.length; i++)
 			{
 				result.add(returnTypesArray[i]);
 			}
-			
+
 			return result;
 		}
 		else
@@ -250,10 +265,12 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 	}
 
 	/**
-	 * Returns an array of boolean describing which of the parameters is mandatory and which is optional. 
-	 * @return an array of boolean describing which of the parameters is mandatory and which is optional; Returns an empty array in case there are no parameters. 
+	 * Returns an array of boolean describing which of the parameters is mandatory and which is optional.
+	 * 
+	 * @return an array of boolean describing which of the parameters is mandatory and which is optional; Returns an
+	 *         empty array in case there are no parameters.
 	 */
-	public boolean[] getMandatoryParams() 
+	public boolean[] getMandatoryParams()
 	{
 		if (parameterMandatories == null)
 		{
@@ -263,18 +280,20 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 		System.arraycopy(parameterMandatories, 0, toReturn, 0, parameterMandatories.length);
 		return toReturn;
 	}
-	
+
 	/**
 	 * Gets whether function is method.
+	 * 
 	 * @return true if method, false otherwise.
 	 */
 	public boolean isMethod()
 	{
 		return isMethod;
 	}
-	
+
 	/**
 	 * Gets function parameters.
+	 * 
 	 * @return function parameters.
 	 */
 	@SuppressWarnings("unchecked")
@@ -282,13 +301,12 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 	{
 		if (parameterNames != null)
 		{
-			LinkedHashMap<String, Set<Object>> result = 
-				new LinkedHashMap<String, Set<Object>>(parameterNames.length);
+			LinkedHashMap<String, Set<Object>> result = new LinkedHashMap<String, Set<Object>>(parameterNames.length);
 			for (int i = 0; i < parameterNames.length; i++)
 			{
 				HashSet<Object> types = new HashSet<Object>();
 				Object typeObj = parameterTypes[i];
-				
+
 				if (typeObj != null)
 				{
 					if (typeObj instanceof Set)
@@ -302,12 +320,13 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 				}
 				result.put(parameterNames[i], types);
 			}
-			
+
 			return result;
 		}
-		
+
 		return Collections.emptyMap();
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -339,12 +358,14 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 	}
 
 	@Override
-	public int getKind() {
+	public int getKind()
+	{
 		return IPHPIndexConstants.FUNCTION_CATEGORY;
 	}
-	
+
 	/**
 	 * Gets parameter start positions.
+	 * 
 	 * @return parameter start positions.
 	 */
 	public int[] getParameterStartPositions()
@@ -353,12 +374,14 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 	}
 
 	@Override
-	protected void internalWrite(DataOutputStream da) throws IOException {
+	protected void internalWrite(DataOutputStream da) throws IOException
+	{
 		da.writeBoolean(isMethod);
 		IndexPersistence.writeType(returnTypes, da);
-		int len = parameterNames==null?0:parameterNames.length;
+		int len = parameterNames == null ? 0 : parameterNames.length;
 		da.writeInt(len);
-		for (int a=0;a<len;a++){
+		for (int a = 0; a < len; a++)
+		{
 			da.writeUTF(parameterNames[a]);
 			da.writeBoolean(parameterMandatories[a]);
 			da.writeInt(parameterStartPositions[a]);
@@ -366,36 +389,38 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue
 		}
 	}
 
-	private static String[] NO_PARAM_S=new String[0];
-	private static boolean[] NO_PARAM_B=new boolean[0];
-	private static Object[] NO_PARAM_O=new Object[0];
-	private static int[] NO_PARAM_P=new int[0];
-	
+	private static String[] NO_PARAM_S = new String[0];
+	private static boolean[] NO_PARAM_B = new boolean[0];
+	private static Object[] NO_PARAM_O = new Object[0];
+	private static int[] NO_PARAM_P = new int[0];
+
 	@Override
-	protected void internalRead(DataInputStream di) throws IOException {
-		isMethod=di.readBoolean();
-		returnTypes=IndexPersistence.readType(di);
+	protected void internalRead(DataInputStream di) throws IOException
+	{
+		isMethod = di.readBoolean();
+		returnTypes = IndexPersistence.readType(di);
 		int pc = di.readInt();
-		if (pc>0){
-		parameterNames=new String[pc];
-		parameterMandatories=new boolean[pc];
-		parameterTypes=new Object[pc];
-		parameterStartPositions = new int[pc];
-		for (int a=0;a<pc;a++){
-			parameterNames[a]=di.readUTF();
-			parameterMandatories[a]=di.readBoolean();
-			parameterStartPositions[a] = di.readInt();
-			parameterTypes[a]=IndexPersistence.readType(di);
+		if (pc > 0)
+		{
+			parameterNames = new String[pc];
+			parameterMandatories = new boolean[pc];
+			parameterTypes = new Object[pc];
+			parameterStartPositions = new int[pc];
+			for (int a = 0; a < pc; a++)
+			{
+				parameterNames[a] = di.readUTF();
+				parameterMandatories[a] = di.readBoolean();
+				parameterStartPositions[a] = di.readInt();
+				parameterTypes[a] = IndexPersistence.readType(di);
+			}
 		}
-		}
-		else{
-			parameterNames=NO_PARAM_S;
-			parameterMandatories=NO_PARAM_B;
+		else
+		{
+			parameterNames = NO_PARAM_S;
+			parameterMandatories = NO_PARAM_B;
 			parameterStartPositions = NO_PARAM_P;
-			parameterTypes=NO_PARAM_O;
+			parameterTypes = NO_PARAM_O;
 		}
 	}
-	
-	
-}
 
+}

@@ -38,14 +38,18 @@ import java.util.List;
 
 /**
  * Listener to the build paths changes.
+ * 
  * @author Denis Denisenko
  */
 public interface IBuildPathsListener
 {
 	/**
 	 * Notifies build path modules structure or contents changed.
-	 * @param added - added build paths.
-	 * @param removed - removed build paths.
+	 * 
+	 * @param added
+	 *            - added build paths.
+	 * @param removed
+	 *            - removed build paths.
 	 */
 	void changed(List<IBuildPath> added, List<IBuildPath> removed);
 }

@@ -44,28 +44,31 @@ import com.aptana.editor.php.model.env.SourceFieldElementInfo;
 
 /**
  * EntryBasedField
+ * 
  * @author Denis Denisenko
  */
-public class EntryBasedField extends AbstractMember implements IField 
-{	
+public class EntryBasedField extends AbstractMember implements IField
+{
 	/**
 	 * Value.
 	 */
 	private VariablePHPEntryValue entryValue;
-	
+
 	/**
 	 * EntryBasedField constructor.
-	 * @param fieldEntry - field entry.
+	 * 
+	 * @param fieldEntry
+	 *            - field entry.
 	 */
 	public EntryBasedField(IElementEntry fieldEntry)
 	{
 		super(fieldEntry);
-		
+
 		if (!EntryUtils.isField(fieldEntry))
 		{
-			throw new IllegalArgumentException("field entry required");
+			throw new IllegalArgumentException("field entry required"); //$NON-NLS-1$
 		}
-		
+
 		this.entryValue = (VariablePHPEntryValue) fieldEntry.getValue();
 	}
 
@@ -82,7 +85,7 @@ public class EntryBasedField extends AbstractMember implements IField
 	 */
 	public ISourceRange getNameRange()
 	{
-		//TODO add name length
+		// TODO add name length
 		return new SourceRange(entryValue.getStartOffset());
 	}
 
@@ -93,7 +96,7 @@ public class EntryBasedField extends AbstractMember implements IField
 	{
 		return FIELD;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

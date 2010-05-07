@@ -47,6 +47,7 @@ import com.aptana.editor.php.model.ISourceModule;
 
 /**
  * SourceFolder
+ * 
  * @author Denis Denisenko
  */
 public class SourceFolder extends AbstractResourceElement implements ISourceFolder
@@ -54,7 +55,9 @@ public class SourceFolder extends AbstractResourceElement implements ISourceFold
 
 	/**
 	 * SourceFolder constructor.
-	 * @param directory - directory.
+	 * 
+	 * @param directory
+	 *            - directory.
 	 */
 	public SourceFolder(IDirectory directory)
 	{
@@ -79,9 +82,8 @@ public class SourceFolder extends AbstractResourceElement implements ISourceFold
 		{
 			return Collections.emptyList();
 		}
-		
-		List<IDirectory> subdirectories = 
-			buildPath.getSubdirectoriesByPath(getBPResource().getPath());
+
+		List<IDirectory> subdirectories = buildPath.getSubdirectoriesByPath(getBPResource().getPath());
 		List<IModule> modules = buildPath.getModulesByPath(getBPResource().getPath());
 		List<IModelElement> result = new ArrayList<IModelElement>();
 		if (subdirectories != null)
@@ -92,7 +94,7 @@ public class SourceFolder extends AbstractResourceElement implements ISourceFold
 				result.add(folder);
 			}
 		}
-		
+
 		if (modules != null)
 		{
 			for (IModule module : modules)
@@ -101,7 +103,7 @@ public class SourceFolder extends AbstractResourceElement implements ISourceFold
 				result.add(mdl);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -115,23 +117,22 @@ public class SourceFolder extends AbstractResourceElement implements ISourceFold
 		{
 			return false;
 		}
-		
-		List<IDirectory> subdirectories = 
-			buildPath.getSubdirectoriesByPath(getBPResource().getPath());
+
+		List<IDirectory> subdirectories = buildPath.getSubdirectoriesByPath(getBPResource().getPath());
 		List<IModule> modules = buildPath.getModulesByPath(getBPResource().getPath());
 		if (subdirectories != null && subdirectories.size() > 0)
 		{
 			return true;
 		}
-		
+
 		if (modules != null && modules.size() > 0)
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	protected IDirectory getDirectory()
 	{
 		return (IDirectory) getBPResource();

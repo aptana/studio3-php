@@ -38,6 +38,7 @@ import java.io.File;
 
 /**
  * FileSystemDirectory
+ * 
  * @author Denis Denisenko
  */
 public class FileSystemDirectory extends AbstractDirectory
@@ -47,18 +48,21 @@ public class FileSystemDirectory extends AbstractDirectory
 	 * File.
 	 */
 	private File directory;
-	
+
 	/**
 	 * FileSystemDirectory constructor.
-	 * @param directory - directory.
-	 * @param buildPath - build path.
+	 * 
+	 * @param directory
+	 *            - directory.
+	 * @param buildPath
+	 *            - build path.
 	 */
 	public FileSystemDirectory(File directory, IBuildPath buildPath)
 	{
 		super(buildPath, directory.getAbsolutePath());
 		this.directory = directory;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -66,7 +70,7 @@ public class FileSystemDirectory extends AbstractDirectory
 	{
 		return directory.getName();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -96,20 +100,22 @@ public class FileSystemDirectory extends AbstractDirectory
 		{
 			if (other.directory != null)
 				return false;
-		} else if (!directory.equals(other.directory))
+		}
+		else if (!directory.equals(other.directory))
 			return false;
 		return true;
 	}
-	
+
 	/**
 	 * Gets directory.
+	 * 
 	 * @return directory file.
 	 */
 	protected File getDirectory()
 	{
 		return directory;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

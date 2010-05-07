@@ -46,15 +46,16 @@ import com.aptana.editor.php.model.ISourceProject;
 
 /**
  * SourceModel
+ * 
  * @author Denis Denisenko
  */
 public class SourceModel extends AbstractModelElement implements ISourceModel
 {
-	
+
 	/**
 	 * Element name.
 	 */
-	public static final String ELEMENT_NAME = "SourceModel";
+	public static final String ELEMENT_NAME = "SourceModel"; //$NON-NLS-1$
 
 	/**
 	 * {@inheritDoc}
@@ -68,7 +69,7 @@ public class SourceModel extends AbstractModelElement implements ISourceModel
 				return project;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -78,7 +79,7 @@ public class SourceModel extends AbstractModelElement implements ISourceModel
 	public List<ISourceProject> getProjects()
 	{
 		List<ISourceProject> result = new ArrayList<ISourceProject>();
-		
+
 		List<IBuildPath> buildPaths = BuildPathManager.getInstance().getBuildPaths();
 		for (IBuildPath path : buildPaths)
 		{
@@ -87,7 +88,7 @@ public class SourceModel extends AbstractModelElement implements ISourceModel
 				result.add(new SourceProject((ProjectBuildPath) path));
 			}
 		}
-		
+
 		return result;
 	}
 

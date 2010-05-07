@@ -24,15 +24,14 @@ import com.aptana.editor.php.model.env.ModelElementInfo;
 import com.aptana.editor.php.model.env.SourceMethodElementInfo;
 
 /**
- * A script element delta biulder creates a script element delta on a script
- * element between the version of the script element at the time the comparator
- * was created and the current version of the script element.
- * 
- * It performs this operation by locally caching the contents of the script
- * element when it is created. When the method createDeltas() is called, it
- * creates a delta over the cached contents and the new contents.
+ * A script element delta biulder creates a script element delta on a script element between the version of the script
+ * element at the time the comparator was created and the current version of the script element. It performs this
+ * operation by locally caching the contents of the script element when it is created. When the method createDeltas() is
+ * called, it creates a delta over the cached contents and the new contents.
  */
-public class ModelElementDeltaBuilder {
+@SuppressWarnings("unchecked")
+public class ModelElementDeltaBuilder
+{
 	/**
 	 * The model element handle
 	 */
@@ -76,43 +75,44 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Doubly linked list item
 	 */
-	static class ListItem {
+	static class ListItem
+	{
 		public IModelElement previous;
 		public IModelElement next;
 
-		public ListItem(IModelElement previous, IModelElement next) {
+		public ListItem(IModelElement previous, IModelElement next)
+		{
 			this.previous = previous;
 			this.next = next;
 		}
 	}
 
 	/**
-	 * Creates a script element comparator on a script element looking as deep
-	 * as necessary.
+	 * Creates a script element comparator on a script element looking as deep as necessary.
 	 */
-	public ModelElementDeltaBuilder(IModelElement modelElement) {
+	public ModelElementDeltaBuilder(IModelElement modelElement)
+	{
 		this.modelElement = modelElement;
 		this.initialize();
-		this.recordElementInfo(modelElement, (SourceModel) this.modelElement
-				.getModel(), 0);
+		this.recordElementInfo(modelElement, (SourceModel) this.modelElement.getModel(), 0);
 	}
 
 	/**
-	 * Creates a script element comparator on a script element looking only
-	 * 'maxDepth' levels deep.
+	 * Creates a script element comparator on a script element looking only 'maxDepth' levels deep.
 	 */
-	public ModelElementDeltaBuilder(IModelElement modelElement, int maxDepth) {
+	public ModelElementDeltaBuilder(IModelElement modelElement, int maxDepth)
+	{
 		this.modelElement = modelElement;
 		this.maxDepth = maxDepth;
 		this.initialize();
-		this.recordElementInfo(modelElement, (SourceModel) this.modelElement
-				.getModel(), 0);
+		this.recordElementInfo(modelElement, (SourceModel) this.modelElement.getModel(), 0);
 	}
 
 	/**
 	 * Repairs the positioning information after an element has been added
 	 */
-	private void added(IModelElement element) {
+	private void added(IModelElement element)
+	{
 		this.added.add(element);
 		ListItem current = this.getNewPosition(element);
 		ListItem previous = null, next = null;
@@ -127,17 +127,18 @@ public class ModelElementDeltaBuilder {
 	}
 
 	/**
-	 * Builds the script element deltas between the old content of the
-	 * compilation unit and its new content.
+	 * Builds the script element deltas between the old content of the compilation unit and its new content.
 	 * 
 	 * @return delta
 	 */
-	public ModelElementDelta buildDeltas() {
+	public ModelElementDelta buildDeltas()
+	{
 		this.delta = new ModelElementDelta(modelElement);
 
 		// if building a delta on a compilation unit or below,
 		// it's a fine grained delta
-		if (modelElement.getElementType() >= IModelElement.MODULE) {
+		if (modelElement.getElementType() >= IModelElement.MODULE)
+		{
 			this.delta.fineGrained();
 		}
 		this.recordNewPositions(this.modelElement, 0);
@@ -145,12 +146,13 @@ public class ModelElementDeltaBuilder {
 		this.findDeletions();
 		this.findChangesInPositioning(this.modelElement, 0);
 		this.trimDelta(this.delta);
-		if (this.delta.getAffectedChildren().length == 0) {
+		if (this.delta.getAffectedChildren().length == 0)
+		{
 			// this is a fine grained but not children affected -> mark as
 			// content changed
 			this.delta.contentChanged();
 		}
-		
+
 		return this.delta;
 	}
 
@@ -171,33 +173,40 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Finds elements which have been added or changed.
 	 */
-	private void findAdditions(IModelElement newElement, int depth) {
+	private void findAdditions(IModelElement newElement, int depth)
+	{
 		ModelElementInfo oldInfo = this.getElementInfo(newElement);
-		if (oldInfo == null && depth < this.maxDepth) {
+		if (oldInfo == null && depth < this.maxDepth)
+		{
 			this.delta.added(newElement);
 			added(newElement);
-		} else {
+		}
+		else
+		{
 			this.removeElementInfo(newElement);
 		}
 
-		if (depth >= this.maxDepth) {
+		if (depth >= this.maxDepth)
+		{
 			// mark element as changed
 			this.delta.changed(newElement, IModelElementDelta.F_CONTENT);
 			return;
 		}
 
 		ModelElementInfo newInfo = null;
-		newInfo = (ModelElementInfo) ((AbstractModelElement) newElement)
-				.getElementInfo();
+		newInfo = (ModelElementInfo) ((AbstractModelElement) newElement).getElementInfo();
 
 		this.findContentChange(oldInfo, newInfo, newElement);
 
-		if (oldInfo != null && newElement instanceof IParent) {
+		if (oldInfo != null && newElement instanceof IParent)
+		{
 
 			IModelElement[] children = newInfo.getChildren();
-			if (children != null) {
+			if (children != null)
+			{
 				int length = children.length;
-				for (int i = 0; i < length; i++) {
+				for (int i = 0; i < length; i++)
+				{
 					this.findAdditions(children[i], depth + 1);
 				}
 			}
@@ -207,25 +216,28 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Looks for changed positioning of elements.
 	 */
-	private void findChangesInPositioning(IModelElement element, int depth) {
-		if (depth >= this.maxDepth || this.added.contains(element)
-				|| this.removed.contains(element))
+	private void findChangesInPositioning(IModelElement element, int depth)
+	{
+		if (depth >= this.maxDepth || this.added.contains(element) || this.removed.contains(element))
 			return;
 
-		if (!isPositionedCorrectly(element)) {
+		if (!isPositionedCorrectly(element))
+		{
 			this.delta.changed(element, IModelElementDelta.F_REORDER);
 		}
 
-		if (element instanceof IParent) {
+		if (element instanceof IParent)
+		{
 			ModelElementInfo info = null;
-			
-			info = (ModelElementInfo) ((AbstractModelElement) element)
-					.getElementInfo();
-			
+
+			info = (ModelElementInfo) ((AbstractModelElement) element).getElementInfo();
+
 			IModelElement[] children = info.getChildren();
-			if (children != null) {
+			if (children != null)
+			{
 				int length = children.length;
-				for (int i = 0; i < length; i++) {
+				for (int i = 0; i < length; i++)
+				{
 					this.findChangesInPositioning(children[i], depth + 1);
 				}
 			}
@@ -235,36 +247,33 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * The elements are equivalent, but might have content changes.
 	 */
-	private void findContentChange(ModelElementInfo oldInfo,
-			ModelElementInfo newInfo, IModelElement newElement) {
-		if (oldInfo instanceof MemberElementInfo
-				&& newInfo instanceof MemberElementInfo) {
-			if (((MemberElementInfo) oldInfo).getModifiers() != ((MemberElementInfo) newInfo)
-					.getModifiers()) {
+	private void findContentChange(ModelElementInfo oldInfo, ModelElementInfo newInfo, IModelElement newElement)
+	{
+		if (oldInfo instanceof MemberElementInfo && newInfo instanceof MemberElementInfo)
+		{
+			if (((MemberElementInfo) oldInfo).getModifiers() != ((MemberElementInfo) newInfo).getModifiers())
+			{
 				this.delta.changed(newElement, IModelElementDelta.F_MODIFIERS);
-			} else if (oldInfo instanceof SourceMethodElementInfo
-					&& newInfo instanceof SourceMethodElementInfo) {
+			}
+			else if (oldInfo instanceof SourceMethodElementInfo && newInfo instanceof SourceMethodElementInfo)
+			{
 				SourceMethodElementInfo oldSourceMethodInfo = (SourceMethodElementInfo) oldInfo;
 				SourceMethodElementInfo newSourceMethodInfo = (SourceMethodElementInfo) newInfo;
-				if (!equals(oldSourceMethodInfo
-						.getArgumentNames(), newSourceMethodInfo
-						.getArgumentNames())
-						|| !equals(oldSourceMethodInfo
-								.getArgumentInitializers(), newSourceMethodInfo
-								.getArgumentInitializers())) {
-					this.delta
-							.changed(newElement, IModelElementDelta.F_CONTENT);
+				if (!equals(oldSourceMethodInfo.getArgumentNames(), newSourceMethodInfo.getArgumentNames())
+						|| !equals(oldSourceMethodInfo.getArgumentInitializers(), newSourceMethodInfo
+								.getArgumentInitializers()))
+				{
+					this.delta.changed(newElement, IModelElementDelta.F_CONTENT);
 				}
 			}
 		}
-		if (oldInfo instanceof SourceTypeElementInfo
-				&& newInfo instanceof SourceTypeElementInfo) {
+		if (oldInfo instanceof SourceTypeElementInfo && newInfo instanceof SourceTypeElementInfo)
+		{
 			SourceTypeElementInfo oldSourceTypeInfo = (SourceTypeElementInfo) oldInfo;
 			SourceTypeElementInfo newSourceTypeInfo = (SourceTypeElementInfo) newInfo;
-			if (!equals(oldSourceTypeInfo.getSuperclassNames(),
-					newSourceTypeInfo.getSuperclassNames())) {
-				this.delta
-						.changed(newElement, IModelElementDelta.F_SUPER_TYPES);
+			if (!equals(oldSourceTypeInfo.getSuperclassNames(), newSourceTypeInfo.getSuperclassNames()))
+			{
+				this.delta.changed(newElement, IModelElementDelta.F_SUPER_TYPES);
 			}
 		}
 	}
@@ -272,28 +281,34 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Adds removed deltas for any handles left in the table
 	 */
-	private void findDeletions() {
+	private void findDeletions()
+	{
 		Iterator iter = this.infos.keySet().iterator();
-		while (iter.hasNext()) {
+		while (iter.hasNext())
+		{
 			IModelElement element = (IModelElement) iter.next();
 			this.delta.removed(element);
 			this.removed(element);
 		}
 	}
 
-	private ModelElementInfo getElementInfo(IModelElement element) {
+	private ModelElementInfo getElementInfo(IModelElement element)
+	{
 		return (ModelElementInfo) this.infos.get(element);
 	}
 
-	private ListItem getNewPosition(IModelElement element) {
+	private ListItem getNewPosition(IModelElement element)
+	{
 		return (ListItem) this.newPositions.get(element);
 	}
 
-	private ListItem getOldPosition(IModelElement element) {
+	private ListItem getOldPosition(IModelElement element)
+	{
 		return (ListItem) this.oldPositions.get(element);
 	}
 
-	private void initialize() {
+	private void initialize()
+	{
 		this.infos = new HashMap(20);
 		this.oldPositions = new HashMap(20);
 		this.newPositions = new HashMap(20);
@@ -305,20 +320,23 @@ public class ModelElementDeltaBuilder {
 	}
 
 	/**
-	 * Inserts position information for the elements into the new or old
-	 * positions table
+	 * Inserts position information for the elements into the new or old positions table
 	 */
-	private void insertPositions(IModelElement[] elements, boolean isNew) {
+	private void insertPositions(IModelElement[] elements, boolean isNew)
+	{
 		int length = elements.length;
-		IModelElement previous = null, current = null, next = (length > 0) ? elements[0]
-				: null;
-		for (int i = 0; i < length; i++) {
+		IModelElement previous = null, current = null, next = (length > 0) ? elements[0] : null;
+		for (int i = 0; i < length; i++)
+		{
 			previous = current;
 			current = next;
 			next = (i + 1 < length) ? elements[i + 1] : null;
-			if (isNew) {
+			if (isNew)
+			{
 				this.putNewPosition(current, new ListItem(previous, next));
-			} else {
+			}
+			else
+			{
 				this.putOldPosition(current, new ListItem(previous, next));
 			}
 		}
@@ -327,7 +345,8 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Returns whether the elements position has not changed.
 	 */
-	private boolean isPositionedCorrectly(IModelElement element) {
+	private boolean isPositionedCorrectly(IModelElement element)
+	{
 		ListItem oldListItem = this.getOldPosition(element);
 		if (oldListItem == null)
 			return false;
@@ -338,31 +357,38 @@ public class ModelElementDeltaBuilder {
 
 		IModelElement oldPrevious = oldListItem.previous;
 		IModelElement newPrevious = newListItem.previous;
-		if (oldPrevious == null) {
+		if (oldPrevious == null)
+		{
 			return newPrevious == null;
-		} else {
+		}
+		else
+		{
 			return oldPrevious.equals(newPrevious);
 		}
 	}
 
-	private void putElementInfo(IModelElement element, ModelElementInfo info) {
+	private void putElementInfo(IModelElement element, ModelElementInfo info)
+	{
 		this.infos.put(element, info);
 	}
 
-	private void putNewPosition(IModelElement element, ListItem position) {
+	private void putNewPosition(IModelElement element, ListItem position)
+	{
 		this.newPositions.put(element, position);
 	}
 
-	private void putOldPosition(IModelElement element, ListItem position) {
+	private void putOldPosition(IModelElement element, ListItem position)
+	{
 		this.oldPositions.put(element, position);
 	}
 
 	/**
-	 * Records this elements info, and attempts to record the info for the
-	 * children.
+	 * Records this elements info, and attempts to record the info for the children.
 	 */
-	private void recordElementInfo(IModelElement element, SourceModel model, int depth) {
-		if (depth >= this.maxDepth) {
+	private void recordElementInfo(IModelElement element, SourceModel model, int depth)
+	{
+		if (depth >= this.maxDepth)
+		{
 			return;
 		}
 		ModelElementInfo info = null;
@@ -378,9 +404,11 @@ public class ModelElementDeltaBuilder {
 		{
 			return;
 		}
-		if (element instanceof IParent) {
+		if (element instanceof IParent)
+		{
 			IModelElement[] children = info.getChildren();
-			if (children != null) {
+			if (children != null)
+			{
 				insertPositions(children, false);
 				for (int i = 0, length = children.length; i < length; i++)
 					recordElementInfo(children[i], model, depth + 1);
@@ -391,22 +419,25 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Fills the newPositions hashtable with the new position information
 	 */
-	private void recordNewPositions(IModelElement newElement, int depth) {
-		if (depth < this.maxDepth && newElement instanceof IParent) {
+	private void recordNewPositions(IModelElement newElement, int depth)
+	{
+		if (depth < this.maxDepth && newElement instanceof IParent)
+		{
 			ModelElementInfo info = null;
-			
-			info = (ModelElementInfo) ((AbstractModelElement) newElement)
-					.getElementInfo();
+
+			info = (ModelElementInfo) ((AbstractModelElement) newElement).getElementInfo();
 
 			IModelElement[] children = info.getChildren();
-			if (children != null) {
+			if (children != null)
+			{
 				int sizeBeforeInsertion = this.newPositions.size();
 				insertPositions(children, true);
 				if (sizeBeforeInsertion == this.newPositions.size())
 				{
 					return;
 				}
-				for (int i = 0, length = children.length; i < length; i++) {
+				for (int i = 0, length = children.length; i < length; i++)
+				{
 					recordNewPositions(children[i], depth + 1);
 				}
 			}
@@ -416,7 +447,8 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Repairs the positioning information after an element has been removed
 	 */
-	private void removed(IModelElement element) {
+	private void removed(IModelElement element)
+	{
 		this.removed.add(element);
 		ListItem current = this.getOldPosition(element);
 		ListItem previous = null, next = null;
@@ -431,11 +463,13 @@ public class ModelElementDeltaBuilder {
 
 	}
 
-	private void removeElementInfo(IModelElement element) {
+	private void removeElementInfo(IModelElement element)
+	{
 		this.infos.remove(element);
 	}
 
-	public String toString() {
+	public String toString()
+	{
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Built delta:\n"); //$NON-NLS-1$
 		buffer.append(this.delta.toString());
@@ -445,22 +479,28 @@ public class ModelElementDeltaBuilder {
 	/**
 	 * Trims deletion deltas to only report the highest level of deletion
 	 */
-	private void trimDelta(ModelElementDelta elementDelta) {
-		if (elementDelta.getKind() == IModelElementDelta.REMOVED) {
+	private void trimDelta(ModelElementDelta elementDelta)
+	{
+		if (elementDelta.getKind() == IModelElementDelta.REMOVED)
+		{
 			IModelElementDelta[] children = elementDelta.getAffectedChildren();
-			for (int i = 0, length = children.length; i < length; i++) {
-				elementDelta
-						.removeAffectedChild((ModelElementDelta) children[i]);
+			for (int i = 0, length = children.length; i < length; i++)
+			{
+				elementDelta.removeAffectedChild((ModelElementDelta) children[i]);
 			}
-		} else {
+		}
+		else
+		{
 			IModelElementDelta[] children = elementDelta.getAffectedChildren();
-			for (int i = 0, length = children.length; i < length; i++) {
+			for (int i = 0, length = children.length; i < length; i++)
+			{
 				trimDelta((ModelElementDelta) children[i]);
 			}
 		}
 	}
-	
-	private static final boolean equals(String[] first, String[] second) {
+
+	private static final boolean equals(String[] first, String[] second)
+	{
 		if (first == second)
 			return true;
 		if (first == null || second == null)
@@ -468,14 +508,17 @@ public class ModelElementDeltaBuilder {
 		if (first.length != second.length)
 			return false;
 
-		for (int i = first.length; --i >= 0;) {
-			if( first[i] == null && second[i] != null ) {
+		for (int i = first.length; --i >= 0;)
+		{
+			if (first[i] == null && second[i] != null)
+			{
 				return false;
 			}
-			if( first[i] != null && second[i] == null ) {
+			if (first[i] != null && second[i] == null)
+			{
 				return false;
 			}
-			if (first[i] !=null && !first[i].equals(second[i]))
+			if (first[i] != null && !first[i].equals(second[i]))
 				return false;
 		}
 		return true;

@@ -23,7 +23,7 @@ import com.aptana.editor.php.core.ast.ASTFactory;
 public class PHPTokenScanner implements IPHPTokenScanner
 {
 	// We need that prefix for our PHP lexer
-	private static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
+	protected static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
 	private int fTokenLength;
 	private int fOffset;
 
@@ -147,7 +147,7 @@ public class PHPTokenScanner implements IPHPTokenScanner
 		}
 		else
 		{
-			return new Token(symbol.sym);
+			return new Token(symbol);
 		}
 	}
 

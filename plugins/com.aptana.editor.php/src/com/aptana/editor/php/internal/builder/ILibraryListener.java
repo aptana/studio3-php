@@ -37,14 +37,13 @@ package com.aptana.editor.php.internal.builder;
 import java.util.Set;
 
 /**
- * 
  * @author Pavel Petrochenko
- *
  */
-public interface ILibraryListener {
+public interface ILibraryListener
+{
 
-	public void librariesChanged(Set<IPHPLibrary>turnedOn,Set<IPHPLibrary>turnedOf);
-	
+	public void librariesChanged(Set<IPHPLibrary> turnedOn, Set<IPHPLibrary> turnedOf);
+
 	public void userLibrariesChanged(UserLibrary[] newLibraries);
-	
+
 }

@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.IPath;
 
 /**
  * Abstract build-path resource.
+ * 
  * @author Denis Denisenko
  */
 public abstract class AbstractBuildPathResource implements IBuildPathResource
@@ -46,16 +47,19 @@ public abstract class AbstractBuildPathResource implements IBuildPathResource
 	 * Module build path.
 	 */
 	private IBuildPath buildPath;
-	
+
 	/**
 	 * Module full path.
 	 */
 	private String fullPath;
-	
+
 	/**
 	 * AbstractModule constructor.
-	 * @param buildPath - module build path.
-	 * @param fullPath - module full path. 
+	 * 
+	 * @param buildPath
+	 *            - module build path.
+	 * @param fullPath
+	 *            - module full path.
 	 */
 	public AbstractBuildPathResource(IBuildPath buildPath, String fullPath)
 	{
@@ -79,7 +83,7 @@ public abstract class AbstractBuildPathResource implements IBuildPathResource
 	{
 		return fullPath;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -96,10 +100,10 @@ public abstract class AbstractBuildPathResource implements IBuildPathResource
 	{
 		final int prime = 31;
 		int result = 1;
-		/*result = prime * result
-				+ ((buildPath == null) ? 0 : buildPath.hashCode());*/
-		result = prime * result
-				+ ((fullPath == null) ? 0 : fullPath.hashCode());
+		/*
+		 * result = prime * result + ((buildPath == null) ? 0 : buildPath.hashCode());
+		 */
+		result = prime * result + ((fullPath == null) ? 0 : fullPath.hashCode());
 		return result;
 	}
 
@@ -122,31 +126,24 @@ public abstract class AbstractBuildPathResource implements IBuildPathResource
 			return false;
 		}
 		final AbstractBuildPathResource other = (AbstractBuildPathResource) obj;
-		/*if (buildPath == null)
-		{
-			if (other.buildPath != null)
-			{
-				return false;
-			}
-		} 
-		else if (!buildPath.equals(other.buildPath))
-		{
-			return false;
-		}*/
+		/*
+		 * if (buildPath == null) { if (other.buildPath != null) { return false; } } else if
+		 * (!buildPath.equals(other.buildPath)) { return false; }
+		 */
 		if (fullPath == null)
 		{
 			if (other.fullPath != null)
 			{
 				return false;
 			}
-		} 
+		}
 		else if (!fullPath.equals(other.fullPath))
 		{
 			return false;
 		}
 		return true;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

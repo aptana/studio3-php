@@ -52,6 +52,7 @@ import com.aptana.editor.php.model.ISourceProject;
 
 /**
  * Source project.
+ * 
  * @author Denis Denisenko
  */
 public class SourceProject extends AbstractModelElement implements ISourceProject
@@ -63,6 +64,7 @@ public class SourceProject extends AbstractModelElement implements ISourceProjec
 
 	/**
 	 * SourceProject constructor.
+	 * 
 	 * @param buildPath
 	 */
 	public SourceProject(ProjectBuildPath buildPath)
@@ -130,9 +132,10 @@ public class SourceProject extends AbstractModelElement implements ISourceProjec
 					}
 				}
 			}
-			
+
 			return result;
-		} catch (CoreException e)
+		}
+		catch (CoreException e)
 		{
 			return Collections.emptyList();
 		}
@@ -146,7 +149,7 @@ public class SourceProject extends AbstractModelElement implements ISourceProjec
 		try
 		{
 			return buildPath.getProject().members().length != 0;
-		} 
+		}
 		catch (CoreException e)
 		{
 			return false;
@@ -160,8 +163,7 @@ public class SourceProject extends AbstractModelElement implements ISourceProjec
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((buildPath == null) ? 0 : buildPath.hashCode());
+		result = prime * result + ((buildPath == null) ? 0 : buildPath.hashCode());
 		return result;
 	}
 
@@ -181,7 +183,8 @@ public class SourceProject extends AbstractModelElement implements ISourceProjec
 		{
 			if (other.buildPath != null)
 				return false;
-		} else if (!buildPath.equals(other.buildPath))
+		}
+		else if (!buildPath.equals(other.buildPath))
 			return false;
 		return true;
 	}

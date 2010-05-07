@@ -38,6 +38,7 @@ import com.aptana.editor.php.model.IModelElement;
 
 /**
  * Exception indicating model element does not exist any more.
+ * 
  * @author Denis Denisenko
  */
 public class NotExistException extends ModelException

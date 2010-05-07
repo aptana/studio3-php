@@ -46,6 +46,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
  * Project dependencies manager.
+ * 
  * @author Pavel Petrochenko
  * @author Denis Denisenko
  */
@@ -55,38 +56,45 @@ public final class DependenciesManager
 	 * Listeners.
 	 */
 	private static List<IProjectDependencyListener> listeners = new ArrayList<IProjectDependencyListener>();
-	
+
 	/**
 	 * Adds listener.
-	 * @param listener - listener to add.
+	 * 
+	 * @param listener
+	 *            - listener to add.
 	 */
 	public static void addListener(IProjectDependencyListener listener)
 	{
 		listeners.add(listener);
 	}
-	
+
 	/**
 	 * Removes listener.
-	 * @param listener - listener to remove.
+	 * 
+	 * @param listener
+	 *            - listener to remove.
 	 */
 	public static void removeListener(IProjectDependencyListener listener)
 	{
 		listeners.remove(listener);
 	}
-	
+
 	/**
 	 * Gets project dependencies.
-	 * @param project - project.
+	 * 
+	 * @param project
+	 *            - project.
 	 * @return project dependencies
 	 */
-	public static ProjectDependencies getDependencies(IProject project){
+	public static ProjectDependencies getDependencies(IProject project)
+	{
 		ProjectDependencies dependencies = new ProjectDependencies();
-		
+
 		if (!project.isAccessible())
 		{
 			return dependencies;
 		}
-		
+
 		try
 		{
 			String persistentProperty = project.getPersistentProperty(buildPathPropertyName());
@@ -99,16 +107,19 @@ public final class DependenciesManager
 		}
 		return dependencies;
 	}
-	
 
 	/**
 	 * Sets project dependencies.
-	 * @param project - project.
-	 * @param dependencies - dependencies.
+	 * 
+	 * @param project
+	 *            - project.
+	 * @param dependencies
+	 *            - dependencies.
 	 */
-	public static void setDependencies(IProject project, ProjectDependencies dependencies){
+	public static void setDependencies(IProject project, ProjectDependencies dependencies)
+	{
 		try
-		{		
+		{
 			project.setPersistentProperty(buildPathPropertyName(), dependencies.toString());
 			project.setPersistentProperty(libsPropertyName(), dependencies.getLibString());
 			notifyChanged(project, dependencies);
@@ -118,77 +129,88 @@ public final class DependenciesManager
 			PHPEditorPlugin.logError(e);
 		}
 	}
-	
+
 	/**
 	 * Sets project extensions.
-	 * @param extensions - esnetnsions to set.
+	 * 
+	 * @param extensions
+	 *            - esnetnsions to set.
 	 */
-	public static void setExtensions(List<PHPExtension>extensions){
-		StringBuilder bld=new StringBuilder();
-		for (PHPExtension e:extensions){
-			String eName=escape(e.getName());
-			String ePath=escape(e.getPath());
+	public static void setExtensions(List<PHPExtension> extensions)
+	{
+		StringBuilder bld = new StringBuilder();
+		for (PHPExtension e : extensions)
+		{
+			String eName = escape(e.getName());
+			String ePath = escape(e.getPath());
 			bld.append(eName);
-			bld.append((char)3);
+			bld.append((char) 3);
 			bld.append(ePath);
 			bld.append(File.pathSeparatorChar);
 		}
-		if (bld.length()>0){
-			bld.deleteCharAt(bld.length()-1);
+		if (bld.length() > 0)
+		{
+			bld.deleteCharAt(bld.length() - 1);
 		}
-		PHPEditorPlugin.getDefault().getPreferenceStore().setValue("php-extensions",bld.toString()); //$NON-NLS-1$		
+		PHPEditorPlugin.getDefault().getPreferenceStore().setValue("php-extensions", bld.toString()); //$NON-NLS-1$		
 	}
-
 
 	private static QualifiedName buildPathPropertyName()
 	{
-		return new QualifiedName(PHPEditorPlugin.PLUGIN_ID,"phpbuildpath"); //$NON-NLS-1$
+		return new QualifiedName(PHPEditorPlugin.PLUGIN_ID, "phpbuildpath"); //$NON-NLS-1$
 	}
-	
+
 	private static QualifiedName libsPropertyName()
 	{
-		return new QualifiedName(PHPEditorPlugin.PLUGIN_ID,"libs"); //$NON-NLS-1$
+		return new QualifiedName(PHPEditorPlugin.PLUGIN_ID, "libs"); //$NON-NLS-1$
 	}
-	
+
 	/**
 	 * Gets project extensions.
+	 * 
 	 * @return project extensions.
 	 */
-	public static List<PHPExtension> getExtensions(){
+	public static List<PHPExtension> getExtensions()
+	{
 		String string = PHPEditorPlugin.getDefault().getPreferenceStore().getString("php-extensions"); //$NON-NLS-1$
 		String[] split = string.split(File.pathSeparator);
-		ArrayList<PHPExtension>result=new ArrayList<PHPExtension>();
-		for (String s:split){
-			if (s.length()>0){
-				PHPExtension e=new PHPExtension();
-				int indexOf = s.indexOf((char)3);
-				String name=s.substring(0,indexOf);
-				String path=s.substring(indexOf+1);
+		ArrayList<PHPExtension> result = new ArrayList<PHPExtension>();
+		for (String s : split)
+		{
+			if (s.length() > 0)
+			{
+				PHPExtension e = new PHPExtension();
+				int indexOf = s.indexOf((char) 3);
+				String name = s.substring(0, indexOf);
+				String path = s.substring(indexOf + 1);
 				e.setName(descape(name));
 				e.setPath(descape(path));
 				result.add(e);
 			}
 		}
-		return result;		
+		return result;
 	}
-	
+
 	static String descape(String substring)
 	{
 
-		String replace = substring.replace((char)2,File.pathSeparatorChar);
+		String replace = substring.replace((char) 2, File.pathSeparatorChar);
 		return replace;
 	}
-	
+
 	static String escape(String absolutePath)
 	{
-		String replace = absolutePath.replace(File.pathSeparatorChar, (char)2);
+		String replace = absolutePath.replace(File.pathSeparatorChar, (char) 2);
 		return replace;
 	}
-	
+
 	/**
 	 * Notifies project dependencies are changed.
-	 * @param project - project.
-	 * @param dependencies - dependencies.
+	 * 
+	 * @param project
+	 *            - project.
+	 * @param dependencies
+	 *            - dependencies.
 	 */
 	private static void notifyChanged(IProject project, ProjectDependencies dependencies)
 	{
@@ -197,11 +219,12 @@ public final class DependenciesManager
 			listener.dependenciesChanged(project, dependencies);
 		}
 	}
-	
+
 	/**
 	 * DependenciesManager private constructor.
 	 */
-	private DependenciesManager(){
-		
+	private DependenciesManager()
+	{
+
 	}
 }

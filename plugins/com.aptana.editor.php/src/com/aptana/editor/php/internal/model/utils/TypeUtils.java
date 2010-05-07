@@ -51,42 +51,48 @@ import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 
 /**
  * Utilities for analyzing type contents.
+ * 
  * @author Denis Denisenko
  */
 public class TypeUtils
 {
-	
+
 	/**
 	 * Gets type fields using the global index.
-	 * @param typeEntry - type entry.
+	 * 
+	 * @param typeEntry
+	 *            - type entry.
 	 * @return list of type fields or empty list otherwise.
 	 */
 	public static List<IElementEntry> getFields(IElementEntry typeEntry)
 	{
 		return getFields(typeEntry, PHPGlobalIndexer.getInstance().getIndex());
 	}
-	
+
 	/**
 	 * Gets type fields using the index specified.
-	 * @param typeEntry - type entry.
-	 * @param index - index to use.
+	 * 
+	 * @param typeEntry
+	 *            - type entry.
+	 * @param index
+	 *            - index to use.
 	 * @return list of type fields or empty list otherwise.
 	 */
 	public static List<IElementEntry> getFields(IElementEntry typeEntry, IElementsIndex index)
 	{
-		if(typeEntry.getCategory() != IPHPIndexConstants.CLASS_CATEGORY)
+		if (typeEntry.getCategory() != IPHPIndexConstants.CLASS_CATEGORY)
 		{
-			throw new IllegalArgumentException("Only class entries are accepted");
+			throw new IllegalArgumentException("Only class entries are accepted"); //$NON-NLS-1$
 		}
-		
+
 		IModule module = typeEntry.getModule();
-		
-		List<IElementEntry> entries = 
-			index.getEntriesStartingWith(IPHPIndexConstants.VAR_CATEGORY, typeEntry.getEntryPath());
-		
-		//filtering entries
+
+		List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.VAR_CATEGORY, typeEntry
+				.getEntryPath());
+
+		// filtering entries
 		Iterator<IElementEntry> it = entries.iterator();
-		while(it.hasNext())
+		while (it.hasNext())
 		{
 			IElementEntry currentEntry = it.next();
 			if (!currentEntry.getModule().equals(module))
@@ -94,7 +100,7 @@ public class TypeUtils
 				it.remove();
 				continue;
 			}
-			
+
 			if (!(currentEntry.getValue() instanceof VariablePHPEntryValue)
 					|| !((VariablePHPEntryValue) currentEntry.getValue()).isField())
 			{
@@ -102,41 +108,46 @@ public class TypeUtils
 				continue;
 			}
 		}
-		
+
 		return entries;
 	}
-	
+
 	/**
 	 * Gets type methods using the global index.
-	 * @param typeEntry - type entry.
+	 * 
+	 * @param typeEntry
+	 *            - type entry.
 	 * @return list of type methods or empty list otherwise.
 	 */
 	public static List<IElementEntry> getMethods(IElementEntry typeEntry)
 	{
 		return getMethods(typeEntry, PHPGlobalIndexer.getInstance().getIndex());
 	}
-	
+
 	/**
 	 * Gets type methods using the index specified.
-	 * @param typeEntry - type entry.
-	 * @param index - index to use.
+	 * 
+	 * @param typeEntry
+	 *            - type entry.
+	 * @param index
+	 *            - index to use.
 	 * @return list of type methods or empty list otherwise.
 	 */
 	public static List<IElementEntry> getMethods(IElementEntry typeEntry, IElementsIndex index)
 	{
-		if(typeEntry.getCategory() != IPHPIndexConstants.CLASS_CATEGORY)
+		if (typeEntry.getCategory() != IPHPIndexConstants.CLASS_CATEGORY)
 		{
-			throw new IllegalArgumentException("Only class entries are accepted");
+			throw new IllegalArgumentException("Only class entries are accepted"); //$NON-NLS-1$
 		}
-		
+
 		IModule module = typeEntry.getModule();
-		
-		List<IElementEntry> entries = 
-			index.getEntriesStartingWith(IPHPIndexConstants.FUNCTION_CATEGORY, typeEntry.getEntryPath());
-		
-		//filtering entries
+
+		List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.FUNCTION_CATEGORY, typeEntry
+				.getEntryPath());
+
+		// filtering entries
 		Iterator<IElementEntry> it = entries.iterator();
-		while(it.hasNext())
+		while (it.hasNext())
 		{
 			IElementEntry currentEntry = it.next();
 			if (!currentEntry.getModule().equals(module))
@@ -144,7 +155,7 @@ public class TypeUtils
 				it.remove();
 				continue;
 			}
-			
+
 			if (!(currentEntry.getValue() instanceof FunctionPHPEntryValue)
 					|| !((FunctionPHPEntryValue) currentEntry.getValue()).isMethod())
 			{
@@ -152,39 +163,40 @@ public class TypeUtils
 				continue;
 			}
 		}
-		
+
 		return entries;
 	}
-	
+
 	/**
 	 * Gets declaring type entry by a field entry or a method entry using the global index.
 	 * 
-	 * @param member - member entry.
-	 * 
+	 * @param member
+	 *            - member entry.
 	 * @return declaring type entry or null.
 	 */
 	public static IElementEntry getDeclaringType(IElementEntry member)
 	{
 		return getDeclaringType(member, PHPGlobalIndexer.getInstance().getIndex());
 	}
-	
+
 	/**
 	 * Gets declaring type entry by a field entry or a method entry using the index specified.
 	 * 
-	 * @param member - member entry.
-	 * @param index - index to use.
-	 * 
+	 * @param member
+	 *            - member entry.
+	 * @param index
+	 *            - index to use.
 	 * @return declaring type entry or null.
 	 */
 	public static IElementEntry getDeclaringType(IElementEntry member, IElementsIndex index)
 	{
 		if (!(EntryUtils.isField(member) || EntryUtils.isMethod(member)))
 		{
-			throw new IllegalArgumentException("Only fields and methods are accepted");
+			throw new IllegalArgumentException("Only fields and methods are accepted"); //$NON-NLS-1$
 		}
-		
+
 		IModule module = member.getModule();
-		
+
 		String memberPathStr = member.getEntryPath();
 		IPath memberPath = new Path(memberPathStr);
 		IPath classPath = memberPath.removeLastSegments(1);
@@ -194,7 +206,7 @@ public class TypeUtils
 		{
 			return null;
 		}
-		
+
 		for (IElementEntry classEntry : classEntries)
 		{
 			if (classEntry.getModule().equals(module))
@@ -202,10 +214,10 @@ public class TypeUtils
 				return classEntry;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * TypeUtils private constructor.
 	 */

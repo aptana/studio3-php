@@ -45,6 +45,7 @@ import com.aptana.editor.php.internal.builder.IModule;
 
 /**
  * Filter that filters entries by the list of modules.
+ * 
  * @author Denis Denisenko
  */
 public class PHPModuleBasedEntriesFilter implements IElementEntriesFilter
@@ -53,41 +54,47 @@ public class PHPModuleBasedEntriesFilter implements IElementEntriesFilter
 	 * Allowed modules.
 	 */
 	private Set<IModule> allowedModules = new HashSet<IModule>();
-	
+
 	/**
 	 * PHPModuleBasedEntriesFilter constructor.
 	 */
 	public PHPModuleBasedEntriesFilter()
 	{
 	}
-	
+
 	/**
 	 * PHPModuleBasedEntriesFilter constructor.
-	 * @param toAdd - modules to add to filter.
+	 * 
+	 * @param toAdd
+	 *            - modules to add to filter.
 	 */
 	public PHPModuleBasedEntriesFilter(Collection<IModule> toAdd)
 	{
 		allowedModules.addAll(toAdd);
 	}
-	
+
 	/**
 	 * Adds allowed module.
-	 * @param module - module to add.
+	 * 
+	 * @param module
+	 *            - module to add.
 	 */
 	public void addAllowedModule(IModule module)
 	{
 		allowedModules.add(module);
 	}
-	
+
 	/**
 	 * Adds allowed modules.
-	 * @param modules - modules to add.
+	 * 
+	 * @param modules
+	 *            - modules to add.
 	 */
 	public void addAllowedModules(Collection<IModule> modules)
 	{
 		allowedModules.addAll(modules);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -97,9 +104,9 @@ public class PHPModuleBasedEntriesFilter implements IElementEntriesFilter
 		{
 			return Collections.emptySet();
 		}
-		
+
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
-		
+
 		for (IElementEntry entry : toFilter)
 		{
 			if (entry.getModule() != null && allowedModules.contains(entry.getModule()))

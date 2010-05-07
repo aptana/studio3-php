@@ -41,6 +41,7 @@ import com.aptana.editor.php.indexer.IElementEntry;
 
 /**
  * Entry filter.
+ * 
  * @author Denis Denisenko
  */
 public interface IEntryFilter
@@ -48,8 +49,8 @@ public interface IEntryFilter
 	/**
 	 * Filters entries.
 	 * 
-	 * @param toFilter - entries to filter.
-	 * 
+	 * @param toFilter
+	 *            - entries to filter.
 	 * @return filtered entries.
 	 */
 	LinkedHashSet<IElementEntry> filter(Collection<IElementEntry> toFilter);

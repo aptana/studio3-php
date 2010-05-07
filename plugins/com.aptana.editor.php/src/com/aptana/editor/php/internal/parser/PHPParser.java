@@ -17,15 +17,15 @@ public class PHPParser implements IParser
 	@Override
 	public IParseNode parse(IParseState parseState) throws Exception
 	{
-//		String source = new String(parseState.getSource());
-//		PHPScript root = new PHPScript(parseState.getStartingOffset(), parseState.getStartingOffset()
-//				+ source.length());
-//		PHPStructureBuilder builder = new PHPStructureBuilder(root);
-//		SourceElementVisitor visitor = new SourceElementVisitor(builder);
-//		visitor.acceptNode(fParser.parse(source).getAST());
-//		parseState.setParseResult(root);
+		// String source = new String(parseState.getSource());
+		// PHPScript root = new PHPScript(parseState.getStartingOffset(), parseState.getStartingOffset()
+		// + source.length());
+		// PHPStructureBuilder builder = new PHPStructureBuilder(root);
+		// SourceElementVisitor visitor = new SourceElementVisitor(builder);
+		// visitor.acceptNode(fParser.parse(source).getAST());
+		// parseState.setParseResult(root);
 
-//		return root;
+		// return root;
 		// TODO - Shalom: Convert the PDT ASTNode to IParseNode ?
 		return null;
 	}

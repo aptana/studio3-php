@@ -38,6 +38,7 @@ import com.aptana.editor.php.model.ISourceRange;
 
 /**
  * Source range.
+ * 
  * @author Denis Denisenko
  */
 public class SourceRange implements ISourceRange
@@ -46,26 +47,31 @@ public class SourceRange implements ISourceRange
 	 * Offset.
 	 */
 	private int length;
-	
+
 	/**
 	 * Length.
 	 */
 	private int offset;
-	
+
 	/**
 	 * SourceRange constructor.
-	 * @param offset - offset.
-	 * @param length - length.
+	 * 
+	 * @param offset
+	 *            - offset.
+	 * @param length
+	 *            - length.
 	 */
 	public SourceRange(int offset, int length)
 	{
 		this.offset = offset;
 		this.length = length;
 	}
-	
+
 	/**
 	 * SourceRange constructor.
-	 * @param offset - offset.
+	 * 
+	 * @param offset
+	 *            - offset.
 	 */
 	public SourceRange(int offset)
 	{

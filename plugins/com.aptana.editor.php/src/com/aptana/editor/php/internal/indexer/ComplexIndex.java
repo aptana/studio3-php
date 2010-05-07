@@ -49,6 +49,7 @@ import com.aptana.editor.php.internal.builder.IModule;
 
 /**
  * Complex index that contains other indexes referenced by resources.
+ * 
  * @author Denis Denisenko
  */
 public class ComplexIndex implements IElementsIndex
@@ -56,37 +57,46 @@ public class ComplexIndex implements IElementsIndex
 	/**
 	 * Indexes.
 	 */
-	private Map<IBuildPath, IModifiableElementsIndex> indexes
-		= new HashMap<IBuildPath, IModifiableElementsIndex>();
+	private Map<IBuildPath, IModifiableElementsIndex> indexes = new HashMap<IBuildPath, IModifiableElementsIndex>();
 
-	public ComplexIndex() {
-	
+	public ComplexIndex()
+	{
+
 	}
-	
+
 	/**
 	 * Adds entry.
-	 * @param category - category.
-	 * @param entryPath - entry path.
-	 * @param value - value.
-	 * @param module - module.
-	 * @param indexResource - index resource.
+	 * 
+	 * @param category
+	 *            - category.
+	 * @param entryPath
+	 *            - entry path.
+	 * @param value
+	 *            - value.
+	 * @param module
+	 *            - module.
+	 * @param indexResource
+	 *            - index resource.
 	 */
-	public synchronized IElementEntry addEntry(int category, String entryPath, Object value,
-			IModule module, Object indexResource)
+	public synchronized IElementEntry addEntry(int category, String entryPath, Object value, IModule module,
+			Object indexResource)
 	{
 		IModifiableElementsIndex index = indexes.get(indexResource);
 		if (index != null)
 		{
 			return index.addEntry(category, entryPath, value, module);
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * Removes module entries.
-	 * @param module - module.
-	 * @param indexResource - index resource.
+	 * 
+	 * @param module
+	 *            - module.
+	 * @param indexResource
+	 *            - index resource.
 	 */
 	public synchronized void removeModuleEntries(IModule module, Object indexResource)
 	{
@@ -107,7 +117,7 @@ public class ComplexIndex implements IElementsIndex
 		{
 			result.addAll(index.getEntries(category, path));
 		}
-		
+
 		return result;
 	}
 
@@ -121,7 +131,7 @@ public class ComplexIndex implements IElementsIndex
 		{
 			result.addAll(index.getEntriesStartingWith(category, path));
 		}
-		
+
 		return result;
 	}
 
@@ -135,7 +145,7 @@ public class ComplexIndex implements IElementsIndex
 		{
 			result.addAll(index.getModuleEntries(module));
 		}
-		
+
 		return result;
 	}
 
@@ -149,44 +159,48 @@ public class ComplexIndex implements IElementsIndex
 		{
 			result.addAll(index.getModules());
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Adds index.
-	 * @param indexResource - index resource.
-	 * @param index - index to add.
+	 * 
+	 * @param indexResource
+	 *            - index resource.
+	 * @param index
+	 *            - index to add.
 	 */
 	public synchronized void addIndex(IBuildPath indexResource, IModifiableElementsIndex index)
 	{
 		indexes.put(indexResource, index);
 	}
-	
+
 	/**
 	 * Removes index.
-	 * @param indexResource - index resource.
+	 * 
+	 * @param indexResource
+	 *            - index resource.
 	 */
 	public synchronized void removeIndex(IBuildPath indexResource)
 	{
 		indexes.remove(indexResource);
 	}
-	
+
 	/**
-	 * 
 	 * @return all build paths that are stored in this index
 	 */
-	public Collection<IBuildPath>getPaths(){
+	public Collection<IBuildPath> getPaths()
+	{
 		return indexes.keySet();
 	}
-	
+
 	/**
-	 * 
 	 * @return index for build path
 	 */
-	public IModifiableElementsIndex getElementIndex(IBuildPath p){
+	public IModifiableElementsIndex getElementIndex(IBuildPath p)
+	{
 		return indexes.get(p);
 	}
 
-	
 }

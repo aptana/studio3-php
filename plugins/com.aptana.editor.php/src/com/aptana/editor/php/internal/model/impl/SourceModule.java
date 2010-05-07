@@ -55,6 +55,7 @@ import com.aptana.editor.php.model.env.ModelElementInfo;
 
 /**
  * SourceModule
+ * 
  * @author Denis Denisenko
  */
 public class SourceModule extends AbstractResourceElement implements ISourceModule
@@ -62,6 +63,7 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 
 	/**
 	 * SourceModule constructor.
+	 * 
 	 * @param module
 	 */
 	public SourceModule(IModule module)
@@ -84,9 +86,9 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 	{
 		IElementsIndex index = PHPGlobalIndexer.getInstance().getIndex();
 		List<IElementEntry> entries = index.getModuleEntries(getModule());
-		
+
 		List<IModelElement> result = new ArrayList<IModelElement>();
-		
+
 		for (IElementEntry entry : entries)
 		{
 			String pathStr = entry.getEntryPath();
@@ -94,19 +96,19 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 			{
 				continue;
 			}
-			
+
 			if (pathStr.contains(Character.toString(IElementsIndex.DELIMITER)))
 			{
 				continue;
 			}
-			
+
 			IModelElement element = ModelUtils.convertEntry(entry);
 			if (element != null)
 			{
 				result.add(element);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -117,7 +119,7 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 	{
 		return getChildren().size() > 0;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,32 +129,30 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		{
 			return ((LocalModule) getModule()).getFile();
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Gets internal module.
+	 * 
 	 * @return module.
 	 */
 	protected IModule getModule()
 	{
 		return (IModule) getBPResource();
 	}
-	
-	
-	
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public List<IType> getTopLevelTypes()
 	{
-		//TODO support non-top-level types when such a support is implemented in PHP indexer.
+		// TODO support non-top-level types when such a support is implemented in PHP indexer.
 		List<IModelElement> chidren = getChildren();
-		
+
 		List<IType> result = new ArrayList<IType>();
-		
+
 		for (IModelElement child : chidren)
 		{
 			if (child instanceof IType)
@@ -160,7 +160,7 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 				result.add((IType) child);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -174,36 +174,41 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		{
 			return null;
 		}
-		
+
 		return resource.getProjectRelativePath().toPortableString();
 	}
 
-	public List<IMethod> getTopLevelMethods() {
+	public List<IMethod> getTopLevelMethods()
+	{
 		List<IModelElement> chidren = getChildren();
-		
+
 		List<IMethod> result = new ArrayList<IMethod>();
-		
+
 		for (IModelElement child : chidren)
 		{
 			if (child instanceof IMethod)
 			{
 				result.add((IMethod) child);
 			}
-		}		
+		}
 		return result;
 	}
 
-	public IType getType(String name) {
-		for (IType t:getTopLevelTypes()){
-			if (t.getElementName().equals(name)){
+	public IType getType(String name)
+	{
+		for (IType t : getTopLevelTypes())
+		{
+			if (t.getElementName().equals(name))
+			{
 				return t;
 			}
 		}
 		return null;
 	}
-	
-	public ISourceModule getModule(String include){
-		Path path = new Path(include);		
+
+	public ISourceModule getModule(String include)
+	{
+		Path path = new Path(include);
 		IModule module = getModule();
 		IBuildPath buildPath = module.getBuildPath();
 		IModule includedModule = buildPath.resolveRelativePath(module, path);
@@ -211,21 +216,20 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		{
 			return ModelUtils.convertModule(includedModule);
 		}
-		return null;		
+		return null;
 	}
-	
-	
+
 	@Override
 	public ModelElementInfo getElementInfo()
 	{
 		ModelElementInfo info = new ModelElementInfo();
 		List<IModelElement> children = getChildren();
-		
+
 		if (children != null && children.size() != 0)
 		{
 			info.setChildren(children);
 		}
-		
+
 		return info;
 	}
 }

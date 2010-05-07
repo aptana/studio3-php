@@ -45,7 +45,8 @@ import com.aptana.editor.php.indexer.IPHPIndexConstants;
  * 
  * @author Denis Denisenko
  */
-public abstract class AbstractPathReference {
+public abstract class AbstractPathReference
+{
 	/**
 	 * Call path.
 	 */
@@ -57,7 +58,8 @@ public abstract class AbstractPathReference {
 	 * @param path
 	 *            - call path.
 	 */
-	public AbstractPathReference(CallPath path) {
+	public AbstractPathReference(CallPath path)
+	{
 		this.path = path;
 	}
 
@@ -66,21 +68,25 @@ public abstract class AbstractPathReference {
 	 * 
 	 * @return path. null means no path is available (pure function reference).
 	 */
-	public CallPath getPath() {
+	public CallPath getPath()
+	{
 		return path;
 	}
 
-	public void write(DataOutputStream da) throws IOException {
+	public void write(DataOutputStream da) throws IOException
+	{
 		da.writeInt(getKind());
-		boolean has = path!=null;
+		boolean has = path != null;
 		da.writeBoolean(has);
-		if (has){
+		if (has)
+		{
 			path.write(da);
 		}
 		internalWrite(da);
 	}
-	
-	protected static CallPath readPathOrNull(DataInputStream di) throws IOException{
+
+	protected static CallPath readPathOrNull(DataInputStream di) throws IOException
+	{
 		if (di.readBoolean())
 		{
 			return new CallPath(di);
@@ -90,23 +96,22 @@ public abstract class AbstractPathReference {
 
 	protected abstract int getKind();
 
-	protected abstract void internalWrite(DataOutputStream da)
-			throws IOException;
+	protected abstract void internalWrite(DataOutputStream da) throws IOException;
 
-	public static AbstractPathReference read(DataInputStream di)
-			throws IOException {
+	public static AbstractPathReference read(DataInputStream di) throws IOException
+	{
 		int readInt = di.readInt();
-		switch (readInt) {
-		case IPHPIndexConstants.FUNCTION_CATEGORY:
-			return new FunctionPathReference(di);
-		case IPHPIndexConstants.VAR_CATEGORY:
-			return new VariablePathReference(di);
-		case IPHPIndexConstants.IMPORT_CATEGORY:
-			return new StaticPathReference(di);
-			
+		switch (readInt)
+		{
+			case IPHPIndexConstants.FUNCTION_CATEGORY:
+				return new FunctionPathReference(di);
+			case IPHPIndexConstants.VAR_CATEGORY:
+				return new VariablePathReference(di);
+			case IPHPIndexConstants.IMPORT_CATEGORY:
+				return new StaticPathReference(di);
 
-		default:
-			throw new IllegalArgumentException("unknown path reference:"+readInt); //$NON-NLS-1$
+			default:
+				throw new IllegalArgumentException("unknown path reference:" + readInt); //$NON-NLS-1$
 		}
 	}
 }

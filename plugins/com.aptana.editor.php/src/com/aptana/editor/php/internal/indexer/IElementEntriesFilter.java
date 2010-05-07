@@ -41,6 +41,7 @@ import com.aptana.editor.php.indexer.IElementEntry;
 
 /**
  * Abstract element entries filter.
+ * 
  * @author Denis Denisenko
  */
 public interface IElementEntriesFilter
@@ -48,7 +49,9 @@ public interface IElementEntriesFilter
 
 	/**
 	 * Filters entries.
-	 * @param toFilter - entries to filter.
+	 * 
+	 * @param toFilter
+	 *            - entries to filter.
 	 * @return filtered entries.
 	 */
 	public abstract Set<IElementEntry> filter(Collection<IElementEntry> toFilter);

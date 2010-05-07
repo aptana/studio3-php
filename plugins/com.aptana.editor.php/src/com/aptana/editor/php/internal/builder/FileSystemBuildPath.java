@@ -50,7 +50,8 @@ import com.aptana.editor.php.PHPEditorPlugin;
  * 
  * @author Denis Denisenko
  */
-public class FileSystemBuildPath extends AbstractBuildPath {
+public class FileSystemBuildPath extends AbstractBuildPath
+{
 	/**
 	 * File.
 	 */
@@ -72,7 +73,8 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	 * @param file
 	 *            - root file.
 	 */
-	public FileSystemBuildPath(File file) {
+	public FileSystemBuildPath(File file)
+	{
 		this.file = file;
 		collectInitialResources();
 	}
@@ -80,37 +82,41 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void close() {
+	public void close()
+	{
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IModule getModule(Object moduleResource) {
+	public IModule getModule(Object moduleResource)
+	{
 		return modules.get(moduleResource);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<IModule> getModules() {
+	public List<IModule> getModules()
+	{
 		List<IModule> result = new ArrayList<IModule>();
 		result.addAll(modules.values());
 		return result;
 	}
 
 	/**
-	 * 
 	 * @return directory
 	 */
-	public File getFile() {
+	public File getFile()
+	{
 		return file;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IModule getModuleByPath(IPath path) {
+	public IModule getModuleByPath(IPath path)
+	{
 		IPath basePath = new Path(file.getAbsolutePath());
 		IPath modulePath = basePath.append(path);
 		File file = new File(modulePath.toOSString());
@@ -120,30 +126,36 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean isPassive() {
+	public boolean isPassive()
+	{
 		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<IModule> getModulesByPath(IPath path) {
+	public List<IModule> getModulesByPath(IPath path)
+	{
 		IPath basePath = new Path(file.getAbsolutePath());
 		IPath containerPath = basePath.append(path);
 		File file = new File(containerPath.toOSString());
-		if (!file.exists()) {
+		if (!file.exists())
+		{
 			return null;
 		}
 
-		if (!file.isDirectory()) {
+		if (!file.isDirectory())
+		{
 			return null;
 		}
 
 		File[] childFiles = file.listFiles();
 		List<IModule> result = new ArrayList<IModule>();
-		for (File childFile : childFiles) {
+		for (File childFile : childFiles)
+		{
 			IModule currentmodule = getModule(childFile);
-			if (currentmodule != null) {
+			if (currentmodule != null)
+			{
 				result.add(currentmodule);
 			}
 		}
@@ -154,23 +166,28 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<IDirectory> getSubdirectoriesByPath(IPath path) {
+	public List<IDirectory> getSubdirectoriesByPath(IPath path)
+	{
 		IPath basePath = new Path(file.getAbsolutePath());
 		IPath containerPath = basePath.append(path);
 		File file = new File(containerPath.toOSString());
-		if (!file.exists()) {
+		if (!file.exists())
+		{
 			return null;
 		}
 
-		if (!file.isDirectory()) {
+		if (!file.isDirectory())
+		{
 			return null;
 		}
 
 		File[] childFiles = file.listFiles();
 		List<IDirectory> result = new ArrayList<IDirectory>();
-		for (File childFile : childFiles) {
+		for (File childFile : childFiles)
+		{
 			IDirectory currentDirectory = getDirectory(childFile);
-			if (currentDirectory != null) {
+			if (currentDirectory != null)
+			{
 				result.add(currentDirectory);
 			}
 		}
@@ -181,12 +198,15 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IDirectory getDirectory(Object directoryResource) {
-		if (!(directoryResource instanceof File)) {
+	public IDirectory getDirectory(Object directoryResource)
+	{
+		if (!(directoryResource instanceof File))
+		{
 			return null;
 		}
 
-		if (!((File) directoryResource).isDirectory()) {
+		if (!((File) directoryResource).isDirectory())
+		{
 			return null;
 		}
 
@@ -196,7 +216,8 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IDirectory getDirectoryByPath(IPath path) {
+	public IDirectory getDirectoryByPath(IPath path)
+	{
 		IPath basePath = new Path(file.getAbsolutePath());
 		IPath modulePath = basePath.append(path);
 		File file = new File(modulePath.toOSString());
@@ -206,38 +227,44 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IPath getResourcePath(IBuildPathResource resource) {
-		if (resource instanceof FileSystemModule) {
+	public IPath getResourcePath(IBuildPathResource resource)
+	{
+		if (resource instanceof FileSystemModule)
+		{
 			FileSystemModule fsModule = (FileSystemModule) resource;
-			if (modules.get(fsModule.getFile()) == null) {
+			if (modules.get(fsModule.getFile()) == null)
+			{
 				return null;
 			}
 
 			IPath basePath = new Path(file.getAbsolutePath());
 			IPath moduleAbsolutePath = new Path(resource.getFullPath());
-			if (!basePath.isPrefixOf(moduleAbsolutePath)) {
+			if (!basePath.isPrefixOf(moduleAbsolutePath))
+			{
 				return null;
 			}
 
-			IPath result = moduleAbsolutePath.removeFirstSegments(basePath
-					.segmentCount());
+			IPath result = moduleAbsolutePath.removeFirstSegments(basePath.segmentCount());
 			result = result.makeAbsolute();
 
 			return result;
-		} else if (resource instanceof FileSystemDirectory) {
+		}
+		else if (resource instanceof FileSystemDirectory)
+		{
 			FileSystemDirectory fsDirectory = (FileSystemDirectory) resource;
-			if (directories.get(fsDirectory.getDirectory()) == null) {
+			if (directories.get(fsDirectory.getDirectory()) == null)
+			{
 				return null;
 			}
 
 			IPath basePath = new Path(file.getAbsolutePath());
 			IPath moduleAbsolutePath = new Path(resource.getFullPath());
-			if (!basePath.isPrefixOf(moduleAbsolutePath)) {
+			if (!basePath.isPrefixOf(moduleAbsolutePath))
+			{
 				return null;
 			}
 
-			IPath result = moduleAbsolutePath.removeFirstSegments(basePath
-					.segmentCount());
+			IPath result = moduleAbsolutePath.removeFirstSegments(basePath.segmentCount());
 			result = result.makeAbsolute();
 
 			return result;
@@ -249,8 +276,10 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean contains(IModule module) {
-		if (!(module instanceof FileSystemModule)) {
+	public boolean contains(IModule module)
+	{
+		if (!(module instanceof FileSystemModule))
+		{
 			return false;
 		}
 
@@ -260,16 +289,18 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	/**
 	 * Collects initial resources info.
 	 */
-	private void collectInitialResources() {
-		if (!file.exists()) {
+	private void collectInitialResources()
+	{
+		if (!file.exists())
+		{
 			return;
 		}
 		long timeMillis = System.currentTimeMillis();
 		addResourcesRecursively(file);
 		if (PHPEditorPlugin.DEBUG)
 		{
-			System.out.println("FileSystemBuildPath.collectInitialResources(" + file.getName() + ") -> "
-					+ (System.currentTimeMillis() - timeMillis) + "ms");
+			System.out.println("FileSystemBuildPath.collectInitialResources(" + file.getName() + ") -> " //$NON-NLS-1$ //$NON-NLS-2$
+					+ (System.currentTimeMillis() - timeMillis) + "ms"); //$NON-NLS-1$
 		}
 	}
 
@@ -279,20 +310,26 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 	 * @param inputFile
 	 *            - file to handle.
 	 */
-	private void addResourcesRecursively(File inputFile) {
-		if (inputFile.isFile()) {
-			IModule module = PHPFileSystemModuleFactory.getModule(inputFile,
-					this);
-			if (module != null) {
+	private void addResourcesRecursively(File inputFile)
+	{
+		if (inputFile.isFile())
+		{
+			IModule module = PHPFileSystemModuleFactory.getModule(inputFile, this);
+			if (module != null)
+			{
 				modules.put(inputFile, module);
 			}
-		} else if (inputFile.isDirectory()) {
-			if (FolderFilteringManager.acceptFolder(inputFile)) {
-				directories.put(inputFile, new FileSystemDirectory(inputFile,
-						this));
+		}
+		else if (inputFile.isDirectory())
+		{
+			if (FolderFilteringManager.acceptFolder(inputFile))
+			{
+				directories.put(inputFile, new FileSystemDirectory(inputFile, this));
 				File[] listFiles = inputFile.listFiles();
-				if (listFiles != null) {
-					for (File child : listFiles) {
+				if (listFiles != null)
+				{
+					for (File child : listFiles)
+					{
 						addResourcesRecursively(child);
 					}
 				}
@@ -300,8 +337,8 @@ public class FileSystemBuildPath extends AbstractBuildPath {
 		}
 	}
 
-	
-	public String getHandleIdentifier() {
+	public String getHandleIdentifier()
+	{
 		return file.getAbsolutePath();
 	}
 }

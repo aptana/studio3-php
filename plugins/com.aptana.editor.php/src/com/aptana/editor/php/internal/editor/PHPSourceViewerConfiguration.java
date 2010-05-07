@@ -8,15 +8,11 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CompositeSourceViewerConfiguration;
 import com.aptana.editor.common.IPartitionerSwitchStrategy;
-import com.aptana.editor.common.text.CommonDoubleClickStrategy;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.php.internal.IPHPConstants;
 
 public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfiguration
 {
-
-	private CommonDoubleClickStrategy fDoubleClickStrategy;
-
 	public PHPSourceViewerConfiguration(IPreferenceStore preferences, AbstractThemeableEditor editor)
 	{
 		super(HTMLSourceConfiguration.getDefault(), PHPSourceConfiguration.getDefault(), preferences, editor);
@@ -27,7 +23,7 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	{
 		return PHPPartitionerSwitchStrategy.getDefault();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see

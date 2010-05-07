@@ -57,6 +57,7 @@ import com.aptana.editor.php.model.env.ModelElementInfo;
 
 /**
  * EntryBasedType
+ * 
  * @author Denis Denisenko
  */
 public class EntryBasedType extends AbstractMember implements IType
@@ -68,17 +69,19 @@ public class EntryBasedType extends AbstractMember implements IType
 
 	/**
 	 * EntryBasedType constructor.
-	 * @param typeEntry - type entry.
+	 * 
+	 * @param typeEntry
+	 *            - type entry.
 	 */
 	public EntryBasedType(IElementEntry typeEntry)
 	{
 		super(typeEntry);
-		
+
 		if (!EntryUtils.isType(typeEntry))
 		{
-			throw new IllegalArgumentException("type entry required");
+			throw new IllegalArgumentException("type entry required"); //$NON-NLS-1$
 		}
-		
+
 		this.entryValue = (ClassPHPEntryValue) typeEntry.getValue();
 	}
 
@@ -95,7 +98,7 @@ public class EntryBasedType extends AbstractMember implements IType
 				return field;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -114,7 +117,7 @@ public class EntryBasedType extends AbstractMember implements IType
 				result.add((IField) element);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -136,11 +139,10 @@ public class EntryBasedType extends AbstractMember implements IType
 		{
 			return Collections.emptyList();
 		}
-		
-		List<IElementEntry> ancestors = 
-			TypeHierarchyUtils.getDirectClassAncestors(getEntry().getModule(), getElementName(), 
-				PHPGlobalIndexer.getInstance().getIndex());
-		
+
+		List<IElementEntry> ancestors = TypeHierarchyUtils.getDirectClassAncestors(getEntry().getModule(),
+				getElementName(), PHPGlobalIndexer.getInstance().getIndex());
+
 		List<IType> result = new ArrayList<IType>();
 		for (IElementEntry entry : ancestors)
 		{
@@ -149,7 +151,7 @@ public class EntryBasedType extends AbstractMember implements IType
 				result.add((IType) ModelUtils.convertEntry(entry));
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -168,7 +170,7 @@ public class EntryBasedType extends AbstractMember implements IType
 				result.add((IMethod) element);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -178,7 +180,7 @@ public class EntryBasedType extends AbstractMember implements IType
 	public List<IMethod> getMethods(String methodName)
 	{
 		List<IMethod> methods = getMethods();
-		List<IMethod> result = new ArrayList<IMethod>(); 
+		List<IMethod> result = new ArrayList<IMethod>();
 		for (IMethod method : methods)
 		{
 			if (methodName.equals(method.getElementName()))
@@ -186,11 +188,10 @@ public class EntryBasedType extends AbstractMember implements IType
 				result.add(method);
 			}
 		}
-		
+
 		return result;
 	}
 
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -212,7 +213,7 @@ public class EntryBasedType extends AbstractMember implements IType
 	 */
 	public ISourceRange getNameRange()
 	{
-		//TODO add name length
+		// TODO add name length
 		return new SourceRange(entryValue.getStartOffset());
 	}
 
@@ -234,11 +235,10 @@ public class EntryBasedType extends AbstractMember implements IType
 		{
 			return null;
 		}
-		
-		List<IElementEntry> ancestors = 
-			TypeHierarchyUtils.getDirectClassAncestors(getEntry().getModule(), getElementName(), 
-				PHPGlobalIndexer.getInstance().getIndex());
-		
+
+		List<IElementEntry> ancestors = TypeHierarchyUtils.getDirectClassAncestors(getEntry().getModule(),
+				getElementName(), PHPGlobalIndexer.getInstance().getIndex());
+
 		for (IElementEntry entry : ancestors)
 		{
 			if (!EntryUtils.isInterface(entry))
@@ -248,7 +248,7 @@ public class EntryBasedType extends AbstractMember implements IType
 				return result;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -264,7 +264,7 @@ public class EntryBasedType extends AbstractMember implements IType
 		}
 		List<String> result = new ArrayList<String>();
 		result.add(superClassName);
-		
+
 		return result;
 	}
 
@@ -281,17 +281,16 @@ public class EntryBasedType extends AbstractMember implements IType
 		{
 			return Collections.emptyList();
 		}
-		
-		List<IElementEntry> ancestors = 
-			TypeHierarchyUtils.getDirectClassAncestors(getEntry().getModule(), getElementName(), 
-				PHPGlobalIndexer.getInstance().getIndex());
-		
+
+		List<IElementEntry> ancestors = TypeHierarchyUtils.getDirectClassAncestors(getEntry().getModule(),
+				getElementName(), PHPGlobalIndexer.getInstance().getIndex());
+
 		List<IType> result = new ArrayList<IType>();
 		for (IElementEntry entry : ancestors)
 		{
 			result.add((IType) ModelUtils.convertEntry(entry));
 		}
-		
+
 		return result;
 	}
 
@@ -303,7 +302,7 @@ public class EntryBasedType extends AbstractMember implements IType
 	{
 		return getElementName();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -312,19 +311,19 @@ public class EntryBasedType extends AbstractMember implements IType
 		SourceTypeElementInfo info = new SourceTypeElementInfo();
 		info.setFlags(getFlags());
 		info.setNameSourceStart(getSourceRange().getOffset());
-		
+
 		List<IModelElement> children = getChildren();
 		if (children != null && children.size() != 0)
 		{
 			info.setChildren(children);
 		}
-		
+
 		List<String> superClassNames = getSuperClassNames();
 		if (superClassNames != null && superClassNames.size() != 0)
 		{
 			info.setSuperclassNames(superClassNames.toArray(new String[superClassNames.size()]));
 		}
-		
+
 		return info;
 	}
 }

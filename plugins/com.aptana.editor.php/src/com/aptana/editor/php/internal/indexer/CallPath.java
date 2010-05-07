@@ -42,14 +42,15 @@ import java.util.List;
 
 /**
  * Memory-optimized call path like $a->method()->$b->$c->method2()
+ * 
  * @author Denis Denisenko
  */
 public class CallPath
 {
 	/**
 	 * Path entry. May be either VariableEntry or MethodEntry
+	 * 
 	 * @author Denis Denisenko
-	 *
 	 */
 	public abstract static class Entry
 	{
@@ -60,7 +61,9 @@ public class CallPath
 
 		/**
 		 * Entry constructor.
-		 * @param name - entry name.
+		 * 
+		 * @param name
+		 *            - entry name.
 		 */
 		public Entry(String name)
 		{
@@ -69,6 +72,7 @@ public class CallPath
 
 		/**
 		 * Gets entry name
+		 * 
 		 * @return name.
 		 */
 		public String getName()
@@ -105,14 +109,16 @@ public class CallPath
 			{
 				if (other.name != null)
 					return false;
-			} else if (!name.equals(other.name))
+			}
+			else if (!name.equals(other.name))
 				return false;
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Variable entry.
+	 * 
 	 * @author Denis Denisenko
 	 */
 	public final static class VariableEntry extends Entry
@@ -120,7 +126,9 @@ public class CallPath
 
 		/**
 		 * VariableEntry constructor.
-		 * @param name - variable name.
+		 * 
+		 * @param name
+		 *            - variable name.
 		 */
 		public VariableEntry(String name)
 		{
@@ -133,12 +141,13 @@ public class CallPath
 		@Override
 		public String toString()
 		{
-			return "var: " + getName();
+			return "var: " + getName(); //$NON-NLS-1$
 		}
 	}
-	
+
 	/**
 	 * Class entry.
+	 * 
 	 * @author Denis Denisenko
 	 */
 	public final static class ClassEntry extends Entry
@@ -146,7 +155,9 @@ public class CallPath
 
 		/**
 		 * ClassEntry constructor.
-		 * @param name - class name.
+		 * 
+		 * @param name
+		 *            - class name.
 		 */
 		public ClassEntry(String name)
 		{
@@ -159,12 +170,13 @@ public class CallPath
 		@Override
 		public String toString()
 		{
-			return "class: " + getName();
+			return "class: " + getName(); //$NON-NLS-1$
 		}
 	}
-	
+
 	/**
 	 * Method entry.
+	 * 
 	 * @author Denis Denisenko
 	 */
 	public final static class MethodEntry extends Entry
@@ -172,86 +184,86 @@ public class CallPath
 
 		/**
 		 * MethodEntry constructor.
-		 * @param name - variable name.
+		 * 
+		 * @param name
+		 *            - variable name.
 		 */
 		public MethodEntry(String name)
 		{
 			super(name);
 		}
-		
+
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public String toString()
 		{
-			return "func: " + getName();
+			return "func: " + getName(); //$NON-NLS-1$
 		}
 	}
-	
+
 	/**
 	 * Masks for bit access.
 	 */
-	private final static int[] _masks = 
-	{
-		0x80000000, 0x40000000, 0x20000000, 0x10000000,
-		0x08000000, 0x04000000, 0x02000000, 0x01000000,
-		0x00800000, 0x00400000, 0x00200000, 0x00100000,
-		0x00080000, 0x00040000, 0x00020000, 0x00010000,
-		0x00008000, 0x00004000, 0x00002000, 0x00001000,
-		0x00000800, 0x00000400, 0x00000200, 0x00000100,
-		0x00000080, 0x00000040, 0x00000020, 0x00000010,
-		0x00000008, 0x00000004, 0x00000002, 0x00000001 
-	};
-	
+	private final static int[] _masks = { 0x80000000, 0x40000000, 0x20000000, 0x10000000, 0x08000000, 0x04000000,
+			0x02000000, 0x01000000, 0x00800000, 0x00400000, 0x00200000, 0x00100000, 0x00080000, 0x00040000, 0x00020000,
+			0x00010000, 0x00008000, 0x00004000, 0x00002000, 0x00001000, 0x00000800, 0x00000400, 0x00000200, 0x00000100,
+			0x00000080, 0x00000040, 0x00000020, 0x00000010, 0x00000008, 0x00000004, 0x00000002, 0x00000001 };
+
 	/**
 	 * Entry names.
 	 */
 	private List<String> names = new ArrayList<String>(1);
-	
+
 	/**
 	 * Entry types.
 	 */
 	private int types;
-	
+
 	/**
 	 * Whether first entry is of a ClassEntry type.
 	 */
 	private boolean firstEntryOfClassType = false;
-	
+
 	/**
 	 * Almost never used. Is required for the paths with the length greater then 31.
 	 */
 	private List<Boolean> typesArray = null;
-	
+
 	/**
 	 * Gets size.
+	 * 
 	 * @return path size.
 	 */
 	public int getSize()
 	{
 		return names.size();
 	}
-	
+
 	/**
 	 * Sets first entry as a class entry.
-	 * @param name - class name.
+	 * 
+	 * @param name
+	 *            - class name.
 	 */
 	public void setClassEntry(String name)
 	{
 		if (names.size() != 0)
 		{
-			throw new IllegalArgumentException("Only the first entry might have Class type");
+			throw new IllegalArgumentException("Only the first entry might have Class type"); //$NON-NLS-1$
 		}
-		
+
 		firstEntryOfClassType = true;
-		
+
 		names.add(name);
 	}
-	
+
 	/**
 	 * Adds variable entry to the right of the path.
-	 * @param name - variable name.
+	 * 
+	 * @param name
+	 *            - variable name.
 	 */
 	public void addVariableEntry(String name)
 	{
@@ -266,16 +278,18 @@ public class CallPath
 		}
 		else
 		{
-			//sets the appropriate bit to 1
+			// sets the appropriate bit to 1
 			types |= _masks[names.size()];
 		}
-		
+
 		names.add(name);
 	}
-	
+
 	/**
 	 * Adds method entry to the right of the path.
-	 * @param name - method name.
+	 * 
+	 * @param name
+	 *            - method name.
 	 */
 	public void addMethodEntry(String name)
 	{
@@ -290,15 +304,17 @@ public class CallPath
 		}
 		else
 		{
-			//appropriate bit is already 0 so doing nothing
+			// appropriate bit is already 0 so doing nothing
 		}
-		
+
 		names.add(name);
 	}
-	
+
 	/**
 	 * Adds the specified path as a tail to the current path.
-	 * @param path - path to add.
+	 * 
+	 * @param path
+	 *            - path to add.
 	 */
 	public void addPath(CallPath path)
 	{
@@ -307,7 +323,7 @@ public class CallPath
 			if (entry instanceof ClassEntry)
 			{
 				throw new IllegalArgumentException(
-						"Class entry must start the path, so path containing Class entry can not be added.");
+						"Class entry must start the path, so path containing Class entry can not be added."); //$NON-NLS-1$
 			}
 			else if (entry instanceof MethodEntry)
 			{
@@ -319,15 +335,16 @@ public class CallPath
 			}
 			else
 			{
-				throw 
-					new IllegalArgumentException("Unknown entry type: " + entry.getClass().getCanonicalName());
+				throw new IllegalArgumentException("Unknown entry type: " + entry.getClass().getCanonicalName()); //$NON-NLS-1$
 			}
 		}
 	}
-	
+
 	/**
 	 * Inserts variable entry to the beginning of the path.
-	 * @param name - variable name.
+	 * 
+	 * @param name
+	 *            - variable name.
 	 */
 	public void insertVariableEntry(String name)
 	{
@@ -342,18 +359,20 @@ public class CallPath
 		}
 		else
 		{
-			//shifting types
+			// shifting types
 			types = types >>> 1;
-			//sets the appropriate bit to 1
+			// sets the appropriate bit to 1
 			types |= _masks[0];
 		}
-		
+
 		names.add(0, name);
 	}
-	
+
 	/**
 	 * Inserts method entry to the beginning of the path.
-	 * @param name - method name.
+	 * 
+	 * @param name
+	 *            - method name.
 	 */
 	public void insertMethodEntry(String name)
 	{
@@ -368,17 +387,19 @@ public class CallPath
 		}
 		else
 		{
-			//shifting types
+			// shifting types
 			types = types >>> 1;
-			//appropriate bit is already 0 so setting nothing
+			// appropriate bit is already 0 so setting nothing
 		}
-		
+
 		names.add(0, name);
 	}
-	
+
 	/**
 	 * Returns sub path.
-	 * @param start - index of sub path start. 
+	 * 
+	 * @param start
+	 *            - index of sub path start.
 	 * @return sub path.
 	 */
 	public CallPath subPath(int start)
@@ -387,7 +408,7 @@ public class CallPath
 		{
 			return new CallPath();
 		}
-		
+
 		CallPath result = new CallPath();
 		List<Entry> entries = getEntries();
 		for (int i = start; i < entries.size(); i++)
@@ -402,18 +423,19 @@ public class CallPath
 				result.addMethodEntry(entry.getName());
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets entries.
+	 * 
 	 * @return entries.
 	 */
 	public List<Entry> getEntries()
 	{
 		List<Entry> result = new ArrayList<Entry>(names.size());
-		
+
 		for (int i = 0; i < names.size(); i++)
 		{
 			if (i == 0 && firstEntryOfClassType)
@@ -432,13 +454,15 @@ public class CallPath
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets type for the position.
-	 * @param i - position.
+	 * 
+	 * @param i
+	 *            - position.
 	 * @return true if variable, false if method.
 	 */
 	private boolean getType(int i)
@@ -449,7 +473,7 @@ public class CallPath
 		}
 		else
 		{
-			return((types & _masks[i]) != 0);
+			return ((types & _masks[i]) != 0);
 		}
 	}
 
@@ -461,10 +485,12 @@ public class CallPath
 	{
 		return getEntries().toString();
 	}
-	
+
 	/**
 	 * Gets whether current path is equal to the other path.
-	 * @param other - path to compare to.
+	 * 
+	 * @param other
+	 *            - path to compare to.
 	 * @return
 	 */
 	public boolean compare(CallPath other)
@@ -473,14 +499,14 @@ public class CallPath
 		{
 			return false;
 		}
-		
+
 		if (typesArray != null)
 		{
 			if (other.typesArray == null)
 			{
 				return false;
 			}
-			
+
 			if (!typesArray.equals(other.typesArray))
 			{
 				return false;
@@ -493,48 +519,57 @@ public class CallPath
 				return false;
 			}
 		}
-		
+
 		if (!names.equals(other.names))
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 
-	public void write(DataOutputStream da) throws IOException {
+	public void write(DataOutputStream da) throws IOException
+	{
 		int size = names.size();
 		da.writeInt(size);
 		da.writeInt(types);
 		da.writeBoolean(firstEntryOfClassType);
-		for (String s:names){
+		for (String s : names)
+		{
 			da.writeUTF(s);
 		}
-		da.writeBoolean(typesArray!=null);
-		if (typesArray!=null){
+		da.writeBoolean(typesArray != null);
+		if (typesArray != null)
+		{
 			da.writeInt(typesArray.size());
-			for (Boolean b:typesArray){
+			for (Boolean b : typesArray)
+			{
 				da.writeBoolean(b);
 			}
 		}
 	}
-	
-	public CallPath(){
-		
+
+	public CallPath()
+	{
+
 	}
-	
-	public CallPath(DataInputStream di)throws IOException{
+
+	public CallPath(DataInputStream di) throws IOException
+	{
 		int readInt = di.readInt();
-		names=new ArrayList<String>(readInt);
-		types=di.readInt();
-		firstEntryOfClassType=di.readBoolean();
-		for (int a=0;a<readInt;a++){
+		names = new ArrayList<String>(readInt);
+		types = di.readInt();
+		firstEntryOfClassType = di.readBoolean();
+		for (int a = 0; a < readInt; a++)
+		{
 			names.add(di.readUTF().intern());
 		}
-		if (di.readBoolean()){
-			int sz=di.readInt();
-			typesArray=new ArrayList<Boolean>(sz);
-			for (int a=0;a<sz;a++){
+		if (di.readBoolean())
+		{
+			int sz = di.readInt();
+			typesArray = new ArrayList<Boolean>(sz);
+			for (int a = 0; a < sz; a++)
+			{
 				typesArray.add(di.readBoolean());
 			}
 		}

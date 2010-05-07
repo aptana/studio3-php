@@ -36,7 +36,6 @@ package com.aptana.editor.php.internal.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,15 +62,16 @@ import com.aptana.editor.php.PHPEditorPlugin;
  * 
  * @author Denis Denisenko
  */
-public class ProjectBuildPath extends AbstractBuildPath {
+public class ProjectBuildPath extends AbstractBuildPath
+{
 
 	/**
 	 * PHP elements delta visitor.
 	 * 
 	 * @author Denis Denisenko
 	 */
-	private final class PHPElementsDeltaVisitor implements
-			IResourceDeltaVisitor {
+	private final class PHPElementsDeltaVisitor implements IResourceDeltaVisitor
+	{
 		/**
 		 * Added modules to fill.
 		 */
@@ -107,10 +107,9 @@ public class ProjectBuildPath extends AbstractBuildPath {
 		 * @param removed
 		 *            - removed modules list to fill.
 		 */
-		public PHPElementsDeltaVisitor(List<IModule> added,
-				List<IModule> changed, List<IModule> removed,
-				List<IDirectory> addedDirectories,
-				List<IDirectory> removedDirectories) {
+		public PHPElementsDeltaVisitor(List<IModule> added, List<IModule> changed, List<IModule> removed,
+				List<IDirectory> addedDirectories, List<IDirectory> removedDirectories)
+		{
 			this.added = added;
 			this.changed = changed;
 			this.removed = removed;
@@ -121,17 +120,20 @@ public class ProjectBuildPath extends AbstractBuildPath {
 		/**
 		 * {@inheritDoc}
 		 */
-		public boolean visit(IResourceDelta delta) throws CoreException {
+		public boolean visit(IResourceDelta delta) throws CoreException
+		{
 			IResource resource = delta.getResource();
 
 			// ignoring inaccessible resources
-			if (!resource.isAccessible()
-					&& delta.getKind() != IResourceDelta.REMOVED) {
+			if (!resource.isAccessible() && delta.getKind() != IResourceDelta.REMOVED)
+			{
 				return false;
 			}
 
-			if (resource instanceof IProject) {
-				if (!resource.equals(project)) {
+			if (resource instanceof IProject)
+			{
+				if (!resource.equals(project))
+				{
 					return false;
 				}
 				/*
@@ -139,76 +141,86 @@ public class ProjectBuildPath extends AbstractBuildPath {
 				 */
 			}
 
-			if (!(resource instanceof IFile || resource instanceof IFolder)) {
+			if (!(resource instanceof IFile || resource instanceof IFolder))
+			{
 				return true;
 			}
 
-			if (!resource.getProject().equals(project)) {
+			if (!resource.getProject().equals(project))
+			{
 				return false;
 			}
 
 			// we are not interested in flag changes.
-			if (delta.getFlags() == IResourceDelta.MARKERS) {
+			if (delta.getFlags() == IResourceDelta.MARKERS)
+			{
 				return false;
 			}
 
-			if (resource instanceof IFile) {
+			if (resource instanceof IFile)
+			{
 				IModule module = null;
 
-				switch (delta.getKind()) {
-				case IResourceDelta.ADDED:
-					module = PHPLocalModuleFactory.getModule(resource,
-							ProjectBuildPath.this);
-					if (module == null) {
-						return true;
-					}
-					added.add(module);
-					if ((delta.getFlags() & IResourceDelta.MOVED_FROM) != 0) {
-						IPath fromPath = delta.getMovedFromPath();
-						if (fromPath != null) {
-							IFile fromFile = resource.getWorkspace().getRoot()
-									.getFile(fromPath);
-							if (fromFile != null) {
-								IModule oldModule = PHPLocalModuleFactory
-										.getModuleUnsafe(fromFile,
-												ProjectBuildPath.this);
-								if (oldModule != null) {
-									removed.add(oldModule);
+				switch (delta.getKind())
+				{
+					case IResourceDelta.ADDED:
+						module = PHPLocalModuleFactory.getModule(resource, ProjectBuildPath.this);
+						if (module == null)
+						{
+							return true;
+						}
+						added.add(module);
+						if ((delta.getFlags() & IResourceDelta.MOVED_FROM) != 0)
+						{
+							IPath fromPath = delta.getMovedFromPath();
+							if (fromPath != null)
+							{
+								IFile fromFile = resource.getWorkspace().getRoot().getFile(fromPath);
+								if (fromFile != null)
+								{
+									IModule oldModule = PHPLocalModuleFactory.getModuleUnsafe(fromFile,
+											ProjectBuildPath.this);
+									if (oldModule != null)
+									{
+										removed.add(oldModule);
+									}
 								}
 							}
 						}
-					}
-					break;
-				case IResourceDelta.CHANGED:
-					module = PHPLocalModuleFactory.getModule(resource,
-							ProjectBuildPath.this);
-					if (module == null) {
-						return true;
-					}
-					changed.add(module);
-					break;
-				case IResourceDelta.REMOVED:
-					module = PHPLocalModuleFactory.getModuleUnsafe(resource,
-							ProjectBuildPath.this);
-					if (module != null) {
-						removed.add(module);
-					}
-					break;
-				default:
-					break;
+						break;
+					case IResourceDelta.CHANGED:
+						module = PHPLocalModuleFactory.getModule(resource, ProjectBuildPath.this);
+						if (module == null)
+						{
+							return true;
+						}
+						changed.add(module);
+						break;
+					case IResourceDelta.REMOVED:
+						module = PHPLocalModuleFactory.getModuleUnsafe(resource, ProjectBuildPath.this);
+						if (module != null)
+						{
+							removed.add(module);
+						}
+						break;
+					default:
+						break;
 				}
-			} else if (resource instanceof IFolder) {
+			}
+			else if (resource instanceof IFolder)
+			{
 				// skipping unsynchronized resources.
-				if (!resource.isSynchronized(1)) {
+				if (!resource.isSynchronized(1))
+				{
 					return true;
 				}
 
-				if (!FolderFilteringManager.acceptFolder((IFolder) resource)) {
+				if (!FolderFilteringManager.acceptFolder((IFolder) resource))
+				{
 					return false;
 				}
 
-				IDirectory dir = new LocalDirectory((IFolder) resource,
-						ProjectBuildPath.this);
+				IDirectory dir = new LocalDirectory((IFolder) resource, ProjectBuildPath.this);
 				switch (delta.getKind())
 				{
 					case IResourceDelta.ADDED:
@@ -252,7 +264,8 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	 * @param project
 	 *            - eclipse project.
 	 */
-	public ProjectBuildPath(IProject project) {
+	public ProjectBuildPath(IProject project)
+	{
 		this.project = project;
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -265,7 +278,8 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<IModule> getModules() {
+	public List<IModule> getModules()
+	{
 		List<IModule> result = new ArrayList<IModule>();
 		result.addAll(modules.values());
 		return result;
@@ -274,9 +288,11 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void close() {
+	public void close()
+	{
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		if (workspace != null && workspaceListener != null) {
+		if (workspace != null && workspaceListener != null)
+		{
 			workspace.removeResourceChangeListener(workspaceListener);
 		}
 	}
@@ -284,18 +300,22 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IModule getModule(Object moduleResource) {
-		if (!(moduleResource instanceof IFile)) {
+	public IModule getModule(Object moduleResource)
+	{
+		if (!(moduleResource instanceof IFile))
+		{
 			return null;
 		}
 
-		//this is possble in some cases
+		// this is possble in some cases
 		IModule module = modules.get(moduleResource);
-		if (module==null){
-			IFile f=(IFile) moduleResource;
-			if (f.getProject().equals(this.project)){
+		if (module == null)
+		{
+			IFile f = (IFile) moduleResource;
+			if (f.getProject().equals(this.project))
+			{
 				IModule module2 = PHPLocalModuleFactory.getModule(f, this);
-				if (module2!=null)
+				if (module2 != null)
 				{
 					modules.put(f, module2);
 				}
@@ -308,17 +328,20 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IDirectory getDirectory(Object directoryResource) {
-		if (directoryResource instanceof IProject
-				&& project.equals(directoryResource)) {
-			if (!((IProject) directoryResource).isAccessible()) {
+	public IDirectory getDirectory(Object directoryResource)
+	{
+		if (directoryResource instanceof IProject && project.equals(directoryResource))
+		{
+			if (!((IProject) directoryResource).isAccessible())
+			{
 				return null;
 			}
 
 			return new LocalDirectory(project, this);
 		}
 
-		if (!(directoryResource instanceof IFolder)) {
+		if (!(directoryResource instanceof IFolder))
+		{
 			return null;
 		}
 
@@ -328,20 +351,26 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IPath getResourcePath(IBuildPathResource resource) {
-		if (resource instanceof LocalModule) {
+	public IPath getResourcePath(IBuildPathResource resource)
+	{
+		if (resource instanceof LocalModule)
+		{
 			IFile moduleFile = ((LocalModule) resource).getFile();
-			if (!project.equals(moduleFile.getProject())) {
+			if (!project.equals(moduleFile.getProject()))
+			{
 				return null;
 			}
 
 			return moduleFile.getProjectRelativePath().makeAbsolute();
-		} else if (resource instanceof LocalDirectory) {
+		}
+		else if (resource instanceof LocalDirectory)
+		{
 			IResource fld = ((LocalDirectory) resource).getContainer();
-			if (!project.equals(fld.getProject())) {
+			if (!project.equals(fld.getProject()))
+			{
 				return null;
 			}
-			
+
 			return fld.getProjectRelativePath().makeAbsolute();
 		}
 
@@ -351,15 +380,20 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IModule getModuleByPath(IPath path) {
-		try {
+	public IModule getModuleByPath(IPath path)
+	{
+		try
+		{
 			IResource resource = project.getFile(path);
-			if (resource == null) {
+			if (resource == null)
+			{
 				return null;
 			}
 
 			return getModule(resource);
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			return null;
 		}
 	}
@@ -367,17 +401,20 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IDirectory getDirectoryByPath(IPath path) {
-		if (path.segmentCount() == 0) {
+	public IDirectory getDirectoryByPath(IPath path)
+	{
+		if (path.segmentCount() == 0)
+		{
 			return new LocalDirectory(project, this);
 		}
 
-//		if (path.segmentCount() <= 2) {
-//			return null;
-//		}
+		// if (path.segmentCount() <= 2) {
+		// return null;
+		// }
 
 		IResource resource = project.getFolder(path);
-		if (resource == null) {
+		if (resource == null)
+		{
 			return null;
 		}
 
@@ -387,7 +424,8 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean isPassive() {
+	public boolean isPassive()
+	{
 		return false;
 	}
 
@@ -396,45 +434,56 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	 * 
 	 * @return project.
 	 */
-	public IProject getProject() {
+	public IProject getProject()
+	{
 		return project;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<IModule> getModulesByPath(IPath path) {
+	public List<IModule> getModulesByPath(IPath path)
+	{
 		IResource resource = null;
-		if (path.segmentCount() == 0) {
+		if (path.segmentCount() == 0)
+		{
 			resource = project;
-		} else {
+		}
+		else
+		{
 			resource = project.getFolder(path);
 		}
 
-		if (resource == null || !(resource instanceof IContainer)
-				|| !resource.exists()) {
+		if (resource == null || !(resource instanceof IContainer) || !resource.exists())
+		{
 			return null;
 		}
 
 		IResource[] innerResources = null;
-		try {
+		try
+		{
 			innerResources = ((IContainer) resource).members();
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPEditorPlugin.logError(e);
 			return null;
 		}
 		List<IFile> innerFiles = new ArrayList<IFile>();
-		for (IResource innerResource : innerResources) {
-			if (innerResource instanceof IFile
-					&& ((IFile) innerResource).exists()) {
+		for (IResource innerResource : innerResources)
+		{
+			if (innerResource instanceof IFile && ((IFile) innerResource).exists())
+			{
 				innerFiles.add((IFile) innerResource);
 			}
 		}
 
 		List<IModule> result = new ArrayList<IModule>();
-		for (IFile innerFile : innerFiles) {
+		for (IFile innerFile : innerFiles)
+		{
 			IModule currentModule = getModule(innerFile);
-			if (currentModule != null) {
+			if (currentModule != null)
+			{
 				result.add(currentModule);
 			}
 		}
@@ -445,38 +494,48 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<IDirectory> getSubdirectoriesByPath(IPath path) {
+	public List<IDirectory> getSubdirectoriesByPath(IPath path)
+	{
 		IResource resource = null;
-		if (path.segmentCount() == 0) {
+		if (path.segmentCount() == 0)
+		{
 			resource = project;
-		} else {
+		}
+		else
+		{
 			resource = project.getFolder(path);
 		}
 
-		if (resource == null || !(resource instanceof IContainer)
-				|| !resource.exists()) {
+		if (resource == null || !(resource instanceof IContainer) || !resource.exists())
+		{
 			return null;
 		}
 
 		IResource[] innerResources = null;
-		try {
+		try
+		{
 			innerResources = ((IContainer) resource).members();
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPEditorPlugin.logError(e);
 			return null;
 		}
 		List<IFolder> innerFolders = new ArrayList<IFolder>();
-		for (IResource innerResource : innerResources) {
-			if (innerResource instanceof IFolder
-					&& ((IFolder) innerResource).exists()) {
+		for (IResource innerResource : innerResources)
+		{
+			if (innerResource instanceof IFolder && ((IFolder) innerResource).exists())
+			{
 				innerFolders.add((IFolder) innerResource);
 			}
 		}
 
 		List<IDirectory> result = new ArrayList<IDirectory>();
-		for (IFolder innerFolder : innerFolders) {
+		for (IFolder innerFolder : innerFolders)
+		{
 			// ignoring inaccessible resources
-			if (!innerFolder.isAccessible()) {
+			if (!innerFolder.isAccessible())
+			{
 				continue;
 			}
 
@@ -490,11 +549,13 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean contains(IModule module) {
-		if (!(module instanceof LocalModule)) {
+	public boolean contains(IModule module)
+	{
+		if (!(module instanceof LocalModule))
+		{
 			return false;
 		}
-		
+
 		return getModule(((LocalModule) module).getFile()) != null;
 	}
 
@@ -504,10 +565,13 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	 * @param workspace
 	 *            - workspace.
 	 */
-	private void bindListeners(IWorkspace workspace) {
-		workspaceListener = new IResourceChangeListener() {
+	private void bindListeners(IWorkspace workspace)
+	{
+		workspaceListener = new IResourceChangeListener()
+		{
 
-			public void resourceChanged(IResourceChangeEvent event) {
+			public void resourceChanged(IResourceChangeEvent event)
+			{
 				final List<IModule> added = new ArrayList<IModule>();
 				final List<IModule> changed = new ArrayList<IModule>();
 				final List<IModule> removed = new ArrayList<IModule>();
@@ -515,35 +579,37 @@ public class ProjectBuildPath extends AbstractBuildPath {
 				final List<IDirectory> removedDirectories = new ArrayList<IDirectory>();
 
 				IResourceDelta delta = event.getDelta();
-				if (delta != null) {
-					try {
-						delta.accept(new PHPElementsDeltaVisitor(added,
-								changed, removed, addedDirectories,
+				if (delta != null)
+				{
+					try
+					{
+						delta.accept(new PHPElementsDeltaVisitor(added, changed, removed, addedDirectories,
 								removedDirectories));
-					} catch (CoreException e) {
+					}
+					catch (CoreException e)
+					{
 						PHPEditorPlugin.logError(e);
 					}
 				}
 
 				Collection<IModule> modulesCollection = modules.values();
-				Collection<IDirectory> directoriesCollection = directories
-						.values();
+				Collection<IDirectory> directoriesCollection = directories.values();
 
-				if(!added.isEmpty() || !removed.isEmpty() || !changed.isEmpty()
-						|| !addedDirectories.isEmpty() || !removedDirectories.isEmpty())
+				if (!added.isEmpty() || !removed.isEmpty() || !changed.isEmpty() || !addedDirectories.isEmpty()
+						|| !removedDirectories.isEmpty())
 				{
-					List<IModule> emptyModules = Collections.emptyList();
-					List<IDirectory> emptyDirectories = Collections.emptyList();
-					
-					//first notifying about removed modules and directories BEFORE we actually remove
-					//them from the list 
+					// List<IModule> emptyModules = Collections.emptyList();
+					// List<IDirectory> emptyDirectories = Collections.emptyList();
+
+					// first notifying about removed modules and directories BEFORE we actually remove
+					// them from the list
 					notifyChangedBefore(changed, removed, removedDirectories);
-					
-					//removing modules
+
+					// removing modules
 					modulesCollection.removeAll(removed);
 					directoriesCollection.removeAll(removedDirectories);
-					
-					//adding new modules
+
+					// adding new modules
 					for (IModule currentModule : added)
 					{
 						if (currentModule instanceof LocalModule)
@@ -551,8 +617,8 @@ public class ProjectBuildPath extends AbstractBuildPath {
 							modules.put(((LocalModule) currentModule).getFile(), currentModule);
 						}
 					}
-					
-					//adding directories
+
+					// adding directories
 					for (IDirectory dir : addedDirectories)
 					{
 						if (dir instanceof LocalDirectory)
@@ -561,8 +627,8 @@ public class ProjectBuildPath extends AbstractBuildPath {
 						}
 					}
 
-					//notifying about added modules, added directories and changed modules after 
-					//all additions are done
+					// notifying about added modules, added directories and changed modules after
+					// all additions are done
 					notifyChangedAfter(added, changed, removed, addedDirectories, removedDirectories);
 				}
 			}
@@ -576,34 +642,44 @@ public class ProjectBuildPath extends AbstractBuildPath {
 	 * @param workspace
 	 *            - workspace.
 	 */
-	private void indexLocalResources() {
-		try {
-			project.accept(new IResourceVisitor() {
-				public boolean visit(IResource resource) throws CoreException {
+	private void indexLocalResources()
+	{
+		try
+		{
+			project.accept(new IResourceVisitor()
+			{
+				public boolean visit(IResource resource) throws CoreException
+				{
 					// ignoring inaccessible resources
-					if (!resource.isAccessible()) {
+					if (!resource.isAccessible())
+					{
 						return false;
 					}
 
-					if (resource instanceof IProject) {
-						if (!resource.equals(project)) {
+					if (resource instanceof IProject)
+					{
+						if (!resource.equals(project))
+						{
 							return false;
 						}
 					}
 
-					if (!resource.getProject().equals(project)) {
+					if (!resource.getProject().equals(project))
+					{
 						return false;
 					}
 
-					if (resource instanceof IFile) {
-						IModule module = PHPLocalModuleFactory.getModule(
-								resource, ProjectBuildPath.this);
-						if (module != null) {
+					if (resource instanceof IFile)
+					{
+						IModule module = PHPLocalModuleFactory.getModule(resource, ProjectBuildPath.this);
+						if (module != null)
+						{
 							modules.put((IFile) resource, module);
 						}
-					} else if (resource instanceof IFolder) {
-						IDirectory dir = new LocalDirectory((IFolder) resource,
-								ProjectBuildPath.this);
+					}
+					else if (resource instanceof IFolder)
+					{
+						IDirectory dir = new LocalDirectory((IFolder) resource, ProjectBuildPath.this);
 						directories.put((IFolder) resource, dir);
 					}
 
@@ -611,12 +687,15 @@ public class ProjectBuildPath extends AbstractBuildPath {
 				}
 
 			});
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPEditorPlugin.logError(e);
 		}
 	}
 
-	public String getHandleIdentifier() {
+	public String getHandleIdentifier()
+	{
 		return 'P' + project.getName();
 	}
 }

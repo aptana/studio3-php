@@ -1,4 +1,5 @@
 package com.aptana.editor.php.internal.indexer;
+
 ///**
 // * This file Copyright (c) 2005-2008 Aptana, Inc. This program is
 // * dual-licensed under both the Aptana Public License and the GNU General
@@ -241,4 +242,4 @@ package com.aptana.editor.php.internal.indexer;
 //		}
 //		return rule;
 //	}
-//}
+// }

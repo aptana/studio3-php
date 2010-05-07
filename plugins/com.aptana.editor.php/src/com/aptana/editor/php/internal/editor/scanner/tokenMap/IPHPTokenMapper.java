@@ -4,6 +4,7 @@
 package com.aptana.editor.php.internal.editor.scanner.tokenMap;
 
 import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.php.internal.core.phpModel.javacup.runtime.Symbol;
 
 import com.aptana.editor.php.internal.editor.scanner.PHPCodeScanner;
 
@@ -13,13 +14,16 @@ import com.aptana.editor.php.internal.editor.scanner.PHPCodeScanner;
  */
 public interface IPHPTokenMapper
 {
+	public static final String THIS = "$this"; //$NON-NLS-1$
+	public static final String SELF = "self"; //$NON-NLS-1$
+	public static final String PARENT = "parent"; //$NON-NLS-1$
 
 	/**
 	 * Map the PHP symbol to an IToken
 	 * 
 	 * @param sym
-	 * @param phpCodeScanner 
+	 * @param phpCodeScanner
 	 * @return A mapped {@link IToken}
 	 */
-	public IToken mapToken(int sym, PHPCodeScanner phpCodeScanner);
+	public IToken mapToken(Symbol sym, PHPCodeScanner phpCodeScanner);
 }

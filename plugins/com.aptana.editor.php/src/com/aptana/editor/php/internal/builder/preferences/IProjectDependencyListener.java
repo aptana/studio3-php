@@ -38,14 +38,18 @@ import org.eclipse.core.resources.IProject;
 
 /**
  * IProjectDependencyListener
+ * 
  * @author Denis Denisenko
  */
 public interface IProjectDependencyListener
 {
 	/**
 	 * Notifies project dependencies changed.
-	 * @param project - project, which dependencies are changed.
-	 * @param dependencies - dependencies.
+	 * 
+	 * @param project
+	 *            - project, which dependencies are changed.
+	 * @param dependencies
+	 *            - dependencies.
 	 */
 	void dependenciesChanged(IProject project, ProjectDependencies dependencies);
 }

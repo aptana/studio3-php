@@ -42,6 +42,7 @@ import com.aptana.editor.php.indexer.IReportable;
 
 /**
  * Abstract PHP entry value
+ * 
  * @author Denis Denisenko
  */
 public abstract class AbstractPHPEntryValue implements IReportable
@@ -50,53 +51,58 @@ public abstract class AbstractPHPEntryValue implements IReportable
 	 * Entry modifiers.
 	 */
 	private int modifiers;
-	
+
 	/**
 	 * Entry start offset.
 	 */
 	private int startOffset;
-	
+
 	private String nameSpace;
-	
+
 	/**
 	 * AbstractPHPEntryValue constructor.
-	 * @param modifiers - modifiers.
+	 * 
+	 * @param modifiers
+	 *            - modifiers.
 	 */
-	public AbstractPHPEntryValue(int modifiers,String namespace)
+	public AbstractPHPEntryValue(int modifiers, String namespace)
 	{
 		this.modifiers = modifiers;
-		this.nameSpace=namespace;
+		this.nameSpace = namespace;
 	}
 
-	public AbstractPHPEntryValue(DataInputStream di) throws IOException{
-		this.modifiers=di.readInt();
-		this.startOffset=di.readInt();
-		nameSpace=di.readUTF();
+	public AbstractPHPEntryValue(DataInputStream di) throws IOException
+	{
+		this.modifiers = di.readInt();
+		this.startOffset = di.readInt();
+		nameSpace = di.readUTF();
 	}
-
-	
 
 	/**
-	 * Gets modifiers. 
+	 * Gets modifiers.
+	 * 
 	 * @return
 	 */
 	public int getModifiers()
 	{
 		return modifiers;
 	}
-	
+
 	/**
-	 * Gets entry start offset. 
+	 * Gets entry start offset.
+	 * 
 	 * @return entry start offset.
 	 */
 	public int getStartOffset()
 	{
 		return startOffset;
 	}
-	
+
 	/**
 	 * Sets entry start offset.
-	 * @param startOffset - offset.
+	 * 
+	 * @param startOffset
+	 *            - offset.
 	 */
 	public void setStartOffset(int startOffset)
 	{
@@ -133,7 +139,8 @@ public abstract class AbstractPHPEntryValue implements IReportable
 		return true;
 	}
 
-	public void store(DataOutputStream da) throws IOException {
+	public void store(DataOutputStream da) throws IOException
+	{
 		da.writeInt(this.getKind());
 		da.writeInt(this.modifiers);
 		da.writeInt(this.getStartOffset());
@@ -142,12 +149,13 @@ public abstract class AbstractPHPEntryValue implements IReportable
 	}
 
 	public abstract int getKind();
-	
+
 	protected abstract void internalWrite(DataOutputStream da) throws IOException;
-	
-	protected abstract void internalRead(DataInputStream di) throws IOException ;
-	
-	public String getNameSpace(){
+
+	protected abstract void internalRead(DataInputStream di) throws IOException;
+
+	public String getNameSpace()
+	{
 		return nameSpace;
 	}
 }

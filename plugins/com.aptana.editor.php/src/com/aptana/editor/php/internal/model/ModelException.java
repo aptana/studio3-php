@@ -36,6 +36,7 @@ package com.aptana.editor.php.internal.model;
 
 /**
  * Model exception
+ * 
  * @author Denis Denisenko
  */
 public class ModelException extends Exception
@@ -48,6 +49,7 @@ public class ModelException extends Exception
 
 	/**
 	 * ModelException constructor.
+	 * 
 	 * @param message
 	 * @param cause
 	 */
@@ -58,6 +60,7 @@ public class ModelException extends Exception
 
 	/**
 	 * ModelException constructor.
+	 * 
 	 * @param message
 	 */
 	public ModelException(String message)
@@ -67,6 +70,7 @@ public class ModelException extends Exception
 
 	/**
 	 * ModelException constructor.
+	 * 
 	 * @param cause
 	 */
 	public ModelException(Throwable cause)

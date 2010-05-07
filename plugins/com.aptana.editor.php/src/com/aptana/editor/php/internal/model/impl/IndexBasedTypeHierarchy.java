@@ -59,9 +59,8 @@ import com.aptana.editor.php.model.IType;
 import com.aptana.editor.php.model.ITypeHierarchyChangedListener;
 
 /**
- * Global type hierarchy based on php index.
- * This type hierarchy is not based on a single type, but instead is dynamic and valid
- * for the whole workspace.
+ * Global type hierarchy based on php index. This type hierarchy is not based on a single type, but instead is dynamic
+ * and valid for the whole workspace.
  * 
  * @author Denis Denisenko
  */
@@ -70,9 +69,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	/**
 	 * Listeners.
 	 */
-	private Set<ITypeHierarchyChangedListener> listeners = 
-		new HashSet<ITypeHierarchyChangedListener>();
-	
+	private Set<ITypeHierarchyChangedListener> listeners = new HashSet<ITypeHierarchyChangedListener>();
+
 	/**
 	 * Module index listener.
 	 */
@@ -86,8 +84,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	/**
 	 * {@inheritDoc}
 	 */
-	public void addTypeHierarchyChangedListener(
-			ITypeHierarchyChangedListener listener)
+	public void addTypeHierarchyChangedListener(ITypeHierarchyChangedListener listener)
 	{
 		synchronized (listeners)
 		{
@@ -118,8 +115,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getAllClasses()
 	{
 		IElementsIndex index = PHPGlobalIndexer.getInstance().getIndex();
-		List<IElementEntry> entries = 
-			index.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, "");
+		List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, ""); //$NON-NLS-1$
 		return ModelUtils.convertTypes(entries);
 	}
 
@@ -129,9 +125,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getAllSubtypes(IType type)
 	{
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classDescendants =
-			TypeHierarchyUtils.getClassDescendants(typeEntry.getModule(), typeEntry.getEntryPath(),
-				PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classDescendants = TypeHierarchyUtils.getClassDescendants(typeEntry.getModule(), typeEntry
+				.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
 		return ModelUtils.convertTypes(classDescendants);
 	}
 
@@ -141,9 +136,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getAllSuperclasses(IType type)
 	{
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classAncestors =
-			TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(), typeEntry.getEntryPath(),
-				PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classAncestors = TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(), typeEntry
+				.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
 		return ModelUtils.convertClasses(classAncestors);
 	}
 
@@ -153,9 +147,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getAllSupertypes(IType type)
 	{
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classAncestors =
-			TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(), typeEntry.getEntryPath(),
-				PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classAncestors = TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(), typeEntry
+				.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
 		return ModelUtils.convertTypes(classAncestors);
 	}
 
@@ -165,8 +158,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getAllTypes()
 	{
 		IElementsIndex index = PHPGlobalIndexer.getInstance().getIndex();
-		List<IElementEntry> entries = 
-			index.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, "");
+		List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, ""); //$NON-NLS-1$
 		return ModelUtils.convertTypes(entries);
 	}
 
@@ -187,15 +179,14 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 		{
 			return Collections.emptyList();
 		}
-		
+
 		Set<IType> result = new HashSet<IType>();
 		addRootClassesRecursively(baseType, result);
-		
+
 		List<IType> toReturn = new ArrayList<IType>(result.size());
 		toReturn.addAll(result);
 		return toReturn;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -203,9 +194,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getSubclasses(IType type)
 	{
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classDescendants =
-			TypeHierarchyUtils.getDirectClassDescendants(typeEntry.getModule(), typeEntry.getEntryPath(),
-				PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classDescendants = TypeHierarchyUtils.getDirectClassDescendants(typeEntry.getModule(),
+				typeEntry.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
 		return ModelUtils.convertClasses(classDescendants);
 	}
 
@@ -215,9 +205,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getSubtypes(IType type)
 	{
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classDescendants =
-			TypeHierarchyUtils.getDirectClassDescendants(typeEntry.getModule(), typeEntry.getEntryPath(),
-				PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classDescendants = TypeHierarchyUtils.getDirectClassDescendants(typeEntry.getModule(),
+				typeEntry.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
 		return ModelUtils.convertTypes(classDescendants);
 	}
 
@@ -227,9 +216,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getSuperclass(IType type)
 	{
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classAncestors =
-			TypeHierarchyUtils.getDirectClassAncestors(typeEntry.getModule(), typeEntry.getEntryPath(),
-				PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classAncestors = TypeHierarchyUtils.getDirectClassAncestors(typeEntry.getModule(),
+				typeEntry.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
 		return ModelUtils.convertClasses(classAncestors);
 	}
 
@@ -239,9 +227,8 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	public List<IType> getSupertypes(IType type)
 	{
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classAncestors =
-			TypeHierarchyUtils.getDirectClassAncestors(typeEntry.getModule(), typeEntry.getEntryPath(),
-				PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classAncestors = TypeHierarchyUtils.getDirectClassAncestors(typeEntry.getModule(),
+				typeEntry.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
 		return ModelUtils.convertTypes(classAncestors);
 	}
 
@@ -264,8 +251,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	/**
 	 * {@inheritDoc}
 	 */
-	public void removeTypeHierarchyChangedListener(
-			ITypeHierarchyChangedListener listener)
+	public void removeTypeHierarchyChangedListener(ITypeHierarchyChangedListener listener)
 	{
 		synchronized (listeners)
 		{
@@ -277,15 +263,16 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	/**
 	 * {@inheritDoc}
 	 */
-	public void store(OutputStream outputStream, IProgressMonitor monitor)
-			throws ModelException
+	public void store(OutputStream outputStream, IProgressMonitor monitor) throws ModelException
 	{
 		monitor.done();
 	}
-	
+
 	/**
 	 * Sets base type.
-	 * @param type - type.
+	 * 
+	 * @param type
+	 *            - type.
 	 */
 	public void setType(IType type)
 	{
@@ -294,17 +281,21 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 
 	/**
 	 * Gets type entry.
-	 * @param type - type.
+	 * 
+	 * @param type
+	 *            - type.
 	 * @return type entry.
 	 */
 	private IElementEntry getTypeEntry(IType type)
 	{
 		return ((EntryBasedType) type).getEntry();
 	}
-	
+
 	/**
 	 * Notifies hierarchy changed.
-	 * @param changed - changed types.
+	 * 
+	 * @param changed
+	 *            - changed types.
 	 */
 	private void notifyChanged(Set<IType> changed)
 	{
@@ -313,13 +304,13 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 		{
 			listenersCopy.addAll(listeners);
 		}
-		
+
 		for (ITypeHierarchyChangedListener listener : listenersCopy)
 		{
 			listener.typeHierarchyChanged(changed);
 		}
 	}
-	
+
 	/**
 	 * Ensures model listener is created.
 	 */
@@ -329,11 +320,11 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 		{
 			moduleIndexListener = new IModuleIndexListener()
 			{
-				public void afterIndexChange(List<IModule> added,
-						List<IModule> changed, List<IDirectory> addedDirectories)
+				public void afterIndexChange(List<IModule> added, List<IModule> changed,
+						List<IDirectory> addedDirectories)
 				{
 					Set<IType> changedTypes = new HashSet<IType>();
-					
+
 					for (IModule module : changed)
 					{
 						ISourceModule sourceModule = ModelUtils.convertModule(module);
@@ -342,7 +333,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 							changedTypes.addAll(sourceModule.getTopLevelTypes());
 						}
 					}
-					
+
 					for (IModule module : added)
 					{
 						ISourceModule sourceModule = ModelUtils.convertModule(module);
@@ -351,16 +342,15 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 							changedTypes.addAll(sourceModule.getTopLevelTypes());
 						}
 					}
-				
+
 					notifyChanged(changedTypes);
 				}
 
-				public void beforeIndexChange(List<IModule> changed,
-						List<IModule> removed,
+				public void beforeIndexChange(List<IModule> changed, List<IModule> removed,
 						List<IDirectory> removedDirectories)
 				{
 					Set<IType> changedTypes = new HashSet<IType>();
-					
+
 					for (IModule module : changed)
 					{
 						ISourceModule sourceModule = ModelUtils.convertModule(module);
@@ -369,7 +359,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 							changedTypes.addAll(sourceModule.getTopLevelTypes());
 						}
 					}
-					
+
 					for (IModule module : removed)
 					{
 						ISourceModule sourceModule = ModelUtils.convertModule(module);
@@ -378,15 +368,15 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 							changedTypes.addAll(sourceModule.getTopLevelTypes());
 						}
 					}
-				
+
 					notifyChanged(changedTypes);
 				}
 			};
-			
+
 			PHPGlobalIndexer.getInstance().addListener(moduleIndexListener);
 		}
 	}
-	
+
 	/**
 	 * Removes model listener if needed.
 	 */
@@ -398,23 +388,26 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 			moduleIndexListener = null;
 		}
 	}
-	
+
 	/**
 	 * Adds root classes and interfaces recursivelly.
-	 * @param type - type to check.
-	 * @param result - result.
+	 * 
+	 * @param type
+	 *            - type to check.
+	 * @param result
+	 *            - result.
 	 */
 	private void addRootClassesRecursively(IType type, Set<IType> result)
 	{
 		List<IType> superTypes = type.getSuperTypes();
-		
-		//if no ancestors found, adding this root type to the result list
+
+		// if no ancestors found, adding this root type to the result list
 		if (superTypes == null || superTypes.size() == 0)
 		{
 			result.add(type);
 			return;
 		}
-		
+
 		for (IType superType : superTypes)
 		{
 			addRootClassesRecursively(superType, result);
