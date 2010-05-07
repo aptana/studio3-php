@@ -19,6 +19,7 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants5
 			case T_CLONE:
 			case T_GLOBAL:
 			case T_DECLARE:
+			case T_DEFINE:
 			case T_ENDDECLARE:
 			case T_ARRAY:
 			case T_THROW:
