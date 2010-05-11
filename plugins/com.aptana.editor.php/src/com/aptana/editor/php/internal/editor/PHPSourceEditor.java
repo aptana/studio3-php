@@ -4,11 +4,14 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
-import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlineItem;
 import com.aptana.editor.common.outline.CommonOutlinePage;
+import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.internal.editor.outline.PHTMLOutlineContentProvider;
+import com.aptana.editor.php.internal.editor.outline.PHTMLOutlineLabelProvider;
+import com.aptana.editor.php.internal.parser.PHTMLParser;
 import com.aptana.parsing.lexer.IRange;
 
 /**
@@ -17,7 +20,7 @@ import com.aptana.parsing.lexer.IRange;
  * @author Shalom Gibly <sgibly@aptana.com>
  */
 @SuppressWarnings("restriction")
-public class PHPSourceEditor extends AbstractThemeableEditor
+public class PHPSourceEditor extends HTMLEditor
 {
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
 			'"', '"', '?', '?' };
@@ -34,6 +37,7 @@ public class PHPSourceEditor extends AbstractThemeableEditor
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		setDocumentProvider(new PHPDocumentProvider());
 
+		getFileService().setParser(new PHTMLParser());
 		// getFileService().setParser(new PHPParser());
 	}
 
@@ -41,9 +45,9 @@ public class PHPSourceEditor extends AbstractThemeableEditor
 	protected CommonOutlinePage createOutlinePage()
 	{
 		CommonOutlinePage outline = super.createOutlinePage();
-		// TODO - Shalom: Provide a PHP outline
-		// outline.setContentProvider(new RHTMLOutlineContentProvider());
-		// outline.setLabelProvider(new RHTMLOutlineLabelProvider(getFileService().getParseState()));
+		// Add the PHP-HTML (PHTML) outline provider
+		outline.setContentProvider(new PHTMLOutlineContentProvider());
+		outline.setLabelProvider(new PHTMLOutlineLabelProvider(getFileService().getParseState()));
 
 		return outline;
 	}

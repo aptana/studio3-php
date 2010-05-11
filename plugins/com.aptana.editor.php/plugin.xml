@@ -31,6 +31,9 @@
       <initializer
             class="com.aptana.editor.php.core.PHPCorePreferenceInitializer">
       </initializer>
+      <initializer
+            class="com.aptana.editor.php.internal.editor.preferences.PHPEditorPreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>

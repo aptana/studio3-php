@@ -48,7 +48,7 @@ import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.IModule;
-import com.aptana.editor.php.internal.contentAssist.preferences.IPreferenceConstants;
+import com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants;
 
 /**
  * Indexing utilities.
@@ -202,8 +202,8 @@ public final class ElementsIndexingUtils
 	 */
 	private static boolean includeFilteringEnabled()
 	{
-		return IPreferenceConstants.CONTENT_ASSIST_EXPLICIT_INCLUDE.equals(PHPEditorPlugin.getDefault()
-				.getPreferenceStore().getString(IPreferenceConstants.CONTENT_ASSIST_FILTER_TYPE));
+		return IContentAssistPreferencesConstants.CONTENT_ASSIST_EXPLICIT_INCLUDE.equals(PHPEditorPlugin.getDefault()
+				.getPreferenceStore().getString(IContentAssistPreferencesConstants.CONTENT_ASSIST_FILTER_TYPE));
 	}
 
 	/**

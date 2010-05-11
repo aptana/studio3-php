@@ -39,7 +39,7 @@ package com.aptana.editor.php.internal.contentAssist.preferences;
  * 
  * @author Denis Denisenko
  */
-public interface IPreferenceConstants
+public interface IContentAssistPreferencesConstants
 {
 	/**
 	 * Filter by key.

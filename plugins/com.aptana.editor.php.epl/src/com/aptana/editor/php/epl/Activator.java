@@ -1,8 +1,9 @@
 package com.aptana.editor.php.epl;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
 
 public class Activator extends AbstractUIPlugin
 {
@@ -48,5 +49,25 @@ public class Activator extends AbstractUIPlugin
 	public static Activator getDefault()
 	{
 		return plugin;
+	}
+
+	public static void logInfo(String string, Throwable e)
+	{
+		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
+	}
+
+	public static void logError(Throwable e)
+	{
+		logError(e.getLocalizedMessage(), e);
+	}
+
+	public static void logError(String string, Throwable e)
+	{
+		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, string, e));
+	}
+
+	public static void logWarning(String message)
+	{
+		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
 	}
 }

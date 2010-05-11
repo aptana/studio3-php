@@ -12,6 +12,7 @@ import org.eclipse.php.internal.core.ast.parser.AstLexer;
 import org.eclipse.php.internal.core.phpModel.javacup.sym;
 import org.eclipse.php.internal.core.phpModel.javacup.runtime.Symbol;
 
+import com.aptana.editor.html.parsing.HTMLTokenScanner;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.ast.ASTFactory;
 
@@ -20,7 +21,7 @@ import com.aptana.editor.php.core.ast.ASTFactory;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPTokenScanner implements IPHPTokenScanner
+public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanner
 {
 	// We need that prefix for our PHP lexer
 	protected static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
