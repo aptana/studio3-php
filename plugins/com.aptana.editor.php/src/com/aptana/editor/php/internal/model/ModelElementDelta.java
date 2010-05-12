@@ -13,10 +13,10 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.IResourceDelta;
 
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.IModelElementDelta;
+import com.aptana.editor.php.core.model.SimpleDelta;
 import com.aptana.editor.php.internal.model.impl.AbstractModelElement;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.IModelElementDelta;
-import com.aptana.editor.php.model.SimpleDelta;
 
 public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 {

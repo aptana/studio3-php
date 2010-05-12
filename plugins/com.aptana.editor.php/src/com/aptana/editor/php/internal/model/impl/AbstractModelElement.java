@@ -34,13 +34,13 @@
  */
 package com.aptana.editor.php.internal.model.impl;
 
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.IModelElementVisitor;
+import com.aptana.editor.php.core.model.IParent;
+import com.aptana.editor.php.core.model.ISourceModel;
+import com.aptana.editor.php.core.model.ISourceProject;
+import com.aptana.editor.php.core.model.env.ModelElementInfo;
 import com.aptana.editor.php.internal.model.ModelManager;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.IModelElementVisitor;
-import com.aptana.editor.php.model.IParent;
-import com.aptana.editor.php.model.ISourceModel;
-import com.aptana.editor.php.model.ISourceProject;
-import com.aptana.editor.php.model.env.ModelElementInfo;
 
 /**
  * AbstractModelElement

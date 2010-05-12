@@ -1,18 +1,13 @@
-/**
- * 
- */
 package com.aptana.editor.php.internal.parser.nodes;
 
 import java.util.List;
 
-import org.eclipse.php.internal.core.ast.nodes.ClassConstantDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.Expression;
 import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
 import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.InLineHtml;
 import org.eclipse.php.internal.core.ast.nodes.Include;
@@ -20,41 +15,20 @@ import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
+import org.eclipse.php.internal.core.ast.nodes.Scalar;
 import org.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org.eclipse.php.internal.core.ast.nodes.Variable;
+import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
-import com.aptana.editor.php.utils.PHPASTVisitorStub;
-
-public final class NodeBuildingVisitor extends PHPASTVisitorStub
+public final class NodeBuildingVisitor extends AbstractVisitor
 {
 	private final NodeBuilderClient parserClient;
 
 	public NodeBuildingVisitor(NodeBuilderClient parserClient)
 	{
 		this.parserClient = parserClient;
-	}
-
-	@Override
-	public void endVisit(ClassConstantDeclaration classConstantDeclaration)
-	{
-
-		Identifier[] variableNames = classConstantDeclaration.getVariableNames();
-		for (Identifier i : variableNames)
-		{
-			parserClient.handleClassConstDeclaration(i.getName(), null, i.getStart(), i.getEnd(),
-					classConstantDeclaration.getEnd());
-		}
-		super.endVisit(classConstantDeclaration);
-	}
-
-	@Override
-	public void endVisit(ClassDeclaration classDeclaration)
-	{
-		Identifier name = classDeclaration.getName();
-		parserClient.handleClassDeclarationEnds(name.getName(), name.getEnd() - 1);
-		super.endVisit(classDeclaration);
 	}
 
 	@Override
@@ -66,21 +40,13 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 	}
 
 	@Override
-	public void endVisit(InterfaceDeclaration classDeclaration)
-	{
-		parserClient.handleClassDeclarationEnds(classDeclaration.getName().getName(), classDeclaration.getStart());
-		super.endVisit(classDeclaration);
-
-	}
-
-	@Override
 	public boolean visit(InterfaceDeclaration classDeclaration)
 	{
 		parserClient.hadleClassDeclarationStarts(classDeclaration.getName().getName(), classDeclaration.getStart());
 		String name = classDeclaration.getName().getName();
 
-		Identifier[] interfaces = classDeclaration.getInterfaces();
-		String[] iNames = new String[interfaces.length];
+		List<Identifier> interfaces = classDeclaration.interfaces();
+		String[] iNames = new String[interfaces.size()];
 		StringBuilder bld = new StringBuilder();
 		for (int a = 0; a < iNames.length; a++)
 		{
@@ -92,7 +58,7 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 		}
 
 		String string = bld.toString();
-		if (interfaces.length == 0)
+		if (interfaces.size() == 0)
 		{
 			string = null;
 		}
@@ -108,8 +74,8 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 		parserClient.hadleClassDeclarationStarts(nameIdentifier.getName(), nameIdentifier.getStart());
 		String name = nameIdentifier.getName();
 
-		Identifier[] interfaces = classDeclaration.getInterfaces();
-		String[] iNames = new String[interfaces.length];
+		List<Identifier> interfaces = classDeclaration.interfaces();
+		String[] iNames = new String[interfaces.size()];
 		StringBuilder bld = new StringBuilder();
 		for (int a = 0; a < iNames.length; a++)
 		{
@@ -120,30 +86,20 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 			}
 		}
 		String string = bld.toString();
-		if (interfaces.length == 0)
+		if (interfaces.isEmpty())
 		{
 			string = null;
 		}
-		parserClient.handleClassDeclaration(name, 0, classDeclaration.getSuperClass() == null ? null : classDeclaration
-				.getSuperClass().getName(), string, null, nameIdentifier.getStart(), nameIdentifier.getEnd(), -1);
-		return super.visit(classDeclaration);
-	}
-
-	@Override
-	public void endVisit(FunctionInvocation functionInvocation)
-	{
-		if (functionInvocation.getName().equals("define")) //$NON-NLS-1$
+		// TODO - Shalom - Take a look at the PDT ClassHighlighting (handle namespaces)
+		Expression superClass = classDeclaration.getSuperClass();
+		String superClassName = null;
+		if (superClass != null && superClass instanceof Identifier)
 		{
-			Expression[] parameters = functionInvocation.getParameters();
-			if (parameters.length > 0)
-			{
-				String name = parameters[0].getName();
-				String value = parameters[1].getName();
-				parserClient.handleDefine(name, value, null, functionInvocation.getStart(),
-						functionInvocation.getEnd(), functionInvocation.getEnd());
-			}
+			superClassName = ((Identifier) superClass).getName();
 		}
-		super.endVisit(functionInvocation);
+		parserClient.handleClassDeclaration(name, 0, superClassName, string, null, nameIdentifier.getStart(),
+				nameIdentifier.getEnd(), -1);
+		return super.visit(classDeclaration);
 	}
 
 	@Override
@@ -157,9 +113,13 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 		StringBuilder vars = new StringBuilder();
 		for (Variable v : fieldsDeclaration.getVariableNames())
 		{
-			Expression variableName = v.getVariableName();
-			vars.append(variableName.getName());
-			vars.append(',');
+			// TODO - Shalom: TEST this
+			Expression variableName = v.getName();
+			if (variableName.isStaticScalar())
+			{
+				vars.append(((Scalar) variableName).getStringValue());
+				vars.append(',');
+			}
 		}
 		vars = vars.deleteCharAt(vars.length() - 1);
 		String variables = vars.toString();
@@ -170,37 +130,7 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 	}
 
 	@Override
-	public void endVisit(FieldsDeclaration fieldsDeclaration)
-	{
-		super.endVisit(fieldsDeclaration);
-	}
-
-	@Override
-	public void endVisit(FunctionDeclaration functionDeclaration)
-	{
-		boolean isClassFunction = functionDeclaration.getParent() instanceof MethodDeclaration;
-		// FormalParameter[] formalParameters = functionDeclaration.getFormalParameters();
-
-		Identifier functionName = functionDeclaration.getFunctionName();
-		parserClient.handleFunctionDeclarationEnds(functionName.getName(), isClassFunction,
-				functionName.getEnd() - 1);
-
-		super.endVisit(functionDeclaration);
-	}
-
-	@Override
-	public boolean visit(ClassConstantDeclaration node)
-	{
-		Identifier[] variableNames = node.getVariableNames();
-		for (Identifier i : variableNames)
-		{
-			parserClient.handleClassConstDeclaration(i.getName(), null, i.getStart(), i.getEnd(), i.getEnd());
-		}
-		return super.visit(node);
-	}
-
-	@Override
-	public void endVisit(Include include)
+	public boolean visit(Include include)
 	{
 		int includeT = include.getIncludeType();
 		String includeType = "include"; //$NON-NLS-1$
@@ -222,15 +152,19 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 			default:
 				break;
 		}
-		Expression expr = include.getExpr();
+		Expression expr = include.getExpression();
 		if (expr instanceof ParenthesisExpression)
 		{
 			ParenthesisExpression pa = (ParenthesisExpression) expr;
-			expr = pa.getExpr();
+			expr = pa.getExpression();
 		}
-		parserClient.handleIncludedFile(includeType, expr.getName(), null, include.getStart(), include.getEnd(),
-				include.getEnd(), -1);
-		super.endVisit(include);
+		if (expr instanceof Scalar)
+		{
+			parserClient.handleIncludedFile(includeType, ((Scalar) expr).getStringValue(), null, include.getStart(),
+					include.getEnd(), include.getEnd(), -1);
+		}
+		super.visit(include);
+		return true;
 	}
 
 	@Override
@@ -292,19 +226,129 @@ public final class NodeBuildingVisitor extends PHPASTVisitorStub
 			MethodDeclaration md = (MethodDeclaration) functionDeclaration.getParent();
 			modifiers = md.getModifier();
 		}
-		FormalParameter[] formalParameters = functionDeclaration.getFormalParameters();
+		List<FormalParameter> formalParameters = functionDeclaration.formalParameters();
 		for (FormalParameter p : formalParameters)
 		{
-			String type = p.getParameterType() != null ? p.getParameterType().getName() : null;
-			String vName = p.getParameterName() != null ? p.getParameterName().getName() : null;
+			// TODO - Shalom: Test this
+			String type = null;
+			String vName = null;
+			String defaultVal = null;
+			Expression parameterType = p.getParameterType();
+			Expression parameterName = p.getParameterName();
+			Expression defaultValue = p.getDefaultValue();
+			if (parameterType instanceof Variable)
+				type = ((Identifier) ((Variable) parameterType).getName()).getName();
+			if (parameterName instanceof Variable)
+				vName = ((Identifier) ((Variable) parameterName).getName()).getName();
+			if (defaultValue != null && defaultValue.isStaticScalar())
+				defaultVal = ((Scalar) defaultValue).getStringValue();
 
-			parserClient.handleFunctionParameter(type, vName, false, false, p.getDefaultValue() != null ? p
-					.getDefaultValue().getName() : null, p.getStart(), p.getEnd(), p.getEnd(), -1);
+			parserClient.handleFunctionParameter(type, vName, false, false, defaultVal, p.getStart(), p.getEnd(), p
+					.getEnd(), -1);
 		}
 		Identifier functionName = functionDeclaration.getFunctionName();
-		parserClient.handleFunctionDeclaration(functionName.getName(), isClassFunction,
-				modifiers, null, functionName.getStart(), functionName.getEnd(), -1);
-		return super.visit(functionDeclaration);
+		parserClient.handleFunctionDeclaration(functionName.getName(), isClassFunction, modifiers, null, functionName
+				.getStart(), functionName.getEnd(), -1);
+		return false;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.ClassDeclaration)
+	 */
+	@Override
+	public void endVisit(ClassDeclaration classDeclaration)
+	{
+		parserClient.handleClassDeclarationEnds(null, -1);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration
+	 * )
+	 */
+	@Override
+	public void endVisit(ConstantDeclaration node)
+	{
+		// Do nothing
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration)
+	 */
+	@Override
+	public void endVisit(FieldsDeclaration fieldsDeclaration)
+	{
+		// Do nothing
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration
+	 * )
+	 */
+	@Override
+	public void endVisit(FunctionDeclaration functionDeclaration)
+	{
+		parserClient.handleFunctionDeclarationEnds(null, false, -1);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.Include)
+	 */
+	@Override
+	public void endVisit(Include include)
+	{
+		// Do nothing
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.InLineHtml)
+	 */
+	@Override
+	public void endVisit(InLineHtml inLineHtml)
+	{
+		// Do nothing
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration
+	 * )
+	 */
+	@Override
+	public void endVisit(InterfaceDeclaration interfaceDeclaration)
+	{
+		parserClient.handleClassDeclarationEnds(null, -1);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration
+	 * )
+	 */
+	@Override
+	public void endVisit(NamespaceDeclaration node)
+	{
+		// Do nothing
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.utils.PHPASTVisitorStub#endVisit(org.eclipse.php.internal.core.ast.nodes.UseStatement)
+	 */
+	@Override
+	public void endVisit(UseStatement node)
+	{
+		// Do nothing
+	}
 }

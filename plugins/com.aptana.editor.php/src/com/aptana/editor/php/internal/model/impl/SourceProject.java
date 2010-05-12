@@ -43,12 +43,12 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.ISourceProject;
 import com.aptana.editor.php.internal.builder.IDirectory;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.ProjectBuildPath;
 import com.aptana.editor.php.internal.model.ModelManager;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.ISourceProject;
 
 /**
  * Source project.

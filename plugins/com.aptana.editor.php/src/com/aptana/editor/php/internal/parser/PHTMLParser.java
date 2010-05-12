@@ -1,20 +1,21 @@
 package com.aptana.editor.php.internal.parser;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org.eclipse.php.internal.core.ast.nodes.Program;
-import org.eclipse.php.internal.core.ast.parser.ASTParser;
 import org.eclipse.php.internal.core.ast.visitor.ApplyAll;
 
 import beaver.Symbol;
 
 import com.aptana.editor.common.parsing.CompositeParser;
 import com.aptana.editor.html.parsing.HTMLParser;
+import com.aptana.editor.php.core.preferences.PHPVersionProvider;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilderClient;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
-import com.aptana.editor.php.utils.PHPASTVisitorProxy;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.ast.ParseBaseNode;
@@ -40,7 +41,9 @@ public class PHTMLParser extends CompositeParser
 		Program ast = null;
 		try
 		{
-			ast = ASTParser.parse(source);
+			// TODO: Shalom - Get the active project and pass it to the version provider.
+			ASTParser parser = ASTParser.newParser(new StringReader(source), PHPVersionProvider.getPHPVersion(null));
+			ast = parser.createAST(null);
 		}
 		catch (Exception e)
 		{
@@ -59,45 +62,17 @@ public class PHTMLParser extends CompositeParser
 		ApplyAll astPrinter = new ApplyAll(){
 
 			@Override
-			public void apply(ASTNode node)
+			public boolean apply(ASTNode node)
 			{
 				System.out.println(node.toString());
-				super.apply(node);
+				return true;
 			}
 			
 		};
 		ast.accept(astPrinter);
 		NodeBuilderClient builderClient = new NodeBuilderClient();
-		PHPASTVisitorProxy visitor = new PHPASTVisitorProxy(new NodeBuildingVisitor(builderClient));
-		ast.accept(visitor);
+		ast.accept(new NodeBuildingVisitor(builderClient));
 		PHPBlockNode nodes = builderClient.populateNodes();
 		root.addChild(nodes);
-	}
-
-	private void processRubyBlock(IParseNode root) throws IOException, Exception
-	{
-		Symbol startTag = getCurrentSymbol();
-		advance();
-
-		// finds the entire ruby block
-		int start = getCurrentSymbol().getStart();
-		int end = start;
-		short id = getCurrentSymbol().getId();
-		while (/* id != ERBTokens.RUBY_END && */id != EOF) // TODO
-		{
-			end = getCurrentSymbol().getEnd();
-			advance();
-			id = getCurrentSymbol().getId();
-		}
-
-		// IParseNode result = getParseResult(new PHPParser(), start, end);
-		// if (result != null)
-		// {
-		// Symbol endTag = getCurrentSymbol();
-		// PHPBaseParseNode php = new PHPBaseParseNode(typeIndex, modifiers, startOffset, endOffset, name)
-		// ERBScript erb = new ERBScript((IRubyScript) result, startTag.value.toString(), endTag.value.toString());
-		// erb.setLocation(startTag.getStart(), endTag.getEnd());
-		// root.addChild(erb);
-		// }
 	}
 }

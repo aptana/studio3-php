@@ -3,14 +3,15 @@ package com.aptana.editor.php.internal.editor.scanner;
 import java.io.IOException;
 import java.io.StringReader;
 
+import java_cup.sym;
+import java_cup.runtime.Symbol;
+
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.parser.AstLexer;
-import org.eclipse.php.internal.core.phpModel.javacup.sym;
-import org.eclipse.php.internal.core.phpModel.javacup.runtime.Symbol;
+import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.editor.html.parsing.HTMLTokenScanner;
 import com.aptana.editor.php.PHPEditorPlugin;

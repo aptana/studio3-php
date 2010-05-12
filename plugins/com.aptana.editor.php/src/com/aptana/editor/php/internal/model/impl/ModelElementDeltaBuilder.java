@@ -14,14 +14,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.IModelElementDelta;
+import com.aptana.editor.php.core.model.IParent;
+import com.aptana.editor.php.core.model.env.MemberElementInfo;
+import com.aptana.editor.php.core.model.env.ModelElementInfo;
+import com.aptana.editor.php.core.model.env.SourceMethodElementInfo;
 import com.aptana.editor.php.internal.model.ModelElementDelta;
 import com.aptana.editor.php.internal.model.impl.env.SourceTypeElementInfo;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.IModelElementDelta;
-import com.aptana.editor.php.model.IParent;
-import com.aptana.editor.php.model.env.MemberElementInfo;
-import com.aptana.editor.php.model.env.ModelElementInfo;
-import com.aptana.editor.php.model.env.SourceMethodElementInfo;
 
 /**
  * A script element delta biulder creates a script element delta on a script element between the version of the script

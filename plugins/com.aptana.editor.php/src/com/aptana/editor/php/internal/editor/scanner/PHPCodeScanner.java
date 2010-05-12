@@ -3,16 +3,17 @@ package com.aptana.editor.php.internal.editor.scanner;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import java_cup.runtime.Symbol;
+
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.php.internal.core.phpModel.javacup.runtime.Symbol;
 
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.theme.IThemeManager;
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.internal.editor.preferences.PHPVersionProvider;
+import com.aptana.editor.php.core.preferences.PHPVersionProvider;
 import com.aptana.editor.php.internal.editor.scanner.tokenMap.IPHPTokenMapper;
 import com.aptana.editor.php.internal.editor.scanner.tokenMap.PHPTokenMapperFactory;
 

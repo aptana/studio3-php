@@ -154,11 +154,10 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	 */
 	public void handleClassDeclarationEnds(String className, int endPosition)
 	{
-		if (current instanceof PHPClassParseNode)
-		{
-			PHPClassParseNode fn = (PHPClassParseNode) current;
-			fn.setEndOffset(endPosition);
-		}
+		/*
+		 * if (current instanceof PHPClassParseNode) { PHPClassParseNode fn = (PHPClassParseNode) current;
+		 * fn.setEndOffset(endPosition); }
+		 */
 		current = (IPHPParseNode) stack.pop();
 	}
 
@@ -250,11 +249,13 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	 */
 	public void handleFunctionDeclarationEnds(String functionName, boolean isClassFunction, int endPosition)
 	{
+		/*
 		if (current instanceof PHPFunctionParseNode)
 		{
 			PHPFunctionParseNode fn = (PHPFunctionParseNode) current;
 			fn.setEndOffset(endPosition);
 		}
+		*/
 		current = (IPHPParseNode) stack.pop();
 
 	}

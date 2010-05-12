@@ -39,8 +39,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import com.aptana.editor.php.model.IType;
-import com.aptana.editor.php.model.ITypeHierarchyChangedListener;
+import com.aptana.editor.php.core.model.IType;
+import com.aptana.editor.php.core.model.ITypeHierarchyChangedListener;
 
 /**
  * A type hierarchy provides navigations between a type and its resolved supertypes and subtypes.

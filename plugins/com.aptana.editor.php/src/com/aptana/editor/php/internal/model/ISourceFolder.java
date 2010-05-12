@@ -34,8 +34,8 @@
  */
 package com.aptana.editor.php.internal.model;
 
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.IParent;
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.IParent;
 
 /**
  * Folder.

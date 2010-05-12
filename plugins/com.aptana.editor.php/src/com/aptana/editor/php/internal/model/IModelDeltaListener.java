@@ -34,7 +34,7 @@
  */
 package com.aptana.editor.php.internal.model;
 
-import com.aptana.editor.php.model.IModelElementDelta;
+import com.aptana.editor.php.core.model.IModelElementDelta;
 
 /**
  * Model delta listener.

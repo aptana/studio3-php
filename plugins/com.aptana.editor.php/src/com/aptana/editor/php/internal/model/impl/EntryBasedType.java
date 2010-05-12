@@ -40,6 +40,12 @@ import java.util.List;
 
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
 
+import com.aptana.editor.php.core.model.IField;
+import com.aptana.editor.php.core.model.IMethod;
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.ISourceRange;
+import com.aptana.editor.php.core.model.IType;
+import com.aptana.editor.php.core.model.env.ModelElementInfo;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -48,12 +54,6 @@ import com.aptana.editor.php.internal.model.impl.env.SourceTypeElementInfo;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.model.utils.TypeHierarchyUtils;
 import com.aptana.editor.php.internal.model.utils.TypeUtils;
-import com.aptana.editor.php.model.IField;
-import com.aptana.editor.php.model.IMethod;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.ISourceRange;
-import com.aptana.editor.php.model.IType;
-import com.aptana.editor.php.model.env.ModelElementInfo;
 
 /**
  * EntryBasedType

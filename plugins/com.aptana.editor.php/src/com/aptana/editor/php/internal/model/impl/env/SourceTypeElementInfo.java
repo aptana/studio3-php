@@ -9,16 +9,16 @@
  *******************************************************************************/
 package com.aptana.editor.php.internal.model.impl.env;
 
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.IType;
+import com.aptana.editor.php.core.model.env.ISourceField;
+import com.aptana.editor.php.core.model.env.ISourceMethod;
+import com.aptana.editor.php.core.model.env.ISourceType;
+import com.aptana.editor.php.core.model.env.MemberElementInfo;
 import com.aptana.editor.php.internal.model.impl.AbstractModelElement;
 import com.aptana.editor.php.internal.model.impl.EntryBasedField;
 import com.aptana.editor.php.internal.model.impl.EntryBasedMethod;
 import com.aptana.editor.php.internal.model.impl.EntryBasedType;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.IType;
-import com.aptana.editor.php.model.env.ISourceField;
-import com.aptana.editor.php.model.env.ISourceMethod;
-import com.aptana.editor.php.model.env.ISourceType;
-import com.aptana.editor.php.model.env.MemberElementInfo;
 
 public class SourceTypeElementInfo extends MemberElementInfo implements ISourceType
 {

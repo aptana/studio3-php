@@ -1,12 +1,13 @@
 package com.aptana.editor.php.internal.editor.scanner.tokenMap;
 
+import java_cup.runtime.Symbol;
+
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.php.internal.core.ast.parser.ParserConstants53;
-import org.eclipse.php.internal.core.phpModel.javacup.runtime.Symbol;
+import org.eclipse.php.internal.core.ast.scanner.php53.ParserConstants;
 
 import com.aptana.editor.php.internal.editor.scanner.PHPCodeScanner;
 
-public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants53
+public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 {
 
 	@Override

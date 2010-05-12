@@ -41,6 +41,11 @@ import java.util.List;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import com.aptana.editor.php.core.model.IMember;
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.core.model.ISourceRange;
+import com.aptana.editor.php.core.model.IType;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -50,11 +55,6 @@ import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ElementsIndexingUtils;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.model.utils.TypeUtils;
-import com.aptana.editor.php.model.IMember;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.ISourceModule;
-import com.aptana.editor.php.model.ISourceRange;
-import com.aptana.editor.php.model.IType;
 
 /**
  * Abstract member.

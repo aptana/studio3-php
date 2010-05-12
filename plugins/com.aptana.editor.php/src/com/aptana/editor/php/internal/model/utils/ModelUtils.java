@@ -41,6 +41,10 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
 
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.core.model.ISourceProject;
+import com.aptana.editor.php.core.model.IType;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
@@ -58,10 +62,6 @@ import com.aptana.editor.php.internal.model.impl.EntryBasedType;
 import com.aptana.editor.php.internal.model.impl.SourceFolder;
 import com.aptana.editor.php.internal.model.impl.SourceModule;
 import com.aptana.editor.php.internal.model.impl.SourceProject;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.ISourceModule;
-import com.aptana.editor.php.model.ISourceProject;
-import com.aptana.editor.php.model.IType;
 
 /**
  * ModelUtils.

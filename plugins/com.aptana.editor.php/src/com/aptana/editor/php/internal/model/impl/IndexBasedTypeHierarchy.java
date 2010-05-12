@@ -43,6 +43,9 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.core.model.IType;
+import com.aptana.editor.php.core.model.ITypeHierarchyChangedListener;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IModuleIndexListener;
@@ -54,9 +57,6 @@ import com.aptana.editor.php.internal.model.ITypeHierarchy;
 import com.aptana.editor.php.internal.model.ModelException;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.model.utils.TypeHierarchyUtils;
-import com.aptana.editor.php.model.ISourceModule;
-import com.aptana.editor.php.model.IType;
-import com.aptana.editor.php.model.ITypeHierarchyChangedListener;
 
 /**
  * Global type hierarchy based on php index. This type hierarchy is not based on a single type, but instead is dynamic

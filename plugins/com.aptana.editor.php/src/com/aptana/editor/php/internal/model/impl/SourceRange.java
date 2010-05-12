@@ -34,7 +34,7 @@
  */
 package com.aptana.editor.php.internal.model.impl;
 
-import com.aptana.editor.php.model.ISourceRange;
+import com.aptana.editor.php.core.model.ISourceRange;
 
 /**
  * Source range.

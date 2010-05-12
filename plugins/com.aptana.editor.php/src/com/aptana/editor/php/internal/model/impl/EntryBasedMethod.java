@@ -40,12 +40,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.aptana.editor.php.core.model.IMethod;
+import com.aptana.editor.php.core.model.ISourceRange;
+import com.aptana.editor.php.core.model.env.ModelElementInfo;
+import com.aptana.editor.php.core.model.env.SourceMethodElementInfo;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
-import com.aptana.editor.php.model.IMethod;
-import com.aptana.editor.php.model.ISourceRange;
-import com.aptana.editor.php.model.env.ModelElementInfo;
-import com.aptana.editor.php.model.env.SourceMethodElementInfo;
 
 /**
  * EntryBasedMethod

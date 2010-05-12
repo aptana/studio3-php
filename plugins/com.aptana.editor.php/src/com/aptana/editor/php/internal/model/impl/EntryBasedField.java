@@ -34,13 +34,13 @@
  */
 package com.aptana.editor.php.internal.model.impl;
 
+import com.aptana.editor.php.core.model.IField;
+import com.aptana.editor.php.core.model.ISourceRange;
+import com.aptana.editor.php.core.model.env.ModelElementInfo;
+import com.aptana.editor.php.core.model.env.SourceFieldElementInfo;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
-import com.aptana.editor.php.model.IField;
-import com.aptana.editor.php.model.ISourceRange;
-import com.aptana.editor.php.model.env.ModelElementInfo;
-import com.aptana.editor.php.model.env.SourceFieldElementInfo;
 
 /**
  * EntryBasedField

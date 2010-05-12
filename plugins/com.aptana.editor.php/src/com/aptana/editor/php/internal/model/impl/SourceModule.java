@@ -37,9 +37,18 @@ package com.aptana.editor.php.internal.model.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.dltk.internal.core.util.Util;
 
+import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.core.model.IMethod;
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.core.model.IType;
+import com.aptana.editor.php.core.model.env.ModelElementInfo;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -47,11 +56,6 @@ import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
-import com.aptana.editor.php.model.IMethod;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.ISourceModule;
-import com.aptana.editor.php.model.IType;
-import com.aptana.editor.php.model.env.ModelElementInfo;
 
 /**
  * SourceModule
@@ -60,6 +64,8 @@ import com.aptana.editor.php.model.env.ModelElementInfo;
  */
 public class SourceModule extends AbstractResourceElement implements ISourceModule
 {
+
+	private static final char[] EMPTY_CONTENT = new char[0];
 
 	/**
 	 * SourceModule constructor.
@@ -231,5 +237,28 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		}
 
 		return info;
+	}
+
+	@Override
+	public char[] getSourceAsCharArray()
+	{
+		IFile file = (IFile) getResource();
+		if (file == null)
+		{
+			throw new IllegalStateException("Source module resource was null"); //$NON-NLS-1$
+		}
+		if (!file.exists())
+		{
+			throw new IllegalStateException("Source module resource does not exist"); //$NON-NLS-1$
+		}
+		try
+		{
+			return Util.getResourceContentsAsCharArray(file, file.getCharset());
+		}
+		catch (CoreException e)
+		{
+			PHPEditorPlugin.logError(e);
+		}
+		return EMPTY_CONTENT;
 	}
 }

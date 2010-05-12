@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.aptana.editor.php.core.model.IModelElementDelta;
+import com.aptana.editor.php.core.model.ISourceModel;
+import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.indexer.IModuleIndexListener;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.builder.IDirectory;
@@ -47,9 +50,6 @@ import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.model.impl.ModelElementDeltaBuilder;
 import com.aptana.editor.php.internal.model.impl.SourceModel;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
-import com.aptana.editor.php.model.IModelElementDelta;
-import com.aptana.editor.php.model.ISourceModel;
-import com.aptana.editor.php.model.ISourceModule;
 
 /**
  * ModelManager

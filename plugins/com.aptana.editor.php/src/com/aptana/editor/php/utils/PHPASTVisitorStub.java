@@ -45,7 +45,6 @@ import org.eclipse.php.internal.core.ast.nodes.Block;
 import org.eclipse.php.internal.core.ast.nodes.BreakStatement;
 import org.eclipse.php.internal.core.ast.nodes.CastExpression;
 import org.eclipse.php.internal.core.ast.nodes.CatchClause;
-import org.eclipse.php.internal.core.ast.nodes.ClassConstantDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org.eclipse.php.internal.core.ast.nodes.ClassName;
@@ -161,11 +160,6 @@ public class PHPASTVisitorStub implements IPHPASTVisitor
 	}
 
 	public void endVisit(CatchClause catchClause)
-	{
-
-	}
-
-	public void endVisit(ClassConstantDeclaration classConstantDeclaration)
 	{
 
 	}
@@ -485,12 +479,6 @@ public class PHPASTVisitorStub implements IPHPASTVisitor
 	}
 
 	public boolean visit(CatchClause catchClause)
-	{
-
-		return true;
-	}
-
-	public boolean visit(ClassConstantDeclaration classConstantDeclaration)
 	{
 
 		return true;
@@ -822,14 +810,12 @@ public class PHPASTVisitorStub implements IPHPASTVisitor
 		return true;
 	}
 
-	public boolean endVisit(NamespaceDeclaration node)
-	{
-		return false;
+	public void endVisit(NamespaceDeclaration node) {
+		
 	}
 
-	public boolean endVisit(NamespaceName node)
+	public void endVisit(NamespaceName node)
 	{
-		return false;
 	}
 
 	public void endVisit(LambdaFunctionDeclaration node)

@@ -38,6 +38,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.core.model.IField;
+import com.aptana.editor.php.core.model.IMethod;
+import com.aptana.editor.php.core.model.IModelElement;
+import com.aptana.editor.php.core.model.IType;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IIndexChangeListener;
@@ -59,10 +63,6 @@ import com.aptana.editor.php.internal.parser.nodes.NodeBuilderClient;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
-import com.aptana.editor.php.model.IField;
-import com.aptana.editor.php.model.IMethod;
-import com.aptana.editor.php.model.IModelElement;
-import com.aptana.editor.php.model.IType;
 import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.lexer.Range;
 
