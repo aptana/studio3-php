@@ -3,6 +3,9 @@ package com.aptana.editor.php;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -58,6 +61,42 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	public static PHPEditorPlugin getDefault()
 	{
 		return plugin;
+	}
+
+	/**
+	 * getImage
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static Image getImage(String path)
+	{
+		ImageRegistry registry = plugin.getImageRegistry();
+		Image image = registry.get(path);
+
+		if (image == null)
+		{
+			ImageDescriptor id = getImageDescriptor(path);
+
+			if (id != null)
+			{
+				registry.put(path, id);
+				image = registry.get(path);
+			}
+		}
+
+		return image;
+	}
+
+	/**
+	 * getImageDescriptor
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static ImageDescriptor getImageDescriptor(String path)
+	{
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
 	public static void logInfo(String string, Throwable e)

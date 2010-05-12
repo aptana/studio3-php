@@ -5922,7 +5922,7 @@ parser.getParserClient().handleFunctionDeclarationStarts(functionName);
               Object RESULT = null;
 		int modifierleft = ((Symbol)CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-1)).left;
 		String className = (String)((Symbol) CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-0)).value;
- parser.getParserClient().hadleClassDeclarationStarts(className, modifierleft); 
+ parser.getParserClient().handleClassDeclarationStarts(className, modifierleft); 
               CUP$PhpParser5$result = new Symbol(114/*NT$6*/, ((Symbol)CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-0)).right, ((Symbol)CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-0)).right, RESULT);
             }
           return CUP$PhpParser5$result;
@@ -5967,7 +5967,7 @@ parser.getParserClient().handleFunctionDeclarationStarts(functionName);
               Object RESULT = null;
 		int modifierleft = ((Symbol)CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-1)).left;
 		String className = (String)((Symbol) CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-0)).value;
- parser.getParserClient().hadleClassDeclarationStarts(className, modifierleft); 
+ parser.getParserClient().handleClassDeclarationStarts(className, modifierleft); 
               CUP$PhpParser5$result = new Symbol(112/*NT$4*/, ((Symbol)CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-0)).right, ((Symbol)CUP$PhpParser5$stack.elementAt(CUP$PhpParser5$top-0)).right, RESULT);
             }
           return CUP$PhpParser5$result;

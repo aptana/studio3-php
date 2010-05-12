@@ -9,8 +9,8 @@ import com.aptana.editor.common.outline.CommonOutlineItem;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.internal.editor.outline.PHPDecoratingLabelProvider;
 import com.aptana.editor.php.internal.editor.outline.PHTMLOutlineContentProvider;
-import com.aptana.editor.php.internal.editor.outline.PHTMLOutlineLabelProvider;
 import com.aptana.editor.php.internal.parser.PHTMLParser;
 import com.aptana.parsing.lexer.IRange;
 
@@ -47,7 +47,7 @@ public class PHPSourceEditor extends HTMLEditor
 		CommonOutlinePage outline = super.createOutlinePage();
 		// Add the PHP-HTML (PHTML) outline provider
 		outline.setContentProvider(new PHTMLOutlineContentProvider());
-		outline.setLabelProvider(new PHTMLOutlineLabelProvider(getFileService().getParseState()));
+		outline.setLabelProvider(new PHPDecoratingLabelProvider(getFileService().getParseState()));
 
 		return outline;
 	}

@@ -31,7 +31,7 @@ public interface ParserClient {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void hadleClassDeclarationStarts(String className, int startPosition);
+	void handleClassDeclarationStarts(String className, int startPosition);
 
 	void handleClassDeclaration(String className, int modifier, String superClassName, String interfacesNames, PHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber);
 

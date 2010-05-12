@@ -1,9 +1,8 @@
 package com.aptana.editor.php.internal.parser;
-import org.eclipse.php.internal.core.PHPVersion;
-
 import com.aptana.editor.common.parsing.IScannerSwitchStrategy;
 import com.aptana.editor.common.parsing.ScannerSwitchStrategy;
 import com.aptana.editor.html.parsing.HTMLScanner;
+import com.aptana.editor.php.core.preferences.PHPVersionProvider;
 import com.aptana.editor.php.internal.editor.scanner.PHPTokenScanner;
 
 public class PHTMLScanner extends HTMLScanner
@@ -19,7 +18,8 @@ public class PHTMLScanner extends HTMLScanner
 
 	public PHTMLScanner()
 	{
-		super(new PHPTokenScanner(PHPVersion.PHP5), new IScannerSwitchStrategy[] { PHP_STRATEGY });
+		// TODO: Shalom - Pass the current project.
+		super(new PHPTokenScanner(PHPVersionProvider.getPHPVersion(null)), new IScannerSwitchStrategy[] { PHP_STRATEGY });
 	}
 
 	public short getTokenType(Object data)

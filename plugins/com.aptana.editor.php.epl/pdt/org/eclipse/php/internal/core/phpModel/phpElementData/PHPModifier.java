@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.phpModel.phpElementData;
 
+import org.eclipse.php.core.compiler.PHPFlags;
+
+/**
+ * @deprecated Use {@link PHPFlags}
+ */
 public class PHPModifier {
 
 	/**

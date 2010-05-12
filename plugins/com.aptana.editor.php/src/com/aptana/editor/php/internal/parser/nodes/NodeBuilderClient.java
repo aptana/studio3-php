@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.phpModel.parser.ParserClient;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.editor.preferences.IPHPEditorPreferencesConstants;
@@ -65,7 +65,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	 */
 	public NodeBuilderClient()
 	{
-		current = new PHPBaseParseNode(0, 0, 0, 0, EMPTY_STRING);
+		current = new PHPBaseParseNode((short) 0, 0, 0, 0, EMPTY_STRING);
 		this.root = current;
 	}
 
@@ -133,7 +133,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 			for (String encodedInterfaceName : encodedInterfaces)
 			{
 				interfaces.add(decodeClassName(encodedInterfaceName));
-				pn.addChild(new PHPExtendsNode(PHPModifier.INTERFACE, startPosition, stopPosition,
+				pn.addChild(new PHPExtendsNode(PHPFlags.AccInterface, startPosition, stopPosition,
 						decodeClassName(encodedInterfaceName)));
 			}
 			pn.setInterfaces(interfaces);
@@ -214,7 +214,8 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	 */
 	public void handleError(String description, int startPosition, int endPosition, int lineNumber)
 	{
-		System.out.println("NodeBuilderClient.handleError() --> " + description);
+		// TODO: Shalom - See what needs to be done to handle those errors.
+		System.out.println("NodeBuilderClient.handleError() --> " + description); //$NON-NLS-1$
 	}
 
 	public void handleTask(String taskName, String description, int startPosition, int endPosition, int lineNumber)
@@ -250,12 +251,9 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	public void handleFunctionDeclarationEnds(String functionName, boolean isClassFunction, int endPosition)
 	{
 		/*
-		if (current instanceof PHPFunctionParseNode)
-		{
-			PHPFunctionParseNode fn = (PHPFunctionParseNode) current;
-			fn.setEndOffset(endPosition);
-		}
-		*/
+		 * if (current instanceof PHPFunctionParseNode) { PHPFunctionParseNode fn = (PHPFunctionParseNode) current;
+		 * fn.setEndOffset(endPosition); }
+		 */
 		current = (IPHPParseNode) stack.pop();
 
 	}

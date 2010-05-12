@@ -25,6 +25,7 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	protected String name;
 	private int modifiers;
 	private PHPDocBlock documentation;
+	private short nodeType;
 
 	/**
 	 * Constructs a new PHPBaseParseNode
@@ -38,15 +39,16 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	/**
 	 * Constructs a new PHPBaseParseNode
 	 * 
-	 * @param typeIndex
+	 * @param nodeType
 	 * @param modifiers
 	 * @param startOffset
 	 * @param endOffset
 	 * @param name
 	 */
-	public PHPBaseParseNode(int typeIndex, int modifiers, int startOffset, int endOffset, String name)
+	public PHPBaseParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String name)
 	{
 		super(PHPMimeType.MimeType);
+		this.nodeType = nodeType;
 		this.name = name.length() != 0 ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;
 		// this.endOffset = endOffset >= startOffset ? endOffset : startOffset;
@@ -109,6 +111,14 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	}
 
 	/**
+	 * Returns the type of this node.
+	 */
+	public short getType()
+	{
+		return nodeType;
+	}
+
+	/**
 	 * @param endOffset
 	 */
 	public void setEndOffset(int endOffset)
@@ -124,8 +134,9 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 		}
 		return false;
 	}
-	
-	public String toString() {
+
+	public String toString()
+	{
 		return getNodeName();
 	}
 }

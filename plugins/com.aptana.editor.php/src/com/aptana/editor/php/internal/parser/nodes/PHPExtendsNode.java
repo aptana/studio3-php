@@ -72,6 +72,6 @@ public class PHPExtendsNode extends PHPBaseParseNode /* implements IResolvableIt
 			return children;
 		}
 
-		return new PHPBaseParseNode[] { new PHPBaseParseNode(0, 0, 0, 0, Messages.PHPExtendsNode_NonOnBuildPath0) };
+		return new PHPBaseParseNode[] { new PHPBaseParseNode((short)0, 0, 0, 0, Messages.PHPExtendsNode_NonOnBuildPath0) };
 	}
 }

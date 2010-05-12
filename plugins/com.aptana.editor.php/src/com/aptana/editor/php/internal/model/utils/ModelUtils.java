@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
+import org.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;
@@ -254,7 +254,7 @@ public class ModelUtils
 		for (IElementEntry entry : entries)
 		{
 			if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY
-					&& !PHPModifier.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
+					&& !PHPFlags.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
 			{
 				IModelElement element = convertEntry(entry);
 				if (element != null)
@@ -286,7 +286,7 @@ public class ModelUtils
 		for (IElementEntry entry : entries)
 		{
 			if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY
-					&& PHPModifier.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
+					&& PHPFlags.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
 			{
 				IModelElement element = convertEntry(entry);
 				if (element != null)

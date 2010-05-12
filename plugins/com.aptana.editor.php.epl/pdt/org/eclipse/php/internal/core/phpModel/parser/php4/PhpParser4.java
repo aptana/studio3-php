@@ -5020,7 +5020,7 @@ class CUP$PhpParser4$actions {
               Object RESULT = null;
 		int modifierleft = ((Symbol)CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-1)).left;
 		String className = (String)((Symbol) CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-0)).value;
- parser.getParserClient().hadleClassDeclarationStarts(className, modifierleft); 
+ parser.getParserClient().handleClassDeclarationStarts(className, modifierleft); 
               CUP$PhpParser4$result = new Symbol(81/*NT$3*/, ((Symbol)CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-0)).right, ((Symbol)CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-0)).right, RESULT);
             }
           return CUP$PhpParser4$result;
@@ -5046,7 +5046,7 @@ class CUP$PhpParser4$actions {
 		int modifierleft = ((Symbol)CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-1)).left;
 		int classNameleft = ((Symbol)CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-0)).left;
 		String className = (String)((Symbol) CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-0)).value;
- parser.getParserClient().hadleClassDeclarationStarts(className, modifierleft);
+ parser.getParserClient().handleClassDeclarationStarts(className, modifierleft);
        parser.getParserClient().handleClassDeclaration(className, PhpParser4.ZERO_INTEGER.intValue(), null, null, parser.getPHPDoc(modifierleft), modifierleft, classNameleft, parser.getCurrentLine());
     
               CUP$PhpParser4$result = new Symbol(80/*NT$2*/, ((Symbol)CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-0)).right, ((Symbol)CUP$PhpParser4$stack.elementAt(CUP$PhpParser4$top-0)).right, RESULT);

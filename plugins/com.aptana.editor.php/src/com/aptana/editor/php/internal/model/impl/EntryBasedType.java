@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
+import org.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.core.model.IField;
 import com.aptana.editor.php.core.model.IMethod;
@@ -197,7 +197,7 @@ public class EntryBasedType extends AbstractMember implements IType
 	 */
 	public boolean isInterface()
 	{
-		return PHPModifier.isInterface(entryValue.getModifiers());
+		return PHPFlags.isInterface(entryValue.getModifiers());
 	}
 
 	/**

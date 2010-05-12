@@ -9,47 +9,47 @@ public interface IPHPParseNode extends IParseNode
 	/**
 	 * CLASS_NODE
 	 */
-	public static final int CLASS_NODE = 450000;
+	public static final short CLASS_NODE = 4500;
 
 	/**
 	 * FUNCTION_NODE
 	 */
-	public static final int FUNCTION_NODE = 450001;
+	public static final short FUNCTION_NODE = 4501;
 
 	/**
 	 * VAR_NODE
 	 */
-	public static final int VAR_NODE = 450002;
+	public static final short VAR_NODE = 4502;
 
 	/**
 	 * CONST_NODE
 	 */
-	public static final int CONST_NODE = 450003;
+	public static final short CONST_NODE = 4503;
 
 	/**
 	 * BLOCK_NODE
 	 */
-	public static final int BLOCK_NODE = 450004;
+	public static final short BLOCK_NODE = 4504;
 
 	/**
 	 * KEYWORD_NODE
 	 */
-	public static final int KEYWORD_NODE = 450005;
+	public static final short KEYWORD_NODE = 4505;
 
 	/**
 	 * IMPORT_NODE
 	 */
-	public static final int IMPORT_NODE = 450006;
+	public static final short IMPORT_NODE = 4506;
 
 	/**
 	 * USE_NODE
 	 */
-	public static final int USE_NODE = 450007;
+	public static final short USE_NODE = 4507;
 
 	/**
 	 * NAMESPACE_NODE
 	 */
-	public static final int NAMESPACE_NODE = 450008;
+	public static final short NAMESPACE_NODE = 4508;
 
 	public void setDocumentation(PHPDocBlock docInfo);
 

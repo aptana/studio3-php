@@ -2,6 +2,7 @@ package com.aptana.editor.php.internal.parser.nodes;
 
 import java.util.List;
 
+import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
@@ -41,12 +42,13 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	}
 
 	@Override
-	public boolean visit(InterfaceDeclaration classDeclaration)
+	public boolean visit(InterfaceDeclaration interfaceDeclaration)
 	{
-		parserClient.hadleClassDeclarationStarts(classDeclaration.getName().getName(), classDeclaration.getStart());
-		String name = classDeclaration.getName().getName();
+		Identifier nameIdentifier = interfaceDeclaration.getName();
+		String name = nameIdentifier.getName();
+		parserClient.handleClassDeclarationStarts(name, interfaceDeclaration.getStart());
 
-		List<Identifier> interfaces = classDeclaration.interfaces();
+		List<Identifier> interfaces = interfaceDeclaration.interfaces();
 		String[] iNames = new String[interfaces.size()];
 		StringBuilder bld = new StringBuilder();
 		for (int a = 0; a < iNames.length; a++)
@@ -63,16 +65,16 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		{
 			string = null;
 		}
-		parserClient.handleClassDeclaration(name, 0, null, string, null, classDeclaration.getStart(), classDeclaration
+		parserClient.handleClassDeclaration(name, PHPFlags.AccInterface, null, string, null, nameIdentifier.getStart(), nameIdentifier
 				.getEnd() - 1, -1);
-		return super.visit(classDeclaration);
+		return super.visit(interfaceDeclaration);
 	}
 
 	@Override
 	public boolean visit(ClassDeclaration classDeclaration)
 	{
 		Identifier nameIdentifier = classDeclaration.getName();
-		parserClient.hadleClassDeclarationStarts(nameIdentifier.getName(), nameIdentifier.getStart());
+		parserClient.handleClassDeclarationStarts(nameIdentifier.getName(), nameIdentifier.getStart());
 		String name = nameIdentifier.getName();
 
 		List<Identifier> interfaces = classDeclaration.interfaces();
@@ -86,10 +88,10 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 				bld.append(',');
 			}
 		}
-		String string = bld.toString();
+		String interfacesNames = bld.toString();
 		if (interfaces.isEmpty())
 		{
-			string = null;
+			interfacesNames = null;
 		}
 		// TODO - Shalom - Take a look at the PDT ClassHighlighting (handle namespaces)
 		Expression superClass = classDeclaration.getSuperClass();
@@ -98,7 +100,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		{
 			superClassName = ((Identifier) superClass).getName();
 		}
-		parserClient.handleClassDeclaration(name, 0, superClassName, string, null, nameIdentifier.getStart(),
+		parserClient.handleClassDeclaration(name, 0, superClassName, interfacesNames, null, nameIdentifier.getStart(),
 				nameIdentifier.getEnd() - 1, -1);
 		return super.visit(classDeclaration);
 	}
@@ -107,24 +109,32 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	public boolean visit(FieldsDeclaration fieldsDeclaration)
 	{
 		int modifier = fieldsDeclaration.getModifier();
-		int startPosition = fieldsDeclaration.getStart();
-		int endPosition = fieldsDeclaration.getStart();
-		int stopPosition = endPosition;
+		int startPosition = -1;
+		int endPosition = -1;
 		PHPDocBlock docInfo = null;
 		StringBuilder vars = new StringBuilder();
 		for (Variable v : fieldsDeclaration.getVariableNames())
 		{
-			// TODO - Shalom: TEST this
 			Expression variableName = v.getName();
 			if (variableName.getType() == ASTNode.IDENTIFIER)
 			{
+				if (startPosition < 0)
+					startPosition = variableName.getStart();
+				endPosition = variableName.getEnd();
 				vars.append(((Identifier) variableName).getName());
 				vars.append(',');
 			}
 		}
 		vars = vars.deleteCharAt(vars.length() - 1);
 		String variables = vars.toString();
-		parserClient.handleClassVariablesDeclaration(variables, modifier, docInfo, startPosition, endPosition,
+		// Just in case of an error, make sure that we have start and end positions.
+		if (startPosition < 0 || endPosition < 0)
+		{
+			startPosition = fieldsDeclaration.getStart();
+			endPosition = fieldsDeclaration.getEnd();
+		}
+		int stopPosition = endPosition - 1;
+		parserClient.handleClassVariablesDeclaration(variables, modifier, docInfo, startPosition, endPosition - 1,
 				stopPosition);
 		super.visit(fieldsDeclaration);
 		return true;

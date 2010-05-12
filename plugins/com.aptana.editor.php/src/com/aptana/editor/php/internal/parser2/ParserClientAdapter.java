@@ -48,7 +48,7 @@ public class ParserClientAdapter implements ParserClient
 	 * @param className
 	 * @param startPosition
 	 */
-	public void hadleClassDeclarationStarts(String className, int startPosition)
+	public void handleClassDeclarationStarts(String className, int startPosition)
 	{
 
 	}
