@@ -2,6 +2,7 @@ package com.aptana.editor.php.internal.parser.nodes;
 
 import java.util.List;
 
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.Expression;
@@ -63,7 +64,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			string = null;
 		}
 		parserClient.handleClassDeclaration(name, 0, null, string, null, classDeclaration.getStart(), classDeclaration
-				.getEnd(), -1);
+				.getEnd() - 1, -1);
 		return super.visit(classDeclaration);
 	}
 
@@ -75,11 +76,11 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		String name = nameIdentifier.getName();
 
 		List<Identifier> interfaces = classDeclaration.interfaces();
-		String[] iNames = new String[interfaces.size()];
+		Identifier[] iNames = interfaces.toArray(new Identifier[interfaces.size()]);
 		StringBuilder bld = new StringBuilder();
 		for (int a = 0; a < iNames.length; a++)
 		{
-			bld.append(iNames[a]);
+			bld.append(iNames[a].getName());
 			if (a != iNames.length - 1)
 			{
 				bld.append(',');
@@ -93,12 +94,12 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		// TODO - Shalom - Take a look at the PDT ClassHighlighting (handle namespaces)
 		Expression superClass = classDeclaration.getSuperClass();
 		String superClassName = null;
-		if (superClass != null && superClass instanceof Identifier)
+		if (superClass != null && superClass.getType() == ASTNode.IDENTIFIER)
 		{
 			superClassName = ((Identifier) superClass).getName();
 		}
 		parserClient.handleClassDeclaration(name, 0, superClassName, string, null, nameIdentifier.getStart(),
-				nameIdentifier.getEnd(), -1);
+				nameIdentifier.getEnd() - 1, -1);
 		return super.visit(classDeclaration);
 	}
 
@@ -115,9 +116,9 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		{
 			// TODO - Shalom: TEST this
 			Expression variableName = v.getName();
-			if (variableName.isStaticScalar())
+			if (variableName.getType() == ASTNode.IDENTIFIER)
 			{
-				vars.append(((Scalar) variableName).getStringValue());
+				vars.append(((Identifier) variableName).getName());
 				vars.append(',');
 			}
 		}
@@ -153,15 +154,15 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 				break;
 		}
 		Expression expr = include.getExpression();
-		if (expr instanceof ParenthesisExpression)
+		if (expr != null && expr.getType() == ASTNode.PARENTHESIS_EXPRESSION)
 		{
 			ParenthesisExpression pa = (ParenthesisExpression) expr;
 			expr = pa.getExpression();
 		}
-		if (expr instanceof Scalar)
+		if (expr != null && expr.getType() == ASTNode.SCALAR)
 		{
 			parserClient.handleIncludedFile(includeType, ((Scalar) expr).getStringValue(), null, include.getStart(),
-					include.getEnd(), include.getEnd(), -1);
+					include.getEnd(), include.getEnd() - 1, -1);
 		}
 		super.visit(include);
 		return true;
@@ -173,7 +174,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		List<Identifier> variableNames = node.names();
 		for (Identifier i : variableNames)
 		{
-			parserClient.handleDefine('"' + i.getName() + '"', "...", null, i.getStart(), i.getEnd(), i.getEnd()); //$NON-NLS-1$
+			parserClient.handleDefine('"' + i.getName() + '"', "...", null, i.getStart(), i.getEnd(), i.getEnd() - 1); //$NON-NLS-1$
 		}
 		return super.visit(node);
 	}
@@ -190,7 +191,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		}
 		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		String segmentsString = stringBuilder.toString();
-		parserClient.handleNamespace(segmentsString, node.getStart(), node.getEnd());
+		parserClient.handleNamespace(segmentsString, node.getStart(), node.getEnd() - 1);
 		return true;
 	}
 
@@ -211,7 +212,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 			String segmentsString = stringBuilder.toString();
 			parserClient.handleUse(segmentsString, alias != null ? alias.getName() : null, node.getStart(), node
-					.getEnd());
+					.getEnd() - 1);
 		}
 		return super.visit(node);
 	}
@@ -219,7 +220,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FunctionDeclaration functionDeclaration)
 	{
-		boolean isClassFunction = functionDeclaration.getParent() instanceof MethodDeclaration;
+		ASTNode parent = functionDeclaration.getParent();
+		boolean isClassFunction = parent != null && parent.getType() == ASTNode.METHOD_DECLARATION;
 		int modifiers = 0;
 		if (isClassFunction)
 		{
@@ -236,19 +238,19 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			Expression parameterType = p.getParameterType();
 			Expression parameterName = p.getParameterName();
 			Expression defaultValue = p.getDefaultValue();
-			if (parameterType instanceof Variable)
+			if (parameterType != null && parameterType.getType() == ASTNode.VARIABLE)
 				type = ((Identifier) ((Variable) parameterType).getName()).getName();
-			if (parameterName instanceof Variable)
+			if (parameterName != null && parameterName.getType() == ASTNode.VARIABLE)
 				vName = ((Identifier) ((Variable) parameterName).getName()).getName();
-			if (defaultValue != null && defaultValue.isStaticScalar())
+			if (defaultValue != null && defaultValue.getType() == ASTNode.SCALAR)
 				defaultVal = ((Scalar) defaultValue).getStringValue();
 
 			parserClient.handleFunctionParameter(type, vName, false, false, defaultVal, p.getStart(), p.getEnd(), p
-					.getEnd(), -1);
+					.getEnd() - 1, -1);
 		}
 		Identifier functionName = functionDeclaration.getFunctionName();
 		parserClient.handleFunctionDeclaration(functionName.getName(), isClassFunction, modifiers, null, functionName
-				.getStart(), functionName.getEnd(), -1);
+				.getStart(), functionName.getEnd() - 1, -1);
 		return false;
 	}
 

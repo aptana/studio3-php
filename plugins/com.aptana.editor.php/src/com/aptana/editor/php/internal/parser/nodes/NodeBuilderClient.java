@@ -203,7 +203,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 		{
 			return;
 		}
-		PHPConstantNode pn = new PHPConstantNode(startPosition, endPosition, name);
+		PHPConstantNode pn = new PHPConstantNode(startPosition, stopPosition, name);
 		pn.setDocumentation(docInfo);
 		pn.setField(true);
 		current.addChild(pn);
