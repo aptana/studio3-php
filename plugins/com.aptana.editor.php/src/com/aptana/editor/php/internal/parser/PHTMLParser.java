@@ -9,7 +9,7 @@ import com.aptana.editor.common.parsing.CompositeParser;
 import com.aptana.editor.html.parsing.HTMLParser;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.preferences.PHPVersionProvider;
-import com.aptana.editor.php.internal.parser.nodes.NodeBuilderClient;
+import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
 import com.aptana.parsing.IParseState;
@@ -76,7 +76,7 @@ public class PHTMLParser extends CompositeParser
 		};
 		ast.accept(astPrinter);
 		*/
-		NodeBuilderClient builderClient = new NodeBuilderClient();
+		NodeBuilder builderClient = new NodeBuilder();
 		ast.accept(new NodeBuildingVisitor(builderClient));
 		PHPBlockNode nodes = builderClient.populateNodes();
 	    for (IParseNode child : nodes.getChildren())

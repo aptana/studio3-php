@@ -7,7 +7,6 @@ import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
-import com.aptana.editor.common.outline.CommonOutlineItem;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.parsing.ast.IParseNode;
@@ -48,7 +47,7 @@ public class PHPOutlineLabelDecorator extends AbstractComposingLabelDecorator
 	 * @param image
 	 *            The original image that we want to decorate.
 	 * @param element
-	 *            a {@link CommonOutlineItem} that contains a {@link PHPBaseParseNode} element.
+	 *            a {@link PHPOutlineItem} that contains a {@link PHPBaseParseNode} element.
 	 */
 	@Override
 	protected Object getCompositionKey(Image image, Object element)
@@ -71,20 +70,20 @@ public class PHPOutlineLabelDecorator extends AbstractComposingLabelDecorator
 
 	/**
 	 * Returns the inner referenced node from the given element. We expect the given element to be a
-	 * {@link CommonOutlineItem} which contains a reference node of {@link PHPBaseParseNode}. In any other case the
-	 * method will return null.
+	 * {@link PHPOutlineItem} which contains a reference node of {@link PHPBaseParseNode}. In any other case the method
+	 * will return null.
 	 * 
 	 * @param element
-	 *            A {@link CommonOutlineItem}
+	 *            A {@link PHPOutlineItem}
 	 * @return A {@link PHPBaseParseNode} instance, or null.
 	 */
 	protected PHPBaseParseNode getPHPNode(Object element)
 	{
-		if (!(element instanceof CommonOutlineItem))
+		if (!(element instanceof PHPOutlineItem))
 		{
 			return null;
 		}
-		CommonOutlineItem outlineItem = (CommonOutlineItem) element;
+		PHPOutlineItem outlineItem = (PHPOutlineItem) element;
 		IParseNode referenceNode = outlineItem.getReferenceNode();
 		if (referenceNode instanceof PHPBaseParseNode)
 			return (PHPBaseParseNode) referenceNode;

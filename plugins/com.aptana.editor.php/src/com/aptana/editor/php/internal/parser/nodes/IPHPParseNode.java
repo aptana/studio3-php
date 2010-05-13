@@ -62,4 +62,6 @@ public interface IPHPParseNode extends IParseNode
 	public void setEndOffset(int endOffset);
 
 	public boolean containsOffset(int offset);
+	
+	void setNameNode(String name, int startOffset, int endOffset);
 }

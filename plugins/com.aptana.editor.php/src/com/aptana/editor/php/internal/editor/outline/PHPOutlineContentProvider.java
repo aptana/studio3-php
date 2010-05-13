@@ -15,6 +15,20 @@ import com.aptana.parsing.ast.IParseNode;
  */
 public class PHPOutlineContentProvider extends CommonOutlineContentProvider
 {
+	
+	/* (non-Javadoc)
+	 * @see com.aptana.editor.common.outline.CommonOutlineContentProvider#getOutlineItem(com.aptana.parsing.ast.IParseNode)
+	 */
+	@Override
+	public CommonOutlineItem getOutlineItem(IParseNode node)
+	{
+		if (node == null)
+		{
+			return null;
+		}
+		return new PHPOutlineItem(node.getNameNode().getNameRange(), node);
+	}
+
 	@Override
 	protected Object[] filter(IParseNode[] nodes)
 	{

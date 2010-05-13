@@ -5,14 +5,17 @@ import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
 import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.outline.CommonOutlineItem;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.editor.outline.PHPDecoratingLabelProvider;
+import com.aptana.editor.php.internal.editor.outline.PHPOutlineItem;
 import com.aptana.editor.php.internal.editor.outline.PHTMLOutlineContentProvider;
+import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHTMLParser;
-import com.aptana.parsing.lexer.IRange;
+import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
+import com.aptana.parsing.ast.ILanguageNode;
+import com.aptana.parsing.ast.IParseNode;
 
 /**
  * The PHP editor central class.
@@ -20,7 +23,7 @@ import com.aptana.parsing.lexer.IRange;
  * @author Shalom Gibly <sgibly@aptana.com>
  */
 @SuppressWarnings("restriction")
-public class PHPSourceEditor extends HTMLEditor
+public class PHPSourceEditor extends HTMLEditor implements ILanguageNode
 {
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
 			'"', '"', '?', '?' };
@@ -58,20 +61,32 @@ public class PHPSourceEditor extends HTMLEditor
 		return PAIR_MATCHING_CHARS;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.AbstractThemeableEditor#getOutlineElementAt(int)
+	 */
 	@Override
-	protected void setSelectedElement(IRange element)
+	protected Object getOutlineElementAt(int caret)
 	{
-		if (element instanceof CommonOutlineItem)
+		IParseNode parseResult = getFileService().getParseResult();
+		if (parseResult != null)
 		{
-			// IParseNode node = ((CommonOutlineItem) element).getReferenceNode();
-			// TODO - Shalom: Set selected element
-			// if (node instanceof IImportContainer)
-			// {
-			// // just sets the highlight range and moves the cursor
-			// setHighlightRange(element.getStartingOffset(), element.getLength(), true);
-			// return;
-			// }
+			IParseNode node = parseResult.getNodeAt(caret);
+			if (node instanceof PHPExtendsNode)
+			{
+				node = node.getParent();
+			}
+			if (node != null)
+			{
+				return new PHPOutlineItem(node.getNameNode().getNameRange(), node);
+			}
 		}
-		super.setSelectedElement(element);
+		return super.getOutlineElementAt(caret);
+	}
+
+	@Override
+	public String getLanguage()
+	{
+		return PHPMimeType.MimeType;
 	}
 }

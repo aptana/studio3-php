@@ -12,6 +12,7 @@ package com.aptana.editor.php.internal.parser.nodes;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.parsing.ast.INameNode;
 import com.aptana.parsing.ast.ParseBaseNode;
 
 /**
@@ -26,6 +27,7 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	private int modifiers;
 	private PHPDocBlock documentation;
 	private short nodeType;
+	private INameNode nameNode;
 
 	/**
 	 * Constructs a new PHPBaseParseNode
@@ -138,5 +140,34 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	public String toString()
 	{
 		return getNodeName();
+	}
+
+	@Override
+	public void setNameNode(String name, int startOffset, int endOffset)
+	{
+		this.nameNode = new NameNode(name, startOffset, endOffset);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.parsing.ast.ParseBaseNode#getNameNode()
+	 */
+	@Override
+	public INameNode getNameNode()
+	{
+		if (this.nameNode != null)
+		{
+			return this.nameNode;
+		}
+		return super.getNameNode();
+	}
+	
+	/**
+	 * Override the default ParseBaseNode implementation to add a name check.
+	 */
+	@Override
+	public boolean equals(Object obj)
+	{
+		return super.equals(obj) && ((PHPBaseParseNode)obj).getNameNode().equals(this.getNameNode());
 	}
 }

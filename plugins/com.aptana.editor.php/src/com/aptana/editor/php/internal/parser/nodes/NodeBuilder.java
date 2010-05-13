@@ -14,18 +14,20 @@ import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.phpModel.parser.ParserClient;
+import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.Identifier;
+import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.editor.preferences.IPHPEditorPreferencesConstants;
-import com.aptana.editor.php.internal.parser.ParserClientAdapter;
 import com.aptana.parsing.ast.IParseNode;
 
 /**
  * @author Pavel Petrochenko
  */
-public class NodeBuilderClient extends ParserClientAdapter implements ParserClient
+public class NodeBuilder
 {
 
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
@@ -54,7 +56,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	/**
 	 * @param root
 	 */
-	public NodeBuilderClient(IPHPParseNode root)
+	public NodeBuilder(IPHPParseNode root)
 	{
 		this.current = root;
 		this.root = root;
@@ -63,7 +65,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	/**
 	 * 
 	 */
-	public NodeBuilderClient()
+	public NodeBuilder()
 	{
 		current = new PHPBaseParseNode((short) 0, 0, 0, 0, EMPTY_STRING);
 		this.root = current;
@@ -75,7 +77,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	 * @param collectVariables
 	 *            - whether to collect variables.
 	 */
-	public NodeBuilderClient(boolean collectVariables)
+	public NodeBuilder(boolean collectVariables)
 	{
 		this();
 		this.collectVariables = collectVariables;
@@ -106,9 +108,9 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclaration(java.lang.String, int,
-	 *      java.lang.String, java.lang.String, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int,
-	 *      int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclaration(java.lang.String,
+	 *      int, java.lang.String, java.lang.String, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock,
+	 *      int, int, int)
 	 */
 	public void handleClassDeclaration(String className, int modifier, String superClassName, String interfacesNames,
 			PHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber)
@@ -150,20 +152,8 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclarationEnds(java.lang.String, int)
-	 */
-	public void handleClassDeclarationEnds(String className, int endPosition)
-	{
-		/*
-		 * if (current instanceof PHPClassParseNode) { PHPClassParseNode fn = (PHPClassParseNode) current;
-		 * fn.setEndOffset(endPosition); }
-		 */
-		current = (IPHPParseNode) stack.pop();
-	}
-
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassVariablesDeclaration(java.lang.String, int,
-	 *      org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassVariablesDeclaration(java.lang.String,
+	 *      int, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
 	 */
 	public void handleClassVariablesDeclaration(String variables, int modifier, PHPDocBlock docInfo, int startPosition,
 			int endPosition, int stopPosition)
@@ -189,8 +179,8 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleDefine(java.lang.String, java.lang.String,
-	 *      org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleDefine(java.lang.String,
+	 *      java.lang.String, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
 	 */
 	public void handleDefine(String name, String value, PHPDocBlock docInfo, int startPosition, int endPosition,
 			int stopPosition)
@@ -210,7 +200,8 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleError(java.lang.String, int, int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleError(java.lang.String,
+	 *      int, int, int)
 	 */
 	public void handleError(String description, int startPosition, int endPosition, int lineNumber)
 	{
@@ -227,8 +218,8 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclaration(java.lang.String, boolean,
-	 *      int, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclaration(java.lang.String,
+	 *      boolean, int, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
 	 */
 	public void handleFunctionDeclaration(String functionName, boolean isClassFunction, int modifier,
 			PHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber)
@@ -242,20 +233,6 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 		}
 		parameters = new ArrayList<Object>();
 		pushNode(pn);
-	}
-
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclarationEnds(java.lang.String,
-	 *      boolean, int)
-	 */
-	public void handleFunctionDeclarationEnds(String functionName, boolean isClassFunction, int endPosition)
-	{
-		/*
-		 * if (current instanceof PHPFunctionParseNode) { PHPFunctionParseNode fn = (PHPFunctionParseNode) current;
-		 * fn.setEndOffset(endPosition); }
-		 */
-		current = (IPHPParseNode) stack.pop();
-
 	}
 
 	/**
@@ -459,8 +436,6 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 			int startPosition, int endPosition, int stopPosition, int lineNumber)
 	{
 		current.addChild(new PHPIncludeNode(startPosition, endPosition, includeFileName, includingType));
-		super.handleIncludedFile(includingType, includeFileName, docInfo, startPosition, endPosition, stopPosition,
-				lineNumber);
 	}
 
 	/**
@@ -489,11 +464,55 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 		return encodedName.substring(bracketIndex + 1);
 	}
 
-	@Override
 	public void handleSyntaxError(int currToken, String currText, short[] rowOfProbe, int startPosition,
 			int endPosition, int lineNumber)
 	{
 		hasSyntaxErrors = true;
 	}
 
+	public void setNodeName(Identifier nameIdentifier)
+	{
+		if (current != null && nameIdentifier != null)
+		{
+			current.setNameNode(nameIdentifier.getName(), nameIdentifier.getStart(), nameIdentifier.getEnd() - 1);
+		}
+		else
+		{
+			if (nameIdentifier == null)
+				PHPEditorPlugin.logWarning("PHP NodeBuilder.setNodeName got a null identifier."); //$NON-NLS-1$
+			else
+				PHPEditorPlugin
+						.logWarning("PHP NodeBuilder.setNodeName didn't hold any current node to set a name on."); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * Handle a class declaration end
+	 * 
+	 * @param classDeclaration
+	 */
+	public void handleClassDeclarationEnd(ClassDeclaration classDeclaration)
+	{
+		current = (IPHPParseNode) stack.pop();
+	}
+
+	/**
+	 * Handle an interface declaration end. We treat the interface as a class (pure abstract class).
+	 * 
+	 * @param interfaceDeclaration
+	 */
+	public void handleClassDeclarationEnd(InterfaceDeclaration interfaceDeclaration)
+	{
+		current = (IPHPParseNode) stack.pop();
+	}
+
+	/**
+	 * Handle a function declaration end
+	 * 
+	 * @param functionDeclaration
+	 */
+	public void handleFunctionDeclarationEnd(FunctionDeclaration functionDeclaration)
+	{
+		current = (IPHPParseNode) stack.pop();
+	}
 }
