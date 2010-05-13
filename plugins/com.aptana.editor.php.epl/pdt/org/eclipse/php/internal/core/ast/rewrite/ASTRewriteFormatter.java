@@ -13,17 +13,40 @@ package org.eclipse.php.internal.core.ast.rewrite;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
-import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.text.*;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
+import org.eclipse.jface.text.DefaultPositionUpdater;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.Region;
 import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.nodes.*;
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org.eclipse.php.internal.core.ast.nodes.Block;
+import org.eclipse.php.internal.core.ast.nodes.BodyDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.Comment;
+import org.eclipse.php.internal.core.ast.nodes.Expression;
+import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.Statement;
 import org.eclipse.php.internal.core.format.ICodeFormattingProcessor;
 import org.eclipse.php.internal.core.format.IFormatterProcessorFactory;
 import org.eclipse.php.internal.core.format.NullCodeFormattingProcessor;
-import org.eclipse.text.edits.*;
+import org.eclipse.text.edits.DeleteEdit;
+import org.eclipse.text.edits.InsertEdit;
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.text.edits.TextEdit;
+
+import com.aptana.editor.php.epl.Activator;
 
 /**
  * AST rewrite formatter
@@ -140,7 +163,9 @@ import org.eclipse.text.edits.*;
 		this.eventStore = eventStore;
 
 		if (options == null) {
-			options = PHPCorePlugin.getOptions();
+			// TODO: Shalom - Provide the real formatting options
+			// options = PHPCorePlugin.getOptions();
+			options = Collections.emptyMap();
 		}
 		// options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT,
 		// String.valueOf(9999));
@@ -221,7 +246,7 @@ import org.eclipse.text.edits.*;
 					createDocument("", null)).createIndentationString(
 					indentationUnits);
 		} catch (Exception e) {
-			Logger.logException(e);
+			Activator.logError(e);
 		}
 		return ""; //$NON-NLS-1$
 	}
@@ -286,7 +311,7 @@ import org.eclipse.text.edits.*;
 							string, null));
 			return codeFormatter.getTextEdits();
 		} catch (Exception e) {
-			Logger.logException(e);
+			Activator.logError(e);
 		}
 		return new MultiTextEdit();
 	}
@@ -323,7 +348,7 @@ import org.eclipse.text.edits.*;
 					}
 
 					public void handleException(Throwable exception) {
-						Logger.logException(exception);
+						Activator.logError(exception);
 					}
 				});
 				if (elementObject[0] instanceof IFormatterProcessorFactory) {

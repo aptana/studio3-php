@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html. If redistributing this code,
  * this entire header must remain intact.
  */
-package com.aptana.editor.php.internal.parser2;
+package com.aptana.editor.php.internal.parser;
 
 import org.eclipse.php.internal.core.phpModel.parser.ParserClient;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;

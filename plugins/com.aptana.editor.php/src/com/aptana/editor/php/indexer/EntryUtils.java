@@ -34,7 +34,7 @@
  */
 package com.aptana.editor.php.indexer;
 
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
+import org.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
@@ -42,14 +42,17 @@ import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 
 /**
  * Utilities for PHP index entries.
+ * 
  * @author Denis Denisenko
  */
 public class EntryUtils
 {
-	
+
 	/**
 	 * Gets whether the entry is a field entry.
-	 * @param entry - entry.
+	 * 
+	 * @param entry
+	 *            - entry.
 	 * @return whether the entry is a field entry.
 	 */
 	public static boolean isField(IElementEntry entry)
@@ -58,19 +61,21 @@ public class EntryUtils
 		{
 			return false;
 		}
-		
+
 		if (!(entry.getValue() instanceof VariablePHPEntryValue)
 				|| !((VariablePHPEntryValue) entry.getValue()).isField())
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Gets whether the entry is a method entry.
-	 * @param entry - entry.
+	 * 
+	 * @param entry
+	 *            - entry.
 	 * @return whether the entry is a method entry.
 	 */
 	public static boolean isMethod(IElementEntry entry)
@@ -79,58 +84,61 @@ public class EntryUtils
 		{
 			return false;
 		}
-		
+
 		if (!(entry.getValue() instanceof FunctionPHPEntryValue)
 				|| !((FunctionPHPEntryValue) entry.getValue()).isMethod())
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Gets whether the entry is a type entry.
-	 * @param entry - entry.
+	 * 
+	 * @param entry
+	 *            - entry.
 	 * @return whether the entry is a type entry.
 	 */
 	public static boolean isType(IElementEntry entry)
 	{
-		if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY
-				&& entry.getValue() instanceof ClassPHPEntryValue)
+		if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY && entry.getValue() instanceof ClassPHPEntryValue)
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Gets whether the entry is a type entry.
-	 * @param entry - entry.
+	 * 
+	 * @param entry
+	 *            - entry.
 	 * @return whether the entry is a type entry.
 	 */
 	public static boolean isInterface(IElementEntry entry)
 	{
-		if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY
-				&& entry.getValue() instanceof ClassPHPEntryValue
-				&& PHPModifier.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
+		if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY && entry.getValue() instanceof ClassPHPEntryValue
+				&& PHPFlags.isInterface(((ClassPHPEntryValue) entry.getValue()).getModifiers()))
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * EntryUtils private constructor.
 	 */
 	private EntryUtils()
 	{
-		
+
 	}
 
-	public static boolean isFunction(IElementEntry entry) {
-		return entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY;		
+	public static boolean isFunction(IElementEntry entry)
+	{
+		return entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY;
 	}
 }

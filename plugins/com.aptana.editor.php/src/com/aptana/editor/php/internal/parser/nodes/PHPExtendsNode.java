@@ -1,9 +1,5 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
-import org.eclipse.ui.IEditorInput;
-
-import com.aptana.editor.php.internal.search.ExternalReference;
-import com.aptana.editor.php.internal.search.PHPSearchEngine;
 import com.aptana.parsing.ast.IParseNode;
 
 /**
@@ -25,6 +21,7 @@ public class PHPExtendsNode extends PHPBaseParseNode /* implements IResolvableIt
 	/**
 	 * returns editor input that corresponds to this extends node
 	 */
+    /*
 	public IEditorInput getEditorInput()
 	{
 		ExternalReference resolveType = PHPSearchEngine.getInstance().resolveClassToReference(getNodeName());
@@ -35,7 +32,7 @@ public class PHPExtendsNode extends PHPBaseParseNode /* implements IResolvableIt
 
 		return null;
 	}
-
+    */
 	// /**
 	// * returns editor input that corresponds to this extends node
 	// */
@@ -64,14 +61,14 @@ public class PHPExtendsNode extends PHPBaseParseNode /* implements IResolvableIt
 	 */
 	public IParseNode[] getExtendsChildren()
 	{
-
+		/*
 		PHPBaseParseNode resolveType = PHPSearchEngine.getInstance().resolveClass(getNodeName());
 		if (resolveType != null)
 		{
 			IParseNode[] children = resolveType.getChildren();
 			return children;
 		}
-
+		*/
 		return new PHPBaseParseNode[] { new PHPBaseParseNode((short)0, 0, 0, 0, Messages.PHPExtendsNode_NonOnBuildPath0) };
 	}
 }

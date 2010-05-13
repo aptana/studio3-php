@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
+import org.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -338,7 +338,7 @@ public final class PHPTypeProcessor
 		if (entryValue instanceof AbstractPHPEntryValue)
 		{
 			int modifiers = ((AbstractPHPEntryValue) entryValue).getModifiers();
-			return PHPModifier.isStatic(modifiers);
+			return PHPFlags.isStatic(modifiers);
 		}
 
 		return false;

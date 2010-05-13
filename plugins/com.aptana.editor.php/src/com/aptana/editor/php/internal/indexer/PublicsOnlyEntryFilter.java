@@ -37,7 +37,7 @@ package com.aptana.editor.php.internal.indexer;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
+import org.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 
@@ -62,7 +62,7 @@ public class PublicsOnlyEntryFilter implements IEntryFilter
 			if (value instanceof FunctionPHPEntryValue || value instanceof VariablePHPEntryValue)
 			{
 				int modifiers = ((AbstractPHPEntryValue) value).getModifiers();
-				if (modifiers == 0 || PHPModifier.isPublic(modifiers))
+				if (modifiers == 0 || PHPFlags.isPublic(modifiers))
 				{
 					result.add(entry);
 				}

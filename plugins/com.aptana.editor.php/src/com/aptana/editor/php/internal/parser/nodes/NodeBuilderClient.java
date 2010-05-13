@@ -19,7 +19,7 @@ import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.editor.preferences.IPHPEditorPreferencesConstants;
-import com.aptana.editor.php.internal.parser2.ParserClientAdapter;
+import com.aptana.editor.php.internal.parser.ParserClientAdapter;
 import com.aptana.parsing.ast.IParseNode;
 
 /**
@@ -82,7 +82,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleClassConstDeclaration(java.lang.String,
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassConstDeclaration(java.lang.String,
 	 *      org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
 	 */
 	public void handleClassConstDeclaration(String constName, PHPDocBlock docInfo, int startPosition, int endPosition,
@@ -106,7 +106,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclaration(java.lang.String, int,
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclaration(java.lang.String, int,
 	 *      java.lang.String, java.lang.String, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int,
 	 *      int, int)
 	 */
@@ -150,7 +150,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclarationEnds(java.lang.String, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclarationEnds(java.lang.String, int)
 	 */
 	public void handleClassDeclarationEnds(String className, int endPosition)
 	{
@@ -162,7 +162,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleClassVariablesDeclaration(java.lang.String, int,
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassVariablesDeclaration(java.lang.String, int,
 	 *      org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
 	 */
 	public void handleClassVariablesDeclaration(String variables, int modifier, PHPDocBlock docInfo, int startPosition,
@@ -189,7 +189,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleDefine(java.lang.String, java.lang.String,
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleDefine(java.lang.String, java.lang.String,
 	 *      org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
 	 */
 	public void handleDefine(String name, String value, PHPDocBlock docInfo, int startPosition, int endPosition,
@@ -210,7 +210,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleError(java.lang.String, int, int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleError(java.lang.String, int, int, int)
 	 */
 	public void handleError(String description, int startPosition, int endPosition, int lineNumber)
 	{
@@ -227,7 +227,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclaration(java.lang.String, boolean,
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclaration(java.lang.String, boolean,
 	 *      int, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
 	 */
 	public void handleFunctionDeclaration(String functionName, boolean isClassFunction, int modifier,
@@ -245,7 +245,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclarationEnds(java.lang.String,
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclarationEnds(java.lang.String,
 	 *      boolean, int)
 	 */
 	public void handleFunctionDeclarationEnds(String functionName, boolean isClassFunction, int endPosition)
@@ -259,7 +259,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleFunctionParameter(java.lang.String,
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionParameter(java.lang.String,
 	 *      java.lang.String, boolean, boolean, java.lang.String, int, int, int, int)
 	 */
 	public void handleFunctionParameter(String classType, String variableName, boolean isReference, boolean isConst,
@@ -270,7 +270,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleGlobalVar(java.lang.String)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleGlobalVar(java.lang.String)
 	 */
 	public void handleGlobalVar(String variableName)
 	{
@@ -279,7 +279,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handlePHPStart(int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handlePHPStart(int, int)
 	 */
 	public void handlePHPStart(int startOffset, int endOffset)
 	{
@@ -287,7 +287,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handleStaticVar(java.lang.String)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleStaticVar(java.lang.String)
 	 */
 	public void handleStaticVar(String variableName)
 	{
@@ -464,7 +464,7 @@ public class NodeBuilderClient extends ParserClientAdapter implements ParserClie
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.ParserClientAdapter#handlePHPEnd(int, int)
+	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handlePHPEnd(int, int)
 	 */
 	public void handlePHPEnd(int startOffset, int endOffset)
 	{

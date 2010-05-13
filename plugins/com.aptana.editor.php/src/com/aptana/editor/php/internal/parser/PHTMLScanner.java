@@ -8,8 +8,8 @@ import com.aptana.editor.php.internal.editor.scanner.PHPTokenScanner;
 public class PHTMLScanner extends HTMLScanner
 {
 
-	private static final String[] PHP_ENTER_TOKENS = new String[] { "PHP_START" };
-	private static final String[] PHP_EXIT_TOKENS = new String[] { "PHP_END" };
+	private static final String[] PHP_ENTER_TOKENS = new String[] { "PHP_START" }; //$NON-NLS-1$
+	private static final String[] PHP_EXIT_TOKENS = new String[] { "PHP_END" }; //$NON-NLS-1$
 
 	private static final IScannerSwitchStrategy PHP_STRATEGY = new ScannerSwitchStrategy(PHP_ENTER_TOKENS,
 			PHP_EXIT_TOKENS);

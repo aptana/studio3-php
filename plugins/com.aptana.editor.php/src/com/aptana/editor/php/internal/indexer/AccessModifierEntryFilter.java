@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
+import org.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 
@@ -78,8 +78,8 @@ public class AccessModifierEntryFilter implements IEntryFilter
 			if (value instanceof FunctionPHPEntryValue || value instanceof VariablePHPEntryValue)
 			{
 				int modifiers = ((AbstractPHPEntryValue) value).getModifiers();
-				if (rootClasses.contains(getClassName(entry)) || PHPModifier.isPublic(modifiers)
-						|| PHPModifier.isProtected(modifiers))
+				if (rootClasses.contains(getClassName(entry)) || PHPFlags.isPublic(modifiers)
+						|| PHPFlags.isProtected(modifiers))
 				{
 					result.add(entry);
 				}
