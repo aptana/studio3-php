@@ -82,7 +82,7 @@ public class PHPVersionProvider
 		{
 			contexts = new IScopeContext[] { new InstanceScope(), new DefaultScope() };
 		}
-		String versionAlias = service.getString(Activator.PLUGIN_ID, prefKey, PHPVersion.PHP5.getAlias(), contexts);
+		String versionAlias = service.getString(Activator.PLUGIN_ID, prefKey, PHPVersion.PHP5_3.getAlias(), contexts);
 		return PHPVersion.byAlias(versionAlias);
 	}
 }
