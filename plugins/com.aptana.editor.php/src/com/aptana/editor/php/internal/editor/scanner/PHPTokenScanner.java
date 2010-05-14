@@ -42,6 +42,7 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 	 */
 	public PHPTokenScanner(PHPVersion phpVersion)
 	{
+		super();
 		if (phpVersion == null)
 		{
 			throw new IllegalArgumentException("A null PHP Version passed to the PHPTokenScanner"); //$NON-NLS-1$

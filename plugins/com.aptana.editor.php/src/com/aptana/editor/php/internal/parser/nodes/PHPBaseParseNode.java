@@ -170,4 +170,15 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	{
 		return super.equals(obj) && ((PHPBaseParseNode)obj).getNameNode().equals(this.getNameNode());
 	}
+
+	/* (non-Javadoc)
+	 * @see com.aptana.parsing.ast.ParseBaseNode#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		int hash = 31 + getLanguage().hashCode();
+		hash = hash * 31 + getType();
+		return hash;
+	}
 }

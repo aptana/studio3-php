@@ -12,7 +12,7 @@ import com.aptana.editor.php.internal.editor.outline.PHPDecoratingLabelProvider;
 import com.aptana.editor.php.internal.editor.outline.PHPOutlineItem;
 import com.aptana.editor.php.internal.editor.outline.PHTMLOutlineContentProvider;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
-import com.aptana.editor.php.internal.parser.PHTMLParser;
+import com.aptana.editor.php.internal.parser.PHPParser;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
 import com.aptana.parsing.ast.ILanguageNode;
 import com.aptana.parsing.ast.IParseNode;
@@ -40,7 +40,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		setDocumentProvider(new PHPDocumentProvider());
 
-		getFileService().setParser(new PHTMLParser());
+		getFileService().setParser(new PHPParser());
 		// getFileService().setParser(new PHPParser());
 	}
 
