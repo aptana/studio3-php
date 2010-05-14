@@ -16,6 +16,7 @@ import org.eclipse.php.internal.core.ast.nodes.Include;
 import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
 import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org.eclipse.php.internal.core.ast.nodes.Scalar;
 import org.eclipse.php.internal.core.ast.nodes.UseStatement;
@@ -24,13 +25,23 @@ import org.eclipse.php.internal.core.ast.nodes.Variable;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
+/**
+ * An AST visitor that is used to build the PHP outline nodes.
+ * 
+ * @author Shalom Gibly <sgibly@aptana.com>
+ */
 public final class NodeBuildingVisitor extends AbstractVisitor
 {
 	private final NodeBuilder nodeBuilder;
 
-	public NodeBuildingVisitor(NodeBuilder parserClient)
+	/**
+	 * Construct a new visitor with a given NodeBuilder that will be used for the actual creation of PHP nodes.s
+	 * 
+	 * @param nodeBuilder
+	 */
+	public NodeBuildingVisitor(NodeBuilder nodeBuilder)
 	{
-		this.nodeBuilder = parserClient;
+		this.nodeBuilder = nodeBuilder;
 	}
 
 	@Override
@@ -46,25 +57,10 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = interfaceDeclaration.getName();
 		String name = nameIdentifier.getName();
+		nodeBuilder.handleClassDeclaration(name, PHPFlags.AccInterface, null, interfaceDeclaration.getStart(),
+				interfaceDeclaration.getEnd() - 1, -1);
 		List<Identifier> interfaces = interfaceDeclaration.interfaces();
-		String[] iNames = new String[interfaces.size()];
-		StringBuilder bld = new StringBuilder();
-		for (int a = 0; a < iNames.length; a++)
-		{
-			bld.append(iNames[a]);
-			if (a != iNames.length - 1)
-			{
-				bld.append(',');
-			}
-		}
-
-		String string = bld.toString();
-		if (interfaces.size() == 0)
-		{
-			string = null;
-		}
-		nodeBuilder.handleClassDeclaration(name, PHPFlags.AccInterface, null, string, null, interfaceDeclaration
-				.getStart(), interfaceDeclaration.getEnd() - 1, -1);
+		handleInterfaces(interfaces);
 		nodeBuilder.setNodeName(nameIdentifier);
 		return super.visit(interfaceDeclaration);
 	}
@@ -74,32 +70,19 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = classDeclaration.getName();
 		String name = nameIdentifier.getName();
-
-		List<Identifier> interfaces = classDeclaration.interfaces();
-		Identifier[] iNames = interfaces.toArray(new Identifier[interfaces.size()]);
-		StringBuilder bld = new StringBuilder();
-		for (int a = 0; a < iNames.length; a++)
-		{
-			bld.append(iNames[a].getName());
-			if (a != iNames.length - 1)
-			{
-				bld.append(',');
-			}
-		}
-		String interfacesNames = bld.toString();
-		if (interfaces.isEmpty())
-		{
-			interfacesNames = null;
-		}
+		nodeBuilder.handleClassDeclaration(name, classDeclaration.getModifier(), null, classDeclaration.getStart(),
+				classDeclaration.getEnd() - 1, -1);
+		// Handle class inheritance elements (extends and implements)
 		// TODO - Shalom - Take a look at the PDT ClassHighlighting (handle namespaces)
 		Expression superClass = classDeclaration.getSuperClass();
-		String superClassName = null;
 		if (superClass != null && superClass.getType() == ASTNode.IDENTIFIER)
 		{
-			superClassName = ((Identifier) superClass).getName();
+			Identifier superClassName = (Identifier) superClass;
+			nodeBuilder.handleSuperclass(superClassName.getName(), superClassName.getStart(),
+					superClassName.getEnd() - 1);
 		}
-		nodeBuilder.handleClassDeclaration(name, 0, superClassName, interfacesNames, null, classDeclaration.getStart(),
-				classDeclaration.getEnd() - 1, -1);
+		List<Identifier> interfaces = classDeclaration.interfaces();
+		handleInterfaces(interfaces);
 		nodeBuilder.setNodeName(nameIdentifier);
 		return super.visit(classDeclaration);
 	}
@@ -169,8 +152,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		}
 		if (expr != null && expr.getType() == ASTNode.SCALAR)
 		{
-			nodeBuilder.handleIncludedFile(includeType, ((Scalar) expr).getStringValue(), null, include.getStart(),
-					include.getEnd() - 1, -1, -1);
+			nodeBuilder.handleIncludedFile(includeType, ((Scalar) expr).getStringValue(), null, expr.getStart(), expr
+					.getEnd() - 1, -1, -1);
 		}
 		return super.visit(include);
 	}
@@ -181,7 +164,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		List<Identifier> variableNames = node.names();
 		for (Identifier i : variableNames)
 		{
-			nodeBuilder.handleDefine('"' + i.getName() + '"', "...", null, i.getStart(), i.getEnd(), i.getEnd() - 1); //$NON-NLS-1$
+			nodeBuilder.handleDefine(i.getName(), null, null, i.getStart(), node.getEnd() - 1, -1);
 		}
 		return super.visit(node);
 	}
@@ -189,7 +172,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(NamespaceDeclaration node)
 	{
-		List<Identifier> segments = node.getName().segments();
+		NamespaceName name = node.getName();
+		List<Identifier> segments = name.segments();
 		StringBuilder stringBuilder = new StringBuilder();
 		for (Identifier i : segments)
 		{
@@ -198,7 +182,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		}
 		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		String segmentsString = stringBuilder.toString();
-		nodeBuilder.handleNamespace(segmentsString, node.getStart(), node.getEnd() - 1);
+		nodeBuilder.handleNamespaceDeclaration(segmentsString, node.getStart(), node.getEnd() - 1, name.getEnd() - 1);
 		return super.visit(node);
 	}
 
@@ -281,7 +265,6 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public void endVisit(FunctionDeclaration functionDeclaration)
 	{
-		// TODO Auto-generated method stub
 		nodeBuilder.handleFunctionDeclarationEnd(functionDeclaration);
 	}
 
@@ -293,7 +276,36 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public void endVisit(InterfaceDeclaration interfaceDeclaration)
 	{
-		// TODO Auto-generated method stub
 		nodeBuilder.handleClassDeclarationEnd(interfaceDeclaration);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * NamespaceDeclaration)
+	 */
+	@Override
+	public void endVisit(NamespaceDeclaration namespaceDeclaration)
+	{
+		// TODO Auto-generated method stub
+		nodeBuilder.handleNamespaceDeclarationEnd(namespaceDeclaration);
+	}
+
+	/**
+	 * @param interfaces
+	 */
+	protected void handleInterfaces(List<Identifier> interfaces)
+	{
+		String[] extendedInterfacesNames = new String[interfaces.size()];
+		int[][] extendedInterfacesStartEnd = new int[extendedInterfacesNames.length][2];
+		for (int i = 0; i < extendedInterfacesNames.length; i++)
+		{
+			Identifier interfaceName = interfaces.get(i);
+			extendedInterfacesNames[i] = interfaceName.getName();
+			extendedInterfacesStartEnd[i][0] = interfaceName.getStart();
+			extendedInterfacesStartEnd[i][1] = interfaceName.getEnd() - 1;
+		}
+		nodeBuilder.handleImplements(extendedInterfacesNames, extendedInterfacesStartEnd);
+	}
+
 }

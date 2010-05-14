@@ -18,6 +18,7 @@ import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -98,50 +99,81 @@ public class NodeBuilder
 	public void handleUse(String useName, String useAs, int startPosition, int stopPosition)
 	{
 		PHPUseNode un = new PHPUseNode(startPosition, stopPosition, useName, "use"); //$NON-NLS-1$
+		un.setNameNode(useName, startPosition, stopPosition);
 		current.addChild(un);
 	}
 
-	public void handleNamespace(String namespaceName, int startPosition, int stopPosition)
+	public void handleNamespaceDeclaration(String namespaceName, int startPosition, int endPosition, int stopPosition)
 	{
-		PHPNamespaceNode un = new PHPNamespaceNode(startPosition, stopPosition, namespaceName, EMPTY_STRING);
-		current.addChild(un);
+		PHPNamespaceNode un = new PHPNamespaceNode(startPosition, endPosition, namespaceName, EMPTY_STRING);
+		un.setNameNode(namespaceName, startPosition, stopPosition);
+		pushNode(un);
 	}
 
 	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassDeclaration(java.lang.String,
-	 *      int, java.lang.String, java.lang.String, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock,
-	 *      int, int, int)
+	 * Handle class declaration.
+	 * 
+	 * @param className
+	 * @param modifier
+	 * @param docInfo
+	 * @param startPosition
+	 * @param endPosition
+	 * @param lineNumber
 	 */
-	public void handleClassDeclaration(String className, int modifier, String superClassName, String interfacesNames,
-			PHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber)
+	public void handleClassDeclaration(String className, int modifier, PHPDocBlock docInfo, int startPosition,
+			int endPosition, int lineNumber)
 	{
-		PHPClassParseNode pn = new PHPClassParseNode(modifier, startPosition, stopPosition, className);
+		PHPClassParseNode pn = new PHPClassParseNode(modifier, startPosition, endPosition, className);
 		if (docInfo != null)
 		{
 			pn.setDocumentation(docInfo);
 		}
+		pushNode(pn);
+	}
 
+	/**
+	 * Handle the 'extends' section in the class declaration part.
+	 * 
+	 * @param superClassName
+	 * @param startPosition
+	 * @param endPosition
+	 */
+	public void handleSuperclass(String superClassName, int startPosition, int endPosition)
+	{
 		if (superClassName != null)
 		{
 			String decodeClassName = decodeClassName(superClassName);
-			pn.setSuperClassName(decodeClassName);
-			pn.addChild(new PHPExtendsNode(0, startPosition, stopPosition, decodeClassName));
+			PHPClassParseNode classNode = (PHPClassParseNode) current;
+			classNode.setSuperClassName(decodeClassName);
+			PHPExtendsNode superClass = new PHPExtendsNode(0, startPosition, endPosition, decodeClassName);
+			superClass.setNameNode(decodeClassName, startPosition, endPosition);
+			classNode.addChild(superClass);
 		}
+	}
 
-		if (interfacesNames != null)
+	/**
+	 * Handle an 'implements' section in the class declaration part.
+	 * 
+	 * @param interfacesNames
+	 *            An array of interfaces names.
+	 * @param startEndPositions
+	 *            The start and the end of each interface in the interfaces names.
+	 */
+	public void handleImplements(String[] interfacesNames, int[][] startEndPositions)
+	{
+		if (interfacesNames != null && interfacesNames.length > 0 && startEndPositions != null)
 		{
-			String[] encodedInterfaces = interfacesNames.split(","); //$NON-NLS-1$
-			List<String> interfaces = new ArrayList<String>(encodedInterfaces.length);
-			for (String encodedInterfaceName : encodedInterfaces)
+			PHPClassParseNode classNode = (PHPClassParseNode) current;
+			List<String> interfaces = new ArrayList<String>(interfacesNames.length);
+			for (int i = 0; i < interfacesNames.length; i++)
 			{
-				interfaces.add(decodeClassName(encodedInterfaceName));
-				pn.addChild(new PHPExtendsNode(PHPFlags.AccInterface, startPosition, stopPosition,
-						decodeClassName(encodedInterfaceName)));
+				String interfaceName = decodeClassName(interfacesNames[i]);
+				interfaces.add(interfaceName);
+				classNode.addChild(new PHPExtendsNode(PHPFlags.AccInterface, startEndPositions[i][0],
+						startEndPositions[i][1], interfaceName));
 			}
-			pn.setInterfaces(interfaces);
+			classNode.setInterfaces(interfaces);
 		}
-
-		pushNode(pn);
 	}
 
 	private void pushNode(PHPBaseParseNode pn)
@@ -161,6 +193,7 @@ public class NodeBuilder
 		PHPVariableParseNode pn = new PHPVariableParseNode(modifier, startPosition, endPosition, variables);
 		pn.setField(true);
 		current.addChild(pn);
+		pn.setNameNode(variables, startPosition, endPosition);
 	}
 
 	/**
@@ -185,17 +218,10 @@ public class NodeBuilder
 	public void handleDefine(String name, String value, PHPDocBlock docInfo, int startPosition, int endPosition,
 			int stopPosition)
 	{
-		try
-		{
-			name = name.trim().substring(1, name.length() - 1);
-		}
-		catch (StringIndexOutOfBoundsException e)
-		{
-			return;
-		}
-		PHPConstantNode pn = new PHPConstantNode(startPosition, stopPosition, name);
+		PHPConstantNode pn = new PHPConstantNode(startPosition, endPosition, name);
 		pn.setDocumentation(docInfo);
 		pn.setField(true);
+		pn.setNameNode(name, startPosition, endPosition);
 		current.addChild(pn);
 	}
 
@@ -435,7 +461,9 @@ public class NodeBuilder
 	public void handleIncludedFile(String includingType, String includeFileName, PHPDocBlock docInfo,
 			int startPosition, int endPosition, int stopPosition, int lineNumber)
 	{
-		current.addChild(new PHPIncludeNode(startPosition, endPosition, includeFileName, includingType));
+		PHPIncludeNode node = new PHPIncludeNode(startPosition, endPosition, includeFileName, includingType);
+		node.setNameNode(includeFileName, startPosition, endPosition);
+		current.addChild(node);
 	}
 
 	/**
@@ -512,6 +540,16 @@ public class NodeBuilder
 	 * @param functionDeclaration
 	 */
 	public void handleFunctionDeclarationEnd(FunctionDeclaration functionDeclaration)
+	{
+		current = (IPHPParseNode) stack.pop();
+	}
+
+	/**
+	 * Handle a namespace declaration end
+	 * 
+	 * @param functionDeclaration
+	 */
+	public void handleNamespaceDeclarationEnd(NamespaceDeclaration namespaceDeclaration)
 	{
 		current = (IPHPParseNode) stack.pop();
 	}
