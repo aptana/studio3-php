@@ -60,6 +60,8 @@ public interface IPHPParseNode extends IParseNode
 	public boolean isEmpty();
 
 	public void setEndOffset(int endOffset);
+	
+	public void setStartOffset(int startOffset);
 
 	public boolean containsOffset(int offset);
 	

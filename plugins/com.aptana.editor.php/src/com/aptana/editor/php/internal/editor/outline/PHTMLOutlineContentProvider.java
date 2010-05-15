@@ -3,8 +3,8 @@ package com.aptana.editor.php.internal.editor.outline;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aptana.editor.common.outline.CommonOutlineContentProvider;
 import com.aptana.editor.common.outline.CommonOutlineItem;
-import com.aptana.editor.html.outline.HTMLOutlineContentProvider;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.parsing.ast.IParseNode;
 
@@ -13,7 +13,7 @@ import com.aptana.parsing.ast.IParseNode;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHTMLOutlineContentProvider extends HTMLOutlineContentProvider
+public class PHTMLOutlineContentProvider extends CommonOutlineContentProvider
 {
 
 	@Override

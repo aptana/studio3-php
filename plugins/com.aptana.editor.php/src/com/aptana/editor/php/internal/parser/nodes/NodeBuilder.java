@@ -84,10 +84,6 @@ public class NodeBuilder
 		this.collectVariables = collectVariables;
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassConstDeclaration(java.lang.String,
-	 *      org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
-	 */
 	public void handleClassConstDeclaration(String constName, PHPDocBlock docInfo, int startPosition, int endPosition,
 			int stopPosition)
 	{
@@ -183,10 +179,6 @@ public class NodeBuilder
 		current = pn;
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleClassVariablesDeclaration(java.lang.String,
-	 *      int, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
-	 */
 	public void handleClassVariablesDeclaration(String variables, int modifier, PHPDocBlock docInfo, int startPosition,
 			int endPosition, int stopPosition)
 	{
@@ -211,10 +203,6 @@ public class NodeBuilder
 		}
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleDefine(java.lang.String,
-	 *      java.lang.String, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
-	 */
 	public void handleDefine(String name, String value, PHPDocBlock docInfo, int startPosition, int endPosition,
 			int stopPosition)
 	{
@@ -225,10 +213,6 @@ public class NodeBuilder
 		current.addChild(pn);
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleError(java.lang.String,
-	 *      int, int, int)
-	 */
 	public void handleError(String description, int startPosition, int endPosition, int lineNumber)
 	{
 		// TODO: Shalom - See what needs to be done to handle those errors.
@@ -243,10 +227,6 @@ public class NodeBuilder
 		// TODO
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionDeclaration(java.lang.String,
-	 *      boolean, int, org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock, int, int, int)
-	 */
 	public void handleFunctionDeclaration(String functionName, boolean isClassFunction, int modifier,
 			PHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber)
 	{
@@ -261,10 +241,6 @@ public class NodeBuilder
 		pushNode(pn);
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleFunctionParameter(java.lang.String,
-	 *      java.lang.String, boolean, boolean, java.lang.String, int, int, int, int)
-	 */
 	public void handleFunctionParameter(String classType, String variableName, boolean isReference, boolean isConst,
 			String defaultValue, int startPosition, int endPosition, int stopPosition, int lineNumber)
 	{
@@ -272,26 +248,17 @@ public class NodeBuilder
 		parameters.add(pr);
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleGlobalVar(java.lang.String)
-	 */
 	public void handleGlobalVar(String variableName)
 	{
 		PHPVariableParseNode pn = new PHPVariableParseNode(0, -1, -1, variableName);
 		current.addChild(pn);
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handlePHPStart(int, int)
-	 */
 	public void handlePHPStart(int startOffset, int endOffset)
 	{
 		phpStarts.add(new Integer(startOffset));
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handleStaticVar(java.lang.String)
-	 */
 	public void handleStaticVar(String variableName)
 	{
 		PHPVariableParseNode pn = new PHPVariableParseNode(1, -1, -1, variableName);
@@ -466,9 +433,6 @@ public class NodeBuilder
 		current.addChild(node);
 	}
 
-	/**
-	 * @see com.aptana.editor.php.internal.parser.ide.editor.php.parsing.ParserClientAdapter#handlePHPEnd(int, int)
-	 */
 	public void handlePHPEnd(int startOffset, int endOffset)
 	{
 		phpEnds.add(new Integer(startOffset));

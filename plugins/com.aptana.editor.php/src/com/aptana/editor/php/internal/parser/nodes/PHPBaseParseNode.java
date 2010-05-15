@@ -126,6 +126,18 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	public void setEndOffset(int endOffset)
 	{
 		this.end = endOffset;
+		// Reset the name node
+		this.nameNode = null;
+	}
+
+	/**
+	 * @param startOffset
+	 */
+	public void setStartOffset(int startOffset)
+	{
+		this.start = startOffset;
+		// Reset the name node
+		this.nameNode = null;
 	}
 
 	public boolean containsOffset(int offset)
@@ -155,30 +167,30 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	@Override
 	public INameNode getNameNode()
 	{
-		if (this.nameNode != null)
+		if (this.nameNode == null)
 		{
-			return this.nameNode;
+			this.nameNode = super.getNameNode();
 		}
-		return super.getNameNode();
+		return this.nameNode;
 	}
-	
+
 	/**
 	 * Override the default ParseBaseNode implementation to add a name check.
 	 */
 	@Override
 	public boolean equals(Object obj)
 	{
-		return super.equals(obj) && ((PHPBaseParseNode)obj).getNameNode().equals(this.getNameNode());
+		return super.equals(obj)
+				&& ((PHPBaseParseNode) obj).getNameNode().getName().equals(this.getNameNode().getName());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.parsing.ast.ParseBaseNode#hashCode()
 	 */
 	@Override
 	public int hashCode()
 	{
-		int hash = 31 + getLanguage().hashCode();
-		hash = hash * 31 + getType();
-		return hash;
+		return 31 * super.hashCode() + this.getNameNode().getName().hashCode();
 	}
 }
