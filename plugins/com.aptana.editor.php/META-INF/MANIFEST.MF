@@ -11,9 +11,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
  org.eclipse.ui.views,
+ org.eclipse.core.expressions,
  com.aptana.editor.common,
  com.aptana.parsing,
  com.aptana.editor.html,
+ com.aptana.syncing.core,
  com.aptana.editor.php.epl,
  com.aptana.php.libraries
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

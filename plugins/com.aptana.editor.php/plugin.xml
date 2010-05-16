@@ -27,6 +27,16 @@
       </content-type>
    </extension>
    <extension
+         id="phpNanure"
+         name="Aptana PHP Project"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.aptana.editor.php.core.PHPNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="com.aptana.editor.php.core.PHPCorePreferenceInitializer">
@@ -34,6 +44,36 @@
       <initializer
             class="com.aptana.editor.php.internal.editor.preferences.PHPEditorPreferenceInitializer">
       </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="com.aptana.editor.php.core.NaturePropertyTester"
+            id="com.aptana.editor.php.NaturePropertyTester"
+            namespace="com.aptana.editor.php"
+            properties="nature"
+            type="org.eclipse.core.resources.IResource">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="com.aptana.editor.php.internal.preferences.PHPDevelopmentPage"
+            id="com.aptana.editor.php.PHPDevelopmentPage"
+            name="PHP Development">
+         <enabledWhen>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+               <test
+                     args="phpNature"
+                     property="com.aptana.editor.php.nature"
+                     value="true">
+               </test>
+            </and>
+         </enabledWhen>
+      </page>
    </extension>
 
 </plugin>

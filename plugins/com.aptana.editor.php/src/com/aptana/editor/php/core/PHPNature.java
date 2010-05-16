@@ -24,7 +24,7 @@ public final class PHPNature implements IProjectNature
 	/**
 	 * NATURE_ID
 	 */
-	public static final String NATURE_ID = "com.aptana.ide.editor.php.phpnature"; //$NON-NLS-1$
+	public static final String NATURE_ID = PHPEditorPlugin.PLUGIN_ID + ".phpnature"; //$NON-NLS-1$
 	private IProject project;
 
 	/**

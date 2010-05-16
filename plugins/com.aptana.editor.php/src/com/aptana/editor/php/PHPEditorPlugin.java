@@ -118,4 +118,9 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	{
 		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
 	}
+
+	public static void log(IStatus status)
+	{
+		getDefault().getLog().log(status);
+	}
 }
