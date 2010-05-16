@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.Preferences;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * A task tags provider listens to any task-tags preferences changes and notify
@@ -32,8 +32,8 @@ public class TaskTagsProvider {
 	private boolean isInstalled;
 	private PreferencesSupport preferencesSupport;
 	private PreferencesPropagator preferencesPropagator;
-	private static final String NODES_QUALIFIER = Activator.PLUGIN_ID;
-	private static final Preferences store = Activator.getDefault()
+	private static final String NODES_QUALIFIER = PHPEplPlugin.PLUGIN_ID;
+	private static final Preferences store = PHPEplPlugin.getDefault()
 			.getPluginPreferences();
 
 	/**

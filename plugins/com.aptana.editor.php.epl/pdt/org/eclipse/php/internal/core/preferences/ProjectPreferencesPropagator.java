@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * ProjectPreferencesPropagator for propagation of preferences events that
@@ -148,7 +148,7 @@ public class ProjectPreferencesPropagator extends AbstractPreferencesPropagator 
 	 * @return The String value of the property.
 	 */
 	public String getWorkspaceProperty(String id) {
-		return Activator.getDefault().getPluginPreferences().getString(id);
+		return PHPEplPlugin.getDefault().getPluginPreferences().getString(id);
 	}
 
 	/*

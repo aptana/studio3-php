@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.preferences;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 
 public class CorePreferencesSupport extends PreferencesSupport {
@@ -19,8 +19,8 @@ public class CorePreferencesSupport extends PreferencesSupport {
 	private static CorePreferencesSupport corePreferencesSupport;
 
 	private CorePreferencesSupport() {
-		super(Activator.PLUGIN_ID, Activator.getDefault() == null ? null
-				: Activator.getDefault().getPluginPreferences());
+		super(PHPEplPlugin.PLUGIN_ID, PHPEplPlugin.getDefault() == null ? null
+				: PHPEplPlugin.getDefault().getPluginPreferences());
 	}
 
 	public static CorePreferencesSupport getInstance() {

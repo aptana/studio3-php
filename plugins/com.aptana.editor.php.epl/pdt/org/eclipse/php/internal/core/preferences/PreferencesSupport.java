@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 public class PreferencesSupport {
 
@@ -148,7 +148,7 @@ public class PreferencesSupport {
 			try {
 				node.flush();
 			} catch (BackingStoreException e) {
-				Activator.logError(e);
+				PHPEplPlugin.logError(e);
 			}
 			return true;
 		}

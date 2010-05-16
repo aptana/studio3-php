@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.compiler.CharOperation;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * This code is taken and trimmed from the DLTK project.
@@ -429,7 +429,7 @@ public class Util
 					// established yet, or if connection are lost.
 					if (isFatalException(e) || --tryCount == 0)
 					{
-						throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						throw new CoreException(new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID,
 								"Could not read the file content")); //$NON-NLS-1$
 					}
 				}
@@ -439,7 +439,7 @@ public class Util
 		}
 		catch (IOException ioe)
 		{
-			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, ioe.getMessage()));
+			throw new CoreException(new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID, ioe.getMessage()));
 		}
 		finally
 		{

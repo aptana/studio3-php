@@ -46,7 +46,7 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * AST rewrite formatter
@@ -246,7 +246,7 @@ import com.aptana.editor.php.epl.Activator;
 					createDocument("", null)).createIndentationString(
 					indentationUnits);
 		} catch (Exception e) {
-			Activator.logError(e);
+			PHPEplPlugin.logError(e);
 		}
 		return ""; //$NON-NLS-1$
 	}
@@ -311,7 +311,7 @@ import com.aptana.editor.php.epl.Activator;
 							string, null));
 			return codeFormatter.getTextEdits();
 		} catch (Exception e) {
-			Activator.logError(e);
+			PHPEplPlugin.logError(e);
 		}
 		return new MultiTextEdit();
 	}
@@ -348,7 +348,7 @@ import com.aptana.editor.php.epl.Activator;
 					}
 
 					public void handleException(Throwable exception) {
-						Activator.logError(exception);
+						PHPEplPlugin.logError(exception);
 					}
 				});
 				if (elementObject[0] instanceof IFormatterProcessorFactory) {

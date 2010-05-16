@@ -27,7 +27,7 @@ import org.eclipse.text.edits.TextEdit;
 
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.core.model.ISourceReference;
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * The AST root node for PHP program (meaning a PHP file). The program holds
@@ -687,7 +687,7 @@ public class Program extends ASTNode {
 		try {
 			return getElementAt(phpElement.getSourceRange().getOffset());
 		} catch (Exception e) {
-			Activator.logError(e);
+			PHPEplPlugin.logError(e);
 		}
 		return null;
 	}

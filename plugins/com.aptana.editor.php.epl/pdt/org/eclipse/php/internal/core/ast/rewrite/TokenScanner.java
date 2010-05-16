@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org.eclipse.php.internal.core.ast.util.RandomAccessCharArrayReader;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * Wraps a scanner and offers convenient methods for finding tokens
@@ -89,7 +89,7 @@ public class TokenScanner {
 			scanner.setInScriptingState();
 			scanner.resetCommentList();
 		} catch (IOException e) {
-			Activator.logError(e);
+			PHPEplPlugin.logError(e);
 		}
 	}
 
@@ -331,7 +331,7 @@ public class TokenScanner {
 
 	public static IStatus createError(int code, String message,
 			Throwable throwable) {
-		return new Status(IStatus.ERROR, Activator.PLUGIN_ID, code, message,
+		return new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID, code, message,
 				throwable);
 	}
 

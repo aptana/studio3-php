@@ -130,7 +130,7 @@ import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
-import com.aptana.editor.php.epl.Activator;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * Infrastructure to support code modifications. Existing code must stay
@@ -215,7 +215,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			try {
 				this.tokenScanner = new TokenScanner(scanner, content);
 			} catch (IOException e) {
-				Activator.logError(e);
+				PHPEplPlugin.logError(e);
 			}
 		}
 		return this.tokenScanner;
@@ -1539,7 +1539,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 							.getOperationString((Integer) event.getNewValue());
 				} else {
 					throw new CoreException(new Status(IStatus.ERROR,
-							Activator.PLUGIN_ID,
+							PHPEplPlugin.PLUGIN_ID,
 							"The node must be an IOperationNode")); //$NON-NLS-1$
 				}
 				TextEditGroup editGroup = getEditGroup(event);
@@ -3070,7 +3070,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 							FormalParameter.IS_MANDATORY_PROPERTY)) {
 				if (formalParameter.getAST().apiLevel() == PHPVersion.PHP5) {
 					throw new CoreException(
-							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID,
 									"Could not set a FormalParameter 'isMandatory' property for PHP5 AST"));
 				}
 				// Rewrite the isMandatory field
