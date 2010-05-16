@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="com.aptana.editor.php.internal.editor.PHPSourceEditor"
+            class="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
             contributorClass="com.aptana.editor.common.CommonTextEditorActionContributor"
             default="false"
             extensions="php, phtml, inc ,ctp"
@@ -42,7 +42,7 @@
             class="com.aptana.editor.php.core.PHPCorePreferenceInitializer">
       </initializer>
       <initializer
-            class="com.aptana.editor.php.internal.editor.preferences.PHPEditorPreferenceInitializer">
+            class="com.aptana.editor.php.internal.ui.editor.preferences.PHPEditorPreferenceInitializer">
       </initializer>
    </extension>
    <extension
@@ -58,7 +58,7 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="com.aptana.editor.php.internal.preferences.PHPDevelopmentPage"
+            class="com.aptana.editor.php.internal.ui.preferences.PHPDevelopmentPage"
             id="com.aptana.editor.php.PHPDevelopmentPage"
             name="PHP Development">
          <enabledWhen>

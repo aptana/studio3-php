@@ -22,7 +22,7 @@ import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.internal.editor.preferences.IPHPEditorPreferencesConstants;
+import com.aptana.editor.php.internal.ui.editor.preferences.IPHPEditorPreferencesConstants;
 import com.aptana.parsing.ast.IParseNode;
 
 /**
