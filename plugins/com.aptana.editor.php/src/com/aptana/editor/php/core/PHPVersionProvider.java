@@ -163,4 +163,9 @@ public class PHPVersionProvider
 				contexts);
 		return PHPVersion.byAlias(versionAlias);
 	}
+
+	public static PHPVersion getDefaultPHPVersion()
+	{
+		return PHPVersion.PHP5_3;
+	}
 }

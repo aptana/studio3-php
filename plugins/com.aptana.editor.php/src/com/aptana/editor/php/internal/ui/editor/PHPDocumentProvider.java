@@ -1,7 +1,12 @@
 package com.aptana.editor.php.internal.ui.editor;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.php.internal.core.PHPVersion;
+
 import com.aptana.editor.common.CompositeDocumentProvider;
 import com.aptana.editor.html.HTMLSourceConfiguration;
+import com.aptana.editor.php.core.IPHPVersionListener;
 import com.aptana.editor.php.internal.IPHPConstants;
 
 /**
@@ -9,12 +14,52 @@ import com.aptana.editor.php.internal.IPHPConstants;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPDocumentProvider extends CompositeDocumentProvider
+public class PHPDocumentProvider extends CompositeDocumentProvider implements IPHPVersionListener
 {
+
+	private PHPVersion phpVersion;
+	private IDocument document;
 
 	protected PHPDocumentProvider()
 	{
 		super(IPHPConstants.CONTENT_TYPE_PHP, HTMLSourceConfiguration.getDefault(),
 				PHPSourceConfiguration.getDefault(), PHPPartitionerSwitchStrategy.getDefault());
+	}
+
+	/**
+	 * Override the {@link #connect(Object)} to map the inner {@link IDocument} to a {@link PHPVersion}.<br>
+	 * This is done to provide accurate PHP tokens coloring for each PHP version.
+	 */
+	@Override
+	public void connect(Object element) throws CoreException
+	{
+		super.connect(element);
+		this.document = getDocument(element);
+		PHPVersionDocumentManager.increaseDocumentCount(document);
+		if (phpVersion != null)
+		{
+			// This might occur when the file is renamed, for example.
+			PHPVersionDocumentManager.updateVersion(document, phpVersion);
+		}
+	}
+
+	/**
+	 * Override the disconnect to unregister the document from the {@link PHPVersionDocumentManager}.
+	 */
+	@Override
+	public void disconnect(Object element)
+	{
+		PHPVersionDocumentManager.decreaseDocumentCount(document);
+		super.disconnect(element);
+	}
+
+	@Override
+	public void phpVersionChanged(PHPVersion newVersion)
+	{
+		this.phpVersion = newVersion;
+		if (document != null && newVersion != null)
+		{
+			PHPVersionDocumentManager.updateVersion(document, phpVersion);
+		}
 	}
 }

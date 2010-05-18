@@ -20,7 +20,6 @@ import org.osgi.service.prefs.Preferences;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants;
-import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.ui.preferences.Messages;
 import com.aptana.editor.php.internal.ui.preferences.PhpDevelopmentPage;
 
@@ -68,7 +67,7 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 
 	protected Preferences getPreferences(IProject project)
 	{
-		return new ProjectScope(project).getNode(PHPEplPlugin.PLUGIN_ID);
+		return new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
 	}
 
 	/**

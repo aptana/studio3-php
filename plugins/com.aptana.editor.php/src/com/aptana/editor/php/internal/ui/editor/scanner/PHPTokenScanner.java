@@ -15,7 +15,9 @@ import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.editor.html.parsing.HTMLTokenScanner;
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.ast.ASTFactory;
+import com.aptana.editor.php.internal.ui.editor.PHPVersionDocumentManager;
 
 /**
  * A token scanner which returns {@link IToken}s for PHP tokens. These can later be mapped to colors.
@@ -47,8 +49,6 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 		{
 			throw new IllegalArgumentException("A null PHP Version passed to the PHPTokenScanner"); //$NON-NLS-1$
 		}
-		// TODO: Shalom - Since this is only called once per studio session, we need to listen to the PHP versions
-		// changes and update the phpVersion instance variable
 		this.phpVersion = phpVersion;
 	}
 
@@ -113,6 +113,14 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 		{
 			fContents = document.get(offset, length);
 			fContents = PHP_PREFIX + fContents;
+			phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
+			if (phpVersion == null)
+			{
+				PHPEditorPlugin.logError(new IllegalStateException(
+						"Error retrieving the PHP version for the token scanner")); //$NON-NLS-1$
+				// Set the version to the default 5.3
+				phpVersion = PHPVersionProvider.getDefaultPHPVersion();
+			}
 			lexer = ASTFactory.getAstLexer(phpVersion, new StringReader(fContents));
 			// read the next token already, so we can always calculate the spaces between the
 			// tokens and return the right offset and length.

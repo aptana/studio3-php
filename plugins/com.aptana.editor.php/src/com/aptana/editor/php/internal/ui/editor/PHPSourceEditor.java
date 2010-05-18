@@ -2,12 +2,17 @@ package com.aptana.editor.php.internal.ui.editor;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
+import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
 import com.aptana.editor.common.CommonEditorPlugin;
@@ -37,6 +42,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			'"', '"', '?', '?' };
 	private PHPParser parser;
 	private IProject project;
+	private PHPDocumentProvider documentProvider;
 
 	@Override
 	protected void initializeEditor()
@@ -48,13 +54,15 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 				CommonEditorPlugin.getDefault().getPreferenceStore(), EditorsPlugin.getDefault().getPreferenceStore() }));
 
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
-		setDocumentProvider(new PHPDocumentProvider());
+		documentProvider = new PHPDocumentProvider();
+		setDocumentProvider(documentProvider);
 
 		parser = new PHPParser();
 		getFileService().setParser(parser);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
 	 */
 	@Override
@@ -66,13 +74,16 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		if (resource != null)
 		{
 			project = resource.getProject();
-			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
 			parser.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
+			documentProvider.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, parser);
+			PHPVersionProvider.getInstance().addPHPVersionListener(project, documentProvider);
+			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.AbstractThemeableEditor#dispose()
 	 */
 	@Override
@@ -80,6 +91,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	{
 		PHPVersionProvider.getInstance().removePHPVersionListener(this);
 		PHPVersionProvider.getInstance().removePHPVersionListener(parser);
+		PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
 		super.dispose();
 	}
 
@@ -132,6 +144,16 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	public void phpVersionChanged(PHPVersion newVersion)
 	{
-		getSourceViewer().setDocument(getSourceViewer().getDocument());
+		Job refreshJob = new UIJob("Refresh document") //$NON-NLS-1$
+		{
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor)
+			{
+				getSourceViewer().setDocument(getSourceViewer().getDocument());
+				return Status.OK_STATUS;
+			}
+		};
+		refreshJob.setSystem(true);
+		refreshJob.schedule(500L);
 	}
 }
