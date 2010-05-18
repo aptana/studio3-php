@@ -116,9 +116,8 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 			phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
 			if (phpVersion == null)
 			{
-				PHPEditorPlugin.logError(new IllegalStateException(
-						"Error retrieving the PHP version for the token scanner")); //$NON-NLS-1$
-				// Set the version to the default 5.3
+				// Set the version to the default (5.3)
+				// This will happen when an external file is opened in the editor.
 				phpVersion = PHPVersionProvider.getDefaultPHPVersion();
 			}
 			lexer = ASTFactory.getAstLexer(phpVersion, new StringReader(fContents));

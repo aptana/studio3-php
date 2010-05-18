@@ -50,7 +50,7 @@ public class PHPParser implements IParser, IPHPVersionListener
 		Program ast = null;
 		try
 		{
-			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getPHPVersion(null) : phpVersion;
+			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
 			ASTParser parser = ASTParser.newParser(new StringReader(source), version);
 			ast = parser.createAST(null);
 		}
