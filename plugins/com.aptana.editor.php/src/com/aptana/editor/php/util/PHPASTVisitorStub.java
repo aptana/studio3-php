@@ -32,7 +32,7 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.utils;
+package com.aptana.editor.php.util;
 
 import org.eclipse.php.internal.core.ast.nodes.ASTError;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;

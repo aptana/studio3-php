@@ -30,11 +30,11 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPDevelopmentPage extends PropertyPage implements IWorkbenchPropertyPage
+public class PhpDevelopmentPage extends PropertyPage implements IWorkbenchPropertyPage
 {
-	private static final List<String> PHP_ALIASES = Arrays.asList(PHPVersion.PHP4.getAlias(), PHPVersion.PHP5
-			.getAlias(), PHPVersion.PHP5_3.getAlias());
-	private static final List<String> PHP_VERSION_NAMES = Arrays.asList(Messages.PHPDevelopmentPage_php4,
+	public static final List<String> PHP_ALIASES = Arrays.asList(PHPVersion.PHP4.getAlias(),
+			PHPVersion.PHP5.getAlias(), PHPVersion.PHP5_3.getAlias());
+	public static final List<String> PHP_VERSION_NAMES = Arrays.asList(Messages.PHPDevelopmentPage_php4,
 			Messages.PHPDevelopmentPage_php5, Messages.PHPDevelopmentPage_php53);
 	private Combo fPHPVersions;
 
@@ -51,6 +51,7 @@ public class PHPDevelopmentPage extends PropertyPage implements IWorkbenchProper
 		Group group = new Group(composite, SWT.NONE);
 		group.setLayout(new GridLayout(2, false));
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		group.setText(Messages.PHPDevelopmentPage_compatibility);
 
 		Label label = new Label(group, SWT.NONE);
 		label.setText(Messages.PHPDevelopmentPage_phpVersion);

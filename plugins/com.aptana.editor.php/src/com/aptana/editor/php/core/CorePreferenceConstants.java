@@ -11,7 +11,7 @@ public class CorePreferenceConstants
 
 	public interface Keys
 	{
-		public static final String PHP_VERSION = PHPCoreConstants.PHP_OPTIONS_PHP_VERSION;
+		public static final String PHP_VERSION = IPHPCoreConstants.PHP_OPTIONS_PHP_VERSION;
 		public static final String EDITOR_USE_ASP_TAGS = "use_asp_tags"; //$NON-NLS-1$
 	}
 
@@ -29,19 +29,19 @@ public class CorePreferenceConstants
 	public static void initializeDefaultValues()
 	{
 		IPreferenceStore store = getPreferenceStore();
-		store.setDefault(Keys.PHP_VERSION, PHPCoreConstants.PHP5);
+		store.setDefault(Keys.PHP_VERSION, IPHPCoreConstants.PHP5);
 
-		store.setDefault(PHPCoreConstants.TASK_TAGS, PHPCoreConstants.DEFAULT_TASK_TAGS);
-		store.setDefault(PHPCoreConstants.TASK_PRIORITIES, PHPCoreConstants.DEFAULT_TASK_PRIORITIES);
-		store.setDefault(PHPCoreConstants.TASK_CASE_SENSITIVE, PHPCoreConstants.ENABLED);
+		store.setDefault(IPHPCoreConstants.TASK_TAGS, IPHPCoreConstants.DEFAULT_TASK_TAGS);
+		store.setDefault(IPHPCoreConstants.TASK_PRIORITIES, IPHPCoreConstants.DEFAULT_TASK_PRIORITIES);
+		store.setDefault(IPHPCoreConstants.TASK_CASE_SENSITIVE, IPHPCoreConstants.ENABLED);
 		store.setDefault(Keys.EDITOR_USE_ASP_TAGS, false);
 
-		store.setDefault(PHPCoreConstants.FORMATTER_USE_TABS, true);
-		store.setDefault(PHPCoreConstants.FORMATTER_INDENTATION_SIZE, PHPCoreConstants.DEFAULT_INDENTATION_SIZE);
+		store.setDefault(IPHPCoreConstants.FORMATTER_USE_TABS, true);
+		store.setDefault(IPHPCoreConstants.FORMATTER_INDENTATION_SIZE, IPHPCoreConstants.DEFAULT_INDENTATION_SIZE);
 
-		if ((store.getString(PHPCoreConstants.WORKSPACE_DEFAULT_LOCALE)).equals("")) { //$NON-NLS-1$
-			store.setValue(PHPCoreConstants.WORKSPACE_DEFAULT_LOCALE, Locale.getDefault().toString());
-			store.setDefault(PHPCoreConstants.WORKSPACE_LOCALE, Locale.getDefault().toString());
+		if ((store.getString(IPHPCoreConstants.WORKSPACE_DEFAULT_LOCALE)).equals("")) { //$NON-NLS-1$
+			store.setValue(IPHPCoreConstants.WORKSPACE_DEFAULT_LOCALE, Locale.getDefault().toString());
+			store.setDefault(IPHPCoreConstants.WORKSPACE_LOCALE, Locale.getDefault().toString());
 		}
 	}
 

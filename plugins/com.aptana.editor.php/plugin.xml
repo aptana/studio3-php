@@ -10,7 +10,7 @@
             extensions="php, phtml, inc ,ctp"
             icon="icons/full/obj16/php.png"
             id="com.aptana.editor.php"
-            name="Aptana PHP Source Editor">
+            name="%editor.name">
          <contentTypeBinding
                contentTypeId="com.aptana.contenttype.php">
          </contentTypeBinding>
@@ -22,13 +22,13 @@
             base-type="org.eclipse.core.runtime.text"
             file-extensions="php, phtml, inc, ctp"
             id="com.aptana.contenttype.php"
-            name="PHP Source File"
+            name="%content-type.name"
             priority="normal">
       </content-type>
    </extension>
    <extension
-         id="phpNanure"
-         name="Aptana PHP Project"
+         id="phpNature"
+         name="%nature.name"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
@@ -37,12 +37,20 @@
       </runtime>
    </extension>
    <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/full/ovr16/php_ovr.gif"
+            id="com.aptana.editor.php.projectnature"
+            natureId="com.aptana.editor.php.phpNature">
+      </image>
+   </extension>
+   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="com.aptana.editor.php.core.PHPCorePreferenceInitializer">
       </initializer>
       <initializer
-            class="com.aptana.editor.php.internal.ui.editor.preferences.PHPEditorPreferenceInitializer">
+            class="com.aptana.editor.php.internal.ui.preferences.PhpUIPreferencesInitializer">
       </initializer>
    </extension>
    <extension
@@ -58,22 +66,41 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="com.aptana.editor.php.internal.ui.preferences.PHPDevelopmentPage"
+            class="com.aptana.editor.php.internal.ui.preferences.PhpDevelopmentPage"
             id="com.aptana.editor.php.PHPDevelopmentPage"
-            name="PHP Development">
+            name="%project-property-page.name">
          <enabledWhen>
             <and>
                <instanceof
                      value="org.eclipse.core.resources.IProject">
                </instanceof>
                <test
-                     args="phpNature"
+                     args="com.aptana.editor.php.phpNature"
                      property="com.aptana.editor.php.nature"
                      value="true">
                </test>
             </and>
          </enabledWhen>
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="com.aptana.ui.wizards.category"
+            class="com.aptana.editor.php.internal.ui.wizard.NewPHPProjectWizard"
+            finalPerspective="com.aptana.ui.WebPerspective"
+            icon="icons/full/obj16/php.gif"
+            id="com.aptana.editor.php.NewPHPProjectWizard"
+            name="%new-project-wizard.name"
+            preferredPerspectives="com.aptana.ui.WebPerspective"
+            project="true">
+         <description>
+            %new-project-wizard.description
+         </description>
+      </wizard>
+      <primaryWizard
+            id="com.aptana.editor.php.NewPHPProjectWizard">
+      </primaryWizard>
    </extension>
 
 </plugin>

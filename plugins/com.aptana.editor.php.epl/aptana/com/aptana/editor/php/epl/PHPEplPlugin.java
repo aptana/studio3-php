@@ -2,6 +2,10 @@ package com.aptana.editor.php.epl;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -49,6 +53,38 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public static PHPEplPlugin getDefault()
 	{
 		return plugin;
+	}
+
+	/**
+	 * Returns the active workbench window shell.
+	 * 
+	 * @return the active workbench window shell; Null if none exists.
+	 */
+	public static Shell getShell()
+	{
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		if (window == null)
+		{
+			IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+			if (windows.length > 0)
+			{
+				return windows[0].getShell();
+			}
+		}
+		else
+		{
+			Shell shell = window.getShell();
+			if (shell == null)
+			{
+				// Try to get it straight from the Display
+				Display disp = PlatformUI.getWorkbench().getDisplay();
+				if (disp != null)
+				{
+					return disp.getActiveShell();
+				}
+			}
+		}
+		return null;
 	}
 
 	public static void logInfo(String string, Throwable e)

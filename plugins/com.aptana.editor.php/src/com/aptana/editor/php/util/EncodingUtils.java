@@ -2,7 +2,7 @@
  * Aptana Inc.
  * License: EPL
  */
-package com.aptana.editor.php.utils;
+package com.aptana.editor.php.util;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;

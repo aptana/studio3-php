@@ -22,7 +22,6 @@ import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.internal.ui.editor.preferences.IPHPEditorPreferencesConstants;
 import com.aptana.parsing.ast.IParseNode;
 
 /**
@@ -32,8 +31,6 @@ public class NodeBuilder
 {
 
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
-	private static final int MAX_CHAR_COUNT = 25;
-	private static final int SPACE_COUNT = 3;
 	private IPHPParseNode current;
 	private IPHPParseNode root;
 	private Stack<Object> stack = new Stack<Object>();
@@ -45,8 +42,6 @@ public class NodeBuilder
 	 * Whether to collect variables.
 	 */
 	private boolean collectVariables = false;
-	private boolean showShortContentInOutline = PHPEditorPlugin.getDefault().getPreferenceStore().getBoolean(
-			IPHPEditorPreferencesConstants.PHPEDITOR_EMPTY_NODE_CONTENT_IN_OUTLINE);
 	private boolean hasSyntaxErrors;
 
 	public boolean hasSyntaxErrors()
@@ -263,143 +258,6 @@ public class NodeBuilder
 	{
 		PHPVariableParseNode pn = new PHPVariableParseNode(1, -1, -1, variableName);
 		current.addChild(pn);
-	}
-
-	/**
-	 * populates all nodes related to given position
-	 * 
-	 * @param parentNode
-	 * @param position
-	 * @param sourceUnsafe
-	 */
-	public void populateNodes(IParseNode parentNode, int position, char[] sourceUnsafe)
-	{
-		if (parentNode == null)
-		{
-			return;
-		}
-		int startingOffset = position;
-		int from = -1;
-		int to = -1;
-		boolean ps = false;
-		int phpEnd = -1;
-		int phpStart = 0;
-		for (int a = 0; a < phpStarts.size(); a++)
-		{
-			Integer pos = (Integer) phpStarts.get(a);
-
-			if (startingOffset >= pos.intValue())
-			{
-				from = pos.intValue();
-				phpStart = pos.intValue();
-				continue;
-
-			}
-			if (!ps)
-			{
-				if (a < phpEnds.size() && a > 0)
-				{
-					phpEnd = ((Integer) phpEnds.get(a - 1)).intValue();
-				}
-				to = pos.intValue();
-				ps = true;
-			}
-		}
-		if (phpEnd == -1)
-		{
-			if (phpEnds.size() > 0)
-			{
-				phpEnd = ((Integer) phpEnds.get(phpEnds.size() - 1)).intValue();
-			}
-		}
-		if (to == -1)
-		{
-			phpEnd = position;
-			to = position;
-		}
-		if (from == -1 || true)
-		{
-			if (parentNode.getChildrenCount() > 0)
-			{
-				IParseNode child = parentNode.getChild(parentNode.getChildrenCount() - 1);
-				from = child.getEndingOffset();
-			}
-		}
-		PHPBlockNode bn = new PHPBlockNode(phpStart, phpEnd + 2, "php"); //$NON-NLS-1$		
-		for (int a = 0; a < current.getChildrenCount(); a++)
-		{
-			IParseNode pn = current.getChild(a);
-			if (pn.getStartingOffset() >= from)
-			{
-				if (to == -1 || pn.getStartingOffset() <= to)
-				{
-					bn.addChild(pn);
-				}
-			}
-		}
-		int childCount = bn.getChildrenCount();
-		if (childCount == 0)
-		{
-			StringBuffer buf = new StringBuffer();
-			int pos = phpStart + 2;
-			if (from > -1)
-			{
-				pos = from;
-			}
-			int count = 0;
-			int i = 0;
-			boolean lastSpace = false;
-			while (pos < sourceUnsafe.length)
-			{
-				char c = sourceUnsafe[pos];
-				if (pos >= position)
-				{
-					break;
-				}
-				if (Character.isWhitespace(c))
-				{
-					pos++;
-					if (!lastSpace)
-					{
-						buf.append(' ');
-						count++;
-					}
-					lastSpace = true;
-					continue;
-				}
-				lastSpace = false;
-				if (count == SPACE_COUNT)
-				{
-					break;
-				}
-				if (i++ > MAX_CHAR_COUNT)
-				{
-					buf.append("..."); //$NON-NLS-1$
-					break;
-				}
-				buf.append(c);
-				pos++;
-			}
-			String string = buf.toString();
-			if (string.startsWith("<?")) //$NON-NLS-1$
-			{
-				string = string.substring(2);
-			}
-			if (string.toLowerCase().startsWith("php")) //$NON-NLS-1$
-			{
-				string = string.substring(3);
-			}
-			if (!showShortContentInOutline)
-			{
-				string = EMPTY_STRING;
-			}
-			PHPBlockNode bn1 = new PHPBlockNode(phpStart, phpEnd + 2, string.trim());
-			parentNode.addChild(bn1);
-		}
-		else
-		{
-			parentNode.addChild(bn);
-		}
 	}
 
 	/**

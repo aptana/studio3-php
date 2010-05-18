@@ -35,7 +35,7 @@
 package com.aptana.editor.php.internal.contentAssist.preferences;
 
 /**
- * IPreferenceConstants
+ * IPhpPreferenceConstants
  * 
  * @author Denis Denisenko
  */

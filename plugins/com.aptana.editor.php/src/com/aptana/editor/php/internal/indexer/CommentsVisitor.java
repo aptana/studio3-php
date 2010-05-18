@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.php.internal.core.ast.nodes.Comment;
-import com.aptana.editor.php.utils.PHPASTVisitorStub;
+
+import com.aptana.editor.php.util.PHPASTVisitorStub;
 
 /**
  * PHP Module comments collector.

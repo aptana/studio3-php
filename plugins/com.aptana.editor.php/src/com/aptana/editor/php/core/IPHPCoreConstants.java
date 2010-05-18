@@ -4,7 +4,7 @@ import org.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 
-public interface PHPCoreConstants {
+public interface IPHPCoreConstants {
 	public static final String PLUGIN_ID = PHPEditorPlugin.PLUGIN_ID;
 	public static final String IP_VARIABLE_INITIALIZER_EXTPOINT_ID = "includePathVariables"; //$NON-NLS-1$
 

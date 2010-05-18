@@ -1,10 +1,3 @@
-/**
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html. If redistributing this code,
- * this entire header must remain intact.
- */
 package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.ICommand;
@@ -24,7 +17,7 @@ public final class PHPNature implements IProjectNature
 	/**
 	 * NATURE_ID
 	 */
-	public static final String NATURE_ID = PHPEditorPlugin.PLUGIN_ID + ".phpnature"; //$NON-NLS-1$
+	public static final String NATURE_ID = PHPEditorPlugin.PLUGIN_ID + ".phpNature"; //$NON-NLS-1$
 	private IProject project;
 
 	/**
@@ -44,14 +37,14 @@ public final class PHPNature implements IProjectNature
 
 	public void configure() throws CoreException
 	{
-		// register the PHP builder
-		addToBuildSpec(PHPEditorPlugin.BUILDER_ID);
+		// TODO: Shalom - register the PHP builder once we have it in place
+		// addToBuildSpec(PHPEditorPlugin.BUILDER_ID);
 	}
 
 	public void deconfigure() throws CoreException
 	{
-		// unregister the PHP builder
-		removeFromBuildSpec(PHPEditorPlugin.BUILDER_ID);
+		// TODO: Shalom - unregister the PHP builder once we have it in place
+		// removeFromBuildSpec(PHPEditorPlugin.BUILDER_ID);
 	}
 
 	public IProject getProject()
@@ -72,15 +65,14 @@ public final class PHPNature implements IProjectNature
 	{
 
 		IProjectDescription description = this.project.getDescription();
-		int scriptCommandIndex = getScriptCommandIndex(description.getBuildSpec());
+		int scriptCommandIndex = getBuildSpecIndex(description.getBuildSpec());
 
 		if (scriptCommandIndex == -1)
 		{
-
 			// Add a PHP command to the build spec
 			ICommand command = description.newCommand();
 			command.setBuilderName(builderID);
-			setScriptCommand(description, command);
+			setBuildSpec(description, command);
 		}
 	}
 
@@ -107,37 +99,35 @@ public final class PHPNature implements IProjectNature
 	}
 
 	/**
-	 * Update the Script command in the build spec (replace existing one if present, add one first if none).
+	 * Set the project's build spec.
 	 */
-	private void setScriptCommand(IProjectDescription description, ICommand newCommand) throws CoreException
+	private void setBuildSpec(IProjectDescription description, ICommand newCommand) throws CoreException
 	{
 
-		ICommand[] oldBuildSpec = description.getBuildSpec();
-		int oldScriptCommandIndex = getScriptCommandIndex(oldBuildSpec);
+		ICommand[] prevBuildSpec = description.getBuildSpec();
+		int prevBuildSpecIndex = getBuildSpecIndex(prevBuildSpec);
 		ICommand[] newCommands;
 
-		if (oldScriptCommandIndex == -1)
+		if (prevBuildSpecIndex == -1)
 		{
-			// Add a Java build spec before other builders (1FWJK7I)
-			newCommands = new ICommand[oldBuildSpec.length + 1];
-			System.arraycopy(oldBuildSpec, 0, newCommands, 1, oldBuildSpec.length);
+			newCommands = new ICommand[prevBuildSpec.length + 1];
+			System.arraycopy(prevBuildSpec, 0, newCommands, 1, prevBuildSpec.length);
 			newCommands[0] = newCommand;
 		}
 		else
 		{
-			oldBuildSpec[oldScriptCommandIndex] = newCommand;
-			newCommands = oldBuildSpec;
+			prevBuildSpec[prevBuildSpecIndex] = newCommand;
+			newCommands = prevBuildSpec;
 		}
 
-		// Commit the spec change into the project
 		description.setBuildSpec(newCommands);
-		this.project.setDescription(description, null);
+		project.setDescription(description, null);
 	}
 
 	/**
-	 * Find the specific Script command amongst the given build spec and return its index or -1 if not found.
+	 * Returns the PHP builder ID index in the commands array.
 	 */
-	private int getScriptCommandIndex(ICommand[] buildSpec)
+	private int getBuildSpecIndex(ICommand[] buildSpec)
 	{
 
 		for (int i = 0; i < buildSpec.length; ++i)
