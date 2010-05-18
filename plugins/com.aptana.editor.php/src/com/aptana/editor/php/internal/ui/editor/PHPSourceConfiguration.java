@@ -186,25 +186,6 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		return singleLineCommentScanner;
 	}
 
-	// private ITokenScanner getRegexpScanner()
-	// {
-	// if (regexpScanner == null)
-	// {
-	// regexpScanner = new PHPRegexpScanner();
-	// }
-	// return regexpScanner;
-	// }
-
-	// private ITokenScanner getCommandScanner()
-	// {
-	// if (commandScanner == null)
-	// {
-	// commandScanner = new RuleBasedScanner();
-	//			commandScanner.setDefaultReturnToken(getToken("string.interpolated.php")); //$NON-NLS-1$
-	// }
-	// return commandScanner;
-	// }
-
 	private ITokenScanner getSingleQuotedStringScanner()
 	{
 		if (singleQuotedStringScanner == null)

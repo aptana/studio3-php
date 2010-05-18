@@ -23,7 +23,7 @@ import org.osgi.service.prefs.Preferences;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants;
-import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.editor.php.core.PHPVersionProvider;
 
 /**
  * The primary PHP development property page.
@@ -90,7 +90,7 @@ public class PhpDevelopmentPage extends PropertyPage implements IWorkbenchProper
 
 	private Preferences getPreferences(IProject project)
 	{
-		return new ProjectScope(project).getNode(PHPEplPlugin.PLUGIN_ID);
+		return new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
 	}
 
 	/*
@@ -106,15 +106,18 @@ public class PhpDevelopmentPage extends PropertyPage implements IWorkbenchProper
 			int index = PHP_VERSION_NAMES.indexOf(selectedVersion);
 			String selectedAlias = PHP_ALIASES.get(index);
 
-			pref.put(CorePreferenceConstants.Keys.PHP_VERSION, selectedAlias);
-
-			try
+			if (!selectedAlias.equals(pref.get(CorePreferenceConstants.Keys.PHP_VERSION, null)))
 			{
-				pref.flush();
-			}
-			catch (BackingStoreException e)
-			{
-				PHPEditorPlugin.logError(e);
+				pref.put(CorePreferenceConstants.Keys.PHP_VERSION, selectedAlias);
+				try
+				{
+					pref.flush();
+				}
+				catch (BackingStoreException e)
+				{
+					PHPEditorPlugin.logError(e);
+				}
+				PHPVersionProvider.getInstance().notifyChange((IProject) getElement().getAdapter(IProject.class), PHPVersion.byAlias(selectedAlias));
 			}
 		}
 		return super.performOk();

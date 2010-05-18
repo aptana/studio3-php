@@ -28,7 +28,6 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.editor.php.core.model.ISourceModule;
-import com.aptana.editor.php.core.preferences.PHPVersionProvider;
 
 /**
  * A PHP language parser for creating abstract syntax trees (ASTs).
@@ -92,11 +91,11 @@ public class ASTParser {
 	/**
 	 * Factory methods for ASTParser
 	 */
-	public static ASTParser newParser(ISourceModule sourceModule) {
-		PHPVersion phpVersion = PHPVersionProvider.getPHPVersion(sourceModule
-				.getResource().getProject());
-		return newParser(phpVersion, sourceModule);
-	}
+	// public static ASTParser newParser(ISourceModule sourceModule) {
+	// PHPVersion phpVersion = PHPVersionProvider.getPHPVersion(sourceModule
+	// .getResource().getProject());
+	// return newParser(phpVersion, sourceModule);
+	// }
 
 	public static ASTParser newParser(PHPVersion version,
 			ISourceModule sourceModule) {

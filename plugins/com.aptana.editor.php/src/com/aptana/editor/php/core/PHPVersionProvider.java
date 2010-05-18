@@ -1,16 +1,20 @@
-package com.aptana.editor.php.core.preferences;
+package com.aptana.editor.php.core;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.preferences.CorePreferenceConstants;
 
-import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
  * Provides the workspace/project-specific PHP version setting.
@@ -19,6 +23,79 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  */
 public class PHPVersionProvider
 {
+	private static PHPVersionProvider instance;
+	private Map<IProject, ListenerList> listeners;
+
+	/**
+	 * Returns an instance of the PHP version provider.
+	 * 
+	 * @return An instance of this class.
+	 */
+	public static PHPVersionProvider getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new PHPVersionProvider();
+		}
+		return instance;
+	}
+
+	// Constructs a new PHPVersionProvider and register to listen on any PHP version changes.
+	private PHPVersionProvider()
+	{
+		listeners = new HashMap<IProject, ListenerList>();
+	}
+
+	/**
+	 * Register a listener to be notified when a PHP version is modified on a specific project.
+	 * 
+	 * @param project
+	 * @param listener
+	 */
+	public void addPHPVersionListener(IProject project, IPHPVersionListener listener)
+	{
+		ListenerList listenerList = listeners.get(project);
+		if (listenerList == null)
+		{
+			listenerList = new ListenerList();
+			listeners.put(project, listenerList);
+		}
+		listenerList.add(listener);
+	}
+
+	/**
+	 * Unregister a modification listener from all the projects that it was registered on.
+	 * 
+	 * @param listener
+	 */
+	public void removePHPVersionListener(IPHPVersionListener listener)
+	{
+		Collection<ListenerList> lists = listeners.values();
+		for (ListenerList listenerList : lists)
+		{
+			listenerList.remove(listener);
+		}
+	}
+
+	/**
+	 * Trigger a notification when a project's PHP version is modified.
+	 * 
+	 * @param project
+	 * @param newVersion
+	 */
+	public void notifyChange(IProject project, PHPVersion newVersion)
+	{
+		ListenerList listenersList = listeners.get(project);
+		if (listenersList != null)
+		{
+			Object[] allListeners = listenersList.getListeners();
+			for (Object listener : allListeners)
+			{
+				((IPHPVersionListener) listener).phpVersionChanged(newVersion);
+			}
+		}
+	}
+
 	/**
 	 * Returns the PHP version that is set in the preferences.
 	 * 
@@ -82,7 +159,8 @@ public class PHPVersionProvider
 		{
 			contexts = new IScopeContext[] { new InstanceScope(), new DefaultScope() };
 		}
-		String versionAlias = service.getString(PHPEplPlugin.PLUGIN_ID, prefKey, PHPVersion.PHP5_3.getAlias(), contexts);
+		String versionAlias = service.getString(PHPEditorPlugin.PLUGIN_ID, prefKey, PHPVersion.PHP5_3.getAlias(),
+				contexts);
 		return PHPVersion.byAlias(versionAlias);
 	}
 }

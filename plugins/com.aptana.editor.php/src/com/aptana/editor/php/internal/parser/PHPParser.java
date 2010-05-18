@@ -2,11 +2,13 @@ package com.aptana.editor.php.internal.parser;
 
 import java.io.StringReader;
 
+import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.core.preferences.PHPVersionProvider;
+import com.aptana.editor.php.core.IPHPVersionListener;
+import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
@@ -23,8 +25,10 @@ import com.aptana.parsing.ast.ParseRootNode;
  * @author Shalom Gibly <sgibly@aptana.com>
  * @since Aptana PHP 3.0
  */
-public class PHPParser implements IParser
+public class PHPParser implements IParser, IPHPVersionListener
 {
+
+	private PHPVersion phpVersion;
 
 	/**
 	 * Constructs a new PHTMLParser
@@ -46,8 +50,8 @@ public class PHPParser implements IParser
 		Program ast = null;
 		try
 		{
-			// TODO: Shalom - Get the active project and pass it to the version provider.
-			ASTParser parser = ASTParser.newParser(new StringReader(source), PHPVersionProvider.getPHPVersion(null));
+			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getPHPVersion(null) : phpVersion;
+			ASTParser parser = ASTParser.newParser(new StringReader(source), version);
 			ast = parser.createAST(null);
 		}
 		catch (Exception e)
@@ -95,5 +99,11 @@ public class PHPParser implements IParser
 		{
 			root.addChild(child);
 		}
+	}
+
+	@Override
+	public void phpVersionChanged(PHPVersion newVersion)
+	{
+		this.phpVersion = newVersion;
 	}
 }

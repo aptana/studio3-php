@@ -1,6 +1,12 @@
 package com.aptana.editor.php.internal.ui.editor;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
@@ -8,6 +14,8 @@ import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.core.IPHPVersionListener;
+import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParser;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
@@ -23,10 +31,12 @@ import com.aptana.parsing.ast.IParseNode;
  * @author Shalom Gibly <sgibly@aptana.com>
  */
 @SuppressWarnings("restriction")
-public class PHPSourceEditor extends HTMLEditor implements ILanguageNode
+public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVersionListener
 {
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
 			'"', '"', '?', '?' };
+	private PHPParser parser;
+	private IProject project;
 
 	@Override
 	protected void initializeEditor()
@@ -40,8 +50,37 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		setDocumentProvider(new PHPDocumentProvider());
 
-		getFileService().setParser(new PHPParser());
-		// getFileService().setParser(new PHPParser());
+		parser = new PHPParser();
+		getFileService().setParser(parser);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
+	 */
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException
+	{
+		super.init(site, input);
+		// Register as a PHP version listener and re-set the document to trigger a refresh and re-parse.
+		IResource resource = (IResource) input.getAdapter(IResource.class);
+		if (resource != null)
+		{
+			project = resource.getProject();
+			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
+			parser.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
+			PHPVersionProvider.getInstance().addPHPVersionListener(project, parser);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.aptana.editor.common.AbstractThemeableEditor#dispose()
+	 */
+	@Override
+	public void dispose()
+	{
+		PHPVersionProvider.getInstance().removePHPVersionListener(this);
+		PHPVersionProvider.getInstance().removePHPVersionListener(parser);
+		super.dispose();
 	}
 
 	@Override
@@ -88,5 +127,11 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode
 	public String getLanguage()
 	{
 		return PHPMimeType.MimeType;
+	}
+
+	@Override
+	public void phpVersionChanged(PHPVersion newVersion)
+	{
+		getSourceViewer().setDocument(getSourceViewer().getDocument());
 	}
 }

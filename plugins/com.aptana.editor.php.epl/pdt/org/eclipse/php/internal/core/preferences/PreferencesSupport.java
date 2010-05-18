@@ -12,13 +12,11 @@
 package org.eclipse.php.internal.core.preferences;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
