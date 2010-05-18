@@ -39,7 +39,7 @@ import com.aptana.parsing.ast.IParseNode;
 public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVersionListener
 {
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
-			'"', '"', '?', '?' };
+			'"', '"' };
 	private PHPParser parser;
 	private IProject project;
 	private PHPDocumentProvider documentProvider;
