@@ -33,6 +33,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * @author Modhe S., Roy G. ,2007
  * </p>
  */
+@SuppressWarnings("unchecked")
 public abstract class ASTNode implements Visitable {
 
 	/**

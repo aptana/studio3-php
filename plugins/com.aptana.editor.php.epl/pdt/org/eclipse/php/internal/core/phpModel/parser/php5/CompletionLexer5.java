@@ -34,6 +34,7 @@ import org.eclipse.php.internal.core.util.collections.IntHashtable;
  * on 6/21/07 5:14 PM from the specification file
  * <tt>file:/C:/Java2/parserUtils/parser/php5/completion_scanner.flex</tt>
  */
+@SuppressWarnings({"unchecked", "nls"})
 public class CompletionLexer5 extends CompletionLexer implements Scanner {
 
 	

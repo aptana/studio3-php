@@ -147,6 +147,7 @@ public abstract class TypeDeclaration extends Statement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == getInterfacesProperty()) {
 			return interfaces();

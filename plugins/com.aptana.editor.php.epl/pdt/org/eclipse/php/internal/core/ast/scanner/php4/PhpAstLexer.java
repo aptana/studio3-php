@@ -15,7 +15,6 @@ package org.eclipse.php.internal.core.ast.scanner.php4;
 
 import org.eclipse.php.internal.core.ast.nodes.AST;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.php.internal.core.ast.nodes.Comment;
 import java_cup.sym;
@@ -32,6 +31,7 @@ import org.eclipse.php.internal.core.PHPVersion;
  * on 8/23/09 11:57 PM from the specification file
  * <tt>ast_scanner.flex</tt>
  */
+@SuppressWarnings({"unchecked", "nls", "unused"})
 public class PhpAstLexer implements org.eclipse.php.internal.core.ast.scanner.AstLexer {
 
   /** This character denotes the end of file */

@@ -70,6 +70,7 @@ public class FunctionInvocation extends VariableBase {
 		super(ast);
 	}
 
+	@SuppressWarnings("unchecked")
 	public FunctionInvocation(int start, int end, AST ast, FunctionName functionName, List parameters) {
 		this(start, end, ast, functionName, parameters == null ? null : (Expression[]) parameters.toArray(new Expression[parameters.size()]));
 	}
@@ -167,6 +168,7 @@ public class FunctionInvocation extends VariableBase {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 	
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == PARAMETERS_PROPERTY) {
 			return parameters();
@@ -196,6 +198,7 @@ public class FunctionInvocation extends VariableBase {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final FunctionName function = ASTNode.copySubtree(target, getFunctionName());

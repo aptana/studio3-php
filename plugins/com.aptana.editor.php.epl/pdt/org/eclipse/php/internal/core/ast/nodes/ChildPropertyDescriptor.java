@@ -20,6 +20,7 @@ package org.eclipse.php.internal.core.ast.nodes;
  * @see org.eclipse.jdt.core.dom.ASTNode#setStructuralProperty(StructuralPropertyDescriptor, Object)
  * @since 3.0
  */
+@SuppressWarnings("unchecked")
 public final class ChildPropertyDescriptor extends StructuralPropertyDescriptor {
 	
 	/**

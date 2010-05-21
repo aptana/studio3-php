@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.php.internal.core.ast.nodes.Comment;
-
+@SuppressWarnings("unchecked")
 public class LineCommentEndOffsets {
 
 	private static final int[] EMPTY_INT_ARRAY = {};

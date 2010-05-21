@@ -13,6 +13,7 @@ import org.eclipse.dltk.ast.Modifiers;
 /** CUP v0.10k generated parser.
   * @version Wed Jul 22 14:58:37 PDT 2009
   */
+@SuppressWarnings({"unchecked", "nls"})
 public class PhpAstParser extends java_cup.runtime.lr_parser {
 
   /** Default constructor. */
@@ -2121,6 +2122,7 @@ public class PhpAstParser extends java_cup.runtime.lr_parser {
 }
 
 /** Cup generated class to encapsulate user supplied action code.*/
+@SuppressWarnings({"unchecked", "nls", "unused"})
 class CUP$PhpAstParser$actions {
   private final PhpAstParser parser;
 

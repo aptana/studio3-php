@@ -66,13 +66,14 @@ public class NamespaceDeclaration extends Statement {
 		super(ast);
 	}
 
+	@SuppressWarnings("unchecked")
 	public NamespaceDeclaration(int start, int end, AST ast,
 			NamespaceName name, Block body, boolean bracketed) {
 		super(start, end, ast);
 
 		if (!bracketed && name == null) {
 			throw new IllegalArgumentException(
-					"Namespace name must not be null in an un-bracketed statement");
+					"Namespace name must not be null in an un-bracketed statement"); //$NON-NLS-1$
 		}
 
 		this.bracketed = bracketed;

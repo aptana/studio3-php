@@ -76,6 +76,7 @@ public class ClassInstanceCreation extends Expression {
 		visitor.endVisit(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	public ClassInstanceCreation(int start, int end, AST ast, ClassName className, List ctorParams) {
 		this(start, end, ast, className, ctorParams == null ? null : (Expression[]) ctorParams.toArray(new Expression[ctorParams.size()]));
 	}
@@ -164,6 +165,7 @@ public class ClassInstanceCreation extends Expression {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == CTOR_PARAMS_PROPERTY) {
 			return ctorParams();
@@ -195,6 +197,7 @@ public class ClassInstanceCreation extends Expression {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List params = ASTNode.copySubtrees(target, ctorParams());

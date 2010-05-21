@@ -62,6 +62,7 @@ public class StaticStatement extends Statement {
 		super(ast);
 	}
 
+	@SuppressWarnings("unchecked")
 	public StaticStatement(int start, int end, AST ast, List expressions) {
 		this(start, end, ast, expressions == null ? null : (Expression[]) expressions.toArray(new Expression[expressions.size()]));
 	}
@@ -69,6 +70,7 @@ public class StaticStatement extends Statement {
 	/**
 	 * @return the variables that participate in the static call
 	 */
+	@SuppressWarnings("unchecked")
 	public Variable[] getVariables() {
 
 		List vars = new LinkedList();
@@ -141,6 +143,7 @@ public class StaticStatement extends Statement {
 		return this.expressions;
 	}
 	
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == EXPRESSIONS_PROPERTY) {
 			return expressions();
@@ -157,6 +160,7 @@ public class StaticStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List expressions = ASTNode.copySubtrees(target, this.expressions());

@@ -54,6 +54,7 @@ public class UseStatement extends Statement {
 		super(ast);
 	}	
 	
+	@SuppressWarnings("unchecked")
 	public UseStatement(int start, int end, AST ast, List parts) {
 		super(start, end, ast);
 
@@ -110,7 +111,7 @@ public class UseStatement extends Statement {
 	public void toString(StringBuffer buffer, String tab) {
 		buffer.append(tab).append("<UseStatement"); //$NON-NLS-1$
 		appendInterval(buffer);
-		buffer.append(">\n");
+		buffer.append(">\n"); //$NON-NLS-1$
 		for (UseStatementPart part : this.parts) {
 			part.toString(buffer, TAB + tab);
 			buffer.append("\n"); //$NON-NLS-1$
@@ -131,6 +132,7 @@ public class UseStatement extends Statement {
 		return this.parts;
 	}
 	
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == PARTS_PROPERTY) {
 			return parts();
@@ -147,6 +149,7 @@ public class UseStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List parts = ASTNode.copySubtrees(target, parts());

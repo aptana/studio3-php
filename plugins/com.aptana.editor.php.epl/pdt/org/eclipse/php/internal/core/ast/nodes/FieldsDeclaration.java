@@ -56,6 +56,7 @@ public class FieldsDeclaration extends BodyDeclaration {
 		PROPERTY_DESCRIPTORS = Collections.unmodifiableList(properyList);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public FieldsDeclaration(int start, int end, AST ast, int modifier, List variablesAndDefaults) {
 		super(start, end, ast, modifier);
 
@@ -165,6 +166,7 @@ public class FieldsDeclaration extends BodyDeclaration {
 		return result;	
 	}
 
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == FIELDS_PROPERTY) {
 			return fields();
@@ -181,6 +183,7 @@ public class FieldsDeclaration extends BodyDeclaration {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List fields = ASTNode.copySubtrees(target, fields());

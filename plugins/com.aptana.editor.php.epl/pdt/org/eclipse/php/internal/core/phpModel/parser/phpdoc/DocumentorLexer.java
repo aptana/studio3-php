@@ -26,6 +26,7 @@ import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlockImp;
  * on 3/5/07 12:15 PM from the specification file
  * <tt>file:/C:/Java/Projects/parserUtils/parser/phpdoc/documentor_scanner.flex</tt>
  */
+@SuppressWarnings({"unchecked", "nls"})
 public class DocumentorLexer {
 
   /** This character denotes the end of file */

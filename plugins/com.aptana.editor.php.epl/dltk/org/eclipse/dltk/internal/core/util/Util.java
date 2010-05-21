@@ -36,6 +36,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 /**
  * This code is taken and trimmed from the DLTK project.
  */
+@SuppressWarnings("unchecked")
 public class Util
 {
 	private static final int DEFAULT_READING_SIZE = 8192;

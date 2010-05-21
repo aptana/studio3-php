@@ -91,6 +91,7 @@ public class ProjectPreferencesPropagator extends AbstractPreferencesPropagator 
 	 * @return The list of listeners assigned for the key, or null if non
 	 *         exists.
 	 */
+	@SuppressWarnings("unchecked")
 	public List removePropagatorListeners(String preferencesKey) {
 		return (List) listenersMap.remove(preferencesKey);
 	}
@@ -110,6 +111,7 @@ public class ProjectPreferencesPropagator extends AbstractPreferencesPropagator 
 		notifyEvent(event.getKey(), event.getOldValue(), event.getNewValue());
 	}
 
+	@SuppressWarnings("unchecked")
 	private void notifyEvent(String key, Object oldValue, Object newValue) {
 		List listeners = getPropagatorListeners(key);
 		if (listeners != null) {
@@ -147,6 +149,7 @@ public class ProjectPreferencesPropagator extends AbstractPreferencesPropagator 
 	 * 
 	 * @return The String value of the property.
 	 */
+	@SuppressWarnings("deprecation")
 	public String getWorkspaceProperty(String id) {
 		return PHPEplPlugin.getDefault().getPluginPreferences().getString(id);
 	}

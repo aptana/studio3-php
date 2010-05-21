@@ -22,6 +22,7 @@ import org.eclipse.php.internal.core.ast.rewrite.RewriteEventStore.CopySourceInf
 /**
  *
  */
+@SuppressWarnings("unchecked")
 public final class NodeInfoStore {
 	private AST ast;
 
@@ -82,19 +83,19 @@ public final class NodeInfoStore {
 			switch (node.getType()) {
 			case ASTNode.ASSIGNMENT:
 				Assignment assignment = (Assignment) node;
-				assignment.setLeftHandSide(this.ast.newVariable("a"));
+				assignment.setLeftHandSide(this.ast.newVariable("a")); //$NON-NLS-1$
 				assignment.setOperator(Assignment.OP_EQUAL);
-				assignment.setRightHandSide(this.ast.newVariable("a"));
+				assignment.setRightHandSide(this.ast.newVariable("a")); //$NON-NLS-1$
 				break;
 			case ASTNode.INFIX_EXPRESSION:
 				InfixExpression expression = (InfixExpression) node;
-				expression.setLeft(this.ast.newScalar("a"));
+				expression.setLeft(this.ast.newScalar("a")); //$NON-NLS-1$
 				expression.setOperator(InfixExpression.OP_MINUS);
-				expression.setRight(this.ast.newVariable("a"));
+				expression.setRight(this.ast.newVariable("a")); //$NON-NLS-1$
 				break;
 			case ASTNode.VARIABLE:
 				Variable variable = (Variable) node;
-				variable.setName(this.ast.newIdentifier(""));
+				variable.setName(this.ast.newIdentifier("")); //$NON-NLS-1$
 				break;
 			case ASTNode.FIELD_DECLARATION:
 				// ((FieldsDeclaration)

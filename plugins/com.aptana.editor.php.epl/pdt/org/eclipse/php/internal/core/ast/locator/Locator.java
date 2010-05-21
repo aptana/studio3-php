@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.ast.locator;
 
+import java.util.List;
+
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 import org.eclipse.php.internal.core.ast.nodes.Statement;
@@ -44,9 +46,8 @@ public class Locator extends ApplyAll {
 		}
 
 		// visit the nodes
-		Statement[] statements = program.getStatements();
-		for (int i = 0; i < statements.length; i++) {
-			Statement statement = statements[i];
+		List<Statement> statements = program.statements();
+		for (Statement statement : statements) {
 			if (inNode(statement, offset)) {
 				return statement;
 			}

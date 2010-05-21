@@ -166,6 +166,7 @@ public class ASTRewrite {
 	 *             document passed does not correspond to the AST that is
 	 *             rewritten.
 	 */
+	@SuppressWarnings("unchecked")
 	public TextEdit rewriteAST(IDocument document, Map options)
 			throws IllegalArgumentException {
 		if (document == null) {
@@ -228,6 +229,7 @@ public class ASTRewrite {
 	 * 
 	 * @since 3.2
 	 */
+	@SuppressWarnings("unchecked")
 	public TextEdit rewriteAST() throws CoreException,
 			IllegalArgumentException {
 		ASTNode rootNode = getRootNode();
@@ -258,6 +260,7 @@ public class ASTRewrite {
 				astRoot.comments(), options, rootNode);
 	}
 
+	@SuppressWarnings("unchecked")
 	private TextEdit internalRewriteAST(IDocument document, char[] content,
 			LineInformation lineInfo, String lineDelim, List commentNodes,
 			Map options, ASTNode rootNode) {
@@ -276,6 +279,7 @@ public class ASTRewrite {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	private ASTNode getRootNode() {
 		ASTNode node = null;
 		int start = -1;

@@ -189,7 +189,7 @@ public class AST {
 			lexer53.setUseAspTagsAsPhp(aspTagsAsPhp);
 			return lexer53;
 		} else {
-			throw new IllegalArgumentException(CoreMessages.getString("ASTParser_1") + phpVersion);
+			throw new IllegalArgumentException(CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
 		}
 	}
 
@@ -225,7 +225,7 @@ public class AST {
 			parser.setAST(this);
 			return parser;
 		} else {
-			throw new IllegalArgumentException(CoreMessages.getString("ASTParser_1") + phpVersion);
+			throw new IllegalArgumentException(CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
 		}
 	}
 
@@ -732,6 +732,7 @@ public class AST {
 	 * new Class[] {AST.class}
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	private static final Class[] AST_CLASS = new Class[] { AST.class };
 
 	/**
@@ -760,6 +761,7 @@ public class AST {
 	 * <code>null</code> or is not a concrete node type class
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public ASTNode createInstance(Class nodeClass) {
 		if (nodeClass == null) {
 			throw new IllegalArgumentException();
@@ -802,6 +804,7 @@ public class AST {
 	 * not a legal AST node type
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public ASTNode createInstance(int nodeType) {
 		// nodeClassForType throws IllegalArgumentException if nodeType is bogus
 		Class nodeClass = ASTNode.nodeClassForType(nodeType);
@@ -865,6 +868,7 @@ public class AST {
 	 * @see Program#rewrite(IDocument, Map)
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	TextEdit rewrite(IDocument document, Map options) {
 		if (document == null) {
 			throw new IllegalArgumentException();

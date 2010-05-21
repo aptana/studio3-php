@@ -24,6 +24,7 @@ import org.eclipse.php.internal.core.phpModel.phpElementData.PHPModifier;
 /** CUP v0.10j generated parser.
   * @version Thu Jun 21 17:14:11 IDT 2007
   */
+@SuppressWarnings({"unchecked", "nls", "deprecation"})
 public class PhpParser5 extends lr_parser implements PhpParser {
 
   /** Default constructor. */
@@ -2723,6 +2724,7 @@ public class PhpParser5 extends lr_parser implements PhpParser {
 }
 
 /** Cup generated class to encapsulate user supplied action code.*/
+@SuppressWarnings({"unchecked", "nls"})
 class CUP$PhpParser5$actions {
   private final PhpParser5 parser;
 

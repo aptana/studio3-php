@@ -27,6 +27,7 @@ import com.aptana.editor.php.core.preferences.TaskTag;
  */
 public class TaskTagsEvent extends EventObject {
 
+	private static final long serialVersionUID = 7470422791883879563L;
 	private TaskTag[] tags;
 	private IProject project;
 	private boolean isCaseSensitive;

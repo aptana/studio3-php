@@ -47,6 +47,7 @@ import org.eclipse.php.internal.core.ast.nodes.*;
  * @see ASTNode#subtreeMatch(ASTMatcher, Object)
  * @since 2.0
  */
+@SuppressWarnings("deprecation")
 public class ASTMatcher {
 
 	/**
@@ -54,6 +55,7 @@ public class ASTMatcher {
 	 * 
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unused")
 	private boolean matchDocTags;
 
 	/**
@@ -100,6 +102,7 @@ public class ASTMatcher {
 	 *         <code>ASTNode.subtreeMatch</code>
 	 * @see ASTNode#subtreeMatch(ASTMatcher matcher, Object other)
 	 */
+	@SuppressWarnings("unchecked")
 	public final boolean safeSubtreeListMatch(Collection list1, Collection list2) {
 		int size1 = list1.size();
 		int size2 = list2.size();
@@ -656,6 +659,7 @@ public class ASTMatcher {
 		if (!(other instanceof InLineHtml)) {
 			return false;
 		}
+		@SuppressWarnings("unused")
 		InLineHtml o = (InLineHtml) other;
 
 		return false;
@@ -737,6 +741,7 @@ public class ASTMatcher {
 				node.getVariable(), o.getVariable()));
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean match(Program node, Object other) {
 		if (!(other instanceof Program)) {
 			return false;
@@ -870,6 +875,7 @@ public class ASTMatcher {
 		if (!(other instanceof ThrowStatement)) {
 			return false;
 		}
+		@SuppressWarnings("unused")
 		ThrowStatement o = (ThrowStatement) other;
 
 		return false;

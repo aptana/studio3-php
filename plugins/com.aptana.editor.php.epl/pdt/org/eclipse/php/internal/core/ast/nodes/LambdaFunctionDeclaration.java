@@ -61,6 +61,8 @@ public class LambdaFunctionDeclaration extends Expression {
 		PROPERTY_DESCRIPTORS = Collections.unmodifiableList(propertyList);
 	}	
 	
+	
+	@SuppressWarnings("unchecked")
 	public LambdaFunctionDeclaration(int start, int end, AST ast, List formalParameters, List lexicalVars, Block body, final boolean isReference) {
 		super(start, end, ast);
 		
@@ -271,6 +273,7 @@ public class LambdaFunctionDeclaration extends Expression {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 	
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == FORMAL_PARAMETERS_PROPERTY) {
 			return formalParameters();
@@ -287,6 +290,7 @@ public class LambdaFunctionDeclaration extends Expression {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final Block body = ASTNode.copySubtree(target, getBody());

@@ -95,6 +95,7 @@ public class Program extends ASTNode {
 	 */
 	private int[] lineEndTable = {};
 
+	@SuppressWarnings("unchecked")
 	private Program(int start, int end, AST ast, Statement[] statements,
 			List comments) {
 		super(start, end, ast);
@@ -111,6 +112,7 @@ public class Program extends ASTNode {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Program(int start, int end, AST ast, List statements,
 			List commentList) {
 		this(start, end, ast, (Statement[]) statements
@@ -643,10 +645,12 @@ public class Program extends ASTNode {
 	 * @see #recordModifications()
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public TextEdit rewrite(IDocument document, Map options) {
 		return getAST().rewrite(document, options);
 	}
 
+	@SuppressWarnings("unchecked")
 	ASTNode clone0(AST target) {
 		final List statements = ASTNode.copySubtrees(target, statements());
 		final List comments = ASTNode.copySubtrees(target, comments());
@@ -664,6 +668,7 @@ public class Program extends ASTNode {
 	/*
 	 * (omit javadoc for this method) Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == STATEMENTS_PROPERTY) {
 			return statements();

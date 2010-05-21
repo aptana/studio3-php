@@ -154,6 +154,7 @@ public class PHPModifier {
 		return (mod & ABSTRACT) != 0;
 	}
 
+	@SuppressWarnings("nls")
 	public static String toString(int mod) {
 		StringBuffer sb = new StringBuffer();
 

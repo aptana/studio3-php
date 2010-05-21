@@ -293,6 +293,7 @@ public class SymbolsProvider {
 	 *            The relevant PHP version.
 	 * @return The sym id or the ERROR_SYMBOL.sym in case of an error.
 	 */
+	@SuppressWarnings("nls")
 	public static int getModifierSym(String modifier, PHPVersion phpVersion) {
 		if (PHPVersion.PHP5_3 == phpVersion) {
 			if (modifier.equals("public")) {

@@ -1229,6 +1229,7 @@ public static String[] getThrownExceptionTypes(String methodSignature) throws Il
  *
  * @since 3.1
  */
+@SuppressWarnings("unchecked")
 public static char[][] getThrownExceptionTypes(char[] methodSignature) throws IllegalArgumentException {
 	// skip type parameters
 	int exceptionStart = CharOperation.indexOf(C_EXCEPTION_START, methodSignature);
@@ -1272,6 +1273,7 @@ public static char[][] getThrownExceptionTypes(char[] methodSignature) throws Il
  * 
  * @since 3.1
  */
+@SuppressWarnings("unchecked")
 public static char[][] getTypeArguments(char[] parameterizedTypeSignature) throws IllegalArgumentException {
 	int length = parameterizedTypeSignature.length;
 	if (length < 2 || parameterizedTypeSignature[length-2] != C_GENERIC_END)
@@ -1396,6 +1398,7 @@ public static String getTypeErasure(String parameterizedTypeSignature) throws Il
  * 
  * @since 3.1
  */
+@SuppressWarnings("unchecked")
 public static char[][] getTypeParameters(char[] methodOrTypeSignature) throws IllegalArgumentException {
 	try {
 		int length = methodOrTypeSignature.length;
@@ -1618,7 +1621,7 @@ public static char[] getQualifier(char[] name) {
  */
 public static String getQualifier(String name) {
 	char[] qualifier = getQualifier(name.toCharArray());
-	if (qualifier.length == 0) return "";
+	if (qualifier.length == 0) return ""; //$NON-NLS-1$
 	return new String(qualifier);
 }
 /**

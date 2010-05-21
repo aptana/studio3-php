@@ -78,6 +78,7 @@ public class NamespaceName extends Identifier {
 		this.current = current;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public NamespaceName(int start, int end, AST ast, List segments, boolean global, boolean current) {
 		super(start, end, ast, buildName((Identifier[]) segments.toArray(new Identifier[segments.size()]), global, current));
 
@@ -99,7 +100,7 @@ public class NamespaceName extends Identifier {
 			buf.append('\\');
 		}
 		else if (current) {
-			buf.append("namespace\\");
+			buf.append("namespace\\"); //$NON-NLS-1$
 		}
 		for (int i = 0; i < segments.length; ++i) {
 			if (i > 0) {
@@ -133,8 +134,8 @@ public class NamespaceName extends Identifier {
 	public void toString(StringBuffer buffer, String tab) {
 		buffer.append(tab).append("<NamespaceName"); //$NON-NLS-1$
 		appendInterval(buffer);
-		buffer.append(" global='").append(global).append('\'');
-		buffer.append(" current='").append(current).append('\'');
+		buffer.append(" global='").append(global).append('\''); //$NON-NLS-1$
+		buffer.append(" current='").append(current).append('\''); //$NON-NLS-1$
 		buffer.append(">\n"); //$NON-NLS-1$
 		for (ASTNode node : this.segments) {
 			node.toString(buffer, TAB + tab);
@@ -202,6 +203,7 @@ public class NamespaceName extends Identifier {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	protected ASTNode clone0(AST target) {
 		final List segments = ASTNode.copySubtrees(target, segments());
 		final boolean global = isGlobal();
@@ -238,6 +240,7 @@ public class NamespaceName extends Identifier {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == ELEMENTS_PROPERTY) {
 			return segments();

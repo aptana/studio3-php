@@ -63,6 +63,7 @@ public class ArrayCreation extends Expression {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public ArrayCreation(int start, int end, AST ast, List elements) {
 		this(start, end, ast, elements == null ? null : (ArrayElement[]) elements.toArray(new ArrayElement[elements.size()]));
 	}
@@ -137,6 +138,7 @@ public class ArrayCreation extends Expression {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	ASTNode clone0(AST target) {
 		final List elements = ASTNode.copySubtrees(target, elements());
 		final ArrayCreation result = new ArrayCreation(this.getStart(), this.getEnd(), target, elements);
@@ -151,6 +153,7 @@ public class ArrayCreation extends Expression {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == ELEMENTS_PROPERTY) {
 			return elements();

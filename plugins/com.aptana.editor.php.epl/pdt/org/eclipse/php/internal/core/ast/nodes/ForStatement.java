@@ -98,6 +98,7 @@ public class ForStatement extends Statement {
 		setBody(action);
 	}
 
+	@SuppressWarnings("unchecked")
 	public ForStatement(int start, int end, AST ast, List initializations, List conditions, List increasements, Statement action) {
 		this(start, end, ast, initializations == null ? null : (Expression[]) initializations.toArray(new Expression[initializations.size()]), conditions == null ? null : (Expression[]) conditions.toArray(new Expression[conditions.size()]), increasements == null ? null : (Expression[]) increasements
 			.toArray(new Expression[increasements.size()]), action);
@@ -301,6 +302,7 @@ public class ForStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List inits = ASTNode.copySubtrees(target, initializers());
@@ -319,6 +321,7 @@ public class ForStatement extends Statement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == INITIALIZERS_PROPERTY) {
 			return initializers();

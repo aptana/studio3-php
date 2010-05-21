@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.IPath;
  * @author seva
  *
  */
+@SuppressWarnings("nls")
 public class IncludeStringHack {
 
 	public static String hack(String includeString) {

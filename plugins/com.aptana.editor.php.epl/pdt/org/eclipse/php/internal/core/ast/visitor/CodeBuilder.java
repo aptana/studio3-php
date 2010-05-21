@@ -90,6 +90,7 @@ import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
  * 
  * @author Jackie
  */
+@SuppressWarnings({"unchecked", "nls", "deprecation"})
 public class CodeBuilder implements Visitor
 {
 

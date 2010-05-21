@@ -66,6 +66,7 @@ public class ConstantDeclaration extends Statement {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public ConstantDeclaration(int start, int end, AST ast, List variablesAndDefaults) {
 		super(start, end, ast);
 		if (variablesAndDefaults == null || variablesAndDefaults == null || variablesAndDefaults.size() == 0) {
@@ -162,6 +163,7 @@ public class ConstantDeclaration extends Statement {
 		return this.names;
 	}
 	
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == NAMES_PROPERTY) {
 			return names();
@@ -195,6 +197,7 @@ public class ConstantDeclaration extends Statement {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List names = ASTNode.copySubtrees(target, this.names());

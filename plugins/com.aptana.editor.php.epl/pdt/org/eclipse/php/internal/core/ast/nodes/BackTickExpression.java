@@ -123,6 +123,7 @@ public class BackTickExpression extends Expression {
 		return this.expressions;
 	}
 	
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == EXPRESSIONS_PROPERTY) {
 			return expressions();
@@ -139,6 +140,7 @@ public class BackTickExpression extends Expression {
 		return matcher.match(this, other);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List expressions = ASTNode.copySubtrees(target, expressions());

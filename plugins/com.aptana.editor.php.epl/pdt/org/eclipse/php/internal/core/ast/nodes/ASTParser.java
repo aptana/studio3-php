@@ -172,7 +172,7 @@ public class ASTParser {
 		}
 
 		progressMonitor.beginTask(
-				"Creating Abstract Syntax Tree for source...", 3);
+				"Creating Abstract Syntax Tree for source...", 3); //$NON-NLS-1$
 		final Scanner lexer = this.ast.lexer();
 		final lr_parser phpParser = this.ast.parser();
 		progressMonitor.worked(1);
@@ -263,11 +263,12 @@ public class ASTParser {
 			return lexer53;
 		} else {
 			throw new IllegalArgumentException(CoreMessages
-					.getString("ASTParser_1")
+					.getString("ASTParser_1") //$NON-NLS-1$
 					+ phpVersion);
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static lr_parser getParser(PHPVersion phpVersion, AST ast)
 			throws IOException {
 		if (PHPVersion.PHP4 == phpVersion) {
@@ -284,7 +285,7 @@ public class ASTParser {
 			return parser;
 		} else {
 			throw new IllegalArgumentException(CoreMessages
-					.getString("ASTParser_1")
+					.getString("ASTParser_1") //$NON-NLS-1$
 					+ phpVersion);
 		}
 

@@ -39,6 +39,7 @@ public abstract class StructuralPropertyDescriptor {
 	/**
 	 * The concrete AST node type that owns this property.
 	 */
+	@SuppressWarnings("unchecked")
 	private final Class nodeClass;
 	
 	/**
@@ -51,6 +52,7 @@ public abstract class StructuralPropertyDescriptor {
 	 * @param nodeClass concrete AST node type that owns this property
 	 * @param propertyId the property id
 	 */
+	@SuppressWarnings("unchecked")
 	StructuralPropertyDescriptor(Class nodeClass, String propertyId) {
 		if (nodeClass == null || propertyId == null) {
 			throw new IllegalArgumentException();
@@ -77,6 +79,7 @@ public abstract class StructuralPropertyDescriptor {
 	 * 
 	 * @return the node type that owns this property
 	 */
+	@SuppressWarnings("unchecked")
 	public final Class getNodeClass() {
 		return this.nodeClass;
 	}

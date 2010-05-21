@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChange
  * 
  * @author shalom
  */
+@SuppressWarnings({"unchecked", "deprecation"})
 public class PreferencesPropagator extends AbstractPreferencesPropagator {
 
 	private HashMap projectToPropagator;

@@ -28,6 +28,7 @@ import org.eclipse.text.edits.TextEdit;
  * Internal class: not intended to be used by client.
  * When AST modifications recording is enabled, all changes are recorded by this class.
  */
+@SuppressWarnings("unchecked")
 class InternalASTRewrite extends NodeEventHandler {
 
 	/** root node for the rewrite: Only nodes under this root are accepted */

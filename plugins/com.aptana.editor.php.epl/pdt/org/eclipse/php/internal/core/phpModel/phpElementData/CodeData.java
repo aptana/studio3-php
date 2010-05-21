@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IAdaptable;
 /**
  * The top level interface for all langauges code.
  */
+@SuppressWarnings("unchecked")
 public interface CodeData extends Comparable, Serializable, IAdaptable {
 
 	/**

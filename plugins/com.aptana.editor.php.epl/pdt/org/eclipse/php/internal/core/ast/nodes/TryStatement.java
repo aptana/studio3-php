@@ -84,6 +84,7 @@ public class TryStatement extends Statement {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public TryStatement(int start, int end, AST ast, Block tryStatement, List catchClauses) {
 		this(start, end, ast, tryStatement, catchClauses == null ? null : (CatchClause[]) catchClauses.toArray(new CatchClause[catchClauses.size()]));
 	}
@@ -202,7 +203,7 @@ public class TryStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
-
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		Block body = ASTNode.copySubtree(target, getBody());
@@ -236,6 +237,7 @@ public class TryStatement extends Statement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == CATCH_CLAUSES_PROPERTY) {
 			return catchClauses();

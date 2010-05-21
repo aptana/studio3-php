@@ -24,6 +24,7 @@ import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 public class ASTNodes {
 
 
+	@SuppressWarnings("unchecked")
 	public static ASTNode getParent(ASTNode node, Class parentClass) {
 		if (node == null) 
 			return null;

@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Preferences;
  * @author Eden K.,2006
  * 
  */
+@SuppressWarnings({"unchecked", "deprecation"})
 public class PreferencePropagatorFactory {
 
 	private static PreferencePropagatorFactory instance = new PreferencePropagatorFactory();

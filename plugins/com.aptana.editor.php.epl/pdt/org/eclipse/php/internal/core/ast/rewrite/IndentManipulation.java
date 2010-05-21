@@ -185,7 +185,7 @@ public final class IndentManipulation {
 			}
 		}
 		if (end == 0) {
-			return "";
+			return ""; //$NON-NLS-1$
 		} else if (end == size) {
 			return line;
 		} else {
@@ -261,7 +261,7 @@ public final class IndentManipulation {
 		}
 		String trimmed;
 		if (start == size)
-			trimmed = "";
+			trimmed = ""; //$NON-NLS-1$
 		else
 			trimmed = line.substring(start);
 
@@ -387,6 +387,7 @@ public final class IndentManipulation {
 	 *                <li>the given <code>newIndentString</code> is null</li>
 	 *                </ul>
 	 */
+	@SuppressWarnings("unchecked")
 	public static ReplaceEdit[] getChangeIndentEdits(String source,
 			int indentUnitsToRemove, int tabWidth, int indentWidth,
 			String newIndentString) {
@@ -469,6 +470,7 @@ public final class IndentManipulation {
 	 * @exception IllegalArgumentException
 	 *                if the given <code>options</code> is null
 	 */
+	@SuppressWarnings("unchecked")
 	public static int getTabWidth(Map options) {
 		if (options == null) {
 			throw new IllegalArgumentException();
@@ -493,6 +495,7 @@ public final class IndentManipulation {
 	 * @exception IllegalArgumentException
 	 *                if the given <code>options</code> is null
 	 */
+	@SuppressWarnings("unchecked")
 	public static int getIndentWidth(Map options) {
 		if (options == null) {
 			throw new IllegalArgumentException();
@@ -509,6 +512,7 @@ public final class IndentManipulation {
 		 */return tabWidth;
 	}
 
+	@SuppressWarnings({ "unused", "unchecked" })
 	private static int getIntValue(Map options, String key, int def) {
 		try {
 			return Integer.parseInt((String) options.get(key));

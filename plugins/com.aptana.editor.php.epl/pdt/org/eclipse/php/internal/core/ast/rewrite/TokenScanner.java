@@ -40,6 +40,7 @@ public class TokenScanner {
 
 	public static final int END_OF_FILE = sym.EOF;
 	public static final int LEXICAL_ERROR = 20002;
+	@SuppressWarnings("nls")
 	private static final String[] MODIFIERS = { "public", "private",
 			"protected", "static", "abstract", "final" };
 	// public static final int DOCUMENT_ERROR= 20003;

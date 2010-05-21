@@ -21,6 +21,7 @@ import java.util.EventObject;
  */
 public class PreferencesPropagatorEvent extends EventObject {
 
+	private static final long serialVersionUID = -8212440162836943319L;
 	private Object oldValue;
 	private Object newValue;
 	private Object key;

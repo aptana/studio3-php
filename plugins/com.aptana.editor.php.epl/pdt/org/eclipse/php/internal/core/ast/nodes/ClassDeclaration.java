@@ -94,6 +94,7 @@ public class ClassDeclaration extends TypeDeclaration {
 		super(ast);
 	}
 
+	@SuppressWarnings("unchecked")
 	public ClassDeclaration(int start, int end, AST ast, int modifier, Identifier className, Expression superClass, List interfaces, Block body) {
 		this(start, end, ast, modifier, className, superClass, interfaces == null ? null : (Identifier[]) interfaces.toArray(new Identifier[interfaces.size()]), body);
 	}
@@ -124,7 +125,6 @@ public class ClassDeclaration extends TypeDeclaration {
 		if (superClass != null) {
 			superClass.traverseTopDown(visitor);
 		}
-		Identifier[] interfaces = getInterfaces();
 		for (Object object : interfaces()) {
 			final ASTNode node = (ASTNode) object;
 			node.traverseTopDown(visitor);
@@ -137,7 +137,6 @@ public class ClassDeclaration extends TypeDeclaration {
 		if (superClass != null) {
 			superClass.traverseBottomUp(visitor);
 		}
-		Identifier[] interfaces = getInterfaces();
 		for (Object object : interfaces()) {
 			final ASTNode node = (ASTNode) object;
 			node.traverseBottomUp(visitor);
@@ -272,6 +271,7 @@ public class ClassDeclaration extends TypeDeclaration {
 		return matcher.match(this, other);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final Block body = ASTNode.copySubtree(target, getBody());

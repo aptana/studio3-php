@@ -22,7 +22,7 @@ public class PHPDocBlockImp implements PHPDocBlock
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_DESCRIPTION_TEXT = "Enter description here...";
+	private static final String DEFAULT_DESCRIPTION_TEXT = "Enter description here..."; //$NON-NLS-1$
 
 	private String shortDescription;
 	private String longDescription;
@@ -54,7 +54,7 @@ public class PHPDocBlockImp implements PHPDocBlock
 	{
 		if (longDescription == null)
 		{
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return longDescription;
 	}
@@ -64,11 +64,13 @@ public class PHPDocBlockImp implements PHPDocBlock
 		return tags;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Iterator getTags()
 	{
 		return tags != null ? Arrays.asList(tags).iterator() : null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Iterator getTags(int id)
 	{
 		if (tags == null)
@@ -122,6 +124,7 @@ public class PHPDocBlockImp implements PHPDocBlock
 		return position > getStartPosition() && position <= getEndPosition();
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean hasTagOf(int id)
 	{
 		final Iterator tagsOf = getTags(id);

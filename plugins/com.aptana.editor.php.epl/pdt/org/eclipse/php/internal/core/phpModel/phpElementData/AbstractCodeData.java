@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Platform;
 
 public abstract class AbstractCodeData implements CodeData {
 
+	private static final long serialVersionUID = -1584581365974401435L;
 	protected String name;
 	private String description;
 	private boolean isUserCode;
@@ -112,7 +113,7 @@ public abstract class AbstractCodeData implements CodeData {
 		if (getUserData() == null) {
 			return name;
 		}
-		return name + " (in " + getUserData().getFileName() + ")";
+		return name + " (in " + getUserData().getFileName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -133,6 +134,7 @@ public abstract class AbstractCodeData implements CodeData {
 	 * @see IAdaptable#getAdapter(Class)
 	 * @see Platform#getAdapterManager()
 	 */
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

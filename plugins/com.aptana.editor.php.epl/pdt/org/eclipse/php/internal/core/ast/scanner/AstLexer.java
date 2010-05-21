@@ -26,6 +26,7 @@ public interface AstLexer extends Scanner {
 
 	public void resetCommentList();
 
+	@SuppressWarnings("unchecked")
 	public List getCommentList();
 
 	public void setUseAspTagsAsPhp(boolean useAspTagsAsPhp);

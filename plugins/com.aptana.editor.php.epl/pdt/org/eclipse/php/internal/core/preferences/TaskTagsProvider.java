@@ -23,6 +23,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author shalom
  */
+@SuppressWarnings({"unchecked", "deprecation", "unused"})
 public class TaskTagsProvider {
 
 	private static TaskTagsProvider instance;

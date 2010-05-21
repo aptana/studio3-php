@@ -19,6 +19,7 @@ import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 /**
  *
  */
+@SuppressWarnings("unchecked")
 public class ListRewriteEvent extends RewriteEvent {
 
 	public final static int NEW = 1;
@@ -26,6 +27,7 @@ public class ListRewriteEvent extends RewriteEvent {
 	public final static int BOTH = NEW | OLD;
 
 	/** original list of 'ASTNode' */
+	
 	private List originalNodes;
 
 	/** list of type 'RewriteEvent' */

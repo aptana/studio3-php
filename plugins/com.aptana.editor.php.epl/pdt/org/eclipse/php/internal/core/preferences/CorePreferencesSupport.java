@@ -18,6 +18,7 @@ public class CorePreferencesSupport extends PreferencesSupport {
 
 	private static CorePreferencesSupport corePreferencesSupport;
 
+	@SuppressWarnings("deprecation")
 	private CorePreferencesSupport() {
 		super(PHPEplPlugin.PLUGIN_ID, PHPEplPlugin.getDefault() == null ? null
 				: PHPEplPlugin.getDefault().getPluginPreferences());

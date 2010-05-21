@@ -13,17 +13,16 @@
 
 package org.eclipse.php.internal.core.ast.scanner.php53;
 
-import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
 
-import org.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
-import org.eclipse.php.internal.core.ast.nodes.Comment;
 import java_cup.sym;
-import org.eclipse.php.internal.core.ast.nodes.AST;
 import java_cup.runtime.Symbol;
-import org.eclipse.php.internal.core.ast.scanner.StateStack;
+
 import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.php.internal.core.ast.nodes.AST;
+import org.eclipse.php.internal.core.ast.nodes.Comment;
+import org.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
+import org.eclipse.php.internal.core.ast.scanner.StateStack;
 
 
 /**
@@ -32,6 +31,7 @@ import org.eclipse.php.internal.core.PHPVersion;
  * on 10/15/09 9:17 AM from the specification file
  * <tt>ast_scanner.flex</tt>
  */
+@SuppressWarnings({"unchecked", "nls", "unused"})
 public class PhpAstLexer implements org.eclipse.php.internal.core.ast.scanner.AstLexer {
 
   /** This character denotes the end of file */

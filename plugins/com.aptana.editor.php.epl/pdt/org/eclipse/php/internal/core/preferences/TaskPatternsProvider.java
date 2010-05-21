@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 
 import com.aptana.editor.php.core.preferences.TaskTag;
 
+@SuppressWarnings({"unchecked", "unused"})
 public class TaskPatternsProvider {
 
 	private static TaskPatternsProvider instance;

@@ -29,6 +29,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  *	 public function myFunction($a);
  * }
  */
+@SuppressWarnings("unchecked")
 public class InterfaceDeclaration extends TypeDeclaration {
 
 	public static final ChildPropertyDescriptor NAME_PROPERTY = 
