@@ -19,8 +19,8 @@ public interface IPHPConstants
 
 	public static final String PHP_SINGLE_LINE_COMMENT = PREFIX + "singleline_comment"; //$NON-NLS-1$
 	public static final String PHP_MULTI_LINE_COMMENT = PREFIX + "multiline_comment"; //$NON-NLS-1$
+	public static final String PHP_DOC_COMMENT = PREFIX + "phpdoc_comment"; //$NON-NLS-1$
 	public static final String PHP_COMMENT = PREFIX + "comment"; //$NON-NLS-1$
-	public static final String PHP_DOC = PREFIX + "php_doc"; //$NON-NLS-1$
 	public final static String PHP_STRING_SINGLE = PREFIX + "string_single"; //$NON-NLS-1$
 	public final static String PHP_STRING_DOUBLE = PREFIX + "string_double"; //$NON-NLS-1$
 }
