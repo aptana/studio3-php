@@ -17,6 +17,12 @@
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import plugin="com.aptana.editor.php"/>
+      <import plugin="com.aptana.editor.php.epl"/>
+      <import plugin="com.aptana.php.libraries"/>
+   </requires>
+
    <plugin
          id="com.aptana.editor.php.tests"
          download-size="0"
