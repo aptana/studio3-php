@@ -128,6 +128,10 @@
 			<param name="p2.installIU" value="com.aptana.feature.feature.group" />
 			<param name="p2.repo" value="file:${red-core.p2.repo}" />
 		</antcall>
+		<antcall target="run.director">
+			<param name="p2.installIU" value="com.aptana.php.feature.feature.group" />
+			<param name="p2.repo" value="file:${php.p2.repo}" />
+		</antcall>
 	</target>
 	<!-- - - - - - - - - - - - - - - - - - 
           target: wipe.plugins                      
