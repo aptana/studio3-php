@@ -119,12 +119,20 @@
 			<param name="p2.installIU" value="com.aptana.feature.feature.group" />
 			<param name="p2.repo" value="file:${red-core.p2.repo}" />
 		</antcall>
+			<!-- Install Red Core feature -->
+			<antcall target="install.red.core" />
+			<!-- FIXME For some reason even though we install RED Core, it doesn't pick it up for building the test plugins/fragments! -->
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: install.red.core  (Actually, install the PHP in this case)                
+         - - - - - - - - - - - - - - - - - -->
+	<target name="install.red.core" unless="dont.install.red.core">
 		<antcall target="run.director">
 			<param name="p2.installIU" value="com.aptana.php.feature.feature.group" />
 			<param name="p2.repo" value="file:${php.p2.repo}" />
 		</antcall>
 	</target>
-
 	<!-- - - - - - - - - - - - - - - - - - 
           target: wipe.plugins                      
          - - - - - - - - - - - - - - - - - -->
