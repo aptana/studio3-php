@@ -102,5 +102,41 @@
             id="com.aptana.editor.php.NewPHPProjectWizard">
       </primaryWizard>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.project"
+            description="Clean and rebuild the referenced PHP libraries"
+            id="com.aptana.editor.php.cleanPHPLibraries"
+            name="Rebuild PHP Libraries">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="com.aptana.editor.php.phpLibrariesBuilding"
+            label="PHP Libraries Builder"
+            visible="true">
+         <action
+               class="com.aptana.editor.php.indexer.CleanLibrariesAction"
+               definitionId="com.aptana.editor.php.cleanPHPLibraries"
+               icon="icons/full/obj16/phpBuild.png"
+               id="com.aptana.editor.php.building.cleanLibraries"
+               label="Rebuild PHP Libraries..."
+               menubarPath="project/buildClean"
+               style="push">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         id="id1"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.aptana.editor.php.indexer.IncrementalPHPProjectBuilder">
+         </run>
+      </builder>
+   </extension>
 
 </plugin>
