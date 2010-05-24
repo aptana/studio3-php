@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: All
+Bundle-SymbolicName: com.aptana.php.tests.all
+Bundle-Version: 3.0.0.qualifier
+Bundle-Activator: com.aptana.php.tests.all.Activator
+Bundle-Vendor: Aptana Inc.
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit,
+ com.aptana.editor.php;bundle-version="3.0.0",
+ com.aptana.editor.php.epl;bundle-version="3.0.0",
+ com.aptana.editor.php.epl.tests;bundle-version="3.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

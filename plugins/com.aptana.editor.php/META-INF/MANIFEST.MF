@@ -43,3 +43,4 @@ Export-Package: com.aptana.editor.php,
  com.aptana.editor.php.internal.ui.preferences,
  com.aptana.editor.php.internal.ui.wizard,
  com.aptana.editor.php.util
+Eclipse-ExtensibleAPI: true

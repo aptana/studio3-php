@@ -4,6 +4,8 @@ Bundle-Name: PHP Tests
 Bundle-SymbolicName: com.aptana.editor.php.tests
 Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: Aptana Inc.
-Fragment-Host: com.aptana.editor.php;bundle-version="3.0.0"
+Fragment-Host: com.aptana.editor.php
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit
+Export-Package: com.aptana.editor.php.core,
+ com.aptana.editor.php.tests
