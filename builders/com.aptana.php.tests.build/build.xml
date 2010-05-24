@@ -3,13 +3,13 @@
      April 20, 2009 2:43:07 PM                                                        
 
      RED_Core    
-     Tests the RED_Core feature
+     Tests the PHP feature
                    
      cwilliams                                                                
      ====================================================================== -->
-<project name="RED_Core" default="test">
+<project name="PHP" default="test">
 	<description>
-            Tests the RED_Core feature
+            Tests the PHP feature
     </description>
 
 	<property file="build_local.properties" />
@@ -35,7 +35,7 @@
 	<!-- ================================= 
           target: build              
          ================================= -->
-	<target name="build" description="Builds the RED_Core Test feature" depends="generate.build.properties,generate.base">
+	<target name="build" description="Builds the PHP Test feature" depends="generate.build.properties,generate.base">
 		<java jar="${baseLocation}/plugins/${launcher.plugin}.jar" fork="true" failonerror="yes">
 			<arg line="-application org.eclipse.ant.core.antRunner -buildfile ${baseLocation}/plugins/${builder.plugin}/scripts/build.xml -Dbuilder=${basedir} -Dbuild.revision=${build.revision} -nosplash" />
 		</java>
@@ -202,12 +202,12 @@
 		<property name="library-file" value="${baseLocation}/test-framework/eclipse/plugins/org.eclipse.test_3.2.0/library.xml" />
 		<!-- Run the tests. -->
 		<antcall target="run-core-test">
-			<param name="test.plugin" value="com.aptana.red.core.tests.all" />
-			<param name="test.classname" value="com.aptana.red.core.tests.all.CoreTests" />
+			<param name="test.plugin" value="com.aptana.php.tests.all" />
+			<param name="test.classname" value="com.aptana.php.tests.all.CoreTests" />
 		</antcall>
 		<antcall target="run-ui-test">
-      <param name="test.plugin" value="com.aptana.red.core.tests.all" />
-      <param name="test.classname" value="com.aptana.red.core.tests.all.UITests" />
+      <param name="test.plugin" value="com.aptana.php.tests.all" />
+      <param name="test.classname" value="com.aptana.php.tests.all.UITests" />
     </antcall>
 
 		<!-- Collect all test results into single file and move to results directory. -->
