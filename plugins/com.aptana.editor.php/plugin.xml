@@ -35,6 +35,9 @@
                class="com.aptana.editor.php.core.PHPNature">
          </run>
       </runtime>
+      <builder
+            id="com.aptana.editor.php.aptanaPhpBuilder">
+      </builder>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
@@ -101,6 +104,17 @@
       <primaryWizard
             id="com.aptana.editor.php.NewPHPProjectWizard">
       </primaryWizard>
+   </extension>
+   <extension
+         id="com.aptana.editor.php.aptanaPhpBuilder"
+         name="Aptana PHP Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.aptana.editor.php.indexer.IncrementalPHPProjectBuilder">
+         </run>
+      </builder>
    </extension>
 
 </plugin>

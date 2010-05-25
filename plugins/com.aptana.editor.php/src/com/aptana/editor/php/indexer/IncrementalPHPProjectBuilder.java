@@ -26,7 +26,6 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException
 	{
-		// TODO Auto-generated method stub
 		PHPGlobalIndexer.getInstance().clean(getProject());
 	}
 
