@@ -32,6 +32,8 @@ public final class Messages extends NLS
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 
+	public static String CleanLibrariesAction_rebuildingLibraries;
+
 	/**
 	 * 
 	 */
@@ -68,6 +70,8 @@ public final class Messages extends NLS
 	 * 
 	 */
 	public static String PHPGlobalIndexer_ProviderDecl;
+
+	public static String PHPGlobalIndexer_rebuildingLibraries;
 
 	/**
 	 * 

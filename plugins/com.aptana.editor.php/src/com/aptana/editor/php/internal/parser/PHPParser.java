@@ -1,5 +1,7 @@
 package com.aptana.editor.php.internal.parser;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 
 import org.eclipse.php.internal.core.PHPVersion;
@@ -31,10 +33,20 @@ public class PHPParser implements IParser, IPHPVersionListener
 	private PHPVersion phpVersion;
 
 	/**
-	 * Constructs a new PHTMLParser
+	 * Constructs a new PHPParser
 	 */
 	public PHPParser()
 	{
+	}
+
+	/**
+	 * Constructs a new PHPParser with a preset PHPVersion
+	 * 
+	 * @param phpVersion
+	 */
+	public PHPParser(PHPVersion phpVersion)
+	{
+		this.phpVersion = phpVersion;
 	}
 
 	/**
@@ -57,7 +69,6 @@ public class PHPParser implements IParser, IPHPVersionListener
 		catch (Exception e)
 		{
 			// TODO: handle exception
-			e.printStackTrace();
 			PHPEditorPlugin.logError(e);
 		}
 		if (ast != null)
@@ -66,6 +77,39 @@ public class PHPParser implements IParser, IPHPVersionListener
 		}
 		parseState.setParseResult(root);
 		return root;
+	}
+
+	/**
+	 * Parse the PHP content, given as an input stream, and return a parse node that contains the children nodes that
+	 * were parsed. Note that this method does not use the parse state and does not update anything.
+	 * 
+	 * @param source
+	 * @return
+	 * @throws java.lang.Exception
+	 * @see {@link #parse(IParseState)}
+	 */
+	public IParseNode parse(InputStream source) throws java.lang.Exception
+	{
+		Program ast = null;
+		try
+		{
+			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
+			ASTParser parser = ASTParser.newParser(new InputStreamReader(source), version);
+			ast = parser.createAST(null);
+		}
+		catch (Exception e)
+		{
+			// TODO: handle exception
+			PHPEditorPlugin.logError(e);
+		}
+		if (ast != null)
+		{
+			IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], ast.getStart(), ast
+					.getEnd());
+			processChildren(ast, root);
+			return root;
+		}
+		return new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], 0, 0);
 	}
 
 	/**

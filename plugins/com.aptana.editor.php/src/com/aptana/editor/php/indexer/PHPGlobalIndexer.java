@@ -62,6 +62,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -81,46 +82,59 @@ import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.indexer.ComplexIndex;
 import com.aptana.editor.php.internal.indexer.IndexPersistence;
 import com.aptana.editor.php.internal.indexer.UnpackedElementIndex;
+import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 
 /**
  * PHP global indexer.
  * 
  * @author Denis Denisenko
  */
-public final class PHPGlobalIndexer {
+public final class PHPGlobalIndexer
+{
 
-	private static class Mutex {};
+	private static class Mutex
+	{
+	};
+
 	private static Mutex mutex = new Mutex();
-	private final class WrapIndexer implements IModuleIndexer,IProgramIndexer {
+
+	private final class WrapIndexer implements IModuleIndexer, IProgramIndexer
+	{
 		private final IConfigurationElement element;
 		private IModuleIndexer indexer;
 
-		private WrapIndexer(IConfigurationElement element) {
+		private WrapIndexer(IConfigurationElement element)
+		{
 			this.element = element;
 		}
 
-		public void indexModule(IModule module,
-				IIndexReporter reporter) {
-			try {
+		public void indexModule(IModule module, IIndexReporter reporter)
+		{
+			try
+			{
 				initIfNeeded();
 				indexer.indexModule(module, reporter);
-			} catch (CoreException e) {
+			}
+			catch (CoreException e)
+			{
 				PHPEditorPlugin.logError(e);
 			}
 
 		}
 
-		private void initIfNeeded() throws CoreException {
-			if (indexer==null){
-			indexer = (IModuleIndexer) element
-					.createExecutableExtension(CLASS_ATTRIBUTE_NAME);
+		private void initIfNeeded() throws CoreException
+		{
+			if (indexer == null)
+			{
+				indexer = (IModuleIndexer) element.createExecutableExtension(CLASS_ATTRIBUTE_NAME);
 			}
 		}
 
-		public void indexModule(Program program, IModule module,
-				IIndexReporter reporter) {
-			if (indexer instanceof IProgramIndexer){
-				IProgramIndexer pi=(IProgramIndexer) indexer;
+		public void indexModule(Program program, IModule module, IIndexReporter reporter)
+		{
+			if (indexer instanceof IProgramIndexer)
+			{
+				IProgramIndexer pi = (IProgramIndexer) indexer;
 				pi.indexModule(program, module, reporter);
 			}
 		}
@@ -128,18 +142,27 @@ public final class PHPGlobalIndexer {
 
 	private static final int SAVING_INTERVAL = 10000;
 
-	Thread saverThread = new Thread() {
-		public void run() {
-			while (true) {
-				try {
+	Thread saverThread = new Thread()
+	{
+		public void run()
+		{
+			while (true)
+			{
+				try
+				{
 					Thread.sleep(SAVING_INTERVAL);
-					try {
+					try
+					{
 						doSave();
-					} catch (Exception e) {
+					}
+					catch (Exception e)
+					{
 						PHPEditorPlugin.logError(e);
 						e.printStackTrace();
 					}
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e)
+				{
 					PHPEditorPlugin.logError(e);
 					return;
 				}
@@ -211,35 +234,37 @@ public final class PHPGlobalIndexer {
 	 * 
 	 * @return index.
 	 */
-	public IElementsIndex getIndex() {
+	public IElementsIndex getIndex()
+	{
 		return mainIndex;
 	}
 
 	/**
 	 * PHPElementsIndexer private constructor.
 	 */
-	private PHPGlobalIndexer() {
+	private PHPGlobalIndexer()
+	{
 		createMainIndex();
-		PHPEditorPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener(){
+		PHPEditorPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener()
+		{
 
-			public void propertyChange(PropertyChangeEvent event) {
+			public void propertyChange(PropertyChangeEvent event)
+			{
 				if (event.getProperty().equals(Keys.PHP_VERSION))
-				PHPGlobalIndexer.getInstance().cleanLibraries();
+					PHPGlobalIndexer.getInstance().cleanLibraries(new NullProgressMonitor());
 			}
-			
+
 		});
 		collectModuleIndexersInfo();
 		initPersistence();
 		buildPathChangeListener = new IBuildPathChangeListener()
 		{
-			public void changedBefore(List<IModule> changed,
-					List<IModule> removed, List<IDirectory> removedDirectories)
+			public void changedBefore(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories)
 			{
 				processChangedBefore(changed, removed, removedDirectories);
 			}
 
-			public void changedAfter(List<IModule> added,
-					List<IModule> changed, List<IModule> removed,
+			public void changedAfter(List<IModule> added, List<IModule> changed, List<IModule> removed,
 					List<IDirectory> addedDirectories, List<IDirectory> removedDirectories)
 			{
 				processChangedAfter(added, changed, removed, addedDirectories, removedDirectories);
@@ -282,10 +307,11 @@ public final class PHPGlobalIndexer {
 				}
 			}
 		});
-		
+
 		// Listen to the workspace and remove the index files for deleted projects
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		workspace.addResourceChangeListener(new IResourceChangeListener(){
+		workspace.addResourceChangeListener(new IResourceChangeListener()
+		{
 			public void resourceChanged(IResourceChangeEvent event)
 			{
 				IResource resource = event.getResource();
@@ -298,7 +324,8 @@ public final class PHPGlobalIndexer {
 						if (indexFile != null && indexFile.exists())
 						{
 							// We only delete the index file.
-							// The content of the indexMapping file will be updated only on the next loading of the Studio.
+							// The content of the indexMapping file will be updated only on the next loading of the
+							// Studio.
 							indexFile.delete();
 						}
 					}
@@ -307,7 +334,8 @@ public final class PHPGlobalIndexer {
 		}, IResourceChangeEvent.PRE_DELETE);
 	}
 
-	private void initPersistence() {
+	private void initPersistence()
+	{
 		saverThread.setDaemon(true);
 		saverThread.start();
 	}
@@ -315,7 +343,8 @@ public final class PHPGlobalIndexer {
 	/**
 	 * Creates main index.
 	 */
-	private void createMainIndex() {
+	private void createMainIndex()
+	{
 		mainIndex = new ComplexIndex();
 	}
 
@@ -326,26 +355,28 @@ public final class PHPGlobalIndexer {
 	 *            - modules.
 	 * @return job that is able to handle the removed modules.
 	 */
-	private Job handleModulesRemoved(final List<IModule> modules) {
-		Job job = new Job(Messages.PHPGlobalIndexer_RemovingModuleIndex2) {
-			public IStatus run(IProgressMonitor monitor) {
+	private Job handleModulesRemoved(final List<IModule> modules)
+	{
+		Job job = new Job(Messages.PHPGlobalIndexer_RemovingModuleIndex2)
+		{
+			public IStatus run(IProgressMonitor monitor)
+			{
 				long start = System.currentTimeMillis();
-				monitor.beginTask(
-						Messages.PHPGlobalIndexer_RemovingModuleIndex2, modules
-								.size());
+				monitor.beginTask(Messages.PHPGlobalIndexer_RemovingModuleIndex2, modules.size());
 				fireChanged(modules.size());
-				for (int i = 0; i < modules.size(); i++) {
+				for (int i = 0; i < modules.size(); i++)
+				{
 					if (monitor.isCanceled())
 					{
 						break;
 					}
 					IModule module = modules.get(i);
-					mainIndex
-							.removeModuleEntries(module, module.getBuildPath());
+					mainIndex.removeModuleEntries(module, module.getBuildPath());
 					monitor.worked(1);
-					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex
-							.getElementIndex(module.getBuildPath());
-					if (elementIndex != null) {
+					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(module
+							.getBuildPath());
+					if (elementIndex != null)
+					{
 						elementIndex.removeTimeStamp(module);
 					}
 				}
@@ -364,9 +395,12 @@ public final class PHPGlobalIndexer {
 		return job;
 	}
 
-	private void markDirtyPathes(final List<IModule> modules) {
-		synchronized (needSaving) {
-			for (IModule m : modules) {
+	private void markDirtyPathes(final List<IModule> modules)
+	{
+		synchronized (needSaving)
+		{
+			for (IModule m : modules)
+			{
 				needSaving.add(m.getBuildPath());
 			}
 		}
@@ -381,36 +415,41 @@ public final class PHPGlobalIndexer {
 	 *            - resource.
 	 * @return job that is able to handle the changed modules.
 	 */
-	private Job handleModulesChanged(final List<IModule> modules) {
+	private Job handleModulesChanged(final List<IModule> modules)
+	{
 
-		Job job = new Job(Messages.PHPGlobalIndexer_IndexChanged) {
-			public IStatus run(IProgressMonitor monitor) {
+		Job job = new Job(Messages.PHPGlobalIndexer_IndexChanged)
+		{
+			public IStatus run(IProgressMonitor monitor)
+			{
 				long start = System.currentTimeMillis();
-				monitor.beginTask(Messages.PHPGlobalIndexer_IndexChanged2,
-						modules.size());
+				monitor.beginTask(Messages.PHPGlobalIndexer_IndexChanged2, modules.size());
 				fireChanged(modules.size());
-				for (int i = 0; i < modules.size(); i++) {
+				for (int i = 0; i < modules.size(); i++)
+				{
 					IModule module = modules.get(i);
 					long l = module.getTimeStamp();
 					mainIndex.removeModuleEntries(module, module.getBuildPath());
 
-					for (IModuleIndexer indexer : moduleIndexers) {
+					for (IModuleIndexer indexer : moduleIndexers)
+					{
 						if (monitor.isCanceled())
 						{
 							break;
 						}
-						indexer.indexModule(module, new IIndexReporter() {
-							public IElementEntry reportEntry(int category,
-									String entryPath, IReportable value,
-									IModule module) {
-								return mainIndex.addEntry(category, entryPath,
-										value, module, module.getBuildPath());
+						indexer.indexModule(module, new IIndexReporter()
+						{
+							public IElementEntry reportEntry(int category, String entryPath, IReportable value,
+									IModule module)
+							{
+								return mainIndex.addEntry(category, entryPath, value, module, module.getBuildPath());
 							}
 						});
 					}
-					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex
-							.getElementIndex(module.getBuildPath());
-					if (elementIndex != null) {
+					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(module
+							.getBuildPath());
+					if (elementIndex != null)
+					{
 						elementIndex.recordTimeStamp(module, l);
 					}
 					if (monitor.isCanceled())
@@ -443,17 +482,20 @@ public final class PHPGlobalIndexer {
 	 *            - resource.
 	 * @return job that is able to handle the added modules.
 	 */
-	private Job handleModulesAdded(final List<IModule> modules) {
+	private Job handleModulesAdded(final List<IModule> modules)
+	{
 
-		Job job = new Job(Messages.PHPGlobalIndexer_IndexNew) {
+		Job job = new Job(Messages.PHPGlobalIndexer_IndexNew)
+		{
 
-			public IStatus run(IProgressMonitor monitor) {
+			public IStatus run(IProgressMonitor monitor)
+			{
 				long start = System.currentTimeMillis();
 				fireChanged(modules.size());
-				monitor.beginTask(Messages.PHPGlobalIndexer_IndexNew, modules
-						.size());
+				monitor.beginTask(Messages.PHPGlobalIndexer_IndexNew, modules.size());
 
-				for (int i = 0; i < modules.size(); i++) {
+				for (int i = 0; i < modules.size(); i++)
+				{
 					if (monitor.isCanceled())
 					{
 						break;
@@ -462,19 +504,21 @@ public final class PHPGlobalIndexer {
 					monitor.setTaskName(Messages.PHPGlobalIndexer_IndexNew + " - ../" + module.getShortName()); //$NON-NLS-1$
 
 					long l = module.getTimeStamp();
-					for (IModuleIndexer indexer : moduleIndexers) {
-						indexer.indexModule(module, new IIndexReporter() {
-							public IElementEntry reportEntry(int category,
-									String entryPath, IReportable value,
-									IModule module) {
-								return mainIndex.addEntry(category, entryPath,
-										value, module, module.getBuildPath());
+					for (IModuleIndexer indexer : moduleIndexers)
+					{
+						indexer.indexModule(module, new IIndexReporter()
+						{
+							public IElementEntry reportEntry(int category, String entryPath, IReportable value,
+									IModule module)
+							{
+								return mainIndex.addEntry(category, entryPath, value, module, module.getBuildPath());
 							}
 						});
 					}
-					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex
-							.getElementIndex(module.getBuildPath());
-					if (elementIndex != null) {
+					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(module
+							.getBuildPath());
+					if (elementIndex != null)
+					{
 						elementIndex.recordTimeStamp(module, l);
 					}
 					monitor.worked(1);
@@ -491,40 +535,45 @@ public final class PHPGlobalIndexer {
 			}
 
 		};
-		
+
 		return job;
 	}
 
 	/**
 	 * Collects module indexers from extensions.
 	 */
-	private void collectModuleIndexersInfo() {
+	private void collectModuleIndexersInfo()
+	{
 		moduleIndexers = new ArrayList<IModuleIndexer>();
 
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint ep = registry.getExtensionPoint(EXTENSION_POINT_NAME);
 
-		if (ep != null) {
+		if (ep != null)
+		{
 			IExtension[] extensions = ep.getExtensions();
 
-			for (int i = 0; i < extensions.length; i++) {
+			for (int i = 0; i < extensions.length; i++)
+			{
 				IExtension extension = extensions[i];
-				IConfigurationElement[] elements = extension
-						.getConfigurationElements();
+				IConfigurationElement[] elements = extension.getConfigurationElements();
 
-				for (int j = 0; j < elements.length; j++) {
+				for (int j = 0; j < elements.length; j++)
+				{
 					final IConfigurationElement element = elements[j];
 					String elementName = element.getName();
 
-					if (elementName.equals(INDEXER_ELEMENT_NAME)) {
-						try {
+					if (elementName.equals(INDEXER_ELEMENT_NAME))
+					{
+						try
+						{
 
 							moduleIndexers.add(new WrapIndexer(element));
-						} catch (Throwable th) {
-							PHPEditorPlugin.logError(
-											Messages.PHPGlobalIndexer_UnableLoad
-													+ elementName
-													+ Messages.PHPGlobalIndexer_ProviderDecl, th);
+						}
+						catch (Throwable th)
+						{
+							PHPEditorPlugin.logError(Messages.PHPGlobalIndexer_UnableLoad + elementName
+									+ Messages.PHPGlobalIndexer_ProviderDecl, th);
 						}
 					}
 				}
@@ -541,37 +590,47 @@ public final class PHPGlobalIndexer {
 	{
 		doSave();
 	}
-	
-	private void doSave() {
+
+	private void doSave()
+	{
 		HashSet<IBuildPath> bp = new HashSet<IBuildPath>();
-		synchronized (needSaving) {
+		synchronized (needSaving)
+		{
 			bp.addAll(needSaving);
 			needSaving.clear();
 		}
-		for (IBuildPath p : bp) {
+		for (IBuildPath p : bp)
+		{
 			File indexFile = getIndexFile(p);
-			if (indexFile != null) {
-				//long l0 = System.currentTimeMillis();
+			if (indexFile != null)
+			{
+				// long l0 = System.currentTimeMillis();
 				BufferedOutputStream stream = null;
-				try {
-					stream = new BufferedOutputStream(new FileOutputStream(
-							indexFile));
-					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex
-							.getElementIndex(p);
+				try
+				{
+					stream = new BufferedOutputStream(new FileOutputStream(indexFile));
+					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(p);
 					if (elementIndex != null)
 					{
-						IndexPersistence.store(elementIndex, new DataOutputStream(stream),
-								p);
+						IndexPersistence.store(elementIndex, new DataOutputStream(stream), p);
 					}
-				} catch (IOException e) {
+				}
+				catch (IOException e)
+				{
 					PHPEditorPlugin.logError(e);
-				} finally {
-					//long l1 = System.currentTimeMillis();
-					//System.out.println("Saving:" + (l1 - l0));
-					if (stream != null) {
-						try {
+				}
+				finally
+				{
+					// long l1 = System.currentTimeMillis();
+					// System.out.println("Saving:" + (l1 - l0));
+					if (stream != null)
+					{
+						try
+						{
 							stream.close();
-						} catch (IOException e) {
+						}
+						catch (IOException e)
+						{
 							PHPEditorPlugin.logError(e);
 						}
 					}
@@ -580,13 +639,16 @@ public final class PHPGlobalIndexer {
 		}
 	}
 
-	private File getIndexFile(IBuildPath p) {
-		if (pathes == null) {
+	private File getIndexFile(IBuildPath p)
+	{
+		if (pathes == null)
+		{
 			loadPathMappings();
 		}
 		String handleIdentifier = p.getHandleIdentifier();
 		String string = pathes.get(handleIdentifier);
-		if (string != null) {
+		if (string != null)
+		{
 			// In case the indexMappings got deleted during the session, recreate it.
 			File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
 			File pathesFile = new File(parent, "indexMappings"); //$NON-NLS-1$
@@ -595,11 +657,14 @@ public final class PHPGlobalIndexer {
 				savePathMappings();
 			}
 			return new File(string);
-		} else {
+		}
+		else
+		{
 			int code = handleIdentifier.hashCode();
 			File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
 			String sm = "" + code; //$NON-NLS-1$
-			while (pathes.get(new File(parent, sm).getAbsolutePath()) != null) {
+			while (pathes.get(new File(parent, sm).getAbsolutePath()) != null)
+			{
 				sm += 'l';
 			}
 			File result = new File(parent, sm);
@@ -609,17 +674,20 @@ public final class PHPGlobalIndexer {
 		}
 	}
 
-	private synchronized void loadPathMappings() {
+	private synchronized void loadPathMappings()
+	{
 		pathes = new HashMap<String, String>();
 		File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
 		File pathesFile = new File(parent, "indexMappings"); //$NON-NLS-1$
-		if (pathesFile.exists()) {
-			try {
-				BufferedInputStream stream = new BufferedInputStream(
-						new FileInputStream(pathesFile));
+		if (pathesFile.exists())
+		{
+			try
+			{
+				BufferedInputStream stream = new BufferedInputStream(new FileInputStream(pathesFile));
 				DataInputStream dataInputStream = new DataInputStream(stream);
 				int readInt = dataInputStream.readInt();
-				for (int a = 0; a < readInt; a++) {
+				for (int a = 0; a < readInt; a++)
+				{
 					String handle = dataInputStream.readUTF();
 					String path = dataInputStream.readUTF();
 					// Test the path and remove any non-existing index files from the indexMappings file
@@ -629,27 +697,33 @@ public final class PHPGlobalIndexer {
 					}
 				}
 				dataInputStream.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
 				PHPEditorPlugin.logError(e);
 			}
 		}
 	}
 
-	private synchronized void savePathMappings() {
+	private synchronized void savePathMappings()
+	{
 		File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
 		File pathesFile = new File(parent, "indexMappings"); //$NON-NLS-1$
 
-		try {
-			BufferedOutputStream stream = new BufferedOutputStream(
-					new FileOutputStream(pathesFile));
+		try
+		{
+			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(pathesFile));
 			DataOutputStream dataOutputStream = new DataOutputStream(stream);
 			dataOutputStream.writeInt(pathes.size());
-			for (String s : pathes.keySet()) {
+			for (String s : pathes.keySet())
+			{
 				dataOutputStream.writeUTF(s);
 				dataOutputStream.writeUTF(pathes.get(s));
 			}
 			dataOutputStream.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			PHPEditorPlugin.logError(e);
 		}
 	}
@@ -661,13 +735,16 @@ public final class PHPGlobalIndexer {
 	/**
 	 * Indexes local modules.
 	 */
-	public void indexLocalModules() {
-		Job initializator = new Job(Messages.PHPGlobalIndexer_initializinIndex) {
-			protected IStatus run(IProgressMonitor monitor) {
-				
-				List<IBuildPath> paths = BuildPathManager.getInstance()
-						.getBuildPaths();
-				for (IBuildPath path : paths) {
+	public void indexLocalModules()
+	{
+		Job initializator = new Job(Messages.PHPGlobalIndexer_initializinIndex)
+		{
+			protected IStatus run(IProgressMonitor monitor)
+			{
+
+				List<IBuildPath> paths = BuildPathManager.getInstance().getBuildPaths();
+				for (IBuildPath path : paths)
+				{
 					if (monitor.isCanceled())
 					{
 						break;
@@ -676,24 +753,31 @@ public final class PHPGlobalIndexer {
 					UnpackedElementIndex index = new UnpackedElementIndex();
 					boolean loaded = false;
 					File indexFile = getIndexFile(path);
-					if (indexFile.exists()) {
+					if (indexFile.exists())
+					{
 						DataInputStream di = null;
-						try {
+						try
+						{
 
-							di = new DataInputStream(new BufferedInputStream(
-									new FileInputStream(indexFile)));
-							try {
+							di = new DataInputStream(new BufferedInputStream(new FileInputStream(indexFile)));
+							try
+							{
 								IndexPersistence.load(index, di, path);
 								loaded = true;
-							} catch (Exception e) {								
+							}
+							catch (Exception e)
+							{
 								indexFile.delete();
-								if (!(e instanceof IOException)){
-									e.printStackTrace();									
+								if (!(e instanceof IOException))
+								{
+									e.printStackTrace();
 								}
 
 							}
 							di.close();
-						} catch (Exception e1) {
+						}
+						catch (Exception e1)
+						{
 							PHPEditorPlugin.logError(e1);
 							e1.printStackTrace();
 						}
@@ -704,47 +788,53 @@ public final class PHPGlobalIndexer {
 					}
 					path.addBuildPathChangeListener(buildPathChangeListener);
 					modules.addAll(path.getModules());
-					if (!loaded) {
+					if (!loaded)
+					{
 						mainIndex.addIndex(path, new UnpackedElementIndex());
 						Job addedJob = handleModulesAdded(modules);
 						addedJob.schedule();
-					} else {
+					}
+					else
+					{
 						mainIndex.addIndex(path, index);
 						ArrayList<IModule> changed = new ArrayList<IModule>();
-						List<IModule> asList = Arrays.asList(index
-								.getAllModules());
+						List<IModule> asList = Arrays.asList(index.getAllModules());
 						HashSet<IModule> all = new HashSet<IModule>(asList);
-						for (IModule m : modules) {
+						for (IModule m : modules)
+						{
 							if (monitor.isCanceled())
 							{
 								break;
 							}
-							if (all.contains(m)) {
+							if (all.contains(m))
+							{
 								long timeStamp = index.getTimeStamp(m);
 								long timeStamp2 = m.getTimeStamp();
-								if (timeStamp != timeStamp2) {
+								if (timeStamp != timeStamp2)
+								{
 									changed.add(m);
 								}
 							}
 						}
-						if (!changed.isEmpty()) {
+						if (!changed.isEmpty())
+						{
 							Job changedJob = handleModulesChanged(changed);
 							changedJob.setPriority(Job.BUILD);
 							changedJob.schedule();
 						}
 						all.removeAll(modules);
-						if (!all.isEmpty()) {
-							Job removedJob = handleModulesRemoved(new ArrayList<IModule>(
-									all));
+						if (!all.isEmpty())
+						{
+							Job removedJob = handleModulesRemoved(new ArrayList<IModule>(all));
 							removedJob.setPriority(Job.BUILD);
 							removedJob.schedule();
 						}
 						all = new HashSet<IModule>(modules);
 						all.removeAll(asList);
-						
-						if (!all.isEmpty()) {
-							Job addedJob = handleModulesAdded(new ArrayList<IModule>(
-									all));
+
+						if (!all.isEmpty())
+						{
+							Job addedJob = handleModulesAdded(new ArrayList<IModule>(all));
 							addedJob.setPriority(Job.BUILD);
 							addedJob.schedule();
 						}
@@ -765,8 +855,7 @@ public final class PHPGlobalIndexer {
 	 * @param changed
 	 * @param removed
 	 */
-	public void processChangedBefore(final List<IModule> changed, 
-			final List<IModule> removed,
+	public void processChangedBefore(final List<IModule> changed, final List<IModule> removed,
 			final List<IDirectory> removedDirectories)
 	{
 		fireBeforeIndexing(changed, removed, removedDirectories);
@@ -777,11 +866,10 @@ public final class PHPGlobalIndexer {
 	 * @param changed
 	 * @param removed
 	 */
-	public void processChangedAfter(final List<IModule> added, final List<IModule> changed,
-			List<IModule> removed,
+	public void processChangedAfter(final List<IModule> added, final List<IModule> changed, List<IModule> removed,
 			final List<IDirectory> addedDirectories, final List<IDirectory> removedDirectories)
 	{
-		
+
 		final List<Job> jobs = new ArrayList<Job>();
 		final List<Integer> sizes = new ArrayList<Integer>();
 
@@ -796,7 +884,7 @@ public final class PHPGlobalIndexer {
 			jobs.add(handleModulesAdded(added));
 			sizes.add(added.size());
 		}
-		
+
 		if (removed.size() != 0)
 		{
 			jobs.add(handleModulesRemoved(removed));
@@ -851,30 +939,33 @@ public final class PHPGlobalIndexer {
 		}
 		else
 		{
-			//notifying listeners about added directories
+			// notifying listeners about added directories
 			fireAfterIndexing(added, changed, addedDirectories);
 		}
 	}
 
-	public void processUnsavedModuleUpdate(Program program, IModule module) {
-		
+	public void processUnsavedModuleUpdate(Program program, IModule module)
+	{
+
 		mainIndex.removeModuleEntries(module, module.getBuildPath());
-		UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex
-		.getElementIndex(module.getBuildPath());		
-		for (IModuleIndexer indexer : moduleIndexers) {
-			if (indexer instanceof IProgramIndexer){
-			((IProgramIndexer)indexer).indexModule(program,module, new IIndexReporter() {
-				public IElementEntry reportEntry(int category,
-						String entryPath, IReportable value, IModule module) {
-					return mainIndex.addEntry(category, entryPath, value,
-							module, module.getBuildPath());
-				}
-			});
+		UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(module.getBuildPath());
+		for (IModuleIndexer indexer : moduleIndexers)
+		{
+			if (indexer instanceof IProgramIndexer)
+			{
+				((IProgramIndexer) indexer).indexModule(program, module, new IIndexReporter()
+				{
+					public IElementEntry reportEntry(int category, String entryPath, IReportable value, IModule module)
+					{
+						return mainIndex.addEntry(category, entryPath, value, module, module.getBuildPath());
+					}
+				});
 			}
 		}
-		
-		if (elementIndex != null) {
-			//reindex it later
+
+		if (elementIndex != null)
+		{
+			// reindex it later
 			elementIndex.recordTimeStamp(module, -1);
 		}
 		fireChanged(0);
@@ -884,56 +975,63 @@ public final class PHPGlobalIndexer {
 	/**
 	 * @param modulesLeft
 	 */
-	protected synchronized void fireChanged(int modulesLeft) {
-		for (IIndexChangeListener l : listeners) {
-			l.stateChanged(modulesLeft == 0, MessageFormat.format(
-					Messages.PHPGlobalIndexer_ModulesLeft, modulesLeft));
+	protected synchronized void fireChanged(int modulesLeft)
+	{
+		for (IIndexChangeListener l : listeners)
+		{
+			l.stateChanged(modulesLeft == 0, MessageFormat.format(Messages.PHPGlobalIndexer_ModulesLeft, modulesLeft));
 		}
 	}
 
 	/**
 	 * @param modulesLeft
 	 */
-	protected synchronized void fireChangeProcessed() {
-		for (IIndexChangeListener l : listeners) {
+	protected synchronized void fireChangeProcessed()
+	{
+		for (IIndexChangeListener l : listeners)
+		{
 			l.changeProcessed();
 		}
 	}
 
 	/**
 	 * Fires changes.
-	 * @param changed - changed modules.
-	 * @param removed - removed modules.
+	 * 
+	 * @param changed
+	 *            - changed modules.
+	 * @param removed
+	 *            - removed modules.
 	 */
-	protected void fireBeforeIndexing(List<IModule> changed, List<IModule> removed, 
-			List<IDirectory> removedDirectories)
+	protected void fireBeforeIndexing(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories)
 	{
 		List<IModuleIndexListener> listeners = new ArrayList<IModuleIndexListener>();
 		synchronized (moduleIndexListeners)
 		{
 			listeners.addAll(moduleIndexListeners);
 		}
-		
+
 		for (IModuleIndexListener listener : listeners)
 		{
 			listener.beforeIndexChange(changed, removed, removedDirectories);
 		}
 	}
-	
+
 	/**
 	 * Fires changes.
-	 * @param added - added.
-	 * @param changed - changed.
+	 * 
+	 * @param added
+	 *            - added.
+	 * @param changed
+	 *            - changed.
 	 */
-	protected void fireAfterIndexing(List<IModule> added, List<IModule> changed, 
-			List<IDirectory> addedDirectories)
+	protected void fireAfterIndexing(List<IModule> added, List<IModule> changed, List<IDirectory> addedDirectories)
 	{
 		List<IModuleIndexListener> toNotify = new ArrayList<IModuleIndexListener>();
 		synchronized (moduleIndexListeners)
 		{
 			toNotify.addAll(moduleIndexListeners);
 		}
-		
+
 		for (IModuleIndexListener listener : toNotify)
 		{
 			listener.afterIndexChange(added, changed, addedDirectories);
@@ -943,22 +1041,26 @@ public final class PHPGlobalIndexer {
 	/**
 	 * @param listener
 	 */
-	public synchronized void addListener(IIndexChangeListener listener) {
+	public synchronized void addListener(IIndexChangeListener listener)
+	{
 		listeners.add(listener);
 	}
 
 	/**
 	 * @param listener
 	 */
-	public synchronized void removeListener(IIndexChangeListener listener) {
+	public synchronized void removeListener(IIndexChangeListener listener)
+	{
 		listeners.remove(listener);
 	}
 
 	/**
 	 * @param listener
 	 */
-	public void addListener(IModuleIndexListener listener) {
-		synchronized (moduleIndexListeners) {
+	public void addListener(IModuleIndexListener listener)
+	{
+		synchronized (moduleIndexListeners)
+		{
 			moduleIndexListeners.add(listener);
 		}
 	}
@@ -966,8 +1068,10 @@ public final class PHPGlobalIndexer {
 	/**
 	 * @param listener
 	 */
-	public synchronized void removeListener(IModuleIndexListener listener) {
-		synchronized (moduleIndexListeners) {
+	public synchronized void removeListener(IModuleIndexListener listener)
+	{
+		synchronized (moduleIndexListeners)
+		{
 			moduleIndexListeners.remove(listener);
 		}
 	}
@@ -1045,9 +1149,18 @@ public final class PHPGlobalIndexer {
 
 	/**
 	 * Perform a clean on the external libraries attached to the system.
+	 * 
+	 * @param monitor
 	 */
-	public void cleanLibraries()
+	public void cleanLibraries(IProgressMonitor monitor)
 	{
+		if (monitor == null)
+		{
+			throw new IllegalArgumentException("The progress monitor should not be null"); //$NON-NLS-1$
+		}
+		if (monitor.isCanceled())
+			return;
+		monitor.beginTask(Messages.PHPGlobalIndexer_rebuildingLibraries, 3);
 		BuildPathManager buildPathManager = BuildPathManager.getInstance();
 		List<IBuildPath> buildPaths = buildPathManager.getBuildPaths();
 		for (IBuildPath buildPath : buildPaths)
@@ -1060,10 +1173,24 @@ public final class PHPGlobalIndexer {
 					// We only delete the index file.
 					// The content of the indexMapping file will be updated only on the next loading of the Studio.
 					indexFile.delete();
+					if (monitor.isCanceled())
+						return;
 				}
+				if (monitor.isCanceled())
+					return;
 				buildPathManager.removeBuildPath(((FileSystemBuildPath) buildPath).getFile());
 			}
+			if (monitor.isCanceled())
+				return;
 		}
+		monitor.worked(1);
+		if (monitor.isCanceled())
+			return;
 		buildPathManager.indexExternalLibraries();
+		monitor.worked(1);
+		if (monitor.isCanceled())
+			return;
+		PHPBuiltins.getInstance().clean(monitor);
+		monitor.done();
 	}
 }
