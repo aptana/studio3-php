@@ -200,6 +200,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	 * 
 	 * @return current module.
 	 */
+	@SuppressWarnings("unused")
 	private IModule getModule()
 	{
 		if (module != null)
