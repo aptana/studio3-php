@@ -38,6 +38,18 @@ public class PHPFlags implements IPHPModifiers
 	{
 		return (flags & AccConstant) != 0;
 	}
+	
+	/**
+	 * Returns whether the given integer includes a <code>named-constant</code>(e.g. Define) modifier.
+	 * 
+	 * @param flags
+	 *            the flags
+	 * @return <code>true</code> if a <code>named constant</code> modifier is included
+	 */
+	public static boolean isNamedConstant(int flags)
+	{
+		return (flags & NAMED_CONSTANT) != 0;
+	}
 
 	/**
 	 * Returns whether the given integer includes the <code>class</code> modifier.

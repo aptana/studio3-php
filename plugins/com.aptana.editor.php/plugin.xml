@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="indexer" name="PHP Indexer Participant" schema="schema/indexer.exsd"/>
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -35,6 +36,9 @@
                class="com.aptana.editor.php.core.PHPNature">
          </run>
       </runtime>
+      <builder
+            id="com.aptana.editor.php.aptanaPhpBuilder">
+      </builder>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
@@ -129,7 +133,8 @@
       </actionSet>
    </extension>
    <extension
-         id="id1"
+         id="aptanaPhpBuilder"
+         name="Aptana PHP Builder"
          point="org.eclipse.core.resources.builders">
       <builder
             hasNature="true">

@@ -30,10 +30,6 @@ public class CorePreferenceConstants
 	{
 		IPreferenceStore store = getPreferenceStore();
 		store.setDefault(Keys.PHP_VERSION, IPHPCoreConstants.PHP5);
-
-		store.setDefault(IPHPCoreConstants.TASK_TAGS, IPHPCoreConstants.DEFAULT_TASK_TAGS);
-		store.setDefault(IPHPCoreConstants.TASK_PRIORITIES, IPHPCoreConstants.DEFAULT_TASK_PRIORITIES);
-		store.setDefault(IPHPCoreConstants.TASK_CASE_SENSITIVE, IPHPCoreConstants.ENABLED);
 		store.setDefault(Keys.EDITOR_USE_ASP_TAGS, false);
 
 		store.setDefault(IPHPCoreConstants.FORMATTER_USE_TABS, true);

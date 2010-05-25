@@ -11,6 +11,12 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.preferences;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.php.internal.core.IPHPEplCoreConstants;
+
+import com.aptana.editor.php.epl.PHPEplPlugin;
+
+
 
 public class CorePreferenceConstants {
 
@@ -19,13 +25,23 @@ public class CorePreferenceConstants {
 		public static final String EDITOR_USE_ASP_TAGS = "use_asp_tags_as_php"; //$NON-NLS-1$
 	}
 
+	public static IPreferenceStore getPreferenceStore()
+	{
+		return PHPEplPlugin.getDefault().getPreferenceStore();
+	}
+
 	/**
 	 * Initializes the given preference store with the default values.
 	 * 
 	 * @param store
 	 *            the preference store to be initialized
 	 */
-	public static void initializeDefaultValues() {
+	public static void initializeDefaultValues()
+	{
+		IPreferenceStore store = getPreferenceStore();
+		store.setDefault(IPHPEplCoreConstants.TASK_TAGS, IPHPEplCoreConstants.DEFAULT_TASK_TAGS);
+		store.setDefault(IPHPEplCoreConstants.TASK_PRIORITIES, IPHPEplCoreConstants.DEFAULT_TASK_PRIORITIES);
+		store.setDefault(IPHPEplCoreConstants.TASK_CASE_SENSITIVE, IPHPEplCoreConstants.ENABLED);
 		/*
 		IEclipsePreferences node = new DefaultScope().getNode(PHPCorePlugin.ID);
 

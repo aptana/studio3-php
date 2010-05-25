@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Aptana PHP EPL
-Bundle-SymbolicName: com.aptana.editor.php.epl
+Bundle-SymbolicName: com.aptana.editor.php.epl;singleton:=true
 Bundle-Version: 3.0.0.qualifier
 Bundle-Activator: com.aptana.editor.php.epl.PHPEplPlugin
 Bundle-Vendor: Aptana Inc.
