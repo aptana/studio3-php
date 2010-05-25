@@ -26,6 +26,7 @@ import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlinePage;
+import com.aptana.editor.common.parsing.FileService;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPVersionListener;
@@ -36,7 +37,7 @@ import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.SingleFileBuildPath;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
-import com.aptana.editor.php.internal.parser.PHPParser;
+import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPDecoratingLabelProvider;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPOutlineItem;
@@ -54,12 +55,12 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 {
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
 			'"', '"' };
-	private PHPParser parser;
 	private IProject project;
 	private PHPDocumentProvider documentProvider;
 	private IModule module;
 	private boolean isOutOfWorkspace;
 	private String sourceUri;
+	private PHPParseState phpParseState;
 
 	@Override
 	protected void initializeEditor()
@@ -74,12 +75,14 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		documentProvider = new PHPDocumentProvider();
 		setDocumentProvider(documentProvider);
-
-		parser = new PHPParser();
-		getFileService().setParser(parser);
-		
 		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor
-		
+	}
+
+	@Override
+	protected FileService createFileService()
+	{
+		phpParseState = new PHPParseState();
+		return new FileService(PHPMimeType.MimeType, phpParseState);
 	}
 
 	/*
@@ -95,9 +98,9 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		if (resource != null)
 		{
 			project = resource.getProject();
-			parser.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
+			phpParseState.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
 			documentProvider.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
-			PHPVersionProvider.getInstance().addPHPVersionListener(project, parser);
+			PHPVersionProvider.getInstance().addPHPVersionListener(project, phpParseState);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, documentProvider);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
 		}
@@ -111,7 +114,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	public void dispose()
 	{
 		PHPVersionProvider.getInstance().removePHPVersionListener(this);
-		PHPVersionProvider.getInstance().removePHPVersionListener(parser);
+		PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
 		PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
 		super.dispose();
 	}

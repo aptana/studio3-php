@@ -9,7 +9,6 @@ import org.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.core.IPHPVersionListener;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
@@ -27,7 +26,7 @@ import com.aptana.parsing.ast.ParseRootNode;
  * @author Shalom Gibly <sgibly@aptana.com>
  * @since Aptana PHP 3.0
  */
-public class PHPParser implements IParser, IPHPVersionListener
+public class PHPParser implements IParser
 {
 
 	private PHPVersion phpVersion;
@@ -60,6 +59,10 @@ public class PHPParser implements IParser, IPHPVersionListener
 		IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], startingOffset, startingOffset
 				+ source.length());
 		Program ast = null;
+		if (parseState instanceof IPHPParseState)
+		{
+			phpVersion = ((IPHPParseState) parseState).getPHPVersion();
+		}
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
@@ -94,6 +97,7 @@ public class PHPParser implements IParser, IPHPVersionListener
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
+			// TODO: Shalom - Have this parser in a PHP parsers pool?
 			ASTParser parser = ASTParser.newParser(new InputStreamReader(source), version);
 			ast = parser.createAST(null);
 		}
@@ -143,11 +147,5 @@ public class PHPParser implements IParser, IPHPVersionListener
 		{
 			root.addChild(child);
 		}
-	}
-
-	@Override
-	public void phpVersionChanged(PHPVersion newVersion)
-	{
-		this.phpVersion = newVersion;
 	}
 }

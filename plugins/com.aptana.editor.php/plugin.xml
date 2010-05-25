@@ -143,5 +143,12 @@
          </run>
       </builder>
    </extension>
+   <extension
+         point="com.aptana.parsing.parser">
+      <parser
+            class="com.aptana.editor.php.internal.parser.PHPParser"
+            language="text/php">
+      </parser>
+   </extension>
 
 </plugin>
