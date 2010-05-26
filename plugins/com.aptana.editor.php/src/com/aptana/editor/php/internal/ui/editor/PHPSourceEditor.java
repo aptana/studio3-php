@@ -36,6 +36,7 @@ import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.SingleFileBuildPath;
+import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
@@ -55,12 +56,14 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 {
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
 			'"', '"' };
+	private Object mutex = new Object();
 	private IProject project;
 	private PHPDocumentProvider documentProvider;
 	private IModule module;
 	private boolean isOutOfWorkspace;
 	private String sourceUri;
 	private PHPParseState phpParseState;
+	private PHPOffsetMapper offsetMapper;
 
 	@Override
 	protected void initializeEditor()
@@ -75,7 +78,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		documentProvider = new PHPDocumentProvider();
 		setDocumentProvider(documentProvider);
-		
 		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor
 	}
 
@@ -98,6 +100,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		IResource resource = (IResource) input.getAdapter(IResource.class);
 		if (resource != null)
 		{
+			sourceUri = resource.getLocation().toString();
 			project = resource.getProject();
 			phpParseState.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
 			documentProvider.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
@@ -196,13 +199,23 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		return isOutOfWorkspace;
 	}
 
+	public PHPOffsetMapper getOffsetMapper() {
+		synchronized (mutex)
+		{
+			if (offsetMapper == null)
+			{
+				offsetMapper = new PHPOffsetMapper(this);
+			}
+		}
+		return offsetMapper;
+	}
+	
 	/**
 	 * Gets current module.
 	 * 
 	 * @return current module.
 	 */
-	@SuppressWarnings("unused")
-	private IModule getModule()
+	public IModule getModule()
 	{
 		if (module != null)
 		{

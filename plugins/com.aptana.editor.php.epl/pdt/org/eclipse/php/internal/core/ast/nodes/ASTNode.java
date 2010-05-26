@@ -242,6 +242,7 @@ public abstract class ASTNode implements Visitable {
 	 * @see #property1
 	 */
 	private Object property2 = null;
+	private IBinding binding;
 
 	/**
 	 * Construct an empty ASTNode and attach it with the given AST 
@@ -1715,4 +1716,14 @@ public abstract class ASTNode implements Visitable {
 		}
 	}
 
+	// ---- Aptana Additions ----
+	public void setBinding(IBinding binding)
+	{
+		this.binding = binding;
+	}
+
+	public IBinding getBinding()
+	{
+		return this.binding;
+	}
 }

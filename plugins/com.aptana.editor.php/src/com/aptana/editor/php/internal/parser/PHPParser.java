@@ -13,6 +13,7 @@ import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
+import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.IParser;
 import com.aptana.parsing.ast.IParseNode;
@@ -79,6 +80,11 @@ public class PHPParser implements IParser
 			processChildren(ast, root);
 		}
 		parseState.setParseResult(root);
+		if (ast != null)
+		{
+			// Recalculate the type bindings
+			TypeBindingBuilder.buildBindings(ast);
+		}
 		return root;
 	}
 

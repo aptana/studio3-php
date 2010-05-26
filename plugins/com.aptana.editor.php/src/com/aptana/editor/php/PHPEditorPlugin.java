@@ -85,8 +85,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 			}
 		};
 		indexerJob.setPriority(Job.BUILD);
-		indexerJob.schedule();
-		
+		indexerJob.schedule(1000L);
 	}
 
 	/*
