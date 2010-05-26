@@ -53,7 +53,7 @@
          version="0.0.0"/>
 
    <plugin
-         id="com.aptana.libraries"
+         id="com.aptana.php.libraries"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
