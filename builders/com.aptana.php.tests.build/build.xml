@@ -209,10 +209,12 @@
 			<param name="test.plugin" value="com.aptana.php.tests.all" />
 			<param name="test.classname" value="com.aptana.php.tests.all.CoreTests" />
 		</antcall>
+		<!--
 		<antcall target="run-ui-test">
-      <param name="test.plugin" value="com.aptana.php.tests.all" />
-      <param name="test.classname" value="com.aptana.php.tests.all.UITests" />
-    </antcall>
+     		<param name="test.plugin" value="com.aptana.php.tests.all" />
+      		<param name="test.classname" value="com.aptana.php.tests.all.UITests" />
+    	</antcall>
+    	-->
 
 		<!-- Collect all test results into single file and move to results directory. -->
 		<ant target="collect" antfile="${library-file}" dir="${baseLocation}">
