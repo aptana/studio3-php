@@ -30,7 +30,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author shalom
  */
-@SuppressWarnings( { "unchecked", "deprecation"})
+@SuppressWarnings( { "unchecked", "deprecation" })
 public class TaskTagsProvider
 {
 
@@ -49,7 +49,7 @@ public class TaskTagsProvider
 	 */
 	private TaskTagsProvider()
 	{
-		// install();
+		install();
 	}
 
 	/**
@@ -86,7 +86,8 @@ public class TaskTagsProvider
 	 */
 	public boolean isWorkspaceTagsCaseSensitive()
 	{
-		String caseSensitive = preferencesSupport.getWorkspacePreferencesValue(IPHPEplCoreConstants.TASK_CASE_SENSITIVE);
+		String caseSensitive = preferencesSupport
+				.getWorkspacePreferencesValue(IPHPEplCoreConstants.TASK_CASE_SENSITIVE);
 		return IPHPEplCoreConstants.ENABLED.equals(caseSensitive);
 	}
 
@@ -102,8 +103,8 @@ public class TaskTagsProvider
 	{
 		String priorities = preferencesSupport.getProjectSpecificPreferencesValue(IPHPEplCoreConstants.TASK_PRIORITIES,
 				null, project);
-		String projectTags = preferencesSupport.getProjectSpecificPreferencesValue(IPHPEplCoreConstants.TASK_TAGS, null,
-				project);
+		String projectTags = preferencesSupport.getProjectSpecificPreferencesValue(IPHPEplCoreConstants.TASK_TAGS,
+				null, project);
 		if (projectTags == null || priorities == null)
 		{
 			return null;
@@ -162,13 +163,20 @@ public class TaskTagsProvider
 	// Install propagator listeners for the given project.
 	private void installPropagatorListeners(IProject project)
 	{
+		if (project != null && projectToPropagatorListeners.get(project) != null)
+		{
+			return;
+		}
+
 		IPreferencesPropagatorListener[] listeners = new IPreferencesPropagatorListener[] {
 				new InnerTaskTagsListener(project), new InnerTaskPrioritiesListener(project),
 				new InnerTaskCaseListener(project) };
-		preferencesPropagator.addPropagatorListener(listeners[0], IPHPEplCoreConstants.TASK_TAGS);
-		preferencesPropagator.addPropagatorListener(listeners[1], IPHPEplCoreConstants.TASK_PRIORITIES);
-		preferencesPropagator.addPropagatorListener(listeners[2], IPHPEplCoreConstants.TASK_CASE_SENSITIVE);
-
+		if (project != null)
+		{
+			preferencesPropagator.addPropagatorListener(listeners[0], IPHPEplCoreConstants.TASK_TAGS);
+			preferencesPropagator.addPropagatorListener(listeners[1], IPHPEplCoreConstants.TASK_PRIORITIES);
+			preferencesPropagator.addPropagatorListener(listeners[2], IPHPEplCoreConstants.TASK_CASE_SENSITIVE);
+		}
 		projectToPropagatorListeners.put(project, listeners);
 	}
 
@@ -177,7 +185,7 @@ public class TaskTagsProvider
 	{
 		IPreferencesPropagatorListener[] listeners = (IPreferencesPropagatorListener[]) projectToPropagatorListeners
 				.get(project);
-		if (listeners != null)
+		if (listeners != null && project != null)
 		{
 			preferencesPropagator.removePropagatorListener(listeners[0], IPHPEplCoreConstants.TASK_TAGS);
 			preferencesPropagator.removePropagatorListener(listeners[1], IPHPEplCoreConstants.TASK_PRIORITIES);
@@ -413,8 +421,8 @@ public class TaskTagsProvider
 			}
 			else
 			{
-				priorities = preferencesSupport.getProjectSpecificPreferencesValue(IPHPEplCoreConstants.TASK_PRIORITIES,
-						"", getProject());//$NON-NLS-1$
+				priorities = preferencesSupport.getProjectSpecificPreferencesValue(
+						IPHPEplCoreConstants.TASK_PRIORITIES, "", getProject());//$NON-NLS-1$
 			}
 			if (StringUtils.occurrencesOf(priorities, ',') == StringUtils.occurrencesOf(tags, ','))
 			{
@@ -423,7 +431,8 @@ public class TaskTagsProvider
 				String newValue = (String) event.getNewValue();
 				if (newValue == null)
 				{
-					newValue = preferencesSupport.getWorkspacePreferencesValue(IPHPEplCoreConstants.TASK_CASE_SENSITIVE);
+					newValue = preferencesSupport
+							.getWorkspacePreferencesValue(IPHPEplCoreConstants.TASK_CASE_SENSITIVE);
 				}
 				if (IPHPEplCoreConstants.ENABLED.equals(newValue))
 				{

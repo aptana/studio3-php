@@ -100,13 +100,16 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		IResource resource = (IResource) input.getAdapter(IResource.class);
 		if (resource != null)
 		{
-			sourceUri = resource.getLocation().toString();
+			sourceUri = resource.getLocationURI().toString();
 			project = resource.getProject();
 			phpParseState.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
 			documentProvider.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, phpParseState);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, documentProvider);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
+			
+			// Set the current module into the parse state
+			phpParseState.setModule(getModule());
 		}
 	}
 

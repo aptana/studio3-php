@@ -2,6 +2,7 @@ package com.aptana.editor.php.internal.parser;
 
 import org.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.parsing.ParseState;
 
 /**
@@ -13,6 +14,7 @@ public class PHPParseState extends ParseState implements IPHPParseState
 {
 
 	private PHPVersion phpVersion;
+	private IModule module;
 
 	/*
 	 * (non-Javadoc)
@@ -28,5 +30,15 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	public void phpVersionChanged(PHPVersion newVersion)
 	{
 		this.phpVersion = newVersion;
+	}
+
+	public void setModule(IModule module)
+	{
+		this.module = module;
+	}
+
+	public IModule getModule()
+	{
+		return this.module;
 	}
 }

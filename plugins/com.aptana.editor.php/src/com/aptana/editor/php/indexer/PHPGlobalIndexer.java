@@ -132,10 +132,18 @@ public final class PHPGlobalIndexer
 
 		public void indexModule(Program program, IModule module, IIndexReporter reporter)
 		{
-			if (indexer instanceof IProgramIndexer)
+			try
 			{
-				IProgramIndexer pi = (IProgramIndexer) indexer;
-				pi.indexModule(program, module, reporter);
+				initIfNeeded();
+				if (indexer instanceof IProgramIndexer)
+				{
+					IProgramIndexer pi = (IProgramIndexer) indexer;
+					pi.indexModule(program, module, reporter);
+				}
+			}
+			catch (CoreException e)
+			{
+				PHPEditorPlugin.logError(e);
 			}
 		}
 	}
@@ -173,7 +181,7 @@ public final class PHPGlobalIndexer
 	/**
 	 * Extension point name.
 	 */
-	private static final String EXTENSION_POINT_NAME = "com.aptana.ide.editor.php.indexer"; //$NON-NLS-1$
+	private static final String EXTENSION_POINT_NAME = "com.aptana.editor.php.indexer"; //$NON-NLS-1$
 
 	/**
 	 * Indexer element name.
@@ -245,6 +253,7 @@ public final class PHPGlobalIndexer
 	private PHPGlobalIndexer()
 	{
 		createMainIndex();
+		// FIXME: Shalom - Don't think it will work for a variety of php versions in the workspace.
 		PHPEditorPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener()
 		{
 

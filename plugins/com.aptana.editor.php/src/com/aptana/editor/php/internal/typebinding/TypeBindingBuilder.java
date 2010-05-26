@@ -76,6 +76,7 @@ import org.eclipse.php.internal.core.ast.nodes.InfixExpression;
 import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.MethodInvocation;
+import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
 import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 import org.eclipse.php.internal.core.ast.nodes.ReturnStatement;
@@ -114,7 +115,6 @@ import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.indexer.VariablePathReference;
 import com.aptana.editor.php.internal.model.impl.SourceModule;
 import com.aptana.editor.php.internal.search.PHPSearchEngine;
-import com.aptana.editor.php.util.PHPASTVisitorStub;
 
 /**
  * PHP type binding builder.
@@ -2278,12 +2278,22 @@ public class TypeBindingBuilder
 
 			// counting first path entry
 			Expression classNameIdentifier = dispatch.getClassName();
-			if (classNameIdentifier == null || classNameIdentifier.getType() != ASTNode.IDENTIFIER)
+			// FIXME: Shalom - We might need a better handle here for namespaces
+			String className = null;
+			if (classNameIdentifier == null
+					|| (classNameIdentifier.getType() != ASTNode.IDENTIFIER && classNameIdentifier.getType() != ASTNode.NAMESPACE_NAME))
 			{
-				PHPEditorPlugin.logError(new IllegalArgumentException("Expected an identifier")); //$NON-NLS-1$
+				PHPEditorPlugin.logError(new IllegalArgumentException("Expected an identifier or namespace-name")); //$NON-NLS-1$
 				return null;
 			}
-			String className = ((Identifier) classNameIdentifier).getName();
+			else if (classNameIdentifier.getType() == ASTNode.IDENTIFIER)
+			{
+				className = ((Identifier) classNameIdentifier).getName();
+			}
+			else
+			{
+				className = ((NamespaceName) classNameIdentifier).getName();
+			}
 			result.setClassEntry(className);
 
 			// counting second entry
