@@ -23,7 +23,8 @@
 
 	<path id="instrument.classpath">
 		<fileset dir="${baseLocation}/plugins">
-			<include name="com.aptana.*.jar" />
+			<include name="com.aptana.editor.php*" />
+			<include name="com.aptana.php*" />
 		</fileset>
 	</path>
 	<path id="source.path">
