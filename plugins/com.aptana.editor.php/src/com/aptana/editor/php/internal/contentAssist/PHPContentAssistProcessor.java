@@ -9,28 +9,53 @@
  */
 package com.aptana.editor.php.internal.contentAssist;
 
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
+import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 
+import com.aptana.editor.common.AbstractThemeableEditor;
+import com.aptana.editor.common.CommonContentAssistProcessor;
+import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.indexer.ElementsIndexingUtils;
 import com.aptana.editor.php.internal.indexer.IElementEntriesFilter;
+import com.aptana.editor.php.internal.ui.editor.PHPVersionDocumentManager;
 
 /**
- * TODO
+ * Content assist processor for PHP.
+ * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPContentAssistProcessor implements IContentAssistProcessor
+@SuppressWarnings("unused")
+public class PHPContentAssistProcessor extends CommonContentAssistProcessor implements IContentAssistProcessor
 {
+
+	private static char[] autoactivationCharacters = new char[] { '>', '@', '$', ':' };
+	private static char[] contextautoactivationCharacters = new char[] { '(' };
+	private ITextViewer viewer;
+
+	/**
+	 * Constructs a new PHP content assist processor.
+	 * 
+	 * @param editor
+	 */
+	public PHPContentAssistProcessor(AbstractThemeableEditor editor)
+	{
+		super(editor);
+	}
 
 	/**
 	 * Filters entries by module and modules this module might include.
@@ -60,29 +85,179 @@ public class PHPContentAssistProcessor implements IContentAssistProcessor
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset)
 	{
-		// TODO Auto-generated method stub
+		this.viewer = viewer;
+		IDocument document = viewer.getDocument();
+		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
+		if (phpVersion == null)
+		{
+			phpVersion = PHPVersionProvider.getDefaultPHPVersion();
+		}
+		String content = document.get();
+
+		// AstLexer astLexer = ASTFactory.getAstLexer(phpVersion, new StringReader(content));
+		// ASTParser parser = ASTParser.newParser(new StringReader(content), phpVersion);
+		// Program ast = parser.createAST(null);
+		// ASTNode node = ast.getElementAt(offset);
+	    AbstractPhpLexer lexer = PhpLexerFactory.createLexer(new StringReader(content), phpVersion);
+	    lexer.initialize(-1);
+	    lexer.setPatterns(null);
+	    lexer.setAspTags(true);
+	    
+	    /*
+		Symbol prev = null;
+		Symbol prev2 = null;
+		Symbol lastN = null;
+		int pos = 0;
+		StringBuilder contentS = null;
+		try
+		{
+			while (true)
+			{
+
+				Symbol next_token = lexer.next_token();
+				if (next_token.sym == ParserConstants.T_NAMESPACE || next_token.sym == ParserConstants.T_USE)
+				{
+					lastN = next_token;
+					contentS = new StringBuilder();
+				}
+				else if (lastN != null)
+				{
+					if (next_token.sym == ParserConstants.T_STRING || next_token.sym == ParserConstants.T_NS_SEPARATOR)
+					{
+						if (contentS.length() == 0)
+						{
+							pos = next_token.left;
+						}
+						contentS.append(next_token.value == null ? '\\' : next_token.value);
+					}
+					else
+					{
+						lastN = null;
+					}
+				}
+				if (lastN != null)
+				{
+					if (next_token.left <= offset && next_token.right >= offset)
+					{
+						return getNamespaceCompletionProposals(content, contentS.toString(), pos, contentS.length(), 1,
+								viewer);
+					}
+				}
+				if (next_token.left < offset && next_token.right > offset)
+				{
+
+					if (next_token.sym == ParserConstants5.T_CONSTANT_ENCAPSED_STRING)
+					{
+						if (prev2 != null || prev != null)
+						{
+							if (checkInclude(prev2) || checkInclude(prev))
+							{
+								String text = (String) next_token.value;
+								String substring = text.substring(1, offset - next_token.left);
+								return getFilePathCompletionProposals(substring, next_token.left + 1, substring
+										.length(), 1, viewer);
+							}
+						}
+						return null;
+					}
+
+					// System.out.println(next_token);
+				}
+				if (next_token.sym == 0)
+				{
+					break;
+				}
+				prev2 = prev;
+				prev = next_token;
+			}
+		}
+		catch (IOException e)
+		{
+
+		}
+		if (isInCommentChecker.inComment)
+		{
+			if (isInCommentChecker.inPHPDoc)
+			{
+				return docProcessor.computeCompletionProposals(viewer, offset);
+			}
+			return null;
+		}
+		int startOffset = offset < content.length() ? offset : offset - 1;
+		for (int a = startOffset; a >= 0; a--)
+		{
+			char c = content.charAt(a);
+			if (c < ' ')
+			{
+				break;
+			}
+			if (c == '/')
+			{
+				if (a > 0)
+				{
+					if (content.charAt(a - 1) == '/')
+					{
+						return null;
+					}
+				}
+			}
+		}
+		if (activationChar == '@' && autoActivated)
+		{
+			return new ICompletionProposal[0];
+		}
+
+		boolean forceActivation = false;
+		Boolean fa = (Boolean) viewer.getTextWidget().getData("ASSIST_FORCE_ACTIVATION"); //$NON-NLS-1$
+		if (fa != null)
+		{
+			forceActivation = fa;
+		}
+
+		int replaceLengthIncrease = countReplaceLengthIncrease(content, offset);
+
+		// Calculates and sets completion context
+		calculateCompletionContext(offset);
+
+		ICompletionProposal[] computeCompletionProposalInternal = computeCompletionProposalInternal(offset, content,
+				true, forceActivation);
+		if (computeCompletionProposalInternal.length > 0)
+		{
+			PHPCompletionProposal pa = (PHPCompletionProposal) computeCompletionProposalInternal[0];
+			pa.defaultSelection = true;
+			pa.suggestedSelection = true;
+			if (replaceLengthIncrease > 0)
+			{
+				computeCompletionProposalInternal = batchIncreaseReplaceLength(computeCompletionProposalInternal,
+						replaceLengthIncrease);
+			}
+		}
+
+		// resetting the force activation flag.
+		viewer.getTextWidget().setData("ASSIST_FORCE_ACTIVATION", //$NON-NLS-1$
+				false);
+		return computeCompletionProposalInternal;
+		*/
 		return null;
 	}
 
 	@Override
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset)
 	{
-		// TODO Auto-generated method stub
+		// TODO
 		return null;
 	}
 
 	@Override
 	public char[] getCompletionProposalAutoActivationCharacters()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return autoactivationCharacters;
 	}
 
 	@Override
 	public char[] getContextInformationAutoActivationCharacters()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return contextautoactivationCharacters;
 	}
 
 	@Override
