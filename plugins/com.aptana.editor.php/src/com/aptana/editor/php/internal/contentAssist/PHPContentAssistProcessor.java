@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.swing.text.Segment;
+
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -26,6 +28,7 @@ import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -99,10 +102,30 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// Program ast = parser.createAST(null);
 		// ASTNode node = ast.getElementAt(offset);
 	    AbstractPhpLexer lexer = PhpLexerFactory.createLexer(new StringReader(content), phpVersion);
-	    lexer.initialize(-1);
+	    int state = -1;
+	    try {
+			// set initial lexer state - we use reflection here since we don't
+			// know the constant value of
+			// of this state in specific PHP version lexer
+	    	state = lexer.getClass().getField(
+					"ST_PHP_IN_SCRIPTING").getInt(lexer); //$NON-NLS-1$
+		} catch (Exception e) {
+			PHPEditorPlugin.logError(e);
+			return null;
+		}
+		lexer.initialize(state);
 	    lexer.setPatterns(null);
 	    lexer.setAspTags(true);
-	    
+	    try {
+	    	String next = null;
+	    	while ((next = lexer.getNextToken()) != null) {
+	    		
+	    		
+	    		System.out.println(next + " --> " + lexer.yytext());
+	    	}
+	    } catch (Exception e) {
+			PHPEditorPlugin.logError(e);
+		}
 	    /*
 		Symbol prev = null;
 		Symbol prev2 = null;
