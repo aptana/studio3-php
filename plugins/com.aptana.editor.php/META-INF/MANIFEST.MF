@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.parsing,
  com.aptana.editor.html,
  com.aptana.editor.php.epl,
- com.aptana.php.libraries
+ com.aptana.php.libraries,
+ beaver;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.editor.php,
