@@ -113,6 +113,16 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	}
 
 	/**
+	 * Set the parse node's modifiers.
+	 * 
+	 * @param modifiers
+	 */
+	public void setModifiers(int modifiers)
+	{
+		this.modifiers = modifiers;
+	}
+
+	/**
 	 * Returns the type of this node.
 	 */
 	public short getType()

@@ -1797,10 +1797,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		final IModule module = entry.getModule();
 		final Object val = entry.getValue();
 		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, module, entry);
-		if (entry.getValue() instanceof NamespacePHPEntryValue)
-		{
+//		if (entry.getValue() instanceof NamespacePHPEntryValue)
+//		{
 			image = labelProvider.getImage(val);
-		}
+//		}
 		// TODO - Shalom - Check if this is needed, now that we use a decorated label provider.
 		// if (entry.getValue() instanceof FunctionPHPEntryValue)
 		// {

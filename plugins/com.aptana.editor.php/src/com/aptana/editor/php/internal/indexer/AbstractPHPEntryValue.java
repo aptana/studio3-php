@@ -39,13 +39,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import com.aptana.editor.php.indexer.IReportable;
+import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.parsing.ast.ILanguageNode;
 
 /**
  * Abstract PHP entry value
  * 
  * @author Denis Denisenko
  */
-public abstract class AbstractPHPEntryValue implements IReportable
+public abstract class AbstractPHPEntryValue implements IReportable, ILanguageNode
 {
 	/**
 	 * Entry modifiers.
@@ -157,5 +159,14 @@ public abstract class AbstractPHPEntryValue implements IReportable
 	public String getNameSpace()
 	{
 		return nameSpace;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.aptana.parsing.ast.ILanguageNode#getLanguage()
+	 */
+	@Override
+	public String getLanguage()
+	{
+		return PHPMimeType.MimeType;
 	}
 }
