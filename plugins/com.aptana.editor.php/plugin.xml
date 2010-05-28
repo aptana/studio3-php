@@ -56,6 +56,9 @@
       <initializer
             class="com.aptana.editor.php.internal.ui.preferences.PhpUIPreferencesInitializer">
       </initializer>
+      <initializer
+            class="com.aptana.editor.php.internal.contentAssist.preferences.ContentAssistPreferencesInitializer">
+      </initializer>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">

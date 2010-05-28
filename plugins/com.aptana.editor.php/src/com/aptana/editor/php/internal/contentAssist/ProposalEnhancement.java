@@ -2,7 +2,7 @@ package com.aptana.editor.php.internal.contentAssist;
 
 import java.util.List;
 
-import javax.swing.text.Position;
+import org.eclipse.jface.text.Position;
 
 /**
  * Proposal enhancement.

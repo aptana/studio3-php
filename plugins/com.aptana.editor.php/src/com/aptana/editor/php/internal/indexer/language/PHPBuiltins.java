@@ -283,7 +283,7 @@ public final class PHPBuiltins
 	 * @param func
 	 * @return is this function exists in php4 built ins
 	 */
-	public boolean existsInPHP4(PHPBaseParseNode func)
+	public boolean existsInPHP4(IPHPParseNode func)
 	{
 		if (func.getClass() == PHPBaseParseNode.class)
 		{
@@ -299,12 +299,16 @@ public final class PHPBuiltins
 	 * @param func
 	 * @return is this function exists in php5 built ins
 	 */
-	public boolean existsInPHP5(PHPBaseParseNode func)
+	public boolean existsInPHP5(IPHPParseNode func)
 	{
 		return php5Names.contains(func.getNodeName()) || func.getClass() == PHPBaseParseNode.class;
 	}
 
-	public boolean existsInPHP53(PHPBaseParseNode func)
+	/**
+	 * @param func
+	 * @return is this function exists in php5.3 built ins
+	 */
+	public boolean existsInPHP53(IPHPParseNode func)
 	{
 		return php53Names.contains(func.getNodeName()) || func.getClass() == PHPBaseParseNode.class;
 	}

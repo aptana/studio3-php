@@ -45,7 +45,7 @@ import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.LocalModule;
-import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.contentAssist.ContentAssistFilters;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
@@ -261,7 +261,7 @@ public final class PHPSearchEngine
 			Set<IElementEntry> filterByModule;
 			if (emodule != null)
 			{
-				filterByModule = PHPContentAssistProcessor.filterByModule(entries, emodule, index);
+				filterByModule = ContentAssistFilters.filterByModule(entries, emodule, index);
 			}
 			else
 			{
