@@ -28,8 +28,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
@@ -53,6 +55,7 @@ import com.aptana.editor.php.indexer.IIndexReporter;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IReportable;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.IPHPConstants;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
@@ -183,6 +186,33 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	{
 		this.viewer = viewer;
 		IDocument document = viewer.getDocument();
+		// First, check if we are in a PHP partition
+		try
+		{
+			// Make sure that if the offset is at the end of the document, we test for the offset-1. This
+			// is done due to a bug in the Studio that returns the default partition and not the php-default
+			// partition.
+			int length = document.getLength();
+			ITypedRegion partition;
+			if (length == offset && length > 0)
+			{
+				partition = document.getPartition(offset - 1);
+			}
+			else
+			{
+				partition = document.getPartition(offset);
+			}
+			if (!partition.getType().startsWith(IPHPConstants.PREFIX))
+			{
+				// The partition does not start with our __php_ prefix, so do not return any proposals.
+				return null;
+			}
+		}
+		catch (BadLocationException e1)
+		{
+			PHPEditorPlugin.logError(e1);
+			return null;
+		}
 		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
 		if (phpVersion == null)
 		{
@@ -282,16 +312,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			PHPEditorPlugin.logError(e);
 		}
-		if (isInState(lexer, "ST_PHP_COMMENT")) //$NON-NLS-1$
-		{
-			if (isInState(lexer, "ST_PHP_DOC_COMMENT")) //$NON-NLS-1$
-			{
-				// FIXME: Shalom - implement the docPorcessor
-				// return docProcessor.computeCompletionProposals(viewer, offset);
-				return null;
-			}
-			return null;
-		}
+
 		int startOffset = offset < content.length() ? offset : offset - 1;
 		for (int a = startOffset; a >= 0; a--)
 		{
@@ -1797,10 +1818,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		final IModule module = entry.getModule();
 		final Object val = entry.getValue();
 		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, module, entry);
-//		if (entry.getValue() instanceof NamespacePHPEntryValue)
-//		{
-			image = labelProvider.getImage(val);
-//		}
+		// if (entry.getValue() instanceof NamespacePHPEntryValue)
+		// {
+		image = labelProvider.getImage(val);
+		// }
 		// TODO - Shalom - Check if this is needed, now that we use a decorated label provider.
 		// if (entry.getValue() instanceof FunctionPHPEntryValue)
 		// {

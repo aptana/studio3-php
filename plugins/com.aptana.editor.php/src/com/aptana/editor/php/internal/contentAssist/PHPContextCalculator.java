@@ -52,6 +52,18 @@ public class PHPContextCalculator
 		currentContext = new ProposalContext(new AcceptAllContextFilter(), true, true, null);
 		int lexemePosition = lexemeProvider.getLexemeFloorIndex(offset - 1);
 
+		// checking line-comment context
+		if (checkLineCommentContext(lexemeProvider, offset, lexemePosition))
+		{
+			return;
+		}
+
+		// checking PHPDoc context
+		if (checkPHPDocContext(lexemeProvider, offset, lexemePosition))
+		{
+			return;
+		}
+
 		// checking class declaration context
 		if (checkClassDeclarationContext(lexemeProvider, offset, lexemePosition))
 		{
@@ -410,30 +422,6 @@ public class PHPContextCalculator
 	}
 
 	/**
-	 * Gets "Deny all" proposal context.
-	 * 
-	 * @return
-	 */
-	private static ProposalContext getDenyAllProposalContext()
-	{
-		IContextFilter filter = new IContextFilter()
-		{
-
-			public boolean acceptBuiltin(Object builtinElement)
-			{
-				return false;
-			}
-
-			public boolean acceptElementEntry(IElementEntry element)
-			{
-				return false;
-			}
-		};
-
-		return new ProposalContext(filter, false, false, new int[0]);
-	}
-
-	/**
 	 * Checks new instance context.
 	 * 
 	 * @param lexemeProvider
@@ -518,6 +506,53 @@ public class PHPContextCalculator
 	}
 
 	/**
+	 * Checks for line-comment context.
+	 * 
+	 * @param lexemeProvider
+	 *            - lexeme provider.
+	 * @param lexemePosition
+	 *            - lexeme position.
+	 * @return true if context is recognized and set, false otherwise
+	 */
+
+	private boolean checkLineCommentContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	{
+		Lexeme<PHPTokenType> firstLexeme = lexemeProvider.getFirstLexeme();
+		if (firstLexeme != null)
+		{
+			String lexemeType = firstLexeme.getType().getType();
+			if (lexemeType.equals(PHPRegionTypes.PHP_COMMENT_START)
+					|| lexemeType.equals(PHPRegionTypes.PHP_LINE_COMMENT))
+			{
+				currentContext = getDenyAllProposalContext();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks for PHPDoc context.
+	 * 
+	 * @param lexemeProvider
+	 *            - lexeme provider.
+	 * @param lexemePosition
+	 *            - lexeme position.
+	 * @return true if context is recognized and set, false otherwise
+	 */
+
+	private boolean checkPHPDocContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	{
+		Lexeme<PHPTokenType> firstLexeme = lexemeProvider.getFirstLexeme();
+		if (firstLexeme != null && firstLexeme.getType().getType().equals(PHPRegionTypes.PHPDOC_COMMENT_START))
+		{
+			currentContext = getDenyAllProposalContext();
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Finds lexeme going backwards.
 	 * 
 	 * @param lexemeProvider
@@ -537,7 +572,7 @@ public class PHPContextCalculator
 		for (int i = startPosition; i >= 0; i--)
 		{
 			Lexeme<PHPTokenType> currentLexeme = lexemeProvider.getLexeme(i);
-			if (currentLexeme.getType().equals(typeToFind))
+			if (currentLexeme.getType().getType().equals(typeToFind))
 			{
 				return currentLexeme;
 			}
@@ -548,7 +583,7 @@ public class PHPContextCalculator
 					boolean allowedToSkip = false;
 					for (int j = 0; j < allowedTypesToSkip.length; j++)
 					{
-						if (currentLexeme.getType().equals(allowedTypesToSkip[j]))
+						if (currentLexeme.getType().getType().equals(allowedTypesToSkip[j]))
 						{
 							allowedToSkip = true;
 							break;
@@ -563,4 +598,29 @@ public class PHPContextCalculator
 		}
 		return null;
 	}
+
+	/**
+	 * Gets "Deny all" proposal context.
+	 * 
+	 * @return
+	 */
+	private static ProposalContext getDenyAllProposalContext()
+	{
+		IContextFilter filter = new IContextFilter()
+		{
+
+			public boolean acceptBuiltin(Object builtinElement)
+			{
+				return false;
+			}
+
+			public boolean acceptElementEntry(IElementEntry element)
+			{
+				return false;
+			}
+		};
+
+		return new ProposalContext(filter, false, false, new int[0]);
+	}
+
 }

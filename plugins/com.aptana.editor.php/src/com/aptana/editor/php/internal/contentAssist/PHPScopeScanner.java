@@ -23,6 +23,7 @@ import com.aptana.editor.php.internal.ui.editor.PHPVersionDocumentManager;
 public class PHPScopeScanner implements ITokenScanner
 {
 	private AbstractPhpLexer lexer;
+	private int documetOffset;
 
 	@Override
 	public int getTokenLength()
@@ -33,7 +34,7 @@ public class PHPScopeScanner implements ITokenScanner
 	@Override
 	public int getTokenOffset()
 	{
-		return lexer.getTokenStart();
+		return documetOffset + lexer.getTokenStart();
 	}
 
 	@Override
@@ -58,6 +59,7 @@ public class PHPScopeScanner implements ITokenScanner
 	@Override
 	public void setRange(IDocument document, int offset, int length)
 	{
+		this.documetOffset = offset;
 		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
 		if (phpVersion == null)
 		{
