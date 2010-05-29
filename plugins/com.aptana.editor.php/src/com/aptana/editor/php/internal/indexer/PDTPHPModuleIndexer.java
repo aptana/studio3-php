@@ -378,7 +378,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			String comment = findFunctionPHPDocComment(this.nodeStart);
 			if (comment != null)
 			{
-				// TODO: Shalom - Integrate with the PDT's DocumentorLexer
+				// FIXME: Shalom - Integrate with the PDT's DocumentorLexer
 //				FunctionDocumentation documentation = PHPDocUtils.parseFunctionPHPDoc(comment);
 //				if (documentation != null)
 //				{
@@ -3576,7 +3576,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			// collecting comments
 			CommentsVisitor commentsVisitor = new CommentsVisitor();
-			commentsVisitor.visit(program);
+			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
 
 			// indexing
@@ -3626,7 +3626,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			// collecting comments
 			CommentsVisitor commentsVisitor = new CommentsVisitor();
-			commentsVisitor.visit(program);
+			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
 
 			// indexing
@@ -3926,7 +3926,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 		// collecting comments
 		CommentsVisitor commentsVisitor = new CommentsVisitor();
-		commentsVisitor.visit(program);
+		program.accept(commentsVisitor);
 		_comments = commentsVisitor.getComments();
 
 		// indexing
