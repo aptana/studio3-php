@@ -125,7 +125,6 @@ public class ContentAssistFilters
 			{
 				VariablePHPEntryValue value = (VariablePHPEntryValue) entry.getValue();
 				if (!value.isField() || entry.getCategory() == IPHPIndexConstants.CONST_CATEGORY)
-					;
 				{
 					result.add(entry);
 				}
