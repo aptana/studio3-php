@@ -439,7 +439,7 @@ public class PHPContextCalculator
 		}
 
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1,
-				PHPRegionTypes.PHP_FUNCTION, EMPTY_STRING_ARRAY);
+				PHPRegionTypes.PHP_FUNCTION, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.PHP_TOKEN, PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_VARIABLE});
 		if (nearestKeyWord == null)
 		{
 			return false;
