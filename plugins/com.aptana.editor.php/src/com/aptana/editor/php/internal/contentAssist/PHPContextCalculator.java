@@ -137,7 +137,8 @@ public class PHPContextCalculator
 	}
 
 	/**
-	 * Checks class "extends" or "implements" context and sets it if needed.
+	 * Checks class "extends" or "implements" context and sets it if needed. In case this method is returning true, only
+	 * "extends" or "implements" keyword are displayed.
 	 * 
 	 * @param lexemeProvider
 	 *            - lexeme provider.
@@ -156,13 +157,14 @@ public class PHPContextCalculator
 		}
 
 		Lexeme<PHPTokenType> nearestClassKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1,
-				PHPRegionTypes.PHP_CLASS, EMPTY_STRING_ARRAY);
+				PHPRegionTypes.PHP_CLASS, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.WHITESPACE,
+						PHPRegionTypes.PHP_TOKEN, PHPRegionTypes.PHP_EXTENDS });
 		// WAS SKIPPING: , new int[] {PHPTokenTypes.IDENTIFIER});
 
 		if (nearestClassKeyWord == null)
 		{
 			nearestClassKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1, PHPRegionTypes.PHP_INTERFACE,
-					EMPTY_STRING_ARRAY);
+					new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_TOKEN });
 			// WAS SKIPPING: , new int[] {PHPTokenTypes.IDENTIFIER});
 			if (nearestClassKeyWord == null)
 			{
@@ -172,6 +174,16 @@ public class PHPContextCalculator
 
 		// whether class or interface is being declared
 		final boolean declaredClass = PHPRegionTypes.PHP_CLASS.equals(nearestClassKeyWord.getType().getType());
+		// Check if this declarations already have an "extends" or an "implements" keyword
+		Lexeme<PHPTokenType> extendsToken = findLexemeBackward(lexemeProvider, lexemePosition - 1,
+				PHPRegionTypes.PHP_EXTENDS, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.WHITESPACE,
+						PHPRegionTypes.PHP_TOKEN, PHPRegionTypes.PHP_IMPLEMENTS });
+		Lexeme<PHPTokenType> implementsToken = findLexemeBackward(lexemeProvider, lexemePosition - 1,
+				PHPRegionTypes.PHP_IMPLEMENTS, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.WHITESPACE,
+						PHPRegionTypes.PHP_TOKEN });
+
+		final boolean alreadyHaveExtends = (extendsToken != null);
+		final boolean alreadyHaveImplements = (implementsToken != null);
 
 		IContextFilter filter = new IContextFilter()
 		{
@@ -180,8 +192,9 @@ public class PHPContextCalculator
 			{
 				if (builtinElement instanceof IPHPParseNode)
 				{
-					if ("extends".equals(((IPHPParseNode) builtinElement).getNodeName()) //$NON-NLS-1$
-							|| (declaredClass && "implements".equals(((IPHPParseNode) builtinElement).getNodeName()))) //$NON-NLS-1$
+					if (!alreadyHaveExtends
+							&& "extends".equals(((IPHPParseNode) builtinElement).getNodeName()) //$NON-NLS-1$
+							|| (!alreadyHaveImplements && declaredClass && "implements".equals(((IPHPParseNode) builtinElement).getNodeName()))) //$NON-NLS-1$
 					{
 						return true;
 					}
@@ -235,24 +248,23 @@ public class PHPContextCalculator
 	{
 		// searching for "implements" keyword
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_IMPLEMENTS, EMPTY_STRING_ARRAY);
+				PHPRegionTypes.PHP_IMPLEMENTS, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.WHITESPACE,
+						PHPRegionTypes.PHP_TOKEN });
 		// WAS SKIPPING: , new int[] {PHPTokenTypes.IDENTIFIER, PHPTokenTypes.COMMA });
 		if (nearestKeyWord == null)
 		{
 			return false;
 		}
 
-		// extends keyword found and now we have to check whether interface or
+		// the implements keyword found and now we have to check whether a
 		// class is being declared
 		Lexeme<PHPTokenType> classKeyword = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_CLASS, new String[] { PHPRegionTypes.PHP_EXTENDS, PHPRegionTypes.PHP_IMPLEMENTS });
-		Lexeme<PHPTokenType> interfaceKeyword = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_INTERFACE,
-				new String[] { PHPRegionTypes.PHP_EXTENDS, PHPRegionTypes.PHP_IMPLEMENTS });
+				PHPRegionTypes.PHP_CLASS, new String[] { PHPRegionTypes.PHP_EXTENDS, PHPRegionTypes.PHP_IMPLEMENTS,
+						PHPRegionTypes.PHP_STRING, PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_TOKEN });
 		// WAS ALSO SKIPPING (in both cases above): PHPTokenTypes.IDENTIFIER, PHPTokenTypes.COMMA
 
 		// wrong declaration, so no proposals at all
-		if (classKeyword == null && interfaceKeyword == null)
+		if (classKeyword == null)
 		{
 			currentContext = getDenyAllProposalContext();
 			return true;
@@ -327,7 +339,8 @@ public class PHPContextCalculator
 			int lexemePosition)
 	{
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_EXTENDS, EMPTY_STRING_ARRAY);
+				PHPRegionTypes.PHP_EXTENDS, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.WHITESPACE,
+						PHPRegionTypes.PHP_TOKEN });
 		// WAS SKIPPING: new int[] {PHPTokenTypes.COMMA, PHPTokenTypes.IDENTIFIER });
 		if (nearestKeyWord == null)
 		{
@@ -335,11 +348,14 @@ public class PHPContextCalculator
 		}
 
 		// extends keyword found and now we have to check whether interface or
-		// class is being declared
+		// class is being declared.
+		// Also, we need to make sure we do not allow multiple inheritance when a class extension is involved.
 		Lexeme<PHPTokenType> classKeyword = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_CLASS, new String[] { PHPRegionTypes.PHP_EXTENDS });
+				PHPRegionTypes.PHP_CLASS, new String[] { PHPRegionTypes.PHP_EXTENDS, PHPRegionTypes.PHP_STRING,
+						PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_TOKEN });
 		Lexeme<PHPTokenType> interfaceKeyword = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_INTERFACE, new String[] { PHPRegionTypes.PHP_EXTENDS });
+				PHPRegionTypes.PHP_INTERFACE, new String[] { PHPRegionTypes.PHP_EXTENDS, PHPRegionTypes.PHP_STRING,
+						PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_TOKEN });
 		// WAS ALSO SKIPPING (in both cases): PHPTokenTypes.IDENTIFIER, PHPTokenTypes.COMMA
 
 		// wrong declaration, so no proposals at all
@@ -350,6 +366,18 @@ public class PHPContextCalculator
 		}
 
 		final boolean classDeclared = classKeyword != null;
+
+		// Check that we don't have any strings or commas that indicate a syntax error or a multiple inheritance
+		if (classDeclared)
+		{
+			Lexeme<PHPTokenType> extendsOnly = findLexemeBackward(lexemeProvider, lexemePosition,
+					PHPRegionTypes.PHP_EXTENDS, new String[] { PHPRegionTypes.WHITESPACE });
+			if (extendsOnly == null)
+			{
+				// We have something else between the completion location and the extends keyword, so we block it.
+				return false;
+			}
+		}
 
 		IContextFilter filter = new IContextFilter()
 		{
