@@ -187,13 +187,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		this.viewer = viewer;
 		IDocument document = viewer.getDocument();
 		// First, check if we are in a PHP partition
+		ITypedRegion partition;
 		try
 		{
 			// Make sure that if the offset is at the end of the document, we test for the offset-1. This
 			// is done due to a bug in the Studio that returns the default partition and not the php-default
 			// partition.
 			int length = document.getLength();
-			ITypedRegion partition;
 			if (length == offset && length > 0)
 			{
 				partition = document.getPartition(offset - 1);
@@ -358,8 +358,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// Calculates and sets completion context
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
 
-		ICompletionProposal[] computeCompletionProposalInternal = computeCompletionProposalInternal(offset, content,
-				true, forceActivation);
+		ICompletionProposal[] computeCompletionProposalInternal = computeCompletionProposalInternal(partition, offset,
+				content, true, forceActivation);
 		if (computeCompletionProposalInternal.length > 0)
 		{
 			PHPCompletionProposal pa = (PHPCompletionProposal) computeCompletionProposalInternal[0];
@@ -381,6 +381,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	/**
 	 * Computes proposals.
 	 * 
+	 * @param partition
 	 * @param offset
 	 *            - offset.
 	 * @param content
@@ -391,15 +392,15 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - whether force activation occured.
 	 * @return proposals
 	 */
-	public ICompletionProposal[] computeCompletionProposalInternal(final int offset, String content,
-			boolean proposeBuiltins, boolean forceActivation)
+	public ICompletionProposal[] computeCompletionProposalInternal(ITypedRegion partition, final int offset,
+			String content, boolean proposeBuiltins, boolean forceActivation)
 	{
 		final int start = offset == 0 ? 0 : offset - 1;
 
 		this.offset = offset;
 		this.content = content;
 
-		List<String> callPath = ParsingUtils.parseCallPath(content, start, OPS, false);
+		List<String> callPath = ParsingUtils.parseCallPath(partition, content, start, OPS, false);
 		if (callPath == null || callPath.isEmpty())
 		{
 			return new ICompletionProposal[0];

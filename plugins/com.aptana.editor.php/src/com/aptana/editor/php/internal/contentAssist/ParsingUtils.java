@@ -3,6 +3,8 @@ package com.aptana.editor.php.internal.contentAssist;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.text.ITypedRegion;
+
 /**
  * Utilities for parsing.
  * 
@@ -14,6 +16,8 @@ public final class ParsingUtils
 	/**
 	 * Gets dereferencing parts.
 	 * 
+	 * @param region
+	 *            - An {@link ITypedRegion} that will bound the call path search to the region itself (can be null)
 	 * @param content
 	 *            - content.
 	 * @param possibleReferenceOperators
@@ -24,14 +28,17 @@ public final class ParsingUtils
 	 *         "A::constField->method()->field2" there would be ["A", "::", "constField", "->", "method()", "->",
 	 *         "field2"] The last entry may be an empty string if we are completing right after the reference operator.
 	 */
-	public static List<String> parseCallPath(String content, int offset, String[] possibleReferenceOperators)
+	public static List<String> parseCallPath(ITypedRegion region, String content, int offset,
+			String[] possibleReferenceOperators)
 	{
-		return parseCallPath(content, offset, possibleReferenceOperators, false);
+		return parseCallPath(region, content, offset, possibleReferenceOperators, false);
 	}
 
 	/**
 	 * Gets dereferencing parts.
 	 * 
+	 * @param region
+	 *            - An {@link ITypedRegion} that will bound the call path search to the region itself (can be null)
 	 * @param content
 	 *            - content.
 	 * @param possibleReferenceOperators
@@ -44,8 +51,8 @@ public final class ParsingUtils
 	 *         "A::constField->method()->field2" there would be ["A", "::", "constField", "->", "method()", "->",
 	 *         "field2"] The last entry may be an empty string if we are completing right after the reference operator.
 	 */
-	public static List<String> parseCallPath(String content, int offset, String[] possibleReferenceOperators,
-			boolean skipInitialSpaces)
+	public static List<String> parseCallPath(ITypedRegion region, String content, int offset,
+			String[] possibleReferenceOperators, boolean skipInitialSpaces)
 	{
 		try
 		{
@@ -64,10 +71,10 @@ public final class ParsingUtils
 			}
 
 			// parsing right-most name
-			String entry = parseFunctionCall(content, currentPos, false);
+			String entry = parseFunctionCall(region, content, currentPos, false);
 			if (entry == null)
 			{
-				entry = parseName(content, currentPos, false);
+				entry = parseName(region, content, currentPos, false);
 			}
 
 			currentPos -= entry.length();
@@ -80,7 +87,7 @@ public final class ParsingUtils
 				currentPos = skipWhiteSpaces(currentPos, content);
 
 				// parsing for reference
-				String operator = parseReferenceOperator(possibleReferenceOperators, currentPos, content);
+				String operator = parseReferenceOperator(region, possibleReferenceOperators, currentPos, content);
 
 				// if no reference found, returning the result
 				if (operator == null)
@@ -93,10 +100,10 @@ public final class ParsingUtils
 				currentPos = skipWhiteSpaces(currentPos, content);
 
 				// parsing for method call or identifier
-				entry = parseFunctionCall(content, currentPos, false);
+				entry = parseFunctionCall(region, content, currentPos, false);
 				if (entry == null)
 				{
-					entry = parseName(content, currentPos, false);
+					entry = parseName(region, content, currentPos, false);
 				}
 
 				// if no entry found, returning null as call path is incomplete.
@@ -186,6 +193,8 @@ public final class ParsingUtils
 	/**
 	 * Checks whether current content is an identifier.
 	 * 
+	 * @param region
+	 *            An {@link ITypedRegion} that can be used to limit the search range (can be null)
 	 * @param content
 	 *            - current content.
 	 * @param offset
@@ -194,7 +203,7 @@ public final class ParsingUtils
 	 *            - whether to skip initial white spaces.
 	 * @return identifier or null
 	 */
-	private static String parseName(String content, int offset, boolean skipInitialWhitespaces)
+	private static String parseName(ITypedRegion region, String content, int offset, boolean skipInitialWhitespaces)
 	{
 		if (content.length() == 0)
 		{
@@ -208,9 +217,10 @@ public final class ParsingUtils
 		StringBuffer name = new StringBuffer();
 
 		int start = offset;
+		int partitionStart = (region == null) ? 0 : region.getOffset();
 		if (skipInitialWhitespaces)
 		{
-			for (int i = start; i >= 0; i--)
+			for (int i = start; i >= partitionStart; i--)
 			{
 				char ch = content.charAt(i);
 				if (!Character.isWhitespace(ch))
@@ -221,7 +231,7 @@ public final class ParsingUtils
 			}
 		}
 
-		for (int i = start; i >= 0; i--)
+		for (int i = start; i >= partitionStart; i--)
 		{
 			char ch = content.charAt(i);
 
@@ -258,7 +268,8 @@ public final class ParsingUtils
 	 *            - whether to skip initial white spaces.
 	 * @return identifier or null
 	 */
-	private static String parseFunctionCall(String content, int offset, boolean skipInitialWhitespaces)
+	private static String parseFunctionCall(ITypedRegion region, String content, int offset,
+			boolean skipInitialWhitespaces)
 	{
 		if (offset < 0)
 		{
@@ -281,10 +292,9 @@ public final class ParsingUtils
 		final int argumentsEndMet = 2;
 
 		int state = initialState;
-
 		int level = 0;
-
-		for (int i = start; i >= 0; i--)
+		int partitionStart = (region == null) ? 0 : region.getOffset();
+		for (int i = start; i >= partitionStart; i--)
 		{
 			char ch = content.charAt(i);
 
@@ -358,6 +368,8 @@ public final class ParsingUtils
 	/**
 	 * Parses references.
 	 * 
+	 * @param region
+	 *            An {@link ITypedRegion} that will bound the reference search to the region itself (can be null)
 	 * @param possibleOperators
 	 *            - possible reference operators to parse.
 	 * @param pos
@@ -366,11 +378,12 @@ public final class ParsingUtils
 	 *            - contents.
 	 * @return parsed reference.
 	 */
-	private static String parseReferenceOperator(String[] possibleOperators, int pos, String contents)
+	private static String parseReferenceOperator(ITypedRegion region, String[] possibleOperators, int pos,
+			String contents)
 	{
 		for (String possibleReference : possibleOperators)
 		{
-			if (parseConstantString(possibleReference, pos, contents) != -1)
+			if (parseConstantString(region, possibleReference, pos, contents) != -1)
 			{
 				return possibleReference;
 			}
@@ -409,6 +422,9 @@ public final class ParsingUtils
 	/**
 	 * Parses simple reference.
 	 * 
+	 * @param region
+	 *            A region (partition) that bounds the search for the reference. The search will not go left to the
+	 *            region's start offset (passing a null region will not limit the scan).
 	 * @param constant
 	 *            - constant to parse
 	 * @param start
@@ -417,15 +433,15 @@ public final class ParsingUtils
 	 *            - contents to parse.
 	 * @return the offset right before the end of the constant or -1 if constant not found.
 	 */
-	private static int parseConstantString(String constant, int start, String contents)
+	private static int parseConstantString(ITypedRegion region, String constant, int start, String contents)
 	{
 		if (start < constant.length() - 1)
 		{
 			return -1;
 		}
-
+		int partitionStart = (region == null) ? 0 : region.getOffset();
 		int posInConstant = constant.length() - 1;
-		for (int i = start; i >= 0; i--)
+		for (int i = start; i >= partitionStart; i--)
 		{
 			if (posInConstant == -1)
 			{
