@@ -12,6 +12,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
@@ -89,6 +90,7 @@ public class PHPParser implements IParser
 		{
 			try
 			{
+				ast.setSourceModule(ModelUtils.convertModule(module));
 				// Recalculate the type bindings
 				TypeBindingBuilder.buildBindings(ast);
 				// TODO: Shalom - check for Program errors?
