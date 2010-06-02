@@ -439,7 +439,8 @@ public class PHPContextCalculator
 		}
 
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1,
-				PHPRegionTypes.PHP_FUNCTION, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.PHP_TOKEN, PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_VARIABLE});
+				PHPRegionTypes.PHP_FUNCTION, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.PHP_TOKEN,
+						PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_VARIABLE });
 		if (nearestKeyWord == null)
 		{
 			return false;
@@ -490,7 +491,7 @@ public class PHPContextCalculator
 	{
 		// searching for "new" keyword
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_NEW, EMPTY_STRING_ARRAY);
+				PHPRegionTypes.PHP_NEW, new String[] { PHPRegionTypes.WHITESPACE });
 		// WAS SKIPPING: { PHPTokenTypes.IDENTIFIER, PHPTokenTypes.BACKSLASH });
 		if (nearestKeyWord == null)
 		{

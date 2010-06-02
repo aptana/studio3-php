@@ -121,10 +121,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	private static final String SELF_ACTIVATION_SEQUENCE = "self"; //$NON-NLS-1$
 
-	/**
-	 * "new" activation sequence.
-	 */
-	private static final String NEW_ACTIVATION_SEQUENCE = "new"; //$NON-NLS-1$
 	private static final IRange EMPTY_RANGE = new Range(0, 0);
 
 	private static Image fIcon53 = PHPEditorPlugin.getImage("icons/full/obj16/v53.png"); //$NON-NLS-1$
