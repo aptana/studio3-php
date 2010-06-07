@@ -756,4 +756,20 @@ public class StringUtils {
         super();
     }
 
+	public static String join(String joinStr, String[] strings)
+	{
+		StringBuilder builder = new StringBuilder();
+		for (String str : strings)
+		{
+			builder.append(str);
+			builder.append(joinStr);
+		}
+		if (builder.length() > 0)
+		{
+			int end = builder.length() - 1;
+			builder.delete(end - joinStr.length(), end);
+		}
+		return builder.toString();
+	}
+
 }

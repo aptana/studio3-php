@@ -27,6 +27,7 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	protected void clean(IProgressMonitor monitor) throws CoreException
 	{
 		PHPGlobalIndexer.getInstance().clean(getProject());
+		PHPGlobalIndexer.getInstance().cleanLibraries(monitor);
 	}
 
 	/**

@@ -296,7 +296,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 					// System.out.println(next_token);
 				}
-				if (next_token == null)
+				if (next_token == null || (PHPRegionTypes.PHP_CLOSETAG.equals(next_token) && PHPRegionTypes.PHP_CLOSETAG.equals(prev)))
 				{
 					break;
 				}

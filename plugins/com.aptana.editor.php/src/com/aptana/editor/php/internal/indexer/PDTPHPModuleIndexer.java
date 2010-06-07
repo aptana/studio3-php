@@ -74,6 +74,7 @@ import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org.eclipse.php.internal.core.ast.scanner.php53.ParserConstants;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
@@ -87,6 +88,8 @@ import com.aptana.editor.php.indexer.IModuleIndexer;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IProgramIndexer;
 import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
+import com.aptana.editor.php.internal.parser.phpdoc.TypedDescription;
 import com.aptana.editor.php.util.EncodingUtils;
 
 /**
@@ -375,30 +378,29 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 */
 		private void grabDockedTypes()
 		{
-			String comment = findFunctionPHPDocComment(this.nodeStart);
+			PHPDocBlock comment = findFunctionPHPDocComment(this.nodeStart);
 			if (comment != null)
 			{
-				// FIXME: Shalom - Integrate with the PDT's DocumentorLexer
-//				FunctionDocumentation documentation = PHPDocUtils.parseFunctionPHPDoc(comment);
-//				if (documentation != null)
-//				{
-//					ArrayList<TypedDescription> vars = documentation.getVars();
-//					if (vars != null && vars.size() != 0)
-//					{
-//						if (this.variableTypes == null)
-//						{
-//							variableTypes = new HashSet<Object>();
-//						}
-//						for (TypedDescription descr : vars)
-//						{
-//							String[] types = descr.getTypes();
-//							for (String type : types)
-//							{
-//								variableTypes.add(type);
-//							}
-//						}
-//					}
-//				}
+				FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
+				if (documentation != null)
+				{
+					ArrayList<TypedDescription> vars = documentation.getVars();
+					if (vars != null && vars.size() != 0)
+					{
+						if (this.variableTypes == null)
+						{
+							variableTypes = new HashSet<Object>();
+						}
+						for (TypedDescription descr : vars)
+						{
+							String[] types = descr.getTypes();
+							for (String type : types)
+							{
+								variableTypes.add(type);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1128,7 +1130,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				return true;
 			}
 
-			String comment = findFunctionPHPDocComment(functionDeclaration.getStart());
+			PHPDocBlock comment = findFunctionPHPDocComment(functionDeclaration.getStart());
 
 			// getting function name
 			Identifier functionNameIdentifier = functionDeclaration.getFunctionName();
@@ -1237,7 +1239,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		@Override
 		public boolean visit(MethodDeclaration methodDeclaration)
 		{
-			String comment = findFunctionPHPDocComment(methodDeclaration.getStart());
+			PHPDocBlock comment = findFunctionPHPDocComment(methodDeclaration.getStart());
 
 			FunctionDeclaration functionDeclaration = methodDeclaration.getFunction();
 			if (functionDeclaration == null)
@@ -1572,31 +1574,30 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 					fieldTypes = countExpressionTypes(initialValue);
 				}
 
-				String comment = findFunctionPHPDocComment(fieldsDeclaration.getStart());
-				// TODO: Shalom - Integrate with the PDT's DocumentorLexer
-//				if (comment != null)
-//				{
-//					FunctionDocumentation documentation = PHPDocUtils.parseFunctionPHPDoc(comment);
-//					if (documentation != null)
-//					{
-//						ArrayList<TypedDescription> vars = documentation.getVars();
-//						if (vars != null && vars.size() != 0)
-//						{
-//							if (fieldTypes == null)
-//							{
-//								fieldTypes = new HashSet<Object>();
-//							}
-//							for (TypedDescription descr : vars)
-//							{
-//								String[] types = descr.getTypes();
-//								for (String type : types)
-//								{
-//									fieldTypes.add(type);
-//								}
-//							}
-//						}
-//					}
-//				}
+				PHPDocBlock comment = findFunctionPHPDocComment(fieldsDeclaration.getStart());
+				if (comment != null)
+				{
+					FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
+					if (documentation != null)
+					{
+						ArrayList<TypedDescription> vars = documentation.getVars();
+						if (vars != null && vars.size() != 0)
+						{
+							if (fieldTypes == null)
+							{
+								fieldTypes = new HashSet<Object>();
+							}
+							for (TypedDescription descr : vars)
+							{
+								String[] types = descr.getTypes();
+								for (String type : types)
+								{
+									fieldTypes.add(type);
+								}
+							}
+						}
+					}
+				}
 
 				reportField(modifier, fieldName, fieldTypes, fieldVariable.getStart());
 			}
@@ -3047,68 +3048,67 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param parametersMap
 		 * @return possible return types.
 		 */
-		private String[] applyComment(String comment, Map<String, Set<Object>> parametersMap)
+		private String[] applyComment(PHPDocBlock comment, Map<String, Set<Object>> parametersMap)
 		{
-			// TODO: Shalom - Integrate with the PDT's DocumentorLexer
-//			try
-//			{
-//				FunctionDocumentation doc = PHPDocUtils.parseFunctionPHPDoc(comment);
-//				if (doc == null)
-//				{
-//					return null;
-//				}
-//
-//				TypedDescription[] params = doc.getParams();
-//				if (params != null && params.length != 0)
-//				{
-//					for (TypedDescription param : params)
-//					{
-//						String paramName = param.getName();
-//						if (paramName == null || paramName.length() == 0)
-//						{
-//							continue;
-//						}
-//
-//						if (paramName.startsWith(DOLLAR_SIGN))
-//						{
-//							paramName = paramName.substring(1);
-//						}
-//						String[] types = param.getTypes();
-//						if (parametersMap != null)
-//						{
-//							Set<Object> toSetParams = parametersMap.get(paramName);
-//							if (parametersMap.containsKey(paramName))
-//							{
-//								if (toSetParams == null && types != null)
-//								{
-//									toSetParams = new HashSet<Object>();
-//									parametersMap.put(paramName, toSetParams);
-//								}
-//
-//								if (types != null)
-//								{
-//									for (String type : types)
-//									{
-//										toSetParams.add(type);
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//
-//				TypedDescription returnDescr = doc.getReturn();
-//				if (returnDescr == null)
-//				{
-//					return null;
-//				}
-//
-//				return returnDescr.getTypes();
-//			}
-//			catch (Throwable th)
-//			{
-//				// ignore
-//			}
+			try
+			{
+				FunctionDocumentation doc = PHPDocUtils.getFunctionDocumentation(comment);
+				if (doc == null)
+				{
+					return null;
+				}
+
+				TypedDescription[] params = doc.getParams();
+				if (params != null && params.length != 0)
+				{
+					for (TypedDescription param : params)
+					{
+						String paramName = param.getName();
+						if (paramName == null || paramName.length() == 0)
+						{
+							continue;
+						}
+
+						if (paramName.startsWith(DOLLAR_SIGN))
+						{
+							paramName = paramName.substring(1);
+						}
+						String[] types = param.getTypes();
+						if (parametersMap != null)
+						{
+							Set<Object> toSetParams = parametersMap.get(paramName);
+							if (parametersMap.containsKey(paramName))
+							{
+								if (toSetParams == null && types != null)
+								{
+									toSetParams = new HashSet<Object>();
+									parametersMap.put(paramName, toSetParams);
+								}
+
+								if (types != null)
+								{
+									for (String type : types)
+									{
+										toSetParams.add(type);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				TypedDescription returnDescr = doc.getReturn();
+				if (returnDescr == null)
+				{
+					return null;
+				}
+
+				return returnDescr.getTypes();
+			}
+			catch (Throwable th)
+			{
+				// ignore
+			}
 
 			return null;
 		}
@@ -3867,7 +3867,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	 *            - offset to start search from.
 	 * @return comment contents or null.
 	 */
-	private String findFunctionPHPDocComment(int offset)
+	private PHPDocBlock findFunctionPHPDocComment(int offset)
 	{
 		if (_comments == null || _comments.isEmpty())
 		{
@@ -3875,7 +3875,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 
 		Comment nearestComment = null;
-		for (Comment comment : _comments)
+		for (Comment comment : _comments) // FIXME - Shalom: Use binary search!
 		{
 			if (comment.getStart() > offset)
 			{
@@ -3901,7 +3901,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		{
 			return null;
 		}
-
+		
+		// checking if we have anything but white spaces between comment end and offset
 		for (int i = nearestComment.getEnd() + 1; i < offset - 1; i++)
 		{
 			char ch = _contents.charAt(i);
@@ -3910,8 +3911,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				return null;
 			}
 		}
+		// return _contents.substring(nearestComment.getStart(), nearestComment.getEnd());
 
-		return _contents.substring(nearestComment.getStart(), nearestComment.getEnd());
+		return (PHPDocBlock) nearestComment;
 	}
 
 	public void indexModule(Program program, IModule module, IIndexReporter reporter)

@@ -93,6 +93,7 @@ import org.eclipse.php.internal.core.ast.nodes.Variable;
 import org.eclipse.php.internal.core.ast.nodes.VariableBase;
 import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPTypeConstants;
@@ -109,11 +110,14 @@ import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.CommentsVisitor;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPathReference;
+import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.editor.php.internal.indexer.PHPTypeProcessor;
 import com.aptana.editor.php.internal.indexer.StaticPathReference;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.indexer.VariablePathReference;
 import com.aptana.editor.php.internal.model.impl.SourceModule;
+import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
+import com.aptana.editor.php.internal.parser.phpdoc.TypedDescription;
 import com.aptana.editor.php.internal.search.PHPSearchEngine;
 
 /**
@@ -1107,7 +1111,7 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			String comment = findFunctionPHPDocComment(functionDeclaration.getStart());
+			PHPDocBlock comment = findFunctionPHPDocComment(functionDeclaration.getStart());
 
 			// getting function name
 			Identifier functionNameIdentifier = functionDeclaration.getFunctionName();
@@ -1204,7 +1208,7 @@ public class TypeBindingBuilder
 		@Override
 		public boolean visit(MethodDeclaration methodDeclaration)
 		{
-			String comment = findFunctionPHPDocComment(methodDeclaration.getStart());
+			PHPDocBlock comment = findFunctionPHPDocComment(methodDeclaration.getStart());
 
 			FunctionDeclaration functionDeclaration = methodDeclaration.getFunction();
 			if (functionDeclaration == null)
@@ -2947,65 +2951,63 @@ public class TypeBindingBuilder
 		 * @param parametersMap
 		 * @return possible return types.
 		 */
-		private String[] applyComment(String comment, Map<String, Set<Object>> parametersMap)
+		private String[] applyComment(PHPDocBlock comment, Map<String, Set<Object>> parametersMap)
 		{
-			// TODO: Shalom - Implement me
-			// try
-			// {
-			// FunctionDocumentation doc = PHPDocUtils.parseFunctionPHPDoc(comment);
-			// if (doc == null)
-			// {
-			// return null;
-			// }
+			try
+			{
+				FunctionDocumentation doc = PHPDocUtils.getFunctionDocumentation(comment);
+				if (doc == null)
+				{
+					return null;
+				}
 
-			// TypedDescription[] params = doc.getParams();
-			// if (params != null && params.length != 0)
-			// {
-			// for (TypedDescription param : params)
-			// {
-			// String paramName = param.getName();
-			// if (paramName == null || paramName.length() == 0)
-			// {
-			// continue;
-			// }
-			//
-			//						if (paramName.startsWith("$")) //$NON-NLS-1$
-			// {
-			// paramName = paramName.substring(1);
-			// }
-			// String[] types = param.getTypes();
-			// Set<Object> toSetParams =
-			// parametersMap!=null?parametersMap.get
-			// (paramName):Collections.emptySet();
-			// if (toSetParams == null)
-			// {
-			//
-			// toSetParams = new HashSet<Object>();
-			// parametersMap.put(paramName, toSetParams);
-			// }
-			//
-			// if (types != null)
-			// {
-			// for (String type : types)
-			// {
-			// toSetParams.add(type);
-			// }
-			// }
-			// }
-			// }
+				TypedDescription[] params = doc.getParams();
+				if (params != null && params.length != 0)
+				{
+					for (TypedDescription param : params)
+					{
+						String paramName = param.getName();
+						if (paramName == null || paramName.length() == 0)
+						{
+							continue;
+						}
 
-			// TypedDescription returnDescr = doc.getReturn();
-			// if (returnDescr == null)
-			// {
-			// return null;
-			// }
-			//
-			// return returnDescr.getTypes();
-			// }
-			// catch (Throwable th)
-			// {
-			// // ignore
-			// }
+						if (paramName.startsWith("$")) //$NON-NLS-1$
+						{
+							paramName = paramName.substring(1);
+						}
+						String[] types = param.getTypes();
+						Set<Object> toSetParams = parametersMap != null ? parametersMap.get(paramName) : Collections
+								.emptySet();
+						if (toSetParams == null)
+						{
+
+							toSetParams = new HashSet<Object>();
+							parametersMap.put(paramName, toSetParams);
+						}
+
+						if (types != null)
+						{
+							for (String type : types)
+							{
+								toSetParams.add(type);
+							}
+						}
+					}
+				}
+
+				TypedDescription returnDescr = doc.getReturn();
+				if (returnDescr == null)
+				{
+					return null;
+				}
+
+				return returnDescr.getTypes();
+			}
+			catch (Throwable th)
+			{
+				// ignore
+			}
 
 			return null;
 		}
@@ -3301,7 +3303,7 @@ public class TypeBindingBuilder
 	 *            - offset to start search from.
 	 * @return comment contents or null.
 	 */
-	private String findFunctionPHPDocComment(int offset)
+	private PHPDocBlock findFunctionPHPDocComment(int offset)
 	{
 		if (_comments == null || _comments.isEmpty())
 		{
@@ -3341,7 +3343,8 @@ public class TypeBindingBuilder
 				}
 			}
 
-			return _contents.substring(nearestComment.getStart(), nearestComment.getEnd());
+			// return _contents.substring(nearestComment.getStart(), nearestComment.getEnd());
+			return (PHPDocBlock) nearestComment;
 		}
 		else
 		{
