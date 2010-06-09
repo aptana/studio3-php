@@ -145,39 +145,7 @@ public final class PHPDocUtils
 		program.accept(commentsVisitor);
 		List<Comment> _comments = commentsVisitor.getComments();
 
-		Comment nearestComment = null;
-		for (Comment comment : _comments) // FIXME Shalom: Run a binary search!
-		{
-			if (comment.getStart() > offset)
-			{
-				break;
-			}
-
-			nearestComment = comment;
-		}
-
-		if (nearestComment == null)
-		{
-			return null;
-		}
-
-		if (nearestComment.getCommentType() != Comment.TYPE_PHPDOC)
-		{
-			return null;
-		}
-
-		// checking if we have anything but white spaces between comment end and offset
-		for (int i = nearestComment.getEnd() + 1; i < offset - 1; i++)
-		{
-			char ch = contents.charAt(i);
-			if (!Character.isWhitespace(ch))
-			{
-				return null;
-			}
-		}
-
-		// return contents.substring(nearestComment.getStart(), nearestComment.getEnd());
-		return (PHPDocBlock) nearestComment;
+		return findPHPDocComment(_comments, offset, contents);
 	}
 
 	/**
@@ -276,16 +244,14 @@ public final class PHPDocUtils
 		}
 
 		Comment nearestComment = null;
-		for (Comment comment : comments) // FIXME - Shalom: Use binary search!
+
+		int commentIndex = findComment(comments, offset);
+		if (commentIndex < 0)
 		{
-			if (comment.getStart() > offset)
-			{
-				break;
-			}
-
-			nearestComment = comment;
+			// The nearest comment we found should always have a negative value, as it should never overlap with the
+			// given offset
+			nearestComment = comments.get(-commentIndex - 1);
 		}
-
 		if (nearestComment == null)
 		{
 			return null;
@@ -317,6 +283,30 @@ public final class PHPDocUtils
 		}
 
 		return (PHPDocBlock) nearestComment;
+	}
+
+	/*
+	 * Perform a binary search for a comment that appears right on top of the given offset
+	 */
+	private static int findComment(List<Comment> comments, int offset)
+	{
+		int low = 0;
+		int high = comments.size() - 1;
+
+		while (low <= high)
+		{
+			int mid = (low + high) >>> 1;
+			Comment midVal = (Comment) comments.get(mid);
+			int cmp = midVal.getStart() - offset;
+
+			if (cmp < 0)
+				low = mid + 1;
+			else if (cmp > 0)
+				high = mid - 1;
+			else
+				return mid; // key found
+		}
+		return -(low); // key not found.
 	}
 
 	/**

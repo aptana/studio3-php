@@ -378,7 +378,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 */
 		private void grabDockedTypes()
 		{
-			PHPDocBlock comment = findFunctionPHPDocComment(this.nodeStart);
+			PHPDocBlock comment = PHPDocUtils.findPHPDocComment(_comments, this.nodeStart, _contents);
 			if (comment != null)
 			{
 				FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
@@ -1130,7 +1130,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				return true;
 			}
 
-			PHPDocBlock comment = findFunctionPHPDocComment(functionDeclaration.getStart());
+			PHPDocBlock comment = PHPDocUtils.findPHPDocComment(_comments, functionDeclaration.getStart(), _contents);
 
 			// getting function name
 			Identifier functionNameIdentifier = functionDeclaration.getFunctionName();
@@ -1239,7 +1239,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		@Override
 		public boolean visit(MethodDeclaration methodDeclaration)
 		{
-			PHPDocBlock comment = findFunctionPHPDocComment(methodDeclaration.getStart());
+			PHPDocBlock comment = PHPDocUtils.findPHPDocComment(_comments, methodDeclaration.getStart(), _contents);
 
 			FunctionDeclaration functionDeclaration = methodDeclaration.getFunction();
 			if (functionDeclaration == null)
@@ -1574,7 +1574,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 					fieldTypes = countExpressionTypes(initialValue);
 				}
 
-				PHPDocBlock comment = findFunctionPHPDocComment(fieldsDeclaration.getStart());
+				PHPDocBlock comment = PHPDocUtils.findPHPDocComment(_comments, fieldsDeclaration.getStart(), _contents);
 				if (comment != null)
 				{
 					FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
@@ -3858,62 +3858,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 
 		return null;
-	}
-
-	/**
-	 * Finds function or method PHPDoc comment above.
-	 * 
-	 * @param offset
-	 *            - offset to start search from.
-	 * @return comment contents or null.
-	 */
-	private PHPDocBlock findFunctionPHPDocComment(int offset)
-	{
-		if (_comments == null || _comments.isEmpty())
-		{
-			return null;
-		}
-
-		Comment nearestComment = null;
-		for (Comment comment : _comments) // FIXME - Shalom: Use binary search!
-		{
-			if (comment.getStart() > offset)
-			{
-				break;
-			}
-
-			nearestComment = comment;
-		}
-
-		if (nearestComment == null)
-		{
-			return null;
-		}
-
-		if (nearestComment.getCommentType() != Comment.TYPE_PHPDOC)
-		{
-			return null;
-		}
-
-		// checking if we have anything but whitespace between comment end and
-		// offset
-		if (offset - 2 < 0 || nearestComment.getEnd() >= _contents.length() || offset - 2 >= _contents.length())
-		{
-			return null;
-		}
-		
-		// checking if we have anything but white spaces between comment end and offset
-		for (int i = nearestComment.getEnd() + 1; i < offset - 1; i++)
-		{
-			char ch = _contents.charAt(i);
-			if (!Character.isWhitespace(ch))
-			{
-				return null;
-			}
-		}
-		// return _contents.substring(nearestComment.getStart(), nearestComment.getEnd());
-
-		return (PHPDocBlock) nearestComment;
 	}
 
 	public void indexModule(Program program, IModule module, IIndexReporter reporter)
