@@ -296,7 +296,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 					// System.out.println(next_token);
 				}
-				if (next_token == null || (PHPRegionTypes.PHP_CLOSETAG.equals(next_token) && PHPRegionTypes.PHP_CLOSETAG.equals(prev)))
+				if (next_token == null
+						|| (PHPRegionTypes.PHP_CLOSETAG.equals(next_token) && PHPRegionTypes.PHP_CLOSETAG.equals(prev)))
 				{
 					break;
 				}
@@ -2336,43 +2337,52 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						// value will be null, and not an empty string (this
 						// implementation might be incorrect when
 						// the default value is an empty string)
-						if (!insertOptionals && !EMPTY_STRING.equals(parameters[i].getDefaultValue()))
+						if (parameters[i].getDefaultValue() != null && !insertOptionals
+								&& !EMPTY_STRING.equals(parameters[i].getDefaultValue()))
 						{
 							break; // once we have a default value we can stop
 							// (since the optional params are always
 							// right to the mandatory ones)
 						}
 						String parameterName = parameters[i].getVariableName();
-
-						int start = builder.length() + result.replaceString.length();
-
-						builder.append(parameterName);
-
-						int length = builder.length() + result.replaceString.length() - start;
-
-						builder.append(", "); //$NON-NLS-1$
-						commaAppended = true;
-						if (result.positions != null)
+						if (parameterName != null && !parameterName.startsWith(DOLLAR_SIGN))
 						{
-							result.positions.add(new Position(start, length));
+							parameterName = DOLLAR_SIGN + parameterName;
+							int start = builder.length() + result.replaceString.length();
+
+							builder.append(parameterName);
+
+							int length = builder.length() + result.replaceString.length() - start;
+
+							builder.append(", "); //$NON-NLS-1$
+							commaAppended = true;
+							if (result.positions != null)
+							{
+								result.positions.add(new Position(start, length));
+							}
 						}
 					}
 
 					int start = builder.length() + result.replaceString.length();
 					// make sure that the last param fits the 'optional
 					// insertion' policy
-					if (insertOptionals
-							|| (!insertOptionals && EMPTY_STRING.equals(parameters[parameters.length - 1]
-									.getDefaultValue())))
+					if (insertOptionals || parameters[parameters.length - 1].getDefaultValue() == null
+							|| !insertOptionals
+							&& EMPTY_STRING.equals(parameters[parameters.length - 1].getDefaultValue()))
 					{
-						builder.append(parameters[parameters.length - 1].getVariableName());
-						int length = builder.length() + result.replaceString.length() - start;
-
-						if (result.positions != null)
+						String name = parameters[parameters.length - 1].getVariableName();
+						if (name != null && !name.startsWith(DOLLAR_SIGN))
 						{
-							result.positions.add(new Position(start, length));
+							name = DOLLAR_SIGN + name;
+							builder.append(name);
+							int length = builder.length() + result.replaceString.length() - start;
+
+							if (result.positions != null)
+							{
+								result.positions.add(new Position(start, length));
+							}
+							commaAppended = false;
 						}
-						commaAppended = false;
 					}
 
 					if (commaAppended)

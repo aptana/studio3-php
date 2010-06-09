@@ -10,6 +10,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
+
 /**
  * An incremental project builder for PHP projects. This builder is here for clean operations.
  * 
@@ -28,6 +30,7 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	{
 		PHPGlobalIndexer.getInstance().clean(getProject());
 		PHPGlobalIndexer.getInstance().cleanLibraries(monitor);
+		ContentAssistUtils.cleanIndex();
 	}
 
 	/**

@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
 import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
@@ -59,6 +61,8 @@ public final class PHPBuiltins
 	private static final PHPDocTag[] NO_TAGS = new PHPDocTag[0];
 	private static final PHPBuiltins instance = new PHPBuiltins();
 
+	private Object mutex = new Object();
+
 	private HashSet<Object> php4Names = new HashSet<Object>();
 	private HashSet<Object> php5Names = new HashSet<Object>();
 	private HashSet<Object> php53Names = new HashSet<Object>();
@@ -68,6 +72,7 @@ public final class PHPBuiltins
 	private HashMap<String, String> builtInClassesAndConstants = new HashMap<String, String>();
 
 	private TreeSet<Object> builtins;
+	private boolean initializing;
 
 	private void addKeywords()
 	{
@@ -271,9 +276,22 @@ public final class PHPBuiltins
 	{
 		if (builtins == null)
 		{
-			synchronized (this)
+			synchronized (mutex)
 			{
-				initBuiltins(new NullProgressMonitor());
+				if (initializing)
+				{
+					return null;
+				}
+				Job parseBuiltins = new Job(Messages.PHPBuiltins_indexingLibraries)
+				{
+					protected IStatus run(IProgressMonitor monitor)
+					{
+						clean(monitor);
+						return Status.OK_STATUS;
+					}
+				};
+				parseBuiltins.setPriority(Job.BUILD);
+				parseBuiltins.schedule();
 			}
 		}
 		return builtins;
@@ -362,7 +380,6 @@ public final class PHPBuiltins
 
 	private void initBuiltins(IProgressMonitor monitor)
 	{
-
 		try
 		{
 			this.builtins = new TreeSet<Object>(new Comparator<Object>()
@@ -662,13 +679,6 @@ public final class PHPBuiltins
 
 	private PHPBuiltins()
 	{
-		long l0 = System.currentTimeMillis();
-		initBuiltins(new NullProgressMonitor());
-		long l1 = System.currentTimeMillis();
-		if (PHPEditorPlugin.INDEXER_DEBUG)
-		{
-			System.out.println("Built ins init:" + (l1 - l0)); //$NON-NLS-1$
-		}
 	}
 
 	/**
@@ -685,20 +695,28 @@ public final class PHPBuiltins
 	 * @param monitor
 	 *            A non null progress monitor.
 	 */
-	public void clean(IProgressMonitor monitor)
+	public synchronized void clean(IProgressMonitor monitor)
 	{
-		if (monitor == null)
-		{
-			throw new IllegalArgumentException("The progress monitor should not be null"); //$NON-NLS-1$
-		}
+		long start = System.currentTimeMillis();
 		this.builtins = null;
+		initializing = true;
 		this.php4Names = new HashSet<Object>();
 		this.php5Names = new HashSet<Object>();
 		this.php53Names = new HashSet<Object>();
 		this.builtInFunctions = new HashMap<String, String>();
 		this.builtInClassesAndConstants = new HashMap<String, String>();
 
+		if (monitor == null)
+		{
+			initializing = false;
+			throw new IllegalArgumentException("The progress monitor should not be null"); //$NON-NLS-1$
+		}
 		initBuiltins(monitor);
+		initializing = false;
+		if (PHPEditorPlugin.INDEXER_DEBUG)
+		{
+			System.out.println("Built-ins clean: " + (System.currentTimeMillis() - start) + "ms"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 
 }

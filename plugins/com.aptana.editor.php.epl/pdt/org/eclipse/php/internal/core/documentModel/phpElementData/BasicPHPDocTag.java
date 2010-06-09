@@ -12,8 +12,9 @@ package org.eclipse.php.internal.core.documentModel.phpElementData;
 
 import java.util.HashMap;
 
-@SuppressWarnings({"unchecked", "nls"})
-public class BasicPHPDocTag implements PHPDocTag {
+@SuppressWarnings( { "unchecked", "nls" })
+public class BasicPHPDocTag implements PHPDocTag
+{
 
 	/**
 	 * 
@@ -23,21 +24,26 @@ public class BasicPHPDocTag implements PHPDocTag {
 	private String value;
 	private static HashMap nameToID;
 
-	public BasicPHPDocTag(int id, String value) {
+	public BasicPHPDocTag(int id, String value)
+	{
 		this.id = id;
 		this.value = value;
 	}
 
-	public int getID() {
+	public int getID()
+	{
 		return id;
 	}
 
-	public String getValue() {
+	public String getValue()
+	{
 		return value;
 	}
 
-	public static String getName(int id) {
-		switch (id) {
+	public static String getName(int id)
+	{
+		switch (id)
+		{
 			case ABSTRACT:
 				return "abstract";
 			case AUTHOR:
@@ -102,16 +108,20 @@ public class BasicPHPDocTag implements PHPDocTag {
 		return "";
 	}
 
-	public static int getID(String name) {
+	public static int getID(String name)
+	{
 		Integer rv = (Integer) getNameToID().get(name);
-		if (rv == null) {
+		if (rv == null)
+		{
 			return -1;
 		}
 		return rv.intValue();
 	}
 
-	private static HashMap getNameToID() {
-		if (nameToID == null) {
+	private static HashMap getNameToID()
+	{
+		if (nameToID == null)
+		{
 			nameToID = new HashMap();
 			nameToID.put("abstract", new Integer(ABSTRACT));
 			nameToID.put("access", new Integer(ACCESS));
@@ -147,13 +157,39 @@ public class BasicPHPDocTag implements PHPDocTag {
 		return nameToID;
 	}
 
-	public String toString() {
+	public String toString()
+	{
 		StringBuffer b = new StringBuffer("@");
-		b.append("<b>"+getName(getID())+"</b>");
+		b.append("<b>" + getName(getID()) + "</b>");
 		b.append(" ");
-		if (getValue() != null) {
+		if (getValue() != null)
+		{
 			b.append(getValue().toString());
 		}
 		return b.toString();
+	}
+
+	/**
+	 * Create a document-model doc tag from a give AST doc tag type. <br>
+	 * [Note: Aptana Addition]
+	 * 
+	 * @param docTag
+	 *            An AST PHPDocTag (can be null).
+	 * @return A PHPDocTag; Null if the given docTag was null, or there is no matching doc type.
+	 */
+	public static PHPDocTag fromASTDocTag(org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag docTag)
+	{
+		if (docTag == null)
+		{
+			return null;
+		}
+		String tagKind = org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag.getTagKind(docTag.getTagKind());
+		int thisId = getID(tagKind);
+		if (thisId == -1)
+		{
+			// There is no matching model doc tag
+			return null;
+		}
+		return new BasicPHPDocTag(thisId, docTag.getValue());
 	}
 }

@@ -77,5 +77,4 @@ public interface PHPDocTag extends Serializable {
 	int getID();
 
 	String getValue();
-
 }

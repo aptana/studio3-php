@@ -257,6 +257,69 @@ public final class PHPDocUtils
 	}
 
 	/**
+	 * Finds the PHPDoc comment that appears right above the given offset. In case there is no comment, or there are
+	 * non-white characters between the offset and the comment, this method returns null.
+	 * 
+	 * @param comments
+	 *            - The list of comments as parsed with the AST
+	 * @param offset
+	 *            - offset to start search from.
+	 * @param content
+	 *            - The file content
+	 * @return PHPDocBlock The PhpDoc, or null.
+	 */
+	public static PHPDocBlock findPHPDocComment(List<Comment> comments, int offset, String content)
+	{
+		if (comments == null || comments.isEmpty())
+		{
+			return null;
+		}
+
+		Comment nearestComment = null;
+		for (Comment comment : comments) // FIXME - Shalom: Use binary search!
+		{
+			if (comment.getStart() > offset)
+			{
+				break;
+			}
+
+			nearestComment = comment;
+		}
+
+		if (nearestComment == null)
+		{
+			return null;
+		}
+
+		if (nearestComment.getCommentType() != Comment.TYPE_PHPDOC)
+		{
+			return null;
+		}
+
+		if (content != null)
+		{
+			// checking if we have anything but whitespace between comment end and
+			// offset
+			if (offset - 2 < 0 || nearestComment.getEnd() >= content.length() || offset - 2 >= content.length())
+			{
+				return null;
+			}
+
+			// checking if we have anything but white spaces between comment end and offset
+			for (int i = nearestComment.getEnd() + 1; i < offset - 1; i++)
+			{
+				char ch = content.charAt(i);
+				if (!Character.isWhitespace(ch))
+				{
+					return null;
+				}
+			}
+		}
+
+		return (PHPDocBlock) nearestComment;
+	}
+
+	/**
 	 * Gets the first word of a sentence.
 	 * 
 	 * @param str

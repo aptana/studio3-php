@@ -83,7 +83,7 @@ public class PHPParser implements IParser
 		}
 		if (ast != null)
 		{
-			processChildren(ast, root);
+			processChildren(ast, root, source);
 		}
 		parseState.setParseResult(root);
 		if (ast != null)
@@ -124,6 +124,7 @@ public class PHPParser implements IParser
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
 			// TODO: Shalom - Have this parser in a PHP parsers pool?
+			
 			ASTParser parser = ASTParser.newParser(new InputStreamReader(source), version);
 			ast = parser.createAST(null);
 		}
@@ -136,7 +137,7 @@ public class PHPParser implements IParser
 		{
 			IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], ast.getStart(), ast
 					.getEnd());
-			processChildren(ast, root);
+			processChildren(ast, root, null);
 			return root;
 		}
 		return new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], 0, 0);
@@ -159,7 +160,7 @@ public class PHPParser implements IParser
 	/*
 	 * Process the AST and update the given IParseNode
 	 */
-	private void processChildren(Program ast, IParseNode root)
+	private void processChildren(Program ast, IParseNode root, String source)
 	{
 		/*
 		 * kept here for Debug purposes ApplyAll astPrinter = new ApplyAll() {
@@ -167,7 +168,7 @@ public class PHPParser implements IParser
 		 * ast.accept(astPrinter);
 		 */
 		NodeBuilder builderClient = new NodeBuilder();
-		ast.accept(new NodeBuildingVisitor(builderClient));
+		ast.accept(new NodeBuildingVisitor(builderClient, source));
 		PHPBlockNode nodes = builderClient.populateNodes();
 		for (IParseNode child : nodes.getChildren())
 		{

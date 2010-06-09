@@ -41,6 +41,8 @@ public final class Messages extends NLS
 
 	public static String PHPBuiltins_addingPhp53;
 
+	public static String PHPBuiltins_indexingLibraries;
+
 	/**
 	 * PREDEFINED_CONSTANT_LABEL
 	 */

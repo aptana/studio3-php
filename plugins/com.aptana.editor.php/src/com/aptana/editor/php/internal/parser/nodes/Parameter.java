@@ -157,7 +157,7 @@ public class Parameter
 		{
 			buf.append('&');
 		}
-		buf.append(this.getVariableName());
+		buf.append('$' + this.getVariableName());
 	}
 
 }

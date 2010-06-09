@@ -1199,6 +1199,7 @@ public final class PHPGlobalIndexer
 		monitor.worked(1);
 		if (monitor.isCanceled())
 			return;
+		// Clean the built-ins
 		PHPBuiltins.getInstance().clean(monitor);
 		monitor.done();
 	}

@@ -46,15 +46,28 @@ public class ContentAssistUtils
 	private static Map<Character, List<BuiltinInfo>> index = null;
 
 	/**
+	 * Clean the PHP built-ins content assist index.
+	 */
+	public static void cleanIndex()
+	{
+		index = null;
+	}
+
+	/**
 	 * @param name
 	 * @param eq
 	 * @return list of model element that matches to given name
 	 */
 	public synchronized static ArrayList<Object> selectModelElements(String name, boolean eq)
 	{
-		if (index == null)
+		if (index == null || index.isEmpty())
 		{
 			Collection<Object> builtins = PHPBuiltins.getInstance().getBuiltins();
+			if (builtins == null)
+			{
+				// The built-ins are probably loading now
+				return null;
+			}
 			initializeBuiltinsIndex(builtins);
 		}
 
