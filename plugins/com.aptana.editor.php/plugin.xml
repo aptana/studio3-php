@@ -143,5 +143,22 @@
             name="PHP Module Indexer">
       </indexer>
    </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+      <target
+            id="com.aptana.editor.php"
+            name="Aptana PHP Editor">
+      </target>
+   </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="com.aptana.editor.php.internal.ui.editor.hyperlink.PHPHyperlinkDetector"
+            id="com.aptana.editor.php.hyperlinkDetector"
+            name="PHP Element"
+            targetId="com.aptana.editor.php">
+      </hyperlinkDetector>
+   </extension>
 
 </plugin>

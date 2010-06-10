@@ -1,5 +1,5 @@
 /**
- * This file Copyright (c) 2005-2008 Aptana, Inc. This program is
+ * This file Copyright (c) 2005-2010 Aptana, Inc. This program is
  * dual-licensed under both the Aptana Public License and the GNU General
  * Public license. You may elect to use one or the other of these licenses.
  * 
@@ -34,32 +34,32 @@
  */
 package com.aptana.editor.php.internal.contentAssist.mapping;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IIndexReporter;
 import com.aptana.editor.php.indexer.IReportable;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
-import com.aptana.editor.php.internal.builder.BuildPathManager;
-import com.aptana.editor.php.internal.builder.FileSystemBuildPath;
-import com.aptana.editor.php.internal.builder.FileSystemModule;
+import com.aptana.editor.php.internal.IPHPConstants;
 import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.contentAssist.ContentAssistFilters;
+import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.contentAssist.PHPContextCalculator;
+import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
+import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ModuleSubstitutionIndex;
 import com.aptana.editor.php.internal.indexer.PDTPHPModuleIndexer;
@@ -70,16 +70,19 @@ import com.aptana.parsing.lexer.Lexeme;
 /**
  * PHPOffsetMapper
  * 
- * @author Denis Denisenko
+ * @author Denis Denisenko, Shalom Gibly
  */
-@SuppressWarnings( { "unused", "unchecked" })
 public class PHPOffsetMapper
 {
+	private static final String NEW = "new"; //$NON-NLS-1$
+
 	/**
 	 * Whether reported stack is global.
 	 */
 	private boolean reportedStackIsGlobal;
 	private PHPSourceEditor phpSourceEditor;
+	private String namespace;
+	private Map<String, String> aliases;
 
 	/**
 	 * Constructs a new PHP offset mapper with a given PHP editor.
@@ -96,178 +99,207 @@ public class PHPOffsetMapper
 	 */
 	private Set<String> globalImports;
 
-	// TODO - Shalom Implement
-	// /**
-	// * {@inheritDoc}
-	// */
-	// public ICodeLocation findTarget(Lexeme lexeme)
-	// {
-	// int offset = lexeme.getEndingOffset() - 1;
-	// String source = getFileService().getSource();
-	//
-	// if (PHPTokenTypes.getIntValue(lexeme.getType()) == PHPTokenTypes.REQUIRE
-	// || PHPTokenTypes.getIntValue(lexeme.getType()) == PHPTokenTypes.REQUIRE_ONCE
-	// || PHPTokenTypes.getIntValue(lexeme.getType()) == PHPTokenTypes.INCLUDE
-	// || PHPTokenTypes.getIntValue(lexeme.getType()) == PHPTokenTypes.INCLUDE_ONCE)
-	// {
-	// return getIncludeLocation(lexeme, source);
-	// }
-	//
-	// boolean isFunctionCall = isFunctionCall(lexeme, source);
-	// boolean isConstructor = isConstructorCall(lexeme, source);
-	//
-	// IModule module = getModule();
-	// if (module == null)
-	// {
-	// return null;
-	// }
-	//
-	// Set<IElementEntry> entries = null;
-	//
-	// IElementsIndex index = getIndex(source, offset);
-	//
-	// // trying to get dereference entries
-	// List<String> callPath = ParsingUtils.parseCallPath(source, offset, PHPContentAssistProcessor.OPS, false);
-	// if (callPath == null || callPath.isEmpty())
-	// {
-	// return null;
-	// }
-	//
-	// if (callPath.size() > 1)
-	// {
-	// if (PHPContentAssistProcessor.DEREFERENCE_OP.equals(callPath.get(1)))
-	// {
-	// entries = PHPContentAssistProcessor.computeDereferenceEntries(index, callPath, offset, module, true);
-	// }
-	// else
-	// {
-	// entries = PHPContentAssistProcessor.computeStaticDereferenceEntries(index, callPath, offset, module,
-	// true);
-	// }
-	// }
-	// else
-	// {
-	// String toFind = callPath.get(callPath.size() - 1);
-	// boolean variableCompletion = false;
-	//			if (toFind.startsWith("$")) //$NON-NLS-1$
-	// {
-	// variableCompletion = true;
-	// toFind = toFind.substring(1);
-	// }
-	//
-	// List<IElementEntry> res = PHPContentAssistProcessor.computeSimpleIdentifierEntries(reportedStackIsGlobal,
-	// globalImports, toFind, variableCompletion, index, true, module, false, namespace, aliases);
-	// if (res != null)
-	// {
-	// entries = new LinkedHashSet<IElementEntry>();
-	// entries.addAll(res);
-	// }
-	// }
-	//
-	// if (entries == null)
-	// {
-	// return null;
-	// }
-	//
-	// if (isFunctionCall && !isConstructor)
-	// {
-	// entries = PHPContentAssistProcessor.filterAllButFunctions(entries, index);
-	// }
-	// else if (isConstructor)
-	// {
-	// entries = PHPContentAssistProcessor.filterAllButClasses(entries, index);
-	// }
-	// else
-	// {
-	// entries = PHPContentAssistProcessor.filterAllButVariablesAndClasses(entries, index);
-	// }
-	//
-	// if (entries == null || entries.size() == 0)
-	// {
-	// return null;
-	// }
-	//
-	// String fullPath = null;
-	// // String resultText = null;
-	// int resultOffset = -1;
-	//
-	// List<IElementEntry> sortedEntries = sortByModule(entries);
-	//
-	// for (IElementEntry entry : sortedEntries)
-	// {
-	// if (entry.getValue() instanceof AbstractPHPEntryValue)
-	// {
-	// if (entry.getModule() != null)
-	// {
-	// fullPath = entry.getModule().getFullPath();
-	// }
-	// resultOffset = ((AbstractPHPEntryValue) entry.getValue()).getStartOffset();
-	// // resultText = ElementsIndexingUtils.getLastNameInPath(entry.getEntryPath());
-	// break;
-	// }
-	// }
-	// if (fullPath == null)
-	// {
-	// return null;
-	// }
-	//
-	// Lexeme startLexeme = new FakeLexeme("", resultOffset);
-	// return new CodeLocation(fullPath, startLexeme);
-	// }
-	//
-	// /**
-	// * Gets include location.
-	// *
-	// * @param lexeme
-	// * - include lexeme.
-	// * @param source
-	// * - source.
-	// * @return location or null.
-	// */
-	// private ICodeLocation getIncludeLocation(Lexeme lexeme, String source)
-	// {
-	// String moduleName = getIncludeModuleName(lexeme, source);
-	// if (moduleName == null)
-	// {
-	// return null;
-	// }
-	//
-	// if (getModule() == null)
-	// {
-	// return null;
-	// }
-	//
-	// IBuildPath buildPath = getModule().getBuildPath();
-	//
-	// if (buildPath == null)
-	// {
-	// return null;
-	// }
-	//
-	// try
-	// {
-	// Path path = new Path(moduleName);
-	// if (path.isAbsolute())
-	// {
-	// return null;
-	// }
-	//
-	// IModule includedModule = buildPath.resolveRelativePath(getModule(), path);
-	// if (includedModule == null)
-	// {
-	// return null;
-	// }
-	//
-	// Lexeme startLexeme = new FakeLexeme("", 0);
-	// return new CodeLocation(includedModule.getFullPath(), startLexeme);
-	// }
-	// catch (Throwable th)
-	// {
-	// // skip
-	// }
-	//
-	// return null;
-	// }
+	/**
+	 * Find the ICodeLocation for the given lexeme.
+	 * 
+	 * @param lexeme
+	 *            The current lexeme
+	 * @param lexemeProvider
+	 *            The lexeme provider, for cases that require lexeme inspection
+	 */
+	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, LexemeProvider<PHPTokenType> lexemeProvider)
+	{
+		int offset = lexeme.getEndingOffset();
+		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
+
+		try
+		{
+			// Check if we are in an 'include' or 'require'
+			IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
+			ITypedRegion partition = document.getPartition(lexeme.getStartingOffset());
+			int previousPartitionEnd = partition != null ? partition.getOffset() - 1 : -1;
+			if (previousPartitionEnd > 0
+					&& (IPHPConstants.PHP_STRING_SINGLE.equals(partition.getType()) || IPHPConstants.PHP_STRING_DOUBLE
+							.equals(partition.getType())))
+			{
+				// Because we have a different partition type for strings, we have to check the previous partition for
+				// any include or require lexemes.
+				// We also have to create a new lexeme provider just for this region check
+				LexemeProvider<PHPTokenType> newLexemeProvider = ParsingUtils.createLexemeProvider(document,
+						previousPartitionEnd);
+				int lexemePosition = newLexemeProvider.getLexemeFloorIndex(previousPartitionEnd - 1);
+				Lexeme<PHPTokenType> importLexeme = PHPContextCalculator.findLexemeBackward(newLexemeProvider,
+						lexemePosition, new String[] { PHPRegionTypes.PHP_INCLUDE, PHPRegionTypes.PHP_INCLUDE_ONCE,
+								PHPRegionTypes.PHP_REQUIRE, PHPRegionTypes.PHP_REQUIRE_ONCE },
+						new String[] { PHPRegionTypes.WHITESPACE });
+				if (importLexeme != null)
+				{
+					return getIncludeLocation(lexeme, source);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			PHPEditorPlugin.logError(e);
+		}
+		boolean isFunctionCall = isFunctionCall(lexeme, source);
+		boolean isConstructor = isConstructorCall(lexeme, source);
+
+		IModule module = phpSourceEditor.getModule();
+		if (module == null)
+		{
+			return null;
+		}
+
+		Set<IElementEntry> entries = null;
+
+		IElementsIndex index = getIndex(source, offset);
+
+		// trying to get dereference entries
+		List<String> callPath = ParsingUtils.parseCallPath(null, source, offset, PHPContentAssistProcessor.OPS, false);
+		if (callPath == null || callPath.isEmpty())
+		{
+			return null;
+		}
+
+		if (callPath.size() > 1)
+		{
+			if (PHPContentAssistProcessor.DEREFERENCE_OP.equals(callPath.get(1)))
+			{
+				entries = PHPContentAssistProcessor.computeDereferenceEntries(index, callPath, offset, module, true);
+			}
+			else
+			{
+				entries = PHPContentAssistProcessor.computeStaticDereferenceEntries(index, callPath, offset, module,
+						true);
+			}
+		}
+		else
+		{
+			String toFind = callPath.get(callPath.size() - 1);
+			boolean variableCompletion = false;
+			if (toFind.startsWith("$")) //$NON-NLS-1$
+			{
+				variableCompletion = true;
+				toFind = toFind.substring(1);
+			}
+			toFind = toFind.toLowerCase();
+			List<IElementEntry> res = PHPContentAssistProcessor.computeSimpleIdentifierEntries(reportedStackIsGlobal,
+					globalImports, toFind, variableCompletion, index, true, module, false, namespace, aliases);
+			if (res != null)
+			{
+				entries = new LinkedHashSet<IElementEntry>();
+				entries.addAll(res);
+			}
+		}
+
+		if (entries == null)
+		{
+			return null;
+		}
+
+		if (isFunctionCall && !isConstructor)
+		{
+			entries = ContentAssistFilters.filterAllButFunctions(entries, index);
+		}
+		else if (isConstructor)
+		{
+			entries = ContentAssistFilters.filterAllButClasses(entries, index);
+		}
+		else
+		{
+			entries = ContentAssistFilters.filterAllButVariablesAndClasses(entries, index);
+		}
+
+		if (entries == null || entries.size() == 0)
+		{
+			return null;
+		}
+
+		String fullPath = null;
+		int startOffset = 0;
+
+		List<IElementEntry> sortedEntries = sortByModule(entries);
+
+		for (IElementEntry entry : sortedEntries)
+		{
+			Object value = entry.getValue();
+			if (value instanceof AbstractPHPEntryValue)
+			{
+				if (entry.getModule() != null)
+				{
+					fullPath = entry.getModule().getFullPath();
+					AbstractPHPEntryValue phpEntryValue = (AbstractPHPEntryValue) value;
+					startOffset = phpEntryValue.getStartOffset();
+				}
+				break;
+			}
+		}
+		if (fullPath == null)
+		{
+			return null;
+		}
+
+		Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN),
+				startOffset, startOffset, ""); //$NON-NLS-1$
+		return new CodeLocation(fullPath, startLexeme);
+	}
+
+	/**
+	 * Gets include location.
+	 * 
+	 * @param lexeme
+	 *            - include lexeme.
+	 * @param source
+	 *            - source.
+	 * @return location or null.
+	 */
+	private ICodeLocation getIncludeLocation(Lexeme<PHPTokenType> lexeme, String source)
+	{
+		String moduleName = getIncludeModuleName(lexeme, source);
+		if (moduleName == null)
+		{
+			return null;
+		}
+
+		IModule module = phpSourceEditor.getModule();
+		if (module == null)
+		{
+			return null;
+		}
+
+		IBuildPath buildPath = module.getBuildPath();
+
+		if (buildPath == null)
+		{
+			return null;
+		}
+
+		try
+		{
+			Path path = new Path(moduleName);
+			if (path.isAbsolute())
+			{
+				return null;
+			}
+
+			IModule includedModule = buildPath.resolveRelativePath(module, path);
+			if (includedModule == null)
+			{
+				return null;
+			}
+
+			Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN),
+					0, 0, ""); //$NON-NLS-1$
+			return new CodeLocation(includedModule.getFullPath(), startLexeme);
+		}
+		catch (Throwable th)
+		{
+			// skip
+		}
+
+		return null;
+	}
 
 	/**
 	 * Gets include module name.
@@ -278,91 +310,17 @@ public class PHPOffsetMapper
 	 *            - source.
 	 * @return module name or null
 	 */
-	private String getIncludeModuleName(Lexeme lexeme, String source)
+	private String getIncludeModuleName(Lexeme<PHPTokenType> lexeme, String source)
 	{
-		int offset = lexeme.getEndingOffset();
-
-		// // searching for the first round bracket
-		// int firstBaracketPos = -1;
-		// for (; offset < source.length(); offset++)
-		// {
-		// char ch = source.charAt(offset);
-		// if (ch == '(')
-		// {
-		// firstBaracketPos = offset;
-		// break;
-		// }
-		// }
-		//
-		// if (firstBaracketPos == -1)
-		// {
-		// return null;
-		// }
-		//
-		// // searching for the second round bracket
-		// int secondBaracketPos = -1;
-		// for (; offset < source.length(); offset++)
-		// {
-		// char ch = source.charAt(offset);
-		// if (ch == ')')
-		// {
-		// secondBaracketPos = offset;
-		// break;
-		// }
-		// }
-		//
-		// if (secondBaracketPos == -1)
-		// {
-		// return null;
-		// }
-		//
-		// String includeArgumentsString = source.substring(firstBaracketPos + 1, secondBaracketPos);
-
-		int lineEndPos = offset;
-		for (int i = lineEndPos; i < source.length(); i++)
+		if (lexeme != null)
 		{
-			char ch = source.charAt(i);
-			if (ch == '\r' || ch == '\n' || ch == ';' || i == source.length() - 1)
+			String includeString = lexeme.getText();
+			if (includeString != null && includeString.length() > 2)
 			{
-				lineEndPos = i;
-				break;
+				return includeString.substring(1, includeString.length() - 1);
 			}
 		}
-
-		String includeArgumentsString = source.substring(offset, lineEndPos);
-
-		char toSearch;
-		if (includeArgumentsString.contains("\"")) //$NON-NLS-1$
-		{
-			toSearch = '"';
-		}
-		else
-		{
-			toSearch = '\'';
-		}
-
-		int firstQuotePos = -1;
-		int secondQuotePos = -1;
-
-		// searching for double quotes
-		firstQuotePos = includeArgumentsString.indexOf(toSearch);
-		if (firstQuotePos == -1)
-		{
-			return null;
-		}
-
-		secondQuotePos = includeArgumentsString.lastIndexOf(toSearch);
-		if (secondQuotePos == -1)
-		{
-			return null;
-		}
-
-		if (firstQuotePos == secondQuotePos)
-		{
-			return null;
-		}
-
-		return includeArgumentsString.substring(firstQuotePos + 1, secondQuotePos);
+		return null;
 	}
 
 	/**
@@ -374,10 +332,8 @@ public class PHPOffsetMapper
 	 *            - source.
 	 * @return true if constructor, false otherwise.
 	 */
-	private boolean isConstructorCall(Lexeme lexeme, String source)
+	private boolean isConstructorCall(Lexeme<PHPTokenType> lexeme, String source)
 	{
-		final String NEW = "new"; //$NON-NLS-1$
-
 		int searchStringPos = NEW.length() - 1;
 
 		// going left searching for the "new" sequence
@@ -411,10 +367,10 @@ public class PHPOffsetMapper
 	 *            - source.
 	 * @return true if function call, false otherwise
 	 */
-	private boolean isFunctionCall(Lexeme lexeme, String source)
+	private boolean isFunctionCall(Lexeme<PHPTokenType> lexeme, String source)
 	{
 		// going right searching for "(" character
-		for (int i = lexeme.getEndingOffset(); i < source.length(); i++)
+		for (int i = lexeme.getEndingOffset() + 1; i < source.length(); i++)
 		{
 			char ch = source.charAt(i);
 			if (ch == '(')
@@ -429,46 +385,6 @@ public class PHPOffsetMapper
 
 		return false;
 	}
-
-	/**
-	 * Gets current module.
-	 * 
-	 * @param resource
-	 * @return current module.
-	 */
-	// private IModule getModule()
-	// {
-	// String struri = getSourceProvider().getSourceURI();
-	// URI uri;
-	// try
-	// {
-	// uri = new URI(struri);
-	// }
-	// catch (URISyntaxException e)
-	// {
-	// PHPEditorPlugin.logError(e);
-	// return null;
-	// }
-	// if (uri.isAbsolute())
-	// {
-	// IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
-	// if (files != null && files.length != 0)
-	// {
-	// return BuildPathManager.getInstance().getModuleByResource(files[0]);
-	// }
-	// }
-	//
-	// String filePath = struri;
-	//		if (filePath.startsWith("file://")) //$NON-NLS-1$
-	// {
-	// filePath = filePath.substring(7);
-	// }
-	// File file = new File(filePath);
-	// return new FileSystemModule(new File(file.getName()), new FileSystemBuildPath(file.getParentFile()));
-	// }
-
-	String namespace;
-	Map<String, String> aliases;
 
 	/**
 	 * Gets elements index for a module.

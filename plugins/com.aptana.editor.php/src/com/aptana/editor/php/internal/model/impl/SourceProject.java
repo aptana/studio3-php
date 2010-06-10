@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
@@ -70,6 +71,14 @@ public class SourceProject extends AbstractModelElement implements ISourceProjec
 	public SourceProject(ProjectBuildPath buildPath)
 	{
 		this.buildPath = buildPath;
+	}
+
+	/**
+	 * Returns the project associated to this SourceProject instance.
+	 */
+	public IProject getProject()
+	{
+		return buildPath.getProject();
 	}
 
 	/**

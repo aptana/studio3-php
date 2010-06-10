@@ -1,5 +1,7 @@
 package com.aptana.editor.php.internal.ui.editor;
 
+import java.util.Map;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -72,5 +74,14 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 		// }
 
 		return new PHPContentAssistProcessor(editor);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	protected Map getHyperlinkDetectorTargets(ISourceViewer sourceViewer)
+	{
+		Map targets = super.getHyperlinkDetectorTargets(sourceViewer);
+		targets.put("com.aptana.editor.php", getEditor()); //$NON-NLS-1$
+		return targets;
 	}
 }

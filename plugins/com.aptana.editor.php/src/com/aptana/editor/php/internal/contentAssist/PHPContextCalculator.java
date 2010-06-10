@@ -1,5 +1,7 @@
 package com.aptana.editor.php.internal.contentAssist;
 
+import java.util.HashSet;
+
 import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
@@ -588,20 +590,34 @@ public class PHPContextCalculator
 	 *            - lexeme provider.
 	 * @param startPosition
 	 *            - start position.
-	 * @param typeToFind
-	 *            - type of lexeme to find.
+	 * @param typesToFind
+	 *            - type of lexeme to find. Can be a String or an array of String types. If an array is passes, this
+	 *            method will stop and return a Lexeme on the first match.
 	 * @param allowedTypesToSkip
 	 *            - types allowed to skip. empty array means no types can be skipped, null means any types can be
 	 *            skipped.
 	 * @return found lexeme or null if not found
 	 */
-	private Lexeme<PHPTokenType> findLexemeBackward(LexemeProvider<PHPTokenType> lexemeProvider, int startPosition,
-			String typeToFind, String[] allowedTypesToSkip)
+	public static Lexeme<PHPTokenType> findLexemeBackward(LexemeProvider<PHPTokenType> lexemeProvider, int startPosition,
+			Object typesToFind, String[] allowedTypesToSkip)
 	{
+		HashSet<String> typesSet = new HashSet<String>();
+		if (typesToFind instanceof String)
+		{
+			typesSet.add(typesToFind.toString());
+		}
+		else
+		{
+			String[] types = (String[]) typesToFind;
+			for (String type : types)
+			{
+				typesSet.add(type);
+			}
+		}
 		for (int i = startPosition; i >= 0; i--)
 		{
 			Lexeme<PHPTokenType> currentLexeme = lexemeProvider.getLexeme(i);
-			if (currentLexeme.getType().getType().equals(typeToFind))
+			if (typesSet.contains(currentLexeme.getType().getType()))
 			{
 				return currentLexeme;
 			}

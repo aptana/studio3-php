@@ -343,15 +343,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		int replaceLengthIncrease = countReplaceLengthIncrease(content, offset);
 
-		LexemeProvider<PHPTokenType> lexemeProvider = new LexemeProvider<PHPTokenType>(document, offset,
-				new PHPScopeScanner())
-		{
-			@Override
-			protected PHPTokenType getTypeFromData(Object data)
-			{
-				return new PHPTokenType(data.toString());
-			}
-		};
+		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		// Calculates and sets completion context
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
 

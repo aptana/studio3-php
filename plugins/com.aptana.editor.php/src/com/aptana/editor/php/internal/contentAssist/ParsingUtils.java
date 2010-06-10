@@ -3,7 +3,10 @@ package com.aptana.editor.php.internal.contentAssist;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
+
+import com.aptana.editor.common.contentassist.LexemeProvider;
 
 /**
  * Utilities for parsing.
@@ -12,6 +15,24 @@ import org.eclipse.jface.text.ITypedRegion;
  */
 public final class ParsingUtils
 {
+	/**
+	 * Create a {@link LexemeProvider} for the given partition that is at the offset of the given document.
+	 * 
+	 * @param textViewer
+	 * @param region
+	 * @return A new {@link LexemeProvider} for the partition on that offset.
+	 */
+	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int offset)
+	{
+		return new LexemeProvider<PHPTokenType>(document, offset, new PHPScopeScanner())
+		{
+			@Override
+			protected PHPTokenType getTypeFromData(Object data)
+			{
+				return new PHPTokenType(data.toString());
+			}
+		};
+	}
 
 	/**
 	 * Gets dereferencing parts.

@@ -186,4 +186,92 @@ public class ContentAssistFilters
 		}
 		return result;
 	}
+
+	/**
+	 * Gets the Set of entries, removes all but functions and methods.
+	 * 
+	 * @param entries
+	 *            - entries to filter.
+	 * @param index
+	 * @return filtered entries.
+	 */
+	public static Set<IElementEntry> filterAllButFunctions(Set<IElementEntry> entries, IElementsIndex index)
+	{
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+
+		for (IElementEntry entry : entries)
+		{
+			Object value = entry.getValue();
+			if (value instanceof FunctionPHPEntryValue)
+			{
+				result.add(entry);
+			}
+			if (value instanceof ClassPHPEntryValue)
+			{
+				String entryPath = entry.getEntryPath();
+				List<IElementEntry> entries2 = index.getEntries(IPHPIndexConstants.FUNCTION_CATEGORY, entryPath
+						+ IElementsIndex.DELIMITER + "__construct"); //$NON-NLS-1$
+				for (IElementEntry e : entries2)
+				{
+					result.add(e);
+				}
+				if (entries2.isEmpty())
+				{
+					entries2 = index.getEntries(IPHPIndexConstants.FUNCTION_CATEGORY, entryPath
+							+ IElementsIndex.DELIMITER + entryPath);
+					for (IElementEntry e : entries2)
+					{
+						result.add(e);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Gets the Set of entries, removes all but classes.
+	 * 
+	 * @param entries
+	 *            - entries to filter.
+	 * @param index
+	 * @return filtered entries.
+	 */
+	public static Set<IElementEntry> filterAllButClasses(Set<IElementEntry> entries, IElementsIndex index)
+	{
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+
+		for (IElementEntry entry : entries)
+		{
+			Object value = entry.getValue();
+			if (value instanceof ClassPHPEntryValue)
+			{
+				result.add(entry);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Gets the Set of entries, removes all but variables, fields and classes.
+	 * 
+	 * @param entries
+	 *            - entries to filter.
+	 * @param index
+	 * @return filtered entries.
+	 */
+	public static Set<IElementEntry> filterAllButVariablesAndClasses(Set<IElementEntry> entries, IElementsIndex index)
+	{
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+
+		for (IElementEntry entry : entries)
+		{
+			Object value = entry.getValue();
+			if (value instanceof VariablePHPEntryValue || value instanceof ClassPHPEntryValue)
+			{
+				result.add(entry);
+			}
+		}
+		return result;
+	}
 }
