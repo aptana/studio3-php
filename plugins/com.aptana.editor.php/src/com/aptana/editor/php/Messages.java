@@ -1,11 +1,15 @@
 package com.aptana.editor.php;
 
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "com.aptana.editor.php.messages"; //$NON-NLS-1$
 	public static String PHPEditorPlugin_indexingJobMessage;
+	private static ResourceBundle fResourceBundle;
 	static
 	{
 		// initialize resource bundle
@@ -14,5 +18,15 @@ public class Messages extends NLS
 
 	private Messages()
 	{
+	}
+	
+	public static ResourceBundle getResourceBundle() {
+		try {
+			if (fResourceBundle == null)
+				fResourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
+		} catch (MissingResourceException x) {
+			fResourceBundle = null;
+		}
+		return fResourceBundle;
 	}
 }

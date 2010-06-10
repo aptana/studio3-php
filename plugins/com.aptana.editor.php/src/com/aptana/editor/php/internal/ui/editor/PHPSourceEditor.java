@@ -15,11 +15,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -28,6 +32,7 @@ import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.common.parsing.FileService;
 import com.aptana.editor.html.HTMLEditor;
+import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPVersionListener;
 import com.aptana.editor.php.core.PHPNature;
@@ -40,6 +45,8 @@ import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
+import com.aptana.editor.php.internal.ui.actions.IPHPActionKeys;
+import com.aptana.editor.php.internal.ui.actions.OpenDeclarationAction;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPDecoratingLabelProvider;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPOutlineItem;
 import com.aptana.editor.php.internal.ui.editor.outline.PHTMLOutlineContentProvider;
@@ -54,6 +61,12 @@ import com.aptana.parsing.ast.IParseNode;
 @SuppressWarnings("restriction")
 public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVersionListener
 {
+	/**
+	 * The PHP editor context.<b> This context is also defined in the contexts extension point. <b> The returned value
+	 * is <code>com.aptana.editor.php.editorContext</code>
+	 */
+	public static final String PHP_EDITOR_CONTEXT = "com.aptana.editor.php.editorContext"; //$NON-NLS-1$
+
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
 			'"', '"' };
 	private Object mutex = new Object();
@@ -90,6 +103,40 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.aptana.editor.html.HTMLEditor#createPartControl(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	public void createPartControl(Composite parent)
+	{
+		super.createPartControl(parent);
+		IContextService contextService = (IContextService) getSite().getService(IContextService.class);
+		contextService.activateContext(PHP_EDITOR_CONTEXT);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.aptana.editor.common.AbstractThemeableEditor#createActions()
+	 */
+	@Override
+	protected void createActions()
+	{
+		super.createActions();
+		IAction action = new OpenDeclarationAction(Messages.getResourceBundle(), this);
+		action.setActionDefinitionId(IPHPActionKeys.OPEN_DECLARATION);
+		setAction(IPHPActionKeys.OPEN_DECLARATION, action);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#handleCursorPositionChanged()
+	 */
+	@Override
+	protected void handleCursorPositionChanged()
+	{
+		super.handleCursorPositionChanged();
+		// TODO: Shalom - Handle the position change for the contributed actions?
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
 	 */
 	@Override
@@ -107,7 +154,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, phpParseState);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, documentProvider);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
-			
+
 			// Set the current module into the parse state
 			phpParseState.setModule(getModule());
 		}
@@ -197,12 +244,38 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		refreshJob.schedule(500L);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.ui.texteditor.AbstractDecoratedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.
+	 * IMenuManager)
+	 */
+	@Override
+	protected void editorContextMenuAboutToShow(IMenuManager menu)
+	{
+		super.editorContextMenuAboutToShow(menu);
+		final String openGroup = "group.open"; //$NON-NLS-1$
+		IAction action = getAction(IPHPActionKeys.OPEN_DECLARATION);
+		if (action != null)
+			menu.appendToGroup(openGroup, action);
+	}
+
+	/**
+	 * Returns true if this editor is now displaying content that is out of the workspace.
+	 * 
+	 * @return True, if the displayed content is not in the workspace; False, if it is.
+	 */
 	public boolean isOutOfWorkspace()
 	{
 		return isOutOfWorkspace;
 	}
 
-	public PHPOffsetMapper getOffsetMapper() {
+	/**
+	 * Returns the offset mapper for this editor.
+	 * 
+	 * @return A {@link PHPOffsetMapper} for this editor.
+	 */
+	public PHPOffsetMapper getOffsetMapper()
+	{
 		synchronized (mutex)
 		{
 			if (offsetMapper == null)
@@ -212,7 +285,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		}
 		return offsetMapper;
 	}
-	
+
 	/**
 	 * Gets current module.
 	 * 

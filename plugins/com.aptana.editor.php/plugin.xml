@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="indexer" name="PHP Indexer Participant" schema="schema/indexer.exsd"/>
+   <extension-point id="indexer" name="%phpIndexerParticipant.name" schema="schema/indexer.exsd"/>
    <extension
          point="org.eclipse.ui.editors">
       <editor
             class="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
-            contributorClass="com.aptana.editor.common.CommonTextEditorActionContributor"
+            contributorClass="com.aptana.editor.php.internal.ui.editor.PHPActionContributor"
             default="false"
             extensions="php, phtml, inc ,ctp"
             icon="icons/full/obj16/php.png"
@@ -110,17 +110,35 @@
       </primaryWizard>
    </extension>
    <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="PHP source editing context"
+            id="com.aptana.editor.php.editorContext"
+            name="PHP Source Editing"
+            parentId="com.aptana.scripting.context">
+      </context>
+   </extension>
+   <extension
          point="org.eclipse.ui.commands">
       <command
-            categoryId="org.eclipse.ui.category.project"
-            description="Clean and rebuild the referenced PHP libraries"
-            id="com.aptana.editor.php.cleanPHPLibraries"
-            name="Rebuild PHP Libraries">
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%openDeclaration.description"
+            id="com.aptana.editor.php.openDeclaration"
+            name="%openDeclaration.name">
       </command>
    </extension>
    <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="com.aptana.editor.php.openDeclaration"
+            contextId="com.aptana.editor.php.editorContext"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F3">
+      </key>
+   </extension>
+   <extension
          id="aptanaPhpBuilder"
-         name="Aptana PHP Builder"
+         name="%aptanaPHPBuilder"
          point="org.eclipse.core.resources.builders">
       <builder
             hasNature="true">
@@ -147,7 +165,7 @@
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
       <target
             id="com.aptana.editor.php"
-            name="Aptana PHP Editor">
+            name="%aptanaPHPEditor">
       </target>
    </extension>
    <extension
@@ -156,7 +174,7 @@
             activate="true"
             class="com.aptana.editor.php.internal.ui.editor.hyperlink.PHPHyperlinkDetector"
             id="com.aptana.editor.php.hyperlinkDetector"
-            name="PHP Element"
+            name="%phpHyperlinkDetector.name"
             targetId="com.aptana.editor.php">
       </hyperlinkDetector>
    </extension>

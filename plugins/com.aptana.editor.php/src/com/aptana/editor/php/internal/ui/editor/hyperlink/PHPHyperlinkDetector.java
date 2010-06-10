@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
@@ -71,87 +69,11 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 		return null;
 	}
 
-	public static IRegion findWord(IDocument document, int offset, boolean namespacesSupported)
-	{
-
-		int start = -2;
-		int end = -1;
-
-		try
-		{
-			int pos = offset;
-			char c;
-
-			int rightmostNsSeparator = -1;
-			while (pos >= 0)
-			{
-				c = document.getChar(pos);
-				if (!Character.isJavaIdentifierPart(c) && (!namespacesSupported || c != '\\'))
-				{
-					break;
-				}
-				if (namespacesSupported && c == '\\' && rightmostNsSeparator == -1)
-				{
-					rightmostNsSeparator = pos;
-				}
-				--pos;
-			}
-			start = pos;
-
-			pos = offset;
-			int length = document.getLength();
-
-			while (pos < length)
-			{
-				c = document.getChar(pos);
-				if (!Character.isJavaIdentifierPart(c) && (!namespacesSupported || c != '\\'))
-				{
-					break;
-				}
-				if (namespacesSupported && c == '\\')
-				{
-					rightmostNsSeparator = pos;
-				}
-				++pos;
-			}
-			end = pos;
-
-			if (rightmostNsSeparator != -1)
-			{
-				if (rightmostNsSeparator > offset)
-				{
-					end = rightmostNsSeparator;
-				}
-				else
-				{
-					start = rightmostNsSeparator;
-				}
-			}
-
-		}
-		catch (BadLocationException x)
-		{
-		}
-
-		if (start >= -1 && end > -1)
-		{
-			if (start == offset && end == offset)
-			{
-				return new Region(offset, 0);
-			}
-			else if (start == offset)
-			{
-				return new Region(start, end - start);
-			}
-			else
-			{
-				return new Region(start + 1, end - start - 1);
-			}
-		}
-
-		return null;
-	}
-
+	/**
+	 * PHP Hyperlink implementation for PHP elements that we have their declaration identified.
+	 * 
+	 * @author Shalom Gibly <sgibly@aptana.com>
+	 */
 	class PHPHyperLink implements IHyperlink
 	{
 		private IRegion region;
