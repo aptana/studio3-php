@@ -14,6 +14,9 @@
  */
 package org.eclipse.php.internal.core.format;
 
+import java.util.Map;
+
+import org.eclipse.php.internal.core.IPHPEplCoreConstants;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org.eclipse.text.edits.MultiTextEdit;
 
@@ -23,10 +26,41 @@ import org.eclipse.text.edits.MultiTextEdit;
  * 
  * @author shalom
  */
-public class NullCodeFormattingProcessor extends AbstractVisitor implements
+@SuppressWarnings("unchecked")
+public class DefaultCodeFormattingProcessor extends AbstractVisitor implements
 		ICodeFormattingProcessor {
+	private final Map options;
+
+	public DefaultCodeFormattingProcessor(Map options) {
+		this.options = options;
+	}
 
 	public String createIndentationString(int indentationUnits) {
+		if (indentationUnits > 0) {
+			String useTabs = (String) options
+					.get(IPHPEplCoreConstants.FORMATTER_USE_TABS);
+			if (useTabs != null) {
+				String indentation = "\t"; //$NON-NLS-1$
+				if ("false".equalsIgnoreCase(useTabs)) { //$NON-NLS-1$
+					String sizeValue = (String) options
+							.get(IPHPEplCoreConstants.FORMATTER_INDENTATION_SIZE);
+					if (sizeValue != null) {
+						StringBuffer sb = new StringBuffer();
+						int size = Integer.parseInt(sizeValue);
+						for (int i = 0; i < size; i++) {
+							sb.append(' ');
+						}
+						indentation = sb.toString();
+					}
+				}
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < indentationUnits; i++) {
+					sb.append(indentation);
+				}
+				return sb.toString();
+			}
+
+		}
 		return ""; //$NON-NLS-1$
 	}
 

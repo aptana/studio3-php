@@ -20,6 +20,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.ILineTracker;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.php.internal.core.IPHPEplCoreConstants;
 import org.eclipse.text.edits.ReplaceEdit;
 
 /**
@@ -28,6 +29,7 @@ import org.eclipse.text.edits.ReplaceEdit;
  * 
  * @since 3.2
  */
+@SuppressWarnings("unchecked")
 public final class IndentManipulation {
 
 	private IndentManipulation() {
@@ -387,7 +389,6 @@ public final class IndentManipulation {
 	 *                <li>the given <code>newIndentString</code> is null</li>
 	 *                </ul>
 	 */
-	@SuppressWarnings("unchecked")
 	public static ReplaceEdit[] getChangeIndentEdits(String source,
 			int indentUnitsToRemove, int tabWidth, int indentWidth,
 			String newIndentString) {
@@ -412,9 +413,7 @@ public final class IndentManipulation {
 				int length = indexOfIndent(line, indentUnitsToRemove, tabWidth,
 						indentWidth);
 				if (length >= 0) {
-					result
-							.add(new ReplaceEdit(offset, length,
-									newIndentString));
+					result.add(new ReplaceEdit(offset, length, newIndentString));
 				} else {
 					length = measureIndentUnits(line, tabWidth, indentWidth);
 					result.add(new ReplaceEdit(offset, length, "")); //$NON-NLS-1$
@@ -470,15 +469,13 @@ public final class IndentManipulation {
 	 * @exception IllegalArgumentException
 	 *                if the given <code>options</code> is null
 	 */
-	@SuppressWarnings("unchecked")
 	public static int getTabWidth(Map options) {
 		if (options == null) {
 			throw new IllegalArgumentException();
 		}
-		return 4;
-		// TODO link with PHP CodeFormatterConstants.FORMATTER_TAB_SIZE
-		// return getIntValue(options,
-		// DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, 4);
+		// TODO link with PHP PHPCoreConstants.FORMATTER_INDENTATION_SIZE
+		return getIntValue(options,
+				IPHPEplCoreConstants.FORMATTER_INDENTATION_SIZE, 4);
 	}
 
 	/**
@@ -495,7 +492,6 @@ public final class IndentManipulation {
 	 * @exception IllegalArgumentException
 	 *                if the given <code>options</code> is null
 	 */
-	@SuppressWarnings("unchecked")
 	public static int getIndentWidth(Map options) {
 		if (options == null) {
 			throw new IllegalArgumentException();
@@ -512,7 +508,6 @@ public final class IndentManipulation {
 		 */return tabWidth;
 	}
 
-	@SuppressWarnings({ "unused", "unchecked" })
 	private static int getIntValue(Map options, String key, int def) {
 		try {
 			return Integer.parseInt((String) options.get(key));

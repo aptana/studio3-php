@@ -6,6 +6,7 @@ public interface IPHPEplCoreConstants
 {
 	public static final String PLUGIN_ID = PHPEplPlugin.PLUGIN_ID;
 
+	// Task Tags
 	public static final String TASK_PRIORITIES = PLUGIN_ID + ".taskPriorities"; //$NON-NLS-1$
 	public static final String TASK_PRIORITY_HIGH = "HIGH"; //$NON-NLS-1$
 	public static final String TASK_PRIORITY_LOW = "LOW"; //$NON-NLS-1$
@@ -16,4 +17,9 @@ public interface IPHPEplCoreConstants
 	public static final String DEFAULT_TASK_PRIORITIES = "NORMAL,HIGH,NORMAL,NORMAL"; //$NON-NLS-1$
 	public static final String ENABLED = "enabled"; //$NON-NLS-1$
 	public static final String DISABLED = "disabled"; //$NON-NLS-1$
+
+	// Code formatter
+	public static final int DEFAULT_INDENTATION_SIZE = 1;
+	public static final String FORMATTER_INDENTATION_SIZE = PLUGIN_ID + ".phpForamtterIndentationSize"; //$NON-NLS-1$
+	public static final String FORMATTER_USE_TABS = PLUGIN_ID + ".phpForamtterUseTabs"; //$NON-NLS-1$
 }
