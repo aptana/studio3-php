@@ -4,6 +4,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -85,6 +87,29 @@ public class PHPEplPlugin extends AbstractUIPlugin
 			}
 		}
 		return null;
+	}
+
+	public static IWorkbenchPage getActivePage()
+	{
+		return getDefault().internalGetActivePage();
+	}
+
+	public static IEditorPart getActiveEditor()
+	{
+		IWorkbenchPage activePage = getActivePage();
+		if (activePage != null)
+		{
+			return activePage.getActiveEditor();
+		}
+		return null;
+	}
+
+	private IWorkbenchPage internalGetActivePage()
+	{
+		IWorkbenchWindow window = getWorkbench().getActiveWorkbenchWindow();
+		if (window == null)
+			return null;
+		return getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 
 	public static void logInfo(String string, Throwable e)

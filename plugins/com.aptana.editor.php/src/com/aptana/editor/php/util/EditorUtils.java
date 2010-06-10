@@ -106,6 +106,6 @@ public class EditorUtils
 	private static boolean isSameDocument(final ITextViewer viewer, IEditorPart editor)
 	{
 		return editor instanceof PHPSourceEditor
-				&& ((PHPSourceEditor) editor).getDocumentProvider().getDocument(null) == viewer.getDocument();
+				&& ((PHPSourceEditor) editor).getDocumentProvider().getDocument(editor.getEditorInput()) == viewer.getDocument();
 	}
 }

@@ -254,7 +254,7 @@ public final class PHPSearchEngine
 		{
 			PHPSourceEditor editor = (PHPSourceEditor) activeEditor;
 			PHPOffsetMapper mapper = editor.getOffsetMapper();
-			String source = editor.getDocumentProvider().getDocument(null).get();
+			String source = editor.getDocumentProvider().getDocument(editor.getEditorInput()).get();
 			IElementsIndex index = mapper.getIndex(source, source.length());
 			IModule emodule = editor.getModule();
 			List<IElementEntry> entries = index.getEntries(IElementsIndex.ANY_CETEGORY, name);

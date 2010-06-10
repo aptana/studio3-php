@@ -45,8 +45,21 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 		}
 		PHPSourceEditor editor = (PHPSourceEditor) part;
 
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(textViewer.getDocument(),
-				region.getOffset());
+		return detectHyperlinks(editor, region, canShowMultipleHyperlinks);
+	}
+
+	/**
+	 * Detect hyperlinks given a {@link PHPSourceEditor} and an {@link IRegion}.
+	 * 
+	 * @param editor
+	 * @param region
+	 * @param canShowMultipleHyperlinks
+	 * @return An array of detected {@link IHyperlink}s.
+	 */
+	public IHyperlink[] detectHyperlinks(PHPSourceEditor editor, IRegion region, boolean canShowMultipleHyperlinks)
+	{
+		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
+				.getDocument(editor.getEditorInput()), region.getOffset());
 
 		Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexemeFromOffset(region.getOffset());
 		if (lexeme == null)

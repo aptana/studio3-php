@@ -2,8 +2,17 @@ package com.aptana.editor.php.internal.ui.actions;
 
 import java.util.ResourceBundle;
 
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.php.internal.ui.util.StatusLineMessageTimerManager;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
+
+import com.aptana.editor.php.Messages;
+import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
+import com.aptana.editor.php.internal.ui.editor.hyperlink.PHPHyperlinkDetector;
 
 /**
  * An Open-Declaration action for PHP elements.
@@ -24,13 +33,23 @@ public class OpenDeclarationAction extends TextEditorAction
 	@Override
 	public void run()
 	{
-		// TODO - Shalom - Implement the Open Declaration
-		// ITextEditor textEditor = this.getTextEditor();
-		// IEditorPart part = (IEditorPart) getAdapter(IEditorPart.class);
-		// if (!(part instanceof PHPSourceEditor))
-		// {
-		// return null;
-		// }
-		// new PHPHyperlinkDetector().detectHyperlinks(textViewer, region, canShowMultipleHyperlinks)
+		ITextEditor textEditor = getTextEditor();
+		if (!(textEditor instanceof PHPSourceEditor))
+		{
+			return;
+		}
+		ITextSelection selection = (ITextSelection) textEditor.getSelectionProvider().getSelection();
+		IRegion region = new Region(selection.getOffset(), 1);
+		PHPHyperlinkDetector detector = new PHPHyperlinkDetector();
+		IHyperlink[] hyperlinks = detector.detectHyperlinks((PHPSourceEditor) textEditor, region, false);
+		if (hyperlinks != null && hyperlinks.length > 0)
+		{
+			hyperlinks[0].open();
+		}
+		else
+		{
+			StatusLineMessageTimerManager.setErrorMessage(Messages.OpenDeclarationAction_cannotOpenDeclataion, 3000L,
+					true);
+		}
 	}
 }
