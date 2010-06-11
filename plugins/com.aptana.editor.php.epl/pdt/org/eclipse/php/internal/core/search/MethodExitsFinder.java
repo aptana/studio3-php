@@ -45,8 +45,14 @@ public class MethodExitsFinder extends AbstractOccurrencesFinder {
 		fASTRoot = root;
 		fExitPointNode = node;
 		if (isExitExecutionPath(node)) {
-			fFunctionDeclaration = (FunctionDeclaration) ASTNodes.getParent(
-					node, ASTNode.FUNCTION_DECLARATION);
+			if (node.getType() == ASTNode.FUNCTION_DECLARATION)
+			{
+				fFunctionDeclaration = (FunctionDeclaration) node;
+			}
+			else
+			{
+				fFunctionDeclaration = (FunctionDeclaration) ASTNodes.getParent(node, ASTNode.FUNCTION_DECLARATION);
+			}
 			if (fFunctionDeclaration == null)
 				return "MethodExitsFinder_no_return_type_selected"; //$NON-NLS-1$
 			return null;
@@ -58,8 +64,8 @@ public class MethodExitsFinder extends AbstractOccurrencesFinder {
 
 	private final boolean isExitExecutionPath(ASTNode node) {
 		return node != null
-				&& (node.getType() == ASTNode.RETURN_STATEMENT || node
-						.getType() == ASTNode.THROW_STATEMENT);
+				&& (node.getType() == ASTNode.RETURN_STATEMENT || node.getType() == ASTNode.THROW_STATEMENT || node
+						.getType() == ASTNode.FUNCTION_DECLARATION);
 	}
 
 	protected void findOccurrences() {
