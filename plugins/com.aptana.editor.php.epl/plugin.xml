@@ -6,6 +6,9 @@
       <initializer
             class="org.eclipse.php.internal.core.preferences.PHPCorePreferenceInitializer">
       </initializer>
+      <initializer
+            class="org.eclipse.php.internal.ui.preferences.PHPUIPreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>

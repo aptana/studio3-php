@@ -19,6 +19,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -37,6 +38,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPVersionListener;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.core.PHPVersionProvider;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.IModule;
@@ -113,7 +115,8 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		contextService.activateContext(PHP_EDITOR_CONTEXT);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.AbstractThemeableEditor#createActions()
 	 */
 	@Override
@@ -125,7 +128,8 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		setAction(IPHPActionKeys.OPEN_DECLARATION, action);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#handleCursorPositionChanged()
 	 */
 	@Override
@@ -365,6 +369,17 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		module = BuildPathManager.getInstance().getModuleByResource(files[0]);
 
 		return module;
+	}
+
+	/**
+	 * Returns true if the PHP editor's preferences are set to mark PHP elements occurrences.
+	 * 
+	 * @return True, if mark occurrences is on; False, in case it's off.
+	 */
+	public boolean isMarkingOccurrences()
+	{
+		IPreferenceStore store = PHPEplPlugin.getDefault().getPreferenceStore();
+		return store != null && store.getBoolean(PreferenceConstants.EDITOR_MARK_OCCURRENCES);
 	}
 
 	private IModule createLocalFileModule(URI uri)
