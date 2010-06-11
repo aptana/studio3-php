@@ -10,7 +10,7 @@ import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 
-import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 
 /**
@@ -67,7 +67,7 @@ public class ToggleMarkOccurrencesAction extends TextEditorAction implements IPr
 		{
 			if (fStore == null)
 			{
-				fStore = PHPEditorPlugin.getDefault().getPreferenceStore();
+				fStore = PHPEplPlugin.getDefault().getPreferenceStore();
 				fStore.addPropertyChangeListener(this);
 			}
 		}
