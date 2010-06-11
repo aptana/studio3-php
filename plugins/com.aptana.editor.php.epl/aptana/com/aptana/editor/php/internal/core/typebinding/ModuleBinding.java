@@ -1,4 +1,4 @@
-package com.aptana.editor.php.internal.typebinding;
+package com.aptana.editor.php.internal.core.typebinding;
 
 import org.eclipse.php.internal.core.ast.nodes.IBinding;
 

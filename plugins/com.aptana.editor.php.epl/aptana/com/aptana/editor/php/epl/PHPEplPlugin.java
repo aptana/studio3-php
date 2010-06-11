@@ -2,6 +2,7 @@ package com.aptana.editor.php.epl;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.php.internal.ui.editor.ASTProvider;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -19,6 +20,8 @@ public class PHPEplPlugin extends AbstractUIPlugin
 
 	// The shared instance
 	private static PHPEplPlugin plugin;
+
+	private ASTProvider fASTProvider;
 
 	/**
 	 * The constructor
@@ -55,6 +58,20 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public static PHPEplPlugin getDefault()
 	{
 		return plugin;
+	}
+
+	/**
+	 * Returns the AST provider.
+	 * 
+	 * @return the AST provider
+	 * @since 3.0
+	 */
+	public synchronized ASTProvider getASTProvider()
+	{
+		if (fASTProvider == null)
+			fASTProvider = new ASTProvider();
+
+		return fASTProvider;
 	}
 
 	/**
@@ -130,5 +147,10 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public static void logWarning(String message)
 	{
 		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
+	}
+
+	public static void log(IStatus status)
+	{
+		getDefault().getLog().log(status);
 	}
 }

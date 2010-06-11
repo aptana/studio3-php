@@ -1,4 +1,4 @@
-package com.aptana.editor.php.internal.typebinding;
+package com.aptana.editor.php.internal.core.typebinding;
 
 import java.util.List;
 

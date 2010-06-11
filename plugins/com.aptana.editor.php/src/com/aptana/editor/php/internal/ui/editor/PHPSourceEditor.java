@@ -23,6 +23,10 @@ import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IPartService;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
@@ -38,12 +42,15 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPVersionListener;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.core.PHPVersionProvider;
+import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.SingleFileBuildPath;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
+import com.aptana.editor.php.internal.core.model.ISourceModuleProviderEditor;
+import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
@@ -61,7 +68,8 @@ import com.aptana.parsing.ast.IParseNode;
  * @author Shalom Gibly <sgibly@aptana.com>
  */
 @SuppressWarnings("restriction")
-public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVersionListener
+public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVersionListener,
+		ISourceModuleProviderEditor
 {
 	/**
 	 * The PHP editor context.<b> This context is also defined in the contexts extension point. <b> The returned value
@@ -69,31 +77,53 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	 */
 	public static final String PHP_EDITOR_CONTEXT = "com.aptana.editor.php.editorContext"; //$NON-NLS-1$
 
+	/**
+	 * The PHP Editor ID
+	 */
+	public static final String PHP_EDITOR_ID = "com.aptana.editor.php"; //$NON-NLS-1$
+
 	private static final char[] PAIR_MATCHING_CHARS = new char[] { '(', ')', '{', '}', '[', ']', '`', '`', '\'', '\'',
 			'"', '"' };
 	private Object mutex = new Object();
 	private IProject project;
 	private PHPDocumentProvider documentProvider;
 	private IModule module;
+	private ISourceModule sourceModule;
 	private boolean isOutOfWorkspace;
 	private String sourceUri;
 	private PHPParseState phpParseState;
 	private PHPOffsetMapper offsetMapper;
 
+	// Mark Occurrences management
+	private OccurrencesUpdater occurrencesUpdater;
+
+	/**
+	 * Constructs a new PHP source editor.
+	 */
+	public PHPSourceEditor()
+	{
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.html.HTMLEditor#initializeEditor()
+	 */
 	@Override
 	protected void initializeEditor()
 	{
 		super.initializeEditor();
 		module = null;
+		sourceModule = null;
 		isOutOfWorkspace = false;
-		setPreferenceStore(new ChainedPreferenceStore(new IPreferenceStore[] {
-				PHPEditorPlugin.getDefault().getPreferenceStore(),
-				CommonEditorPlugin.getDefault().getPreferenceStore(), EditorsPlugin.getDefault().getPreferenceStore() }));
+		ChainedPreferenceStore store = new ChainedPreferenceStore(new IPreferenceStore[] {
+				PHPEditorPlugin.getDefault().getPreferenceStore(), PHPEplPlugin.getDefault().getPreferenceStore(),
+				CommonEditorPlugin.getDefault().getPreferenceStore(), EditorsPlugin.getDefault().getPreferenceStore() });
+		setPreferenceStore(store);
 
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		documentProvider = new PHPDocumentProvider();
 		setDocumentProvider(documentProvider);
-		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor
+		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor?
 	}
 
 	@Override
@@ -113,6 +143,9 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		super.createPartControl(parent);
 		IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 		contextService.activateContext(PHP_EDITOR_CONTEXT);
+		// Initialize the occurrences annotations marker
+		occurrencesUpdater = new OccurrencesUpdater(this);
+		occurrencesUpdater.initialize(getPreferenceStore());
 	}
 
 	/*
@@ -174,6 +207,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		PHPVersionProvider.getInstance().removePHPVersionListener(this);
 		PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
 		PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
+		occurrencesUpdater.dispose();
 		super.dispose();
 	}
 
@@ -291,84 +325,133 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	}
 
 	/**
+	 * Returns an {@link ISourceModule} for this editor.
+	 * 
+	 * @return An {@link ISourceModule}
+	 */
+	public ISourceModule getSourceModule()
+	{
+		synchronized (mutex)
+		{
+			if (sourceModule == null)
+			{
+				sourceModule = ModelUtils.convertModule(getModule());
+			}
+		}
+		return sourceModule;
+	}
+
+	/**
+	 * Returns the PHP editor's ID.
+	 * 
+	 * @return The editor's ID
+	 * @see ISourceModuleProviderEditor#getEditorID()
+	 */
+	public String getEditorID()
+	{
+		return PHP_EDITOR_ID;
+	}
+
+	/**
+	 * Returns true if this editor is active now.
+	 * 
+	 * @return True, iff this editor is active.
+	 */
+	public boolean isActiveEditor()
+	{
+		IWorkbenchPartSite site = getSite();
+		if (site == null)
+		{
+			return false;
+		}
+		IWorkbenchWindow window = site.getWorkbenchWindow();
+		IPartService service = window.getPartService();
+		IWorkbenchPart part = service.getActivePart();
+		return part != null && part.equals(this);
+	}
+
+	/**
 	 * Gets current module.
 	 * 
 	 * @return current module.
 	 */
 	public IModule getModule()
 	{
-		if (module != null)
+		synchronized (mutex)
 		{
-			return module;
-		}
-		if (sourceUri == null)
-		{
-			PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
-					"Error in getModule(): sourceUri was null. Returning null")); //$NON-NLS-1$
-			return null;
-		}
-		String struri = sourceUri;
-		URI uri = null;
-		try
-		{
-			uri = new URI(struri);
-		}
-		catch (URISyntaxException e)
-		{
-			try
+			if (module != null)
 			{
-				int fileNameStart = struri.lastIndexOf('/');
-				if (fileNameStart > -1 && fileNameStart < struri.length() - 1)
-				{
-					String fileName = struri.substring(fileNameStart + 1);
-					String encoded = URLEncoder.encode(fileName, "UTF-8"); //$NON-NLS-1$
+				return module;
+			}
 
-					uri = new URI(struri.substring(0, fileNameStart + 1) + encoded);
-				}
-			}
-			catch (UnsupportedEncodingException e1)
+			if (sourceUri == null)
 			{
-			}
-			catch (URISyntaxException e2)
-			{
-			}
-			if (uri == null)
-			{
-				PHPEditorPlugin.logError(e);
+				PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
+						"Error in getModule(): sourceUri was null. Returning null")); //$NON-NLS-1$
 				return null;
 			}
-		}
-		if (!uri.isAbsolute())
-		{
-			return null;
-		}
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
-		if (files == null || files.length == 0)
-		{
-			return createLocalFileModule(uri);
-		}
-		this.isOutOfWorkspace = false;
-
-		if (module == null)
-		{
+			String struri = sourceUri;
+			URI uri = null;
 			try
 			{
-				if (files[0].getProject().getNature(PHPNature.NATURE_ID) == null)
+				uri = new URI(struri);
+			}
+			catch (URISyntaxException e)
+			{
+				try
 				{
-					// we are outside of PHP project (probably web project or
-					// other)
-					return createLocalFileModule(uri);
+					int fileNameStart = struri.lastIndexOf('/');
+					if (fileNameStart > -1 && fileNameStart < struri.length() - 1)
+					{
+						String fileName = struri.substring(fileNameStart + 1);
+						String encoded = URLEncoder.encode(fileName, "UTF-8"); //$NON-NLS-1$
+
+						uri = new URI(struri.substring(0, fileNameStart + 1) + encoded);
+					}
+				}
+				catch (UnsupportedEncodingException e1)
+				{
+				}
+				catch (URISyntaxException e2)
+				{
+				}
+				if (uri == null)
+				{
+					PHPEditorPlugin.logError(e);
+					return null;
 				}
 			}
-			catch (CoreException e)
+			if (!uri.isAbsolute())
 			{
-				// ignore
+				return null;
 			}
+			IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
+			if (files == null || files.length == 0)
+			{
+				return createLocalFileModule(uri);
+			}
+			this.isOutOfWorkspace = false;
+
+			if (module == null)
+			{
+				try
+				{
+					if (files[0].getProject().getNature(PHPNature.NATURE_ID) == null)
+					{
+						// we are outside of PHP project (probably web project or
+						// other)
+						return createLocalFileModule(uri);
+					}
+				}
+				catch (CoreException e)
+				{
+					// ignore
+				}
+			}
+
+			module = BuildPathManager.getInstance().getModuleByResource(files[0]);
+			return module;
 		}
-
-		module = BuildPathManager.getInstance().getModuleByResource(files[0]);
-
-		return module;
 	}
 
 	/**
@@ -382,12 +465,23 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		return store != null && store.getBoolean(PreferenceConstants.EDITOR_MARK_OCCURRENCES);
 	}
 
+	/*
+	 * Override this one to expose the progress monitor to the current package.
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#getProgressMonitor()
+	 */
+	@Override
+	protected IProgressMonitor getProgressMonitor()
+	{
+		return super.getProgressMonitor();
+	}
+
 	private IModule createLocalFileModule(URI uri)
 	{
 		File file = new File(uri.getPath());
 		FileSystemModule fileSystemModule = new FileSystemModule(file, new SingleFileBuildPath(file));
 		this.isOutOfWorkspace = true;
 		module = fileSystemModule;
+		sourceModule = null;
 		return fileSystemModule;
 	}
 }

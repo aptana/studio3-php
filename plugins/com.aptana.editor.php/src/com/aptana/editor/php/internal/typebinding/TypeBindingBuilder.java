@@ -105,6 +105,8 @@ import com.aptana.editor.php.core.typebinding.TypeBinding;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.core.typebinding.MethodBinding;
+import com.aptana.editor.php.internal.core.typebinding.ModuleBinding;
 import com.aptana.editor.php.internal.indexer.CallPath;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.CommentsVisitor;

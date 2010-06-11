@@ -19,6 +19,8 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org.eclipse.php.internal.core.ast.visitor.Visitor;
 
+import com.aptana.editor.php.core.typebinding.IMethodBinding;
+
 /**
  * Represents a function declaration in a class
  * Holds the function modifier
@@ -211,7 +213,6 @@ public class MethodDeclaration extends BodyDeclaration {
 	 *    resolved
 	 */
 	public IMethodBinding resolveMethodBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveMethod(this);
-		return null;
+		return (IMethodBinding) this.getBinding();
 	}
 }

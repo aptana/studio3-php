@@ -13,9 +13,6 @@ package org.eclipse.php.internal.core.ast.nodes;
 
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
-;
-
-
 /**
  * Utilities used for Ast nodes
  * @author Eden
@@ -80,6 +77,4 @@ public class ASTNodes {
 		
 		return builder.toString();
 	}
-	
-	
 }
