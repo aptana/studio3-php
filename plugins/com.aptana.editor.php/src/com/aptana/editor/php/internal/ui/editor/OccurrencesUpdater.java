@@ -49,8 +49,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 
+import com.aptana.editor.common.outline.IParseListener;
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.model.IModelElement;
@@ -62,7 +64,7 @@ import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-class OccurrencesUpdater implements IPropertyChangeListener
+class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 {
 	private PHPSourceEditor editor;
 
@@ -122,6 +124,7 @@ class OccurrencesUpdater implements IPropertyChangeListener
 		if (editor.isMarkingOccurrences())
 		{
 			installOccurrencesFinder(true);
+			editor.getFileService().addListener(this);
 		}
 
 		store.addPropertyChangeListener(this);
@@ -163,6 +166,7 @@ class OccurrencesUpdater implements IPropertyChangeListener
 			fOccurrencesFinderJobCanceler = new OccurrencesFinderJobCanceler();
 			fOccurrencesFinderJobCanceler.install();
 		}
+		editor.getFileService().addListener(this);
 	}
 
 	protected void uninstallOccurrencesFinder()
@@ -188,6 +192,7 @@ class OccurrencesUpdater implements IPropertyChangeListener
 		}
 
 		removeOccurrenceAnnotations();
+		editor.getFileService().removeListener(this);
 	}
 
 	/**
@@ -195,6 +200,7 @@ class OccurrencesUpdater implements IPropertyChangeListener
 	 */
 	protected void dispose()
 	{
+		editor.getFileService().removeListener(this);
 		if (fActivationListener != null)
 		{
 			PlatformUI.getWorkbench().removeWindowListener(fActivationListener);
@@ -500,6 +506,45 @@ class OccurrencesUpdater implements IPropertyChangeListener
 			fStickyOccurrenceAnnotations = newBooleanValue;
 			return;
 		}
+	}
+
+	/**
+	 * Get notified when the parser is done, so we can update the markers.<br>
+	 * The parser itself should already set the latest AST on the shared AST provider, so we should be fine with the new
+	 * positions on the AST.
+	 */
+	@Override
+	public void parseFinished()
+	{
+		Job updateOccurrences = new UIJob("Updating occurrences...") //$NON-NLS-1$
+		{
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor)
+			{
+				if (editor.getSelectionProvider() != null)
+				{
+					fForcedMarkOccurrencesSelection = editor.getSelectionProvider().getSelection();
+					IModelElement source = editor.getSourceModule();
+					if (source != null)
+					{
+						try
+						{
+							final Program ast = SharedASTProvider.getAST((ISourceModule) source, SharedASTProvider.WAIT_ACTIVE_ONLY,
+									editor.getProgressMonitor());
+							fPostSelectionListenerWithAST.selectionChanged(editor, (ITextSelection)fForcedMarkOccurrencesSelection, ast);
+						}
+						catch (Exception e)
+						{
+							PHPEditorPlugin.logError(e);
+						}
+					}
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		updateOccurrences.setSystem(true);
+		updateOccurrences.setPriority(Job.DECORATE);
+		updateOccurrences.schedule();
 	}
 
 	/**

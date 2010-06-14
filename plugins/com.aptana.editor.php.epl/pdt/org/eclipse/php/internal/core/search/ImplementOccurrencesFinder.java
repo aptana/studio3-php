@@ -60,9 +60,13 @@ public class ImplementOccurrencesFinder extends AbstractOccurrencesFinder {
 		if (isIdendifier(node)) {
 			fIdentifier = (Identifier) node;
 			StructuralPropertyDescriptor locationInParent;
+			// [Aptana Mod] - Since in our model the NamespaceName holds the binding,
+			// make sure that the "binding holder" is set currectly.
+			Identifier bindingHolder = fIdentifier;
 			if (fIdentifier.getParent() instanceof NamespaceName) {
 				locationInParent = fIdentifier.getParent()
 						.getLocationInParent();
+				bindingHolder = (Identifier) fIdentifier.getParent();
 			} else {
 				locationInParent = fIdentifier.getLocationInParent();
 			}
@@ -72,7 +76,7 @@ public class ImplementOccurrencesFinder extends AbstractOccurrencesFinder {
 					&& locationInParent != InterfaceDeclaration.INTERFACES_PROPERTY) {
 				return "ImplementOccurrencesFinder_invalidTarget"; //$NON-NLS-1$
 			}
-			IBinding resolvedBinding = fIdentifier.resolveBinding();
+			IBinding resolvedBinding = bindingHolder.resolveBinding();
 			if (resolvedBinding == null
 					|| !(resolvedBinding instanceof ITypeBinding)) {
 				return "ImplementOccurrencesFinder_invalidTarget"; //$NON-NLS-1$
@@ -106,13 +110,13 @@ public class ImplementOccurrencesFinder extends AbstractOccurrencesFinder {
 	 * ()
 	 */
 	@Override
-	protected void findOccurrences() {
-		fDescription = Messages
-				.format(
-						CoreMessages.getString("ImplementOccurrencesFinder.3"), fIdentifier.getName()); //$NON-NLS-1$
+	protected void findOccurrences()
+	{
+		fDescription = Messages.format(CoreMessages.getString("ImplementOccurrencesFinder.3"), fIdentifier.getName()); //$NON-NLS-1$
+		String baseDescription = Messages.format(BASE_DESCRIPTION, fIdentifier.getName());
 		fTypeDeclaration.accept(this);
-		fResult.add(new OccurrenceLocation(fIdentifier.getStart(), fIdentifier
-				.getLength(), getOccurrenceType(fIdentifier), fDescription));
+		fResult.add(new OccurrenceLocation(fIdentifier.getStart(), fIdentifier.getLength(),
+				getOccurrenceType(fIdentifier), baseDescription));
 	}
 
 	/*

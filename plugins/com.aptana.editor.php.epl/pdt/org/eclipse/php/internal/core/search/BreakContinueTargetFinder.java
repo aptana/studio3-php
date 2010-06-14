@@ -133,6 +133,7 @@ public class BreakContinueTargetFinder extends AbstractOccurrencesFinder {
 	private void addOccurrences() {
 		boolean targetFound = false;
 		int nestingCount = 0;
+		@SuppressWarnings("unused")
 		int blockEnd = -1;
 		ASTNode parent = statement.getParent();
 		while (!targetFound) {
@@ -149,10 +150,11 @@ public class BreakContinueTargetFinder extends AbstractOccurrencesFinder {
 							fDescription));
 					// In cases where we have a block, mark the closing curly
 					// bracket
-					if (blockEnd > -1) {
-						fResult.add(new OccurrenceLocation(blockEnd - 1, 1,
-								getOccurrenceType(null), fDescription));
-					}
+					// [Aptana Mod - Removed]
+					// if (blockEnd > -1) {
+					// fResult.add(new OccurrenceLocation(blockEnd - 1, 1,
+					// getOccurrenceType(null), fDescription));
+					// }
 					targetFound = true;
 				} else {
 					blockEnd = -1;

@@ -152,7 +152,6 @@ public class SelectionListenerWithASTManager {
 				return;
 			}
 			final ISourceModule typeRoot = (ISourceModule) input;
-
 			fCurrentJob = new Job("Calculation AST...") { //$NON-NLS-1$
 				public IStatus run(IProgressMonitor monitor) {
 					if (monitor == null) {
@@ -166,7 +165,7 @@ public class SelectionListenerWithASTManager {
 			};
 			fCurrentJob.setPriority(Job.DECORATE);
 			fCurrentJob.setSystem(true);
-			fCurrentJob.schedule();
+			fCurrentJob.schedule(200L);
 		}
 
 		protected final IStatus calculateASTandInform(ISourceModule input,
@@ -178,7 +177,6 @@ public class SelectionListenerWithASTManager {
 			try {
 				Program astRoot = SharedASTProvider.getAST(input,
 						SharedASTProvider.WAIT_ACTIVE_ONLY, monitor);
-
 				// https://bugs.eclipse.org/bugs/show_bug.cgi?id=291569
 				IDocument document = fPart.getDocumentProvider().getDocument(fPart.getEditorInput());
 

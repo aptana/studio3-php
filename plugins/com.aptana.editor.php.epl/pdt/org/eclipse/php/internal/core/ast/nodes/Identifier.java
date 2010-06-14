@@ -162,7 +162,6 @@ public class Identifier extends Expression {
 	 *    resolved
 	 */
 	public final IBinding resolveBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveName(this);
-		return null;
+		return getBinding();
 	}
 }

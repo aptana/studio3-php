@@ -90,9 +90,9 @@ public class MethodExitsFinder extends AbstractOccurrencesFinder {
 		// return;
 		// }
 		// }
-		int offset = fFunctionDeclaration.getEnd() - 1;
-		fResult.add(new OccurrenceLocation(offset, 1, getOccurrenceType(null),
-				fDescription));
+		int offset = fFunctionDeclaration.getStart();
+		fResult.add(new OccurrenceLocation(offset, 8, getOccurrenceType(null),
+				"")); //$NON-NLS-1$
 		// }
 	}
 
@@ -108,13 +108,13 @@ public class MethodExitsFinder extends AbstractOccurrencesFinder {
 	}
 
 	public boolean visit(ReturnStatement node) {
-		fResult.add(new OccurrenceLocation(node.getStart(), node.getLength(),
+		fResult.add(new OccurrenceLocation(node.getStart(), node.getLength() - 1,
 				getOccurrenceType(null), fDescription));
 		return super.visit(node);
 	}
 
 	public boolean visit(ThrowStatement node) {
-		fResult.add(new OccurrenceLocation(node.getStart(), node.getLength(),
+		fResult.add(new OccurrenceLocation(node.getStart(), node.getLength() - 1,
 				getOccurrenceType(null), fDescription));
 		return true;
 	}

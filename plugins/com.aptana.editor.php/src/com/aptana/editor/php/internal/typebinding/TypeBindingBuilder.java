@@ -922,18 +922,18 @@ public class TypeBindingBuilder
 		public boolean visit(ClassDeclaration classDeclaration)
 		{
 			// int category = IPHPIndexConstants.CLASS_CATEGORY;
-
 			List<Identifier> interfaces = classDeclaration.interfaces();
 			List<String> interfaceNames = new ArrayList<String>(interfaces.size());
 			for (int i = 0; i < interfaces.size(); i++)
 			{
 				interfaceNames.add(interfaces.get(i).getName());
-				interfaces.get(i).setBinding(resolveTypeBinding(interfaces.get(i).getName()));
+				Identifier identifier = interfaces.get(i);
+				identifier.setBinding(resolveTypeBinding(interfaces.get(i).getName()));
 			}
 
 			Expression superClassIdentifier = classDeclaration.getSuperClass();
 			String superClassName = null;
-			if (superClassIdentifier != null && superClassIdentifier.getType() == ASTNode.IDENTIFIER)
+			if (superClassIdentifier != null && (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
 			{
 				superClassName = ((Identifier) superClassIdentifier).getName();
 				superClassIdentifier.setBinding(resolveTypeBinding(superClassName));
