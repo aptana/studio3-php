@@ -16,6 +16,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.ModelManager;
 
 /**
@@ -51,6 +52,17 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		super.start(context);
 		plugin = this;
 		index();
+		Job loadBuiltins = new Job("Index PHP API...") { //$NON-NLS-1$
+			@Override
+			protected IStatus run(IProgressMonitor monitor)
+			{
+				PHPBuiltins.getInstance().getBuiltins();
+				return Status.OK_STATUS;
+			}
+		};
+		loadBuiltins.setSystem(true);
+		loadBuiltins.setPriority(Job.BUILD);
+		loadBuiltins.schedule(2000L);
 	}
 
 	private void index()
