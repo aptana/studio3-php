@@ -17,15 +17,19 @@ import org.eclipse.php.internal.core.CoreMessages;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org.eclipse.php.internal.core.ast.nodes.ASTNodes;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org.eclipse.php.internal.core.ast.nodes.ClassName;
 import org.eclipse.php.internal.core.ast.nodes.Expression;
 import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
 import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.Include;
+import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 import org.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
 import org.eclipse.php.internal.core.ast.nodes.StructuralPropertyDescriptor;
+import org.eclipse.php.internal.core.ast.nodes.Variable;
 
 import com.aptana.editor.php.core.model.IMethod;
 import com.aptana.editor.php.core.model.IModelElement;
@@ -138,19 +142,76 @@ public class IncludeOccurrencesFinder extends AbstractOccurrencesFinder {
 	}
 
 	@Override
-	public boolean visit(ClassName className) {
-		Expression className2 = className.getName();
-		if (className2.getType() == ASTNode.IDENTIFIER) {
-			Identifier id = (Identifier) className2;
-			String name = id.getName();
-			for (IType type : types) {
-				if (type.getElementName().equals(name))
-					fResult.add(new OccurrenceLocation(className.getStart(),
-							className.getLength(), getOccurrenceType(null),
-							fDescription));
-			}
+	public boolean visit(ClassName className)
+	{
+		Expression expression = className.getName();
+		markImportedTypes(expression);
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ClassDeclaration)
+	 */
+	@Override
+	public boolean visit(ClassDeclaration classDeclaration)
+	{
+		Expression superClass = classDeclaration.getSuperClass();
+		markImportedTypes(superClass);
+		List<Identifier> interfaces = classDeclaration.interfaces();
+		for (Identifier interfaceIdentifier : interfaces)
+		{
+			markImportedTypes(interfaceIdentifier);
 		}
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration)
+	 */
+	@Override
+	public boolean visit(InterfaceDeclaration interfaceDeclaration)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(interfaceDeclaration);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation)
+	 */
+	@Override
+	public boolean visit(ClassInstanceCreation classInstanceCreation)
+	{
+		ClassName className = classInstanceCreation.getClassName();
+		Expression expression = className.getName();
+		markImportedTypes(expression);
+		return false;
+	}
+
+	private void markImportedTypes(Expression expression)
+	{
+		String name = null;
+		if (expression == null)
+		{
+			return;
+		}
+		if (expression.getType() == ASTNode.NAMESPACE_NAME)
+		{
+			name = ((NamespaceName) expression).getName();
+		}
+		if (name == null && expression.getType() == ASTNode.IDENTIFIER)
+		{
+			Identifier id = (Identifier) expression;
+			name = id.getName();
+		}
+		if (name != null)
+		{
+			for (IType type : types)
+			{
+				if (type.getElementName().equals(name))
+					fResult.add(new OccurrenceLocation(expression.getStart(), expression.getLength(),
+							getOccurrenceType(null), fDescription));
+			}
+		}
 	}
 
 	@Override
@@ -173,16 +234,21 @@ public class IncludeOccurrencesFinder extends AbstractOccurrencesFinder {
 	}
 
 	@Override
-	public boolean visit(FunctionInvocation functionInvocation) {
-		Expression functionName2 = functionInvocation.getFunctionName()
-				.getName();
-		if (functionName2.getType() == ASTNode.IDENTIFIER) {
+	public boolean visit(FunctionInvocation functionInvocation)
+	{
+		Expression functionName2 = functionInvocation.getFunctionName().getName();
+		if (functionName2.getType() == ASTNode.VARIABLE)
+		{
+			functionName2 = ((Variable) functionName2).getName();
+		}
+		if (functionName2.getType() == ASTNode.IDENTIFIER)
+		{
 			Identifier id = (Identifier) functionName2;
 			String name = id.getName();
-			for (IMethod method : methods) {
+			for (IMethod method : methods)
+			{
 				if (method.getElementName().equals(name))
-					fResult.add(new OccurrenceLocation(functionInvocation
-							.getStart(), functionInvocation.getLength(),
+					fResult.add(new OccurrenceLocation(functionInvocation.getStart(), functionInvocation.getLength(),
 							getOccurrenceType(null), fDescription));
 			}
 		}

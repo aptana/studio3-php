@@ -327,7 +327,7 @@ public final class ASTProvider {
 	 *            the Java element
 	 * @see org.eclipse.jdt.internal.ui.text.java.IJavaReconcilingListener#aboutToBeReconciled()
 	 */
-	void aboutToBeReconciled(ISourceModule javaElement) {
+	public void aboutToBeReconciled(ISourceModule javaElement) {
 
 		if (javaElement == null)
 			return;
@@ -432,7 +432,7 @@ public final class ASTProvider {
 			fWaitLock.notifyAll();
 		}
 	}
-
+	
 	/**
 	 * Returns a shared compilation unit AST for the given Java element.
 	 * <p>
@@ -606,7 +606,6 @@ public final class ASTProvider {
 								.println(getThreadName()
 										+ " - " + DEBUG_PREFIX + "creating AST for: " + input.getElementName()); //$NON-NLS-1$ //$NON-NLS-2$
 					root[0] = (Program) parser.createAST(progressMonitor);
-
 					// mark as unmodifiable
 					ASTNodes.setFlagsToAST(root[0], ASTNode.PROTECT);
 				} catch (OperationCanceledException ex) {
@@ -669,7 +668,7 @@ public final class ASTProvider {
 	 * org.eclipse.jdt.internal.ui.text.java.IJavaReconcilingListener#reconciled
 	 * (org.eclipse.jdt.core.dom.Program)
 	 */
-	void reconciled(Program ast, ISourceModule javaElement,
+	public void reconciled(Program ast, ISourceModule javaElement,
 			IProgressMonitor progressMonitor) {
 		if (DEBUG)
 			System.out
@@ -705,5 +704,4 @@ public final class ASTProvider {
 		else
 			return Thread.currentThread().toString();
 	}
-
 }

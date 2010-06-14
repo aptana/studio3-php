@@ -187,17 +187,29 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 	public List<IMethod> getTopLevelMethods()
 	{
 		List<IModelElement> chidren = getChildren();
-
 		List<IMethod> result = new ArrayList<IMethod>();
+		// Collect the methods. We limit the depth to 3, so we don't collect too much.
+		getMethodsRecursively(chidren, result, 3);
+		return result;
+	}
 
+	private void getMethodsRecursively(List<IModelElement> chidren, List<IMethod> result, int depth)
+	{
 		for (IModelElement child : chidren)
 		{
 			if (child instanceof IMethod)
 			{
 				result.add((IMethod) child);
 			}
+			else if (child instanceof IType)
+			{
+				if (depth > 0)
+				{
+					IType type = (IType) child;
+					getMethodsRecursively(type.getChildren(), result, --depth);
+				}
+			}
 		}
-		return result;
 	}
 
 	public IType getType(String name)

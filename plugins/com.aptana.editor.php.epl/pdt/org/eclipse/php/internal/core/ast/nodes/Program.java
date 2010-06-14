@@ -95,6 +95,8 @@ public class Program extends ASTNode {
 	 */
 	private int[] lineEndTable = {};
 
+	private boolean bindingCompleted;
+
 	@SuppressWarnings("unchecked")
 	private Program(int start, int end, AST ast, Statement[] statements,
 			List comments) {
@@ -695,5 +697,29 @@ public class Program extends ASTNode {
 			PHPEplPlugin.logError(e);
 		}
 		return null;
+	}
+	
+	// [Aptana Additions]
+	/**
+	 * Set the completion state of the Type Binding of this AST.
+	 * 
+	 * @param completed
+	 *            The type binding state.
+	 * @see #isBindingCompleted()
+	 */
+	public void setBindingCompleted(boolean completed)
+	{
+		this.bindingCompleted = completed;
+	}
+
+	/**
+	 * Returns if the type binding is completed for this AST.
+	 * 
+	 * @return True, iff the binding was completed.
+	 * @see #setBindingCompleted(boolean)
+	 */
+	public boolean isBindingCompleted()
+	{
+		return bindingCompleted;
 	}
 }

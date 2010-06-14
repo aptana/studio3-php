@@ -55,6 +55,7 @@ import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
 
 /**
  * This class works closely with the {@link PHPSourceEditor} to update the PHP elements occurrences annotations.
@@ -63,7 +64,6 @@ import com.aptana.editor.php.core.model.ISourceModule;
  */
 class OccurrencesUpdater implements IPropertyChangeListener
 {
-
 	private PHPSourceEditor editor;
 
 	// Occurrences
@@ -87,8 +87,7 @@ class OccurrencesUpdater implements IPropertyChangeListener
 	private IRegion fMarkOccurrenceTargetRegion;
 	private long fMarkOccurrenceModificationStamp;
 
-	private com.aptana.editor.php.internal.ui.editor.OccurrencesUpdater.OccurrencesFinderJobCanceler fOccurrencesFinderJobCanceler;
-
+	private OccurrencesFinderJobCanceler fOccurrencesFinderJobCanceler;
 	private ISelectionListenerWithAST fPostSelectionListenerWithAST;
 
 	/**
@@ -222,7 +221,10 @@ class OccurrencesUpdater implements IPropertyChangeListener
 
 		if (ast == null || selection == null)
 			return;
-
+		if (!ast.isBindingCompleted())
+		{
+			TypeBindingBuilder.buildBindings(ast);
+		}
 		IDocument document = editor.getISourceViewer().getDocument();
 		if (document == null)
 			return;

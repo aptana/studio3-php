@@ -68,7 +68,6 @@ import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org.eclipse.php.internal.core.ast.nodes.FunctionName;
 import org.eclipse.php.internal.core.ast.nodes.GlobalStatement;
-import org.eclipse.php.internal.core.ast.nodes.IBinding;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.IfStatement;
 import org.eclipse.php.internal.core.ast.nodes.Include;
@@ -99,6 +98,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPTypeConstants;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.core.model.IType;
+import com.aptana.editor.php.core.typebinding.IBinding;
 import com.aptana.editor.php.core.typebinding.IBindingReporter;
 import com.aptana.editor.php.core.typebinding.ITypeBinding;
 import com.aptana.editor.php.core.typebinding.TypeBinding;
@@ -166,6 +166,7 @@ public class TypeBindingBuilder
 					node.setBinding(binding);
 				}
 			});
+			program.setBindingCompleted(true);
 		}
 		else
 		{

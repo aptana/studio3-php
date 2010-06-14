@@ -4,12 +4,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
+import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
@@ -35,6 +39,7 @@ public class PHPParser implements IParser
 
 	private PHPVersion phpVersion;
 	private IModule module;
+	private ISourceModule sourceModule;
 
 	/**
 	 * Constructs a new PHPParser
@@ -68,7 +73,14 @@ public class PHPParser implements IParser
 		{
 			IPHPParseState phpParseState = (IPHPParseState) parseState;
 			phpVersion = phpParseState.getPHPVersion();
-			module = phpParseState.getModule();
+
+			IModule newModule = phpParseState.getModule();
+			if (module != newModule)
+			{
+				module = newModule;
+				sourceModule = phpParseState.getSourceModule();
+			}
+			aboutToBeReconciled();
 		}
 		try
 		{
@@ -104,6 +116,7 @@ public class PHPParser implements IParser
 			{
 				PHPEditorPlugin.logError(t);
 			}
+			reconciled(ast, false, new NullProgressMonitor());
 		}
 		return root;
 	}
@@ -124,7 +137,7 @@ public class PHPParser implements IParser
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
 			// TODO: Shalom - Have this parser in a PHP parsers pool?
-			
+
 			ASTParser parser = ASTParser.newParser(new InputStreamReader(source), version);
 			ast = parser.createAST(null);
 		}
@@ -141,6 +154,23 @@ public class PHPParser implements IParser
 			return root;
 		}
 		return new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], 0, 0);
+	}
+
+	/**
+	 * Notify the shared AST provider that the module is about to be reconciled.
+	 */
+	private void aboutToBeReconciled()
+	{
+		// Notify the shared AST provider
+		PHPEplPlugin.getDefault().getASTProvider().aboutToBeReconciled(sourceModule);
+	}
+
+	/**
+	 * Notify the shared AST provider that the module was reconciled.
+	 */
+	private void reconciled(Program program, boolean forced, IProgressMonitor progressMonitor)
+	{
+		PHPEplPlugin.getDefault().getASTProvider().reconciled(program, sourceModule, progressMonitor);
 	}
 
 	/**
