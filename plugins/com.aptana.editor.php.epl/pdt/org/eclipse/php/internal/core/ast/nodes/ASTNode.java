@@ -23,6 +23,8 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org.eclipse.php.internal.core.ast.visitor.Visitor;
 
+import com.aptana.editor.php.core.typebinding.IBinding;
+
 /**
  * Abstract superclass of all Abstract Syntax Tree (AST) node types. <p>
  * An AST node represents a PHP source code construct, such

@@ -1,9 +1,8 @@
 package com.aptana.editor.php.internal.core.typebinding;
 
-import org.eclipse.php.internal.core.ast.nodes.IBinding;
-
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.core.typebinding.IBinding;
 
 public class ModuleBinding implements IBinding
 {
