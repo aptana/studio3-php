@@ -12,6 +12,7 @@
 package org.eclipse.php.internal.core.ast.nodes;
 
 import java.util.List;
+import com.aptana.editor.php.core.typebinding.ITypeBinding;
 
 /**
  * Represents base class for class declaration and interface declaration  
@@ -163,9 +164,6 @@ public abstract class TypeDeclaration extends Statement {
 	 *    resolved
 	 */
 	public final ITypeBinding resolveTypeBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveType(this);
-		return null;
+		return (ITypeBinding)getBinding();
 	}
-	
-	
 }

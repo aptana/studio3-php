@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.ast.nodes;
 
+import com.aptana.editor.php.core.typebinding.ITypeBinding;
+
 /**
  * Base class for all expression in PHP
  */
@@ -117,8 +119,7 @@ public abstract class Expression extends ASTNode
 	 */
 	public ITypeBinding resolveTypeBinding()
 	{
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveExpressionType(this);
-		return null;
+		return (ITypeBinding)getBinding();
 	}
 
 	/**

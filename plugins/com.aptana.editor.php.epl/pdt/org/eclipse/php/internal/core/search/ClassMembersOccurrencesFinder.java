@@ -23,7 +23,6 @@ import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org.eclipse.php.internal.core.ast.nodes.FunctionName;
-import org.eclipse.php.internal.core.ast.nodes.ITypeBinding;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
@@ -40,6 +39,7 @@ import org.eclipse.php.internal.core.ast.nodes.Variable;
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.core.model.IType;
+import com.aptana.editor.php.core.typebinding.ITypeBinding;
 
 /**
  * Class members occurrences finder.

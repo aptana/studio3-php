@@ -103,14 +103,14 @@ public class PHPParser implements IParser
 			try
 			{
 				ast.setSourceModule(ModelUtils.convertModule(module));
-				// Recalculate the type bindings
-				TypeBindingBuilder.buildBindings(ast);
 				// TODO: Shalom - check for Program errors?
 				// if (!ast.hasSyntaxErrors() && module != null) {
 				if (module != null)
 				{
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(ast, module);
 				}
+				// Recalculate the type bindings
+				TypeBindingBuilder.buildBindings(ast);
 			}
 			catch (Throwable t)
 			{

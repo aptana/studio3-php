@@ -23,7 +23,9 @@ import com.aptana.editor.php.PHPEditorPlugin;
  */
 public class PHPVersionProvider
 {
+	public static final String DEFAULT_PREFERENCES_QUALIFIER = PHPEditorPlugin.PLUGIN_ID;
 	private static PHPVersionProvider instance;
+	private String preferencesQualifier;
 	private Map<IProject, ListenerList> listeners;
 
 	/**
@@ -44,6 +46,20 @@ public class PHPVersionProvider
 	private PHPVersionProvider()
 	{
 		listeners = new HashMap<IProject, ListenerList>();
+		preferencesQualifier = DEFAULT_PREFERENCES_QUALIFIER;
+	}
+
+	/**
+	 * An option to set the preferences qualifier from which the PHP project settings will be read.
+	 * @param qualifier
+	 */
+	public void setPreferencesQualifier(String qualifier)
+	{
+		if (qualifier == null)
+		{
+			throw new IllegalArgumentException("Qualifier cannot be null"); //$NON-NLS-1$
+		}
+		this.preferencesQualifier = qualifier;
 	}
 
 	/**
@@ -105,7 +121,7 @@ public class PHPVersionProvider
 	 */
 	public static PHPVersion getPHPVersion(IProject project)
 	{
-		return getVersion(project, CorePreferenceConstants.Keys.PHP_VERSION);
+		return getInstance().getVersion(project, CorePreferenceConstants.Keys.PHP_VERSION);
 	}
 
 	/**
@@ -147,7 +163,7 @@ public class PHPVersionProvider
 		return PHPVersion.PHP4.equals(version);
 	}
 
-	private static PHPVersion getVersion(IProject project, String prefKey)
+	private PHPVersion getVersion(IProject project, String prefKey)
 	{
 		IPreferencesService service = Platform.getPreferencesService();
 		IScopeContext[] contexts;
@@ -159,8 +175,7 @@ public class PHPVersionProvider
 		{
 			contexts = new IScopeContext[] { new InstanceScope(), new DefaultScope() };
 		}
-		String versionAlias = service.getString(PHPEditorPlugin.PLUGIN_ID, prefKey, PHPVersion.PHP5_3.getAlias(),
-				contexts);
+		String versionAlias = service.getString(preferencesQualifier, prefKey, PHPVersion.PHP5_3.getAlias(), contexts);
 		return PHPVersion.byAlias(versionAlias);
 	}
 

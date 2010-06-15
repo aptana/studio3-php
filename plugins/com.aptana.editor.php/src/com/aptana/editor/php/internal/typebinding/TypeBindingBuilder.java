@@ -938,7 +938,7 @@ public class TypeBindingBuilder
 				superClassName = ((Identifier) superClassIdentifier).getName();
 				superClassIdentifier.setBinding(resolveTypeBinding(superClassName));
 			}
-
+			classDeclaration.setBinding(resolveTypeBinding(classDeclaration.getName().getName()));
 			ClassPHPEntryValue value = new ClassPHPEntryValue(classDeclaration.getModifier(), superClassName,
 					interfaceNames, currentNamespace);
 
@@ -1001,7 +1001,7 @@ public class TypeBindingBuilder
 		private void visitStaticDispatch(StaticDispatch classConstantAccess)
 		{
 			Expression className = classConstantAccess.getClassName();
-			if (className != null && className.getType() == ASTNode.IDENTIFIER)
+			if (className != null && (className.getType() == ASTNode.NAMESPACE_NAME || className.getType() == ASTNode.IDENTIFIER))
 			{
 				IBinding resolveTypeBinding = resolveTypeBinding(((Identifier) className).getName());
 				reporter.report(classConstantAccess, resolveTypeBinding);
