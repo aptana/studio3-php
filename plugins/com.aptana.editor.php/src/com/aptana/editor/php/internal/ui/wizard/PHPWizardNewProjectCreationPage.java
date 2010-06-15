@@ -21,7 +21,7 @@ import org.osgi.service.prefs.Preferences;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants;
 import com.aptana.editor.php.internal.ui.preferences.Messages;
-import com.aptana.editor.php.internal.ui.preferences.PhpDevelopmentPage;
+import com.aptana.editor.php.internal.ui.preferences.PHPVersionConfigurationBlock;
 
 /**
  * New PHP project main creation page.
@@ -58,8 +58,8 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 		Label label = new Label(group, SWT.NONE);
 		label.setText(Messages.PHPDevelopmentPage_phpVersion);
 		fPHPVersions = new Combo(group, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-		fPHPVersions.setItems(PhpDevelopmentPage.PHP_VERSION_NAMES
-				.toArray(new String[PhpDevelopmentPage.PHP_VERSION_NAMES.size()]));
+		fPHPVersions.setItems(PHPVersionConfigurationBlock.PHP_VERSION_NAMES
+				.toArray(new String[PHPVersionConfigurationBlock.PHP_VERSION_NAMES.size()]));
 		selectVersion(PHPVersion.PHP5_3.getAlias());
 		Dialog.applyDialogFont(control);
 		setControl(control);
@@ -78,7 +78,7 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 	protected void setPhpLangOptions(IProject project)
 	{
 		Preferences preferences = getPreferences(project);
-		preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, PhpDevelopmentPage.PHP_ALIASES.get(fPHPVersions
+		preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, PHPVersionConfigurationBlock.PHP_ALIASES.get(fPHPVersions
 				.getSelectionIndex()));
 		try
 		{
@@ -95,7 +95,7 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 	 */
 	private void selectVersion(String phpAlias)
 	{
-		int index = PhpDevelopmentPage.PHP_ALIASES.indexOf(phpAlias);
+		int index = PHPVersionConfigurationBlock.PHP_ALIASES.indexOf(phpAlias);
 		if (index < 0)
 		{
 			PHPEditorPlugin.logWarning("Unresolved PHP version: " + phpAlias); //$NON-NLS-1$

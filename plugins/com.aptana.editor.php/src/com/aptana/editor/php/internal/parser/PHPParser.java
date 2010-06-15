@@ -117,6 +117,8 @@ public class PHPParser implements IParser
 				PHPEditorPlugin.logError(t);
 			}
 			reconciled(ast, false, new NullProgressMonitor());
+		} else {
+			reconciled(null, false, new NullProgressMonitor());
 		}
 		return root;
 	}

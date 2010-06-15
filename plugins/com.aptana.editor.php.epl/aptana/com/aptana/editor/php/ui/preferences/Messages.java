@@ -8,6 +8,7 @@ public class Messages extends NLS
 	public static String GenericRootPage_genericPerferencesPageMessage;
 	public static String GenericRootPage_noAvailablePages;
 	public static String GenericRootPage_preferences;
+	
 	static
 	{
 		// initialize resource bundle

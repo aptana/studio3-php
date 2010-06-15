@@ -487,6 +487,7 @@ public final class PHPGlobalIndexer
 	 * 
 	 * @param modules
 	 *            - modules.
+	 * @param monitor
 	 * @param resource
 	 *            - resource.
 	 * @return job that is able to handle the added modules.
@@ -1090,8 +1091,9 @@ public final class PHPGlobalIndexer
 	 * 
 	 * @param project
 	 *            The project to clean
+	 * @param monitor
 	 */
-	public void clean(IProject project)
+	public void clean(IProject project, IProgressMonitor monitor)
 	{
 		if (project != null)
 		{
@@ -1151,7 +1153,7 @@ public final class PHPGlobalIndexer
 		{
 			if (p.isAccessible())
 			{
-				clean(p);
+				clean(p, new NullProgressMonitor());
 			}
 		}
 	}

@@ -275,7 +275,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
-				getSourceViewer().setDocument(getSourceViewer().getDocument());
+				getFileService().parse(true);
 				return Status.OK_STATUS;
 			}
 		};

@@ -10,6 +10,10 @@ public class Messages extends NLS
 	public static String PHPDevelopmentPage_php53;
 	public static String PHPDevelopmentPage_phpVersion;
 	public static String PHPDevelopmentPage_compatibility;
+	public static String PHPVersionConfigurationBlock_needsbuild_title;
+	public static String PHPVersionConfigurationBlock_needsfullbuild_message;
+	public static String PHPVersionConfigurationBlock_needsprojectbuild_message;
+	
 	static
 	{
 		// initialize resource bundle

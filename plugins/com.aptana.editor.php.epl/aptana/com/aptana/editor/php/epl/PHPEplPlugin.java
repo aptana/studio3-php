@@ -1,5 +1,7 @@
 package com.aptana.editor.php.epl;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.php.internal.ui.editor.ASTProvider;
@@ -152,5 +154,9 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public static void log(IStatus status)
 	{
 		getDefault().getLog().log(status);
+	}
+
+	public static IWorkspace getWorkspace() {
+		return ResourcesPlugin.getWorkspace();
 	}
 }

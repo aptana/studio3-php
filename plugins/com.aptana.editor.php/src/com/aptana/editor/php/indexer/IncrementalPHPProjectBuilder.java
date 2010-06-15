@@ -28,7 +28,7 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException
 	{
-		PHPGlobalIndexer.getInstance().clean(getProject());
+		PHPGlobalIndexer.getInstance().clean(getProject(), monitor);
 		PHPGlobalIndexer.getInstance().cleanLibraries(monitor);
 		ContentAssistUtils.cleanIndex();
 	}
@@ -50,7 +50,11 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException
 	{
 		// FIXME - SG: Convert from Indexer timer to the builder system.
-		monitor.done();
+		IProject project = getProject();
+		if ((kind == CLEAN_BUILD || kind == FULL_BUILD) && project != null)
+		{
+			PHPGlobalIndexer.getInstance().clean(project, monitor);
+		}
 		return null;
 	}
 
