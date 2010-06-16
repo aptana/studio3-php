@@ -46,6 +46,7 @@ import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.contentAssist.PHPCompletionProposal;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.ModelException;
 import com.aptana.editor.php.internal.model.ModelManager;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
@@ -82,8 +83,14 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		IProjectDescription desc = project.getDescription();
 		desc.setNatureIds(new String[] { PHPNature.NATURE_ID });
 		project.setDescription(desc, null);
+		PHPBuiltins.getInstance();
 		PHPGlobalIndexer.getInstance();
 		ModelManager.getInstance();
+		try
+		{
+			Thread.sleep(4000L);
+		}
+		catch (InterruptedException ie){}
 	}
 
 	public static void tearDownSuite() throws Exception {

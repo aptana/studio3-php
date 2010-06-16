@@ -35,6 +35,7 @@
 package com.aptana.editor.php.internal.model.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +46,10 @@ import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.contentAssist.ContentAssistCollectors;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ElementsIndexingUtils;
+import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 
 /**
  * Type hierarchy utilities
@@ -265,14 +268,25 @@ public final class TypeHierarchyUtils
 	{
 		List<IElementEntry> result = new ArrayList<IElementEntry>();
 
-		Set<IBuildPath> dependencies = buildPath.getDependencies();
+		Set<IBuildPath> dependencies = (buildPath != null) ? buildPath.getDependencies() : new HashSet<IBuildPath>(1);
 
 		for (IElementEntry entry : toFilter)
 		{
-			IBuildPath currentEntryBuildPath = entry.getModule().getBuildPath();
-			if (buildPath.equals(currentEntryBuildPath) || dependencies.contains(currentEntryBuildPath))
+			IModule module = entry.getModule();
+			if (module == null)
 			{
-				result.add(entry);
+				if (PHPBuiltins.getInstance().isBuiltinClassOrConstant(entry.getEntryPath()))
+				{
+					result.add(entry);
+				}
+			}
+			else
+			{
+				IBuildPath currentEntryBuildPath = module.getBuildPath();
+				if (buildPath.equals(currentEntryBuildPath) || dependencies.contains(currentEntryBuildPath))
+				{
+					result.add(entry);
+				}
 			}
 		}
 
@@ -303,12 +317,22 @@ public final class TypeHierarchyUtils
 		ClassPHPEntryValue entryValue = (ClassPHPEntryValue) value;
 		String superClassName = entryValue.getSuperClassname();
 
-		IBuildPath classEntryBuildPath = classEntry.getModule().getBuildPath();
+		IBuildPath classEntryBuildPath = null;
+		if (classEntry.getModule() != null)
+		{
+			classEntryBuildPath = classEntry.getModule().getBuildPath();
+		}
 
 		if (superClassName != null)
 		{
 			List<IElementEntry> classEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, superClassName);
-
+			if (classEntries.isEmpty())
+			{
+				Set<String> superClass = new HashSet<String>(1);
+				superClass.add(superClassName);
+				Set<IElementEntry> entries = ContentAssistCollectors.collectBuiltinTypeEntries(superClass, true);
+				classEntries.addAll(entries);
+			}
 			List<IElementEntry> classEntriesOnBuildPath = filterByBuildPath(classEntryBuildPath, classEntries);
 
 			toFill.addAll(classEntriesOnBuildPath);

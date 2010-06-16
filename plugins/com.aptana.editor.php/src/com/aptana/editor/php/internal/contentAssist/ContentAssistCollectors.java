@@ -14,9 +14,12 @@ import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
+import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPVariableParseNode;
 import com.aptana.editor.php.internal.parser.nodes.Parameter;
 import com.aptana.parsing.ast.IParseNode;
 
@@ -61,17 +64,104 @@ public class ContentAssistCollectors
 			{
 				currentEntries = index.getEntriesStartingWith(IPHPIndexConstants.VAR_CATEGORY, entryPath);
 			}
+			ArrayList<?> items = ContentAssistUtils.selectModelElements(leftType, true);
+			if (items != null && !items.isEmpty())
+			{
+				String lowCaseFuncName = varName != null ? varName.toLowerCase() : EMPTY_STRING;
+				for (Object obj : items)
+				{
+					if (obj instanceof PHPClassParseNode)
+					{
+						final PHPClassParseNode classParseNode = (PHPClassParseNode) obj;
+						IParseNode[] children = classParseNode.getChildren();
+						if (children != null)
+						{
+							for (IParseNode child : children)
+							{
+								if (child instanceof PHPVariableParseNode)
+								{
+									final PHPVariableParseNode varParseNode = (PHPVariableParseNode) child;
+									if (!varParseNode.isField())
+										continue;
+									String funcNodeName = varParseNode.getNodeName();
+									if (funcNodeName != null)
+									{
+										if (!funcNodeName.startsWith(DOLLAR_SIGN))
+										{
+											funcNodeName = DOLLAR_SIGN + funcNodeName;
+										}
+										String lowCaseFuncNodeName = funcNodeName.toLowerCase();
+										if (exactMatch)
+										{
+											if (!lowCaseFuncName.equals(lowCaseFuncNodeName))
+												continue;
+										}
+										else
+										{
+											if (!lowCaseFuncNodeName.startsWith(lowCaseFuncName))
+												continue;
+										}
+									}
+									// Add an element entry
+									result.add(new IElementEntry()
+									{
 
+										private VariablePHPEntryValue value;
+
+										public int getCategory()
+										{
+											return IPHPIndexConstants.VAR_CATEGORY;
+										}
+
+										public String getEntryPath()
+										{
+											// Returns the function name.
+											// This is useful when we have a
+											// built-in class function
+											// completion.
+											return classParseNode.getNodeName() + IElementsIndex.DELIMITER
+													+ varParseNode.getNodeName();
+										}
+
+										public String getLowerCaseEntryPath()
+										{
+											String path = getEntryPath();
+											return path != null ? path.toLowerCase() : EMPTY_STRING;
+										}
+
+										public IModule getModule()
+										{
+											return null;
+										}
+
+										public Object getValue()
+										{
+											if (value != null)
+											{
+												return value;
+											}
+											value = new VariablePHPEntryValue(varParseNode.getModifiers(), varParseNode
+													.isParameter(), varParseNode.isLocalVariable(), varParseNode
+													.isField(), varParseNode.getType(), varParseNode
+													.getStartingOffset(), EMPTY_STRING);
+											return value;
+										}
+
+									});
+								}
+							}
+						}
+					}
+				}
+			}
 			if (currentEntries != null)
 			{
 				result.addAll(currentEntries);
 			}
 		}
-
 		return result;
 	}
 
-	
 	/**
 	 * Collects entries for the variable.
 	 * 
@@ -281,6 +371,93 @@ public class ContentAssistCollectors
 			}
 		}
 
+		return result;
+	}
+
+	/**
+	 * Collects function entries.
+	 * 
+	 * @param types
+	 *            - types to collect.
+	 * @param exactMatch
+	 *            - whether to check for exact match of the function name.
+	 * @return A set of collected {@link IElementEntry}s with the requested types.
+	 */
+	public static Set<IElementEntry> collectBuiltinTypeEntries(Set<String> types, boolean exactMatch)
+	{
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+		for (String typeName : types)
+		{
+			ArrayList<?> items = ContentAssistUtils.selectModelElements(typeName, true);
+			if (items != null && !items.isEmpty())
+			{
+				String lowCaseClassName = typeName != null ? typeName.toLowerCase() : EMPTY_STRING;
+				for (Object obj : items)
+				{
+					if (obj instanceof PHPClassParseNode)
+					{
+						final PHPClassParseNode classParseNode = (PHPClassParseNode) obj;
+						String nodeName = classParseNode.getNodeName();
+						if (nodeName != null)
+						{
+							String lowCaseClassNodeName = nodeName.toLowerCase();
+							if (exactMatch)
+							{
+								if (!lowCaseClassName.equals(lowCaseClassNodeName))
+									continue;
+							}
+							else
+							{
+								if (!lowCaseClassNodeName.startsWith(lowCaseClassName))
+									continue;
+							}
+
+							// Add the builtin element
+							result.add(new IElementEntry()
+							{
+								private ClassPHPEntryValue value;
+
+								public int getCategory()
+								{
+									return IPHPIndexConstants.CLASS_CATEGORY;
+								}
+
+								public String getEntryPath()
+								{
+									// Returns the class name.
+									return classParseNode.getNodeName();
+								}
+
+								public String getLowerCaseEntryPath()
+								{
+									String path = getEntryPath();
+									return path != null ? path.toLowerCase() : EMPTY_STRING;
+								}
+
+								public IModule getModule()
+								{
+									return null;
+								}
+
+								public Object getValue()
+								{
+									if (value != null)
+									{
+										return value;
+									}
+									String superClassname = classParseNode.getSuperClassname();
+									List<String> interfaces = classParseNode.getInterfaces();
+									value = new ClassPHPEntryValue(classParseNode.getModifiers(), superClassname,
+											interfaces, EMPTY_STRING);
+									return value;
+								}
+
+							});
+						}
+					}
+				}
+			}
+		}
 		return result;
 	}
 }

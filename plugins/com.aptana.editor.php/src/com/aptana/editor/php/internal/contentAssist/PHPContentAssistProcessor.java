@@ -118,9 +118,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static final String THIS_ACTIVATION_SEQUENCE = "$this"; //$NON-NLS-1$
 
 	/**
-	 * "$self" activation sequence.
+	 * "self" activation sequence.
 	 */
 	private static final String SELF_ACTIVATION_SEQUENCE = "self"; //$NON-NLS-1$
+
+	/**
+	 * "parent" activation sequence.
+	 */
+	private static final String PARENT_ACTIVATION_SEQUENCE = "parent"; //$NON-NLS-1$
 
 	private static final IRange EMPTY_RANGE = new Range(0, 0);
 
@@ -420,6 +425,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				return EMPTY_PROPOSAL;
 			}
 
+			// FIXME - Shalom - Fix the case where we have a static dereferencing at the beginning
+			// Foo::hello()->goodbye()...
 			if (DEREFERENCE_OP.equals(callPath.get(1)))
 			{
 				return dereferencingCompletion(getIndex(content, start), callPath, start, getModule());
@@ -427,9 +434,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			else if (callPath.size() > 3 && DEREFERENCE_OP.equals(callPath.get(3)))
 			{
 				// We have a case like A::$B-> so we treat $B as a simple identifier
-				String identifier = callPath.get(2);
-				return simpleIdentifierCompletion(start, content, identifier.toLowerCase(),
-						reportedScopeUnderClassOrFunction, globalImports, getModule(), false, false);
+				return dereferencingCompletion(getIndex(content, start), callPath, start, getModule());
+				// String identifier = callPath.get(2);
+				// return simpleIdentifierCompletion(start, content, identifier.toLowerCase(),
+				// reportedScopeUnderClassOrFunction, globalImports, getModule(), false, false);
 			}
 			else
 			{
@@ -588,7 +596,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				applyAccessRestriction = true;
 			}
 
-			result = computeDereferenceRightEntries(leftDereferenceEntries, index, pathEntryName(callPath.get(i)),
+			String callPathEntry = callPath.get(i);
+			result = computeDereferenceRightEntries(leftDereferenceEntries, index, pathEntryName(callPathEntry),
 					offset, module, currentExactMatchFlag, applyAccessRestriction, innerCompletion);
 			if (result == null || result.isEmpty())
 			{
@@ -669,11 +678,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return null;
 		}
 
-		boolean innerCompletion = false;
-		if (SELF_ACTIVATION_SEQUENCE.equals(callPath.get(0)))
-		{
-			innerCompletion = true;
-		}
+		boolean innerCompletion = SELF_ACTIVATION_SEQUENCE.equals(callPath.get(0));
+		boolean parentCompletion = PARENT_ACTIVATION_SEQUENCE.equals(callPath.get(0));
 
 		boolean currentExactMatch = true;
 		if (callPath.size() == 3)
@@ -681,7 +687,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			currentExactMatch = exactMatch;
 		}
 		Set<IElementEntry> result = computeStaticDereferenceRightEntries(index, leftDereferenceEntries,
-				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, innerCompletion);
+				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, innerCompletion,
+				parentCompletion);
 		if (result == null || result.isEmpty())
 		{
 			return null;
@@ -734,11 +741,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - whether to filter entries by access modifiers.
 	 * @param innerEntries
 	 *            - whether inner entries are being computed. Like $this->... or self::...
+	 * @param parentEntries
 	 * @return set of entries or null.
 	 */
 	private static Set<IElementEntry> computeStaticDereferenceRightEntries(IElementsIndex index,
 			Set<IElementEntry> leftEntries, String right, int offset, IModule module, boolean exactMatch,
-			boolean applyAccessModifiers, boolean innerEntries)
+			boolean applyAccessModifiers, boolean innerEntries, boolean parentEntries)
 	{
 		if (leftEntries == null || leftEntries.isEmpty())
 		{
@@ -769,7 +777,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			if (innerEntries)
 			{
-				filter = new AccessModifierEntryFilter(customLeftTypes);
+				filter = new AccessModifierEntryFilter(customLeftTypes, false);
+			}
+			else if (parentEntries)
+			{
+				filter = new AccessModifierEntryFilter(customLeftTypes, true);
 			}
 			else
 			{
@@ -816,7 +828,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return null;
 		}
 
-		result = ContentAssistFilters.filterStaticEntries(result);
+		if (!parentEntries)
+		{
+			result = ContentAssistFilters.filterStaticEntries(result);
+		}
 
 		if (filter != null)
 		{
@@ -903,6 +918,27 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			result.add(currentClass);
 			return result;
 		}
+		else if (PARENT_ACTIVATION_SEQUENCE.equals(left))
+		{
+			IElementEntry currentClass = getCurrentClass(index, module, offset);
+			if (currentClass == null)
+			{
+				return null;
+			}
+			LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+			Object clazz = currentClass.getValue();
+			if (clazz instanceof ClassPHPEntryValue)
+			{
+				String superClassname = ((ClassPHPEntryValue) clazz).getSuperClassname();
+				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module);
+				if (superClassEntry != null && superClassEntry.size() == 1)
+				{
+					result.addAll(superClassEntry);
+				}
+			}
+
+			return result;
+		}
 		else
 		{
 			return getClassEntries(index, left, module);
@@ -955,7 +991,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			return null;
 		}
-		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>(leftEntries);
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		for (IElementEntry entry : leftEntries)
 		{
 			if (module == null || module.equals(entry.getModule()))
@@ -1039,7 +1075,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			if (innerEntries)
 			{
-				filter = new AccessModifierEntryFilter(customLeftTypes);
+				filter = new AccessModifierEntryFilter(customLeftTypes, false);
 			}
 			else
 			{
@@ -1051,6 +1087,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// now searching for the possible right parts
+		boolean filterNonStatic = true;
 		if (right.length() == 0)
 		{
 			Set<IElementEntry> varResults = ContentAssistCollectors.collectVariableEntries(index, DOLLAR_SIGN,
@@ -1068,8 +1105,17 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else
 		{
-			result.addAll(ContentAssistCollectors.collectVariableEntries(index, DOLLAR_SIGN + right,
-					typesWithAncestors, exactMatch));
+			String var;
+			if (right.startsWith(DOLLAR_SIGN))
+			{
+				var = right;
+				filterNonStatic = false;
+			}
+			else
+			{
+				var = DOLLAR_SIGN + right;
+			}
+			result.addAll(ContentAssistCollectors.collectVariableEntries(index, var, typesWithAncestors, exactMatch));
 			result.addAll(ContentAssistCollectors.collectFunctionEntries(index, right, typesWithAncestors, exactMatch));
 		}
 		if (result == null || result.isEmpty())
@@ -1077,8 +1123,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return null;
 		}
 
-		result = ContentAssistFilters.filterNonStaticVariables(result);
-
+		if (filterNonStatic)
+		{
+			result = ContentAssistFilters.filterNonStaticVariables(result);
+		}
 		if (filter != null)
 		{
 			result = filter.filter(result);
@@ -1123,7 +1171,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else
 		{
-			return getFunctionEntriesByCall(index, left);
+			if (ParsingUtils.isFunctionCall(left))
+			{
+				return getFunctionEntriesByCall(index, left);
+			}
+			else
+			{
+				return getClassEntries(index, left, module);
+			}
 		}
 	}
 
@@ -1760,7 +1815,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						String n = name;
 						if (!lowerCaseFirstName.startsWith(lowerCase))
 						{
-							// In this case set the name to an empty string to force the proposal to insert at the current offset
+							// In this case set the name to an empty string to force the proposal to insert at the
+							// current offset
 							n = ""; //$NON-NLS-1$
 						}
 						proposal = createProposal(entry, offset, n, firstName, module, applyDollarSymbol, index,

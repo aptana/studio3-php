@@ -1592,7 +1592,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 								String[] types = descr.getTypes();
 								for (String type : types)
 								{
-									fieldTypes.add(type);
+									fieldTypes.add(type.trim());
 								}
 							}
 						}

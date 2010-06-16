@@ -92,16 +92,7 @@ $a = new A();
 ?>
 --EXPECT--
 field($staticDefaultField)
-field($staticPrivateField)
-field($staticProtectedField)
 field($staticPublicField)
 field(CONSTANT_FIELD)
-method(__construct)
-method(defaultNonStaticFunction)
 method(defaultStaticFunction)
-method(privateNonStaticFunction)
-method(privateStaticFunction)
-method(protectedNonStaticFunction)
-method(protectedStaticFunction)
-method(publicNonStaticFunction)
 method(publicStaticFunction)

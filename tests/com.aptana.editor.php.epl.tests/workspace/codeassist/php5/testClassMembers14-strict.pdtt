@@ -1,7 +1,7 @@
 --TEST--
 Show self static variables
 --PREFERENCES--
-org.eclipse.php.core/contentAssistShowStrictOptions=false
+org.eclipse.php.core/contentAssistShowStrictOptions=true
 --FILE--
 <?php
 class Abc {
@@ -88,14 +88,8 @@ field($staticPrivateField)
 field($staticProtectedField)
 field($staticPublicField)
 field(CONSTANT_FIELD)
-method(__destruct)
-method(defaultNonStaticFunction)
 method(defaultStaticFunction)
-method(foo)
-method(privateNonStaticFunction)
 method(privateStaticFunction)
-method(protectedNonStaticFunction)
 method(protectedStaticFunction)
-method(publicNonStaticFunction)
 method(publicStaticFunction)
 

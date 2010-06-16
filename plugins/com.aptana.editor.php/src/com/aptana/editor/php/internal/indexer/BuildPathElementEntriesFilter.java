@@ -35,8 +35,10 @@
 package com.aptana.editor.php.internal.indexer;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -121,19 +123,27 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 			result.addAll(toFilter);
 			return result;
 		}
+		// To avoid adding elements for different modules to the same entry prefix, we maintain a map
+		// between the entry prefix and the module. This is basically first-come-first serve map, and entries that
+		// appear in a later arriving module will be filtered out.
+		Map<String, IModule> entryToModule = new HashMap<String, IModule>();
 		if (activeBuildPaths.size() != 0 || passiveBuildPaths.size() != 0)
 		{
 			for (IElementEntry e : toFilter)
 			{
 				IModule module = e.getModule();
 				boolean added = false;
-
-				if (activeBuildPaths.size() != 0)
+				String entryPrefix = ElementsIndexingUtils.getFirstNameInPath(e.getEntryPath());
+				if (!entryToModule.containsKey(entryPrefix) || entryToModule.get(entryPrefix) == module)
 				{
-					if (module == null || activeBuildPaths.contains(module.getBuildPath()))
+					entryToModule.put(entryPrefix, module);
+					if (activeBuildPaths.size() != 0)
 					{
-						result.add(e);
-						added = true;
+						if (module == null || activeBuildPaths.contains(module.getBuildPath()))
+						{
+							result.add(e);
+							added = true;
+						}
 					}
 				}
 
