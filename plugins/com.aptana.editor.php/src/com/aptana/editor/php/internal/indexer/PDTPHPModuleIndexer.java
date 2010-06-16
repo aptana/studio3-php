@@ -989,7 +989,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			Expression superClassIdentifier = classDeclaration.getSuperClass();
 			String superClassName = null;
-			if (superClassIdentifier != null && superClassIdentifier.getType() == ASTNode.IDENTIFIER)
+			if (superClassIdentifier != null && (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
 			{
 				superClassName = ((Identifier) superClassIdentifier).getName();
 			}

@@ -3,6 +3,7 @@ package com.aptana.editor.php.internal.contentAssist;
 import java.util.HashSet;
 
 import org.eclipse.php.core.compiler.PHPFlags;
+import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
@@ -389,8 +390,11 @@ public class PHPContextCalculator
 				if (builtinElement instanceof PHPClassParseNode)
 				{
 					PHPClassParseNode node = (PHPClassParseNode) builtinElement;
+					if (ClassDeclaration.MODIFIER_FINAL == node.getModifiers())
+					{
+						return false;
+					}
 					boolean isInterface = PHPFlags.isInterface(node.getModifiers());
-
 					if (classDeclared && !isInterface || !classDeclared && isInterface)
 					{
 						return true;
@@ -404,8 +408,13 @@ public class PHPContextCalculator
 			{
 				if (element.getValue() instanceof ClassPHPEntryValue)
 				{
+					ClassPHPEntryValue value = (ClassPHPEntryValue) element.getValue();
+					if (ClassDeclaration.MODIFIER_FINAL == value.getModifiers())
+					{
+						return false;
+					}
 					boolean isInterface = PHPFlags
-							.isInterface(((ClassPHPEntryValue) element.getValue()).getModifiers());
+							.isInterface(value.getModifiers());
 					if (classDeclared && !isInterface || !classDeclared && isInterface)
 					{
 						return true;
@@ -598,8 +607,8 @@ public class PHPContextCalculator
 	 *            skipped.
 	 * @return found lexeme or null if not found
 	 */
-	public static Lexeme<PHPTokenType> findLexemeBackward(LexemeProvider<PHPTokenType> lexemeProvider, int startPosition,
-			Object typesToFind, String[] allowedTypesToSkip)
+	public static Lexeme<PHPTokenType> findLexemeBackward(LexemeProvider<PHPTokenType> lexemeProvider,
+			int startPosition, Object typesToFind, String[] allowedTypesToSkip)
 	{
 		HashSet<String> typesSet = new HashSet<String>();
 		if (typesToFind instanceof String)

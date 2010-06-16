@@ -333,7 +333,12 @@ public class PHPCompletionProposal extends CommonCompletionProposal
 	{
 		return _replacementLength;
 	}
-
+	
+	public String getReplacementString()
+	{
+		return _replacementString;
+	}
+	
 	public void setReplacementLength(int replacementLength)
 	{
 		_replacementLength = replacementLength;

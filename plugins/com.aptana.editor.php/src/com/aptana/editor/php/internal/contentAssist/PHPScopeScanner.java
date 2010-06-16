@@ -24,6 +24,7 @@ public class PHPScopeScanner implements ITokenScanner
 {
 	private AbstractPhpLexer lexer;
 	private int documetOffset;
+	private int prevTokenOffset;
 
 	@Override
 	public int getTokenLength()
@@ -43,6 +44,14 @@ public class PHPScopeScanner implements ITokenScanner
 		try
 		{
 			String token = lexer.getNextToken();
+			int tokenOffset = getTokenOffset();
+			if (prevTokenOffset == tokenOffset)
+			{
+				// we stumble into a case where the lexer failed to notify us with the end
+				// token, so force a stop.
+				return Token.EOF;
+			}
+			prevTokenOffset = tokenOffset;
 			if (token == null)
 			{
 				return Token.EOF;
@@ -60,6 +69,7 @@ public class PHPScopeScanner implements ITokenScanner
 	public void setRange(IDocument document, int offset, int length)
 	{
 		this.documetOffset = offset;
+		this.prevTokenOffset = -1;
 		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
 		if (phpVersion == null)
 		{

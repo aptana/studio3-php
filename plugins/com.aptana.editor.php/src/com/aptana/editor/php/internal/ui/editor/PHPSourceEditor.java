@@ -372,9 +372,10 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	}
 
 	/**
-	 * Gets current module.
+	 * Gets current module.<b> This method caches the returned module for any consequent calls.
 	 * 
 	 * @return current module.
+	 * @see #computeModule(String)
 	 */
 	public IModule getModule()
 	{
@@ -384,14 +385,30 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			{
 				return module;
 			}
+			return computeModule(this.sourceUri);
+		}
+	}
 
-			if (sourceUri == null)
+	/**
+	 * Returns the IModule using a given sourceURI.<br>
+	 * You are encouraged to use the {@link #getModule()} method when an {@link IModule} is needed. This method does not
+	 * check if the module was computed before, and runs the computation again.
+	 * 
+	 * @param sourceURI
+	 * @return A computed {@link IModule}
+	 * @see #getModule()
+	 */
+	public IModule computeModule(String sourceURI)
+	{
+		synchronized (mutex)
+		{
+			if (sourceURI == null)
 			{
 				PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
 						"Error in getModule(): sourceUri was null. Returning null")); //$NON-NLS-1$
 				return null;
 			}
-			String struri = sourceUri;
+			String struri = sourceURI;
 			URI uri = null;
 			try
 			{

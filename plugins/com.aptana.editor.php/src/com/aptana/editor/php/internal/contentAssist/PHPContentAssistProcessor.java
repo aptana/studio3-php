@@ -93,6 +93,7 @@ import com.aptana.parsing.lexer.Range;
 @SuppressWarnings("unused")
 public class PHPContentAssistProcessor extends CommonContentAssistProcessor implements IContentAssistProcessor
 {
+	private static final ICompletionProposal[] EMPTY_PROPOSAL = new ICompletionProposal[0];
 	protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	protected static final String DOLLAR_SIGN = "$"; //$NON-NLS-1$
 
@@ -182,6 +183,20 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	{
 		this.viewer = viewer;
 		IDocument document = viewer.getDocument();
+		return computeCompletionProposals(document, offset);
+	}
+
+	/**
+	 * Compute the proposals using an offset and a document. Note: this is a convenient way of separating the UI (the
+	 * ITextViewer) from the actual computation, so it can be tested easily.
+	 * 
+	 * @param viewer
+	 * @param offset
+	 * @param document
+	 * @return
+	 */
+	public ICompletionProposal[] computeCompletionProposals(IDocument document, int offset)
+	{
 		// First, check if we are in a PHP partition
 		ITypedRegion partition;
 		try
@@ -288,10 +303,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 								// FIXME: Shalom - Implement getFilePathCompletionProposals
 								// return getFilePathCompletionProposals(substring, left + 1, substring.length(), 1,
 								// viewer);
-								return null;
+								return EMPTY_PROPOSAL;
 							}
 						}
-						return null;
+						return EMPTY_PROPOSAL;
 					}
 
 					// System.out.println(next_token);
@@ -324,7 +339,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				{
 					if (content.charAt(a - 1) == '/')
 					{
-						return null;
+						return EMPTY_PROPOSAL;
 					}
 				}
 			}
@@ -335,7 +350,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// }
 
 		boolean forceActivation = false;
-		Boolean fa = (Boolean) viewer.getTextWidget().getData("ASSIST_FORCE_ACTIVATION"); //$NON-NLS-1$
+		// The only reason why we test for a null viewer here is to allow testing without any ITextViewer attachment.
+		Boolean fa = (viewer != null) ? (Boolean) viewer.getTextWidget().getData("ASSIST_FORCE_ACTIVATION") : null; //$NON-NLS-1$
 		if (fa != null)
 		{
 			forceActivation = fa;
@@ -362,8 +378,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 
 		// resetting the force activation flag.
-		viewer.getTextWidget().setData("ASSIST_FORCE_ACTIVATION", //$NON-NLS-1$
-				false);
+		if (viewer != null)
+		{
+			viewer.getTextWidget().setData("ASSIST_FORCE_ACTIVATION", false);//$NON-NLS-1$
+		}
 		return computeCompletionProposalInternal;
 	}
 
@@ -392,19 +410,26 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		List<String> callPath = ParsingUtils.parseCallPath(partition, content, start, OPS, false);
 		if (callPath == null || callPath.isEmpty())
 		{
-			return new ICompletionProposal[0];
+			return EMPTY_PROPOSAL;
 		}
 
 		if (callPath.size() > 1)
 		{
 			if (hasStaticDereferenceOperatorAfterTheFirst(callPath))
 			{
-				return new ICompletionProposal[0];
+				return EMPTY_PROPOSAL;
 			}
 
 			if (DEREFERENCE_OP.equals(callPath.get(1)))
 			{
 				return dereferencingCompletion(getIndex(content, start), callPath, start, getModule());
+			}
+			else if (callPath.size() > 3 && DEREFERENCE_OP.equals(callPath.get(3)))
+			{
+				// We have a case like A::$B-> so we treat $B as a simple identifier
+				String identifier = callPath.get(2);
+				return simpleIdentifierCompletion(start, content, identifier.toLowerCase(),
+						reportedScopeUnderClassOrFunction, globalImports, getModule(), false, false);
 			}
 			else
 			{
@@ -420,7 +445,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (forceActivation
 					&& !preferenceStore.getBoolean(IContentAssistPreferencesConstants.AUTO_ACTIVATE_ON_IDENTIFIERS))
 			{
-				return new ICompletionProposal[0];
+				return EMPTY_PROPOSAL;
 			}
 			String identifier = callPath.get(0);
 
@@ -433,10 +458,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// }
 
 			return simpleIdentifierCompletion(start, content, identifier.toLowerCase(),
-					reportedScopeUnderClassOrFunction, globalImports, getModule(), proposeBuiltins);
+					reportedScopeUnderClassOrFunction, globalImports, getModule(), proposeBuiltins, true);
 		}
 
-		return new ICompletionProposal[0];
+		return EMPTY_PROPOSAL;
 	}
 
 	/**
@@ -471,7 +496,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						false, index, false));
 			}
 		}
-		ICompletionProposal[] result = completionProposals.toArray(new ICompletionProposal[0]);
+		ICompletionProposal[] result = completionProposals.toArray(EMPTY_PROPOSAL);
 		if (result.length > 0)
 		{
 			((PHPCompletionProposal) result[0]).setIsDefaultSelection(true);
@@ -1165,7 +1190,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return completion proposals
 	 */
 	private ICompletionProposal[] simpleIdentifierCompletion(final int offset, String content, String identifier,
-			boolean reportedStackIsGlobal, Set<String> globalImports, IModule module, boolean proposeBuiltins)
+			boolean reportedStackIsGlobal, Set<String> globalImports, IModule module, boolean proposeBuiltins,
+			boolean filter)
 	{
 		String name = identifier;
 
@@ -1212,7 +1238,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			index = getIndexOptimized(content, offset);
 		}
 		List<IElementEntry> entries = computeSimpleIdentifierEntries(reportedStackIsGlobal, globalImports, name,
-				variableCompletion, index, false, module, true, currentContext, namespace, aliases);
+				variableCompletion, index, false, module, filter, currentContext, namespace, aliases);
 
 		items.addAll(entries);
 
@@ -1723,11 +1749,21 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						}
 					}
 				}
-				if (firstName != null && firstName.toLowerCase().startsWith(lowerCase))
+
+				String lowerCaseFirstName = firstName.toLowerCase();
+				if (firstName != null
+						&& (lowerCaseFirstName.startsWith(lowerCase) || entry.getEntryPath().toLowerCase().startsWith(
+								lowerCase)))
 				{
 					if (!usedNames.contains(firstName))
 					{
-						proposal = createProposal(entry, offset, name, firstName, module, applyDollarSymbol, index,
+						int off = offset;
+						if (!lowerCaseFirstName.startsWith(lowerCase))
+						{
+							// In this case, shift the offset forward, to force the proposal to insert at the current offset
+							off += name.length();
+						}
+						proposal = createProposal(entry, off, name, firstName, module, applyDollarSymbol, index,
 								newInstanceCompletion);
 						if (proposal != null)
 						{
