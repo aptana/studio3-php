@@ -101,7 +101,7 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	 */
 	public boolean isEmpty()
 	{
-		return getChildrenCount() == 0;
+		return getChildCount() == 0;
 	}
 
 	/**

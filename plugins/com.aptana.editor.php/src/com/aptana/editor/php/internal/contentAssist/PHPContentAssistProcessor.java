@@ -1757,13 +1757,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				{
 					if (!usedNames.contains(firstName))
 					{
-						int off = offset;
+						String n = name;
 						if (!lowerCaseFirstName.startsWith(lowerCase))
 						{
-							// In this case, shift the offset forward, to force the proposal to insert at the current offset
-							off += name.length();
+							// In this case set the name to an empty string to force the proposal to insert at the current offset
+							n = ""; //$NON-NLS-1$
 						}
-						proposal = createProposal(entry, off, name, firstName, module, applyDollarSymbol, index,
+						proposal = createProposal(entry, offset, n, firstName, module, applyDollarSymbol, index,
 								newInstanceCompletion);
 						if (proposal != null)
 						{

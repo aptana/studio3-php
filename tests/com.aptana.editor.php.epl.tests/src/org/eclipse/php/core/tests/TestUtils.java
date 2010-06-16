@@ -84,7 +84,7 @@ public class TestUtils
 
 	public static void waitForIndexer()
 	{
-		// ModelManager.getModelManager().getIndexManager().waitUntilReady();
+		// TODO
 	}
 
 	/**

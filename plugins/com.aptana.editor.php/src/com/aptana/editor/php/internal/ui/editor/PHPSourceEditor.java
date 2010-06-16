@@ -248,7 +248,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		IParseNode parseResult = getFileService().getParseResult();
 		if (parseResult != null)
 		{
-			IParseNode node = parseResult.getNodeAt(caret);
+			IParseNode node = parseResult.getNodeAtOffset(caret);
 			if (node instanceof PHPExtendsNode)
 			{
 				node = node.getParent();

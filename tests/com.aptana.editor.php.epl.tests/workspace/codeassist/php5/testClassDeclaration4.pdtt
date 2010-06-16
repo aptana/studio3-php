@@ -1,0 +1,6 @@
+--TEST--
+Test Class Declaration With Prefix
+--FILE--
+<? class A i| ?>
+--EXPECT--
+keyword(implements)

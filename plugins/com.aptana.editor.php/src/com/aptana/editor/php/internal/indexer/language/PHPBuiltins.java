@@ -459,7 +459,7 @@ public final class PHPBuiltins
 				try
 				{
 					IParseNode php4 = parser.parse(url.openStream());
-					for (int a = 0; a < php4.getChildrenCount(); a++)
+					for (int a = 0; a < php4.getChildCount(); a++)
 					{
 						IParseNode child = (IParseNode) php4.getChild(a);
 						String name = child.getNameNode().getName().intern();
@@ -504,7 +504,7 @@ public final class PHPBuiltins
 				try
 				{
 					IParseNode php5 = parser.parse(url.openStream());
-					for (int a = 0; a < php5.getChildrenCount(); a++)
+					for (int a = 0; a < php5.getChildCount(); a++)
 					{
 						IParseNode child = (IParseNode) php5.getChild(a);
 						String name = child.getNameNode().getName().intern();
@@ -550,7 +550,7 @@ public final class PHPBuiltins
 				try
 				{
 					IParseNode php53 = parser.parse(url.openStream());
-					for (int a = 0; a < php53.getChildrenCount(); a++)
+					for (int a = 0; a < php53.getChildCount(); a++)
 					{
 						IParseNode child = (IParseNode) php53.getChild(a);
 						String name = child.getNameNode().getName().intern();

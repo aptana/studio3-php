@@ -266,7 +266,7 @@ public class NodeBuilder
 	public PHPBlockNode populateNodes()
 	{
 		PHPBlockNode bn = new PHPBlockNode(0, 0, "php"); //$NON-NLS-1$
-		for (int a = 0; a < current.getChildrenCount(); a++)
+		for (int a = 0; a < current.getChildCount(); a++)
 		{
 			IParseNode pn = current.getChild(a);
 			bn.addChild(pn);

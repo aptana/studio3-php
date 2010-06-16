@@ -1,0 +1,14 @@
+--TEST--
+Test Internal Class
+--FILE--
+<?
+/**
+ * @internal
+ */
+class MyInternalClass {}
+
+MyInter| 
+
+?>
+--EXPECT--
+type(MyInternalClass)
