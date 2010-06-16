@@ -44,7 +44,7 @@ public class PHTMLOutlineContentProvider extends CommonOutlineContentProvider
 			{
 				element = (IPHPParseNode) node;
 				// filters out block elements
-				if (element.getType() != IPHPParseNode.BLOCK_NODE)
+				if (element.getNodeType() != IPHPParseNode.BLOCK_NODE)
 				{
 					list.add(getOutlineItem(element));
 				}

@@ -2193,7 +2193,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				// adding space after "extends", "implements" and "new" keywords
 				IPHPParseNode nodeEntry = (IPHPParseNode) entry;
-				if (nodeEntry.getType() == IPHPParseNode.KEYWORD_NODE && ("extends".equals(nodeEntry.getNodeName()) || //$NON-NLS-1$
+				if (nodeEntry.getNodeType() == IPHPParseNode.KEYWORD_NODE && ("extends".equals(nodeEntry.getNodeName()) || //$NON-NLS-1$
 						"implements".equals(nodeEntry.getNodeName()) || //$NON-NLS-1$
 						"new".equals(nodeEntry.getNodeName()))) //$NON-NLS-1$
 				{
@@ -2624,7 +2624,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		if (item instanceof IPHPParseNode)
 		{
 			IPHPParseNode node = (IPHPParseNode) item;
-			if (node.getType() == IPHPParseNode.KEYWORD_NODE && "new".equals(node.getNodeName())) { //$NON-NLS-1$
+			if (node.getNodeType() == IPHPParseNode.KEYWORD_NODE && "new".equals(node.getNodeName())) { //$NON-NLS-1$
 				return true;
 			}
 		}

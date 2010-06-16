@@ -24,6 +24,10 @@ public final class ParsingUtils
 	 */
 	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int offset)
 	{
+		if (offset == document.getLength() && offset > 0)
+		{
+			offset--;
+		}
 		return new LexemeProvider<PHPTokenType>(document, offset, new PHPScopeScanner())
 		{
 			@Override

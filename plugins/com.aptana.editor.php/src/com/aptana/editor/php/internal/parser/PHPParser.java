@@ -175,20 +175,6 @@ public class PHPParser implements IParser
 		PHPEplPlugin.getDefault().getASTProvider().reconciled(program, sourceModule, progressMonitor);
 	}
 
-	/**
-	 * Returns the index that the given node is located at his parent node.
-	 * 
-	 * @param node
-	 * @return The index, or -1 if this node does not have any parent.
-	 */
-	protected int getIndexInParent(IParseNode node)
-	{
-		IParseNode parent = node.getParent();
-		if (parent != null)
-			return parent.getIndex(node);
-		return -1;
-	}
-
 	/*
 	 * Process the AST and update the given IParseNode
 	 */

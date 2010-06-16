@@ -610,8 +610,8 @@ public final class PHPBuiltins
 				}
 			}
 		}
-		else if (child instanceof PHPConstantNode || child.getType() == IPHPParseNode.KEYWORD_NODE
-				|| child.getType() == IPHPParseNode.CONST_NODE)
+		else if (child instanceof PHPConstantNode || child.getNodeType() == IPHPParseNode.KEYWORD_NODE
+				|| child.getNodeType() == IPHPParseNode.CONST_NODE)
 		{
 			// Convert this PHP constant to a PHP parse node with a Keyword
 			// type.
