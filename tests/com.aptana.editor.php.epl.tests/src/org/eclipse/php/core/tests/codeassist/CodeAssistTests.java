@@ -189,6 +189,8 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
 		testFile = project.getFile("test.php");
+		if (testFile.exists())
+			testFile.refreshLocal(IResource.DEPTH_ZERO, null);
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);

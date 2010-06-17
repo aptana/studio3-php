@@ -267,7 +267,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				int left = lexer.getTokenStart();
 				int right = left + lexer.yylength();
 				String value = lexer.yytext();
-				if (next_token == PHPRegionTypes.PHP_NAMESPACE || next_token == PHPRegionTypes.PHP_USE)
+				if (next_token == PHPRegionTypes.PHP_NS_SEPARATOR || next_token == PHPRegionTypes.PHP_USE)
 				{
 					lastN = next_token;
 					contentS = new StringBuilder();
@@ -568,16 +568,25 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - whether to perform the exact match of the last entry.
 	 * @return dereference entries or null.
 	 */
+	@SuppressWarnings("unchecked")
 	public static Set<IElementEntry> computeDereferenceEntries(IElementsIndex index, List<String> callPath, int offset,
 			IModule module, boolean exactMatch)
 	{
-		Set<IElementEntry> leftDereferenceEntries = computeDereferenceLeftEntries(index,
-				pathEntryName(callPath.get(0)), offset, module);
+		String entryName = callPath.get(0);
+		Set<IElementEntry> leftDereferenceEntries = computeDereferenceLeftEntries(index, pathEntryName(entryName),
+				offset, module);
 		if (leftDereferenceEntries == null)
 		{
 			return null;
 		}
-
+		if (leftDereferenceEntries.isEmpty() && ParsingUtils.isFunctionCall(callPath.get(0)))
+		{
+			// In this case, we have a function call right at the beginning on the call-path. So we compute
+			// a simple identifier for that call and add it to our list, so the code assist will suggest completion
+			// for the return type of that call.
+			leftDereferenceEntries.addAll(computeSimpleIdentifierEntries(true, Collections.EMPTY_SET,
+					pathEntryName(entryName), false, index, false, module, false, EMPTY_STRING, Collections.EMPTY_MAP));
+		}
 		boolean innerCompletion = false;
 		if (THIS_ACTIVATION_SEQUENCE.equals(callPath.get(0)))
 		{
@@ -853,7 +862,26 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		Set<Object> result = new LinkedHashSet<Object>();
 		for (IElementEntry entry : entries)
 		{
-			result.addAll(getEntryTypes(entry));
+			Set<Object> entryTypes = getEntryTypes(entry);
+			Set<Object> splittedTypes = new HashSet<Object>(entryTypes.size() + 2);
+			for (Object type : entryTypes)
+			{
+				if (type instanceof String)
+				{
+					String t = type.toString();
+					String[] types = t.split("\\|"); //$NON-NLS-1$
+					for (String splittedType : types)
+					{
+						splittedTypes.add(splittedType.trim());
+					}
+				}
+				else
+				{
+					splittedTypes.add(type);
+				}
+
+			}
+			result.addAll(splittedTypes);
 		}
 
 		return result;
@@ -1083,6 +1111,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 
+		// FIXME - Shalom (???) - Have the ancestors look at the current module and remove any other ancestor from a
+		// different module and a similar name
 		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index);
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
@@ -2193,8 +2223,9 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				// adding space after "extends", "implements" and "new" keywords
 				IPHPParseNode nodeEntry = (IPHPParseNode) entry;
-				if (nodeEntry.getNodeType() == IPHPParseNode.KEYWORD_NODE && ("extends".equals(nodeEntry.getNodeName()) || //$NON-NLS-1$
-						"implements".equals(nodeEntry.getNodeName()) || //$NON-NLS-1$
+				if (nodeEntry.getNodeType() == IPHPParseNode.KEYWORD_NODE
+						&& ("extends".equals(nodeEntry.getNodeName()) || //$NON-NLS-1$
+								"implements".equals(nodeEntry.getNodeName()) || //$NON-NLS-1$
 						"new".equals(nodeEntry.getNodeName()))) //$NON-NLS-1$
 				{
 					result = new ProposalEnhancement();

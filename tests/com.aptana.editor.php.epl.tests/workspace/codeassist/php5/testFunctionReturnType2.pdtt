@@ -6,7 +6,9 @@ Test Function Return Multiple Types Doc
 /**
  * @return A|B 
  */
-function bar() { } bar()->| ?>
+function bar() { } 
+bar()->| 
+?>
 --EXPECT--
 method(foo)
 method(bar)

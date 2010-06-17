@@ -10,6 +10,7 @@ class TestBaseClass {
 	public $_testObject;
 }
 class TestClass extends TestBaseClass {}
-$test = new TestClass(); $test->_testObject->| ?>
+$test = new TestClass(); 
+$test->_testObject->| ?>
 --EXPECT--
 method(test)

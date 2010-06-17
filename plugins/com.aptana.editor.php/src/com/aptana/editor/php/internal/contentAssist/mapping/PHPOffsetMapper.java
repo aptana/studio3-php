@@ -344,6 +344,10 @@ public class PHPOffsetMapper
 				return true;
 			}
 
+			if (i > source.length() - 1)
+			{
+				return false;
+			}
 			char ch = source.charAt(i);
 			if (ch == NEW.charAt(searchStringPos))
 			{

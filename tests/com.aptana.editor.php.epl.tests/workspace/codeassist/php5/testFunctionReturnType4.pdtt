@@ -5,6 +5,8 @@ Test Function Return Type Doc
 /**
  * @return A
  */
-function bar() { } bar()->| ?>
+function bar() { } 
+bar()->| 
+?>
 --EXPECT--
 method(foo)

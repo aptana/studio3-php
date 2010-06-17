@@ -3,6 +3,11 @@ Test Inherited Method
 --PREFERENCES--
 org.eclipse.php.core/contentAssistShowStrictOptions=false
 --FILE--
-<? class A { function foo() } class B extends A {}    $b = new B(); $b->| ?>
+<? 
+class A { function foo(); } 
+class B extends A {}    
+$b = new B(); 
+$b->|
+?>
 --EXPECT--
 method(foo)

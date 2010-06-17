@@ -874,8 +874,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 		/**
 		 * Current function.
+		 *
 		 */
-		private IElementEntry currentFunction;
+		private IElementEntry currentFunction; // FIXME: Shalom - Maintain a stack to handle nested functions?
 
 		/**
 		 * Variable scopes.
@@ -989,7 +990,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			Expression superClassIdentifier = classDeclaration.getSuperClass();
 			String superClassName = null;
-			if (superClassIdentifier != null && (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
+			if (superClassIdentifier != null
+					&& (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
 			{
 				superClassName = ((Identifier) superClassIdentifier).getName();
 			}
@@ -1166,7 +1168,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 					parameterPositions[parCount] = parameter.getStart();
 					String parameterType = null;
 					Expression parameterTypeIdentifier = parameter.getParameterType();
-					if (parameterTypeIdentifier != null && parameterTypeIdentifier.getType() == ASTNode.IDENTIFIER)
+					if (parameterTypeIdentifier != null
+							&& (parameterTypeIdentifier.getType() == ASTNode.IDENTIFIER || parameterTypeIdentifier
+									.getType() == ASTNode.NAMESPACE_NAME))
 					{
 						parameterType = ((Identifier) parameterTypeIdentifier).getName();
 					}
@@ -1281,7 +1285,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 					String parameterType = null;
 					Expression parameterTypeIdentifier = parameter.getParameterType();
-					if (parameterTypeIdentifier != null && parameterTypeIdentifier.getType() == ASTNode.IDENTIFIER)
+					if (parameterTypeIdentifier != null
+							&& (parameterTypeIdentifier.getType() == ASTNode.NAMESPACE_NAME || parameterTypeIdentifier
+									.getType() == ASTNode.IDENTIFIER))
 					{
 						parameterType = ((Identifier) parameterTypeIdentifier).getName();
 					}
@@ -1670,6 +1676,15 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 */
 		@Override
 		public void endVisit(ClassDeclaration classDeclaration)
+		{
+			currentClass = null;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration)
+		 */
+		@Override
+		public void endVisit(InterfaceDeclaration interfaceDeclaration)
 		{
 			currentClass = null;
 		}
@@ -2454,7 +2469,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				for (FormalParameter p : formalParameters)
 				{
 					Expression parameterName = p.getParameterName();
-					if (parameterName != null && parameterName.getType() == ASTNode.IDENTIFIER)
+					if (parameterName != null
+							&& (parameterName.getType() == ASTNode.IDENTIFIER || parameterName.getType() == ASTNode.NAMESPACE_NAME))
 					{
 						String name = ((Identifier) parameterName).getName();
 						if (name.startsWith(DOLLAR_SIGN))
@@ -3210,7 +3226,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				for (FormalParameter p : formalParameters)
 				{
 					Expression varName = p.getParameterName();
-					if (varName != null && varName.getType() == ASTNode.IDENTIFIER)
+					if (varName != null
+							&& (varName.getType() == ASTNode.IDENTIFIER || varName.getType() == ASTNode.NAMESPACE_NAME))
 					{
 						String name = ((Identifier) varName).getName();
 						if (name.startsWith(DOLLAR_SIGN))
@@ -3224,7 +3241,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				List<Expression> lexicalVariables = lambdaFunctionDeclaration.lexicalVariables();
 				for (Expression p : lexicalVariables)
 				{
-					if (p.getType() == ASTNode.IDENTIFIER)
+					if (p.getType() == ASTNode.IDENTIFIER || p.getType() == ASTNode.NAMESPACE_NAME)
 					{
 						String varName = ((Identifier) p).getName();
 						if (varName != null && varName.startsWith(DOLLAR_SIGN))

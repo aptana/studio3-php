@@ -1,0 +1,11 @@
+--TEST--
+Test Function In Function
+--FILE--
+<? function foo() { function myFunction() {} } 
+myF|
+
+// TODO: Shalom - Will need to maintain a stack in the PDTPHPModuleIndexer to get the support for nested functions completion.
+
+?>
+--EXPECT--
+method(myFunction)

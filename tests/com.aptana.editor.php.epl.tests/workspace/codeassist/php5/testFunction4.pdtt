@@ -5,6 +5,8 @@ Test Internal Function
 /**
  * @internal
  */
-function myInternalFunction() {} myInter|?>
+function myInternalFunction() {} 
+myInter|
+?>
 --EXPECT--
 method(myInternalFunction)
