@@ -31,7 +31,7 @@ public class PHPContextCalculator
 	 */
 	protected static final String NEW_PROPOSAL_CONTEXT_TYPE = "NEW_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
 
-	private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	// private static final String[] EMPTY_STRING_ARRAY = new String[0];
 	private ProposalContext currentContext;
 
 	/**
@@ -124,11 +124,11 @@ public class PHPContextCalculator
 		}
 
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1,
-				PHPRegionTypes.PHP_CLASS, EMPTY_STRING_ARRAY);
+				PHPRegionTypes.PHP_CLASS, new String[] { PHPRegionTypes.PHP_NS_SEPARATOR });
 		if (nearestKeyWord == null)
 		{
 			nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1, PHPRegionTypes.PHP_INTERFACE,
-					EMPTY_STRING_ARRAY);
+					new String[] { PHPRegionTypes.PHP_NS_SEPARATOR });
 			if (nearestKeyWord == null)
 			{
 				return false;
@@ -413,8 +413,7 @@ public class PHPContextCalculator
 					{
 						return false;
 					}
-					boolean isInterface = PHPFlags
-							.isInterface(value.getModifiers());
+					boolean isInterface = PHPFlags.isInterface(value.getModifiers());
 					if (classDeclared && !isInterface || !classDeclared && isInterface)
 					{
 						return true;

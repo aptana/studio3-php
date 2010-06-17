@@ -45,6 +45,7 @@ import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org.eclipse.php.internal.core.ast.nodes.FunctionName;
 import org.eclipse.php.internal.core.ast.nodes.GlobalStatement;
+import org.eclipse.php.internal.core.ast.nodes.IFunctionBinding;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.IfStatement;
 import org.eclipse.php.internal.core.ast.nodes.Include;
@@ -874,7 +875,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 		/**
 		 * Current function.
-		 *
 		 */
 		private IElementEntry currentFunction; // FIXME: Shalom - Maintain a stack to handle nested functions?
 
@@ -938,7 +938,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			reporter.reportEntry(IPHPIndexConstants.NAMESPACE_CATEGORY, name, new NamespacePHPEntryValue(0, name),
 					module);
 			currentNamespace = name;
-			_namespace = currentNamespace;
+			if (currentOffset == 0 || _namespace == null || currentOffset > node.getStart())
+			{
+				_namespace = currentNamespace;
+			}
 			return super.visit(node);
 		}
 
@@ -1235,6 +1238,126 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			currentFunction = reporter.reportEntry(IPHPIndexConstants.FUNCTION_CATEGORY, entryPath, entryValue, module);
 
 			return true;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+		 * LambdaFunctionDeclaration)
+		 */
+		@Override
+		public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
+		{
+			PHPDocBlock comment = PHPDocUtils.findPHPDocComment(_comments, lambdaFunctionDeclaration.getStart(),
+					_contents);
+
+			// Since this is a lambda function, we would like to give it the name of the variable assignment if possible
+			// getting function parameters
+			List<FormalParameter> parameters = lambdaFunctionDeclaration.formalParameters();
+
+			LinkedHashMap<String, Set<Object>> parametersMap = null;
+			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+
+			if (parameters.size() > 0)
+			{
+				parametersMap = new LinkedHashMap<String, Set<Object>>(parameters.size());
+			}
+			ArrayList<Boolean> mandatoryParams = new ArrayList<Boolean>();
+			if (parameters != null)
+			{
+				int parCount = 0;
+				for (FormalParameter parameter : parameters)
+				{
+					Identifier nameIdentifier = parameter.getParameterNameIdentifier();
+					if (nameIdentifier == null)
+					{
+						continue;
+					}
+					String parameterName = nameIdentifier.getName();
+					parameterPositions[parCount] = parameter.getStart();
+					String parameterType = null;
+					Expression parameterTypeIdentifier = parameter.getParameterType();
+					if (parameterTypeIdentifier != null
+							&& (parameterTypeIdentifier.getType() == ASTNode.IDENTIFIER || parameterTypeIdentifier
+									.getType() == ASTNode.NAMESPACE_NAME))
+					{
+						parameterType = ((Identifier) parameterTypeIdentifier).getName();
+					}
+
+					Set<Object> types = null;
+					if (parameterType != null)
+					{
+						types = new HashSet<Object>(1);
+						types.add(parameterType);
+					}
+
+					if (parameter.getDefaultValue() != null)
+					{
+						Expression rightPartExpr = parameter.getDefaultValue();
+						Set<Object> expressionTypes = countExpressionTypes(rightPartExpr);
+						if (expressionTypes != null && expressionTypes.size() != 0)
+						{
+							if (types == null)
+							{
+								types = new HashSet<Object>();
+								types.addAll(expressionTypes);
+							}
+						}
+					}
+
+					parametersMap.put(parameterName, types);
+					mandatoryParams.add(parameter.getDefaultValue() == null || parameter.isMandatory());
+					parCount++;
+				}
+			}
+
+			// parsing PHP doc and adding types from it to the parameters
+			String[] returnTypes = null;
+			if (comment != null)
+			{
+				returnTypes = applyComment(comment, parametersMap);
+			}
+			boolean[] mandatories = new boolean[mandatoryParams.size()];
+			for (int j = 0; j < mandatoryParams.size(); j++)
+			{
+				mandatories[j] = mandatoryParams.get(j);
+			}
+			LambdaFunctionPHPEntryValue entryValue = new LambdaFunctionPHPEntryValue(0, parametersMap,
+					parameterPositions, mandatories, lambdaFunctionDeclaration.getStart(), currentNamespace);
+			if (returnTypes != null)
+			{
+				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				for (String returnType : returnTypes)
+				{
+					returnTypesSet.add(returnType);
+				}
+				entryValue.setReturnTypes(returnTypesSet);
+			}
+			String entryPath = EMPTY_STRING;
+			if (currentClass != null)
+			{
+				entryPath = currentClass.getClassEntry().getEntryPath() + IElementsIndex.DELIMITER;
+			}
+
+			// entryPath += functionName;
+
+			currentFunction = reporter.reportEntry(IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY, entryPath, entryValue,
+					module);
+			startVisitScopeNode(lambdaFunctionDeclaration);
+			return true;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes
+		 * .LambdaFunctionDeclaration)
+		 */
+		@Override
+		public void endVisit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
+		{
+			currentFunction = null;
+			endVisitScopeNode(lambdaFunctionDeclaration);
 		}
 
 		/**
@@ -1680,8 +1803,11 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			currentClass = null;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration)
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes
+		 * .InterfaceDeclaration)
 		 */
 		@Override
 		public void endVisit(InterfaceDeclaration interfaceDeclaration)
@@ -2065,7 +2191,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			}
 
 			IElementEntry currentEntry = null;
-			if (node instanceof FunctionDeclaration)
+			if (node instanceof FunctionDeclaration || node instanceof LambdaFunctionDeclaration)
 			{
 				currentEntry = currentFunction;
 			}
@@ -2939,9 +3065,11 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				{
 					IElementEntry entry = scope.getEntry();
 					if (entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY
-							&& entry.getValue() instanceof FunctionPHPEntryValue)
+							&& entry.getValue() instanceof FunctionPHPEntryValue
+							|| entry.getCategory() == IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY
+							&& entry.getValue() instanceof LambdaFunctionPHPEntryValue)
 					{
-						FunctionPHPEntryValue val = (FunctionPHPEntryValue) entry.getValue();
+						IPHPFunctionEntryValue val = (IPHPFunctionEntryValue) entry.getValue();
 						Map<String, Set<Object>> parameters = val.getParameters();
 						int[] parameterStartPositions = val.getParameterStartPositions();
 						if (parameters != null && !parameters.isEmpty())
@@ -2974,7 +3102,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 */
 		private boolean checkIfScopeIsUnderClassOrFunction(Stack<Scope> stack, int currentScopeDepth)
 		{
-			for (int i = currentScopeDepth; i <= 0; i--)
+			for (int i = currentScopeDepth; i >= 0; i--)
 			{
 				Scope scope = scopes.get(i);
 				IElementEntry entry = scope.getEntry();

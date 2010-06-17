@@ -37,8 +37,9 @@ class A {
 }
 
 $a = new A();
-$a::|
+A::|
 
+// Aptana Change: WAS - $a::
 ?>
 --EXPECT--
 field($staticDefaultField)

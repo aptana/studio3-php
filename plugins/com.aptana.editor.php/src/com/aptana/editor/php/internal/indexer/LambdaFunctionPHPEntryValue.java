@@ -49,17 +49,12 @@ import java.util.Map.Entry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
 /**
- * PHP entry value for functions.
+ * PHP entry value for lambda functions.
  * 
- * @author Denis Denisenko
+ * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHPFunctionEntryValue
+public class LambdaFunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHPFunctionEntryValue
 {
-	/**
-	 * Whether the function is method.
-	 */
-	private boolean isMethod;
-
 	/**
 	 * Parameters names.
 	 */
@@ -84,29 +79,25 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	private Object returnTypes;
 
 	/**
-	 * FunctionPHPEntryValue constructor.
+	 * LambdaFunctionPHPEntryValue constructor.
 	 * 
 	 * @param modifiers
 	 *            - modifiers.
-	 * @param isMethod
-	 *            - if is method.
 	 * @param startPosition
 	 *            - declaration start position.
+	 * @param nameSpace
 	 */
-	public FunctionPHPEntryValue(int modifiers, boolean isMethod, int startPosition, String nameSpace)
+	public LambdaFunctionPHPEntryValue(int modifiers, int startPosition, String nameSpace)
 	{
 		super(modifiers, nameSpace);
 		this.setStartOffset(startPosition);
-		this.isMethod = isMethod;
 	}
 
 	/**
-	 * FunctionPHPEntryValue constructor.
+	 * LambdaFunctionPHPEntryValue constructor.
 	 * 
 	 * @param modifiers
 	 *            - modifiers.
-	 * @param isMethod
-	 *            - if is method.
 	 * @param parameters
 	 *            - function parameters.
 	 * @param parameterStartPositions
@@ -115,10 +106,11 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	 *            - boolean array in the size of the parameters that indicates which of the params is a mandatory one.
 	 * @param startPosition
 	 *            - declaration start position.
+	 * @param nameSpace
 	 * @throws IllegalArgumentException
 	 *             in any case where the parameterMandatories parameter length is different from the expected.
 	 */
-	public FunctionPHPEntryValue(int modifiers, boolean isMethod, LinkedHashMap<String, Set<Object>> parameters,
+	public LambdaFunctionPHPEntryValue(int modifiers, LinkedHashMap<String, Set<Object>> parameters,
 			int[] parameterStartPositions, boolean[] parameterMandatories, int startPosition, String nameSpace)
 	{
 		super(modifiers, nameSpace);
@@ -187,10 +179,16 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 			}
 		}
 		this.setStartOffset(startPosition);
-		this.isMethod = isMethod;
 	}
 
-	public FunctionPHPEntryValue(DataInputStream di) throws IOException
+	/**
+	 * Constructs LambdaFunctionPHPEntryValue by loading it from an input steam.
+	 * 
+	 * @param di
+	 *            {@link DataInputStream}
+	 * @throws IOException
+	 */
+	public LambdaFunctionPHPEntryValue(DataInputStream di) throws IOException
 	{
 		super(di);
 		internalRead(di);
@@ -282,16 +280,6 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	}
 
 	/**
-	 * Gets whether function is method.
-	 * 
-	 * @return true if method, false otherwise.
-	 */
-	public boolean isMethod()
-	{
-		return isMethod;
-	}
-
-	/**
 	 * Gets function parameters.
 	 * 
 	 * @return function parameters.
@@ -335,7 +323,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	{
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + (isMethod ? 1231 : 1237);
+		result = prime * result;
 		return result;
 	}
 
@@ -347,12 +335,9 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	{
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final FunctionPHPEntryValue other = (FunctionPHPEntryValue) obj;
-		if (isMethod != other.isMethod)
+		if (!super.equals(obj))
 			return false;
 		return true;
 	}
@@ -360,7 +345,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	@Override
 	public int getKind()
 	{
-		return IPHPIndexConstants.FUNCTION_CATEGORY;
+		return IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY;
 	}
 
 	/**
@@ -376,7 +361,6 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	@Override
 	protected void internalWrite(DataOutputStream da) throws IOException
 	{
-		da.writeBoolean(isMethod);
 		IndexPersistence.writeType(returnTypes, da);
 		int len = parameterNames == null ? 0 : parameterNames.length;
 		da.writeInt(len);
@@ -397,7 +381,6 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	@Override
 	protected void internalRead(DataInputStream di) throws IOException
 	{
-		isMethod = di.readBoolean();
 		returnTypes = IndexPersistence.readType(di);
 		int pc = di.readInt();
 		if (pc > 0)

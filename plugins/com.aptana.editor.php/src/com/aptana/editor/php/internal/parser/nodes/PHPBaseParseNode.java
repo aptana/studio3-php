@@ -13,14 +13,14 @@ import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.parsing.ast.INameNode;
-import com.aptana.parsing.ast.ParseBaseNode;
+import com.aptana.parsing.ast.ParseNode;
 
 /**
  * PHP base ParseNode
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
+public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 {
 	private static final String EMPTY = " "; //$NON-NLS-1$
 	protected String name;

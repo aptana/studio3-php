@@ -24,7 +24,7 @@ import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.IParser;
 import com.aptana.parsing.ast.IParseNode;
-import com.aptana.parsing.ast.ParseBaseNode;
+import com.aptana.parsing.ast.ParseNode;
 import com.aptana.parsing.ast.ParseRootNode;
 
 /**
@@ -66,7 +66,7 @@ public class PHPParser implements IParser
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], startingOffset, startingOffset
+		IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], startingOffset, startingOffset
 				+ source.length());
 		Program ast = null;
 		if (parseState instanceof IPHPParseState)
@@ -150,12 +150,12 @@ public class PHPParser implements IParser
 		}
 		if (ast != null)
 		{
-			IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], ast.getStart(), ast
+			IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
 					.getEnd());
 			processChildren(ast, root, null);
 			return root;
 		}
-		return new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], 0, 0);
+		return new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], 0, 0);
 	}
 
 	/**

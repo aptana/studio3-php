@@ -234,6 +234,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			phpVersion = PHPVersionProvider.getDefaultPHPVersion();
 		}
+		
+		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		// Calculates and sets completion context
+		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
+		
 		String content = document.get();
 
 		AbstractPhpLexer lexer = PhpLexerFactory.createLexer(new StringReader(content), phpVersion);
@@ -363,10 +368,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 
 		int replaceLengthIncrease = countReplaceLengthIncrease(content, offset);
-
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
-		// Calculates and sets completion context
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
 
 		ICompletionProposal[] computeCompletionProposalInternal = computeCompletionProposalInternal(partition, offset,
 				content, true, forceActivation);
@@ -500,8 +501,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (!paths.contains(entryPath))
 			{
 				paths.add(entryPath);
-				completionProposals.add(createProposal(e, i + text2.length() - 1, text2, entryPath, e.getModule(),
-						false, index, false));
+				PHPCompletionProposal proposal = createProposal(e, i + text2.length() - 1, text2, entryPath, e
+						.getModule(), false, index, false);
+				if (proposal != null)
+				{
+					completionProposals.add(proposal);
+				}
 			}
 		}
 		ICompletionProposal[] result = completionProposals.toArray(EMPTY_PROPOSAL);
@@ -2743,7 +2748,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	private static boolean isFunctionEntry(IElementEntry entry)
 	{
-		if (entry.getCategory() != IPHPIndexConstants.FUNCTION_CATEGORY)
+		if (entry.getCategory() != IPHPIndexConstants.FUNCTION_CATEGORY
+				&& entry.getCategory() != IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY)
 		{
 			return false;
 		}

@@ -137,8 +137,25 @@ public class EntryUtils
 
 	}
 
+	/**
+	 * Returns true iff the given entry is a function; False, otherwise.
+	 * 
+	 * @param entry
+	 * @return true iff the given entry is a function.
+	 */
 	public static boolean isFunction(IElementEntry entry)
 	{
 		return entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY;
+	}
+
+	/**
+	 * Returns true iff the given entry is a lambda function (PHP closure); False, otherwise.
+	 * 
+	 * @param entry
+	 * @return true iff the given entry is a lambda function.
+	 */
+	public static boolean isLambdaFunction(IElementEntry entry)
+	{
+		return entry.getCategory() == IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY;
 	}
 }
