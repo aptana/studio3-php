@@ -166,12 +166,13 @@ public class PHPOffsetMapper
 		{
 			if (PHPContentAssistProcessor.DEREFERENCE_OP.equals(callPath.get(1)))
 			{
-				entries = PHPContentAssistProcessor.computeDereferenceEntries(index, callPath, offset, module, true);
+				entries = PHPContentAssistProcessor.computeDereferenceEntries(index, callPath, offset, module, true,
+						namespace);
 			}
 			else
 			{
 				entries = PHPContentAssistProcessor.computeStaticDereferenceEntries(index, callPath, offset, module,
-						true);
+						true, namespace);
 			}
 		}
 		else

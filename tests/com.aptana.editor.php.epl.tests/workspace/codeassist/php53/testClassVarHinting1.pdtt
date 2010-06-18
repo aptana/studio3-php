@@ -9,7 +9,8 @@ class TestClass {
 	 * @var \If1|\If2
 	 */
 	public $_testObject;
-} $test = new TestClass(); $test->_testObject->| ?>
+} $test = new TestClass(); 
+$test->_testObject->| ?>
 --EXPECT--
 method(testIf1)
 method(testIf2)

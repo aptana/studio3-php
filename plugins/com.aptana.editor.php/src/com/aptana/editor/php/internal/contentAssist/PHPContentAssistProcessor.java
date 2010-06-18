@@ -98,6 +98,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	protected static final String DOLLAR_SIGN = "$"; //$NON-NLS-1$
 
 	/**
+	 * The global namespace char, which is also used as a namespace separator.
+	 */
+	public static final String GLOBAL_NAMESPACE = "\\"; //$NON-NLS-1$
+	/**
 	 * Dereference operator.
 	 */
 	public static final String DEREFERENCE_OP = "->"; //$NON-NLS-1$
@@ -234,11 +238,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			phpVersion = PHPVersionProvider.getDefaultPHPVersion();
 		}
-		
+
 		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		// Calculates and sets completion context
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
-		
+
 		String content = document.get();
 
 		AbstractPhpLexer lexer = PhpLexerFactory.createLexer(new StringReader(content), phpVersion);
@@ -532,7 +536,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			IModule module)
 	{
 		Set<IElementEntry> result = computeDereferenceEntries(index, callPath, offset == 0 ? 0 : offset - 1, module,
-				false);
+				false, namespace);
 		if (result == null || result.isEmpty())
 		{
 			return new ICompletionProposal[] {};
@@ -571,15 +575,17 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - module.
 	 * @param exactMatch
 	 *            - whether to perform the exact match of the last entry.
+	 * @param namespace
+	 *            - current namespace
 	 * @return dereference entries or null.
 	 */
 	@SuppressWarnings("unchecked")
 	public static Set<IElementEntry> computeDereferenceEntries(IElementsIndex index, List<String> callPath, int offset,
-			IModule module, boolean exactMatch)
+			IModule module, boolean exactMatch, String namespace)
 	{
 		String entryName = callPath.get(0);
 		Set<IElementEntry> leftDereferenceEntries = computeDereferenceLeftEntries(index, pathEntryName(entryName),
-				offset, module);
+				offset, module, namespace);
 		if (leftDereferenceEntries == null)
 		{
 			return null;
@@ -612,7 +618,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 			String callPathEntry = callPath.get(i);
 			result = computeDereferenceRightEntries(leftDereferenceEntries, index, pathEntryName(callPathEntry),
-					offset, module, currentExactMatchFlag, applyAccessRestriction, innerCompletion);
+					offset, module, currentExactMatchFlag, applyAccessRestriction, innerCompletion, namespace);
 			if (result == null || result.isEmpty())
 			{
 				return null;
@@ -637,7 +643,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			int offset, IModule module)
 	{
 		Set<IElementEntry> result = computeStaticDereferenceEntries(index, callPath, offset == 0 ? 0 : offset - 1,
-				module, false);
+				module, false, namespace);
 		if (result == null || result.isEmpty())
 		{
 			return new ICompletionProposal[] {};
@@ -680,13 +686,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - module.
 	 * @param exactMatch
 	 *            - whether to perform an exact match for the last entry.
+	 * @param namespace
 	 * @return set of entries or null.
 	 */
 	public static Set<IElementEntry> computeStaticDereferenceEntries(IElementsIndex index, List<String> callPath,
-			int offset, IModule module, boolean exactMatch)
+			int offset, IModule module, boolean exactMatch, String namespace)
 	{
 		Set<IElementEntry> leftDereferenceEntries = computeStaticDereferenceLeftEntries(index, pathEntryName(callPath
-				.get(0)), offset, module);
+				.get(0)), offset, module, namespace);
 		if (leftDereferenceEntries == null || leftDereferenceEntries.isEmpty())
 		{
 			return null;
@@ -702,7 +709,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		Set<IElementEntry> result = computeStaticDereferenceRightEntries(index, leftDereferenceEntries,
 				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, innerCompletion,
-				parentCompletion);
+				parentCompletion, namespace);
 		if (result == null || result.isEmpty())
 		{
 			return null;
@@ -725,7 +732,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					applyAccessRestriction = true;
 				}
 				result = computeDereferenceRightEntries(leftDereferenceEntries, index, pathEntryName(callPath.get(i)),
-						offset, module, currentExactMatch, applyAccessRestriction, innerCompletion);
+						offset, module, currentExactMatch, applyAccessRestriction, innerCompletion, namespace);
 				if (result == null || result.isEmpty())
 				{
 					return null;
@@ -760,7 +767,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	private static Set<IElementEntry> computeStaticDereferenceRightEntries(IElementsIndex index,
 			Set<IElementEntry> leftEntries, String right, int offset, IModule module, boolean exactMatch,
-			boolean applyAccessModifiers, boolean innerEntries, boolean parentEntries)
+			boolean applyAccessModifiers, boolean innerEntries, boolean parentEntries, String namespace)
 	{
 		if (leftEntries == null || leftEntries.isEmpty())
 		{
@@ -803,26 +810,26 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 
-		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index);
+		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace);
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// now searching for the possible right parts
 		if (right.length() == 0)
 		{
 			Set<IElementEntry> varResults = ContentAssistCollectors.collectVariableEntries(index, DOLLAR_SIGN,
-					typesWithAncestors, exactMatch);
+					typesWithAncestors, exactMatch, namespace);
 			if (varResults != null)
 			{
 				result.addAll(varResults);
 			}
 			Set<IElementEntry> funcResults = ContentAssistCollectors.collectFunctionEntries(index, right,
-					typesWithAncestors, exactMatch);
+					typesWithAncestors, exactMatch, namespace);
 			if (funcResults != null)
 			{
 				result.addAll(funcResults);
 			}
 			Set<IElementEntry> constResults = ContentAssistCollectors.collectConstEntries(index, right,
-					typesWithAncestors, exactMatch);
+					typesWithAncestors, exactMatch, namespace);
 			if (constResults != null)
 			{
 				result.addAll(constResults);
@@ -830,12 +837,15 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else if (right.startsWith(DOLLAR_SIGN))
 		{
-			result.addAll(ContentAssistCollectors.collectVariableEntries(index, right, typesWithAncestors, exactMatch));
+			result.addAll(ContentAssistCollectors.collectVariableEntries(index, right, typesWithAncestors, exactMatch,
+					namespace));
 		}
 		else
 		{
-			result.addAll(ContentAssistCollectors.collectConstEntries(index, right, typesWithAncestors, exactMatch));
-			result.addAll(ContentAssistCollectors.collectFunctionEntries(index, right, typesWithAncestors, exactMatch));
+			result.addAll(ContentAssistCollectors.collectConstEntries(index, right, typesWithAncestors, exactMatch,
+					namespace));
+			result.addAll(ContentAssistCollectors.collectFunctionEntries(index, right, typesWithAncestors, exactMatch,
+					namespace));
 		}
 		if (result == null || result.isEmpty())
 		{
@@ -877,7 +887,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					String[] types = t.split("\\|"); //$NON-NLS-1$
 					for (String splittedType : types)
 					{
-						splittedTypes.add(splittedType.trim());
+						String resolvedType = splittedType.trim();
+						if (resolvedType.startsWith(GLOBAL_NAMESPACE))
+						{
+							resolvedType = resolvedType.substring(1);
+						}
+						splittedTypes.add(resolvedType);
 					}
 				}
 				else
@@ -930,10 +945,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - offset.
 	 * @param module
 	 *            - current module.
+	 * @param namespace
 	 * @return set of entries or null.
 	 */
 	private static Set<IElementEntry> computeStaticDereferenceLeftEntries(IElementsIndex index, String left,
-			int offset, IModule module)
+			int offset, IModule module, String namespace)
 	{
 		if (left.startsWith("$")) //$NON-NLS-1$
 		{
@@ -963,7 +979,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (clazz instanceof ClassPHPEntryValue)
 			{
 				String superClassname = ((ClassPHPEntryValue) clazz).getSuperClassname();
-				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module);
+				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, namespace);
 				if (superClassEntry != null && superClassEntry.size() == 1)
 				{
 					result.addAll(superClassEntry);
@@ -974,7 +990,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else
 		{
-			return getClassEntries(index, left, module);
+			return getClassEntries(index, left, module, namespace);
 		}
 	}
 
@@ -1015,10 +1031,16 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - index to use.
 	 * @param clazz
 	 *            - class name.
+	 * @param namespace
 	 * @return variable entries.
 	 */
-	private static Set<IElementEntry> getClassEntries(IElementsIndex index, String clazz, IModule module)
+	private static Set<IElementEntry> getClassEntries(IElementsIndex index, String clazz, IModule module,
+			String namespace)
 	{
+		if (clazz != null && clazz.startsWith(GLOBAL_NAMESPACE))
+		{
+			clazz = clazz.substring(1);
+		}
 		List<IElementEntry> leftEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, clazz);
 		if (leftEntries == null)
 		{
@@ -1029,7 +1051,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			if (module == null || module.equals(entry.getModule()))
 			{
-				result.add(entry);
+				ClassPHPEntryValue value = (ClassPHPEntryValue) entry.getValue();
+				if (ContentAssistUtils.isInNamespace(value, namespace))
+				{
+					result.add(entry);
+				}
 			}
 		}
 		return result;
@@ -1073,11 +1099,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - whether to filter entries by access modifiers.
 	 * @param innerEntries
 	 *            - whether inner entries are being computed. Like $this->... or self::...
+	 * @param namespace
 	 * @return set of entries or null.
 	 */
 	private static Set<IElementEntry> computeDereferenceRightEntries(Set<IElementEntry> leftEntries,
 			IElementsIndex index, String right, int offset, IModule module, boolean exactMatch,
-			boolean applyAccessModifiers, boolean innerEntries)
+			boolean applyAccessModifiers, boolean innerEntries, String namespace)
 	{
 		if (leftEntries == null || leftEntries.isEmpty())
 		{
@@ -1118,7 +1145,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		// FIXME - Shalom (???) - Have the ancestors look at the current module and remove any other ancestor from a
 		// different module and a similar name
-		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index);
+		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace);
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// now searching for the possible right parts
@@ -1126,13 +1153,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		if (right.length() == 0)
 		{
 			Set<IElementEntry> varResults = ContentAssistCollectors.collectVariableEntries(index, DOLLAR_SIGN,
-					typesWithAncestors, exactMatch);
+					typesWithAncestors, exactMatch, namespace);
 			if (varResults != null)
 			{
 				result.addAll(varResults);
 			}
 			Set<IElementEntry> funcResults = ContentAssistCollectors.collectFunctionEntries(index, right,
-					typesWithAncestors, exactMatch);
+					typesWithAncestors, exactMatch, namespace);
 			if (funcResults != null)
 			{
 				result.addAll(funcResults);
@@ -1150,8 +1177,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				var = DOLLAR_SIGN + right;
 			}
-			result.addAll(ContentAssistCollectors.collectVariableEntries(index, var, typesWithAncestors, exactMatch));
-			result.addAll(ContentAssistCollectors.collectFunctionEntries(index, right, typesWithAncestors, exactMatch));
+			result.addAll(ContentAssistCollectors.collectVariableEntries(index, var, typesWithAncestors, exactMatch,
+					namespace));
+			result.addAll(ContentAssistCollectors.collectFunctionEntries(index, right, typesWithAncestors, exactMatch,
+					namespace));
 		}
 		if (result == null || result.isEmpty())
 		{
@@ -1181,10 +1210,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - offset.
 	 * @param module
 	 *            - current module.
+	 * @param namespace
+	 *            - current namespace
 	 * @return set of entries or null.
 	 */
 	private static Set<IElementEntry> computeDereferenceLeftEntries(IElementsIndex index, String left, int offset,
-			IModule module)
+			IModule module, String namespace)
 	{
 		if (left.startsWith("$")) //$NON-NLS-1$
 		{
@@ -1201,7 +1232,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else
 			{
-				return getVariableEntries(index, left);
+				return getVariableEntries(index, left, namespace);
 			}
 		}
 		else
@@ -1212,7 +1243,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else
 			{
-				return getClassEntries(index, left, module);
+				return getClassEntries(index, left, module, namespace);
 			}
 		}
 	}
@@ -1245,9 +1276,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - index to use.
 	 * @param var
 	 *            - variable name.
+	 * @param namespace
+	 *            - namespace
 	 * @return variable entries.
 	 */
-	private static Set<IElementEntry> getVariableEntries(IElementsIndex index, String var)
+	private static Set<IElementEntry> getVariableEntries(IElementsIndex index, String var, String namespace)
 	{
 		String varName = var.substring(1);
 		List<IElementEntry> leftEntries = index.getEntries(IPHPIndexConstants.VAR_CATEGORY, varName);
@@ -1255,8 +1288,15 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			return null;
 		}
-		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>(leftEntries);
-		result.addAll(leftEntries);
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+		for (IElementEntry entry : leftEntries)
+		{
+			VariablePHPEntryValue value = (VariablePHPEntryValue) entry.getValue();
+			if (ContentAssistUtils.isInNamespace(value, namespace))
+			{
+				result.add(entry);
+			}
+		}
 		return result;
 	}
 

@@ -915,6 +915,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		@Override
 		public void endVisit(NamespaceDeclaration node)
 		{
+			this.endVisitScopeNode(node);
 			currentNamespace = EMPTY_STRING;
 			super.endVisit(node);
 		}
@@ -923,15 +924,20 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		public boolean visit(NamespaceDeclaration node)
 		{
 			StringBuilder nameBuilder = new StringBuilder();
-			List<Identifier> segments = node.getName().segments();
-			int a = 0;
-			for (Identifier i : segments)
+			// TODO: Shalom - At the moment we place an empty string for the root namespace. We might want to consider
+			// using the namespace backslash '\' as the root.
+			if (node.getName() != null)
 			{
-				nameBuilder.append(i.getName());
-				a++;
-				if (a != segments.size())
+				List<Identifier> segments = node.getName().segments();
+				int a = 0;
+				for (Identifier i : segments)
 				{
-					nameBuilder.append('\\');
+					nameBuilder.append(i.getName());
+					a++;
+					if (a != segments.size())
+					{
+						nameBuilder.append('\\');
+					}
 				}
 			}
 			String name = nameBuilder.toString();
@@ -942,6 +948,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			{
 				_namespace = currentNamespace;
 			}
+			this.startVisitScopeNode(node);
 			return super.visit(node);
 		}
 
@@ -982,8 +989,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		@Override
 		public boolean visit(ClassDeclaration classDeclaration)
 		{
-			int category = IPHPIndexConstants.CLASS_CATEGORY;
-
 			List<Identifier> interfaces = classDeclaration.interfaces();
 			List<String> interfaceNames = new ArrayList<String>(interfaces.size());
 			for (Identifier interfaceName : interfaces)
@@ -1005,8 +1010,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			value.setStartOffset(classDeclaration.getStart());
 			value.setEndOffset(classDeclaration.getEnd());
 
-			IElementEntry currentClassEntry = reporter.reportEntry(category, classDeclaration.getName().getName(),
-					value, module);
+			IElementEntry currentClassEntry = reporter.reportEntry(IPHPIndexConstants.CLASS_CATEGORY, classDeclaration
+					.getName().getName(), value, module);
 			currentClass = new ClassScopeInfo(currentClassEntry);
 
 			return true;
@@ -3654,7 +3659,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							for (String s : variables)
 							{
 								VariablePHPEntryValue value = new VariablePHPEntryValue(0, false, false, false,
-										Collections.emptySet(), lineStartPos, EMPTY_STRING);
+										Collections.emptySet(), lineStartPos, this._namespace);
 								reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY, s.substring(1), value, module);
 							}
 							StringBuffer replaceBuffer = new StringBuffer();

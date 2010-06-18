@@ -42,19 +42,21 @@ public class ContentAssistCollectors
 	 *            - types to collect variables from.
 	 * @param exactMatch
 	 *            - whether to check for exact match of the variable name.
+	 * @param namespace
 	 * @param filter
 	 *            - filter to apply.
 	 * @return types
 	 */
 	public static Set<IElementEntry> collectVariableEntries(IElementsIndex index, String varName, Set<String> types,
-			boolean exactMatch)
+			boolean exactMatch, final String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// searching for variables
 		String rightVarName = varName.substring(1);
 		for (String leftType : types)
 		{
-			String entryPath = leftType + IElementsIndex.DELIMITER + rightVarName;
+			String typeName = processTypeName(namespace, leftType);
+			String entryPath = typeName + rightVarName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)
 			{
@@ -143,7 +145,7 @@ public class ContentAssistCollectors
 											value = new VariablePHPEntryValue(varParseNode.getModifiers(), varParseNode
 													.isParameter(), varParseNode.isLocalVariable(), varParseNode
 													.isField(), varParseNode.getType(), varParseNode
-													.getStartingOffset(), EMPTY_STRING);
+													.getStartingOffset(), namespace);
 											return value;
 										}
 
@@ -175,17 +177,20 @@ public class ContentAssistCollectors
 	 *            - whether to check for exact match of the variable name.
 	 * @param filter
 	 *            - filter to apply.
+	 * @param namespace
+	 *            - namespace lookup (can be null)
 	 * @return types
 	 */
 	public static Set<IElementEntry> collectConstEntries(IElementsIndex index, String varName, Set<String> types,
-			boolean exactMatch)
+			boolean exactMatch, String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// searching for variables
 		String rightVarName = varName;
 		for (String leftType : types)
 		{
-			String entryPath = leftType + IElementsIndex.DELIMITER + rightVarName;
+			String typeName = processTypeName(namespace, leftType);
+			String entryPath = typeName + rightVarName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)
 			{
@@ -206,6 +211,28 @@ public class ContentAssistCollectors
 	}
 
 	/**
+	 * Prepare the type name with the namespace.
+	 * 
+	 * @param namespace
+	 *            The namespace (should be without the separaotr at the beginning)
+	 * @param typeName
+	 *            The type that we want to append the namespace with
+	 * @return A processed type name with a namespace prefix, in case a valid namespace was passed.
+	 */
+	private static String processTypeName(String namespace, String typeName)
+	{
+		String result = typeName;
+		if (namespace != null)
+		{
+			if (!typeName.startsWith(namespace) && !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
+			{
+				result = namespace + PHPContentAssistProcessor.GLOBAL_NAMESPACE + typeName;
+			}
+		}
+		return result + IElementsIndex.DELIMITER;
+	}
+
+	/**
 	 * Collects function entries.
 	 * 
 	 * @param index
@@ -216,10 +243,11 @@ public class ContentAssistCollectors
 	 *            - types to collect functions (methods) from.
 	 * @param exactMatch
 	 *            - whether to check for exact match of the function name.
+	 * @param namespace
 	 * @return types
 	 */
 	public static Set<IElementEntry> collectFunctionEntries(IElementsIndex index, String funcName, Set<String> types,
-			boolean exactMatch)
+			boolean exactMatch, String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 
@@ -227,7 +255,8 @@ public class ContentAssistCollectors
 		String rightMethodName = funcName;
 		for (String leftType : types)
 		{
-			String entryPath = leftType + IElementsIndex.DELIMITER + rightMethodName;
+			String typeName = processTypeName(namespace, leftType);
+			String entryPath = typeName + rightMethodName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)
 			{
@@ -317,19 +346,20 @@ public class ContentAssistCollectors
 												Parameter[] parameters = functionParseNode.getParameters();
 												LinkedHashMap<String, Set<Object>> parametersMap = null;
 												boolean[] mandatories = null;
-												int[] startPositions = null;
+												ArrayList<Integer> startPositions = null;
 												parametersMap = new LinkedHashMap<String, Set<Object>>(
 														parameters.length);
 												if (parameters != null)
 												{
 													mandatories = new boolean[parameters.length];
-													startPositions = new int[parameters.length];
+													startPositions = new ArrayList<Integer>(parameters.length);
 													for (int i = 0; i < parameters.length; i++)
 													{
 														Parameter parameter = parameters[i];
 														String nameIdentifier = parameter.getVariableName();
 														if (nameIdentifier == null)
 														{
+
 															continue;
 														}
 														if (nameIdentifier.startsWith(DOLLAR_SIGN))
@@ -347,12 +377,16 @@ public class ContentAssistCollectors
 														mandatories[i] = EMPTY_STRING.equals(parameter
 																.getDefaultValue());
 														// Always set to that, since we have no other information here
-														startPositions[i] = functionParseNode.getStartingOffset();
+														startPositions.add(functionParseNode.getStartingOffset());
 													}
 												}
-
+												int[] startPositionsArray = new int[startPositions.size()];
+												for (int p = 0; p < startPositions.size(); p++)
+												{
+													startPositionsArray[p] = startPositions.get(p);
+												}
 												value = new FunctionPHPEntryValue(functionParseNode.getModifiers(),
-														true, parametersMap, startPositions, mandatories,
+														true, parametersMap, startPositionsArray, mandatories,
 														functionParseNode.getStartingOffset(), EMPTY_STRING);
 												return value;
 											}

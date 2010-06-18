@@ -24,9 +24,14 @@ class B extends A {
 		parent::|
 	}
 }
+
+// Aptana Mod - We added simpleField, publicField and protectedField to the completion
 ?>
 --EXPECT--
 field($staticField)
+field($protectedField)
+field($publicField)
+field($simpleField)
 field(CONSTANT_FIELD)
 method(publicStaticFunction)
 method(protectedStaticFunction)

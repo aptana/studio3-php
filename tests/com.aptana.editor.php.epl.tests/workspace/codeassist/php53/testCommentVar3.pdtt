@@ -1,0 +1,16 @@
+--TEST--
+Test Commented Variable With Class Type Methods
+--FILE--
+<?php 
+  // Aptana style of supporting the var type
+  class Foobar {
+    public function nonsense(){} 
+  } 
+  /**
+   * @var \Foobar 
+   */ 
+  $obj = null; 
+  $obj->
+ ?>
+--EXPECT--
+method(nonsense)

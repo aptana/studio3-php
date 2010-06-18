@@ -8,6 +8,18 @@ Test Commented Variable With Class Type Methods
 	/* @var $obj \Foobar */ 
 	$obj = null; 
 	$obj->|
+	
+	/*
+	Currently, Aptana PHP only supports this format:
+	  class Foobar {
+	    public function nonsense(){} 
+	  } 
+	  **
+	   * @var \Foobar 
+	   *
+	  $obj = null; 
+	  $obj->
+    */
  ?>
 --EXPECT--
 method(nonsense)
