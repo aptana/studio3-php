@@ -2266,13 +2266,14 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 */
 		private void reportGlobalScopeVariables(Scope scope)
 		{
-			if (globalMode)
+			int rootType = scope.getRoot().getType();
+			if (globalMode || rootType == ASTNode.NAMESPACE)
 			{
-				if (scope.getRoot() instanceof Program)
+				if (rootType == ASTNode.PROGRAM || rootType == ASTNode.NAMESPACE)
 				{
 					for (VariableInfo info : scope.getVariables())
 					{
-						VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, false, false, info
+						VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, true, false, info
 								.getVariableTypes(), info.getNodeStart(), currentNamespace);
 
 						String entryPath = info.getName();
