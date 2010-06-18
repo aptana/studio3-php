@@ -13,7 +13,6 @@ import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
 import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocTag;
 
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
-import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
