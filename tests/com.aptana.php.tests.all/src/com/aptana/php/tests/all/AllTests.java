@@ -11,7 +11,7 @@ public class AllTests
 		TestSuite suite = new TestSuite(AllTests.class.getName());
 		// $JUnit-BEGIN$
 		suite.addTest(CoreTests.suite());
-		// suite.addTest(UITests.suite());
+		suite.addTest(UITests.suite());
 		// $JUnit-END$
 		return suite;
 	}

@@ -10,7 +10,7 @@ public class UITests
 	{
 		TestSuite suite = new TestSuite(UITests.class.getName());
 		// $JUnit-BEGIN$
-		// suite.addTest(org.eclipse.php.core.tests.AllTests.suite());
+		suite.addTest(org.eclipse.php.core.tests.AllUITests.suite());
 		// $JUnit-END$
 
 		// Now add special test cases which require to be run after all plugins are loaded (dependency inversion in
