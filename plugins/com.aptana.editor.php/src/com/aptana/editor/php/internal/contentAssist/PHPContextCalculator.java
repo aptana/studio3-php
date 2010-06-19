@@ -8,10 +8,12 @@ import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
+import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.NamespacePHPEntryValue;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPNamespaceNode;
 import com.aptana.parsing.lexer.Lexeme;
 
 public class PHPContextCalculator
@@ -30,6 +32,11 @@ public class PHPContextCalculator
 	 * "new" proposal context type.
 	 */
 	protected static final String NEW_PROPOSAL_CONTEXT_TYPE = "NEW_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
+
+	/**
+	 * Namespace proposal context type.
+	 */
+	protected static final String NAMESPACE_PROPOSAL_CONTEXT_TYPE = "NAMESPACE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
 
 	// private static final String[] EMPTY_STRING_ARRAY = new String[0];
 	private ProposalContext currentContext;
@@ -99,6 +106,12 @@ public class PHPContextCalculator
 
 		// checking new instance context
 		if (checkNewInstanceContext(lexemeProvider, offset, lexemePosition))
+		{
+			return;
+		}
+
+		// checking for namespace Use statement
+		if (checkNamespaceUseContext(lexemeProvider, offset, lexemePosition))
 		{
 			return;
 		}
@@ -501,7 +514,8 @@ public class PHPContextCalculator
 	{
 		// searching for "new" keyword
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
-				PHPRegionTypes.PHP_NEW, new String[] { PHPRegionTypes.WHITESPACE });
+				PHPRegionTypes.PHP_NEW, new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_NS_SEPARATOR,
+						PHPRegionTypes.PHP_STRING });
 		// WAS SKIPPING: { PHPTokenTypes.IDENTIFIER, PHPTokenTypes.BACKSLASH });
 		if (nearestKeyWord == null)
 		{
@@ -589,6 +603,43 @@ public class PHPContextCalculator
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Checks for namespace 'use' context.
+	 * 
+	 * @param lexemeProvider
+	 *            - lexeme provider.
+	 * @param lexemePosition
+	 *            - lexeme position.
+	 * @return true if context is recognized and set, false otherwise
+	 */
+	private boolean checkNamespaceUseContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	{
+		Lexeme<PHPTokenType> nearestUseKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
+				PHPRegionTypes.PHP_USE, new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_NS_SEPARATOR,
+						PHPRegionTypes.PHP_STRING });
+		if (nearestUseKeyWord == null)
+		{
+			return false;
+		}
+
+		IContextFilter filter = new IContextFilter()
+		{
+
+			public boolean acceptBuiltin(Object builtinElement)
+			{
+				return (builtinElement instanceof PHPNamespaceNode);
+			}
+
+			public boolean acceptElementEntry(IElementEntry element)
+			{
+				return element.getValue() instanceof NamespacePHPEntryValue;
+			}
+		};
+		currentContext = new ProposalContext(filter, true, true, new int[] {IPHPIndexConstants.NAMESPACE_CATEGORY});
+		currentContext.setType(NAMESPACE_PROPOSAL_CONTEXT_TYPE);
+		return true;
 	}
 
 	/**

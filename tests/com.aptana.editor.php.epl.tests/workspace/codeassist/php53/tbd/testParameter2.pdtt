@@ -2,6 +2,7 @@
 Should comlete namespace constants in parameter initializers
 --FILE--
 <?
+// TODO - Change our proposal context to allow constants when creating param assignments 
 namespace NS;
 const MY_CONST1 = 1;
 const MY_CONST2 = 2;

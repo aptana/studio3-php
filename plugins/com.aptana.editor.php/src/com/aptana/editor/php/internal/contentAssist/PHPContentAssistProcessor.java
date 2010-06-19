@@ -42,6 +42,7 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
 import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org.eclipse.php.util.StringUtils;
 import org.eclipse.swt.graphics.Image;
 
 import com.aptana.editor.common.AbstractThemeableEditor;
@@ -140,7 +141,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static Image fIcon5off = PHPEditorPlugin.getImage("icons/full/obj16/v5_off.png"); //$NON-NLS-1$
 	private static Image fIcon4off = PHPEditorPlugin.getImage("icons/full/obj16/v4_off.png"); //$NON-NLS-1$
 
-	private static char[] autoactivationCharacters = new char[] { '>', '@', '$', ':' };
+	private static char[] autoactivationCharacters = new char[] { '>', '@', '$', ':', '\\' };
 	private static char[] contextautoactivationCharacters = new char[] { '(' };
 	private static PHPDecoratingLabelProvider labelProvider = new PHPDecoratingLabelProvider();
 	private ITextViewer viewer;
@@ -300,8 +301,9 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				{
 					if (left <= offset && right >= offset)
 					{
-						return getNamespaceCompletionProposals(content, contentS.toString(), pos, contentS.length(), 1,
-								viewer);
+						// return getNamespaceCompletionProposals(content, contentS.toString(), offset,
+						// contentS.length(), 1,
+						// viewer);
 					}
 				}
 				if (left < offset && right > offset)
@@ -430,7 +432,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				return EMPTY_PROPOSAL;
 			}
 
-			// FIXME - Shalom - Fix the case where we have a static dereferencing at the beginning
 			// Foo::hello()->goodbye()...
 			if (DEREFERENCE_OP.equals(callPath.get(1)))
 			{
@@ -440,9 +441,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				// We have a case like A::$B-> so we treat $B as a simple identifier
 				return dereferencingCompletion(getIndex(content, start), callPath, start, getModule());
-				// String identifier = callPath.get(2);
-				// return simpleIdentifierCompletion(start, content, identifier.toLowerCase(),
-				// reportedScopeUnderClassOrFunction, globalImports, getModule(), false, false);
 			}
 			else
 			{
@@ -451,7 +449,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else if (callPath.size() == 1)
 		{
-			this.hashCode();
 			// if content assistant is not auto-activated and we should not
 			// auto-activate on
 			// identifiers, skipping the proposals computation.
@@ -470,56 +467,79 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// getModule());
 			// }
 
+			// Check if we are dealing with a namespace completion
+			if (identifier.startsWith(GLOBAL_NAMESPACE))
+			{
+				return computeNamespaceCompletion(start, content, identifier, reportedScopeUnderClassOrFunction,
+						globalImports, getModule(), proposeBuiltins, true);
+			}
+
 			return simpleIdentifierCompletion(start, content, identifier.toLowerCase(),
-					reportedScopeUnderClassOrFunction, globalImports, getModule(), proposeBuiltins, true);
+					reportedScopeUnderClassOrFunction, globalImports, getModule(), proposeBuiltins, true, false);
 		}
 
 		return EMPTY_PROPOSAL;
 	}
 
-	/**
-	 * Returns a namespace-completion proposals.
-	 * 
-	 * @param text
-	 * @param text2
-	 * @param i
-	 * @param length
-	 * @param j
-	 * @param viewer2
-	 * @return
-	 */
-	private ICompletionProposal[] getNamespaceCompletionProposals(String text, String text2, int i, int length, int j,
-			ITextViewer viewer2)
+	private ICompletionProposal[] computeNamespaceCompletion(int offset, String content, String identifier,
+			boolean reportedScopeUnderClassOrFunction, Set<String> globalImports, IModule module,
+			boolean proposeBuiltins, boolean filter)
 	{
-		ArrayList<ICompletionProposal> completionProposals = new ArrayList<ICompletionProposal>();
-		IElementsIndex index = getIndex(text, i);
-		List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY, EMPTY_STRING);
-		HashSet<String> paths = new HashSet<String>();
-		for (IElementEntry e : entries)
-		{
-			String entryPath = e.getEntryPath();
-			if (!entryPath.startsWith(text2))
-			{
-				continue;
-			}
-			if (!paths.contains(entryPath))
-			{
-				paths.add(entryPath);
-				PHPCompletionProposal proposal = createProposal(e, i + text2.length() - 1, text2, entryPath, e
-						.getModule(), false, index, false);
-				if (proposal != null)
-				{
-					completionProposals.add(proposal);
-				}
-			}
-		}
-		ICompletionProposal[] result = completionProposals.toArray(EMPTY_PROPOSAL);
-		if (result.length > 0)
-		{
-			((PHPCompletionProposal) result[0]).setIsDefaultSelection(true);
-		}
-		return result;
+		// We need to trim out our namespace separator at the beginning of the identifier.
+		identifier = identifier.substring(1);
+		return simpleIdentifierCompletion(offset, content, identifier, reportedScopeUnderClassOrFunction,
+				globalImports, module, proposeBuiltins, filter, true);
 	}
+
+	// /**
+	// * Returns a namespace-only completion proposals.
+	// * @param index
+	// *
+	// * @param content
+	// * @param identifier
+	// * @param offset
+	// * @param collectItemsFromScope
+	// * @param proposals
+	// * @param length
+	// * @return
+	// * @return
+	// */
+	// private Set<ICompletionProposal> computeNamespaceCompletionProposals(IElementsIndex index, String content, String
+	// identifier, int offset, boolean collectItemsFromScope)
+	// {
+	// Set<ICompletionProposal> nsProposals = new TreeSet<ICompletionProposal>();
+	// List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY, EMPTY_STRING);
+	// HashSet<String> paths = new HashSet<String>();
+	// for (IElementEntry e : entries)
+	// {
+	// String entryPath = e.getEntryPath();
+	// if (!entryPath.startsWith(identifier))
+	// {
+	// continue;
+	// }
+	// if (!paths.contains(entryPath))
+	// {
+	// paths.add(entryPath);
+	// PHPCompletionProposal proposal = createProposal(e, offset, identifier, entryPath, e.getModule(), false,
+	// index, false);
+	// if (proposal != null)
+	// {
+	// nsProposals.add(proposal);
+	// }
+	// if (collectItemsFromScope)
+	// {
+	// // We should continue to collect any relevant proposal from this namespace scope
+	// ICompletionProposal[] identifiersCompletion = simpleIdentifierCompletion(offset, content, identifier, false,
+	// null, module, false, true, true);
+	// for (ICompletionProposal p : identifiersCompletion)
+	// {
+	// nsProposals.add(p);
+	// }
+	// }
+	// }
+	// }
+	// return nsProposals;
+	// }
 
 	/**
 	 * Performs dereferencing completion.
@@ -536,7 +556,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			IModule module)
 	{
 		Set<IElementEntry> result = computeDereferenceEntries(index, callPath, offset == 0 ? 0 : offset - 1, module,
-				false, namespace);
+				false, aliases, namespace);
 		if (result == null || result.isEmpty())
 		{
 			return new ICompletionProposal[] {};
@@ -581,11 +601,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	@SuppressWarnings("unchecked")
 	public static Set<IElementEntry> computeDereferenceEntries(IElementsIndex index, List<String> callPath, int offset,
-			IModule module, boolean exactMatch, String namespace)
+			IModule module, boolean exactMatch, Map<String, String> aliases, String namespace)
 	{
 		String entryName = callPath.get(0);
 		Set<IElementEntry> leftDereferenceEntries = computeDereferenceLeftEntries(index, pathEntryName(entryName),
-				offset, module, namespace);
+				offset, module, aliases, namespace);
 		if (leftDereferenceEntries == null)
 		{
 			return null;
@@ -643,7 +663,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			int offset, IModule module)
 	{
 		Set<IElementEntry> result = computeStaticDereferenceEntries(index, callPath, offset == 0 ? 0 : offset - 1,
-				module, false, namespace);
+				module, false, aliases, namespace);
 		if (result == null || result.isEmpty())
 		{
 			return new ICompletionProposal[] {};
@@ -690,10 +710,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return set of entries or null.
 	 */
 	public static Set<IElementEntry> computeStaticDereferenceEntries(IElementsIndex index, List<String> callPath,
-			int offset, IModule module, boolean exactMatch, String namespace)
+			int offset, IModule module, boolean exactMatch, Map<String, String> aliases, String namespace)
 	{
 		Set<IElementEntry> leftDereferenceEntries = computeStaticDereferenceLeftEntries(index, pathEntryName(callPath
-				.get(0)), offset, module, namespace);
+				.get(0)), offset, module, aliases, namespace);
 		if (leftDereferenceEntries == null || leftDereferenceEntries.isEmpty())
 		{
 			return null;
@@ -949,7 +969,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return set of entries or null.
 	 */
 	private static Set<IElementEntry> computeStaticDereferenceLeftEntries(IElementsIndex index, String left,
-			int offset, IModule module, String namespace)
+			int offset, IModule module, Map<String, String> aliases, String namespace)
 	{
 		if (left.startsWith("$")) //$NON-NLS-1$
 		{
@@ -979,7 +999,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (clazz instanceof ClassPHPEntryValue)
 			{
 				String superClassname = ((ClassPHPEntryValue) clazz).getSuperClassname();
-				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, namespace);
+				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, aliases, namespace);
 				if (superClassEntry != null && superClassEntry.size() == 1)
 				{
 					result.addAll(superClassEntry);
@@ -990,7 +1010,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else
 		{
-			return getClassEntries(index, left, module, namespace);
+			return getClassEntries(index, left, module, aliases, namespace);
 		}
 	}
 
@@ -1035,12 +1055,15 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return variable entries.
 	 */
 	private static Set<IElementEntry> getClassEntries(IElementsIndex index, String clazz, IModule module,
-			String namespace)
+			Map<String, String> aliases, String namespace)
 	{
 		if (clazz != null && clazz.startsWith(GLOBAL_NAMESPACE))
 		{
 			clazz = clazz.substring(1);
 		}
+
+		ArrayList<IElementEntry> namespaceEntries = getNamespaceEntries(clazz, module, aliases);
+		clazz = getNameByAlias(clazz, index, namespace, aliases, namespaceEntries);
 		List<IElementEntry> leftEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, clazz);
 		if (leftEntries == null)
 		{
@@ -1215,7 +1238,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return set of entries or null.
 	 */
 	private static Set<IElementEntry> computeDereferenceLeftEntries(IElementsIndex index, String left, int offset,
-			IModule module, String namespace)
+			IModule module, Map<String, String> aliases, String namespace)
 	{
 		if (left.startsWith("$")) //$NON-NLS-1$
 		{
@@ -1243,7 +1266,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else
 			{
-				return getClassEntries(index, left, module, namespace);
+				return getClassEntries(index, left, module, aliases, namespace);
 			}
 		}
 	}
@@ -1317,11 +1340,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - module.
 	 * @param proposeBuiltins
 	 *            - whether to propose built-ins.
+	 * @param ignorIndexNamespace
 	 * @return completion proposals
 	 */
 	private ICompletionProposal[] simpleIdentifierCompletion(final int offset, String content, String identifier,
 			boolean reportedStackIsGlobal, Set<String> globalImports, IModule module, boolean proposeBuiltins,
-			boolean filter)
+			boolean filter, boolean ignorIndexNamespace)
 	{
 		String name = identifier;
 
@@ -1367,15 +1391,17 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			index = getIndexOptimized(content, offset);
 		}
+		String namespaceToUse = ignorIndexNamespace ? EMPTY_STRING : namespace;
 		List<IElementEntry> entries = computeSimpleIdentifierEntries(reportedStackIsGlobal, globalImports, name,
-				variableCompletion, index, false, module, filter, currentContext, namespace, aliases);
+				variableCompletion, index, false, module, filter, currentContext, namespaceToUse, aliases);
 
 		items.addAll(entries);
 
 		if (proposeBuiltins)
 		{
 			String completionStart = name;
-			if (completionStart.startsWith("\\")) { //$NON-NLS-1$
+			if (completionStart.startsWith(GLOBAL_NAMESPACE))
+			{
 				completionStart = completionStart.substring(1);
 			}
 			List<Object> modelItems = variableCompletion ? ContentAssistUtils.selectModelElements(DOLLAR_SIGN
@@ -1490,37 +1516,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			boolean exactMatch, IModule module, boolean filter, ProposalContext proposalContext, String namespace,
 			Map<String, String> aliases)
 	{
-		ArrayList<IElementEntry> namespaceEntries = new ArrayList<IElementEntry>();
-		for (String s : aliases.keySet())
+		ArrayList<IElementEntry> namespaceEntries = getNamespaceEntries(name, module, aliases);
+		// [http://php.net/manual/en/language.namespaces.faq.php]
+		// "Names that contain a backslash but do not begin with a backslash like my\name can be resolved in 2 different
+		// ways. If there is an import statement that aliases another name to my, then the import alias is applied to
+		// the my in my\name.Otherwise, the current namespace name is prepended to my\name."
+		if (!name.startsWith(GLOBAL_NAMESPACE))
 		{
-			if (s.toLowerCase().startsWith(name))
-			{
-				namespaceEntries.add(new UnpackedEntry(-1, s, new NamespacePHPEntryValue(0, s), module));
-			}
-		}
-		if (!name.startsWith("\\")) { //$NON-NLS-1$
-			if (namespace != null && namespace.length() > 0)
-			{
-				name = namespace + '\\' + name;
-			}
-			for (String s : aliases.keySet())
-			{
-				if (name.startsWith(s.toLowerCase()))
-				{
-					name = aliases.get(s) + name.substring(s.length());
-					break;
-				}
-
-			}
-			List<IElementEntry> entriesStartingWith = index.getEntriesStartingWith(
-					IPHPIndexConstants.NAMESPACE_CATEGORY, EMPTY_STRING);
-			for (IElementEntry e : entriesStartingWith)
-			{
-				if (e.getEntryPath().startsWith(name))
-				{
-					namespaceEntries.add(e);
-				}
-			}
+			name = getNameByAlias(name, index, namespace, aliases, namespaceEntries);
 		}
 		else
 		{
@@ -1591,6 +1594,29 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				{
 					entries.addAll(index.getEntriesStartingWith(IPHPIndexConstants.CONST_CATEGORY, name));
 				}
+
+				if (proposalContext == null
+						|| proposalContext.acceptModelElementType(IPHPIndexConstants.NAMESPACE_CATEGORY))
+				{
+					// In case the name start with the current namespace, remove that prefix.
+					String ns = name;
+					if (ns.startsWith(namespace + GLOBAL_NAMESPACE))
+					{
+						ns = ns.substring(namespace.length() + 1);
+					}
+					// tokenize the namespace segments. Collect the namespaces from the longest namespace possible until
+					// we don't get any more assist.
+					Set<IElementEntry> collectedNs = new LinkedHashSet<IElementEntry>();
+					collectedNs.addAll(index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY, ns));
+					int separatorIndex = ns.lastIndexOf(GLOBAL_NAMESPACE);
+					while (separatorIndex > 0)
+					{
+						String nsLookup = ns.substring(0, separatorIndex);
+						collectedNs.addAll(index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY, nsLookup));
+						separatorIndex = nsLookup.lastIndexOf(GLOBAL_NAMESPACE);
+					}
+					entries.addAll(collectedNs);
+				}
 			}
 
 			List<IElementEntry> defineEntries = null;
@@ -1646,6 +1672,81 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		ArrayList<IElementEntry> result = new ArrayList<IElementEntry>();
 		result.addAll(filterResult);
 		return result;
+	}
+
+	/**
+	 * @param name
+	 * @param module
+	 * @param aliases
+	 * @return
+	 */
+	private static ArrayList<IElementEntry> getNamespaceEntries(String name, IModule module, Map<String, String> aliases)
+	{
+		ArrayList<IElementEntry> namespaceEntries = new ArrayList<IElementEntry>();
+		for (String s : aliases.keySet())
+		{
+			if (s.toLowerCase().startsWith(name))
+			{
+				namespaceEntries.add(new UnpackedEntry(-1, s, new NamespacePHPEntryValue(0, s), module));
+			}
+		}
+		return namespaceEntries;
+	}
+
+	/**
+	 * Returns the name of the identifier we complete with regards to the aliases we have in the script.<br>
+	 * This follows the rules defined at http://php.net/manual/en/language.namespaces.faq.php: "Names that contain a
+	 * backslash but do not begin with a backslash like my\name can be resolved in 2 different ways. If there is an
+	 * import statement that aliases another name to my, then the import alias is applied to the my in
+	 * my\name.Otherwise, the current namespace name is prepended to my\name."
+	 * 
+	 * @param name
+	 * @param index
+	 * @param namespace
+	 * @param aliases
+	 * @param namespaceEntries
+	 * @return The identifier name with regards to the namespace aliases
+	 */
+	private static String getNameByAlias(String name, IElementsIndex index, String namespace,
+			Map<String, String> aliases, ArrayList<IElementEntry> namespaceEntries)
+	{
+
+		boolean foundAlias = false;
+		String lowerCaseName = name != null ? name.toLowerCase() : EMPTY_STRING;
+		for (String s : aliases.keySet())
+		{
+			if (lowerCaseName.startsWith(s.toLowerCase()))
+			{
+				name = aliases.get(s) + name.substring(s.length());
+				foundAlias = true;
+				break;
+			}
+		}
+		if (!foundAlias)
+		{
+			if (namespace != null && namespace.length() > 0 && !name.startsWith(namespace + GLOBAL_NAMESPACE))
+			{
+				// Calling namespace\ is just like calling the current namespace, so we have to check it here and
+				// return the current name.
+				if (name.startsWith("namespace\\")) { //$NON-NLS-1$
+					name = namespace + GLOBAL_NAMESPACE + name.substring(10);
+				}
+				else
+				{
+					name = namespace + GLOBAL_NAMESPACE + name;
+				}
+			}
+		}
+		List<IElementEntry> entriesStartingWith = index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY,
+				EMPTY_STRING);
+		for (IElementEntry e : entriesStartingWith)
+		{
+			if (e.getEntryPath().startsWith(name))
+			{
+				namespaceEntries.add(e);
+			}
+		}
+		return name;
 	}
 
 	/**
@@ -1836,14 +1937,24 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			else if (item instanceof IElementEntry)
 			{
 				IElementEntry entry = (IElementEntry) item;
-				String firstName = ElementsIndexingUtils.getLastNameInPath(entry.getEntryPath());
+				String firstName;
+				if (entry.getCategory() != IPHPIndexConstants.CONST_CATEGORY && entry.getCategory() != IPHPIndexConstants.NAMESPACE_CATEGORY)
+				{
+					firstName = ElementsIndexingUtils.getLastNameInPath(entry.getEntryPath());
+				}
+				else
+				{
+					firstName = entry.getEntryPath().replaceAll(String.valueOf(IElementsIndex.DELIMITER),
+							STATIC_DEREFERENCE_OP);
+				}
 				if (entry.getValue() instanceof NamespacePHPEntryValue)
 				{
 					name = origName;
 					lowerCase = origName;
 
-					if (lowerCase.startsWith("\\")) { //$NON-NLS-1$
-						firstName = "\\" + firstName; //$NON-NLS-1$
+					if (lowerCase.startsWith(GLOBAL_NAMESPACE))
+					{
+						firstName = GLOBAL_NAMESPACE + firstName;
 					}
 					else if (!usedNames.contains(firstName))
 					{
@@ -1875,7 +1986,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 								newInstanceCompletion);
 						if (proposal != null)
 						{
-							usedNames.add(lowerCase);
+							usedNames.add(firstName.toLowerCase());
 						}
 					}
 				}

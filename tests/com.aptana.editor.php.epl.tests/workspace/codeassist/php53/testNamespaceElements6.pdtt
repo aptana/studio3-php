@@ -3,14 +3,16 @@ Should complete namespace elements using 'namespace' prefix, which means: curren
 --FILE--
 <?
 namespace NS;
-function AAA() {}
-class AAA {}
-const AAA = 5;
+function AAA_FUNC() {}
+class AAA_CLASS {
+  const AAA_CONST = 5;
+}
+
 $AAA = "";
 
 namespace\|
 ?>
 --EXPECT--
-type(AAA)
-method(AAA)
-field(AAA)
+type(AAA_CLASS)
+method(AAA_FUNC)
+field(AAA_CLASS::AAA_CONST)

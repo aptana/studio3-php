@@ -953,13 +953,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 
 		@Override
-		public boolean visit(UseStatement node)
-		{
-			// TODO Auto-generated method stub
-			return super.visit(node);
-		}
-
-		@Override
 		public boolean visit(UseStatementPart node)
 		{
 			NamespaceName name = node.getName();
@@ -2273,7 +2266,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				{
 					for (VariableInfo info : scope.getVariables())
 					{
-						VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, true, false, info
+						VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, false, false, info
 								.getVariableTypes(), info.getNodeStart(), currentNamespace);
 
 						String entryPath = info.getName();

@@ -10,7 +10,7 @@ Test Commented Variable With Class Type Methods
    * @var \Foobar 
    */ 
   $obj = null; 
-  $obj->
+  $obj->|
  ?>
 --EXPECT--
 method(nonsense)

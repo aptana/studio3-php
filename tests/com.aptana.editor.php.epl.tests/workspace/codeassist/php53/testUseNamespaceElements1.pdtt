@@ -15,14 +15,17 @@ namespace MyTestNS2\NS22 { class MyTestClass6 {} }
 namespace test{
 	use MyTest|
 }
-?>
---EXPECT--
+/*
+TODO: Have these in the code assist
 type(MyTestClass1)
 type(MyTestClass2)
 type(MyTestClass3)
 type(MyTestClass4)
 type(MyTestClass5)
 type(MyTestClass6)
+*/
+?>
+--EXPECT--
 type(MyTestNS1)
 type(MyTestNS1\NS11)
 type(MyTestNS1\NS12)

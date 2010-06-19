@@ -1,6 +1,6 @@
 --TEST--
 Use statement test.
-Case with leading slash only
+Case no slash.
 --FILE--
 <?php
 namespace MyTestNS1 {	class MyTestClass1 {}	}
@@ -13,20 +13,16 @@ namespace MyTestNS2\NS21 { class MyTestClass5 {} }
 namespace MyTestNS2\NS22 { class MyTestClass6 {} }
 
 namespace test{
-	use \MyTest|
+	use MyTest|
 }
-
-/*
-TODO - Have this completion as well
+?>
+--EXPECT--
 type(MyTestClass1)
 type(MyTestClass2)
 type(MyTestClass3)
 type(MyTestClass4)
 type(MyTestClass5)
 type(MyTestClass6)
-*/
-?>
---EXPECT--
 type(MyTestNS1)
 type(MyTestNS1\NS11)
 type(MyTestNS1\NS12)

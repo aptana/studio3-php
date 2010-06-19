@@ -36,7 +36,7 @@ import com.aptana.editor.common.contentassist.CommonCompletionProposal;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>, Pavel Petrochenko
  */
-public class PHPCompletionProposal extends CommonCompletionProposal
+public class PHPCompletionProposal extends CommonCompletionProposal implements Comparable<PHPCompletionProposal>
 {
 	/** The type of the object. This is an 'enum' of JSCompletionProposalComparator sorting types. */
 	private int fObjectType;
@@ -333,14 +333,47 @@ public class PHPCompletionProposal extends CommonCompletionProposal
 	{
 		return _replacementLength;
 	}
-	
+
 	public String getReplacementString()
 	{
 		return _replacementString;
 	}
-	
+
 	public void setReplacementLength(int replacementLength)
 	{
 		_replacementLength = replacementLength;
+	}
+
+	/**
+	 * A simple strings comparison of completion proposals.
+	 */
+	@Override
+	public int compareTo(PHPCompletionProposal otherProposal)
+	{
+		
+		String replacement = this.getReplacementString();
+		String otherReplacement = otherProposal.getReplacementString();
+		if (replacement.startsWith(otherReplacement))
+		{
+			// Give this replacement priority as the shorter one
+			return 1;
+		}
+		return replacement.compareTo(otherReplacement);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("{PHPCompletionProposal"); //$NON-NLS-1$
+		builder.append(", Replacement: "); //$NON-NLS-1$
+		builder.append(getReplacementString());
+		builder.append(", Display: "); //$NON-NLS-1$
+		builder.append(getDisplayString());
+		builder.append("}"); //$NON-NLS-1$
+		return builder.toString();
 	}
 }

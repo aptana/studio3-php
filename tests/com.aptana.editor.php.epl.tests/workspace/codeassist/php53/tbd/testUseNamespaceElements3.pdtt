@@ -15,12 +15,8 @@ namespace NS2\NS22 { class Foo {} }
 namespace test{
 	use NS1\|
 }
-/*
-TODO
-Have this completion as well:
-type(A)
-*/
 ?>
 --EXPECT--
+type(A)
 type(NS1\NS11)
 type(NS1\NS12)
