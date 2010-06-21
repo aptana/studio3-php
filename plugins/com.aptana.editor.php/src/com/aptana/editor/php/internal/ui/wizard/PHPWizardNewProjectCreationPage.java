@@ -5,6 +5,7 @@ package com.aptana.editor.php.internal.ui.wizard;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.swt.SWT;
@@ -63,6 +64,11 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 		selectVersion(PHPVersion.PHP5_3.getAlias());
 		Dialog.applyDialogFont(control);
 		setControl(control);
+	}
+
+	public boolean isLocationDefault()
+	{
+		return getLocationPath().equals(Platform.getLocation());
 	}
 
 	protected Preferences getPreferences(IProject project)

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.internal.resources.ResourceStatus;
@@ -164,9 +165,16 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 
 		// get a project handle
 		final IProject newProjectHandle = projectPage.getProjectHandle();
+		// get a project descriptor
+		URI location = null;
+		if (!projectPage.isLocationDefault())
+		{
+			location = projectPage.getLocationURI();
+		}
+
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
-		description.setLocationURI(projectPage.getLocationURI());
+		description.setLocationURI(location);
 		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
 
 		if (!doCreateProject(description, newProjectHandle))
