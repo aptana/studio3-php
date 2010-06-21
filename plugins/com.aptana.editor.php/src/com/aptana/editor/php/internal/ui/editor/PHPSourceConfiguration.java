@@ -1,6 +1,14 @@
 package com.aptana.editor.php.internal.ui.editor;
 
-import static com.aptana.editor.php.internal.IPHPConstants.*;
+import static com.aptana.editor.php.internal.IPHPConstants.COMMAND;
+import static com.aptana.editor.php.internal.IPHPConstants.CONTENT_TYPE_PHP;
+import static com.aptana.editor.php.internal.IPHPConstants.DEFAULT;
+import static com.aptana.editor.php.internal.IPHPConstants.PHP_DOC_COMMENT;
+import static com.aptana.editor.php.internal.IPHPConstants.PHP_MULTI_LINE_COMMENT;
+import static com.aptana.editor.php.internal.IPHPConstants.PHP_SINGLE_LINE_COMMENT;
+import static com.aptana.editor.php.internal.IPHPConstants.PHP_STRING_DOUBLE;
+import static com.aptana.editor.php.internal.IPHPConstants.PHP_STRING_SINGLE;
+import static com.aptana.editor.php.internal.IPHPConstants.PREFIX;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -22,8 +30,9 @@ import com.aptana.editor.common.scripting.IContentTypeTranslator;
 import com.aptana.editor.common.scripting.QualifiedContentType;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
-import com.aptana.editor.common.theme.IThemeManager;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
+import com.aptana.theme.IThemeManager;
+import com.aptana.theme.ThemePlugin;
 
 public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration
 {
@@ -225,6 +234,6 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	protected IThemeManager getThemeManager()
 	{
-		return CommonEditorPlugin.getDefault().getThemeManager();
+		return ThemePlugin.getDefault().getThemeManager();
 	}
 }
