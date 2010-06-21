@@ -136,13 +136,13 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 				String entryPrefix = ElementsIndexingUtils.getFirstNameInPath(e.getEntryPath());
 				if (!entryToModule.containsKey(entryPrefix) || entryToModule.get(entryPrefix) == module)
 				{
-					entryToModule.put(entryPrefix, module);
 					if (activeBuildPaths.size() != 0)
 					{
 						if (module == null || activeBuildPaths.contains(module.getBuildPath()))
 						{
 							result.add(e);
 							added = true;
+							entryToModule.put(entryPrefix, module);
 						}
 					}
 				}
