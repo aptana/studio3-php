@@ -35,6 +35,7 @@
 package com.aptana.editor.php.internal.contentAssist.mapping;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,25 @@ public class PHPOffsetMapper
 	private Set<String> globalImports;
 
 	/**
+	 * Returns the first matching {@link IElementEntry} origin for the given lexeme.
+	 * 
+	 * @param lexeme
+	 * @param lexemeProvider
+	 * @return An {@link IElementEntry} matching the lexeme origin, or null if none was found.
+	 */
+	public IElementEntry findEntry(Lexeme<PHPTokenType> lexeme, LexemeProvider<PHPTokenType> lexemeProvider)
+	{
+		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
+		Set<IElementEntry> entries = collectEntries(source, lexeme);
+		if (entries.isEmpty())
+		{
+			return null;
+		}
+		List<IElementEntry> sortedEntries = sortByModule(entries);
+		return sortedEntries.get(0);
+	}
+
+	/**
 	 * Find the ICodeLocation for the given lexeme.
 	 * 
 	 * @param lexeme
@@ -109,9 +129,7 @@ public class PHPOffsetMapper
 	 */
 	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, LexemeProvider<PHPTokenType> lexemeProvider)
 	{
-		int offset = lexeme.getEndingOffset();
 		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
-
 		try
 		{
 			// Check if we are in an 'include' or 'require'
@@ -142,13 +160,55 @@ public class PHPOffsetMapper
 		{
 			PHPEditorPlugin.logError(e);
 		}
+
+		String fullPath = null;
+		int startOffset = 0;
+
+		List<IElementEntry> sortedEntries = sortByModule(collectEntries(source, lexeme));
+
+		for (IElementEntry entry : sortedEntries)
+		{
+			Object value = entry.getValue();
+			if (value instanceof AbstractPHPEntryValue)
+			{
+				if (entry.getModule() != null)
+				{
+					fullPath = entry.getModule().getFullPath();
+					AbstractPHPEntryValue phpEntryValue = (AbstractPHPEntryValue) value;
+					startOffset = phpEntryValue.getStartOffset();
+				}
+				break;
+			}
+		}
+		if (fullPath == null)
+		{
+			return null;
+		}
+
+		Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN),
+				startOffset, startOffset, ""); //$NON-NLS-1$
+		return new CodeLocation(fullPath, startLexeme);
+	}
+
+	/**
+	 * Collect a set of {@link IElementEntry}s.
+	 * 
+	 * @param offset
+	 * @param source
+	 * @param lexeme
+	 * @return A collection of IElementEntries
+	 */
+	@SuppressWarnings("unchecked")
+	private Set<IElementEntry> collectEntries(String source, Lexeme<PHPTokenType> lexeme)
+	{
 		boolean isFunctionCall = isFunctionCall(lexeme, source);
 		boolean isConstructor = isConstructorCall(lexeme, source);
 
+		int offset = lexeme.getEndingOffset();
 		IModule module = phpSourceEditor.getModule();
 		if (module == null)
 		{
-			return null;
+			return Collections.EMPTY_SET;
 		}
 
 		Set<IElementEntry> entries = null;
@@ -159,7 +219,7 @@ public class PHPOffsetMapper
 		List<String> callPath = ParsingUtils.parseCallPath(null, source, offset, PHPContentAssistProcessor.OPS, false);
 		if (callPath == null || callPath.isEmpty())
 		{
-			return null;
+			return Collections.EMPTY_SET;
 		}
 
 		if (callPath.size() > 1)
@@ -196,7 +256,7 @@ public class PHPOffsetMapper
 
 		if (entries == null)
 		{
-			return null;
+			return Collections.EMPTY_SET;
 		}
 
 		if (isFunctionCall && !isConstructor)
@@ -214,36 +274,9 @@ public class PHPOffsetMapper
 
 		if (entries == null || entries.size() == 0)
 		{
-			return null;
+			return Collections.EMPTY_SET;
 		}
-
-		String fullPath = null;
-		int startOffset = 0;
-
-		List<IElementEntry> sortedEntries = sortByModule(entries);
-
-		for (IElementEntry entry : sortedEntries)
-		{
-			Object value = entry.getValue();
-			if (value instanceof AbstractPHPEntryValue)
-			{
-				if (entry.getModule() != null)
-				{
-					fullPath = entry.getModule().getFullPath();
-					AbstractPHPEntryValue phpEntryValue = (AbstractPHPEntryValue) value;
-					startOffset = phpEntryValue.getStartOffset();
-				}
-				break;
-			}
-		}
-		if (fullPath == null)
-		{
-			return null;
-		}
-
-		Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN),
-				startOffset, startOffset, ""); //$NON-NLS-1$
-		return new CodeLocation(fullPath, startLexeme);
+		return entries;
 	}
 
 	/**

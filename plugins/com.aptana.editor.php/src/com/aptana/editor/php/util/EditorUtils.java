@@ -6,10 +6,12 @@ import java.net.URI;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorRegistry;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -79,25 +81,40 @@ public class EditorUtils
 	 */
 	public static final PHPSourceEditor getPHPSourceEditor(final ITextViewer viewer)
 	{
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IEditorPart activeEditor = page.getActiveEditor();
-		if (isSameDocument(viewer, activeEditor))
+		Display display = Display.getCurrent();
+		if (display == null)
 		{
-			return (PHPSourceEditor) activeEditor;
+			display = Display.getDefault();
 		}
-
-		// Check for any other open editor in the workspace
-		IEditorReference[] references = page.getEditorReferences();
-		for (int i = 0; i < references.length; i++)
+		final PHPSourceEditor[] editorResult = new PHPSourceEditor[1];
+		display.syncExec(new Runnable()
 		{
-			IEditorReference reference = references[i];
-			IEditorPart editor = reference.getEditor(false);
-			if (activeEditor != editor && isSameDocument(viewer, editor))
+			@Override
+			public void run()
 			{
-				return (PHPSourceEditor) editor;
+				IWorkbench workbench = PlatformUI.getWorkbench();
+				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+				IEditorPart activeEditor = page.getActiveEditor();
+				if (isSameDocument(viewer, activeEditor))
+				{
+					editorResult[0] = (PHPSourceEditor) activeEditor;
+				}
+
+				// Check for any other open editor in the workspace
+				IEditorReference[] references = page.getEditorReferences();
+				for (int i = 0; i < references.length; i++)
+				{
+					IEditorReference reference = references[i];
+					IEditorPart editor = reference.getEditor(false);
+					if (activeEditor != editor && isSameDocument(viewer, editor))
+					{
+						editorResult[0] = (PHPSourceEditor) editor;
+					}
+				}
 			}
-		}
-		return null;
+		});
+		
+		return editorResult[0];
 	}
 
 	/*

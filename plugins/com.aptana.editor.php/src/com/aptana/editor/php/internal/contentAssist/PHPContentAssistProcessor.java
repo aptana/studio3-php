@@ -42,7 +42,6 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
 import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
-import org.eclipse.php.util.StringUtils;
 import org.eclipse.swt.graphics.Image;
 
 import com.aptana.editor.common.AbstractThemeableEditor;
@@ -91,7 +90,6 @@ import com.aptana.parsing.lexer.Range;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-@SuppressWarnings("unused")
 public class PHPContentAssistProcessor extends CommonContentAssistProcessor implements IContentAssistProcessor
 {
 	private static final ICompletionProposal[] EMPTY_PROPOSAL = new ICompletionProposal[0];
@@ -205,6 +203,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @param document
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public ICompletionProposal[] computeCompletionProposals(IDocument document, int offset)
 	{
 		// First, check if we are in a PHP partition
@@ -1804,30 +1803,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 
 		return proposals;
-	}
-
-	/**
-	 * Test if the given lexer is in a given state.
-	 * 
-	 * @param lexer
-	 * @param lexerState
-	 * @return True, if the lexer is in the same state as given; False, if not or we got an error in the check.
-	 */
-	private boolean isInState(AbstractPhpLexer lexer, String lexerState)
-	{
-		int state = lexer.yystate();
-		try
-		{
-			// we use reflection here since we don't know the constant value of
-			// of this specific PHP lexer
-			int lexerStateValue = lexer.getClass().getField(lexerState).getInt(lexer);
-			return lexerStateValue == state;
-		}
-		catch (Exception e)
-		{
-			PHPEditorPlugin.logError(e);
-		}
-		return false;
 	}
 
 	/**
