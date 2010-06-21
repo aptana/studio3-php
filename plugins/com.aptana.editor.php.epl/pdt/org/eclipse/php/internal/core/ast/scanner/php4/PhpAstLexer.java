@@ -21,6 +21,7 @@ import java_cup.sym;
 import java_cup.runtime.Symbol;
 import org.eclipse.php.internal.core.ast.scanner.StateStack;
 import org.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
+import org.eclipse.php.internal.core.compiler.ast.parser.DocumentorLexer;
 import org.eclipse.php.internal.core.PHPVersion;
 
 
@@ -1109,7 +1110,7 @@ public class PhpAstLexer implements org.eclipse.php.internal.core.ast.scanner.As
 	
 	
 	protected IDocumentorLexer getDocumentorLexer(java.io.Reader  reader) {
-		return null;
+		return new DocumentorLexer(reader, ast);
 	}
 	
 	public void reset(java.io.Reader  reader, char[] buffer, int[] parameters){

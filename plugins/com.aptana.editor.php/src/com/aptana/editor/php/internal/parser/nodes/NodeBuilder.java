@@ -19,7 +19,7 @@ import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.parsing.ast.IParseNode;
@@ -266,7 +266,7 @@ public class NodeBuilder
 	public PHPBlockNode populateNodes()
 	{
 		PHPBlockNode bn = new PHPBlockNode(0, 0, "php"); //$NON-NLS-1$
-		for (int a = 0; a < current.getChildrenCount(); a++)
+		for (int a = 0; a < current.getChildCount(); a++)
 		{
 			IParseNode pn = current.getChild(a);
 			bn.addChild(pn);

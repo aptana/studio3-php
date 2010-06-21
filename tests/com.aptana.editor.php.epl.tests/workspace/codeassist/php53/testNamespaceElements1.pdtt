@@ -1,0 +1,17 @@
+--TEST--
+Should complete namespace elements using global namespace prefix
+--FILE--
+<?
+namespace NS;
+function AAA_FUNC() {}
+class AAA_CLASS {
+	const AAA_CONST = 5;
+}
+$AAA = "";
+
+\NS\|
+?>
+--EXPECT--
+type(AAA_CLASS)
+method(AAA_FUNC)
+field(AAA_CLASS::AAA_CONST)

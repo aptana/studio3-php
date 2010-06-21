@@ -23,6 +23,8 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org.eclipse.php.internal.core.ast.visitor.Visitor;
 
+import com.aptana.editor.php.core.typebinding.IBinding;
+
 /**
  * Abstract superclass of all Abstract Syntax Tree (AST) node types. <p>
  * An AST node represents a PHP source code construct, such
@@ -242,6 +244,7 @@ public abstract class ASTNode implements Visitable {
 	 * @see #property1
 	 */
 	private Object property2 = null;
+	private IBinding binding;
 
 	/**
 	 * Construct an empty ASTNode and attach it with the given AST 
@@ -1715,4 +1718,14 @@ public abstract class ASTNode implements Visitable {
 		}
 	}
 
+	// ---- Aptana Additions ----
+	public void setBinding(IBinding binding)
+	{
+		this.binding = binding;
+	}
+
+	public IBinding getBinding()
+	{
+		return this.binding;
+	}
 }

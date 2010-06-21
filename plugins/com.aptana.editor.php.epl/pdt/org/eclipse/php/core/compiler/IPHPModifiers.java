@@ -37,4 +37,9 @@ public interface IPHPModifiers extends Modifiers {
 	public static final int Constructor = 1 << (Modifiers.USER_MODIFIER + 2);
 
 	public static final int USER_MODIFIER = Modifiers.USER_MODIFIER + 3;
+	
+	/**
+	 * The <code>int</code> value representing a <code>named constant</code> (created by a 'define') modifier.
+	 */
+	public static final int NAMED_CONSTANT = Modifiers.USER_MODIFIER + 4;
 }

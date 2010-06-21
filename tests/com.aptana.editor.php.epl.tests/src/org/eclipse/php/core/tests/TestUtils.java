@@ -84,7 +84,7 @@ public class TestUtils
 
 	public static void waitForIndexer()
 	{
-		// ModelManager.getModelManager().getIndexManager().waitUntilReady();
+		// TODO
 	}
 
 	/**
@@ -124,7 +124,6 @@ public class TestUtils
 		Preferences pref = getPreferences(project);
 		if (pref != null)
 		{
-
 			if (!phpVersion.getAlias().equals(pref.get(CorePreferenceConstants.Keys.PHP_VERSION, null)))
 			{
 				pref.put(CorePreferenceConstants.Keys.PHP_VERSION, phpVersion.getAlias());

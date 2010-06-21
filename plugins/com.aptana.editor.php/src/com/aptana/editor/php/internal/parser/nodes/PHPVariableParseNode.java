@@ -31,6 +31,19 @@ public class PHPVariableParseNode extends PHPBaseParseNode
 	{
 		super(PHPBaseParseNode.VAR_NODE, modifiers, startOffset, endOffset, className);
 	}
+	
+	/**
+	 * @param modifiers
+	 * @param startOffset
+	 * @param endOffset
+	 * @param className
+	 * @param isField
+	 */
+	public PHPVariableParseNode(int modifiers, int startOffset, int endOffset, String className, boolean isField)
+	{
+		this(modifiers, startOffset, endOffset, className);
+		setField(isField);
+	}
 
 	/**
 	 * @return is class member or usual variable

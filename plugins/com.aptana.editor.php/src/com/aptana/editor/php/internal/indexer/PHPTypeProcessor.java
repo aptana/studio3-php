@@ -43,6 +43,7 @@ import org.eclipse.php.core.compiler.PHPFlags;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
+import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 
 /**
  * PHPTypeProcessor
@@ -174,7 +175,12 @@ public final class PHPTypeProcessor
 			{
 				if (type instanceof String)
 				{
-					result.add((String) type);
+					String typeStr = type.toString();
+					if (typeStr.startsWith(PHPContentAssistProcessor.GLOBAL_NAMESPACE))
+					{
+						typeStr = typeStr.substring(1);
+					}
+					result.add(typeStr);
 				}
 				else if (type instanceof VariablePathReference)
 				{

@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org.eclipse.php.internal.core.ast.visitor.Visitor;
+import com.aptana.editor.php.core.typebinding.IBinding;
 
 /**
  * Represents include, include_once, require and require_once expressions
@@ -243,8 +244,6 @@ public class Include extends Expression {
 	 *    resolved
 	 */	
 	public IBinding resolveBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveInclude(this);
-		return null;
+		return (IBinding) getBinding();
 	}
-
 }

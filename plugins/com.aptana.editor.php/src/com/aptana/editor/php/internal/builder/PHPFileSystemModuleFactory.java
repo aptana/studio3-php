@@ -50,7 +50,7 @@ public final class PHPFileSystemModuleFactory
 {
 	private static final String COMPILED_SMARTY_REGEX = "(%%).+(%%).+"; //$NON-NLS-1$
 	private static final String COMPILED_SMARTY_PREFIX = "%%"; //$NON-NLS-1$
-	private static final String PHP_SOURCE_CONTENT_TYPE = "com.aptana.ide.editor.php.phpSource"; //$NON-NLS-1$
+	private static final String PHP_SOURCE_CONTENT_TYPE = "com.aptana.contenttype.php"; //$NON-NLS-1$
 	private static IContentType contentType = Platform.getContentTypeManager().getContentType(PHP_SOURCE_CONTENT_TYPE);
 	static
 	{

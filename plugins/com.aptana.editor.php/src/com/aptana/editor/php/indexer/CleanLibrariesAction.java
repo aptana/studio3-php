@@ -1,5 +1,9 @@
 package com.aptana.editor.php.indexer;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -37,7 +41,17 @@ public class CleanLibrariesAction implements IWorkbenchWindowActionDelegate
 	 */
 	public void run(IAction action)
 	{
-		PHPGlobalIndexer.getInstance().cleanLibraries();
+		Job cleanJob = new Job(Messages.CleanLibrariesAction_rebuildingLibraries)
+		{
+			@Override
+			protected IStatus run(IProgressMonitor monitor)
+			{
+				PHPGlobalIndexer.getInstance().cleanLibraries(monitor);
+				return Status.OK_STATUS;
+			}
+		};
+		cleanJob.setPriority(Job.BUILD);
+		cleanJob.schedule();
 	}
 
 	/*

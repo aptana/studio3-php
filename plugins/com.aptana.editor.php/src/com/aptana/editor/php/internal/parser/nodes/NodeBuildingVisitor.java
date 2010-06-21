@@ -23,7 +23,12 @@ import org.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org.eclipse.php.internal.core.ast.nodes.Variable;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.BasicPHPDocTag;
+import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
+import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocTag;
+
+import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 
 /**
  * An AST visitor that is used to build the PHP outline nodes.
@@ -32,16 +37,18 @@ import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
  */
 public final class NodeBuildingVisitor extends AbstractVisitor
 {
-	private final NodeBuilder nodeBuilder;
+	private NodeBuilder nodeBuilder;
+	private String source;
 
 	/**
 	 * Construct a new visitor with a given NodeBuilder that will be used for the actual creation of PHP nodes.s
 	 * 
 	 * @param nodeBuilder
 	 */
-	public NodeBuildingVisitor(NodeBuilder nodeBuilder)
+	public NodeBuildingVisitor(NodeBuilder nodeBuilder, String source)
 	{
 		this.nodeBuilder = nodeBuilder;
+		this.source = source;
 	}
 
 	@Override
@@ -57,7 +64,10 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = interfaceDeclaration.getName();
 		String name = nameIdentifier.getName();
-		nodeBuilder.handleClassDeclaration(name, PHPFlags.AccInterface, null, interfaceDeclaration.getStart(),
+		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+				interfaceDeclaration.getProgramRoot().comments(), interfaceDeclaration.getStart(), source);
+		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
+		nodeBuilder.handleClassDeclaration(name, PHPFlags.AccInterface, docBlock, interfaceDeclaration.getStart(),
 				interfaceDeclaration.getEnd() - 1, -1);
 		List<Identifier> interfaces = interfaceDeclaration.interfaces();
 		handleInterfaces(interfaces);
@@ -70,7 +80,10 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = classDeclaration.getName();
 		String name = nameIdentifier.getName();
-		nodeBuilder.handleClassDeclaration(name, classDeclaration.getModifier(), null, classDeclaration.getStart(),
+		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+				classDeclaration.getProgramRoot().comments(), classDeclaration.getStart(), source);
+		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
+		nodeBuilder.handleClassDeclaration(name, classDeclaration.getModifier(), docBlock, classDeclaration.getStart(),
 				classDeclaration.getEnd() - 1, -1);
 		// Handle class inheritance elements (extends and implements)
 		// TODO - Shalom - Take a look at the PDT ClassHighlighting (handle namespaces)
@@ -240,7 +253,10 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 					.getEnd() - 1, -1);
 		}
 		Identifier functionName = functionDeclaration.getFunctionName();
-		nodeBuilder.handleFunctionDeclaration(functionName.getName(), isClassFunction, modifiers, null,
+		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+				functionDeclaration.getProgramRoot().comments(), functionDeclaration.getStart(), source);
+		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
+		nodeBuilder.handleFunctionDeclaration(functionName.getName(), isClassFunction, modifiers, docBlock,
 				functionDeclaration.getStart(), functionDeclaration.getEnd() - 1, -1);
 		nodeBuilder.setNodeName(functionName);
 		return super.visit(functionDeclaration);
@@ -306,6 +322,27 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			extendedInterfacesStartEnd[i][1] = interfaceName.getEnd() - 1;
 		}
 		nodeBuilder.handleImplements(extendedInterfacesNames, extendedInterfacesStartEnd);
+	}
+
+	/**
+	 * Converts a {@link org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock} to a {@link PHPDocBlockImp}.
+	 * 
+	 * @param docComment
+	 * @return A new {@link PHPDocBlockImp}, or null if the given docComment is null
+	 */
+	protected PHPDocBlockImp convertToDocBlock(org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment)
+	{
+		if (docComment == null)
+		{
+			return null;
+		}
+		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag[] docTags = docComment.getTags();
+		PHPDocTag[] tags = new PHPDocTag[docTags.length];
+		for (int i = 0; i < docTags.length; i++)
+		{
+			tags[i] = BasicPHPDocTag.fromASTDocTag(docTags[i]);
+		}
+		return new PHPDocBlockImp(docComment.getShortDescription(), "", tags, docComment.getCommentType()); //$NON-NLS-1$
 	}
 
 }

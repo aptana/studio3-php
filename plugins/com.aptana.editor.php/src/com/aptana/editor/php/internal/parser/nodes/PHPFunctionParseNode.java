@@ -74,7 +74,7 @@ public class PHPFunctionParseNode extends PHPBaseParseNode
 			p.addLabel(bf);
 			if (a != size - 1)
 			{
-				bf.append(',');
+				bf.append(", "); //$NON-NLS-1$
 			}
 		}
 		bf.append(')');

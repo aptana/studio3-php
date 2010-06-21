@@ -1,0 +1,13 @@
+--TEST--
+Should complete parameter type with fully qualified name
+--FILE--
+<?
+// TODO - Shalom - Since the state of the AST is in error here, we don't get the class name assist
+namespace NS;
+class myClass {
+	function foo(\NS\myC|) {
+	}
+}
+?>
+--EXPECT--
+type(myClass)

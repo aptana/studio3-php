@@ -10,6 +10,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
+
 /**
  * An incremental project builder for PHP projects. This builder is here for clean operations.
  * 
@@ -26,7 +28,9 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException
 	{
-		PHPGlobalIndexer.getInstance().clean(getProject());
+		PHPGlobalIndexer.getInstance().clean(getProject(), monitor);
+		PHPGlobalIndexer.getInstance().cleanLibraries(monitor);
+		ContentAssistUtils.cleanIndex();
 	}
 
 	/**
@@ -46,7 +50,11 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException
 	{
 		// FIXME - SG: Convert from Indexer timer to the builder system.
-		monitor.done();
+		IProject project = getProject();
+		if ((kind == CLEAN_BUILD || kind == FULL_BUILD) && project != null)
+		{
+			PHPGlobalIndexer.getInstance().clean(project, monitor);
+		}
 		return null;
 	}
 

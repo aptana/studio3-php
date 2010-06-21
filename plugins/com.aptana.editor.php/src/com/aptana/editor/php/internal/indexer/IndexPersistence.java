@@ -177,6 +177,10 @@ public final class IndexPersistence
 		{
 			return new IncludePHPEntryValue(di);
 		}
+		else if (cat == IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY)
+		{
+			return new LambdaFunctionPHPEntryValue(di);
+		}
 		IEntryValueFactory entryValueFactory = factories.get(cat);
 		if (entryValueFactory != null)
 		{

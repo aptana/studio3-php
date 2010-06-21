@@ -1,9 +1,14 @@
 package com.aptana.editor.php.epl;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.php.internal.ui.editor.ASTProvider;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -17,6 +22,8 @@ public class PHPEplPlugin extends AbstractUIPlugin
 
 	// The shared instance
 	private static PHPEplPlugin plugin;
+
+	private ASTProvider fASTProvider;
 
 	/**
 	 * The constructor
@@ -56,6 +63,20 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	}
 
 	/**
+	 * Returns the AST provider.
+	 * 
+	 * @return the AST provider
+	 * @since 3.0
+	 */
+	public synchronized ASTProvider getASTProvider()
+	{
+		if (fASTProvider == null)
+			fASTProvider = new ASTProvider();
+
+		return fASTProvider;
+	}
+
+	/**
 	 * Returns the active workbench window shell.
 	 * 
 	 * @return the active workbench window shell; Null if none exists.
@@ -87,6 +108,29 @@ public class PHPEplPlugin extends AbstractUIPlugin
 		return null;
 	}
 
+	public static IWorkbenchPage getActivePage()
+	{
+		return getDefault().internalGetActivePage();
+	}
+
+	public static IEditorPart getActiveEditor()
+	{
+		IWorkbenchPage activePage = getActivePage();
+		if (activePage != null)
+		{
+			return activePage.getActiveEditor();
+		}
+		return null;
+	}
+
+	private IWorkbenchPage internalGetActivePage()
+	{
+		IWorkbenchWindow window = getWorkbench().getActiveWorkbenchWindow();
+		if (window == null)
+			return null;
+		return getWorkbench().getActiveWorkbenchWindow().getActivePage();
+	}
+
 	public static void logInfo(String string, Throwable e)
 	{
 		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
@@ -105,5 +149,14 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public static void logWarning(String message)
 	{
 		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
+	}
+
+	public static void log(IStatus status)
+	{
+		getDefault().getLog().log(status);
+	}
+
+	public static IWorkspace getWorkspace() {
+		return ResourcesPlugin.getWorkspace();
 	}
 }

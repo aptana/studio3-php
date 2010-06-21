@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.php.internal.core.ast.nodes.Comment;
-
-import com.aptana.editor.php.util.PHPASTVisitorStub;
+import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 /**
  * PHP Module comments collector.
  * 
  * @author Denis Denisenko
  */
-public class CommentsVisitor extends PHPASTVisitorStub
+public class CommentsVisitor extends AbstractVisitor
 {
 	/**
 	 * Collected comments.

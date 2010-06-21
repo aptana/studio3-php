@@ -9,18 +9,18 @@
  */
 package com.aptana.editor.php.internal.parser.nodes;
 
-import org.eclipse.php.internal.core.phpModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
 
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.parsing.ast.INameNode;
-import com.aptana.parsing.ast.ParseBaseNode;
+import com.aptana.parsing.ast.ParseNode;
 
 /**
  * PHP base ParseNode
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
+public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 {
 	private static final String EMPTY = " "; //$NON-NLS-1$
 	protected String name;
@@ -101,7 +101,7 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	 */
 	public boolean isEmpty()
 	{
-		return getChildrenCount() == 0;
+		return getChildCount() == 0;
 	}
 
 	/**
@@ -110,6 +110,16 @@ public class PHPBaseParseNode extends ParseBaseNode implements IPHPParseNode
 	public int getModifiers()
 	{
 		return modifiers;
+	}
+
+	/**
+	 * Set the parse node's modifiers.
+	 * 
+	 * @param modifiers
+	 */
+	public void setModifiers(int modifiers)
+	{
+		this.modifiers = modifiers;
 	}
 
 	/**

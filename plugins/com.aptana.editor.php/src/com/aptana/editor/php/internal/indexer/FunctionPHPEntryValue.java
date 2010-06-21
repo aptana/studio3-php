@@ -53,7 +53,7 @@ import com.aptana.editor.php.indexer.IPHPIndexConstants;
  * 
  * @author Denis Denisenko
  */
-public class FunctionPHPEntryValue extends AbstractPHPEntryValue
+public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHPFunctionEntryValue
 {
 	/**
 	 * Whether the function is method.

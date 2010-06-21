@@ -157,8 +157,6 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 	 */
 	private IProject createNewProject()
 	{
-		// HACK I have to query for this here, because otherwise when we generate the project somehow the fields get
-		// focus and that auto changes the radio selection value for generation
 		if (newProject != null)
 		{
 			return newProject;
@@ -168,6 +166,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 		final IProject newProjectHandle = projectPage.getProjectHandle();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
+		description.setLocationURI(projectPage.getLocationURI());
 		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
 
 		if (!doCreateProject(description, newProjectHandle))

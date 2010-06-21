@@ -37,12 +37,12 @@ public final class PHPNature implements IProjectNature
 
 	public void configure() throws CoreException
 	{
-		addToBuildSpec(PHPEditorPlugin.BUILDER_ID);
+		 addToBuildSpec(PHPEditorPlugin.BUILDER_ID);
 	}
 
 	public void deconfigure() throws CoreException
 	{
-		removeFromBuildSpec(PHPEditorPlugin.BUILDER_ID);
+		 removeFromBuildSpec(PHPEditorPlugin.BUILDER_ID);
 	}
 
 	public IProject getProject()

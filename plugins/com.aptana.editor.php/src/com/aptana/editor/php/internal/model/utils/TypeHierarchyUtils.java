@@ -35,6 +35,7 @@
 package com.aptana.editor.php.internal.model.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +46,13 @@ import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.contentAssist.ContentAssistCollectors;
+import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
+import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ElementsIndexingUtils;
+import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 
 /**
  * Type hierarchy utilities
@@ -167,10 +173,14 @@ public final class TypeHierarchyUtils
 	 *            - types, which ancestors to add.
 	 * @param index
 	 *            - index to use.
+	 * @param namespaces
+	 *            A namespace to accept
 	 * @return types with ancestors added.
 	 */
-	public static Set<String> addAllAncestors(Set<String> types, IElementsIndex index)
+	public static Set<String> addAllAncestors(Set<String> types, IElementsIndex index, String namespaces)
 	{
+		// FIXME: Shalom - This should probably get a set of namespaces to accept. 
+		// Or better, the getClassAncestors() should be the one that deals with it. 
 		LinkedHashSet<String> result = new LinkedHashSet<String>();
 		for (String type : types)
 		{
@@ -178,7 +188,11 @@ public final class TypeHierarchyUtils
 			List<IElementEntry> entries = getClassAncestors(null, type, index);
 			for (IElementEntry entry : entries)
 			{
-				result.add(ElementsIndexingUtils.getFirstNameInPath(entry.getEntryPath()));
+				AbstractPHPEntryValue value = (AbstractPHPEntryValue) entry.getValue();
+				if (ContentAssistUtils.isInNamespace(value, namespaces))
+				{
+					result.add(ElementsIndexingUtils.getFirstNameInPath(entry.getEntryPath()));
+				}
 			}
 		}
 
@@ -265,14 +279,25 @@ public final class TypeHierarchyUtils
 	{
 		List<IElementEntry> result = new ArrayList<IElementEntry>();
 
-		Set<IBuildPath> dependencies = buildPath.getDependencies();
+		Set<IBuildPath> dependencies = (buildPath != null) ? buildPath.getDependencies() : new HashSet<IBuildPath>(1);
 
 		for (IElementEntry entry : toFilter)
 		{
-			IBuildPath currentEntryBuildPath = entry.getModule().getBuildPath();
-			if (buildPath.equals(currentEntryBuildPath) || dependencies.contains(currentEntryBuildPath))
+			IModule module = entry.getModule();
+			if (module == null)
 			{
-				result.add(entry);
+				if (PHPBuiltins.getInstance().isBuiltinClassOrConstant(entry.getEntryPath()))
+				{
+					result.add(entry);
+				}
+			}
+			else
+			{
+				IBuildPath currentEntryBuildPath = module.getBuildPath();
+				if (buildPath.equals(currentEntryBuildPath) || dependencies.contains(currentEntryBuildPath))
+				{
+					result.add(entry);
+				}
 			}
 		}
 
@@ -294,6 +319,7 @@ public final class TypeHierarchyUtils
 	private static void findClassAncestorsRecursivelly(IElementEntry classEntry, List<IElementEntry> toFill,
 			IElementsIndex index)
 	{
+		// FIXME - Shalom: This lookup should take into consideration the namespaces that are involved in the hierarchy
 		Object value = classEntry.getValue();
 		if (!(value instanceof ClassPHPEntryValue))
 		{
@@ -303,12 +329,26 @@ public final class TypeHierarchyUtils
 		ClassPHPEntryValue entryValue = (ClassPHPEntryValue) value;
 		String superClassName = entryValue.getSuperClassname();
 
-		IBuildPath classEntryBuildPath = classEntry.getModule().getBuildPath();
+		IBuildPath classEntryBuildPath = null;
+		if (classEntry.getModule() != null)
+		{
+			classEntryBuildPath = classEntry.getModule().getBuildPath();
+		}
 
 		if (superClassName != null)
 		{
+			if (superClassName.startsWith(PHPContentAssistProcessor.GLOBAL_NAMESPACE))
+			{
+				superClassName = superClassName.substring(1);
+			}
 			List<IElementEntry> classEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, superClassName);
-
+			if (classEntries.isEmpty())
+			{
+				Set<String> superClass = new HashSet<String>(1);
+				superClass.add(superClassName);
+				Set<IElementEntry> entries = ContentAssistCollectors.collectBuiltinTypeEntries(superClass, true);
+				classEntries.addAll(entries);
+			}
 			List<IElementEntry> classEntriesOnBuildPath = filterByBuildPath(classEntryBuildPath, classEntries);
 
 			toFill.addAll(classEntriesOnBuildPath);
@@ -322,9 +362,13 @@ public final class TypeHierarchyUtils
 		List<String> interfaces = entryValue.getInterfaces();
 		if (interfaces != null && !interfaces.isEmpty())
 		{
-			for (String className : interfaces)
+			for (String interfaceName : interfaces)
 			{
-				List<IElementEntry> classEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, className);
+				if (interfaceName.startsWith(PHPContentAssistProcessor.GLOBAL_NAMESPACE))
+				{
+					interfaceName = interfaceName.substring(1);
+				}
+				List<IElementEntry> classEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, interfaceName);
 
 				List<IElementEntry> classEntriesOnBuildPath = filterByBuildPath(classEntryBuildPath, classEntries);
 
@@ -364,6 +408,10 @@ public final class TypeHierarchyUtils
 		String superClassName = entryValue.getSuperClassname();
 		if (superClassName != null)
 		{
+			if (superClassName.startsWith(PHPContentAssistProcessor.GLOBAL_NAMESPACE))
+			{
+				superClassName = superClassName.substring(1);
+			}
 			List<IElementEntry> classEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, superClassName);
 
 			List<IElementEntry> classEntriesOnBuildPath = filterByBuildPath(classEntryBuildPath, classEntries);
@@ -376,6 +424,10 @@ public final class TypeHierarchyUtils
 		{
 			for (String className : interfaces)
 			{
+				if (className.startsWith(PHPContentAssistProcessor.GLOBAL_NAMESPACE))
+				{
+					className = className.substring(1);
+				}
 				List<IElementEntry> classEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, className);
 
 				List<IElementEntry> classEntriesOnBuildPath = filterByBuildPath(classEntryBuildPath, classEntries);

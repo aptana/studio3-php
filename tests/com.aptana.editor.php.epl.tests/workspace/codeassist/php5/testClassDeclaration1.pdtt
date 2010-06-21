@@ -1,0 +1,6 @@
+--TEST--
+Test Class Declaration
+--FILE--
+<? class A e| ?>
+--EXPECT--
+keyword(extends)

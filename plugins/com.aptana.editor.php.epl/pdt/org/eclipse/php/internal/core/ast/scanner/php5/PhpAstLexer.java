@@ -23,6 +23,7 @@ import org.eclipse.php.internal.core.ast.nodes.AST;
 import org.eclipse.php.internal.core.ast.nodes.Comment;
 import org.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
 import org.eclipse.php.internal.core.ast.scanner.StateStack;
+import org.eclipse.php.internal.core.compiler.ast.parser.DocumentorLexer;
 
 
 /**
@@ -1222,7 +1223,7 @@ public class PhpAstLexer implements org.eclipse.php.internal.core.ast.scanner.As
 	
 	
 	protected IDocumentorLexer getDocumentorLexer(java.io.Reader  reader) {
-		return null;
+		return new DocumentorLexer(reader, ast);
 	}
 	
 	public void reset(java.io.Reader  reader, char[] buffer, int[] parameters){

@@ -18,82 +18,7 @@ import java.util.List;
 
 import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.nodes.ASTError;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.ArrayAccess;
-import org.eclipse.php.internal.core.ast.nodes.ArrayCreation;
-import org.eclipse.php.internal.core.ast.nodes.ArrayElement;
-import org.eclipse.php.internal.core.ast.nodes.Assignment;
-import org.eclipse.php.internal.core.ast.nodes.BackTickExpression;
-import org.eclipse.php.internal.core.ast.nodes.Block;
-import org.eclipse.php.internal.core.ast.nodes.BreakStatement;
-import org.eclipse.php.internal.core.ast.nodes.CastExpression;
-import org.eclipse.php.internal.core.ast.nodes.CatchClause;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
-import org.eclipse.php.internal.core.ast.nodes.ClassName;
-import org.eclipse.php.internal.core.ast.nodes.CloneExpression;
-import org.eclipse.php.internal.core.ast.nodes.Comment;
-import org.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
-import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ContinueStatement;
-import org.eclipse.php.internal.core.ast.nodes.DeclareStatement;
-import org.eclipse.php.internal.core.ast.nodes.DoStatement;
-import org.eclipse.php.internal.core.ast.nodes.EchoStatement;
-import org.eclipse.php.internal.core.ast.nodes.EmptyStatement;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
-import org.eclipse.php.internal.core.ast.nodes.FieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ForEachStatement;
-import org.eclipse.php.internal.core.ast.nodes.ForStatement;
-import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
-import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
-import org.eclipse.php.internal.core.ast.nodes.FunctionName;
-import org.eclipse.php.internal.core.ast.nodes.GlobalStatement;
-import org.eclipse.php.internal.core.ast.nodes.GotoLabel;
-import org.eclipse.php.internal.core.ast.nodes.GotoStatement;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.IfStatement;
-import org.eclipse.php.internal.core.ast.nodes.IgnoreError;
-import org.eclipse.php.internal.core.ast.nodes.InLineHtml;
-import org.eclipse.php.internal.core.ast.nodes.Include;
-import org.eclipse.php.internal.core.ast.nodes.InfixExpression;
-import org.eclipse.php.internal.core.ast.nodes.InstanceOfExpression;
-import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.LambdaFunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ListVariable;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.MethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
-import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
-import org.eclipse.php.internal.core.ast.nodes.PostfixExpression;
-import org.eclipse.php.internal.core.ast.nodes.PrefixExpression;
-import org.eclipse.php.internal.core.ast.nodes.Program;
-import org.eclipse.php.internal.core.ast.nodes.Quote;
-import org.eclipse.php.internal.core.ast.nodes.Reference;
-import org.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
-import org.eclipse.php.internal.core.ast.nodes.ReturnStatement;
-import org.eclipse.php.internal.core.ast.nodes.Scalar;
-import org.eclipse.php.internal.core.ast.nodes.SingleFieldDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Statement;
-import org.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.StaticStatement;
-import org.eclipse.php.internal.core.ast.nodes.StructuralPropertyDescriptor;
-import org.eclipse.php.internal.core.ast.nodes.SwitchCase;
-import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
-import org.eclipse.php.internal.core.ast.nodes.ThrowStatement;
-import org.eclipse.php.internal.core.ast.nodes.TryStatement;
-import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
-import org.eclipse.php.internal.core.ast.nodes.UseStatement;
-import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
-import org.eclipse.php.internal.core.ast.nodes.Variable;
-import org.eclipse.php.internal.core.ast.nodes.VariableBase;
-import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
+import org.eclipse.php.internal.core.ast.nodes.*;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 @SuppressWarnings({"deprecation", "unchecked"})
@@ -429,16 +354,16 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(Comment comment) {
 		result.append(getComment(comment));
-		result.append("\n"); //$NON-NLS-1$"
+		result.append("\n"); //$NON-NLS-1$
 		return false;
 	}
 
 	public String getComment(Comment comment) {
 		if (comment.getCommentType() == Comment.TYPE_SINGLE_LINE) {
-			return "//"; //$NON-NLS-1$"
+			return "//"; //$NON-NLS-1$
 		}
 		if (comment.getCommentType() == Comment.TYPE_MULTILINE) {
-			return "/* */"; //$NON-NLS-1$"
+			return "/* */"; //$NON-NLS-1$
 		}
 		if (comment.getCommentType() == Comment.TYPE_PHPDOC) {
 			return "/** */"; //$NON-NLS-1$"
@@ -485,20 +410,27 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(DoStatement doStatement) {
 		result.append("do "); //$NON-NLS-1$
-		doStatement.getAction().accept(this);
+		Statement body = doStatement.getBody();
+
+		if (body != null) {
+			body.accept(this);
+		}
 		result.append("while ("); //$NON-NLS-1$
-		doStatement.getCondition().accept(this);
+		Expression cond = doStatement.getCondition();
+		if (cond != null) {
+			cond.accept(this);
+		}
 		result.append(");\n"); //$NON-NLS-1$
 		return false;
 	}
 
 	public boolean visit(EchoStatement echoStatement) {
 		result.append("echo "); //$NON-NLS-1$
-		Expression[] expressions = echoStatement.getExpressions();
-		for (int i = 0; i < expressions.length; i++) {
-			expressions[i].accept(this);
-			if (i + 1 < expressions.length) {
-				result.append(", "); //$NON-NLS-1$"
+		List<Expression> expressions = echoStatement.expressions();
+		for (int i = 0; i < expressions.size(); i++) {
+			expressions.get(i).accept(this);
+			if (i + 1 < expressions.size()) {
+				result.append(", "); //$NON-NLS-1$
 			}
 		}
 		result.append(";\n"); //$NON-NLS-1$
@@ -515,7 +447,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 			expressionStatement.getExpression().accept(this);
 			result.append(";\n"); //$NON-NLS-1$
 		} else {
-			result.append("Missing();"); //$NON-NLS-1$"
+			result.append("Missing();"); //$NON-NLS-1$
 		}
 		return false;
 	}
@@ -544,20 +476,26 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(ForEachStatement forEachStatement) {
 		result.append("foreach ("); //$NON-NLS-1$
-		forEachStatement.getExpression().accept(this);
+		Expression express = forEachStatement.getExpression();
+		if (express != null) {
+			express.accept(this);
+		}
 		result.append(" as "); //$NON-NLS-1$
 		if (forEachStatement.getKey() != null) {
 			forEachStatement.getKey().accept(this);
 			result.append(" => "); //$NON-NLS-1$
 		}
-		forEachStatement.getValue().accept(this);
+		Expression value = forEachStatement.getValue();
+		if (value != null) {
+			value.accept(this);
+		}
 		result.append(")"); //$NON-NLS-1$
 		forEachStatement.getStatement().accept(this);
 		return false;
 	}
 
 	public boolean visit(NamespaceDeclaration namespaceDeclaration) {
-		result.append("namespace "); //$NON-NLS-1$"
+		result.append("namespace "); //$NON-NLS-1$
 		namespaceDeclaration.childrenAccept(this);
 		if (namespaceDeclaration.getBody() == null) {
 			result.append(";\n"); //$NON-NLS-1$
@@ -567,32 +505,32 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(NamespaceName namespaceName) {
 		if (namespaceName.isGlobal()) {
-			result.append("\\"); //$NON-NLS-1$"
+			result.append("\\"); //$NON-NLS-1$
 		}
 		if (namespaceName.isCurrent()) {
-			result.append("namespace\\"); //$NON-NLS-1$"
+			result.append("namespace\\"); //$NON-NLS-1$
 		}
 		List<Identifier> segments = namespaceName.segments();
 		Iterator<Identifier> it = segments.iterator();
 		while (it.hasNext()) {
 			it.next().accept(this);
 			if (it.hasNext()) {
-				result.append("\\"); //$NON-NLS-1$"
+				result.append("\\"); //$NON-NLS-1$
 			}
 		}
 		return false;
 	}
 
 	public boolean visit(UseStatement useStatement) {
-		result.append("use "); //$NON-NLS-1$"
+		result.append("use "); //$NON-NLS-1$
 		Iterator<UseStatementPart> it = useStatement.parts().iterator();
 		while (it.hasNext()) {
 			it.next().accept(this);
 			if (it.hasNext()) {
-				result.append(", "); //$NON-NLS-1$"
+				result.append(", "); //$NON-NLS-1$
 			}
 		}
-		result.append(";\n"); //$NON-NLS-1$"
+		result.append(";\n"); //$NON-NLS-1$
 		return false;
 	}
 
@@ -600,7 +538,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 		useStatementPart.getName().accept(this);
 		Identifier alias = useStatementPart.getAlias();
 		if (alias != null) {
-			result.append(" as "); //$NON-NLS-1$"
+			result.append(" as "); //$NON-NLS-1$
 			alias.accept(this);
 		}
 		return false;
@@ -609,7 +547,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 	public boolean visit(FormalParameter formalParameter) {
 		if (formalParameter.isMandatory()) {
 			if (formalParameter.getAST().apiLevel() == PHPVersion.PHP4) {
-				result.append("const "); // only for PHP 4 //$NON-NLS-1$"
+				result.append("const "); // only for PHP 4 //$NON-NLS-1$
 			}
 		}
 		Expression paramType = formalParameter.getParameterType();
@@ -621,7 +559,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 		formalParameter.getParameterName().accept(this);
 		Expression defaultValue = formalParameter.getDefaultValue();
 		if (defaultValue != null /* && defaultValue.getLength() > 0 */) {
-			result.append(" = "); //$NON-NLS-1$"
+			result.append(" = "); //$NON-NLS-1$
 			defaultValue.accept(this);
 		}
 		return false;
@@ -659,12 +597,15 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 			isFirst = false;
 		}
 		result.append(" ) "); //$NON-NLS-1$
-		forStatement.getAction().accept(this);
+		Statement body = forStatement.getBody();
+		if (body != null) {
+			body.accept(this);
+		}
 		return false;
 	}
 
 	public boolean visit(FunctionDeclaration functionDeclaration) {
-		result.append(" function "); //$NON-NLS-1$"
+		result.append(" function "); //$NON-NLS-1$
 		if (functionDeclaration.isReference()) {
 			result.append('&');
 		}
@@ -744,9 +685,15 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(IfStatement ifStatement) {
 		result.append("if("); //$NON-NLS-1$
-		ifStatement.getCondition().accept(this);
+		Expression cond = ifStatement.getCondition();
+		if (cond != null) {
+			cond.accept(this);
+		}
 		result.append(")"); //$NON-NLS-1$
-		ifStatement.getTrueStatement().accept(this);
+		Statement trueStatement = ifStatement.getTrueStatement();
+		if (trueStatement != null) {
+			trueStatement.accept(this);
+		}
 		if (ifStatement.getFalseStatement() != null) {
 			result.append("else"); //$NON-NLS-1$
 			ifStatement.getFalseStatement().accept(this);
@@ -823,7 +770,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 	}
 
 	public boolean visit(LambdaFunctionDeclaration functionDeclaration) {
-		result.append(" function "); //$NON-NLS-1$"
+		result.append(" function "); //$NON-NLS-1$
 		if (functionDeclaration.isReference()) {
 			result.append('&');
 		}
@@ -834,7 +781,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 		while (paramIt.hasNext()) {
 			paramIt.next().accept(this);
 			if (paramIt.hasNext()) {
-				result.append(", "); //$NON-NLS-1$"
+				result.append(", "); //$NON-NLS-1$
 			}
 		}
 		result.append(')');
@@ -842,7 +789,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 		List<Expression> lexicalVariables = functionDeclaration
 				.lexicalVariables();
 		if (lexicalVariables.size() > 0) {
-			result.append(" use ("); //$NON-NLS-1$"
+			result.append(" use ("); //$NON-NLS-1$
 			Iterator<Expression> it = lexicalVariables.iterator();
 			while (it.hasNext()) {
 				it.next().accept(this);
@@ -1028,9 +975,9 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(SwitchCase switchCase) {
 		if (switchCase.isDefault()) {
-			result.append("default:\n"); //$NON-NLS-1$"
+			result.append("default:\n"); //$NON-NLS-1$
 		} else {
-			result.append("case "); //$NON-NLS-1$"
+			result.append("case "); //$NON-NLS-1$
 			if (switchCase.getValue() != null) {
 				switchCase.getValue().accept(this);
 				result.append(":\n"); //$NON-NLS-1$
@@ -1045,9 +992,16 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(SwitchStatement switchStatement) {
 		result.append("switch ("); //$NON-NLS-1$
-		switchStatement.getExpr().accept(this);
+
+		Expression express = switchStatement.getExpression();
+		if (express != null) {
+			express.accept(this);
+		}
 		result.append(")"); //$NON-NLS-1$
-		switchStatement.getStatement().accept(this);
+		Block statment = switchStatement.getBody();
+		if (statment != null) {
+			statment.accept(this);
+		}
 		return false;
 	}
 
@@ -1058,10 +1012,14 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(TryStatement tryStatement) {
 		result.append("try "); //$NON-NLS-1$
-		tryStatement.getTryStatement().accept(this);
-		CatchClause[] catchClauses = tryStatement.getCatchClauses();
-		for (int i = 0; i < catchClauses.length; i++) {
-			catchClauses[i].accept(this);
+
+		Block body = tryStatement.getBody();
+		if (body != null) {
+			body.accept(this);
+		}
+		List<CatchClause> catchClauses = tryStatement.catchClauses();
+		for (int i = 0; i < catchClauses.size(); i++) {
+			catchClauses.get(i).accept(this);
 		}
 		return false;
 	}
@@ -1074,7 +1032,7 @@ public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public boolean visit(Variable variable) {
 		if (variable.isDollared()) {
-			result.append("$"); //$NON-NLS-1$"
+			result.append("$"); //$NON-NLS-1$
 		}
 		variable.getVariableName().accept(this);
 		return false;

@@ -69,7 +69,9 @@ public interface IPHPIndexConstants extends IPHPTypeConstants
 	 * NAMESPACE_CATEGORY
 	 */
 	static final int NAMESPACE_CATEGORY = 6;
-	;
 	
-	
+	/**
+	 * LAMBDA_FUNCTION_CATEGORY
+	 */
+	static final int LAMBDA_FUNCTION_CATEGORY = 7;
 }

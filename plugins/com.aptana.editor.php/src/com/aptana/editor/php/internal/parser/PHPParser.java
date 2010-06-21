@@ -4,19 +4,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
+import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
+import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.IParser;
 import com.aptana.parsing.ast.IParseNode;
-import com.aptana.parsing.ast.ParseBaseNode;
+import com.aptana.parsing.ast.ParseNode;
 import com.aptana.parsing.ast.ParseRootNode;
 
 /**
@@ -30,6 +38,8 @@ public class PHPParser implements IParser
 {
 
 	private PHPVersion phpVersion;
+	private IModule module;
+	private ISourceModule sourceModule;
 
 	/**
 	 * Constructs a new PHPParser
@@ -56,12 +66,21 @@ public class PHPParser implements IParser
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], startingOffset, startingOffset
+		IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], startingOffset, startingOffset
 				+ source.length());
 		Program ast = null;
 		if (parseState instanceof IPHPParseState)
 		{
-			phpVersion = ((IPHPParseState) parseState).getPHPVersion();
+			IPHPParseState phpParseState = (IPHPParseState) parseState;
+			phpVersion = phpParseState.getPHPVersion();
+
+			IModule newModule = phpParseState.getModule();
+			if (module != newModule)
+			{
+				module = newModule;
+				sourceModule = phpParseState.getSourceModule();
+			}
+			aboutToBeReconciled();
 		}
 		try
 		{
@@ -76,9 +95,31 @@ public class PHPParser implements IParser
 		}
 		if (ast != null)
 		{
-			processChildren(ast, root);
+			processChildren(ast, root, source);
 		}
 		parseState.setParseResult(root);
+		if (ast != null)
+		{
+			try
+			{
+				ast.setSourceModule(ModelUtils.convertModule(module));
+				// TODO: Shalom - check for Program errors?
+				// if (!ast.hasSyntaxErrors() && module != null) {
+				if (module != null)
+				{
+					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(ast, module);
+				}
+				// Recalculate the type bindings
+				TypeBindingBuilder.buildBindings(ast);
+			}
+			catch (Throwable t)
+			{
+				PHPEditorPlugin.logError(t);
+			}
+			reconciled(ast, false, new NullProgressMonitor());
+		} else {
+			reconciled(null, false, new NullProgressMonitor());
+		}
 		return root;
 	}
 
@@ -98,6 +139,7 @@ public class PHPParser implements IParser
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
 			// TODO: Shalom - Have this parser in a PHP parsers pool?
+
 			ASTParser parser = ASTParser.newParser(new InputStreamReader(source), version);
 			ast = parser.createAST(null);
 		}
@@ -108,32 +150,35 @@ public class PHPParser implements IParser
 		}
 		if (ast != null)
 		{
-			IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], ast.getStart(), ast
+			IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
 					.getEnd());
-			processChildren(ast, root);
+			processChildren(ast, root, null);
 			return root;
 		}
-		return new ParseRootNode(PHPMimeType.MimeType, new ParseBaseNode[0], 0, 0);
+		return new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], 0, 0);
 	}
 
 	/**
-	 * Returns the index that the given node is located at his parent node.
-	 * 
-	 * @param node
-	 * @return The index, or -1 if this node does not have any parent.
+	 * Notify the shared AST provider that the module is about to be reconciled.
 	 */
-	protected int getIndexInParent(IParseNode node)
+	private void aboutToBeReconciled()
 	{
-		IParseNode parent = node.getParent();
-		if (parent != null)
-			return parent.getIndex(node);
-		return -1;
+		// Notify the shared AST provider
+		PHPEplPlugin.getDefault().getASTProvider().aboutToBeReconciled(sourceModule);
+	}
+
+	/**
+	 * Notify the shared AST provider that the module was reconciled.
+	 */
+	private void reconciled(Program program, boolean forced, IProgressMonitor progressMonitor)
+	{
+		PHPEplPlugin.getDefault().getASTProvider().reconciled(program, sourceModule, progressMonitor);
 	}
 
 	/*
 	 * Process the AST and update the given IParseNode
 	 */
-	private void processChildren(Program ast, IParseNode root)
+	private void processChildren(Program ast, IParseNode root, String source)
 	{
 		/*
 		 * kept here for Debug purposes ApplyAll astPrinter = new ApplyAll() {
@@ -141,7 +186,7 @@ public class PHPParser implements IParser
 		 * ast.accept(astPrinter);
 		 */
 		NodeBuilder builderClient = new NodeBuilder();
-		ast.accept(new NodeBuildingVisitor(builderClient));
+		ast.accept(new NodeBuildingVisitor(builderClient, source));
 		PHPBlockNode nodes = builderClient.populateNodes();
 		for (IParseNode child : nodes.getChildren())
 		{

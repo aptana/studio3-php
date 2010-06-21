@@ -37,9 +37,9 @@ import org.eclipse.php.internal.core.ast.nodes.Comment;
 import org.eclipse.php.internal.core.ast.nodes.Expression;
 import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.Statement;
+import org.eclipse.php.internal.core.format.DefaultCodeFormattingProcessor;
 import org.eclipse.php.internal.core.format.ICodeFormattingProcessor;
 import org.eclipse.php.internal.core.format.IFormatterProcessorFactory;
-import org.eclipse.php.internal.core.format.NullCodeFormattingProcessor;
 import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.MultiTextEdit;
@@ -53,7 +53,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author shalom (based on JDT code)
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unused", "unchecked"})
 /* package */final class ASTRewriteFormatter {
 
 	// TODO - Need a code cleanup
@@ -153,7 +153,6 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 	private final RewriteEventStore eventStore;
 
 	private final Map options;
-	@SuppressWarnings("unused")
 	private IDocument document;
 	private PHPVersion phpVersion;
 
@@ -245,7 +244,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 	public String createIndentString(int indentationUnits) {
 		try {
 			return createCodeFormatter(this.options, new Region(0, 0),
-					createDocument("", null)).createIndentationString( //$NON-NLS-1$"
+					createDocument("", null)).createIndentationString( //$NON-NLS-1$
 					indentationUnits);
 		} catch (Exception e) {
 			PHPEplPlugin.logError(e);
@@ -297,10 +296,9 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 			return doc.get();
 		} catch (BadLocationException e) {
 			// JavaPlugin.log(e); // bug in the formatter
-			Assert
-					.isTrue(
-							false,
-							"Fromatter created edits with wrong positions: " + e.getMessage()); //$NON-NLS-1$
+			Assert.isTrue(
+					false,
+					"Fromatter created edits with wrong positions: " + e.getMessage()); //$NON-NLS-1$
 		}
 		return null;
 	}
@@ -324,7 +322,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 			return contentFormatter.getCodeFormattingProcessor(document,
 					phpVersion, region);
 		}
-		return new NullCodeFormattingProcessor();
+		return new DefaultCodeFormattingProcessor(options);
 	}
 
 	/*
@@ -380,6 +378,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 		// formatter.
 		// Every node is created with a <?php prefix and, optionally, some more
 		// prefix string that is needed for the formatting.
+		int code;
 		String prefix = "<?php "; //$NON-NLS-1$
 		String suffix = ""; //$NON-NLS-1$
 		if (node instanceof Statement) {
@@ -388,7 +387,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 				suffix = "}"; //$NON-NLS-1$
 			}
 			if (node instanceof MethodDeclaration) {
-				prefix += "class x{"; //$NON-NLS-1$"
+				prefix += "class x{"; //$NON-NLS-1$
 				suffix = "}"; //$NON-NLS-1$
 			}
 
@@ -396,7 +395,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 				&& node.getType() != ASTNode.SINGLE_FIELD_DECLARATION) {
 		} else if (node instanceof BodyDeclaration) {
 		} else if (node instanceof Comment) {
-			prefix += "class x{"; //$NON-NLS-1$"
+			prefix += "class x{"; //$NON-NLS-1$
 			suffix = "}"; //$NON-NLS-1$
 		} else {
 			if (node.getType() == ASTNode.CATCH_CLAUSE) {
@@ -487,25 +486,23 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 				final String POS_CATEGORY = "myCategory"; //$NON-NLS-1$
 
 				doc.addPositionCategory(POS_CATEGORY);
-				doc
-						.addPositionUpdater(new DefaultPositionUpdater(
-								POS_CATEGORY) {
-							protected boolean notDeleted() {
-								int start = this.fOffset;
-								int end = start + this.fLength;
-								if (start < this.fPosition.offset
-										&& (this.fPosition.offset
-												+ this.fPosition.length < end)) {
-									this.fPosition.offset = end; // deleted
-																	// positions:
-																	// set to
-																	// end of
-																	// remove
-									return false;
-								}
-								return true;
-							}
-						});
+				doc.addPositionUpdater(new DefaultPositionUpdater(POS_CATEGORY) {
+					protected boolean notDeleted() {
+						int start = this.fOffset;
+						int end = start + this.fLength;
+						if (start < this.fPosition.offset
+								&& (this.fPosition.offset
+										+ this.fPosition.length < end)) {
+							this.fPosition.offset = end; // deleted
+															// positions:
+															// set to
+															// end of
+															// remove
+							return false;
+						}
+						return true;
+					}
+				});
 				for (int i = 0; i < positions.length; i++) {
 					try {
 						doc.addPosition(POS_CATEGORY, positions[i]);
@@ -542,7 +539,6 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private class FormattingPrefix implements Prefix {
 		private int kind;
 		private String string;

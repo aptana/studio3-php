@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 
 import com.aptana.editor.php.core.preferences.TaskTag;
 
-@SuppressWarnings({"unchecked", "unused"})
 public class TaskPatternsProvider {
 
 	private static TaskPatternsProvider instance;
@@ -26,13 +26,13 @@ public class TaskPatternsProvider {
 	private TaskTagsProvider provider;
 
 	private Pattern[] workspacePatterns;
-	private HashMap projectsPatterns;
-	private HashMap projectToListener;
+	private HashMap<IProject, Pattern[]> projectsPatterns;
+	private HashMap<IProject, ITaskTagsListener> projectToListener;
 
 	private TaskPatternsProvider() {
 		provider = TaskTagsProvider.getInstance();
-		projectsPatterns = new HashMap();
-		projectToListener = new HashMap();
+		projectsPatterns = new HashMap<IProject, Pattern[]>();
+		projectToListener = new HashMap<IProject, ITaskTagsListener>();
 		initPatternsDB();
 	}
 
@@ -54,7 +54,6 @@ public class TaskPatternsProvider {
 	}
 
 	private void initPatternsDB() {
-		/*
 		workspacePatterns = createPatterns(provider.getWorkspaceTaskTags(),
 				provider.isWorkspaceTagsCaseSensitive());
 		final IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
@@ -68,7 +67,6 @@ public class TaskPatternsProvider {
 			IProject project = projects[i];
 			registerProject(project);
 		}
-		*/
 	}
 
 	public Pattern[] getPetternsForWorkspace() {
@@ -78,7 +76,6 @@ public class TaskPatternsProvider {
 	// If necessary, initialise the needed listeners on the given project and
 	// update its patterns.
 	private void registerProject(IProject project) {
-		/*
 		if (projectToListener.get(project) == null) {
 			// Add to the project patterns
 			TaskTag[] tags = provider.getProjectTaskTags(project);
@@ -93,7 +90,6 @@ public class TaskPatternsProvider {
 			provider.addTaskTagsListener(tagsListener, project);
 			projectToListener.put(project, tagsListener);
 		}
-		*/
 	}
 
 	private Pattern[] createPatterns(TaskTag[] workspaceTaskTags,

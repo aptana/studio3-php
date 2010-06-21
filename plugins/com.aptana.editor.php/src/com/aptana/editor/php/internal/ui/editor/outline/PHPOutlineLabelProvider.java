@@ -5,9 +5,15 @@ import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.swt.graphics.Image;
 
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.indexer.IPHPIndexConstants;
+import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPConstantNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPIncludeNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPNamespaceNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPVariableParseNode;
 import com.aptana.parsing.ast.INameNode;
 import com.aptana.parsing.ast.IParseNode;
@@ -86,6 +92,20 @@ public class PHPOutlineLabelProvider extends LabelProvider
 	public static final Image IMPORT_ICON = PHPEditorPlugin.getImage("icons/full/obj16/imp_obj.gif"); //$NON-NLS-1$
 
 	private static final Image BLOCK_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php.gif"); //$NON-NLS-1$
+
+	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
+
+	// Template PHPBaseParseNodes that we use to convert AbstractPHPEntryValue to PHPBaseParseNodes (see getParseNode).
+	// The AbstractPHPEntryValue are usually arriving from the content assist system.
+	private static final PHPBaseParseNode classParseNodeTemplate = new PHPClassParseNode(0, 0, 0, EMPTY_STRING);
+	private static final PHPBaseParseNode constantParseNodeTemplate = new PHPConstantNode(0, 0, EMPTY_STRING);
+	private static final PHPBaseParseNode functionParseNodeTemplate = new PHPFunctionParseNode(0, 0, 0, EMPTY_STRING);
+	private static final PHPBaseParseNode namespaceParseNodeTemplate = new PHPNamespaceNode(0, 0, EMPTY_STRING,
+			EMPTY_STRING);
+	private static final PHPBaseParseNode includeParseNodeTemplate = new PHPIncludeNode(0, 0, EMPTY_STRING,
+			EMPTY_STRING);
+	private static final PHPBaseParseNode variableParseNodeTemplate = new PHPVariableParseNode(0, 0, 0, EMPTY_STRING,
+			true);
 
 	/*
 	 * (non-Javadoc)
@@ -170,6 +190,38 @@ public class PHPOutlineLabelProvider extends LabelProvider
 		{
 			IParseNode referenceNode = ((PHPOutlineItem) element).getReferenceNode();
 			return (PHPBaseParseNode) referenceNode;
+		}
+		else if (element instanceof AbstractPHPEntryValue)
+		{
+			// Convert this content-assist AbstractPHPEntryValue item to a PHPBaseParseNode
+			AbstractPHPEntryValue value = (AbstractPHPEntryValue) element;
+			PHPBaseParseNode result = null;
+			switch (value.getKind())
+			{
+				case IPHPIndexConstants.CLASS_CATEGORY:
+					result = classParseNodeTemplate;
+					break;
+				case IPHPIndexConstants.CONST_CATEGORY:
+					result = constantParseNodeTemplate;
+					break;
+				case IPHPIndexConstants.FUNCTION_CATEGORY:
+					result = functionParseNodeTemplate;
+					break;
+				case IPHPIndexConstants.IMPORT_CATEGORY:
+					result = includeParseNodeTemplate;
+					break;
+				case IPHPIndexConstants.NAMESPACE_CATEGORY:
+					result = namespaceParseNodeTemplate;
+					break;
+				case IPHPIndexConstants.VAR_CATEGORY:
+					result = variableParseNodeTemplate;
+					break;
+			}
+			if (result != null)
+			{
+				result.setModifiers(value.getModifiers());
+				return result;
+			}
 		}
 		return null;
 	}
