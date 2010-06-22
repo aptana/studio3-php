@@ -10,12 +10,12 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 
-import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.theme.IThemeManager;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.IPHPTokenMapper;
 import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.PHPTokenMapperFactory;
+import com.aptana.theme.IThemeManager;
+import com.aptana.theme.ThemePlugin;
 
 /**
  * Hook the php token scanner and the parser to tokenize
@@ -114,7 +114,7 @@ public class PHPCodeScanner implements ITokenScanner
 
 	protected IThemeManager getThemeManager()
 	{
-		return CommonEditorPlugin.getDefault().getThemeManager();
+		return ThemePlugin.getDefault().getThemeManager();
 	}
 
 	public int peek()

@@ -93,7 +93,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="com.aptana.common"
+            category="com.aptana.ui.AptanaPreferencePage"
             class="com.aptana.editor.php.PHPPreferencePage"
             id="com.aptana.editor.php.preferences.php"
             name="PHP">
