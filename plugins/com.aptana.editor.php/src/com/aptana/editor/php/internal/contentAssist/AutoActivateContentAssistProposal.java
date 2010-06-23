@@ -1,6 +1,6 @@
 package com.aptana.editor.php.internal.contentAssist;
 
-import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.graphics.Image;
@@ -17,10 +17,15 @@ public class AutoActivateContentAssistProposal extends PHPCompletionProposal
 				contextInformation, additionalProposalInfo, objectType, fileLocation, userAgentImages);
 	}
 
-	public void apply(IDocument document)
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.contentassist.CommonCompletionProposal#apply(org.eclipse.jface.text.ITextViewer,
+	 * char, int, int)
+	 */
+	@Override
+	public void apply(final ITextViewer viewer, char trigger, int stateMask, int offset)
 	{
-		super.apply(document);
-
+		super.apply(viewer, trigger, stateMask, offset);
 		if (viewer != null && viewer instanceof SourceViewer)
 		{
 			Display.getCurrent().asyncExec(new Runnable()
@@ -29,7 +34,6 @@ public class AutoActivateContentAssistProposal extends PHPCompletionProposal
 				{
 					((SourceViewer) viewer).doOperation(SourceViewer.CONTENTASSIST_PROPOSALS);
 				}
-
 			});
 		}
 	}
