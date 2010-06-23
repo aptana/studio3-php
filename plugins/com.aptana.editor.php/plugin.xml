@@ -125,6 +125,15 @@
       </primaryWizard>
    </extension>
    <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <commonWizard
+            associatedExtensionId="org.eclipse.ui.navigator.resourceContent"
+            type="new"
+            wizardId="com.aptana.editor.php.NewPHPProjectWizard">
+         <enablement></enablement>
+      </commonWizard>
+   </extension>
+   <extension
          point="org.eclipse.ui.contexts">
       <context
             description="PHP source editing context"
@@ -198,6 +207,9 @@
          <actionSet
                id="com.aptana.editor.php.presentation">
          </actionSet>
+         <newWizardShortcut
+               id="com.aptana.editor.php.NewPHPProjectWizard">
+         </newWizardShortcut>
       </perspectiveExtension>
    </extension>
    <extension
