@@ -132,11 +132,15 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 		return fObjectType;
 	}
 
-	/**
-	 * @see ICompletionProposal#apply(IDocument)
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.contentassist.CommonCompletionProposal#apply(org.eclipse.jface.text.ITextViewer,
+	 * char, int, int)
 	 */
-	public void apply(IDocument document)
+	@Override
+	public void apply(ITextViewer viewer, char trigger, int stateMask, int offset)
 	{
+		IDocument document = viewer.getDocument();
 		try
 		{
 			document.replace(_replacementOffset, _replacementLength, _replacementString);
@@ -350,7 +354,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 	@Override
 	public int compareTo(PHPCompletionProposal otherProposal)
 	{
-		
+
 		String replacement = this.getReplacementString();
 		String otherReplacement = otherProposal.getReplacementString();
 		if (replacement.startsWith(otherReplacement))
@@ -361,7 +365,8 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 		return replacement.compareTo(otherReplacement);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
