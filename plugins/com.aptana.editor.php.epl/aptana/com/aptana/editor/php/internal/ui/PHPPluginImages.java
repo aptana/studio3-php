@@ -44,8 +44,8 @@ public class PHPPluginImages
 	public static final String IMG_OBJS_FIXABLE_PROBLEM = NAME_PREFIX + "quickfix_warning_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_FIXABLE_ERROR = NAME_PREFIX + "quickfix_error_obj.gif"; //$NON-NLS-1$
 
-	//  public static final ImageDescriptor DESC_OVR_WARNING= createUnManagedCached(T_OVR, "warning_co.gif"); 					//$NON-NLS-1$
-	//	public static final ImageDescriptor DESC_OVR_ERROR= createUnManagedCached(T_OVR, "error_co.gif"); 						//$NON-NLS-1$
+	public static final ImageDescriptor DESC_OVR_WARNING= createUnManagedCached(T_OVR, "warning_co.gif"); //$NON-NLS-1$
+	public static final ImageDescriptor DESC_OVR_ERROR= createUnManagedCached(T_OVR, "error_co.gif"); //$NON-NLS-1$
 
 	private static final class CachedImageDescriptor extends ImageDescriptor
 	{

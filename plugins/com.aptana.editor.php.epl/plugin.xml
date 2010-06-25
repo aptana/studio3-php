@@ -158,5 +158,33 @@
      </markerAttributeGrouping>
      <markerAttributeGrouping markerType="com.aptana.editor.php.epl.buildpath_problem"
         defaultGroupingEntry="com.aptana.editor.php.epl.category.buildpath"/>
-   </extension> 
+   </extension>
+   <extension point="org.eclipse.ui.decorators">
+		<decorator
+        adaptable="true"
+        class="com.aptana.editor.php.internal.ui.ProblemsLabelDecorator"
+        id="com.aptana.editor.php.epl.problemsDecorator"
+        label="PHP Problem Decorator"
+        lightweight="true"
+        location="BOTTOM_LEFT"
+        state="true">
+			<enablement>
+				<objectClass name="org.eclipse.core.resources.IResource">
+				</objectClass>
+			</enablement>
+		</decorator>
+		<!--decorator
+			label="%OverrideIndicatorLabelDecorator.label"
+			lightweight="true"
+			location="BOTTOM_RIGHT"		
+			state="true"
+			class="com.aptana.editor.php.epl.OverrideIndicatorLabelDecorator"
+			id="com.aptana.editor.php.epl.override.decorator">
+		    <enablement>
+			  <objectClass
+				name="com.aptana.editor.php.core.model.IMethod">
+			  </objectClass>
+		    </enablement>
+	    </decorator -->
+	</extension>
 </plugin>

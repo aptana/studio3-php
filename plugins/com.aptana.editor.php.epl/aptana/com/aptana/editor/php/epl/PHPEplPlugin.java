@@ -15,6 +15,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.aptana.editor.php.internal.ui.viewsupport.ProblemMarkerManager;
+
 public class PHPEplPlugin extends AbstractUIPlugin
 {
 
@@ -27,6 +29,8 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	private static PHPEplPlugin plugin;
 
 	private ASTProvider fASTProvider;
+
+	private ProblemMarkerManager fProblemMarkerManager;
 
 	/**
 	 * The constructor
@@ -77,6 +81,33 @@ public class PHPEplPlugin extends AbstractUIPlugin
 			fASTProvider = new ASTProvider();
 
 		return fASTProvider;
+	}
+
+	/**
+	 * Returns a {@link ProblemMarkerManager}
+	 * @return {@link ProblemMarkerManager}
+	 */
+	public synchronized ProblemMarkerManager getProblemMarkerManager() {
+		if (fProblemMarkerManager == null)
+			fProblemMarkerManager= new ProblemMarkerManager();
+		return fProblemMarkerManager;
+	}
+	
+	/**
+	 * Returns the standard display to be used. The method first checks, if the thread calling this method has an
+	 * associated display. If so, this display is returned. Otherwise the method returns the default display.
+	 * 
+	 * @return returns the standard display to be used
+	 */
+	public static Display getStandardDisplay()
+	{
+		Display display;
+		display = Display.getCurrent();
+		if (display == null)
+		{
+			display = Display.getDefault();
+		}
+		return display;
 	}
 
 	/**
@@ -159,7 +190,8 @@ public class PHPEplPlugin extends AbstractUIPlugin
 		getDefault().getLog().log(status);
 	}
 
-	public static IWorkspace getWorkspace() {
+	public static IWorkspace getWorkspace()
+	{
 		return ResourcesPlugin.getWorkspace();
 	}
 }
