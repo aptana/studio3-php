@@ -282,17 +282,17 @@ public final class PHPBuiltins
 				{
 					return null;
 				}
-				Job parseBuiltins = new Job(Messages.PHPBuiltins_indexingLibraries)
-				{
-					protected IStatus run(IProgressMonitor monitor)
-					{
-						clean(monitor);
-						return Status.OK_STATUS;
-					}
-				};
-				parseBuiltins.setPriority(Job.BUILD);
-				parseBuiltins.schedule();
 			}
+			Job parseBuiltins = new Job(Messages.PHPBuiltins_indexingLibraries)
+			{
+				protected IStatus run(IProgressMonitor monitor)
+				{
+					clean(monitor);
+					return Status.OK_STATUS;
+				}
+			};
+			parseBuiltins.setPriority(Job.BUILD);
+			parseBuiltins.schedule();
 		}
 		return builtins;
 	}

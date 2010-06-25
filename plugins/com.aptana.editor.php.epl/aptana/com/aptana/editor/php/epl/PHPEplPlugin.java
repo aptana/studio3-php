@@ -3,6 +3,7 @@ package com.aptana.editor.php.epl;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.php.internal.ui.editor.ASTProvider;
 import org.eclipse.swt.widgets.Display;
@@ -19,6 +20,8 @@ public class PHPEplPlugin extends AbstractUIPlugin
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.editor.php.epl"; //$NON-NLS-1$
+
+	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(PLUGIN_ID + "/debug")).booleanValue(); //$NON-NLS-1$
 
 	// The shared instance
 	private static PHPEplPlugin plugin;

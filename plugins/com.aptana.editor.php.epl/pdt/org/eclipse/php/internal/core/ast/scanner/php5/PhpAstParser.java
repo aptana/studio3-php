@@ -8,13 +8,14 @@ package org.eclipse.php.internal.core.ast.scanner.php5;
 
 import java.util.*;
 import org.eclipse.php.internal.core.ast.nodes.*;
+import org.eclipse.php.internal.core.ast.scanner.AbstractASTParser;
 import org.eclipse.dltk.ast.Modifiers;
 
 /** CUP v0.10k generated parser.
   * @version Tue May 04 11:31:38 PDT 2010
   */
 @SuppressWarnings({"unchecked", "nls"})
-public class PhpAstParser extends java_cup.runtime.lr_parser {
+public class PhpAstParser extends AbstractASTParser {
 
   /** Default constructor. */
   public PhpAstParser() {super();}
@@ -2442,12 +2443,6 @@ public class PhpAstParser extends java_cup.runtime.lr_parser {
 	protected final static Integer FINAL = new Integer(Modifiers.AccFinal);
 	protected final static Integer STATIC = new Integer(Modifiers.AccStatic);
 	
-	AST ast;
-  
-	public final void setAST (AST ast) {
-		this.ast = ast;
-	}	
-
 	public Dispatch createDispatch(VariableBase dispatcher, VariableBase property) {
 		Dispatch dispatch = null;
 		if (property instanceof Variable) {
@@ -2459,40 +2454,6 @@ public class PhpAstParser extends java_cup.runtime.lr_parser {
 		}
 		return dispatch;
 	}
-
-    /**
-     * Report a non fatal error (or warning).  This method takes a message
-     * string and an additional object (to be used by specializations implemented in subclasses).
-     * The super class prints the message to System.err.
-     * @param message an error message.
-     * @param info    an extra object reserved for use by specialized subclasses.
-     */
-    public void report_error(String message, Object info) {
-		// System.err.print(message);
-  		// if (info instanceof Symbol)
-		//	if (((Symbol)info).left != -1)
-		//		System.err.println(" at character " + ((Symbol)info).left + " of input");
-		//	else System.err.println("");
-	    // else 
-	   	//	System.err.println("");
-    }	
-	
-	
-	public void report_fatal_error(
-    String   message, 
-    Object   info)
-    throws java.lang.Exception
-    {
-      /* stop parsing (not really necessary since we throw an exception, but) */
-      done_parsing();
-
-      /* use the normal error message reporting to put out the message */
-      report_error(message, info);
-
-      /* throw an exception */
-     // throw new Exception("Can't recover from previous error(s)");
-    }
-
 }
 
 /** Cup generated class to encapsulate user supplied action code.*/

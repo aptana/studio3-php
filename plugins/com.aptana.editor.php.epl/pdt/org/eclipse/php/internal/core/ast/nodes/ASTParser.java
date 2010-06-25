@@ -20,6 +20,7 @@ import java_cup.runtime.Scanner;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.lr_parser;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -59,9 +60,13 @@ public class ASTParser {
 			ISourceModule sourceModule) throws IOException {
 
 		this.sourceModule = sourceModule;
-		this.ast = new AST(reader, phpVersion, useASPTags);
+		IResource resource = null;
+		if (sourceModule != null)
+		{
+			resource = sourceModule.getResource();
+		}
+		this.ast = new AST(reader, phpVersion, useASPTags, resource);
 		this.ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
-
 		// set resolve binding property and the binding resolver
 		// TODO: Shalom - Binding resolver
 //		if (sourceModule != null) {
