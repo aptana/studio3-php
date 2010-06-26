@@ -83,6 +83,7 @@ import com.aptana.editor.php.internal.indexer.ComplexIndex;
 import com.aptana.editor.php.internal.indexer.IndexPersistence;
 import com.aptana.editor.php.internal.indexer.UnpackedElementIndex;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
+import com.aptana.editor.php.internal.ui.PHPPluginImages;
 
 /**
  * PHP global indexer.
@@ -1097,6 +1098,14 @@ public final class PHPGlobalIndexer
 	{
 		if (project != null)
 		{
+			try
+			{
+				project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			}
+			catch (CoreException e)
+			{
+				PHPEditorPlugin.logError(e);
+			}
 			BuildPathManager buildPathManager = BuildPathManager.getInstance();
 			IBuildPath buildPath = buildPathManager.getBuildPathByResource(project);
 			if (buildPath != null)
