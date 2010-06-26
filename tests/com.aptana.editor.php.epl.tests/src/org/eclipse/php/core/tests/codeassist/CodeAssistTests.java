@@ -47,7 +47,6 @@ import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.contentAssist.PHPCompletionProposal;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
-import com.aptana.editor.php.internal.model.ModelException;
 import com.aptana.editor.php.internal.model.ModelManager;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
@@ -214,12 +213,12 @@ public class CodeAssistTests extends AbstractPDTTTest {
 	}
 
 	public static ICompletionProposal[] getProposals(int offset)
-			throws ModelException {
+			throws Exception {
 		return getProposals(getSourceModule(), offset);
 	}
 
 	public static ICompletionProposal[] getProposals(ISourceModule sourceModule,
-			int offset) throws ModelException {
+			int offset) throws Exception {
 		PHPSourceEditor editor = new PHPSourceEditor();
 		editor.computeModule(sourceModule.getResource().getLocationURI().toString());
 		PHPContentAssistProcessor processor = new PHPContentAssistProcessor(editor);

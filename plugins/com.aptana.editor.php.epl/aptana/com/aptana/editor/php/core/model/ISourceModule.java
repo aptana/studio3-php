@@ -2,6 +2,7 @@ package com.aptana.editor.php.core.model;
 
 import java.util.List;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 
 /**
  * Module.
@@ -35,6 +36,6 @@ public interface ISourceModule extends IModelElement, IParent
 
 	IType getType(String name);
 
-	char[] getSourceAsCharArray();
+	char[] getSourceAsCharArray() throws CoreException;
 
 }

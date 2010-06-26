@@ -29,6 +29,7 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * A PHP language parser for creating abstract syntax trees (ASTs).
@@ -113,6 +114,9 @@ public class ASTParser {
 					version, false, sourceModule);
 			parser.setSource(sourceModule.getSourceAsCharArray());
 			return parser;
+		} catch (CoreException ce) {
+			PHPEplPlugin.logError(ce);
+			return null;
 		} catch (IOException e) {
 			return null;
 		}

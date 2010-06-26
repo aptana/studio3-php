@@ -34,15 +34,21 @@
  */
 package com.aptana.editor.php.internal.model.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.internal.core.util.Util;
 
+import com.aptana.core.util.IOUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.model.IMethod;
 import com.aptana.editor.php.core.model.IModelElement;
@@ -252,12 +258,23 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 	}
 
 	@Override
-	public char[] getSourceAsCharArray()
+	public char[] getSourceAsCharArray() throws CoreException
 	{
 		IFile file = (IFile) getResource();
 		if (file == null)
 		{
-			throw new IllegalStateException("Source module resource was null"); //$NON-NLS-1$
+			File f = new File(getModule().getFullPath());
+			if (!f.exists()) {
+				throw new IllegalStateException("Source module resource was null"); //$NON-NLS-1$
+			}
+			try
+			{
+				return IOUtil.read(new FileInputStream(f)).toCharArray();
+			}
+			catch (FileNotFoundException e)
+			{
+				throw new CoreException(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID, "Error reading the file's content", e));  //$NON-NLS-1$
+			}
 		}
 		if (!file.exists())
 		{

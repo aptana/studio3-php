@@ -27,6 +27,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -204,6 +205,15 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			// Set the current module into the parse state
 			phpParseState.setModule(getModule());
 			phpParseState.setSourceModule(getSourceModule());
+		}
+		else
+		{
+			// It's probably a file out of the workspace
+			if (input instanceof FileStoreEditorInput)
+			{
+				FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
+				sourceUri = fsInput.getURI().toString();
+			}
 		}
 	}
 
@@ -413,8 +423,11 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			if (sourceURI == null)
 			{
-				PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
-						"Error in getModule(): sourceUri was null. Returning null")); //$NON-NLS-1$
+				if (PHPEditorPlugin.DEBUG)
+				{
+					PHPEditorPlugin.log(new Status(IStatus.WARNING, PHPEditorPlugin.PLUGIN_ID,
+							"sourceUri was null. Returning null")); //$NON-NLS-1$
+				}
 				return null;
 			}
 			String struri = sourceURI;
