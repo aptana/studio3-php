@@ -1115,34 +1115,47 @@ public final class PHPGlobalIndexer
 				mainIndex.removeIndex(buildPath);
 				buildPathManager.handleChanged(empty, targetProject);
 				buildPathManager.handleChanged(targetProject, empty);
-
-				final IBuildPath newBuildPath = buildPathManager.getBuildPathByResource(project);
-				mainIndex.addIndex(newBuildPath, new UnpackedElementIndex());
-				Job job = handleModulesAdded(newBuildPath.getModules());
-				job.setPriority(Job.BUILD);
-				job.schedule();
-				try
-				{
-					job.join();
-				}
-				catch (InterruptedException e)
-				{
-				}
-				Job savingJob = new Job(Messages.PHPGlobalIndexer_savingIndex)
-				{
-					protected IStatus run(IProgressMonitor monitor)
-					{
-						needSaving.add(newBuildPath);
-						doSave();
-						return Status.OK_STATUS;
-					}
-				};
-				savingJob.setSystem(true);
-				savingJob.setPriority(Job.BUILD);
 			}
 		}
 	}
 
+	/**
+	 * Build the index for the given project. Usually, this call should arrive after a clean is requested.
+	 * 
+	 * @param project
+	 * @param monitor
+	 */
+	public void build(IProject project, IProgressMonitor monitor)
+	{
+		if (project != null)
+		{
+			BuildPathManager buildPathManager = BuildPathManager.getInstance();
+			final IBuildPath newBuildPath = buildPathManager.getBuildPathByResource(project);
+			mainIndex.addIndex(newBuildPath, new UnpackedElementIndex());
+			Job job = handleModulesAdded(newBuildPath.getModules());
+			job.setPriority(Job.BUILD);
+			job.schedule();
+			try
+			{
+				job.join();
+			}
+			catch (InterruptedException e)
+			{
+			}
+			Job savingJob = new Job(Messages.PHPGlobalIndexer_savingIndex)
+			{
+				protected IStatus run(IProgressMonitor monitor)
+				{
+					needSaving.add(newBuildPath);
+					doSave();
+					return Status.OK_STATUS;
+				}
+			};
+			savingJob.setSystem(true);
+			savingJob.setPriority(Job.BUILD);
+		}
+	}
+	
 	/**
 	 * Clean all the projects in the workspace.
 	 */

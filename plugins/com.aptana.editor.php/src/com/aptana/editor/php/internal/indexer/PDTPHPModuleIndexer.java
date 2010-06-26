@@ -89,6 +89,7 @@ import com.aptana.editor.php.indexer.IModuleIndexer;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IProgramIndexer;
 import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
 import com.aptana.editor.php.internal.parser.phpdoc.TypedDescription;
 import com.aptana.editor.php.util.EncodingUtils;
@@ -3780,6 +3781,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			{
 				v.process(program, reporter, module);
 			}
+			// Mark the errors in the project tree
+			program.getAST().flushErrors();
 		}
 		catch (Throwable th)
 		{
@@ -3943,6 +3946,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			if (isUpdateTaskTags())
 			{
 				Reader reader = new StringReader(contents);
+				// FIXME- Shalom: Tasks updating
 				updater.update(reader, module);
 			}
 		}
@@ -3961,7 +3965,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			Reader reader = new StringReader(contents);
 			PHPVersion phpVersion = null; // TODO - Shalom: Get the right version from the module
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			ASTParser parser = ASTParser.newParser(reader, version);
+			ASTParser parser = ASTParser.newParser(reader, version, true, ModelUtils.convertModule(module));
 			return parser.createAST(null);
 		}
 		catch (Throwable th)
