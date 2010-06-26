@@ -1,19 +1,35 @@
 package com.aptana.editor.php.internal.contentAssist;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.widgets.Display;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
+import com.aptana.editor.php.internal.indexer.ElementsIndexingUtils;
+import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.NamespacePHPEntryValue;
+import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPNamespaceNode;
+import com.aptana.editor.php.internal.parser.nodes.Parameter;
+import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
+import com.aptana.editor.php.internal.text.link.contentassist.LineBreakingReader;
+import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.lexer.Lexeme;
 
 public class PHPContextCalculator
@@ -37,6 +53,13 @@ public class PHPContextCalculator
 	 * Namespace proposal context type.
 	 */
 	protected static final String NAMESPACE_PROPOSAL_CONTEXT_TYPE = "NAMESPACE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
+
+	private static final String NEW_LINE = System.getProperty("line.separator", "\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	/**
+	 * DEFAULT_DELIMITER
+	 */
+	public static final String DEFAULT_DELIMITER = NEW_LINE + "\u2022\t"; //$NON-NLS-1$
 
 	// private static final String[] EMPTY_STRING_ARRAY = new String[0];
 	private ProposalContext currentContext;
@@ -637,7 +660,7 @@ public class PHPContextCalculator
 				return element.getValue() instanceof NamespacePHPEntryValue;
 			}
 		};
-		currentContext = new ProposalContext(filter, true, true, new int[] {IPHPIndexConstants.NAMESPACE_CATEGORY});
+		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.NAMESPACE_CATEGORY });
 		currentContext.setType(NAMESPACE_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
@@ -727,4 +750,212 @@ public class PHPContextCalculator
 		return new ProposalContext(filter, false, false, new int[0]);
 	}
 
+	/**
+	 * Returns a CallInfo representing the function name or the class name that comes before the given offset.
+	 * 
+	 * @param lexemeProvider
+	 * @param offset
+	 * @return A {@link CallInfo}, or null if none is located.
+	 */
+	static CallInfo calculateCallInfo(LexemeProvider<PHPTokenType> lexemeProvider, int offset)
+	{
+		int startPosition = lexemeProvider.getLexemeFloorIndex(offset - 1);
+		int level = 0;
+		for (int i = startPosition; i >= 0; i--)
+		{
+			Lexeme<PHPTokenType> currentLexeme = lexemeProvider.getLexeme(i);
+			String type = currentLexeme.getType().getType();
+			if (PHPRegionTypes.PHP_NEW.equals(type) && lexemeProvider.size() - 2 > i)
+			{
+				// This is not a function call, but a class instantiation,
+				// however, we return a CallInfo for that too.
+				// Get the lexeme in i+2 position to skip the white-space
+				Lexeme<PHPTokenType> className = lexemeProvider.getLexeme(i + 2);
+				return new CallInfo(className.getText(), className.getEndingOffset());
+			}
+			if (PHPRegionTypes.PHP_TOKEN.equals(type))
+			{
+				if (")".equals(currentLexeme.getText())) //$NON-NLS-1$
+				{
+					level++;
+				}
+				else if ("(".equals(currentLexeme.getText())) //$NON-NLS-1$
+				{
+					if (level == 0)
+					{
+						Lexeme<PHPTokenType> function = findLexemeBackward(lexemeProvider, i - 1,
+								PHPRegionTypes.PHP_STRING, new String[] { PHPRegionTypes.WHITESPACE,
+										PHPRegionTypes.PHP_COMMENT, PHPRegionTypes.PHP_COMMENT_END,
+										PHPRegionTypes.PHP_COMMENT_START });
+						if (function == null)
+						{
+							return null;
+						}
+						return new CallInfo(function.getText(), function.getEndingOffset());
+					}
+					level--;
+				}
+			}
+			i--;
+		}
+		return null;
+	}
+
+	/**
+	 * Computes context information about the PHP function parse node.
+	 * 
+	 * @param pn
+	 *            - parse node.
+	 * @return context info.
+	 */
+	static ContextInformation computeArgContextInformation(PHPFunctionParseNode pn)
+	{
+		StringBuffer bf = new StringBuffer();
+		// bf.append("<b>");
+		bf.append(pn.getNodeName());
+		// bf.append("</b>");
+		bf.append('(');
+		Parameter[] parameters = pn.getParameters();
+		String[] parameterNames = new String[parameters.length];
+		for (int a = 0; a < parameters.length; a++)
+		{
+			parameterNames[a] = parameters[a].getVariableName();
+		}
+		for (int a = 0; a < parameters.length; a++)
+		{
+			parameters[a].addLabel(bf);
+			if (a != parameters.length - 1)
+			{
+				bf.append(',');
+			}
+		}
+		bf.append(')');
+		return new ContextInformation("argInfo", bf.toString()); //$NON-NLS-1$
+	}
+
+	/**
+	 * Computes context information about the PHP function element entry.
+	 * 
+	 * @param entry
+	 *            - element entry.
+	 * @return context info.
+	 */
+	static ContextInformation computeArgContextInformation(IElementEntry entry)
+	{
+		FunctionPHPEntryValue value = (FunctionPHPEntryValue) entry.getValue();
+		StringBuffer bf = new StringBuffer();
+
+		bf.append(ElementsIndexingUtils.getLastNameInPath(entry.getEntryPath()));
+
+		bf.append('(');
+		Map<String, Set<Object>> parameters = value.getParameters();
+		int i = 0;
+		for (String parName : parameters.keySet())
+		{
+			bf.append('$');
+			bf.append(parName);
+			if (i != parameters.size() - 1)
+			{
+				bf.append(',');
+			}
+			i++;
+		}
+		bf.append(')');
+		PHPDocBlock doc = null;
+
+		if (value.getStartOffset() > 0)
+		{
+			doc = PHPDocUtils.findFunctionPHPDocComment(entry, value.getStartOffset() - 1);
+		}
+
+		if (doc != null)
+		{
+			FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(doc);
+			if (documentation == null)
+			{
+				return null;
+			}
+
+			if (documentation != null)
+			{
+				if (documentation.getDescription() != null && documentation.getDescription().length() != 0)
+				{
+					bf.append("\n"); //$NON-NLS-1$
+					bf.append(documentation.getDescription());
+				}
+			}
+			// Map<String, Set<Object>> parameters = obj.getParameters();
+			String[] parameterNames = new String[parameters.size()];
+			int a = 0;
+			for (String s : parameters.keySet())
+			{
+				parameterNames[a++] = s;
+			}
+		}
+		return new ContextInformation("argInfo", bf.toString()); //$NON-NLS-1$
+	}
+
+	/**
+	 * Computes the context information for the built-in PHP class constructors.
+	 * 
+	 * @param cn
+	 * @return Context information.
+	 */
+	static ContextInformation computeConstructorContextInformation(PHPClassParseNode cn)
+	{
+		IParseNode[] children = cn.getChildren();
+		for (IParseNode child : children)
+		{
+			if (child instanceof PHPFunctionParseNode)
+			{
+				PHPFunctionParseNode func = (PHPFunctionParseNode) child;
+				// Return the first hit for a constructor.
+				// This should be modified once we'll have multiple return
+				// options (like in JDT)
+				if ("__construct".equals(func.getNodeName()) //$NON-NLS-1$
+						|| cn.getNodeName().equals(func.getNodeName()))
+				{
+					Parameter[] parameters = func.getParameters();
+					if (parameters != null && parameters.length > 0)
+					{
+						return computeArgContextInformation(func);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	static String wrapString(String s, int maxWidth, String delimiter)
+	{
+		if (Display.getCurrent() == null)
+		{
+			return s;
+		}
+		StringReader sr = new StringReader(s);
+		GC gc = new GC(Display.getCurrent());
+		String result = ""; //$NON-NLS-1$
+		LineBreakingReader r = new LineBreakingReader(sr, gc, maxWidth);
+
+		try
+		{
+			String line = r.readLine();
+			while (line != null)
+			{
+				result += line;
+				line = r.readLine();
+				if (line != null)
+				{
+					result += delimiter;
+				}
+			}
+		}
+		catch (IOException e)
+		{
+		}
+
+		gc.dispose();
+
+		return result;
+	}
 }

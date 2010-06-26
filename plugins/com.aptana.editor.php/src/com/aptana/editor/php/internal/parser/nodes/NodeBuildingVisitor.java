@@ -24,9 +24,9 @@ import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org.eclipse.php.internal.core.ast.nodes.Variable;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org.eclipse.php.internal.core.documentModel.phpElementData.BasicPHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocTag;
 
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 
@@ -106,7 +106,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		int modifier = fieldsDeclaration.getModifier();
 		int startPosition = -1;
 		int endPosition = -1;
-		PHPDocBlock docInfo = null;
+		IPHPDocBlock docInfo = null;
 		StringBuilder vars = new StringBuilder();
 		for (Variable v : fieldsDeclaration.getVariableNames())
 		{
@@ -336,8 +336,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		{
 			return null;
 		}
-		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag[] docTags = docComment.getTags();
-		PHPDocTag[] tags = new PHPDocTag[docTags.length];
+		IPHPDocTag[] docTags = docComment.getTags();
+		IPHPDocTag[] tags = new IPHPDocTag[docTags.length];
 		for (int i = 0; i < docTags.length; i++)
 		{
 			tags[i] = BasicPHPDocTag.fromASTDocTag(docTags[i]);

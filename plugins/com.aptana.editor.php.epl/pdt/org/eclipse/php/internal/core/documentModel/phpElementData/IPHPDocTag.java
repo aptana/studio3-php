@@ -12,7 +12,7 @@ package org.eclipse.php.internal.core.documentModel.phpElementData;
 
 import java.io.Serializable;
 
-public interface PHPDocTag extends Serializable {
+public interface IPHPDocTag extends Serializable {
 
 	 int ABSTRACT = 0;
 
@@ -77,4 +77,6 @@ public interface PHPDocTag extends Serializable {
 	int getID();
 
 	String getValue();
+
+	int getTagKind();
 }

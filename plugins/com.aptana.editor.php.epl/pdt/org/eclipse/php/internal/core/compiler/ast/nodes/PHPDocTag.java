@@ -19,9 +19,12 @@ import org.eclipse.dltk.ast.references.TypeReference;
 import org.eclipse.dltk.ast.references.VariableReference;
 import org.eclipse.php.internal.core.ast.nodes.AST;
 import org.eclipse.php.internal.core.ast.nodes.Comment;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
-public class PHPDocTag extends Comment implements PHPDocTagKinds {
+public class PHPDocTag extends Comment implements IPHPDocTag {
 
+	private static final long serialVersionUID = 7543654184965368295L;
+	
 	public static final String ERROR = "ERROR!!!"; //$NON-NLS-1$
 	public static final String THROWS_NAME = "throws"; //$NON-NLS-1$
 	public static final String VERSION_NAME = "version"; //$NON-NLS-1$
@@ -114,7 +117,7 @@ public class PHPDocTag extends Comment implements PHPDocTagKinds {
 		
 		int valueStart = start + getTagKind(tagKind).length() + 1;
 		
-		if (tagKind == RETURN || tagKind == VAR || tagKind == THROWS) {
+		if (tagKind == PHPDocTagKinds.RETURN || tagKind == PHPDocTagKinds.VAR || tagKind == PHPDocTagKinds.THROWS) {
 			
 			int wordStart = getNonWhitespaceIndex(value, 0);
 			int wordEnd = getWhitespaceIndex(value, wordStart);
@@ -137,7 +140,7 @@ public class PHPDocTag extends Comment implements PHPDocTagKinds {
 					references = types.toArray(new TypeReference[types.size()]);
 				}
 			}
-		} else if (tagKind == PARAM) {
+		} else if (tagKind == PHPDocTagKinds.PARAM) {
 			
 			int firstWordStart = getNonWhitespaceIndex(value, 0);
 			int firstWordEnd = getWhitespaceIndex(value, firstWordStart);
@@ -185,75 +188,84 @@ public class PHPDocTag extends Comment implements PHPDocTagKinds {
 
 	public static String getTagKind(int kind) {
 		switch (kind) {
-			case ABSTRACT:
+			case PHPDocTagKinds.ABSTRACT:
 				return ABSTRACT_NAME;
-			case AUTHOR:
+			case PHPDocTagKinds.AUTHOR:
 				return AUTHOR_NAME;
-			case DEPRECATED:
+			case PHPDocTagKinds.DEPRECATED:
 				return DEPRECATED_NAME;
-			case FINAL:
+			case PHPDocTagKinds.FINAL:
 				return FINAL_NAME;
-			case GLOBAL:
+			case PHPDocTagKinds.GLOBAL:
 				return GLOBAL_NAME;
-			case NAME:
+			case PHPDocTagKinds.NAME:
 				return NAME_NAME;
-			case RETURN:
+			case PHPDocTagKinds.RETURN:
 				return RETURN_NAME;
-			case PARAM:
+			case PHPDocTagKinds.PARAM:
 				return PARAM_NAME;
-			case SEE:
+			case PHPDocTagKinds.SEE:
 				return SEE_NAME;
-			case STATIC:
+			case PHPDocTagKinds.STATIC:
 				return STATIC_NAME;
-			case STATICVAR:
+			case PHPDocTagKinds.STATICVAR:
 				return STATICVAR_NAME;
-			case TODO:
+			case PHPDocTagKinds.TODO:
 				return TODO_NAME;
-			case VAR:
+			case PHPDocTagKinds.VAR:
 				return VAR_NAME;
-			case PACKAGE:
+			case PHPDocTagKinds.PACKAGE:
 				return PACKAGE_NAME;
-			case ACCESS:
+			case PHPDocTagKinds.ACCESS:
 				return ACCESS_NAME;
-			case CATEGORY:
+			case PHPDocTagKinds.CATEGORY:
 				return CATEGORY_NAME;
-			case COPYRIGHT:
+			case PHPDocTagKinds.COPYRIGHT:
 				return COPYRIGHT_NAME;
-			case DESC:
+			case PHPDocTagKinds.DESC:
 				return DESC_NAME;
-			case EXAMPLE:
+			case PHPDocTagKinds.EXAMPLE:
 				return EXAMPLE_NAME;
-			case FILESOURCE:
+			case PHPDocTagKinds.FILESOURCE:
 				return FILESOURCE_NAME;
-			case IGNORE:
+			case PHPDocTagKinds.IGNORE:
 				return IGNORE_NAME;
-			case INTERNAL:
+			case PHPDocTagKinds.INTERNAL:
 				return INTERNAL_NAME;
-			case LICENSE:
+			case PHPDocTagKinds.LICENSE:
 				return LICENSE_NAME;
-			case LINK:
+			case PHPDocTagKinds.LINK:
 				return LINK_NAME;
-			case SINCE:
+			case PHPDocTagKinds.SINCE:
 				return SINCE_NAME;
-			case SUBPACKAGE:
+			case PHPDocTagKinds.SUBPACKAGE:
 				return SUBPACKAGE_NAME;
-			case TUTORIAL:
+			case PHPDocTagKinds.TUTORIAL:
 				return TUTORIAL_NAME;
-			case USES:
+			case PHPDocTagKinds.USES:
 				return USES_NAME;
-			case VERSION:
+			case PHPDocTagKinds.VERSION:
 				return VERSION_NAME;
-			case THROWS:
+			case PHPDocTagKinds.THROWS:
 				return THROWS_NAME;
-			case PROPERTY:
+			case PHPDocTagKinds.PROPERTY:
 				return PROPERTY_NAME;
-			case PROPERTY_READ:
+			case PHPDocTagKinds.PROPERTY_READ:
 				return PROPERTY_READ_NAME;
-			case PROPERTY_WRITE:
+			case PHPDocTagKinds.PROPERTY_WRITE:
 				return PROPERTY_WRITE_NAME;
-			case METHOD:
+			case PHPDocTagKinds.METHOD:
 				return METHOD_NAME;
 		}
 		return ERROR;
+	}
+
+	/**
+	 * Returns {@link #getTagKind()} for this doc tag type.
+	 */
+	@Override
+	public int getID()
+	{
+		return getTagKind();
 	}
 }

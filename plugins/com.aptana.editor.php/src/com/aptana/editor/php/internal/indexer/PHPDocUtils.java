@@ -14,6 +14,9 @@ import org.eclipse.php.internal.core.ast.nodes.Comment;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
@@ -149,13 +152,13 @@ public final class PHPDocUtils
 	}
 
 	/**
-	 * Returns the function documentation from a given {@link PHPDocBlock}.
+	 * Returns the function documentation from a given {@link IPHPDocBlock}.
 	 * 
 	 * @param block
 	 *            - The block to convert to a {@link FunctionDocumentation}.
 	 * @return FunctionDocumentation or null.
 	 */
-	public static FunctionDocumentation getFunctionDocumentation(PHPDocBlock block)
+	public static FunctionDocumentation getFunctionDocumentation(IPHPDoc block)
 	{
 		if (block == null)
 		{
@@ -165,10 +168,10 @@ public final class PHPDocUtils
 
 		result.setDescription(block.getShortDescription());
 
-		PHPDocTag[] tags = block.getTags();
+		IPHPDocTag[] tags = block.getTags();
 		if (tags != null)
 		{
-			for (PHPDocTag tag : tags)
+			for (IPHPDocTag tag : tags)
 			{
 				switch (tag.getTagKind())
 				{
@@ -234,7 +237,7 @@ public final class PHPDocUtils
 	 *            - offset to start search from.
 	 * @param content
 	 *            - The file content
-	 * @return PHPDocBlock The PhpDoc, or null.
+	 * @return IPHPDocBlock The PhpDoc, or null.
 	 */
 	public static PHPDocBlock findPHPDocComment(List<Comment> comments, int offset, String content)
 	{

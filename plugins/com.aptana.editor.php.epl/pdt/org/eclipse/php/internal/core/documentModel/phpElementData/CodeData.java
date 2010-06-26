@@ -42,7 +42,7 @@ public interface CodeData extends Comparable, Serializable, IAdaptable {
 	 * Returns the user data
 	 * @return the user data
 	 */
-	UserData getUserData();
+	IUserData getUserData();
 
 
 }

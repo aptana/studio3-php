@@ -9,7 +9,7 @@
  */
 package com.aptana.editor.php.internal.parser.nodes;
 
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.parsing.ast.INameNode;
@@ -25,7 +25,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	private static final String EMPTY = " "; //$NON-NLS-1$
 	protected String name;
 	private int modifiers;
-	private PHPDocBlock documentation;
+	private IPHPDocBlock documentation;
 	private short nodeType;
 	private INameNode nameNode;
 
@@ -62,7 +62,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	/**
 	 * @param docInfo
 	 */
-	public void setDocumentation(PHPDocBlock docInfo)
+	public void setDocumentation(IPHPDocBlock docInfo)
 	{
 		this.documentation = docInfo;
 	}
@@ -71,7 +71,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 * @return documentation block or null
 	 */
 
-	public PHPDocBlock getDocumentation()
+	public IPHPDocBlock getDocumentation()
 	{
 		return documentation;
 	}

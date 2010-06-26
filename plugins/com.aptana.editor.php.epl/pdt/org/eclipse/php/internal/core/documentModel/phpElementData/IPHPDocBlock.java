@@ -13,7 +13,7 @@ package org.eclipse.php.internal.core.documentModel.phpElementData;
 import java.io.Serializable;
 import java.util.Iterator;
 @SuppressWarnings("unchecked")
-public interface PHPDocBlock extends Serializable {
+public interface IPHPDocBlock extends Serializable, IPHPDoc {
 
 	int FILE_DOCBLOCK = 0;
 	int CLASS_DOCBLOCK = 1;
@@ -30,9 +30,9 @@ public interface PHPDocBlock extends Serializable {
 
 	String getLongDescription();
 
-	Iterator getTags();
+	IPHPDocTag[] getTags();
 
-	PHPDocTag[] getTagsAsArray();
+	IPHPDocTag[] getTagsAsArray();
 
 	Iterator getTags(int id);
 	

@@ -13,7 +13,7 @@ package org.eclipse.php.internal.core.documentModel.phpElementData;
 import java.util.HashMap;
 
 @SuppressWarnings( { "unchecked", "nls" })
-public class BasicPHPDocTag implements PHPDocTag
+public class BasicPHPDocTag implements IPHPDocTag
 {
 
 	/**
@@ -33,6 +33,15 @@ public class BasicPHPDocTag implements PHPDocTag
 	public int getID()
 	{
 		return id;
+	}
+
+	/**
+	 * This one returns -1 on every call.
+	 */
+	@Override
+	public int getTagKind()
+	{
+		return -1;
 	}
 
 	public String getValue()
@@ -174,10 +183,10 @@ public class BasicPHPDocTag implements PHPDocTag
 	 * [Note: Aptana Addition]
 	 * 
 	 * @param docTag
-	 *            An AST PHPDocTag (can be null).
-	 * @return A PHPDocTag; Null if the given docTag was null, or there is no matching doc type.
+	 *            An AST IPHPDocTag (can be null).
+	 * @return A IPHPDocTag; Null if the given docTag was null, or there is no matching doc type.
 	 */
-	public static PHPDocTag fromASTDocTag(org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag docTag)
+	public static IPHPDocTag fromASTDocTag(IPHPDocTag docTag)
 	{
 		if (docTag == null)
 		{

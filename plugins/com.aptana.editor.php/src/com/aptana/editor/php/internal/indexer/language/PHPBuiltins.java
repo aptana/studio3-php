@@ -29,9 +29,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocTag;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -58,7 +58,7 @@ public final class PHPBuiltins
 	public static final String PHP53_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "5.3"; //$NON-NLS-1$
 
 	private static final int INITIAL_CAPACITY = 5000;
-	private static final PHPDocTag[] NO_TAGS = new PHPDocTag[0];
+	private static final IPHPDocTag[] NO_TAGS = new IPHPDocTag[0];
 	private static final PHPBuiltins instance = new PHPBuiltins();
 
 	private Object mutex = new Object();
@@ -617,7 +617,7 @@ public final class PHPBuiltins
 			// type.
 			// Also, make sure that the documentation is providing some basics.
 			PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
-			PHPDocBlock documentation = phpChild.getDocumentation();
+			IPHPDocBlock documentation = phpChild.getDocumentation();
 			@SuppressWarnings("unused")
 			boolean docsFromBuiltinSource = true;
 			if (documentation == null || EMPTY_STRING.equals(documentation.getShortDescription()))

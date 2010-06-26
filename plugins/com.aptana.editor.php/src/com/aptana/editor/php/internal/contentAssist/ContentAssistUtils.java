@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocTag;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
@@ -264,7 +264,7 @@ public class ContentAssistUtils
 	{
 		String additionalInfo = Messages.ContentAssistUtils_noAvailableDocumentation;
 		StringBuffer buf = new StringBuffer();
-		PHPDocBlock documentation = node.getDocumentation();
+		IPHPDocBlock documentation = node.getDocumentation();
 		if (!(node instanceof PHPFunctionParseNode))
 		{
 			buf.append("<b>" + name + "</b><br>"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -286,7 +286,7 @@ public class ContentAssistUtils
 			{
 				buf.append(documentation.getShortDescription());
 			}
-			PHPDocTag[] tagsAsArray = documentation.getTagsAsArray();
+			IPHPDocTag[] tagsAsArray = documentation.getTagsAsArray();
 			buf.append("<br>"); //$NON-NLS-1$
 			for (int a = 0; a < tagsAsArray.length; a++)
 			{
