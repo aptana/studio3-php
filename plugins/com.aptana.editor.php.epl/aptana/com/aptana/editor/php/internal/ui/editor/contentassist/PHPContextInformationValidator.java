@@ -10,6 +10,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.text.contentassist.IContextInformationExtension;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.SWT;
@@ -42,9 +43,16 @@ public class PHPContextInformationValidator implements IContextInformationValida
 	public void install(IContextInformation info, ITextViewer viewer, int offset)
 	{
 		fContextInformation = info;
-		this.fInitialOffset = offset;
-		this.fViewer = viewer;
-
+		fViewer = viewer;
+		if (info instanceof IContextInformationExtension)
+		{
+			fInitialOffset = ((IContextInformationExtension) info).getContextInformationPosition();
+		}
+		else
+		{
+			fInitialOffset = offset - 1;
+		}
+		fInitialOffset++;
 		fCurrentParameter = -1;
 	}
 
@@ -123,11 +131,27 @@ public class PHPContextInformationValidator implements IContextInformationValida
 		return true;
 	}
 
-	private int getCharCount(IDocument document, final int start, final int end, String increments, String decrements,
+	private int getCharCount(IDocument document, int start, final int end, String increments, String decrements,
 			boolean considerNesting) throws BadLocationException
 	{
 
 		Assert.isTrue((increments.length() != 0 || decrements.length() != 0) && !increments.equals(decrements));
+
+		// The given offset that we get here for PHP is for the function name end. We'll need to
+		// scan for the open bracket and fix the offset to be inside the function arguments.
+		while (start < end)
+		{
+			char c = document.getChar(start);
+			if (Character.isWhitespace(c))
+			{
+				start++;
+			}
+			else if (c == '(')
+			{
+				start++;
+				break;
+			}
+		}
 
 		final int NONE = 0;
 		final int BRACKET = 1;

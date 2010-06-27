@@ -7,27 +7,26 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.text.contentassist.ContextInformation;
+import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.text.contentassist.IContextInformationExtension;
 import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
-import com.aptana.editor.php.internal.indexer.ElementsIndexingUtils;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.NamespacePHPEntryValue;
-import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPNamespaceNode;
 import com.aptana.editor.php.internal.parser.nodes.Parameter;
-import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
 import com.aptana.editor.php.internal.text.link.contentassist.LineBreakingReader;
 import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.lexer.Lexeme;
@@ -796,7 +795,7 @@ public class PHPContextCalculator
 					level--;
 				}
 			}
-			i--;
+			// i--;
 		}
 		return null;
 	}
@@ -806,15 +805,12 @@ public class PHPContextCalculator
 	 * 
 	 * @param pn
 	 *            - parse node.
+	 * @param nameEndOffset
 	 * @return context info.
 	 */
-	static ContextInformation computeArgContextInformation(PHPFunctionParseNode pn)
+	static IContextInformation computeArgContextInformation(PHPFunctionParseNode pn, int nameEndOffset)
 	{
 		StringBuffer bf = new StringBuffer();
-		// bf.append("<b>");
-		bf.append(pn.getNodeName());
-		// bf.append("</b>");
-		bf.append('(');
 		Parameter[] parameters = pn.getParameters();
 		String[] parameterNames = new String[parameters.length];
 		for (int a = 0; a < parameters.length; a++)
@@ -826,11 +822,12 @@ public class PHPContextCalculator
 			parameters[a].addLabel(bf);
 			if (a != parameters.length - 1)
 			{
-				bf.append(',');
+				bf.append(", "); //$NON-NLS-1$
 			}
 		}
-		bf.append(')');
-		return new ContextInformation("argInfo", bf.toString()); //$NON-NLS-1$
+		String info = bf.toString();
+		ContextInformation contextInformation = new ContextInformation(info, info);
+		return new PHPContextInformationWrapper(contextInformation, nameEndOffset);
 	}
 
 	/**
@@ -840,14 +837,12 @@ public class PHPContextCalculator
 	 *            - element entry.
 	 * @return context info.
 	 */
-	static ContextInformation computeArgContextInformation(IElementEntry entry)
+	static IContextInformation computeArgContextInformation(IElementEntry entry, int nameEndOffset)
 	{
 		FunctionPHPEntryValue value = (FunctionPHPEntryValue) entry.getValue();
 		StringBuffer bf = new StringBuffer();
 
-		bf.append(ElementsIndexingUtils.getLastNameInPath(entry.getEntryPath()));
-
-		bf.append('(');
+		// bf.append(ElementsIndexingUtils.getLastNameInPath(entry.getEntryPath()));
 		Map<String, Set<Object>> parameters = value.getParameters();
 		int i = 0;
 		for (String parName : parameters.keySet())
@@ -856,52 +851,23 @@ public class PHPContextCalculator
 			bf.append(parName);
 			if (i != parameters.size() - 1)
 			{
-				bf.append(',');
+				bf.append(", "); //$NON-NLS-1$
 			}
 			i++;
 		}
-		bf.append(')');
-		PHPDocBlock doc = null;
-
-		if (value.getStartOffset() > 0)
-		{
-			doc = PHPDocUtils.findFunctionPHPDocComment(entry, value.getStartOffset() - 1);
-		}
-
-		if (doc != null)
-		{
-			FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(doc);
-			if (documentation == null)
-			{
-				return null;
-			}
-
-			if (documentation != null)
-			{
-				if (documentation.getDescription() != null && documentation.getDescription().length() != 0)
-				{
-					bf.append("\n"); //$NON-NLS-1$
-					bf.append(documentation.getDescription());
-				}
-			}
-			// Map<String, Set<Object>> parameters = obj.getParameters();
-			String[] parameterNames = new String[parameters.size()];
-			int a = 0;
-			for (String s : parameters.keySet())
-			{
-				parameterNames[a++] = s;
-			}
-		}
-		return new ContextInformation("argInfo", bf.toString()); //$NON-NLS-1$
+		String info = bf.toString();
+		ContextInformation contextInformation = new ContextInformation(info, info);
+		return new PHPContextInformationWrapper(contextInformation, nameEndOffset);
 	}
 
 	/**
 	 * Computes the context information for the built-in PHP class constructors.
 	 * 
 	 * @param cn
+	 * @param nameEndOffset
 	 * @return Context information.
 	 */
-	static ContextInformation computeConstructorContextInformation(PHPClassParseNode cn)
+	static IContextInformation computeConstructorContextInformation(PHPClassParseNode cn, int nameEndOffset)
 	{
 		IParseNode[] children = cn.getChildren();
 		for (IParseNode child : children)
@@ -918,7 +884,7 @@ public class PHPContextCalculator
 					Parameter[] parameters = func.getParameters();
 					if (parameters != null && parameters.length > 0)
 					{
-						return computeArgContextInformation(func);
+						return computeArgContextInformation(func, nameEndOffset);
 					}
 				}
 			}
@@ -957,5 +923,49 @@ public class PHPContextCalculator
 		gc.dispose();
 
 		return result;
+	}
+
+	/**
+	 * A context information that implements {@link IContextInformationExtension} to provide accurate location for the
+	 * function name end position. This is needed for an accurate computation of the argument position at the
+	 * PHPContextInformationValidator (getCharCount)
+	 * 
+	 * @author Shalom
+	 */
+	static class PHPContextInformationWrapper implements IContextInformation, IContextInformationExtension
+	{
+
+		private ContextInformation contextInformation;
+		private final int contextPosition;
+
+		public PHPContextInformationWrapper(ContextInformation information, int contextPosition)
+		{
+			this.contextInformation = information;
+			this.contextPosition = contextPosition;
+		}
+
+		@Override
+		public String getContextDisplayString()
+		{
+			return contextInformation.getContextDisplayString();
+		}
+
+		@Override
+		public Image getImage()
+		{
+			return contextInformation.getImage();
+		}
+
+		@Override
+		public String getInformationDisplayString()
+		{
+			return contextInformation.getContextDisplayString();
+		}
+
+		@Override
+		public int getContextInformationPosition()
+		{
+			return contextPosition;
+		}
 	}
 }

@@ -33,7 +33,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
@@ -3052,7 +3051,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	@Override
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset)
 	{
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(viewer.getDocument(), offset);
+		IDocument document = viewer.getDocument();
+		if (document == null)
+		{
+			return new IContextInformation[0];
+		}
+		String content = document.get();
+		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		CallInfo info = PHPContextCalculator.calculateCallInfo(lexemeProvider, offset);
 		if (info == null)
 		{
@@ -3064,11 +3069,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			Set<IElementEntry> entries = null;
 
-			IElementsIndex index = getIndex(this.content, offset);
+			IElementsIndex index = getIndex(content, offset);
 			ITypedRegion partition = viewer.getDocument().getDocumentPartitioner().getPartition(offset);
 			// trying to get dereference entries
-			List<String> callPath = ParsingUtils.parseCallPath(partition, this.content, info.getNameEndPos(), OPS,
-					false);
+			List<String> callPath = ParsingUtils
+					.parseCallPath(partition, content, info.getNameEndPos() - 1, OPS, false);
 			if (callPath == null || callPath.isEmpty())
 			{
 				return new IContextInformation[0];
@@ -3102,7 +3107,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				return new IContextInformation[0];
 			}
-
+			
+			// FIXME: Shalom - What about class constructors?
 			entries = ContentAssistFilters.filterAllButFunctions(entries, index);
 			if (entries.size() == 0)
 			{
@@ -3110,7 +3116,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 
 			IElementEntry funcEntry = entries.iterator().next();
-			ContextInformation ci = PHPContextCalculator.computeArgContextInformation(funcEntry);
+			IContextInformation ci = PHPContextCalculator.computeArgContextInformation(funcEntry, info.getNameEndPos());
 			if (ci == null)
 			{
 				return new IContextInformation[0];
@@ -3123,14 +3129,15 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			IPHPParseNode pn = (IPHPParseNode) items.get(0);
 			IContextInformation[] ici = null;
-			ContextInformation ci = null;
+			IContextInformation ci = null;
 			if (pn instanceof PHPFunctionParseNode)
 			{
-				ci = PHPContextCalculator.computeArgContextInformation((PHPFunctionParseNode) pn);
+				ci = PHPContextCalculator.computeArgContextInformation((PHPFunctionParseNode) pn, info.getNameEndPos());
 			}
 			else if (pn instanceof PHPClassParseNode)
 			{
-				ci = PHPContextCalculator.computeConstructorContextInformation((PHPClassParseNode) pn);
+				ci = PHPContextCalculator.computeConstructorContextInformation((PHPClassParseNode) pn, info
+						.getNameEndPos());
 			}
 
 			if (ci != null)
