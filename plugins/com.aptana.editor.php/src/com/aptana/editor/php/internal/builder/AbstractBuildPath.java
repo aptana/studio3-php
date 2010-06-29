@@ -45,6 +45,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IBuildPathChangeListener;
+import com.aptana.editor.php.internal.core.builder.IBuildPathResource;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * Abstract build path.

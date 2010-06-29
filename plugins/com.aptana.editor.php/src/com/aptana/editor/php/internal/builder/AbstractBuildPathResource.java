@@ -36,6 +36,9 @@ package com.aptana.editor.php.internal.builder;
 
 import org.eclipse.core.runtime.IPath;
 
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IBuildPathResource;
+
 /**
  * Abstract build-path resource.
  * 

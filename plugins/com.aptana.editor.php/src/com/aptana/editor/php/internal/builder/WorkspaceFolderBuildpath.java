@@ -45,6 +45,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.internal.core.builder.IBuildPathResource;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * Workspace folder build-path. As this build-path is mostly used as dependency and never for supporting modules in

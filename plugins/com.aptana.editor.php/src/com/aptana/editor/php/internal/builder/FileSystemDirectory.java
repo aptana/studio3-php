@@ -36,6 +36,8 @@ package com.aptana.editor.php.internal.builder;
 
 import java.io.File;
 
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+
 /**
  * FileSystemDirectory
  * 

@@ -11,7 +11,6 @@ package org.eclipse.dltk.compiler.problem;
 
 import java.util.Arrays;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.dltk.compiler.util.Messages;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -77,15 +76,6 @@ public class DefaultProblem extends CategorizedProblem {
 			int severity, int startPosition, int endPosition, int line) {
 		this(NONAME, message, id, stringArguments, severity, startPosition,
 				endPosition, line, 0);
-	}
-
-	//XXX Aptana Mod (addition)
-	public DefaultProblem(IResource resource, String message, int id,
-			String[] stringArguments, int severity, int startPosition,
-			int endPosition, int line)
-	{
-		this(resource.getLocation().toString(), message, id, stringArguments, severity, startPosition, endPosition,
-				line);
 	}
 
 	private static final String NONAME = ""; //$NON-NLS-1$

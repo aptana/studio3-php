@@ -36,8 +36,8 @@ package com.aptana.editor.php.indexer;
 
 import java.util.List;
 
-import com.aptana.editor.php.internal.builder.IDirectory;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * IModuleIndexListener

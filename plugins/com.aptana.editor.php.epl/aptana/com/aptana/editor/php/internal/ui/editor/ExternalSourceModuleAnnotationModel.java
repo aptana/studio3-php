@@ -1,14 +1,22 @@
 package com.aptana.editor.php.internal.ui.editor;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.dltk.compiler.problem.DefaultProblem;
+
+import com.aptana.core.resources.IUniformResourceChangeEvent;
+import com.aptana.core.resources.IUniformResourceChangeListener;
+import com.aptana.core.resources.IUniformResourceMarker;
+import com.aptana.core.resources.MarkerUtils;
+import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.editor.php.internal.core.builder.PHPUniformResource;
 
 /**
  * Annotation model dealing with java marker annotations and temporary problems. Also acts as problem requester for its
@@ -16,12 +24,37 @@ import org.eclipse.core.runtime.IPath;
  */
 public class ExternalSourceModuleAnnotationModel extends SourceModuleAnnotationModel
 {
-	private IPath location;
+	private PHPUniformResource resource;
+	private IUniformResourceChangeListener resourceChangeListener;
 
+	/**
+	 * ResourceChangeListener
+	 */
+	private class ResourceChangeListener implements IUniformResourceChangeListener
+	{
+		/**
+		 * @see com.aptana.ide.core.resources.IUniformResourceChangeListener#resourceChanged(com.aptana.ide.core.resources.IUniformResourceChangeEvent)
+		 */
+		public void resourceChanged(IUniformResourceChangeEvent event)
+		{
+			if (resource.equals(event.getResource()))
+			{
+				update(event.getMarkerDeltas());
+			}
+		}
+	};
+
+	/**
+	 * Constructs a new ExternalSourceModuleAnnotationModel
+	 * 
+	 * @param location
+	 *            An IPath location
+	 */
 	public ExternalSourceModuleAnnotationModel(IPath location)
 	{
 		super(ResourcesPlugin.getWorkspace().getRoot());
-		this.location = location;
+		this.resource = new PHPUniformResource(location);
+		this.resourceChangeListener = new ResourceChangeListener();
 	}
 
 	/*
@@ -29,19 +62,56 @@ public class ExternalSourceModuleAnnotationModel extends SourceModuleAnnotationM
 	 */
 	protected IMarker[] retrieveMarkers() throws CoreException
 	{
-		String moduleLocation = location.toPortableString();
-		IMarker[] markers = super.retrieveMarkers();
-		List<IMarker> locationMarkers = new LinkedList<IMarker>();
-		for (int i = 0; i < markers.length; i++)
+		IMarker[] markers = MarkerUtils.findMarkers(resource, DefaultProblem.MARKER_TYPE_PROBLEM, true);
+		return markers;
+	}
+
+	/**
+	 * @see org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel#deleteMarkers(org.eclipse.core.resources.IMarker[])
+	 */
+	protected void deleteMarkers(final IMarker[] markers) throws CoreException
+	{
+		try
 		{
-			IMarker marker = markers[i];
-			String markerLocation = (String) marker.getAttribute(IMarker.LOCATION);
-			if (moduleLocation.equals(markerLocation))
+			ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable()
 			{
-				locationMarkers.add(marker);
-			}
+				public void run(IProgressMonitor monitor) throws CoreException
+				{
+					for (int i = 0; i < markers.length; ++i)
+					{
+						markers[i].delete();
+					}
+				}
+			}, null, IWorkspace.AVOID_UPDATE, null);
 		}
-		return locationMarkers.toArray(new IMarker[locationMarkers.size()]);
+		catch (CoreException e)
+		{
+			PHPEplPlugin.logInfo("Problem while deleting external markers", e); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * @see org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel#listenToMarkerChanges(boolean)
+	 */
+	protected void listenToMarkerChanges(boolean listen)
+	{
+		if (listen)
+		{
+			MarkerUtils.addResourceChangeListener(resourceChangeListener);
+		}
+		else
+		{
+			MarkerUtils.removeResourceChangeListener(resourceChangeListener);
+		}
+	}
+
+	/**
+	 * @see org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel#isAcceptable(org.eclipse.core.resources.IMarker)
+	 */
+	protected boolean isAcceptable(IMarker marker)
+	{
+		return marker instanceof IUniformResourceMarker
+				&& resource.equals(((IUniformResourceMarker) marker).getUniformResource());
 	}
 
 	/**
@@ -52,34 +122,32 @@ public class ExternalSourceModuleAnnotationModel extends SourceModuleAnnotationM
 	 */
 	protected void update(IMarkerDelta[] markerDeltas)
 	{
-
 		if (markerDeltas.length == 0)
+		{
 			return;
-
-		String moduleLocation = location.toPortableString();
-
+		}
 		for (int i = 0; i < markerDeltas.length; i++)
 		{
 			IMarkerDelta delta = markerDeltas[i];
-			IMarker marker = delta.getMarker();
 
-			if (moduleLocation.equals(marker.getAttribute(IMarker.LOCATION, moduleLocation)))
+			switch (delta.getKind())
 			{
-				switch (delta.getKind())
-				{
-					case IResourceDelta.ADDED:
-						addMarkerAnnotation(marker);
-						break;
-					case IResourceDelta.REMOVED:
-						removeMarkerAnnotation(marker);
-						break;
-					case IResourceDelta.CHANGED:
-						modifyMarkerAnnotation(marker);
-						break;
-				}
+				case IResourceDelta.ADDED:
+					addMarkerAnnotation(delta.getMarker());
+					break;
+
+				case IResourceDelta.REMOVED:
+					removeMarkerAnnotation(delta.getMarker());
+					break;
+
+				case IResourceDelta.CHANGED:
+					modifyMarkerAnnotation(delta.getMarker());
+					break;
+
+				default:
+					break;
 			}
 		}
-
 		fireModelChanged();
 	}
 }

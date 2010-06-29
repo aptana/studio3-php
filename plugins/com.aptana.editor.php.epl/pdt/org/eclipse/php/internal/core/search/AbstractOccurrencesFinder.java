@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.compiler.problem.DefaultProblem;
 import org.eclipse.php.internal.core.CoreMessages;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
@@ -28,6 +29,9 @@ import org.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org.eclipse.php.internal.core.corext.NodeFinder;
+
+import com.aptana.core.resources.IUniformResource;
+import com.aptana.core.resources.MarkerUtils;
 
 /**
  * A base class for all the occurrence finders.
@@ -104,28 +108,46 @@ public abstract class AbstractOccurrencesFinder extends AbstractVisitor
 	 * @param node
 	 * @return
 	 */
-	public static ProblemDesc[] getProblems(Program node) {
-		try {
-			if (node.getSourceModule() == null) {
+	public static ProblemDesc[] getProblems(Program node)
+	{
+		try
+		{
+			if (node.getSourceModule() == null)
+			{
 				return null;
 			}
 
-			IResource resource = node.getSourceModule().getResource();
-			if (resource != null) {
-				// FIXME: Shalom - Use this "com.aptana.editor.php.problem" to annotate AST errors.
-				IMarker[] markers = resource.findMarkers(
-						"com.aptana.editor.php.problem", true, //$NON-NLS-1$
-						IResource.DEPTH_ONE);
+			Object resource = node.getSourceModule().getResource();
+			if (resource != null)
+			{
+				IMarker[] markers = null;
+
+				if (resource instanceof IResource)
+				{
+					markers = ((IResource) resource).findMarkers(DefaultProblem.MARKER_TYPE_PROBLEM, true,
+							IResource.DEPTH_ONE);
+				}
+				else if (resource instanceof IUniformResource)
+				{
+					markers = MarkerUtils.findMarkers((IUniformResource) resource, DefaultProblem.MARKER_TYPE_PROBLEM,
+							true);
+				}
+				if (markers == null)
+				{
+					return null;
+				}
 				ProblemDesc[] problems = new ProblemDesc[markers.length];
-				for (int i = 0; i < markers.length; ++i) {
+				for (int i = 0; i < markers.length; ++i)
+				{
 					problems[i] = new ProblemDesc(markers[i].getAttribute("id", //$NON-NLS-1$
-							0), markers[i].getAttribute(IMarker.CHAR_START, 0),
-							markers[i].getAttribute(IMarker.CHAR_END, 0),
-							markers[i].getAttribute(IMarker.SEVERITY, 0));
+							0), markers[i].getAttribute(IMarker.CHAR_START, 0), markers[i].getAttribute(
+							IMarker.CHAR_END, 0), markers[i].getAttribute(IMarker.SEVERITY, 0));
 				}
 				return problems;
 			}
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 		}
 		return null;
 	}

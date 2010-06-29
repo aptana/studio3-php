@@ -32,43 +32,24 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.internal.builder;
+package com.aptana.editor.php.internal.core.builder;
 
 import java.util.List;
 
 /**
- * Listener to the changes inside the build path.
+ * Listener to the build paths changes.
  * 
  * @author Denis Denisenko
  */
-public interface IBuildPathChangeListener
+public interface IBuildPathsListener
 {
 	/**
 	 * Notifies build path modules structure or contents changed.
 	 * 
-	 * @param changed
-	 *            - changed modules.
-	 * @param removed
-	 *            - removed modules.
-	 * @param removedDirectories
-	 *            - removed directories.
-	 */
-	void changedBefore(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories);
-
-	/**
-	 * Notifies build path modules structure or contents changed.
-	 * 
 	 * @param added
-	 *            - added modules.
-	 * @param changed
-	 *            - changed modules.
-	 * @param addedDirectories
-	 *            - added directories.
+	 *            - added build paths.
 	 * @param removed
-	 *            - removed modules.
-	 * @param removedDirectories
-	 *            - removed directories.
+	 *            - removed build paths.
 	 */
-	void changedAfter(List<IModule> added, List<IModule> changed, List<IModule> removed,
-			List<IDirectory> addedDirectories, List<IDirectory> removedDirectories);
+	void changed(List<IBuildPath> added, List<IBuildPath> removed);
 }

@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.aptana.editor.php.epl,
  com.aptana.editor.common,
  com.aptana.editor.html,
- com.aptana.parsing
+ com.aptana.parsing,
+ com.aptana.core
 Bundle-ClassPath: org.apache.commons.lang_2.4.0.v20081016-1030.jar,
  .
 Export-Package: com.aptana.editor.php.epl.tests,

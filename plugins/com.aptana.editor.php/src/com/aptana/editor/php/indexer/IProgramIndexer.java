@@ -36,7 +36,7 @@ package com.aptana.editor.php.indexer;
 
 import org.eclipse.php.internal.core.ast.nodes.Program;
 
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * 

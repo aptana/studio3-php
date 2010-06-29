@@ -13,6 +13,8 @@ import org.eclipse.dltk.compiler.problem.ProblemSeverities;
 import org.eclipse.php.internal.core.ast.nodes.AST;
 import org.eclipse.php.internal.core.ast.nodes.ASTError;
 
+import com.aptana.core.resources.IUniformResource;
+
 /**
  * Base class for every PhpAstParser that also handles error reporting.<br>
  * Note: his class is an Aptana Mod. The PDT's PhpAstParser extends directly java_cup.runtime.lr_parser.
@@ -102,10 +104,19 @@ public abstract class AbstractASTParser extends java_cup.runtime.lr_parser
 	 * @param lineNumber
 	 * @param message
 	 */
-	protected void reportError(IProblemReporter problemReporter, IResource resource, int start, int end, int lineNumber,
+	protected void reportError(IProblemReporter problemReporter, Object resource, int start, int end, int lineNumber,
 			String message)
 	{
-		DefaultProblem problem = new DefaultProblem(resource, message, IProblem.Syntax, new String[0],
+		String location = null;
+		if (resource instanceof IResource)
+		{
+			location = ((IResource) resource).getLocation().toString();
+		}
+		else if (resource instanceof IUniformResource)
+		{
+			location = ((IUniformResource) resource).getURI().toString();
+		}
+		DefaultProblem problem = new DefaultProblem(location, message, IProblem.Syntax, new String[0],
 				ProblemSeverities.Error, start, end, lineNumber);
 		problemReporter.reportProblem(problem);
 	}

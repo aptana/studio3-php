@@ -23,7 +23,6 @@ import java.util.Map;
 import java_cup.runtime.Scanner;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.dltk.internal.core.builder.BuildProblemReporter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.php.internal.core.CoreMessages;
 import org.eclipse.php.internal.core.PHPVersion;
@@ -31,6 +30,9 @@ import org.eclipse.php.internal.core.ast.rewrite.ASTRewrite;
 import org.eclipse.php.internal.core.ast.scanner.AbstractASTParser;
 import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org.eclipse.text.edits.TextEdit;
+
+import com.aptana.core.resources.IUniformResource;
+import com.aptana.editor.php.internal.core.builder.BuildProblemReporter;
 
 /**
  * Umbrella owner and abstract syntax tree node factory.
@@ -160,7 +162,8 @@ public class AST {
 	
 	// Error reporting
 	private List<ASTError> reportedErrors;
-	private IResource resource;
+	// Can be an IResource or an IUniformResource, in case we are dealing with a script outside the workspace.
+	private Object resource;
 	private BuildProblemReporter problemReporter;
 
 	/**
@@ -175,13 +178,16 @@ public class AST {
 	
 	/**
 	 * Creates a new AST. This constructor get the IResource reference that this AST is created for.
+	 * 
 	 * @param reader
 	 * @param apiLevel
 	 * @param aspTagsAsPhp
-	 * @param resource The {@link IResource} that this AST is being created for (can be null)
+	 * @param resource
+	 *            An {@link IResource} that this AST is being created for, or an IUniformResource, in case we are
+	 *            dealing with a script outside the workspace (may be null) - [Aptana Mod]
 	 * @throws IOException
 	 */
-	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp, IResource resource) throws IOException
+	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp, Object resource) throws IOException
 	{
 		this.resource = resource;
 		if (this.resource != null)
@@ -247,9 +253,9 @@ public class AST {
 	/**
 	 * Returns the IResource that this AST was created for.
 	 * 
-	 * @return An {@link IResource}. Can be null.
+	 * @return An {@link IResource}, or an {@link IUniformResource}. Can be null.
 	 */
-	public IResource getResource()
+	public Object getResource()
 	{
 		return resource;
 	}

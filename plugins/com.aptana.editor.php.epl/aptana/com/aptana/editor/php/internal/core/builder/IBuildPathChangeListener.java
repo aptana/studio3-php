@@ -32,42 +32,43 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.internal.builder;
+package com.aptana.editor.php.internal.core.builder;
 
-import org.eclipse.core.runtime.IPath;
+import java.util.List;
 
 /**
- * Build-path resource.
+ * Listener to the changes inside the build path.
  * 
  * @author Denis Denisenko
  */
-public interface IBuildPathResource
+public interface IBuildPathChangeListener
 {
 	/**
-	 * Gets module full system path.
+	 * Notifies build path modules structure or contents changed.
 	 * 
-	 * @return module full system path.
+	 * @param changed
+	 *            - changed modules.
+	 * @param removed
+	 *            - removed modules.
+	 * @param removedDirectories
+	 *            - removed directories.
 	 */
-	String getFullPath();
+	void changedBefore(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories);
 
 	/**
-	 * Gets module build path.
+	 * Notifies build path modules structure or contents changed.
 	 * 
-	 * @return module build path.
+	 * @param added
+	 *            - added modules.
+	 * @param changed
+	 *            - changed modules.
+	 * @param addedDirectories
+	 *            - added directories.
+	 * @param removed
+	 *            - removed modules.
+	 * @param removedDirectories
+	 *            - removed directories.
 	 */
-	IBuildPath getBuildPath();
-
-	/**
-	 * Gets module short name.
-	 * 
-	 * @return module short name.
-	 */
-	String getShortName();
-
-	/**
-	 * Gets path inside the resource build-path, starting from the build-path root.
-	 * 
-	 * @return path.
-	 */
-	IPath getPath();
+	void changedAfter(List<IModule> added, List<IModule> changed, List<IModule> removed,
+			List<IDirectory> addedDirectories, List<IDirectory> removedDirectories);
 }

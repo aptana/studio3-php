@@ -36,6 +36,8 @@ package com.aptana.editor.php.internal.builder;
 
 import org.eclipse.core.resources.IContainer;
 
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+
 /**
  * Local directory implementation.
  * 

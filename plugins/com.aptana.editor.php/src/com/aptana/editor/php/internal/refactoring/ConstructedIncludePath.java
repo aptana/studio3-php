@@ -34,7 +34,7 @@
  */
 package com.aptana.editor.php.internal.refactoring;
 
-import com.aptana.editor.php.internal.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
 
 /**
  * Constructed include path.

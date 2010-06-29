@@ -41,12 +41,12 @@ import org.eclipse.core.runtime.IPath;
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.IParent;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IBuildPathResource;
-import com.aptana.editor.php.internal.builder.IDirectory;
-import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.ProjectBuildPath;
 import com.aptana.editor.php.internal.builder.WorkspaceFolderBuildpath;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IBuildPathResource;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * Abstract resource element.
