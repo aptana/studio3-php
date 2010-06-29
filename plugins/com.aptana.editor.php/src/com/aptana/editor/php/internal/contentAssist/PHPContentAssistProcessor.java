@@ -1685,11 +1685,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static ArrayList<IElementEntry> getNamespaceEntries(String name, IModule module, Map<String, String> aliases)
 	{
 		ArrayList<IElementEntry> namespaceEntries = new ArrayList<IElementEntry>();
-		for (String s : aliases.keySet())
+		if (aliases != null)
 		{
-			if (s.toLowerCase().startsWith(name))
+			for (String s : aliases.keySet())
 			{
-				namespaceEntries.add(new UnpackedEntry(-1, s, new NamespacePHPEntryValue(0, s), module));
+				if (s.toLowerCase().startsWith(name))
+				{
+					namespaceEntries.add(new UnpackedEntry(-1, s, new NamespacePHPEntryValue(0, s), module));
+				}
 			}
 		}
 		return namespaceEntries;
@@ -3107,7 +3110,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				return new IContextInformation[0];
 			}
-			
+
 			// FIXME: Shalom - What about class constructors?
 			entries = ContentAssistFilters.filterAllButFunctions(entries, index);
 			if (entries.size() == 0)
