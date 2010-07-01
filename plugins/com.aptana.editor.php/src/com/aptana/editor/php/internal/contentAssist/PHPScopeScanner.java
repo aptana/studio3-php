@@ -43,14 +43,20 @@ public class PHPScopeScanner implements ITokenScanner
 	{
 		try
 		{
+			int duplicateStartCount = 0;
 			String token = lexer.getNextToken();
 			int tokenOffset = getTokenOffset();
 			if (prevTokenOffset == tokenOffset)
 			{
 				// we stumble into a case where the lexer failed to notify us with the end
 				// token, so force a stop.
-				return Token.EOF;
+				if (duplicateStartCount == 3)
+				{
+					return Token.EOF;
+				}
+				duplicateStartCount++;
 			}
+			duplicateStartCount = 0;
 			prevTokenOffset = tokenOffset;
 			if (token == null)
 			{
