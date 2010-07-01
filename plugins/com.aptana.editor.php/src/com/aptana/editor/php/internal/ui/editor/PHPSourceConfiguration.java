@@ -1,14 +1,14 @@
 package com.aptana.editor.php.internal.ui.editor;
 
-import static com.aptana.editor.php.internal.IPHPConstants.COMMAND;
-import static com.aptana.editor.php.internal.IPHPConstants.CONTENT_TYPE_PHP;
-import static com.aptana.editor.php.internal.IPHPConstants.DEFAULT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_DOC_COMMENT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_MULTI_LINE_COMMENT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_SINGLE_LINE_COMMENT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_STRING_DOUBLE;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_STRING_SINGLE;
-import static com.aptana.editor.php.internal.IPHPConstants.PREFIX;
+import static com.aptana.editor.php.internal.core.IPHPConstants.COMMAND;
+import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_PHP;
+import static com.aptana.editor.php.internal.core.IPHPConstants.DEFAULT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_DOC_COMMENT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_MULTI_LINE_COMMENT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_SINGLE_LINE_COMMENT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_DOUBLE;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_SINGLE;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PREFIX;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.presentation.PresentationReconciler;

@@ -3,6 +3,7 @@ package com.aptana.editor.php.internal.ui.editor;
 import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
@@ -15,8 +16,9 @@ import com.aptana.editor.common.CompositeSourceViewerConfiguration;
 import com.aptana.editor.common.IPartitionerSwitchStrategy;
 import com.aptana.editor.common.contentassist.ContentAssistant;
 import com.aptana.editor.html.HTMLSourceConfiguration;
-import com.aptana.editor.php.internal.IPHPConstants;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.core.IPHPConstants;
+import com.aptana.editor.php.internal.ui.editor.formatting.PHPAutoIndentStrategy;
 import com.aptana.editor.php.internal.ui.hover.PHPDocHover;
 
 public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfiguration
@@ -56,6 +58,22 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	protected String getTopContentType()
 	{
 		return IPHPConstants.CONTENT_TYPE_PHP;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.common.CommonSourceViewerConfiguration#getAutoEditStrategies(org.eclipse.jface.text.source.
+	 * ISourceViewer, java.lang.String)
+	 */
+	@Override
+	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType)
+	{
+		if (contentType.startsWith(IPHPConstants.PREFIX))
+		{
+			return new IAutoEditStrategy[] { new PHPAutoIndentStrategy(contentType, this, sourceViewer) };
+		}
+		return super.getAutoEditStrategies(sourceViewer, contentType);
 	}
 
 	/*

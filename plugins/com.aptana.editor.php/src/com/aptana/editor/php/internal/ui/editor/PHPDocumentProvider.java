@@ -9,7 +9,7 @@ import org.eclipse.php.internal.core.PHPVersion;
 import com.aptana.editor.common.CompositeDocumentProvider;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.php.core.IPHPVersionListener;
-import com.aptana.editor.php.internal.IPHPConstants;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 
 /**
  * PHP document provider.

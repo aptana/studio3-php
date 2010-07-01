@@ -1,4 +1,4 @@
-package com.aptana.editor.php.internal;
+package com.aptana.editor.php.internal.core;
 
 import org.eclipse.jface.text.IDocument;
 

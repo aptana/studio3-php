@@ -7,6 +7,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.parsing.lexer.Range;
 
 /**
  * Utilities for parsing.
@@ -18,8 +19,8 @@ public final class ParsingUtils
 	/**
 	 * Create a {@link LexemeProvider} for the given partition that is at the offset of the given document.
 	 * 
-	 * @param textViewer
-	 * @param region
+	 * @param document
+	 * @param offset
 	 * @return A new {@link LexemeProvider} for the partition on that offset.
 	 */
 	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int offset)
@@ -29,6 +30,50 @@ public final class ParsingUtils
 			offset--;
 		}
 		return new LexemeProvider<PHPTokenType>(document, offset, new PHPScopeScanner())
+		{
+			@Override
+			protected PHPTokenType getTypeFromData(Object data)
+			{
+				return new PHPTokenType(data.toString());
+			}
+		};
+	}
+
+	/**
+	 * Create a {@link LexemeProvider} for the entire given document.
+	 * 
+	 * @param document
+	 * @return A new {@link LexemeProvider} for the document.
+	 */
+	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document)
+	{
+		return new LexemeProvider<PHPTokenType>(document, new Range(0, document.getLength() - 1), new PHPScopeScanner())
+		{
+			@Override
+			protected PHPTokenType getTypeFromData(Object data)
+			{
+				return new PHPTokenType(data.toString());
+			}
+		};
+	}
+
+	/**
+	 * Create a {@link LexemeProvider} for the given range in the document.
+	 * 
+	 * @param document
+	 * @param start
+	 *            - start offset
+	 * @param end
+	 *            - end offset
+	 * @return A new {@link LexemeProvider} for the document.
+	 */
+	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int start, int end)
+	{
+		if (end == document.getLength() && end > 0)
+		{
+			end--;
+		}
+		return new LexemeProvider<PHPTokenType>(document, new Range(start, end), new PHPScopeScanner())
 		{
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
