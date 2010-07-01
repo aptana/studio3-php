@@ -30,13 +30,18 @@ import com.aptana.parsing.lexer.Lexeme;
  */
 public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 {
-
+	/**
+	 * A set of PHP alternate end types, such as endif, endfor and such.
+	 */
 	protected static HashSet<String> ALTERNATIVE_END_STYLES = new HashSet<String>(Arrays.asList(
 			PHPRegionTypes.PHP_ENDDECLARE, PHPRegionTypes.PHP_ENDFOR, PHPRegionTypes.PHP_ENDFOREACH,
 			PHPRegionTypes.PHP_ENDIF, PHPRegionTypes.PHP_ENDSWITCH, PHPRegionTypes.PHP_ENDWHILE));
+	/**
+	 * A set of PHP block types, such as for, while and such.
+	 */
 	protected static HashSet<String> BLOCK_TYPES = new HashSet<String>(Arrays.asList(PHPRegionTypes.PHP_IF,
-			PHPRegionTypes.PHP_FOR, PHPRegionTypes.PHP_FOREACH, PHPRegionTypes.PHP_ELSEIF, PHPRegionTypes.PHP_SWITCH,
-			PHPRegionTypes.PHP_WHILE, PHPRegionTypes.PHP_CASE, PHPRegionTypes.PHP_DEFAULT));
+			PHPRegionTypes.PHP_FOR, PHPRegionTypes.PHP_FOREACH, PHPRegionTypes.PHP_ELSEIF, PHPRegionTypes.PHP_ELSE,
+			PHPRegionTypes.PHP_SWITCH, PHPRegionTypes.PHP_WHILE, PHPRegionTypes.PHP_CASE, PHPRegionTypes.PHP_DEFAULT));
 	/**
 	 * When we hit those while searching for a pair match, we can tell for sure we are out of the search scope.
 	 */
@@ -384,6 +389,64 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the last, non-whitespace, lexeme in the line of the given offset.
+	 * 
+	 * @param document
+	 * @param lexemeProvider
+	 * @param startingOffset
+	 * @return The last non-whitespace lexeme in the given line. Null, if none is found.
+	 * @throws BadLocationException
+	 */
+	protected Lexeme<PHPTokenType> getLastLexemeInLine(IDocument document, LexemeProvider<PHPTokenType> lexemeProvider,
+			int offset) throws BadLocationException
+	{
+		IRegion lineRegion = document.getLineInformationOfOffset(offset);
+		Lexeme<PHPTokenType> lexeme = lexemeProvider.getFloorLexeme(lineRegion.getOffset() + lineRegion.getLength());
+		if (lexeme == null || !PHPRegionTypes.WHITESPACE.equals(lexeme.getType().getType()))
+		{
+			return lexeme;
+		}
+		// The first non-whitespace lexeme should be on our left
+		int index = lexemeProvider.getLexemeIndex(lexeme.getStartingOffset());
+		if (index - 1 > 0)
+		{
+			lexeme = lexemeProvider.getLexeme(index - 1);
+			if (lexeme.getStartingOffset() > lineRegion.getOffset())
+			{
+				return lexeme;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the first, non-whitespace, lexeme in the first non-empty line <b>above</b> the line at the given offset.
+	 * 
+	 * @param document
+	 * @param lexemeProvider
+	 * @param startingOffset
+	 * @return The first non-whitespace lexeme in the first, non-empty, line above the offset.
+	 * @throws BadLocationException
+	 */
+	protected Lexeme<PHPTokenType> getFirstLexemeInNonEmptyLine(IDocument document,
+			LexemeProvider<PHPTokenType> lexemeProvider, int offset) throws BadLocationException
+	{
+		IRegion lineInfo = null;
+		Lexeme<PHPTokenType> lexeme = null;
+		do
+		{
+			lineInfo = document.getLineInformationOfOffset(offset);
+			lexeme = getFirstLexemeInLine(document, lexemeProvider, lineInfo.getOffset() - 1);
+			if (lineInfo != null)
+			{
+				offset = lineInfo.getOffset() - 1;
+			}
+		}
+		while (lexeme == null && lineInfo != null && lineInfo.getOffset() > 0 && offset > 0);
+		return lexeme;
 	}
 
 	/**

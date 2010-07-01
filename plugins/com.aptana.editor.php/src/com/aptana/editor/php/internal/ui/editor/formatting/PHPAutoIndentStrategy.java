@@ -45,16 +45,6 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	}
 
 	/**
-	 * getAutoOverwriteCharacters
-	 * 
-	 * @return char[]
-	 */
-	protected char[] getAutoOverwriteCharacters()
-	{
-		return new char[] { ')', ']', '"', '\'', '}' };
-	}
-
-	/**
 	 * @see org.eclipse.jface.text.IAutoEditStrategy#customizeDocumentCommand(org.eclipse.jface.text.IDocument,
 	 *      org.eclipse.jface.text.DocumentCommand)
 	 */
@@ -107,9 +97,20 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						return;
 					}
 				}
-				String lexemeTest = floorLexeme.getText();
-				if (lexemeTest.equals(":") || lexemeTest.equals(";")) //$NON-NLS-1$ //$NON-NLS-2$
+				String lexemeText = floorLexeme.getText();
+				if (lexemeText.equals(":") || lexemeText.equals(";") || lexemeText.equals(")")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				{
+					// First, check for a case where we have a 'one-line-block' such as 'if' or 'while' without
+					// any curly brackets of colon.
+					if (lexemeText.equals(";")) //$NON-NLS-1$
+					{
+						String indent = indentAfterOneLineBlock(floorLexeme.getStartingOffset(), document);
+						if (indent != null)
+						{
+							command.text += indent;
+							return;
+						}
+					}
 					// The colon char can appear in a switch-case blocks and when using an old-style php if-else, loops
 					// or switch-case blocks.
 					// To decide what is the case here, we look at the first word in the current line.
@@ -123,14 +124,22 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					String type = firstLexemeInLine.getType().getType();
 					String indent = configuration.getIndent();
 					indentAfterNewLine(document, command);
+					// We also check ')' against the BLOCK_TYPES set, although it contains some types that
+					// are not 'legally' allowed here (such as 'case')
 					if (BLOCK_TYPES.contains(type))
 					{
 						command.text += indent;
 					}
 				}
+				if (lexemeText.equals("else") || lexemeText.equals("elseif")) //$NON-NLS-1$ //$NON-NLS-2$
+				{
+					// handle 'else' and 'elseif' blocks that do not have curly-brackets
+					indentAfterNewLine(document, command);
+					command.text += configuration.getIndent();
+				}
 				else if (indentAfterOpenBrace(document, command) == false)
 				{
-					super.customizeDocumentCommand(document, command);
+					// super.customizeDocumentCommand(document, command);
 				}
 			}
 			catch (BadLocationException e)
@@ -154,6 +163,52 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			}
 
 		}
+	}
+
+	/**
+	 * Compute the indentation in cases where a semicolon is entered and we are entering a line under a single-line
+	 * block, such as 'if' with no curly brackets, and this is the second line entered under that if.<br>
+	 * In that case, we 'dedent' the line to fit under the top-most one-line we have on top of us.
+	 * 
+	 * @param offset
+	 *            - The start offset to begin the lookup
+	 * @param document
+	 * @return The line indentation string; Null, if no one-line block was identified.
+	 * @throws BadLocationException
+	 */
+	protected String indentAfterOneLineBlock(int offset, IDocument document) throws BadLocationException
+	{
+		// we need to check at least two, non-empty, lines above this offset to verify
+		// if we need to 'dedent'
+		IRegion lineInfo = document.getLineInformationOfOffset(offset);
+		String indent = null;
+		if (lineInfo.getOffset() > 0)
+		{
+			Lexeme<PHPTokenType> firstLexemeInLine = null;
+			do
+			{
+				firstLexemeInLine = getFirstLexemeInNonEmptyLine(document, lexemeProvider, lineInfo.getOffset());
+				// Check if the line of lexeme ends with with a curly bracket or a colon.
+				// If so, we have a block that span more then one line.
+				lineInfo = document.getLineInformationOfOffset(firstLexemeInLine.getStartingOffset());
+				Lexeme<PHPTokenType> lastLexemeInLine = getLastLexemeInLine(document, lexemeProvider, lineInfo
+						.getOffset());
+				if (lastLexemeInLine != null && firstLexemeInLine != null
+						&& BLOCK_TYPES.contains(firstLexemeInLine.getType().getType()))
+				{
+					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$ //$NON-NLS-2$
+					{
+						// it's a block, so return what we have
+						return indent;
+					}
+					indent = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
+				} else {
+					break;
+				}
+			}
+			while (firstLexemeInLine != null && lineInfo != null);
+		}
+		return indent;
 	}
 
 	/**
