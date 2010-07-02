@@ -127,7 +127,11 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					indentAfterNewLine(document, command);
 					// We also check ')' against the BLOCK_TYPES set, although it contains some types that
 					// are not 'legally' allowed here (such as 'case')
-					if (BLOCK_TYPES.contains(type))
+					if (ALTERNATIVE_START_STYLES.contains(type))
+					{
+						indentAfterAlternativeOpen(document, command, firstLexemeInLine);
+					}
+					else if (BLOCK_TYPES.contains(type))
 					{
 						command.text += indent;
 					}
@@ -401,59 +405,54 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	}
 
 	/**
-	 * Handles the
+	 * Adds an alternative style ending block to the command text.
 	 * 
-	 * @param d
+	 * @param document
 	 *            Document
 	 * @param command
 	 *            DocumentCommand
-	 * @param oldStyleLexeme
+	 * @param alternativeOpenLexeme
 	 * @return True if it succeeded
 	 */
-	protected boolean indentAfterOldStyle(IDocument d, DocumentCommand command, Lexeme<PHPTokenType> oldStyleLexeme)
+	protected boolean indentAfterAlternativeOpen(IDocument document, DocumentCommand command,
+			Lexeme<PHPTokenType> alternativeOpenLexeme)
 	{
 		int offset = command.offset;
 		boolean result = false;
 
-		if (offset != -1 && d.getLength() != 0)
+		if (offset != -1 && document.getLength() != 0)
 		{
-			String indent = copyIntentationFromPreviousLine(d, command);
-			String newline = command.text;
-			String tab = configuration.getIndent();
+			String baseIndent = copyIntentationFromPreviousLine(document, command);
+			String newline = TextUtilities.determineLineDelimiter(command.text, TextUtilities.getDefaultLineDelimiter(document));
+			String indent = configuration.getIndent();
 			try
 			{
 				if (command.offset > 0)
 				{
-					char c = d.getChar(command.offset - 1);
+					char c = document.getChar(command.offset - 1);
 					if (c == ':')
 					{
-						String startIndent = newline + indent + tab;
+						String newLineIndent = newline + baseIndent;
 
 						if (isAutoInsertEnabled())
 						{
 
-							command.text = startIndent + newline + indent // +
-									// newline
-									// +
-									// startIndent
-									+ "end" + oldStyleLexeme.getText(); //$NON-NLS-1$
+							command.text = newLineIndent + indent + newline + baseIndent 
+									+ "end" + alternativeOpenLexeme.getText() + ';'; //$NON-NLS-1$
 						}
 						else
 						{
-							command.text = startIndent;// + newline + indent; //
-							// + newline +
-							// startIndent
-
+							command.text = newLineIndent;
 						}
 
 						command.shiftsCaret = false;
-						command.caretOffset = command.offset + startIndent.length();
+						command.caretOffset = command.offset + newLineIndent.length() + indent.length();
 
 						result = true;
 					}
 					else
 					{
-						command.text = newline + indent;
+						command.text = newline + baseIndent;
 					}
 				}
 			}

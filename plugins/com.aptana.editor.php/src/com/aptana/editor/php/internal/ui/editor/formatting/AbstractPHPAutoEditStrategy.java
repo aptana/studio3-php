@@ -37,6 +37,13 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 			PHPRegionTypes.PHP_ENDDECLARE, PHPRegionTypes.PHP_ENDFOR, PHPRegionTypes.PHP_ENDFOREACH,
 			PHPRegionTypes.PHP_ENDIF, PHPRegionTypes.PHP_ENDSWITCH, PHPRegionTypes.PHP_ENDWHILE));
 	/**
+	 * A set of possible PHP alternate start types, such as if, for and such.
+	 */
+	protected static HashSet<String> ALTERNATIVE_START_STYLES = new HashSet<String>(Arrays.asList(
+			PHPRegionTypes.PHP_DECLARE, PHPRegionTypes.PHP_FOR, PHPRegionTypes.PHP_FOREACH,
+			PHPRegionTypes.PHP_IF, PHPRegionTypes.PHP_SWITCH, PHPRegionTypes.PHP_WHILE));
+	
+	/**
 	 * A set of PHP block types, such as for, while and such.
 	 */
 	protected static HashSet<String> BLOCK_TYPES = new HashSet<String>(Arrays.asList(PHPRegionTypes.PHP_IF,
