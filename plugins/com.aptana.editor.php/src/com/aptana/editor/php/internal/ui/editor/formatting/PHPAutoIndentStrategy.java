@@ -125,13 +125,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					String type = firstLexemeInLine.getType().getType();
 					String indent = configuration.getIndent();
 					indentAfterNewLine(document, command);
-					// We also check ')' against the BLOCK_TYPES set, although it contains some types that
-					// are not 'legally' allowed here (such as 'case')
-					if (ALTERNATIVE_START_STYLES.contains(type))
-					{
-						indentAfterAlternativeOpen(document, command, firstLexemeInLine);
-					}
-					else if (BLOCK_TYPES.contains(type))
+					if (BLOCK_TYPES.contains(type))
 					{
 						command.text += indent;
 					}
@@ -402,67 +396,6 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			PHPEditorPlugin.logError(e);
 		}
 
-	}
-
-	/**
-	 * Adds an alternative style ending block to the command text.
-	 * 
-	 * @param document
-	 *            Document
-	 * @param command
-	 *            DocumentCommand
-	 * @param alternativeOpenLexeme
-	 * @return True if it succeeded
-	 */
-	protected boolean indentAfterAlternativeOpen(IDocument document, DocumentCommand command,
-			Lexeme<PHPTokenType> alternativeOpenLexeme)
-	{
-		int offset = command.offset;
-		boolean result = false;
-
-		if (offset != -1 && document.getLength() != 0)
-		{
-			String baseIndent = copyIntentationFromPreviousLine(document, command);
-			String newline = TextUtilities.determineLineDelimiter(command.text, TextUtilities.getDefaultLineDelimiter(document));
-			String indent = configuration.getIndent();
-			try
-			{
-				if (command.offset > 0)
-				{
-					char c = document.getChar(command.offset - 1);
-					if (c == ':')
-					{
-						String newLineIndent = newline + baseIndent;
-
-						if (isAutoInsertEnabled())
-						{
-
-							command.text = newLineIndent + indent + newline + baseIndent 
-									+ "end" + alternativeOpenLexeme.getText() + ';'; //$NON-NLS-1$
-						}
-						else
-						{
-							command.text = newLineIndent;
-						}
-
-						command.shiftsCaret = false;
-						command.caretOffset = command.offset + newLineIndent.length() + indent.length();
-
-						result = true;
-					}
-					else
-					{
-						command.text = newline + baseIndent;
-					}
-				}
-			}
-			catch (BadLocationException e)
-			{
-				PHPEditorPlugin.logError(e);
-			}
-		}
-
-		return result;
 	}
 
 	/**

@@ -40,9 +40,9 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * A set of possible PHP alternate start types, such as if, for and such.
 	 */
 	protected static HashSet<String> ALTERNATIVE_START_STYLES = new HashSet<String>(Arrays.asList(
-			PHPRegionTypes.PHP_DECLARE, PHPRegionTypes.PHP_FOR, PHPRegionTypes.PHP_FOREACH,
-			PHPRegionTypes.PHP_IF, PHPRegionTypes.PHP_SWITCH, PHPRegionTypes.PHP_WHILE));
-	
+			PHPRegionTypes.PHP_DECLARE, PHPRegionTypes.PHP_FOR, PHPRegionTypes.PHP_FOREACH, PHPRegionTypes.PHP_IF,
+			PHPRegionTypes.PHP_SWITCH, PHPRegionTypes.PHP_WHILE));
+
 	/**
 	 * A set of PHP block types, such as for, while and such.
 	 */
@@ -266,7 +266,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	}
 
 	/**
-	 * Do a more precise scan for the opening match of the given pair string.
+	 * Do a more precise scan backwards for the opening match of the given pair string.
 	 * 
 	 * @param pairToFind
 	 * @param offset
@@ -321,12 +321,12 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		return -1;
 	}
 
-
 	protected Lexeme<PHPTokenType> getPreviousNonWhitespaceLexeme(int offset)
 	{
 		int index = lexemeProvider.getLexemeFloorIndex(offset);
 		Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexeme(index);
-		while (lexeme != null && PHPRegionTypes.WHITESPACE.equals(lexeme.getType().getType()) && index > 0) {
+		while (lexeme != null && PHPRegionTypes.WHITESPACE.equals(lexeme.getType().getType()) && index > 0)
+		{
 			index--;
 			lexeme = lexemeProvider.getLexeme(index);
 		}
@@ -336,7 +336,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the open pair type for the given lexeme (in case it represents a closing element)
 	 * 
