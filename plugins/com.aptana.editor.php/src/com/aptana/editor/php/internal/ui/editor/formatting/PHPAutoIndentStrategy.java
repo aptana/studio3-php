@@ -22,7 +22,7 @@ import com.aptana.parsing.lexer.Lexeme;
 public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 {
 	// PHPCommentAutoIndentStrategy commentStrategy;
-	// PHPDocAutoIndentStrategy multiLineCommentStrategy;
+	private AbstractPHPAutoEditStrategy multiLineCommentStrategy;
 	private AbstractPHPAutoEditStrategy switchCaseAutoEditStrategy;
 	private AbstractPHPAutoEditStrategy alternativeSyntaxAutoEditStrategy;
 
@@ -41,7 +41,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		this.alternativeSyntaxAutoEditStrategy = new BlockEndingSyntaxAutoEditStrategy(contentType, configuration,
 				sourceViewer);
 		// this.commentStrategy = new PHPCommentAutoIndentStrategy(contentType, configuration, sourceViewer);
-		// this.multiLineCommentStrategy = new PHPDocAutoIndentStrategy(contentType, configuration, sourceViewer);
+		this.multiLineCommentStrategy = new PhpDocAutoIndentStrategy(contentType, configuration, sourceViewer);
 	}
 
 	/**
@@ -61,11 +61,6 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		{
 			return;
 		}
-		// Lex the partition
-		if (command.text.equals("}")) //$NON-NLS-1$
-		{
-			customizeCloseCurly(document, command, getLexemeProvider(document, command.offset, true));
-		}
 		if (TextUtilities.endsWith(document.getLegalLineDelimiters(), command.text) != -1)
 		{
 			try
@@ -75,7 +70,8 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				if (IPHPConstants.PHP_DOC_COMMENT.equals(regionType)
 						|| IPHPConstants.PHP_MULTI_LINE_COMMENT.equals(regionType))
 				{
-					// multiLineCommentStrategy.customizeDocumentCommand(document, command);
+					multiLineCommentStrategy.customizeDocumentCommand(document, command);
+					return;
 				}
 
 				if (IPHPConstants.PHP_COMMENT.equals(regionType))
@@ -137,9 +133,30 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					indentAfterNewLine(document, command);
 					command.text += configuration.getIndent();
 				}
+				else if (lexemeText.equals("}")) //$NON-NLS-1$
+				{
+					if (command.offset == floorLexeme.getStartingOffset())
+					{
+						// check if the caret is right in between the brackets
+						Lexeme<PHPTokenType> previousNonWhitespaceLexeme = getPreviousNonWhitespaceLexeme(floorLexeme
+								.getStartingOffset() - 1);
+						if (previousNonWhitespaceLexeme != null && "{".equals(previousNonWhitespaceLexeme.getText())) //$NON-NLS-1$
+						{
+							indentAfterOpenBrace(document, command);
+						}
+						else
+						{
+							customizeCloseCurly(document, command, floorLexeme);
+						}
+					}
+					else
+					{
+						customizeCloseCurly(document, command, floorLexeme);
+					}
+				}
 				else if (indentAfterOpenBrace(document, command) == false)
 				{
-					// super.customizeDocumentCommand(document, command);
+					// command.text += getIndentationAtOffset(document, floorLexeme.getStartingOffset());
 				}
 			}
 			catch (BadLocationException e)
@@ -202,7 +219,9 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						return indent;
 					}
 					indent = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
-				} else {
+				}
+				else
+				{
 					break;
 				}
 			}
@@ -232,15 +251,57 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			String indent = configuration.getIndent();
 			try
 			{
-				if (command.offset > 0)
+				if (offset > 0)
 				{
-					char c = d.getChar(command.offset - 1);
-
+					// find the first non-whitespace char
+					char c;
+					do
+					{
+						c = d.getChar(offset - 1);
+						if (Character.isWhitespace(c))
+						{
+							offset--;
+						}
+						else
+						{
+							break;
+						}
+					}
+					while (offset > 0);
+					command.offset = offset;
 					if (c == '{')
 					{
 						String startIndent = newline + currentLineIndent + indent;
-
-						if (command.offset < d.getLength() && d.getChar(command.offset) == '}')
+						boolean hasClosing = false;
+						if (offset < d.getLength())
+						{
+							int charOffset = offset;
+							int charsToDelete = 0;
+							int docLen = d.getLength();
+							while (charOffset < docLen)
+							{
+								char next = d.getChar(charOffset);
+								if (next == '}')
+								{
+									hasClosing = true;
+									break;
+								}
+								if (next == '\n' || next == '\r' || !Character.isWhitespace(next))
+								{
+									// we could not find any closing bracket
+									break;
+								}
+								charsToDelete++;
+								charOffset++;
+							}
+							if (hasClosing)
+							{
+								// delete any whitespace chars the we have between the open brace and the close brace
+								// before inserting the new lines
+								d.replace(offset, charsToDelete, StringUtils.EMPTY);
+							}
+						}
+						if (offset < d.getLength() && d.getChar(offset) == '}')
 						{
 							command.text = startIndent + newline + currentLineIndent;
 						}
@@ -264,40 +325,13 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		return result;
 	}
 
-	private void customizeCloseCurly(IDocument document, DocumentCommand command,
-			LexemeProvider<PHPTokenType> lexemeProvider)
+	private void customizeCloseCurly(IDocument document, DocumentCommand command, Lexeme<PHPTokenType> curlyLexeme)
 	{
 		try
 		{
-			int lineOfOffset = document.getLineOfOffset(command.offset);
-			IRegion lineInformation = document.getLineInformation(lineOfOffset);
-			String string = document.get(lineInformation.getOffset(), lineInformation.getLength());
-			if (string.trim().length() == 0)
-			{
-				int lexemeFloorIndex = lexemeProvider.getLexemeFloorIndex(command.offset);
-				int level = 1;
-				for (int a = lexemeFloorIndex; a >= 0; a--)
-				{
-					Lexeme<PHPTokenType> l = lexemeProvider.getLexeme(a);
-					String tokenText = l.getText();
-					if ("{".equals(tokenText)) //$NON-NLS-1$
-					{
-						level--;
-						if (level == 0)
-						{
-							String indentationAtOffset = getIndentationAtOffset(document, l.getStartingOffset());
-							command.text = indentationAtOffset + "}"; //$NON-NLS-1$
-							command.offset = lineInformation.getOffset();
-							command.length = string.length();
-							return;
-						}
-					}
-					if ("}".equals(tokenText)) //$NON-NLS-1$
-					{
-						level++;
-					}
-				}
-			}
+			int curlyOpenOffset = getForPairMatchOffset("{", curlyLexeme.getStartingOffset() - 1, document); //$NON-NLS-1$
+			Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, curlyOpenOffset);
+			command.text += getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 		}
 		catch (BadLocationException e)
 		{

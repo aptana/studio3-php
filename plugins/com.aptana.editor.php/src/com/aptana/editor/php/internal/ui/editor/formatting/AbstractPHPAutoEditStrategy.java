@@ -251,7 +251,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 				{
 					// Do a detailed scan lexeme-by-lexeme until we find a match.
 					// In case we can't find any, -1 is returned and will cause this loop to end.
-					lineStartOffset = scanForPairMatch(pairToFind, currentLineInfo.getOffset(), document);
+					lineStartOffset = getForPairMatchOffset(pairToFind, currentLineInfo.getOffset(), document);
 				}
 			}
 		}
@@ -268,7 +268,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @return the offset of the start line we found the pair at; -1, in case we could not locate the match
 	 * @throws BadLocationException
 	 */
-	private int scanForPairMatch(String pairToFind, int offset, IDocument document) throws BadLocationException
+	protected int getForPairMatchOffset(String pairToFind, int offset, IDocument document) throws BadLocationException
 	{
 		// We have to maintain a stack of elements. There is always a chance that we have more blocks in our search
 		// scope.
@@ -314,6 +314,22 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		return -1;
 	}
 
+
+	protected Lexeme<PHPTokenType> getPreviousNonWhitespaceLexeme(int offset)
+	{
+		int index = lexemeProvider.getLexemeFloorIndex(offset);
+		Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexeme(index);
+		while (lexeme != null && PHPRegionTypes.WHITESPACE.equals(lexeme.getType().getType()) && index > 0) {
+			index--;
+			lexeme = lexemeProvider.getLexeme(index);
+		}
+		if (lexeme != null && !PHPRegionTypes.WHITESPACE.equals(lexeme.getType().getType()))
+		{
+			return lexeme;
+		}
+		return null;
+	}
+	
 	/**
 	 * Returns the open pair type for the given lexeme (in case it represents a closing element)
 	 * 
