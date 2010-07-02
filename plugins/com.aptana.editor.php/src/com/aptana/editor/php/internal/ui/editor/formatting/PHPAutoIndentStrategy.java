@@ -61,6 +61,11 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		{
 			return;
 		}
+		if (command.text.equals("}")) //$NON-NLS-1$
+		{
+			getLexemeProvider(document, command.offset, true);
+			customizeCloseCurly(document, command, lexemeProvider.getFloorLexeme(command.offset));
+		}
 		if (TextUtilities.endsWith(document.getLegalLineDelimiters(), command.text) != -1)
 		{
 			try
@@ -126,6 +131,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					{
 						command.text += indent;
 					}
+					return;
 				}
 				if (lexemeText.equals("else") || lexemeText.equals("elseif")) //$NON-NLS-1$ //$NON-NLS-2$
 				{
@@ -156,6 +162,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				}
 				else if (indentAfterOpenBrace(document, command) == false)
 				{
+					command.text += copyIntentationFromPreviousLine(document, command);
 					// command.text += getIndentationAtOffset(document, floorLexeme.getStartingOffset());
 				}
 			}
@@ -246,7 +253,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 
 		if (offset != -1 && d.getLength() != 0)
 		{
-			String currentLineIndent = getIndentForCurrentLine(d, command);
+			String currentLineIndent = copyIntentationFromPreviousLine(d, command);
 			String newline = command.text;
 			String indent = configuration.getIndent();
 			try
@@ -268,7 +275,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						}
 					}
 					while (offset > 0);
-					command.offset = offset;
+					int offsetShift = command.offset - offset;
 					if (c == '{')
 					{
 						String startIndent = newline + currentLineIndent + indent;
@@ -311,7 +318,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						}
 
 						command.shiftsCaret = false;
-						command.caretOffset = command.offset + startIndent.length();
+						command.caretOffset = command.offset + startIndent.length() - offsetShift;
 
 						result = true;
 					}
@@ -322,6 +329,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				PHPEditorPlugin.logError(e);
 			}
 		}
+		if (result)
+		{
+			command.offset = offset;
+		}
 		return result;
 	}
 
@@ -329,9 +340,58 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	{
 		try
 		{
-			int curlyOpenOffset = getForPairMatchOffset("{", curlyLexeme.getStartingOffset() - 1, document); //$NON-NLS-1$
-			Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, curlyOpenOffset);
-			command.text += getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
+			if (!"}".equals(command.text)) //$NON-NLS-1$
+			{
+				int curlyOpenOffset = getPervPairMatchOffset("{", curlyLexeme.getStartingOffset() - 1, document); //$NON-NLS-1$
+				Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, curlyOpenOffset);
+				command.text += getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
+			}
+			else
+			{
+				Lexeme<PHPTokenType> nonWhitespaceLexeme = getFirstLexemeInLine(document, lexemeProvider,
+						command.offset);
+				if (nonWhitespaceLexeme == null)
+				{
+					// cut the spaces before the curly to 'dedent'
+					IRegion lineRegion = document.getLineInformationOfOffset(command.offset);
+					if (command.offset > lineRegion.getOffset())
+					{
+						int length = command.offset - lineRegion.getOffset();
+						command.offset -= length;
+						document.replace(lineRegion.getOffset(), length, StringUtils.EMPTY);
+						int curlyOpenOffset = getPervPairMatchOffset("{", command.offset - 1, document); //$NON-NLS-1$
+						if (curlyOpenOffset < 0)
+						{
+							command.text = copyIntentationFromPreviousLine(document, command) + command.text;
+						}
+						else
+						{
+							Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider,
+									curlyOpenOffset);
+							command.text = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset())
+									+ command.text;
+						}
+					}
+					else
+					{
+						// we might need to add some indent here. check if this curly closes another curly on a line
+						// above us
+						int curlyOpenOffset = getPervPairMatchOffset("{", command.offset - 1, document); //$NON-NLS-1$
+						if (curlyOpenOffset < 0)
+						{
+							String indentForCurrentLine = this.copyIntentationFromPreviousLine(document, command);
+							command.text = indentForCurrentLine + command.text;
+						}
+						else
+						{
+							Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider,
+									curlyOpenOffset);
+							command.text = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset())
+									+ command.text;
+						}
+					}
+				}
+			}
 		}
 		catch (BadLocationException e)
 		{
@@ -357,7 +417,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 
 		if (offset != -1 && d.getLength() != 0)
 		{
-			String indent = getIndentForCurrentLine(d, command);
+			String indent = copyIntentationFromPreviousLine(d, command);
 			String newline = command.text;
 			String tab = configuration.getIndent();
 			try
@@ -409,16 +469,16 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	/**
 	 * Copies the indentation of the previous line.
 	 * 
-	 * @param d
+	 * @param document
 	 *            the document to work on
-	 * @param c
+	 * @param command
 	 *            the command to deal with
 	 * @return String
 	 */
-	protected String getIndentForCurrentLine(IDocument d, DocumentCommand c)
+	protected String copyIntentationFromPreviousLine(IDocument document, DocumentCommand command)
 	{
 
-		if (c.offset == -1 || d.getLength() == 0)
+		if (command.offset == -1 || document.getLength() == 0)
 		{
 			return StringUtils.EMPTY;
 		}
@@ -426,18 +486,22 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		try
 		{
 			// find start of line
-			int p = (c.offset == d.getLength() ? c.offset - 1 : c.offset);
-			IRegion info = d.getLineInformationOfOffset(p);
+			int p = command.offset;
+			if (p > 0)
+			{
+				p--;
+			}
+			IRegion info = document.getLineInformationOfOffset(p);
 			int start = info.getOffset();
 
 			// find white spaces
-			int end = findEndOfWhiteSpace(d, start, c.offset);
+			int end = findEndOfWhiteSpace(document, start, command.offset);
 
 			StringBuffer buf = new StringBuffer();
 			if (end > start)
 			{
 				// append to input
-				buf.append(d.get(start, end - start));
+				buf.append(document.get(start, end - start));
 			}
 
 			return buf.toString();

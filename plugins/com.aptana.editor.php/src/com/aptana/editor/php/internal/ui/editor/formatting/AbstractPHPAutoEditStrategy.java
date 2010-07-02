@@ -251,7 +251,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 				{
 					// Do a detailed scan lexeme-by-lexeme until we find a match.
 					// In case we can't find any, -1 is returned and will cause this loop to end.
-					lineStartOffset = getForPairMatchOffset(pairToFind, currentLineInfo.getOffset(), document);
+					lineStartOffset = getPervPairMatchOffset(pairToFind, currentLineInfo.getOffset(), document);
 				}
 			}
 		}
@@ -268,7 +268,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @return the offset of the start line we found the pair at; -1, in case we could not locate the match
 	 * @throws BadLocationException
 	 */
-	protected int getForPairMatchOffset(String pairToFind, int offset, IDocument document) throws BadLocationException
+	protected int getPervPairMatchOffset(String pairToFind, int offset, IDocument document) throws BadLocationException
 	{
 		// We have to maintain a stack of elements. There is always a chance that we have more blocks in our search
 		// scope.
@@ -388,6 +388,10 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	protected Lexeme<PHPTokenType> getFirstLexemeInLine(IDocument document,
 			LexemeProvider<PHPTokenType> lexemeProvider, int offset) throws BadLocationException
 	{
+		if (offset < 0)
+		{
+			return null;
+		}
 		IRegion lineRegion = document.getLineInformationOfOffset(offset);
 		Lexeme<PHPTokenType> lexeme = lexemeProvider.getCeilingLexeme(lineRegion.getOffset());
 		if (lexeme == null || !PHPRegionTypes.WHITESPACE.equals(lexeme.getType().getType()))
@@ -420,7 +424,12 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 			int offset) throws BadLocationException
 	{
 		IRegion lineRegion = document.getLineInformationOfOffset(offset);
-		Lexeme<PHPTokenType> lexeme = lexemeProvider.getFloorLexeme(lineRegion.getOffset() + lineRegion.getLength());
+		int lastCharInLine = lineRegion.getOffset() + lineRegion.getLength();
+		if (lineRegion.getLength() > 0)
+		{
+			lastCharInLine--;
+		}
+		Lexeme<PHPTokenType> lexeme = lexemeProvider.getFloorLexeme(lastCharInLine);
 		if (lexeme == null || !PHPRegionTypes.WHITESPACE.equals(lexeme.getType().getType()))
 		{
 			return lexeme;
