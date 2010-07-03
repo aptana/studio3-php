@@ -16,6 +16,7 @@ import com.aptana.editor.common.CompositeSourceViewerConfiguration;
 import com.aptana.editor.common.IPartitionerSwitchStrategy;
 import com.aptana.editor.common.contentassist.ContentAssistant;
 import com.aptana.editor.html.HTMLSourceConfiguration;
+import com.aptana.editor.html.HTMLSourceViewerConfiguration;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.ui.editor.formatting.PHPAutoIndentStrategy;
@@ -122,22 +123,12 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	protected IContentAssistProcessor getContentAssistProcessor(ISourceViewer sourceViewer, String contentType)
 	{
 		AbstractThemeableEditor editor = this.getAbstractThemeableEditor();
-		// IContentAssistProcessor result;
-		//		
-		// if (contentType.startsWith(JSSourceConfiguration.PREFIX))
-		// {
-		// result = new JSContentAssistProcessor(editor);
-		// }
-		// else if (contentType.startsWith(CSSSourceConfiguration.PREFIX))
-		// {
-		// result = new CSSContentAssistProcessor(editor);
-		// }
-		// else
-		// {
-		// result = new HTMLContentAssistProcessor(editor);
-		// }
-
-		return new PHPContentAssistProcessor(editor);
+		if (contentType.startsWith(IPHPConstants.PREFIX))
+		{
+			return new PHPContentAssistProcessor(editor);
+		}
+		// In any other case, call the HTMLSourceViewerConfiguration to compute the assist processor.
+		return HTMLSourceViewerConfiguration.getContentAssistProcessor(contentType, editor);
 	}
 
 	@Override
