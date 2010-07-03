@@ -15,9 +15,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 	{
 		switch (sym.sym)
 		{
-			case T_VAR:
 			case T_USE:
-			case T_GLOBAL:
 			case T_DECLARE:
 			case T_DEFINE:
 			case T_ENDDECLARE:
@@ -59,10 +57,12 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				// TODO - Shalom: Missing DIE, TRUE, FALSE
 				return scanner.getToken("keyword.control.php"); //$NON-NLS-1$
 			case T_STATIC:
-				return scanner.getToken("keyword.other.modifiers.php"); //$NON-NLS-1$
+				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
 			case T_FUNCTION:
-				return scanner.getToken("keyword.other.function.php"); //$NON-NLS-1$
 			case T_CLASS:
+			case T_VAR:
+			case T_GLOBAL:
+				return scanner.getToken("storage.type.php"); //$NON-NLS-1$
 			case T_EXTENDS:
 				return scanner.getToken("keyword.other.class.php"); //$NON-NLS-1$
 			case T_INCLUDE:

@@ -15,10 +15,8 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 	{
 		switch (sym.sym)
 		{
-			case T_VAR:
 			case T_USE:
 			case T_CLONE:
-			case T_GLOBAL:
 			case T_DECLARE:
 			case T_DEFINE:
 			case T_ENDDECLARE:
@@ -68,10 +66,12 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_PRIVATE:
 			case T_PUBLIC:
 			case T_PROTECTED:
-				return scanner.getToken("keyword.other.modifiers.php"); //$NON-NLS-1$
+				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
 			case T_FUNCTION:
-				return scanner.getToken("keyword.other.function.php"); //$NON-NLS-1$
 			case T_CLASS:
+			case T_GLOBAL:
+			case T_VAR:
+				return scanner.getToken("storage.type.php"); //$NON-NLS-1$
 			case T_INSTANCEOF:
 			case T_EXTENDS:
 			case T_ABSTRACT:
