@@ -72,7 +72,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		c.addTranslation(new QualifiedContentType(PHP_DOC_COMMENT), new QualifiedContentType(
 				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType(
-		        "comment.block.php")); //$NON-NLS-1$
+		        "comment.php")); //$NON-NLS-1$
 	}
 
 	public static PHPSourceConfiguration getDefault()
@@ -192,7 +192,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		if (multiLineCommentScanner == null)
 		{
 			multiLineCommentScanner = new RuleBasedScanner();
-			multiLineCommentScanner.setDefaultReturnToken(getToken("comment.block.php")); //$NON-NLS-1$
+			multiLineCommentScanner.setDefaultReturnToken(getToken("comment.php")); //$NON-NLS-1$
 		}
 		return multiLineCommentScanner;
 	}
