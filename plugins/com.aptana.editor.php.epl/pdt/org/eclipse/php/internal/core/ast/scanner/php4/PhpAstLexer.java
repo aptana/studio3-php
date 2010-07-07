@@ -1024,6 +1024,10 @@ public class PhpAstLexer implements org.eclipse.php.internal.core.ast.scanner.As
 	}
 	
 	protected void addComment(int type) {
+		if (ast == null)
+		{
+			return;
+		}
 		int leftPosition = getTokenStartPosition();
 		Comment comment = new Comment(commentStartPosition, leftPosition + getTokenLength(), this.ast, type);
 		commentList.add(comment);
