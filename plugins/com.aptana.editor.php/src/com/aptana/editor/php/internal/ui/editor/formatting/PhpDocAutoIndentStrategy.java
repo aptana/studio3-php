@@ -109,7 +109,7 @@ public class PhpDocAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		String lexemeType = lastLexeme.getType().getType();
 		StringBuilder builder = new StringBuilder(command.text);
 		builder.append(indent);
-		if (PHPRegionTypes.PHPDOC_COMMENT_END.equals(lexemeType) || PHPRegionTypes.PHP_COMMENT_END.equals(lexemeType))
+		if (command.offset > firstLexeme.getEndingOffset() && (PHPRegionTypes.PHPDOC_COMMENT_END.equals(lexemeType) || PHPRegionTypes.PHP_COMMENT_END.equals(lexemeType)))
 		{
 			// just add a star with the right indentation
 			builder.append(PHP_MULTILINE_COMMENT_MID);
