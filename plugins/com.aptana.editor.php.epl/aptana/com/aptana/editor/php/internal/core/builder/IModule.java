@@ -32,24 +32,25 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.internal.builder;
+package com.aptana.editor.php.internal.core.builder;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Listener to the build paths changes.
+ * Abstract module.
  * 
  * @author Denis Denisenko
  */
-public interface IBuildPathsListener
+public interface IModule extends IBuildPathResource
 {
+
 	/**
-	 * Notifies build path modules structure or contents changed.
+	 * Gets module contents.
 	 * 
-	 * @param added
-	 *            - added build paths.
-	 * @param removed
-	 *            - removed build paths.
+	 * @return module contents.
 	 */
-	void changed(List<IBuildPath> added, List<IBuildPath> removed);
+	InputStream getContents() throws IOException;
+
+	long getTimeStamp();
 }

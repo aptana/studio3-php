@@ -1246,13 +1246,6 @@ class Imagick implements Iterator, Traversable {
 	public function clear () {}
 
 	/**
-	 * Makes an exact copy of the Imagick object
-	 * @link http://www.php.net/manual/en/function.imagick-clone.php
-	 * @return Imagick 
-	 */
-	public function clone () {}
-
-	/**
 	 * Returns the image length in bytes
 	 * @link http://www.php.net/manual/en/function.imagick-getimagesize.php
 	 * @return int an int containing the current image size.
@@ -4162,14 +4155,6 @@ class ImagickDraw  {
 	public function setviewbox ($x1, $y1, $x2, $y2) {}
 
 	/**
-	 * Makes an exact copy of the specified ImagickDraw object
-	 * @link http://www.php.net/manual/en/function.imagickdraw-clone.php
-	 * @return ImagickDraw What the function returns, first on success, then on failure. See
-	 * also the &amp;return.success; entity
-	 */
-	public function clone () {}
-
-	/**
 	 * Adjusts the current affine transformation matrix
 	 * @link http://www.php.net/manual/en/function.imagickdraw-affine.php
 	 * @param affine array <p>
@@ -5235,8 +5220,6 @@ class ImagickPixel  {
 	 * @param colorCount
 	 */
 	public function setcolorcount ($colorCount) {}
-
-	public function clone () {}
 
 }
 // End of imagick v.2.2.2

@@ -22,13 +22,12 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -46,9 +45,9 @@ import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemModule;
-import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.SingleFileBuildPath;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.core.model.ISourceModuleProviderEditor;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
@@ -173,21 +172,32 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
+	 * Override this to make sure we maintain valid editor instance members when the editor input changes (probably as a
+	 * result of move).
+	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#doSetInput(org.eclipse.ui.IEditorInput)
 	 */
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException
+	protected void doSetInput(IEditorInput input) throws CoreException
 	{
-		super.init(site, input);
+		super.doSetInput(input);
 		// Register as a PHP version listener and re-set the document to trigger a refresh and re-parse.
 		IResource resource = (IResource) input.getAdapter(IResource.class);
 		if (resource != null)
 		{
+			// In case this is the second time we hit that doSetInput, we need to re-register the listeners to make sure
+			// the editor is still in a valid state.
+			boolean shouldRefresh = (sourceUri != null);
 			sourceUri = resource.getLocationURI().toString();
 			project = resource.getProject();
 			phpParseState.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
 			documentProvider.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
+			if (shouldRefresh)
+			{
+				module = null;
+				sourceModule = null;
+				PHPVersionProvider.getInstance().removePHPVersionListener(this);
+				PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
+				PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
+			}
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, phpParseState);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, documentProvider);
 			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
@@ -195,6 +205,17 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			// Set the current module into the parse state
 			phpParseState.setModule(getModule());
 			phpParseState.setSourceModule(getSourceModule());
+		}
+		else
+		{
+			// It's probably a file out of the workspace
+			if (input instanceof FileStoreEditorInput)
+			{
+				FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
+				sourceUri = fsInput.getURI().toString();
+				phpParseState.setModule(getModule());
+				phpParseState.setSourceModule(getSourceModule());
+			}
 		}
 	}
 
@@ -404,8 +425,11 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			if (sourceURI == null)
 			{
-				PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
-						"Error in getModule(): sourceUri was null. Returning null")); //$NON-NLS-1$
+				if (PHPEditorPlugin.DEBUG)
+				{
+					PHPEditorPlugin.log(new Status(IStatus.WARNING, PHPEditorPlugin.PLUGIN_ID,
+							"sourceUri was null. Returning null")); //$NON-NLS-1$
+				}
 				return null;
 			}
 			String struri = sourceURI;

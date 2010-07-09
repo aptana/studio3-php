@@ -19,10 +19,10 @@ import org.eclipse.php.internal.core.preferences.TaskTagsProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IDirectory;
-import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.LocalModule;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.validation.Task;
 
 public class TaskTagsUpdater

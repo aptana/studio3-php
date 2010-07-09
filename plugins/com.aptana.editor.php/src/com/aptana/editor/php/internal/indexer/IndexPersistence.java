@@ -54,8 +54,8 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IEntryValueFactory;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IReportable;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 public final class IndexPersistence
 {

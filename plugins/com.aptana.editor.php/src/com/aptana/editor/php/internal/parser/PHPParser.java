@@ -15,7 +15,7 @@ import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
@@ -68,7 +68,7 @@ public class PHPParser implements IParser
 		int startingOffset = parseState.getStartingOffset();
 		IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], startingOffset, startingOffset
 				+ source.length());
-		Program ast = null;
+		Program program = null;
 		if (parseState instanceof IPHPParseState)
 		{
 			IPHPParseState phpParseState = (IPHPParseState) parseState;
@@ -85,38 +85,39 @@ public class PHPParser implements IParser
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			ASTParser parser = ASTParser.newParser(new StringReader(source), version);
-			ast = parser.createAST(null);
+			ASTParser parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule);
+			program = parser.createAST(null);
 		}
 		catch (Exception e)
 		{
 			// TODO: handle exception
 			PHPEditorPlugin.logError(e);
 		}
-		if (ast != null)
+		if (program != null)
 		{
-			processChildren(ast, root, source);
+			processChildren(program, root, source);
 		}
 		parseState.setParseResult(root);
-		if (ast != null)
+		if (program != null)
 		{
 			try
 			{
-				ast.setSourceModule(ModelUtils.convertModule(module));
+				program.setSourceModule(ModelUtils.convertModule(module));
 				// TODO: Shalom - check for Program errors?
 				// if (!ast.hasSyntaxErrors() && module != null) {
+				program.getAST().flushErrors();
 				if (module != null)
 				{
-					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(ast, module);
+					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
 				}
 				// Recalculate the type bindings
-				TypeBindingBuilder.buildBindings(ast);
+				TypeBindingBuilder.buildBindings(program);
 			}
 			catch (Throwable t)
 			{
 				PHPEditorPlugin.logError(t);
 			}
-			reconciled(ast, false, new NullProgressMonitor());
+			reconciled(program, false, new NullProgressMonitor());
 		} else {
 			reconciled(null, false, new NullProgressMonitor());
 		}

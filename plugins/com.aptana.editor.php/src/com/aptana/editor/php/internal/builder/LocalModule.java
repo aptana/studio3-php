@@ -40,6 +40,9 @@ import java.io.InputStream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IModule;
+
 /**
  * Local module.
  * 

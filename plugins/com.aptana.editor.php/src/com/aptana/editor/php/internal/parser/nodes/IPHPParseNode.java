@@ -1,6 +1,6 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.parsing.ast.IParseNode;
 
@@ -51,9 +51,9 @@ public interface IPHPParseNode extends IParseNode
 	 */
 	public static final short NAMESPACE_NODE = 4508;
 
-	public void setDocumentation(PHPDocBlock docInfo);
+	public void setDocumentation(IPHPDocBlock docInfo);
 
-	public PHPDocBlock getDocumentation();
+	public IPHPDocBlock getDocumentation();
 
 	public String getNodeName();
 

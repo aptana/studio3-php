@@ -494,11 +494,13 @@ public class PHPDocHover extends AbstractPHPTextHover
 			try
 			{
 				String name = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
-				ArrayList<Object> elements = ContentAssistUtils.selectModelElements(name, true);
-				if (elements != null && !elements.isEmpty())
-				{
-					// return the first element only
-					entry = elements.get(0);
+				if (!"".equals(name)) { //$NON-NLS-1$
+					ArrayList<Object> elements = ContentAssistUtils.selectModelElements(name, true);
+					if (elements != null && !elements.isEmpty())
+					{
+						// return the first element only
+						entry = elements.get(0);
+					}
 				}
 			}
 			catch (BadLocationException e)

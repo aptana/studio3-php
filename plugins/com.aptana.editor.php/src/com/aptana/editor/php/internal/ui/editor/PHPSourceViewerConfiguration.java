@@ -3,8 +3,10 @@ package com.aptana.editor.php.internal.ui.editor;
 import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -12,9 +14,12 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CompositeSourceViewerConfiguration;
 import com.aptana.editor.common.IPartitionerSwitchStrategy;
+import com.aptana.editor.common.contentassist.ContentAssistant;
 import com.aptana.editor.html.HTMLSourceConfiguration;
-import com.aptana.editor.php.internal.IPHPConstants;
+import com.aptana.editor.html.HTMLSourceViewerConfiguration;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.core.IPHPConstants;
+import com.aptana.editor.php.internal.ui.editor.formatting.PHPAutoIndentStrategy;
 import com.aptana.editor.php.internal.ui.hover.PHPDocHover;
 
 public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfiguration
@@ -59,6 +64,22 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	/*
 	 * (non-Javadoc)
 	 * @see
+	 * com.aptana.editor.common.CommonSourceViewerConfiguration#getAutoEditStrategies(org.eclipse.jface.text.source.
+	 * ISourceViewer, java.lang.String)
+	 */
+	@Override
+	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType)
+	{
+		if (contentType.startsWith(IPHPConstants.PREFIX))
+		{
+			return new IAutoEditStrategy[] { new PHPAutoIndentStrategy(contentType, this, sourceViewer) };
+		}
+		return super.getAutoEditStrategies(sourceViewer, contentType);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
 	 * org.eclipse.ui.editors.text.TextSourceViewerConfiguration#getTextHover(org.eclipse.jface.text.source.ISourceViewer
 	 * , java.lang.String)
 	 */
@@ -76,48 +97,54 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 		return super.getTextHover(sourceViewer, contentType);
 	}
 
-//	/*
-//	 * @see SourceViewerConfiguration#getInformationPresenter(ISourceViewer)
-//	 * @since 2.0
-//	 */
-//	public IInformationPresenter getInformationPresenter(ISourceViewer sourceViewer)
-//	{
-//		InformationPresenter presenter = (InformationPresenter) super.getInformationPresenter(sourceViewer);
-//		// Set the PHP information provider
-//		IInformationProvider provider = new PHPInformationProvider(getEditor());
-//		String[] contentTypes = getConfiguredContentTypes(sourceViewer);
-//		for (int i = 0; i < contentTypes.length; i++)
-//		{
-//			// Register the PHP information provider only for the PHP content types
-//			if (contentTypes[i].startsWith(IPHPConstants.PREFIX))
-//			{
-//				presenter.setInformationProvider(provider, contentTypes[i]);
-//			}
-//		}
-//		// presenter.setSizeConstraints(100, 12, true, true);
-//		return presenter;
-//	}
+	// /*
+	// * @see SourceViewerConfiguration#getInformationPresenter(ISourceViewer)
+	// * @since 2.0
+	// */
+	// public IInformationPresenter getInformationPresenter(ISourceViewer sourceViewer)
+	// {
+	// InformationPresenter presenter = (InformationPresenter) super.getInformationPresenter(sourceViewer);
+	// // Set the PHP information provider
+	// IInformationProvider provider = new PHPInformationProvider(getEditor());
+	// String[] contentTypes = getConfiguredContentTypes(sourceViewer);
+	// for (int i = 0; i < contentTypes.length; i++)
+	// {
+	// // Register the PHP information provider only for the PHP content types
+	// if (contentTypes[i].startsWith(IPHPConstants.PREFIX))
+	// {
+	// presenter.setInformationProvider(provider, contentTypes[i]);
+	// }
+	// }
+	// // presenter.setSizeConstraints(100, 12, true, true);
+	// return presenter;
+	// }
 
 	@Override
 	protected IContentAssistProcessor getContentAssistProcessor(ISourceViewer sourceViewer, String contentType)
 	{
 		AbstractThemeableEditor editor = this.getAbstractThemeableEditor();
-		// IContentAssistProcessor result;
-		//		
-		// if (contentType.startsWith(JSSourceConfiguration.PREFIX))
-		// {
-		// result = new JSContentAssistProcessor(editor);
-		// }
-		// else if (contentType.startsWith(CSSSourceConfiguration.PREFIX))
-		// {
-		// result = new CSSContentAssistProcessor(editor);
-		// }
-		// else
-		// {
-		// result = new HTMLContentAssistProcessor(editor);
-		// }
+		if (contentType.startsWith(IPHPConstants.PREFIX))
+		{
+			return new PHPContentAssistProcessor(editor);
+		}
+		// In any other case, call the HTMLSourceViewerConfiguration to compute the assist processor.
+		return HTMLSourceViewerConfiguration.getContentAssistProcessor(contentType, editor);
+	}
 
-		return new PHPContentAssistProcessor(editor);
+	@Override
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer)
+	{
+		IContentAssistant assistant = super.getContentAssistant(sourceViewer);
+		if (assistant instanceof ContentAssistant)
+		{
+			// Turn on auto insert if only one proposal
+			ContentAssistant contentAssistant = (ContentAssistant) assistant;
+			contentAssistant.enableAutoInsert(true);
+			// This one is a little buggy, as it does not update the proposal replacement string,
+			// so for now it's off.
+			// contentAssistant.enablePrefixCompletion(true);
+		}
+		return assistant;
 	}
 
 	@Override

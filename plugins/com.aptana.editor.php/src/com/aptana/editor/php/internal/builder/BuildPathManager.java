@@ -63,6 +63,10 @@ import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.builder.preferences.DependenciesManager;
 import com.aptana.editor.php.internal.builder.preferences.IProjectDependencyListener;
 import com.aptana.editor.php.internal.builder.preferences.ProjectDependencies;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IBuildPathsListener;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * BuildPathManager

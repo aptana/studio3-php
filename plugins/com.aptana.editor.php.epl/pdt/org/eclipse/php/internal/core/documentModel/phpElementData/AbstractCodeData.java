@@ -19,7 +19,7 @@ public abstract class AbstractCodeData implements CodeData {
 	protected String name;
 	private String description;
 	private boolean isUserCode;
-	protected UserData userData;
+	protected IUserData userData;
 
 	/**
 	 * Construct a new AbstractCodeData that is not user data.
@@ -38,7 +38,7 @@ public abstract class AbstractCodeData implements CodeData {
 	 * @param description The description of the Code Data.
 	 * @param userData
 	 */
-	public AbstractCodeData(String name, String description, UserData userData) {
+	public AbstractCodeData(String name, String description, IUserData userData) {
 		this.name = name;
 		this.description = description;
 		this.userData = userData;
@@ -75,7 +75,7 @@ public abstract class AbstractCodeData implements CodeData {
 	 *
 	 * @return the user data
 	 */
-	public final UserData getUserData() {
+	public final IUserData getUserData() {
 		return userData;
 	}
 

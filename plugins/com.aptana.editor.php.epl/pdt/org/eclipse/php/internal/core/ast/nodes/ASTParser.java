@@ -28,6 +28,7 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * A PHP language parser for creating abstract syntax trees (ASTs).
@@ -48,7 +49,7 @@ public class ASTParser {
 	 * THREAD SAFE AST PARSER STARTS HERE
 	 */
 	private final AST ast;
-	private final ISourceModule sourceModule;
+	private final ISourceModule module;
 
 	private ASTParser(Reader reader, PHPVersion phpVersion, boolean useASPTags)
 			throws IOException {
@@ -56,12 +57,16 @@ public class ASTParser {
 	}
 
 	private ASTParser(Reader reader, PHPVersion phpVersion, boolean useASPTags,
-			ISourceModule sourceModule) throws IOException {
+			ISourceModule module) throws IOException {
 
-		this.sourceModule = sourceModule;
-		this.ast = new AST(reader, phpVersion, useASPTags);
+		this.module = module;
+		Object resource = null;
+		if (module != null)
+		{
+			resource = module.getResource();
+		}
+		this.ast = new AST(reader, phpVersion, useASPTags, resource);
 		this.ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
-
 		// set resolve binding property and the binding resolver
 		// TODO: Shalom - Binding resolver
 //		if (sourceModule != null) {
@@ -98,21 +103,25 @@ public class ASTParser {
 	// }
 
 	public static ASTParser newParser(PHPVersion version,
-			ISourceModule sourceModule) {
-		if (sourceModule == null) {
+			ISourceModule module) {
+		if (module == null) {
 			throw new IllegalStateException(
-					"ASTParser - Can't parser with null ISourceModule"); //$NON-NLS-1$
+					"ASTParser - Can't parser with null IModule"); //$NON-NLS-1$
 		}
 		try {
 			final ASTParser parser = new ASTParser(new StringReader(""), //$NON-NLS-1$
-					version, false, sourceModule);
-			parser.setSource(sourceModule.getSourceAsCharArray());
+					version, false, module);
+			parser.setSource(module.getSourceAsCharArray());
 			return parser;
+		} catch (CoreException ce) {
+			PHPEplPlugin.logError(ce);
+			return null;
 		} catch (IOException e) {
 			return null;
 		}
 	}
 
+		
 	public static ASTParser newParser(Reader reader, PHPVersion version)
 			throws IOException {
 		return new ASTParser(reader, version, false);
@@ -124,8 +133,8 @@ public class ASTParser {
 	}
 
 	public static ASTParser newParser(Reader reader, PHPVersion version,
-			boolean useASPTags, ISourceModule sourceModule) throws IOException {
-		return new ASTParser(reader, version, useASPTags, sourceModule);
+			boolean useASPTags, ISourceModule module) throws IOException {
+		return new ASTParser(reader, version, useASPTags, module);
 	}
 
 	/**
@@ -186,7 +195,7 @@ public class ASTParser {
 		Program p = (Program) symbol.value;
 		AST ast = p.getAST();
 
-		p.setSourceModule(sourceModule);
+		p.setSourceModule(module);
 
 		// now reset the ast default node flag back to differntate between
 		// original nodes

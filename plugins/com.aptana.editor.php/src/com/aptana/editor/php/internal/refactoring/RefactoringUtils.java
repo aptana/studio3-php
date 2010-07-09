@@ -52,11 +52,11 @@ import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.builder.ProjectBuildPath;
 import com.aptana.editor.php.internal.builder.WorkspaceFolderBuildpath;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.IncludePHPEntryValue;
 
 /**

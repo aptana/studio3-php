@@ -37,8 +37,8 @@ package com.aptana.editor.php.indexer;
 import org.eclipse.core.runtime.IPath;
 
 import com.aptana.editor.php.internal.builder.AbstractBuildPathResource;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
 
 /**
  * Abstract directory.

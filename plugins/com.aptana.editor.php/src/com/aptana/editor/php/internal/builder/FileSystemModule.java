@@ -39,6 +39,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.aptana.core.resources.IUniformResource;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.PHPUniformResource;
+
 /**
  * File system - based module.
  * 
@@ -50,6 +55,7 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 	 * File.
 	 */
 	private File file;
+	private PHPUniformResource uniformResource;
 
 	/**
 	 * FileSystemModule constructor.
@@ -138,5 +144,14 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 	public long getTimeStamp()
 	{
 		return file.lastModified();
+	}
+
+	public IUniformResource getExternalFile()
+	{
+		if (uniformResource == null)
+		{
+			uniformResource = new PHPUniformResource(file);
+		}
+		return uniformResource;
 	}
 }

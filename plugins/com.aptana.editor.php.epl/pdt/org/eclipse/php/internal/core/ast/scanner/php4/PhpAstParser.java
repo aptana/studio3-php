@@ -8,13 +8,14 @@ package org.eclipse.php.internal.core.ast.scanner.php4;
 
 import java.util.*;
 import org.eclipse.php.internal.core.ast.nodes.*;
+import org.eclipse.php.internal.core.ast.scanner.AbstractASTParser;
 import org.eclipse.dltk.ast.Modifiers;
 
 /** CUP v0.10k generated parser.
   * @version Wed Jul 22 14:58:37 PDT 2009
   */
 @SuppressWarnings({"unchecked", "nls"})
-public class PhpAstParser extends java_cup.runtime.lr_parser {
+public class PhpAstParser extends AbstractASTParser {
 
   /** Default constructor. */
   public PhpAstParser() {super();}
@@ -2062,12 +2063,6 @@ public class PhpAstParser extends java_cup.runtime.lr_parser {
 	protected final static Integer FINAL = new Integer(Modifiers.AccFinal);
 	protected final static Integer STATIC = new Integer(Modifiers.AccStatic);
 	
-	AST ast;
-  
-	public final void setAST (AST ast) {
-		this.ast = ast;
-	}	
-	  	
 	protected VariableBase constructStaticMember(Identifier className, VariableBase dispatcher) {
 		VariableBase result = null;
 		if (dispatcher.getType() == ASTNode.FIELD_ACCESS) {
@@ -2101,24 +2096,6 @@ public class PhpAstParser extends java_cup.runtime.lr_parser {
 		}
 		return dispatch;
 	}
-	
-    /**
-     * Report a non fatal error (or warning).  This method takes a message
-     * string and an additional object (to be used by specializations implemented in subclasses).
-     * The super class prints the message to System.err.
-     * @param message an error message.
-     * @param info    an extra object reserved for use by specialized subclasses.
-     */
-    public void report_error(String message, Object info) {
-		// System.err.print(message);
-  		// if (info instanceof Symbol)
-		//	if (((Symbol)info).left != -1)
-		//		System.err.println(" at character " + ((Symbol)info).left + " of input");
-		//	else System.err.println("");
-	    // else 
-	   	//	System.err.println("");
-    }	
-
 }
 
 /** Cup generated class to encapsulate user supplied action code.*/

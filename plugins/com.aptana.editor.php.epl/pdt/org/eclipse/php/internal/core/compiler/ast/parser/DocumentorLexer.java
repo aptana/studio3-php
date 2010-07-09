@@ -14,7 +14,6 @@
 package org.eclipse.php.internal.core.compiler.ast.parser;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 
 import org.eclipse.php.internal.core.ast.nodes.AST;
@@ -22,6 +21,7 @@ import org.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTagKinds;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
@@ -471,7 +471,7 @@ public class DocumentorLexer implements IDocumentorLexer {
             PHPEplPlugin.logError(e);
         }
 
-        PHPDocTag[] tags = new PHPDocTag[tagList.size()];
+        IPHPDocTag[] tags = new IPHPDocTag[tagList.size()];
         tagList.toArray(tags);
 
         PHPDocBlock rv = null;

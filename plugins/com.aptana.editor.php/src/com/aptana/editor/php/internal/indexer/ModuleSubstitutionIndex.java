@@ -41,7 +41,7 @@ import java.util.Set;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * Index that has the special sub-index to handle the module specified, all other sub-indexes are ignored regarding the

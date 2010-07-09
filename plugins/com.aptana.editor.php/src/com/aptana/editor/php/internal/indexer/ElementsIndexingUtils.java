@@ -46,9 +46,9 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * Indexing utilities.

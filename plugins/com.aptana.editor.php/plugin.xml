@@ -290,4 +290,11 @@
 			verticalRulerPreferenceValue="false">
 		</specification>
 	</extension>
+   <extension
+         point="org.eclipse.core.filebuffers.annotationModelCreation">
+      <factory
+            class="com.aptana.editor.php.internal.ui.editor.ExternalAnnotationsFactory"
+            contentTypeId="com.aptana.contenttype.php">
+      </factory>
+   </extension>
 </plugin>

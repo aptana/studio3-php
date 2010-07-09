@@ -1,13 +1,15 @@
 package com.aptana.editor.php.internal.ui.editor;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.common.CompositeDocumentProvider;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.php.core.IPHPVersionListener;
-import com.aptana.editor.php.internal.IPHPConstants;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 
 /**
  * PHP document provider.
@@ -61,5 +63,14 @@ public class PHPDocumentProvider extends CompositeDocumentProvider implements IP
 		{
 			PHPVersionDocumentManager.updateVersion(document, phpVersion);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.editors.text.TextFileDocumentProvider#createAnnotationModel(org.eclipse.core.resources.IFile)
+	 */
+	@Override
+	protected IAnnotationModel createAnnotationModel(IFile file)
+	{
+		return new SourceModuleAnnotationModel(file);
 	}
 }

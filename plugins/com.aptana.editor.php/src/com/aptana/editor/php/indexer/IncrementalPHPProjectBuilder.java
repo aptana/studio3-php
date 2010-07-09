@@ -54,6 +54,7 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 		if ((kind == CLEAN_BUILD || kind == FULL_BUILD) && project != null)
 		{
 			PHPGlobalIndexer.getInstance().clean(project, monitor);
+			PHPGlobalIndexer.getInstance().build(project, monitor);
 		}
 		return null;
 	}

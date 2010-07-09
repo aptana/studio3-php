@@ -55,9 +55,9 @@ import com.aptana.editor.php.indexer.IIndexReporter;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IReportable;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
-import com.aptana.editor.php.internal.IPHPConstants;
-import com.aptana.editor.php.internal.builder.IModule;
 import com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants;
+import com.aptana.editor.php.internal.core.IPHPConstants;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.AccessModifierEntryFilter;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
@@ -75,11 +75,13 @@ import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.utils.TypeHierarchyUtils;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPVariableParseNode;
 import com.aptana.editor.php.internal.parser.nodes.Parameter;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 import com.aptana.editor.php.internal.ui.editor.PHPVersionDocumentManager;
+import com.aptana.editor.php.internal.ui.editor.contentassist.PHPContextInformationValidator;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPDecoratingLabelProvider;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPOutlineItem;
 import com.aptana.parsing.lexer.IRange;
@@ -140,7 +142,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static Image fIcon4off = PHPEditorPlugin.getImage("icons/full/obj16/v4_off.png"); //$NON-NLS-1$
 
 	private static char[] autoactivationCharacters = new char[] { '>', '@', '$', ':', '\\' };
-	private static char[] contextautoactivationCharacters = new char[] { '(' };
+	private static final char[] contextInformationActivationChars = { '(', ',' };
 	private static PHPDecoratingLabelProvider labelProvider = new PHPDecoratingLabelProvider();
 	private ITextViewer viewer;
 	private int offset;
@@ -1611,7 +1613,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					while (separatorIndex > 0)
 					{
 						String nsLookup = ns.substring(0, separatorIndex);
-						collectedNs.addAll(index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY, nsLookup));
+						collectedNs.addAll(index
+								.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY, nsLookup));
 						separatorIndex = nsLookup.lastIndexOf(GLOBAL_NAMESPACE);
 					}
 					entries.addAll(collectedNs);
@@ -1682,11 +1685,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static ArrayList<IElementEntry> getNamespaceEntries(String name, IModule module, Map<String, String> aliases)
 	{
 		ArrayList<IElementEntry> namespaceEntries = new ArrayList<IElementEntry>();
-		for (String s : aliases.keySet())
+		if (aliases != null)
 		{
-			if (s.toLowerCase().startsWith(name))
+			for (String s : aliases.keySet())
 			{
-				namespaceEntries.add(new UnpackedEntry(-1, s, new NamespacePHPEntryValue(0, s), module));
+				if (s.toLowerCase().startsWith(name))
+				{
+					namespaceEntries.add(new UnpackedEntry(-1, s, new NamespacePHPEntryValue(0, s), module));
+				}
 			}
 		}
 		return namespaceEntries;
@@ -1913,7 +1919,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				IElementEntry entry = (IElementEntry) item;
 				String firstName;
-				if (entry.getCategory() != IPHPIndexConstants.CONST_CATEGORY && entry.getCategory() != IPHPIndexConstants.NAMESPACE_CATEGORY)
+				if (entry.getCategory() != IPHPIndexConstants.CONST_CATEGORY
+						&& entry.getCategory() != IPHPIndexConstants.NAMESPACE_CATEGORY)
 				{
 					firstName = ElementsIndexingUtils.getLastNameInPath(entry.getEntryPath());
 				}
@@ -3038,11 +3045,114 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		return false;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.common.CommonContentAssistProcessor#computeContextInformation(org.eclipse.jface.text.ITextViewer
+	 * , int)
+	 */
 	@Override
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset)
 	{
-		// TODO
-		return null;
+		IDocument document = viewer.getDocument();
+		if (document == null)
+		{
+			return new IContextInformation[0];
+		}
+		String content = document.get();
+		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		CallInfo info = PHPContextCalculator.calculateCallInfo(lexemeProvider, offset);
+		if (info == null)
+		{
+			return new IContextInformation[0];
+		}
+		ArrayList<?> items = ContentAssistUtils.selectModelElements(info.getName(), true);
+		// if no built-in items found, trying to find the custom ones
+		if (items.size() == 0)
+		{
+			Set<IElementEntry> entries = null;
+
+			IElementsIndex index = getIndex(content, offset);
+			ITypedRegion partition = viewer.getDocument().getDocumentPartitioner().getPartition(offset);
+			// trying to get dereference entries
+			List<String> callPath = ParsingUtils
+					.parseCallPath(partition, content, info.getNameEndPos() - 1, OPS, false);
+			if (callPath == null || callPath.isEmpty())
+			{
+				return new IContextInformation[0];
+			}
+
+			if (callPath.size() > 1)
+			{
+				if (DEREFERENCE_OP.equals(callPath.get(1)))
+				{
+					entries = computeDereferenceEntries(index, callPath, info.getNameEndPos(), getModule(), true,
+							aliases, namespace);
+				}
+				else
+				{
+					entries = computeStaticDereferenceEntries(index, callPath, info.getNameEndPos(), getModule(), true,
+							aliases, namespace);
+				}
+			}
+			else
+			{
+				List<IElementEntry> res = computeSimpleIdentifierEntries(reportedScopeUnderClassOrFunction,
+						globalImports, info.getName(), false, index, true, getModule(), false, namespace, aliases);
+				if (res != null)
+				{
+					entries = new LinkedHashSet<IElementEntry>();
+					entries.addAll(res);
+				}
+			}
+
+			if (entries == null)
+			{
+				return new IContextInformation[0];
+			}
+
+			// FIXME: Shalom - What about class constructors?
+			entries = ContentAssistFilters.filterAllButFunctions(entries, index);
+			if (entries.size() == 0)
+			{
+				return new IContextInformation[0];
+			}
+
+			IElementEntry funcEntry = entries.iterator().next();
+			IContextInformation ci = PHPContextCalculator.computeArgContextInformation(funcEntry, info.getNameEndPos());
+			if (ci == null)
+			{
+				return new IContextInformation[0];
+			}
+			IContextInformation[] res = new IContextInformation[1];
+			res[0] = ci;
+			return res;
+		}
+		else
+		{
+			IPHPParseNode pn = (IPHPParseNode) items.get(0);
+			IContextInformation[] ici = null;
+			IContextInformation ci = null;
+			if (pn instanceof PHPFunctionParseNode)
+			{
+				ci = PHPContextCalculator.computeArgContextInformation((PHPFunctionParseNode) pn, info.getNameEndPos());
+			}
+			else if (pn instanceof PHPClassParseNode)
+			{
+				ci = PHPContextCalculator.computeConstructorContextInformation((PHPClassParseNode) pn, info
+						.getNameEndPos());
+			}
+
+			if (ci != null)
+			{
+				ici = new IContextInformation[] { ci };
+			}
+			else
+			{
+				ici = new IContextInformation[0];
+			}
+			return ici;
+		}
 	}
 
 	@Override
@@ -3054,14 +3164,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	@Override
 	public char[] getContextInformationAutoActivationCharacters()
 	{
-		return contextautoactivationCharacters;
+		return contextInformationActivationChars;
 	}
 
 	@Override
 	public IContextInformationValidator getContextInformationValidator()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new PHPContextInformationValidator();
 	}
 
 	@Override

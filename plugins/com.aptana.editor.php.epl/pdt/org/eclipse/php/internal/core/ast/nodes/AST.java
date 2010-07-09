@@ -15,18 +15,24 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import java_cup.runtime.Scanner;
-import java_cup.runtime.lr_parser;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.php.internal.core.CoreMessages;
 import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.php.internal.core.ast.rewrite.ASTRewrite;
+import org.eclipse.php.internal.core.ast.scanner.AbstractASTParser;
 import org.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org.eclipse.text.edits.TextEdit;
+
+import com.aptana.core.resources.IUniformResource;
+import com.aptana.editor.php.internal.core.builder.BuildProblemReporter;
 
 /**
  * Umbrella owner and abstract syntax tree node factory.
@@ -100,7 +106,7 @@ public class AST {
 	 * to enable ASTParser access  
 	 */
 	final AstLexer lexer;
-	final lr_parser parser;
+	final AbstractASTParser parser;
 	final PHPVersion apiLevel;
 	final boolean useASPTags;
 
@@ -153,6 +159,12 @@ public class AST {
 	 * Internal ast rewriter used to record ast modification when record mode is enabled.
 	 */
 	InternalASTRewrite rewriter;
+	
+	// Error reporting
+	private List<ASTError> reportedErrors;
+	// Can be an IResource or an IUniformResource, in case we are dealing with a script outside the workspace.
+	private Object resource;
+	private BuildProblemReporter problemReporter;
 
 	/**
 	 * The binding resolver for this AST. Initially a binding resolver that
@@ -161,12 +173,93 @@ public class AST {
 	// private BindingResolver resolver = new BindingResolver();
 
 	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp) throws IOException {
+		this(reader, apiLevel, aspTagsAsPhp, null);
+	}
+	
+	/**
+	 * Creates a new AST. This constructor get the IResource reference that this AST is created for.
+	 * 
+	 * @param reader
+	 * @param apiLevel
+	 * @param aspTagsAsPhp
+	 * @param resource
+	 *            An {@link IResource} that this AST is being created for, or an IUniformResource, in case we are
+	 *            dealing with a script outside the workspace (may be null) - [Aptana Mod]
+	 * @throws IOException
+	 */
+	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp, Object resource) throws IOException
+	{
+		this.resource = resource;
+		if (this.resource != null)
+		{
+			problemReporter = new BuildProblemReporter(this.resource);
+		}
 		this.useASPTags = aspTagsAsPhp;
 		this.apiLevel = apiLevel;
 		this.lexer = getLexerInstance(reader, apiLevel, aspTagsAsPhp);
 		this.parser = getParserInstance(apiLevel, this.lexer);
+		this.reportedErrors = new ArrayList<ASTError>();
+	}
+
+	/**
+	 * Clears the reported errors from this AST.
+	 * 
+	 * @param hasErrors
+	 */
+	public void clearErrors(boolean hasErrors)
+	{
+		if (!reportedErrors.isEmpty()){
+			// Create a new list, just in case there is some other 
+			// thread that is traversing the previous list at the moment.
+			reportedErrors = new ArrayList<ASTError>();
+		}
 	}
 	
+	/**
+	 * Returns true in case errors where reported for this AST.<br>
+	 * [XXX: Aptana Mod]
+	 * @return True, in case this AST has errors; False, otherwise.
+	 */
+	public boolean hasErrors()
+	{
+		return !reportedErrors.isEmpty();
+	}
+	
+	/**
+	 * Write the errors into the resource markers and remove the problem reporter.
+	 */
+	public void flushErrors()
+	{
+		if (problemReporter != null)
+		{
+			problemReporter.flush();
+			problemReporter = null;
+		}
+	}
+	
+	/**
+	 * Returns a list of the reported ASTErrors.<br> 
+	 * These errors are different then the ones held in the AST as tree nodes. 
+	 * There can be more reported ASTErrors then then ones exist in the tree.
+	 * [XXX: Aptana Mod]
+	 * 
+	 * @return a list of reported ASTErrors.
+	 */
+	public List<ASTError> getErrors()
+	{
+		return reportedErrors;
+	}
+
+	/**
+	 * Returns the IResource that this AST was created for.
+	 * 
+	 * @return An {@link IResource}, or an {@link IUniformResource}. Can be null.
+	 */
+	public Object getResource()
+	{
+		return resource;
+	}
+
 	/**
 	 * Constructs a scanner from a given reader
 	 * @param reader
@@ -211,22 +304,23 @@ public class AST {
 		return phpAstLexer4;
 	}
 
-	private lr_parser getParserInstance(PHPVersion phpVersion, Scanner lexer) {
+	private AbstractASTParser getParserInstance(PHPVersion phpVersion, Scanner lexer) {
+		AbstractASTParser parser;
 		if (PHPVersion.PHP4 == phpVersion) {
-			final org.eclipse.php.internal.core.ast.scanner.php4.PhpAstParser parser = new org.eclipse.php.internal.core.ast.scanner.php4.PhpAstParser(lexer);
-			parser.setAST(this);
-			return parser;
+			parser = new org.eclipse.php.internal.core.ast.scanner.php4.PhpAstParser(lexer);
 		} else if (PHPVersion.PHP5 == phpVersion) {
-			final org.eclipse.php.internal.core.ast.scanner.php5.PhpAstParser parser = new org.eclipse.php.internal.core.ast.scanner.php5.PhpAstParser(lexer);
-			parser.setAST(this);
-			return parser;
+			parser = new org.eclipse.php.internal.core.ast.scanner.php5.PhpAstParser(lexer);
 		} else if (PHPVersion.PHP5_3 == phpVersion) {
-			final org.eclipse.php.internal.core.ast.scanner.php53.PhpAstParser parser = new org.eclipse.php.internal.core.ast.scanner.php53.PhpAstParser(lexer);
-			parser.setAST(this);
-			return parser;
+			parser = new org.eclipse.php.internal.core.ast.scanner.php53.PhpAstParser(lexer);
 		} else {
 			throw new IllegalArgumentException(CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
 		}
+		parser.setAST(this);
+		if (problemReporter != null)
+		{
+			parser.setProblemReporter(problemReporter);
+		}
+		return parser;
 	}
 
 	/**
@@ -923,7 +1017,7 @@ public class AST {
 	/**
 	 * @return The parser used by this AST 
 	 */
-	public lr_parser parser() {
+	public AbstractASTParser parser() {
 		return parser;
 	}
 

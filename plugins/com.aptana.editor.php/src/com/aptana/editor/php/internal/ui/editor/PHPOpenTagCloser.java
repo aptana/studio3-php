@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Point;
 import com.aptana.editor.html.Activator;
 import com.aptana.editor.html.OpenTagCloser;
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.internal.IPHPConstants;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 
 /**
  * An open tag closer that work within PHP files.<br>

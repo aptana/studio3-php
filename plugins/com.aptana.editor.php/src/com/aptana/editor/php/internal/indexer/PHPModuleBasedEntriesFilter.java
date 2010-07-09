@@ -41,7 +41,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.aptana.editor.php.indexer.IElementEntry;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * Filter that filters entries by the list of modules.

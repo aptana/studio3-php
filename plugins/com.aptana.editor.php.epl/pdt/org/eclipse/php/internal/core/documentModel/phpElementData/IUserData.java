@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.documentModel.phpElementData;
 
-interface UserData {
+interface IUserData {
 
 	/**
 	 * Returns the name of the file.

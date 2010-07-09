@@ -1,14 +1,14 @@
 package com.aptana.editor.php.internal.ui.editor;
 
-import static com.aptana.editor.php.internal.IPHPConstants.COMMAND;
-import static com.aptana.editor.php.internal.IPHPConstants.CONTENT_TYPE_PHP;
-import static com.aptana.editor.php.internal.IPHPConstants.DEFAULT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_DOC_COMMENT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_MULTI_LINE_COMMENT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_SINGLE_LINE_COMMENT;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_STRING_DOUBLE;
-import static com.aptana.editor.php.internal.IPHPConstants.PHP_STRING_SINGLE;
-import static com.aptana.editor.php.internal.IPHPConstants.PREFIX;
+import static com.aptana.editor.php.internal.core.IPHPConstants.COMMAND;
+import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_PHP;
+import static com.aptana.editor.php.internal.core.IPHPConstants.DEFAULT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_DOC_COMMENT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_MULTI_LINE_COMMENT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_SINGLE_LINE_COMMENT;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_DOUBLE;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_SINGLE;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PREFIX;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -43,6 +43,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	private IPredicateRule[] partitioningRules = new IPredicateRule[] {
 			new EndOfLineRule("//", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
+			new EndOfLineRule("#", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
 			new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
 			new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
 			new SingleLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\'), //$NON-NLS-1$ //$NON-NLS-2$
@@ -72,7 +73,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		c.addTranslation(new QualifiedContentType(PHP_DOC_COMMENT), new QualifiedContentType(
 				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType(
-		        "comment.block.php")); //$NON-NLS-1$
+		        "comment.php")); //$NON-NLS-1$
 	}
 
 	public static PHPSourceConfiguration getDefault()
@@ -192,7 +193,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		if (multiLineCommentScanner == null)
 		{
 			multiLineCommentScanner = new RuleBasedScanner();
-			multiLineCommentScanner.setDefaultReturnToken(getToken("comment.block.php")); //$NON-NLS-1$
+			multiLineCommentScanner.setDefaultReturnToken(getToken("comment.php")); //$NON-NLS-1$
 		}
 		return multiLineCommentScanner;
 	}

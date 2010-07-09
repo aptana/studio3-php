@@ -50,7 +50,7 @@ import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ElementsIndexingUtils;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;

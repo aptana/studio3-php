@@ -32,7 +32,7 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.internal.builder;
+package com.aptana.editor.php.internal.core.builder;
 
 import org.eclipse.core.runtime.IPath;
 

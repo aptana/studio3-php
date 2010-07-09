@@ -36,6 +36,7 @@ import org.eclipse.php.core.tests.TestUtils;
 import org.eclipse.php.core.tests.codeassist.CodeAssistPdttFile.ExpectedProposal;
 import org.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.core.resources.IUniformResource;
 import com.aptana.editor.common.ExtendedFastPartitioner;
 import com.aptana.editor.common.NullPartitionerSwitchStrategy;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
@@ -47,7 +48,6 @@ import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.contentAssist.PHPCompletionProposal;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
-import com.aptana.editor.php.internal.model.ModelException;
 import com.aptana.editor.php.internal.model.ModelManager;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
@@ -214,14 +214,22 @@ public class CodeAssistTests extends AbstractPDTTTest {
 	}
 
 	public static ICompletionProposal[] getProposals(int offset)
-			throws ModelException {
+			throws Exception {
 		return getProposals(getSourceModule(), offset);
 	}
 
 	public static ICompletionProposal[] getProposals(ISourceModule sourceModule,
-			int offset) throws ModelException {
+			int offset) throws Exception {
 		PHPSourceEditor editor = new PHPSourceEditor();
-		editor.computeModule(sourceModule.getResource().getLocationURI().toString());
+		Object resource = sourceModule.getResource();
+		if (resource instanceof IResource)
+		{
+			editor.computeModule(((IResource) resource).getLocationURI().toString());
+		}
+		else
+		{
+			editor.computeModule(((IUniformResource) resource).getURI().toString());
+		}
 		PHPContentAssistProcessor processor = new PHPContentAssistProcessor(editor);
 		// 
 		IDocument document = new Document(new String(sourceModule.getSourceAsCharArray()));

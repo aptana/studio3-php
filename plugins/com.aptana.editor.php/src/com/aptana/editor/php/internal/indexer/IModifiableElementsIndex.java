@@ -36,7 +36,7 @@ package com.aptana.editor.php.internal.indexer;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * Modifiable elements index.

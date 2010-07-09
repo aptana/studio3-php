@@ -3,7 +3,7 @@ package com.aptana.editor.php.internal.parser;
 import org.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.core.model.ISourceModule;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.parsing.ParseState;
 
 /**

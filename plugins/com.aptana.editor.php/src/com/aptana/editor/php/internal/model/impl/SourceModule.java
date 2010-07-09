@@ -34,15 +34,22 @@
  */
 package com.aptana.editor.php.internal.model.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.internal.core.util.Util;
 
+import com.aptana.core.resources.IUniformResource;
+import com.aptana.core.util.IOUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.model.IMethod;
 import com.aptana.editor.php.core.model.IModelElement;
@@ -52,9 +59,10 @@ import com.aptana.editor.php.core.model.env.ModelElementInfo;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.LocalModule;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 
 /**
@@ -77,16 +85,18 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		super(module);
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.IModelElement#getElementType()
 	 */
 	public int getElementType()
 	{
 		return MODULE;
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.IParent#getChildren()
 	 */
 	public List<IModelElement> getChildren()
 	{
@@ -118,24 +128,30 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		return result;
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.IParent#hasChildren()
 	 */
 	public boolean hasChildren()
 	{
 		return getChildren().size() > 0;
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.ISourceModule#getResource()
 	 */
-	public org.eclipse.core.resources.IResource getResource()
+	public Object getResource()
 	{
-		if (getModule() instanceof LocalModule)
+		IModule module = getModule();
+		if (module instanceof LocalModule)
 		{
-			return ((LocalModule) getModule()).getFile();
+			return ((LocalModule) module).getFile();
 		}
-
+		else if (module instanceof FileSystemModule)
+		{
+			return ((FileSystemModule) module).getExternalFile();
+		}
 		return null;
 	}
 
@@ -149,8 +165,9 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		return (IModule) getBPResource();
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.ISourceModule#getTopLevelTypes()
 	 */
 	public List<IType> getTopLevelTypes()
 	{
@@ -170,20 +187,32 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		return result;
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.ISourceModule#getPath()
 	 */
 	public String getPath()
 	{
-		IResource resource = getResource();
+		Object resource = getResource();
 		if (resource == null)
 		{
 			return null;
 		}
+		if (resource instanceof IResource)
+		{
+			return ((IResource) resource).getProjectRelativePath().toPortableString();
+		}
+		else
+		{
+			return ((IUniformResource) resource).getURI().toString();
+		}
 
-		return resource.getProjectRelativePath().toPortableString();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.ISourceModule#getTopLevelMethods()
+	 */
 	public List<IMethod> getTopLevelMethods()
 	{
 		List<IModelElement> chidren = getChildren();
@@ -212,6 +241,10 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.ISourceModule#getType(java.lang.String)
+	 */
 	public IType getType(String name)
 	{
 		for (IType t : getTopLevelTypes())
@@ -237,6 +270,10 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.internal.model.impl.AbstractModelElement#getElementInfo()
+	 */
 	@Override
 	public ModelElementInfo getElementInfo()
 	{
@@ -251,13 +288,35 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		return info;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.ISourceModule#getSourceAsCharArray()
+	 */
 	@Override
-	public char[] getSourceAsCharArray()
+	public char[] getSourceAsCharArray() throws CoreException
 	{
-		IFile file = (IFile) getResource();
+		Object resource = getResource();
+		IFile file = null;
+		if (resource instanceof IFile)
+		{
+			file = (IFile) resource;
+		}
 		if (file == null)
 		{
-			throw new IllegalStateException("Source module resource was null"); //$NON-NLS-1$
+			File f = new File(getModule().getFullPath());
+			if (!f.exists())
+			{
+				throw new IllegalStateException("Source module resource was null"); //$NON-NLS-1$
+			}
+			try
+			{
+				return IOUtil.read(new FileInputStream(f)).toCharArray();
+			}
+			catch (FileNotFoundException e)
+			{
+				throw new CoreException(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
+						"Error reading the file's content", e)); //$NON-NLS-1$
+			}
 		}
 		if (!file.exists())
 		{

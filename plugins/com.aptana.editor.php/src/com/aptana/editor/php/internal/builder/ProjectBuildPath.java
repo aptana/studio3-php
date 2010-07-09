@@ -56,6 +56,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.internal.core.builder.IBuildPathResource;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
  * ProjectBuildPath

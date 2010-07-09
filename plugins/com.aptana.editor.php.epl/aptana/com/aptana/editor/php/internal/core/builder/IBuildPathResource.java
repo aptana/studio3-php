@@ -32,25 +32,42 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.internal.builder;
+package com.aptana.editor.php.internal.core.builder;
 
-import java.io.IOException;
-import java.io.InputStream;
+import org.eclipse.core.runtime.IPath;
 
 /**
- * Abstract module.
+ * Build-path resource.
  * 
  * @author Denis Denisenko
  */
-public interface IModule extends IBuildPathResource
+public interface IBuildPathResource
 {
+	/**
+	 * Gets module full system path.
+	 * 
+	 * @return module full system path.
+	 */
+	String getFullPath();
 
 	/**
-	 * Gets module contents.
+	 * Gets module build path.
 	 * 
-	 * @return module contents.
+	 * @return module build path.
 	 */
-	InputStream getContents() throws IOException;
+	IBuildPath getBuildPath();
 
-	long getTimeStamp();
+	/**
+	 * Gets module short name.
+	 * 
+	 * @return module short name.
+	 */
+	String getShortName();
+
+	/**
+	 * Gets path inside the resource build-path, starting from the build-path root.
+	 * 
+	 * @return path.
+	 */
+	IPath getPath();
 }

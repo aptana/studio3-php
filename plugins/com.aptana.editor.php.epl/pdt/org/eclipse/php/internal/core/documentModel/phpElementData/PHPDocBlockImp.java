@@ -11,10 +11,9 @@
 package org.eclipse.php.internal.core.documentModel.phpElementData;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
-public class PHPDocBlockImp implements PHPDocBlock
+public class PHPDocBlockImp implements IPHPDocBlock
 {
 
 	/**
@@ -26,14 +25,14 @@ public class PHPDocBlockImp implements PHPDocBlock
 
 	private String shortDescription;
 	private String longDescription;
-	private PHPDocTag[] tags;
+	private IPHPDocTag[] tags;
 	private int type;
 	private int startPosition;
 	private int endPosition;
 
 	private String content;
 
-	public PHPDocBlockImp(String shortDescription, String longDescription, PHPDocTag[] tags, int type)
+	public PHPDocBlockImp(String shortDescription, String longDescription, IPHPDocTag[] tags, int type)
 	{
 		this.shortDescription = shortDescription;
 		this.longDescription = longDescription;
@@ -59,15 +58,14 @@ public class PHPDocBlockImp implements PHPDocBlock
 		return longDescription;
 	}
 
-	public PHPDocTag[] getTagsAsArray()
+	public IPHPDocTag[] getTagsAsArray()
 	{
 		return tags;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Iterator getTags()
+	public IPHPDocTag[] getTags()
 	{
-		return tags != null ? Arrays.asList(tags).iterator() : null;
+		return tags;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,7 +78,7 @@ public class PHPDocBlockImp implements PHPDocBlock
 		ArrayList rv = new ArrayList(tags.length);
 		for (int i = 0; i < tags.length; i++)
 		{
-			PHPDocTag tag = tags[i];
+			IPHPDocTag tag = tags[i];
 			if (tag.getID() == id)
 			{
 				rv.add(tag);

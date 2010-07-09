@@ -19,7 +19,7 @@ import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.Identifier;
 import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlock;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.parsing.ast.IParseNode;
@@ -79,7 +79,7 @@ public class NodeBuilder
 		this.collectVariables = collectVariables;
 	}
 
-	public void handleClassConstDeclaration(String constName, PHPDocBlock docInfo, int startPosition, int endPosition,
+	public void handleClassConstDeclaration(String constName, IPHPDocBlock docInfo, int startPosition, int endPosition,
 			int stopPosition)
 	{
 		PHPVariableParseNode pn = new PHPVariableParseNode(0, startPosition, endPosition, constName);
@@ -111,7 +111,7 @@ public class NodeBuilder
 	 * @param endPosition
 	 * @param lineNumber
 	 */
-	public void handleClassDeclaration(String className, int modifier, PHPDocBlock docInfo, int startPosition,
+	public void handleClassDeclaration(String className, int modifier, IPHPDocBlock docInfo, int startPosition,
 			int endPosition, int lineNumber)
 	{
 		PHPClassParseNode pn = new PHPClassParseNode(modifier, startPosition, endPosition, className);
@@ -174,7 +174,7 @@ public class NodeBuilder
 		current = pn;
 	}
 
-	public void handleClassVariablesDeclaration(String variables, int modifier, PHPDocBlock docInfo, int startPosition,
+	public void handleClassVariablesDeclaration(String variables, int modifier, IPHPDocBlock docInfo, int startPosition,
 			int endPosition, int stopPosition)
 	{
 		PHPVariableParseNode pn = new PHPVariableParseNode(modifier, startPosition, endPosition, variables);
@@ -198,7 +198,7 @@ public class NodeBuilder
 		}
 	}
 
-	public void handleDefine(String name, String value, PHPDocBlock docInfo, int startPosition, int endPosition,
+	public void handleDefine(String name, String value, IPHPDocBlock docInfo, int startPosition, int endPosition,
 			int stopPosition)
 	{
 		PHPConstantNode pn = new PHPConstantNode(startPosition, endPosition, name);
@@ -216,14 +216,14 @@ public class NodeBuilder
 
 	public void handleTask(String taskName, String description, int startPosition, int endPosition, int lineNumber)
 	{
-		// UserData userData = PHPCodeDataFactory.createUserData(workingFileName, startPosition, endPosition,
+		// IUserData userData = PHPCodeDataFactory.createUserData(workingFileName, startPosition, endPosition,
 		// startPosition, lineNumber);
 		// markers.add(new PHPTask(taskName, description, userData));
 		// TODO
 	}
 
 	public void handleFunctionDeclaration(String functionName, boolean isClassFunction, int modifier,
-			PHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber)
+			IPHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber)
 	{
 		PHPFunctionParseNode pn = new PHPFunctionParseNode(modifier, startPosition, stopPosition, functionName);
 		pn.setMethod(isClassFunction);
@@ -283,7 +283,7 @@ public class NodeBuilder
 	 * @param stopPosition
 	 * @param lineNumber
 	 */
-	public void handleIncludedFile(String includingType, String includeFileName, PHPDocBlock docInfo,
+	public void handleIncludedFile(String includingType, String includeFileName, IPHPDocBlock docInfo,
 			int startPosition, int endPosition, int stopPosition, int lineNumber)
 	{
 		PHPIncludeNode node = new PHPIncludeNode(startPosition, endPosition, includeFileName, includingType);

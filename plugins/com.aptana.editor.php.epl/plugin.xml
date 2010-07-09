@@ -10,5 +10,181 @@
             class="org.eclipse.php.internal.ui.preferences.PHPUIPreferenceInitializer">
       </initializer>
    </extension>
+   <!-- =================================================================================== -->
+	<!-- Problem Markers                                                        -->
+	<!-- =================================================================================== -->
+	<extension id="problem" point="org.eclipse.core.resources.markers" name="%phpProblemName">
+		<super type="org.eclipse.core.resources.problemmarker"/>
+		<super type="org.eclipse.core.resources.textmarker"/>
+		<persistent value="true"/>
+		<attribute name="id"/>
+		<attribute name="flags"/>
+		<attribute name="arguments"/>
+		<attribute name="categoryId"/>
+	</extension>   
+	
+	<extension
+	        id="runtime_problem"
+	        name="%runtimeProblemName"
+	        point="org.eclipse.core.resources.markers">
+	     <super type="org.eclipse.core.resources.problemmarker"/>
+	     <super type="org.eclipse.core.resources.textmarker"/>
+	     <persistent value="true"/>
+	  </extension>
+	
+	<!-- =================================================================================== -->
+	<!-- Buildpath Problem                                                   -->
+	<!-- =================================================================================== -->
+	<extension id="buildpath_problem" point="org.eclipse.core.resources.markers" name="%buildPathProblemName">
+		<super type="org.eclipse.core.resources.problemmarker"/>
+		<super type="org.eclipse.core.resources.textmarker"/>
+		<persistent value="true"/>
+		<attribute name ="cycleDetected"/>
+		<attribute name="id"/>
+		<attribute name="arguments"/>
+	</extension>   
+	
+	<!-- =================================================================================== -->
+	<!-- Task Markers                                                                    -->
+	<!-- =================================================================================== -->
+	<extension id="task" point="org.eclipse.core.resources.markers" name="%phpTaskName">
+		<super type="org.eclipse.core.resources.taskmarker"/>
+		<super type="org.eclipse.core.resources.textmarker"/>
+		<persistent value="true"/>
+    </extension>
+    
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+         name="com.aptana.editor.php.epl.error"
+         super="org.eclipse.ui.workbench.texteditor.error"
+         markerType="com.aptana.editor.php.epl.problem"
+         markerSeverity="2">
+      </type>
+      <type
+         name="com.aptana.editor.php.epl.warning"
+         super="org.eclipse.ui.workbench.texteditor.warning"
+         markerType="com.aptana.editor.php.epl.problem"
+         markerSeverity="1">
+      </type>
+      <type
+         name="com.aptana.editor.php.epl.info"
+         super="org.eclipse.ui.workbench.texteditor.info"
+         markerType="com.aptana.editor.php.epl.problem"
+         markerSeverity="0">
+      </type>
+   </extension>
 
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationImageProvider="com.aptana.editor.php.internal.ui.editor.ScriptAnnotationImageProvider"
+            annotationType="com.aptana.editor.php.epl.error">
+      </specification>
+      <specification
+            annotationImageProvider="com.aptana.editor.php.internal.ui.editor.ScriptAnnotationImageProvider"
+            annotationType="com.aptana.editor.php.epl.warning">
+      </specification>
+      <specification
+            annotationImageProvider="com.aptana.editor.php.internal.ui.editor.ScriptAnnotationImageProvider"
+            annotationType="com.aptana.editor.php.epl.info">
+      </specification>
+   </extension>
+   <extension point="org.eclipse.ui.ide.markerSupport">
+      <markerTypeCategory name="%markerCategory.problem">
+         <markerTypeReference id="com.aptana.editor.php.epl.problem"/>
+      </markerTypeCategory>
+      <markerTypeCategory name="%markerCategory.buildpath_problem">
+         <markerTypeReference id="com.aptana.editor.php.epl.buildpath_problem"/>
+      </markerTypeCategory>
+      
+    <markerGrouping id="com.aptana.editor.php.epl.php_marker_category" label="%MarkerCategory.name"/>
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.buildpath"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.buildpath"
+        priority="100"/>
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.fatal"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.fatal"
+        priority="90"/>
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.documentation"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.documentation"
+        priority="80"/>
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.potential"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.potential"
+        priority="70"/>        
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.codestyle"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.codestyle"
+        priority="60"/>
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.restrictedAPI"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.restrictedAPI"
+        priority="50"/>        
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.deprecation"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.deprecation"
+        priority="40"/>
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.generictypes"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.generictypes"
+        priority="30"/>
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.unnecessary"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.unnecessary"
+        priority="20"/>          
+    <markerGroupingEntry id="com.aptana.editor.php.epl.category.nls"
+        markerGrouping="com.aptana.editor.php.epl.php_marker_category"
+        label="%MarkerCategory.nls"
+        priority="10"/>
+    <markerAttributeGrouping markerType="com.aptana.editor.php.epl.problem" attribute="categoryId">
+        <markerAttributeMapping value="10" markerGroupingEntry="com.aptana.editor.php.epl.category.buildpath"/>
+        <markerAttributeMapping value="20" markerGroupingEntry="com.aptana.editor.php.epl.category.fatal"/>
+        <markerAttributeMapping value="30" markerGroupingEntry="com.aptana.editor.php.epl.category.fatal"/>
+        <markerAttributeMapping value="40" markerGroupingEntry="com.aptana.editor.php.epl.category.fatal"/>
+        <markerAttributeMapping value="50" markerGroupingEntry="com.aptana.editor.php.epl.category.fatal"/>
+        <markerAttributeMapping value="60" markerGroupingEntry="com.aptana.editor.php.epl.category.fatal"/>
+        <markerAttributeMapping value="70" markerGroupingEntry="com.aptana.editor.php.epl.category.documentation"/>
+        <markerAttributeMapping value="80" markerGroupingEntry="com.aptana.editor.php.epl.category.codestyle"/>
+        <markerAttributeMapping value="90" markerGroupingEntry="com.aptana.editor.php.epl.category.potential"/>
+        <markerAttributeMapping value="100" markerGroupingEntry="com.aptana.editor.php.epl.category.potential"/>
+        <markerAttributeMapping value="110" markerGroupingEntry="com.aptana.editor.php.epl.category.deprecation"/>
+        <markerAttributeMapping value="120" markerGroupingEntry="com.aptana.editor.php.epl.category.unnecessary"/>
+        <markerAttributeMapping value="130" markerGroupingEntry="com.aptana.editor.php.epl.category.generictypes"/>
+        <markerAttributeMapping value="140" markerGroupingEntry="com.aptana.editor.php.epl.category.nls"/>
+        <markerAttributeMapping value="150" markerGroupingEntry="com.aptana.editor.php.epl.category.restrictedAPI"/>
+     </markerAttributeGrouping>
+     <markerAttributeGrouping markerType="com.aptana.editor.php.epl.buildpath_problem"
+        defaultGroupingEntry="com.aptana.editor.php.epl.category.buildpath"/>
+   </extension>
+   <extension point="org.eclipse.ui.decorators">
+		<decorator
+        adaptable="true"
+        class="com.aptana.editor.php.internal.ui.ProblemsLabelDecorator"
+        id="com.aptana.editor.php.epl.problemsDecorator"
+        label="PHP Problem Decorator"
+        lightweight="true"
+        location="BOTTOM_LEFT"
+        state="true">
+			<enablement>
+				<objectClass name="org.eclipse.core.resources.IResource">
+				</objectClass>
+			</enablement>
+		</decorator>
+		<!--decorator
+			label="%OverrideIndicatorLabelDecorator.label"
+			lightweight="true"
+			location="BOTTOM_RIGHT"		
+			state="true"
+			class="com.aptana.editor.php.epl.OverrideIndicatorLabelDecorator"
+			id="com.aptana.editor.php.epl.override.decorator">
+		    <enablement>
+			  <objectClass
+				name="com.aptana.editor.php.core.model.IMethod">
+			  </objectClass>
+		    </enablement>
+	    </decorator -->
+	</extension>
 </plugin>

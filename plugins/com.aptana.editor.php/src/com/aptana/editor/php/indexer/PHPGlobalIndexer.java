@@ -74,11 +74,11 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants.Keys;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemBuildPath;
-import com.aptana.editor.php.internal.builder.IBuildPath;
-import com.aptana.editor.php.internal.builder.IBuildPathChangeListener;
-import com.aptana.editor.php.internal.builder.IBuildPathsListener;
-import com.aptana.editor.php.internal.builder.IDirectory;
-import com.aptana.editor.php.internal.builder.IModule;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
+import com.aptana.editor.php.internal.core.builder.IBuildPathChangeListener;
+import com.aptana.editor.php.internal.core.builder.IBuildPathsListener;
+import com.aptana.editor.php.internal.core.builder.IDirectory;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.ComplexIndex;
 import com.aptana.editor.php.internal.indexer.IndexPersistence;
 import com.aptana.editor.php.internal.indexer.UnpackedElementIndex;
@@ -1097,6 +1097,14 @@ public final class PHPGlobalIndexer
 	{
 		if (project != null)
 		{
+			try
+			{
+				project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			}
+			catch (CoreException e)
+			{
+				PHPEditorPlugin.logError(e);
+			}
 			BuildPathManager buildPathManager = BuildPathManager.getInstance();
 			IBuildPath buildPath = buildPathManager.getBuildPathByResource(project);
 			if (buildPath != null)
@@ -1115,34 +1123,47 @@ public final class PHPGlobalIndexer
 				mainIndex.removeIndex(buildPath);
 				buildPathManager.handleChanged(empty, targetProject);
 				buildPathManager.handleChanged(targetProject, empty);
-
-				final IBuildPath newBuildPath = buildPathManager.getBuildPathByResource(project);
-				mainIndex.addIndex(newBuildPath, new UnpackedElementIndex());
-				Job job = handleModulesAdded(newBuildPath.getModules());
-				job.setPriority(Job.BUILD);
-				job.schedule();
-				try
-				{
-					job.join();
-				}
-				catch (InterruptedException e)
-				{
-				}
-				Job savingJob = new Job(Messages.PHPGlobalIndexer_savingIndex)
-				{
-					protected IStatus run(IProgressMonitor monitor)
-					{
-						needSaving.add(newBuildPath);
-						doSave();
-						return Status.OK_STATUS;
-					}
-				};
-				savingJob.setSystem(true);
-				savingJob.setPriority(Job.BUILD);
 			}
 		}
 	}
 
+	/**
+	 * Build the index for the given project. Usually, this call should arrive after a clean is requested.
+	 * 
+	 * @param project
+	 * @param monitor
+	 */
+	public void build(IProject project, IProgressMonitor monitor)
+	{
+		if (project != null)
+		{
+			BuildPathManager buildPathManager = BuildPathManager.getInstance();
+			final IBuildPath newBuildPath = buildPathManager.getBuildPathByResource(project);
+			mainIndex.addIndex(newBuildPath, new UnpackedElementIndex());
+			Job job = handleModulesAdded(newBuildPath.getModules());
+			job.setPriority(Job.BUILD);
+			job.schedule();
+			try
+			{
+				job.join();
+			}
+			catch (InterruptedException e)
+			{
+			}
+			Job savingJob = new Job(Messages.PHPGlobalIndexer_savingIndex)
+			{
+				protected IStatus run(IProgressMonitor monitor)
+				{
+					needSaving.add(newBuildPath);
+					doSave();
+					return Status.OK_STATUS;
+				}
+			};
+			savingJob.setSystem(true);
+			savingJob.setPriority(Job.BUILD);
+		}
+	}
+	
 	/**
 	 * Clean all the projects in the workspace.
 	 */

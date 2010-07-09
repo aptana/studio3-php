@@ -17,13 +17,15 @@ import java.util.List;
 
 import org.eclipse.php.internal.core.ast.nodes.AST;
 import org.eclipse.php.internal.core.ast.nodes.Comment;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
+import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
-public class PHPDocBlock extends Comment {
+public class PHPDocBlock extends Comment implements IPHPDoc {
 
 	private String shortDescription;
-	private PHPDocTag[] tags;
+	private IPHPDocTag[] tags;
 
-	public PHPDocBlock(int start, int end, AST ast, String shortDescription, PHPDocTag[] tags) throws IOException {
+	public PHPDocBlock(int start, int end, AST ast, String shortDescription, IPHPDocTag[] tags) throws IOException {
 		super(start, end, ast, Comment.TYPE_PHPDOC);
 		this.shortDescription = shortDescription;
 		this.tags = tags;
@@ -32,7 +34,7 @@ public class PHPDocBlock extends Comment {
 //	public void traverse(ASTVisitor visitor) throws Exception {
 //		boolean visit = visitor.visit(this);
 //		if (visit) {
-//			for (PHPDocTag tag : tags) {
+//			for (IPHPDocTag tag : tags) {
 //				tag.traverse(visitor);
 //			}
 //		}
@@ -47,14 +49,14 @@ public class PHPDocBlock extends Comment {
 		return shortDescription;
 	}
 
-	public PHPDocTag[] getTags() {
+	public IPHPDocTag[] getTags() {
 		return tags;
 	}
 	
 	public PHPDocTag[] getTags(int kind) {
-		List<PHPDocTag> res = new LinkedList<PHPDocTag>();
+		List<IPHPDocTag> res = new LinkedList<IPHPDocTag>();
 		if (tags != null) {
-			for (PHPDocTag tag : tags) {
+			for (IPHPDocTag tag : tags) {
 				if (tag.getTagKind() == kind) {
 					res.add(tag);
 				}
@@ -67,7 +69,7 @@ public class PHPDocBlock extends Comment {
 //		setStart(sourceStart() + start);
 //		setEnd(sourceEnd() + start);
 //		
-//		for (PHPDocTag tag : tags) {
+//		for (IPHPDocTag tag : tags) {
 //			tag.adjustStart(start);
 //		}
 //	}

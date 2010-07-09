@@ -41,8 +41,8 @@ import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModel;
 import com.aptana.editor.php.core.model.ISourceProject;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
-import com.aptana.editor.php.internal.builder.IBuildPath;
 import com.aptana.editor.php.internal.builder.ProjectBuildPath;
+import com.aptana.editor.php.internal.core.builder.IBuildPath;
 
 /**
  * SourceModel

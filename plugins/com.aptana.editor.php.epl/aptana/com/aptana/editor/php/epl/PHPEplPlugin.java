@@ -3,6 +3,7 @@ package com.aptana.editor.php.epl;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.php.internal.ui.editor.ASTProvider;
 import org.eclipse.swt.widgets.Display;
@@ -14,16 +15,22 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.aptana.editor.php.internal.ui.viewsupport.ProblemMarkerManager;
+
 public class PHPEplPlugin extends AbstractUIPlugin
 {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.editor.php.epl"; //$NON-NLS-1$
 
+	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(PLUGIN_ID + "/debug")).booleanValue(); //$NON-NLS-1$
+
 	// The shared instance
 	private static PHPEplPlugin plugin;
 
 	private ASTProvider fASTProvider;
+
+	private ProblemMarkerManager fProblemMarkerManager;
 
 	/**
 	 * The constructor
@@ -74,6 +81,33 @@ public class PHPEplPlugin extends AbstractUIPlugin
 			fASTProvider = new ASTProvider();
 
 		return fASTProvider;
+	}
+
+	/**
+	 * Returns a {@link ProblemMarkerManager}
+	 * @return {@link ProblemMarkerManager}
+	 */
+	public synchronized ProblemMarkerManager getProblemMarkerManager() {
+		if (fProblemMarkerManager == null)
+			fProblemMarkerManager= new ProblemMarkerManager();
+		return fProblemMarkerManager;
+	}
+	
+	/**
+	 * Returns the standard display to be used. The method first checks, if the thread calling this method has an
+	 * associated display. If so, this display is returned. Otherwise the method returns the default display.
+	 * 
+	 * @return returns the standard display to be used
+	 */
+	public static Display getStandardDisplay()
+	{
+		Display display;
+		display = Display.getCurrent();
+		if (display == null)
+		{
+			display = Display.getDefault();
+		}
+		return display;
 	}
 
 	/**
@@ -156,7 +190,8 @@ public class PHPEplPlugin extends AbstractUIPlugin
 		getDefault().getLog().log(status);
 	}
 
-	public static IWorkspace getWorkspace() {
+	public static IWorkspace getWorkspace()
+	{
 		return ResourcesPlugin.getWorkspace();
 	}
 }
