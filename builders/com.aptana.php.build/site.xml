@@ -4,9 +4,9 @@
       Aptana PHP is an integrated development environemnt for PHP
    </description>
    <feature url="features/com.aptana.php.feature_{version.full}.jar" id="com.aptana.php.feature" version="{version.full}">
-      <category name="Aptana Studio 3 Plugin"/>
+      <category name="Aptana PHP Plugin"/>
    </feature>
-   <category-def name="Aptana Studio 3 Plugin" label="Aptana Studio 3 Plugin">
+   <category-def name="Aptana PHP Plugin" label="Aptana PHP Plugin">
       <description>
          Adds PHP support to the Aptana Studio
       </description>
