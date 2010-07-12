@@ -1718,13 +1718,16 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		boolean foundAlias = false;
 		String lowerCaseName = name != null ? name.toLowerCase() : EMPTY_STRING;
-		for (String s : aliases.keySet())
+		if (aliases != null)
 		{
-			if (lowerCaseName.startsWith(s.toLowerCase()))
+			for (String s : aliases.keySet())
 			{
-				name = aliases.get(s) + name.substring(s.length());
-				foundAlias = true;
-				break;
+				if (lowerCaseName.startsWith(s.toLowerCase()))
+				{
+					name = aliases.get(s) + name.substring(s.length());
+					foundAlias = true;
+					break;
+				}
 			}
 		}
 		if (!foundAlias)
