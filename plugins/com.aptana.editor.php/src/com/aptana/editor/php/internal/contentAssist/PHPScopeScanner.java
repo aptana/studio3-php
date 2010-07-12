@@ -25,6 +25,7 @@ public class PHPScopeScanner implements ITokenScanner
 	private AbstractPhpLexer lexer;
 	private int documetOffset;
 	private int prevTokenOffset;
+	private int duplicateStartCount;
 
 	@Override
 	public int getTokenLength()
@@ -43,7 +44,6 @@ public class PHPScopeScanner implements ITokenScanner
 	{
 		try
 		{
-			int duplicateStartCount = 0;
 			String token = lexer.getNextToken();
 			int tokenOffset = getTokenOffset();
 			if (prevTokenOffset == tokenOffset)
@@ -52,15 +52,19 @@ public class PHPScopeScanner implements ITokenScanner
 				// token, so force a stop.
 				if (duplicateStartCount == 3)
 				{
+					duplicateStartCount = 0;
 					return Token.EOF;
 				}
 				duplicateStartCount++;
 			}
-			duplicateStartCount = 0;
-			prevTokenOffset = tokenOffset;
-			if (token == null)
+			else
 			{
-				return Token.EOF;
+				duplicateStartCount = 0;
+				prevTokenOffset = tokenOffset;
+				if (token == null)
+				{
+					return Token.EOF;
+				}
 			}
 			return new Token(token);
 		}
