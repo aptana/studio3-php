@@ -60,7 +60,14 @@ public final class ParsingUtils
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
 			{
-				return new PHPTokenType(data.toString());
+				if (data != null)
+				{
+					return new PHPTokenType(data.toString());
+				}
+				else 
+				{
+					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
+				}
 			}
 		};
 	}
@@ -86,7 +93,14 @@ public final class ParsingUtils
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
 			{
-				return new PHPTokenType(data.toString());
+				if (data != null)
+				{
+					return new PHPTokenType(data.toString());
+				}
+				else 
+				{
+					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
+				}
 			}
 		};
 	}
