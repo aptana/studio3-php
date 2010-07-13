@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.swing.text.Segment;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.ITypedRegion;
@@ -32,10 +33,12 @@ public class PHPScopeScanner implements ITokenScanner
 	private AbstractPhpLexer lexer;
 	private int regionOffset;
 	private int originalOffset;
+	private int originalLength;
 	private int prevTokenOffset;
 	private int duplicateStartCount;
 	private ITypedRegion[] partitions;
 	private char[] content;
+	private IDocument document;
 
 	@Override
 	public int getTokenLength()
@@ -80,6 +83,18 @@ public class PHPScopeScanner implements ITokenScanner
 			}
 			if (PHPRegionTypes.PHP_CLOSETAG.equals(token))
 			{
+				if (partitions == null)
+				{
+					try
+					{
+						partitions = TextUtilities.computePartitioning(document,
+								IDocumentExtension3.DEFAULT_PARTITIONING, originalOffset, originalLength, false);
+					}
+					catch (BadLocationException e)
+					{
+						PHPEditorPlugin.logError(e);
+					}
+				}
 				// Check if we have more regions of PHP after this close tag.
 				// If so, reset the lexer for the next region.
 				ITypedRegion nextPhpRegion = getNextPhpRegion();
@@ -109,6 +124,7 @@ public class PHPScopeScanner implements ITokenScanner
 		this.content = null;
 		this.partitions = null;
 		this.lexer = null;
+		this.document = null;
 	}
 
 	/**
@@ -138,7 +154,9 @@ public class PHPScopeScanner implements ITokenScanner
 	@Override
 	public void setRange(IDocument document, int offset, int length)
 	{
+		this.document = document;
 		this.originalOffset = offset;
+		this.originalLength = length;
 		this.regionOffset = this.originalOffset;
 		this.prevTokenOffset = -1;
 		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
@@ -149,9 +167,6 @@ public class PHPScopeScanner implements ITokenScanner
 		try
 		{
 			content = document.get(offset, length).toCharArray();
-			partitions = TextUtilities.computePartitioning(document, IDocumentExtension3.DEFAULT_PARTITIONING, offset,
-					length, false);
-
 			lexer = PhpLexerFactory.createLexer(new CharArrayReader(content), phpVersion);
 			// set initial lexer state - we use reflection here since we don't
 			// know the constant value of
