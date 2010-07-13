@@ -4,6 +4,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
@@ -53,41 +54,44 @@ public class PhpDocAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	{
 		if (command.text != null && command.length == 0)
 		{
-			int offset = command.offset;
-			try
+			if (TextUtilities.endsWith(document.getLegalLineDelimiters(), command.text) != -1)
 			{
-				ITypedRegion region = document.getPartition(offset);
-				if (region != null)
+				int offset = command.offset;
+				try
 				{
-					// We only need to ask for the lexemes in the comment and nothing more.
-					getLexemeProvider(document, offset, false);
-					Lexeme<PHPTokenType> lexeme = lexemeProvider.getFloorLexeme(offset);
-					String lexemeType = lexeme.getType().getType();
-					if (document.getLength() == offset
-							&& (lexemeType.equals(PHPRegionTypes.PHPDOC_COMMENT_END) || lexemeType
-									.equals(PHPRegionTypes.PHP_COMMENT_END))
-							&& document.get(offset - 2, 2).equals("*/")) //$NON-NLS-1$
+					ITypedRegion region = document.getPartition(offset);
+					if (region != null)
 					{
-						// get beginning of the multi-line comment or PHPDoc start.
-						// Since we just asked for the lexemes in the offset-region, the lexeme provider holds the open
-						// lexeme as the first one.
-						Lexeme<PHPTokenType> commentStartLexeme = lexemeProvider.getFirstLexeme();
-						// Just append the indentation of that line
-						String indent = getIndentationAtOffset(document, commentStartLexeme.getStartingOffset());
-						// perform the actual work
-						command.shiftsCaret = false;
-						command.caretOffset = command.offset + indent.length();
-						command.text += indent;
-						return;
+						// We only need to ask for the lexemes in the comment and nothing more.
+						getLexemeProvider(document, offset, false);
+						Lexeme<PHPTokenType> lexeme = lexemeProvider.getFloorLexeme(offset);
+						String lexemeType = lexeme.getType().getType();
+						if (document.getLength() == offset
+								&& (lexemeType.equals(PHPRegionTypes.PHPDOC_COMMENT_END) || lexemeType
+										.equals(PHPRegionTypes.PHP_COMMENT_END))
+								&& document.get(offset - 2, 2).equals("*/")) //$NON-NLS-1$
+						{
+							// get beginning of the multi-line comment or PHPDoc start.
+							// Since we just asked for the lexemes in the offset-region, the lexeme provider holds the
+							// open
+							// lexeme as the first one.
+							Lexeme<PHPTokenType> commentStartLexeme = lexemeProvider.getFirstLexeme();
+							// Just append the indentation of that line
+							String indent = getIndentationAtOffset(document, commentStartLexeme.getStartingOffset());
+							// perform the actual work
+							command.shiftsCaret = false;
+							command.caretOffset = command.offset + indent.length();
+							command.text += indent;
+							return;
+						}
 					}
 				}
+				catch (BadLocationException e)
+				{
+					PHPEplPlugin.logError(e);
+				}
+				indentDocAfterNewLine(document, command);
 			}
-			catch (BadLocationException e)
-			{
-				PHPEplPlugin.logError(e);
-			}
-			indentDocAfterNewLine(document, command);
-			return;
 		}
 	}
 
@@ -109,7 +113,9 @@ public class PhpDocAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		String lexemeType = lastLexeme.getType().getType();
 		StringBuilder builder = new StringBuilder(command.text);
 		builder.append(indent);
-		if (command.offset > firstLexeme.getEndingOffset() && (PHPRegionTypes.PHPDOC_COMMENT_END.equals(lexemeType) || PHPRegionTypes.PHP_COMMENT_END.equals(lexemeType)))
+		if (command.offset > firstLexeme.getEndingOffset()
+				&& (PHPRegionTypes.PHPDOC_COMMENT_END.equals(lexemeType) || PHPRegionTypes.PHP_COMMENT_END
+						.equals(lexemeType)))
 		{
 			// just add a star with the right indentation
 			builder.append(PHP_MULTILINE_COMMENT_MID);

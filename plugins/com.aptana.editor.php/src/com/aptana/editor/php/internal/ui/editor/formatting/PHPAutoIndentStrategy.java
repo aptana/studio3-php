@@ -66,23 +66,25 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			getLexemeProvider(document, command.offset, true);
 			customizeCloseCurly(document, command, lexemeProvider.getFloorLexeme(command.offset));
 		}
-		if (TextUtilities.endsWith(document.getLegalLineDelimiters(), command.text) != -1)
+		try
 		{
-			try
+			ITypedRegion region = document.getPartition(command.offset);
+			String regionType = region.getType();
+			if (IPHPConstants.PHP_DOC_COMMENT.equals(regionType)
+					|| IPHPConstants.PHP_MULTI_LINE_COMMENT.equals(regionType))
 			{
-				ITypedRegion region = document.getPartition(command.offset);
-				String regionType = region.getType();
-				if (IPHPConstants.PHP_DOC_COMMENT.equals(regionType)
-						|| IPHPConstants.PHP_MULTI_LINE_COMMENT.equals(regionType))
-				{
-					multiLineCommentStrategy.customizeDocumentCommand(document, command);
-					return;
-				}
+				multiLineCommentStrategy.customizeDocumentCommand(document, command);
+				return;
+			}
 
-				if (IPHPConstants.PHP_COMMENT.equals(regionType))
-				{
-					// commentStrategy.customizeDocumentCommand(document, command);
-				}
+			if (IPHPConstants.PHP_COMMENT.equals(regionType))
+			{
+				// TODO
+				// commentStrategy.customizeDocumentCommand(document, command);
+			}
+			if (TextUtilities.endsWith(document.getLegalLineDelimiters(), command.text) != -1)
+			{
+
 				getLexemeProvider(document, command.offset, true);
 				Lexeme<PHPTokenType> floorLexeme = lexemeProvider.getFloorLexeme(command.offset);
 				int commandLine = document.getLineOfOffset(command.offset);
@@ -163,27 +165,29 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					command.text += copyIntentationFromPreviousLine(document, command);
 					// command.text += getIndentationAtOffset(document, floorLexeme.getStartingOffset());
 				}
+
 			}
-			catch (BadLocationException e)
+			else
 			{
-				PHPEditorPlugin.logError(e);
-				return;
+				// deal with cases where we would like to reduce the indentation.
+				if (alternativeSyntaxAutoEditStrategy.isValidAutoInsertLocation(document, command))
+				{
+					alternativeSyntaxAutoEditStrategy.setLexemeProvider(getLexemeProvider(document, command.offset,
+							true));
+					alternativeSyntaxAutoEditStrategy.customizeDocumentCommand(document, command);
+				}
+				if (switchCaseAutoEditStrategy.isValidAutoInsertLocation(document, command))
+				{
+					switchCaseAutoEditStrategy.setLexemeProvider(getLexemeProvider(document, command.offset, true));
+					switchCaseAutoEditStrategy.customizeDocumentCommand(document, command);
+				}
+
 			}
 		}
-		else
+		catch (BadLocationException e)
 		{
-			// deal with cases where we would like to reduce the indentation.
-			if (alternativeSyntaxAutoEditStrategy.isValidAutoInsertLocation(document, command))
-			{
-				alternativeSyntaxAutoEditStrategy.setLexemeProvider(getLexemeProvider(document, command.offset, true));
-				alternativeSyntaxAutoEditStrategy.customizeDocumentCommand(document, command);
-			}
-			if (switchCaseAutoEditStrategy.isValidAutoInsertLocation(document, command))
-			{
-				switchCaseAutoEditStrategy.setLexemeProvider(getLexemeProvider(document, command.offset, true));
-				switchCaseAutoEditStrategy.customizeDocumentCommand(document, command);
-			}
-
+			PHPEditorPlugin.logError(e);
+			return;
 		}
 	}
 
