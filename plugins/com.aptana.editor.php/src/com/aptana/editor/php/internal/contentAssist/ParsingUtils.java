@@ -39,7 +39,7 @@ public final class ParsingUtils
 				{
 					return new PHPTokenType(data.toString());
 				}
-				else 
+				else
 				{
 					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
 				}
@@ -64,7 +64,7 @@ public final class ParsingUtils
 				{
 					return new PHPTokenType(data.toString());
 				}
-				else 
+				else
 				{
 					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
 				}
@@ -97,7 +97,7 @@ public final class ParsingUtils
 				{
 					return new PHPTokenType(data.toString());
 				}
-				else 
+				else
 				{
 					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
 				}
