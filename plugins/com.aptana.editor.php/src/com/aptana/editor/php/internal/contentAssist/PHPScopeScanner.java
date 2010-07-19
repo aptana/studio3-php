@@ -1,18 +1,26 @@
 package com.aptana.editor.php.internal.contentAssist;
 
+import java.io.CharArrayReader;
 import java.io.IOException;
-import java.io.StringReader;
 
+import javax.swing.text.Segment;
+
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension3;
+import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
 import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
+import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.ui.editor.PHPVersionDocumentManager;
 
 /**
@@ -23,9 +31,14 @@ import com.aptana.editor.php.internal.ui.editor.PHPVersionDocumentManager;
 public class PHPScopeScanner implements ITokenScanner
 {
 	private AbstractPhpLexer lexer;
-	private int documetOffset;
+	private int regionOffset;
+	private int originalOffset;
+	private int originalLength;
 	private int prevTokenOffset;
 	private int duplicateStartCount;
+	private ITypedRegion[] partitions;
+	private char[] content;
+	private IDocument document;
 
 	@Override
 	public int getTokenLength()
@@ -36,7 +49,7 @@ public class PHPScopeScanner implements ITokenScanner
 	@Override
 	public int getTokenOffset()
 	{
-		return documetOffset + lexer.getTokenStart();
+		return regionOffset + lexer.getTokenStart();
 	}
 
 	@Override
@@ -53,6 +66,7 @@ public class PHPScopeScanner implements ITokenScanner
 				if (duplicateStartCount == 3)
 				{
 					duplicateStartCount = 0;
+					dispose();
 					return Token.EOF;
 				}
 				duplicateStartCount++;
@@ -63,7 +77,33 @@ public class PHPScopeScanner implements ITokenScanner
 				prevTokenOffset = tokenOffset;
 				if (token == null)
 				{
+					dispose();
 					return Token.EOF;
+				}
+			}
+			if (PHPRegionTypes.PHP_CLOSETAG.equals(token))
+			{
+				if (partitions == null)
+				{
+					try
+					{
+						partitions = TextUtilities.computePartitioning(document,
+								IDocumentExtension3.DEFAULT_PARTITIONING, originalOffset, originalLength, false);
+					}
+					catch (BadLocationException e)
+					{
+						PHPEditorPlugin.logError(e);
+					}
+				}
+				// Check if we have more regions of PHP after this close tag.
+				// If so, reset the lexer for the next region.
+				ITypedRegion nextPhpRegion = getNextPhpRegion();
+				if (nextPhpRegion != null)
+				{
+					int nextRegionOffset = nextPhpRegion.getOffset() - this.originalOffset;
+					Segment segment = new Segment(content, nextRegionOffset, content.length - nextRegionOffset);
+					lexer.reset(segment);
+					regionOffset = nextPhpRegion.getOffset();
 				}
 			}
 			return new Token(token);
@@ -72,25 +112,62 @@ public class PHPScopeScanner implements ITokenScanner
 		{
 			PHPEditorPlugin.logError(e);
 		}
+		dispose();
 		return Token.EOF;
+	}
+
+	/*
+	 * Dispose this scanner.
+	 */
+	private void dispose()
+	{
+		this.content = null;
+		this.partitions = null;
+		this.lexer = null;
+		this.document = null;
+	}
+
+	/**
+	 * Returns the next PHP region located after the current token end position
+	 * 
+	 * @return The next PHP region, or null if non exists.
+	 */
+	protected ITypedRegion getNextPhpRegion()
+	{
+		if (partitions != null)
+		{
+			int offset = getTokenOffset() + getTokenLength();
+			for (ITypedRegion region : partitions)
+			{
+				if (region.getOffset() > offset)
+				{
+					if (region.getType().startsWith(IPHPConstants.DEFAULT))
+					{
+						return region;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public void setRange(IDocument document, int offset, int length)
 	{
-		this.documetOffset = offset;
+		this.document = document;
+		this.originalOffset = offset;
+		this.originalLength = length;
+		this.regionOffset = this.originalOffset;
 		this.prevTokenOffset = -1;
 		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
 		if (phpVersion == null)
 		{
 			phpVersion = PHPVersionProvider.getDefaultPHPVersion();
 		}
-		String content;
 		try
 		{
-			content = document.get(offset, length);
-
-			lexer = PhpLexerFactory.createLexer(new StringReader(content), phpVersion);
+			content = document.get(offset, length).toCharArray();
+			lexer = PhpLexerFactory.createLexer(new CharArrayReader(content), phpVersion);
 			// set initial lexer state - we use reflection here since we don't
 			// know the constant value of
 			// of this state in specific PHP version lexer

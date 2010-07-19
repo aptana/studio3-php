@@ -6,15 +6,15 @@
       provider-name="%providerName"
       plugin="com.aptana.branding">
 
-   <description url="http://www.example.com/description">
+   <description url="http://www.aptana.com">
       %description
    </description>
 
-   <copyright url="http://www.example.com/copyright">
+   <copyright url="%copyrightURL">
       %copyright
    </copyright>
 
-   <license url="http://www.example.com/license">
+   <license url="%licenseURL">
       %license
    </license>
 

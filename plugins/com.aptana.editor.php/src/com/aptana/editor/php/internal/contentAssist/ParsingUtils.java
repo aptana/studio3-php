@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.parsing.lexer.Range;
@@ -34,7 +35,14 @@ public final class ParsingUtils
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
 			{
-				return new PHPTokenType(data.toString());
+				if (data != null)
+				{
+					return new PHPTokenType(data.toString());
+				}
+				else
+				{
+					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
+				}
 			}
 		};
 	}
@@ -52,7 +60,14 @@ public final class ParsingUtils
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
 			{
-				return new PHPTokenType(data.toString());
+				if (data != null)
+				{
+					return new PHPTokenType(data.toString());
+				}
+				else
+				{
+					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
+				}
 			}
 		};
 	}
@@ -78,7 +93,14 @@ public final class ParsingUtils
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
 			{
-				return new PHPTokenType(data.toString());
+				if (data != null)
+				{
+					return new PHPTokenType(data.toString());
+				}
+				else
+				{
+					return new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN);
+				}
 			}
 		};
 	}
