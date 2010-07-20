@@ -46,6 +46,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			new EndOfLineRule("#", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
 			new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
 			new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
+			new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
+			new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
 			new SingleLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\'), //$NON-NLS-1$ //$NON-NLS-2$
 			new SingleLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\') }; //$NON-NLS-1$ //$NON-NLS-2$
 
