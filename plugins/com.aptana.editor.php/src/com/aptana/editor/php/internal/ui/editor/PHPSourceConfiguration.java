@@ -28,6 +28,7 @@ import com.aptana.editor.common.IPartitioningConfiguration;
 import com.aptana.editor.common.ISourceViewerConfiguration;
 import com.aptana.editor.common.scripting.IContentTypeTranslator;
 import com.aptana.editor.common.scripting.QualifiedContentType;
+import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
@@ -65,7 +66,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	static
 	{
 		IContentTypeTranslator c = CommonEditorPlugin.getDefault().getContentTypeTranslator();
-		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_PHP), new QualifiedContentType("source.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_PHP), new QualifiedContentType("source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_SINGLE), new QualifiedContentType(
 				"string.quoted.single.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_DOUBLE), new QualifiedContentType(
@@ -76,6 +77,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType(
 		        "comment.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.START_SWITCH_TAG), new QualifiedContentType("punctuation.section.embedded.begin.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType("punctuation.section.embedded.end.php")); //$NON-NLS-1$
 	}
 
 	public static PHPSourceConfiguration getDefault()
