@@ -29,8 +29,6 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_UNSET:
 			case T_ISSET:
 				// TODO - Shalom: Maybe move these to their own style
-			case T_FUNC_C:
-			case T_CLASS_C:
 			case T_START_HEREDOC:
 			case T_END_HEREDOC:
 				// case T_NAMESPACE:
@@ -76,6 +74,11 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_LOGICAL_OR:
 			case T_LOGICAL_XOR:
 				return scanner.getToken("keyword.operator.php"); //$NON-NLS-1$
+			case T_LINE:
+			case T_FILE:
+			case T_FUNC_C:
+			case T_CLASS_C:
+				return scanner.getToken("constant.language.php"); //$NON-NLS-1$
 			case T_VARIABLE:
 				if (THIS.equals(scanner.getSymbolValue(sym)))
 				{
@@ -89,6 +92,14 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				if (SELF.equals(tokenContent) || PARENT.equals(tokenContent))
 				{
 					return scanner.getToken("variable.language.php"); //$NON-NLS-1$
+				}
+				if (TRUE.equalsIgnoreCase(tokenContent) || FALSE.equalsIgnoreCase(tokenContent)
+						|| NULL.equalsIgnoreCase(tokenContent) || ON.equalsIgnoreCase(tokenContent)
+						|| OFF.equalsIgnoreCase(tokenContent) || YES.equalsIgnoreCase(tokenContent)
+						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
+						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
+				{
+					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
 				}
 			default:
 				return scanner.getToken("default.php"); //$NON-NLS-1$
