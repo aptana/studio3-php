@@ -19,7 +19,6 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 
@@ -47,10 +46,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			new EndOfLineRule("#", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
 			new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
 			new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new SingleLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\'), //$NON-NLS-1$ //$NON-NLS-2$
-			new SingleLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\') }; //$NON-NLS-1$ //$NON-NLS-2$
+			new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true), //$NON-NLS-1$ //$NON-NLS-2$
+			new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true) }; //$NON-NLS-1$ //$NON-NLS-2$
 
 	private PHPCodeScanner codeScanner;
 	private RuleBasedScanner singleLineCommentScanner;
