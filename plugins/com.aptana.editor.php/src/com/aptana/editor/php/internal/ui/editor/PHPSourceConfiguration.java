@@ -19,7 +19,6 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 
@@ -28,6 +27,7 @@ import com.aptana.editor.common.IPartitioningConfiguration;
 import com.aptana.editor.common.ISourceViewerConfiguration;
 import com.aptana.editor.common.scripting.IContentTypeTranslator;
 import com.aptana.editor.common.scripting.QualifiedContentType;
+import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
@@ -46,10 +46,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			new EndOfLineRule("#", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
 			new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
 			new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new SingleLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\'), //$NON-NLS-1$ //$NON-NLS-2$
-			new SingleLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\') }; //$NON-NLS-1$ //$NON-NLS-2$
+			new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true), //$NON-NLS-1$ //$NON-NLS-2$
+			new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true) }; //$NON-NLS-1$ //$NON-NLS-2$
 
 	private PHPCodeScanner codeScanner;
 	private RuleBasedScanner singleLineCommentScanner;
@@ -65,7 +63,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	static
 	{
 		IContentTypeTranslator c = CommonEditorPlugin.getDefault().getContentTypeTranslator();
-		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_PHP), new QualifiedContentType("source.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_PHP), new QualifiedContentType("source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_SINGLE), new QualifiedContentType(
 				"string.quoted.single.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_DOUBLE), new QualifiedContentType(
@@ -76,6 +74,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType(
 		        "comment.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.START_SWITCH_TAG), new QualifiedContentType("punctuation.section.embedded.begin.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType("punctuation.section.embedded.end.php")); //$NON-NLS-1$
 	}
 
 	public static PHPSourceConfiguration getDefault()
