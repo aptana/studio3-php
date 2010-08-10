@@ -30,9 +30,8 @@ import com.aptana.editor.common.scripting.QualifiedContentType;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
+import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
-import com.aptana.theme.IThemeManager;
-import com.aptana.theme.ThemePlugin;
 
 public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration
 {
@@ -139,34 +138,34 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	 */
 	public void setupPresentationReconciler(PresentationReconciler reconciler, ISourceViewer sourceViewer)
 	{
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getCodeScanner());
+		DefaultDamagerRepairer dr = new ThemeingDamagerRepairer(getCodeScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
 		reconciler.setDamager(dr, DEFAULT);
 		reconciler.setRepairer(dr, DEFAULT);
 
-		dr = new DefaultDamagerRepairer(getSingleLineCommentScanner());
+		dr = new ThemeingDamagerRepairer(getSingleLineCommentScanner());
 		reconciler.setDamager(dr, PHP_SINGLE_LINE_COMMENT);
 		reconciler.setRepairer(dr, PHP_SINGLE_LINE_COMMENT);
 
-		dr = new DefaultDamagerRepairer(getPhpDocCommentScanner());
+		dr = new ThemeingDamagerRepairer(getPhpDocCommentScanner());
 		reconciler.setDamager(dr, PHP_DOC_COMMENT);
 		reconciler.setRepairer(dr, PHP_DOC_COMMENT);
 		
-		dr = new DefaultDamagerRepairer(getMultiLineCommentScanner());
+		dr = new ThemeingDamagerRepairer(getMultiLineCommentScanner());
 		reconciler.setDamager(dr, PHP_MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, PHP_MULTI_LINE_COMMENT);
 
-		// dr = new DefaultDamagerRepairer(getCommandScanner());
+		// dr = new ThemeingDamagerRepairer(getCommandScanner());
 		// reconciler.setDamager(dr, PHPSourceConfiguration.COMMAND);
 		// reconciler.setRepairer(dr, PHPSourceConfiguration.COMMAND);
 
-		dr = new DefaultDamagerRepairer(getSingleQuotedStringScanner());
+		dr = new ThemeingDamagerRepairer(getSingleQuotedStringScanner());
 		reconciler.setDamager(dr, PHP_STRING_SINGLE);
 		reconciler.setRepairer(dr, PHP_STRING_SINGLE);
 
-		dr = new DefaultDamagerRepairer(getDoubleQuotedStringScanner());
+		dr = new ThemeingDamagerRepairer(getDoubleQuotedStringScanner());
 		reconciler.setDamager(dr, PHP_STRING_DOUBLE);
 		reconciler.setRepairer(dr, PHP_STRING_DOUBLE);
 	}
@@ -232,11 +231,6 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	protected IToken getToken(String tokenName)
 	{
-		return getThemeManager().getToken(tokenName);
-	}
-
-	protected IThemeManager getThemeManager()
-	{
-		return ThemePlugin.getDefault().getThemeManager();
+		return new Token(tokenName);
 	}
 }
