@@ -87,6 +87,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 
 				getLexemeProvider(document, command.offset, true);
 				Lexeme<PHPTokenType> floorLexeme = lexemeProvider.getFloorLexeme(command.offset);
+				if (floorLexeme == null || floorLexeme.getType() == null)
+				{
+					return;
+				}
 				int commandLine = document.getLineOfOffset(command.offset);
 				if (PHPRegionTypes.WHITESPACE.equals(floorLexeme.getType().getType())
 						&& floorLexeme.getStartingOffset() > region.getOffset())
