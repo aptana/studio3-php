@@ -29,6 +29,7 @@ import com.aptana.editor.common.scripting.IContentTypeTranslator;
 import com.aptana.editor.common.scripting.QualifiedContentType;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
+import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
@@ -43,10 +44,10 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	private IPredicateRule[] partitioningRules = new IPredicateRule[] {
 			new EndOfLineRule("//", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
 			new EndOfLineRule("#", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
-			new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true), //$NON-NLS-1$ //$NON-NLS-2$
-			new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true), //$NON-NLS-1$ //$NON-NLS-2$
-			new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true) }; //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true)) }; //$NON-NLS-1$ //$NON-NLS-2$
 
 	private PHPCodeScanner codeScanner;
 	private RuleBasedScanner singleLineCommentScanner;
