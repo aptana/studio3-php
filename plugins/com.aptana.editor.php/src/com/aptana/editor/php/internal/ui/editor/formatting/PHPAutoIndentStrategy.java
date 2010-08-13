@@ -87,6 +87,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 
 				getLexemeProvider(document, command.offset, true);
 				Lexeme<PHPTokenType> floorLexeme = lexemeProvider.getFloorLexeme(command.offset);
+				if (floorLexeme == null || floorLexeme.getType() == null)
+				{
+					return;
+				}
 				int commandLine = document.getLineOfOffset(command.offset);
 				if (PHPRegionTypes.WHITESPACE.equals(floorLexeme.getType().getType())
 						&& floorLexeme.getStartingOffset() > region.getOffset())
@@ -105,7 +109,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				{
 					// First, check for a case where we have a 'one-line-block' such as 'if' or 'while' without
 					// any curly brackets of colon.
-					if (lexemeText.equals(";")) //$NON-NLS-1$
+					if (lexemeText.equals(":")) //$NON-NLS-1$
 					{
 						String indent = indentAfterOneLineBlock(floorLexeme.getStartingOffset(), document);
 						if (indent != null)
@@ -123,14 +127,20 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					{
 						return;
 					}
-					// Check if it's one of our supported types. If so, indent.
-					String type = firstLexemeInLine.getType().getType();
-					String indent = configuration.getIndent();
+
 					indentAfterNewLine(document, command);
-					if (BLOCK_TYPES.contains(type))
-					{
-						command.text += indent;
-					}
+
+					// This will cause a line after a 'block-type' to be indented, even when the
+					// type has no open bracket. For now, it's disabled. If we would like to have it enabled, we should
+					// consider de-denting the line back if the user start typing a curly-open on that line.
+
+					// Check if it's one of our supported types. If so, indent.
+					// String type = firstLexemeInLine.getType().getType();
+					// String indent = configuration.getIndent();
+					// if (BLOCK_TYPES.contains(type))
+					// {
+					// command.text += indent;
+					// }
 					return;
 				}
 				if (lexemeText.equals("else") || lexemeText.equals("elseif")) //$NON-NLS-1$ //$NON-NLS-2$
@@ -213,7 +223,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			Lexeme<PHPTokenType> firstLexemeInLine = null;
 			do
 			{
-				firstLexemeInLine = getFirstLexemeInNonEmptyLine(document, lexemeProvider, lineInfo.getOffset());
+				firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, lineInfo.getOffset());
 				// Check if the line of lexeme ends with with a curly bracket or a colon.
 				// If so, we have a block that span more then one line.
 				lineInfo = document.getLineInformationOfOffset(firstLexemeInLine.getStartingOffset());
@@ -225,6 +235,11 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$ //$NON-NLS-2$
 					{
 						// it's a block, so return what we have
+						if (indent == null)
+						{
+							return configuration.getIndent()
+									+ getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
+						}
 						return indent;
 					}
 					indent = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());

@@ -14,8 +14,6 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.IPHPTokenMapper;
 import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.PHPTokenMapperFactory;
-import com.aptana.theme.IThemeManager;
-import com.aptana.theme.ThemePlugin;
 
 /**
  * Hook the php token scanner and the parser to tokenize
@@ -109,12 +107,7 @@ public class PHPCodeScanner implements ITokenScanner
 
 	public IToken getToken(String tokenName)
 	{
-		return getThemeManager().getToken(tokenName);
-	}
-
-	protected IThemeManager getThemeManager()
-	{
-		return ThemePlugin.getDefault().getThemeManager();
+		return new Token(tokenName);
 	}
 
 	public int peek()
