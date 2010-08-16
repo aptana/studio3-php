@@ -111,7 +111,7 @@
             category="com.aptana.ui.wizards.category"
             class="com.aptana.editor.php.internal.ui.wizard.NewPHPProjectWizard"
             finalPerspective="com.aptana.ui.WebPerspective"
-            icon="icons/full/obj16/php.gif"
+            icon="icons/full/obj16/php_wiz.png"
             id="com.aptana.editor.php.NewPHPProjectWizard"
             name="%new-project-wizard.name"
             preferredPerspectives="com.aptana.ui.WebPerspective"

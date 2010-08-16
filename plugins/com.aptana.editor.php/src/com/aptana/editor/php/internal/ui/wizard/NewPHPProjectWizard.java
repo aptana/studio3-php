@@ -57,7 +57,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	public static final String ID = "com.aptana.editor.php.NewPHPProjectWizard"; //$NON-NLS-1$
-	private static final String PHP_PROJ_IMAGE_PATH = "/icons/full/wizban/new_project.gif"; //$NON-NLS-1$
+	private static final String PHP_PROJ_IMAGE_PATH = "/icons/full/wizban/new_project.png"; //$NON-NLS-1$
 
 	private IFile file;
 	private IFile initialPhpFile;
