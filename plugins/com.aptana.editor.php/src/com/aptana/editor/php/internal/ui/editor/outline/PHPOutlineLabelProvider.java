@@ -23,73 +23,73 @@ public class PHPOutlineLabelProvider extends LabelProvider
 	/**
 	 * PROPERTY_ICON
 	 */
-	public static final Image PROPERTY_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_property.gif"); //$NON-NLS-1$
+	public static final Image PROPERTY_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_property.png"); //$NON-NLS-1$
 
 	/**
 	 * FUNCTION_ICON
 	 */
-	public static final Image FUNCTION_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_function.gif"); //$NON-NLS-1$
+	public static final Image FUNCTION_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_function.png"); //$NON-NLS-1$
 
 	/**
 	 * CLASS_ICON
 	 */
-	public static final Image CLASS_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_class.gif"); //$NON-NLS-1$
+	public static final Image CLASS_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_class.png"); //$NON-NLS-1$
 
 	/**
 	 * INTERFACE_ICON
 	 */
-	public static final Image INTERFACE_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_interface.gif"); //$NON-NLS-1$
+	public static final Image INTERFACE_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_interface.png"); //$NON-NLS-1$
 
 	/**
 	 * PRIVATE_METHOD_ICON
 	 */
-	public static final Image PRIVATE_METHOD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/methpri_obj.gif"); //$NON-NLS-1$
+	public static final Image PRIVATE_METHOD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/methpri_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * PROTECTED_METHOD_ICON
 	 */
-	public static final Image PROTECTED_METHOD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/methpro_obj.gif"); //$NON-NLS-1$
+	public static final Image PROTECTED_METHOD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/methpro_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * PUBLIC_METHOD_ICON
 	 */
-	public static final Image PUBLIC_METHOD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/methpub_obj.gif"); //$NON-NLS-1$
+	public static final Image PUBLIC_METHOD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/methpub_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * PRIVATE_FIELD_ICON
 	 */
-	public static final Image PRIVATE_FIELD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/field_private_obj.gif"); //$NON-NLS-1$
+	public static final Image PRIVATE_FIELD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/field_private_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * PROTECTED_FIELD_ICON
 	 */
 	public static final Image PROTECTED_FIELD_ICON = PHPEditorPlugin
-			.getImage("icons/full/obj16/field_protected_obj.gif"); //$NON-NLS-1$
+			.getImage("icons/full/obj16/field_protected_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * DEFAULT_FIELD_ICON
 	 */
-	public static final Image DEFAULT_FIELD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/field_default_obj.gif"); //$NON-NLS-1$
+	public static final Image DEFAULT_FIELD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/field_default_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * PUBLIC_FIELD_ICON
 	 */
-	public static final Image PUBLIC_FIELD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/field_public_obj.gif"); //$NON-NLS-1$
+	public static final Image PUBLIC_FIELD_ICON = PHPEditorPlugin.getImage("icons/full/obj16/field_public_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * LOCALVARIABLE_ICON
 	 */
-	public static final Image LOCALVARIABLE_ICON = PHPEditorPlugin.getImage("icons/full/obj16/localvariable_obj.gif"); //$NON-NLS-1$
+	public static final Image LOCALVARIABLE_ICON = PHPEditorPlugin.getImage("icons/full/obj16/localvariable_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * LOCALVARIABLE_ICON
 	 */
-	public static final Image NAMESPACE_ICON = PHPEditorPlugin.getImage("icons/full/obj16/namespace_obj.gif"); //$NON-NLS-1$
+	public static final Image NAMESPACE_ICON = PHPEditorPlugin.getImage("icons/full/obj16/namespace_obj.png"); //$NON-NLS-1$
 
 	/**
 	 * IMPORT_ICON
 	 */
-	public static final Image IMPORT_ICON = PHPEditorPlugin.getImage("icons/full/obj16/imp_obj.gif"); //$NON-NLS-1$
+	public static final Image IMPORT_ICON = PHPEditorPlugin.getImage("icons/full/obj16/imp_obj.png"); //$NON-NLS-1$
 
 	private static final Image BLOCK_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php.gif"); //$NON-NLS-1$
 
