@@ -1,6 +1,7 @@
 package com.aptana.editor.php.internal.ui.editor;
 
 import static com.aptana.editor.php.internal.core.IPHPConstants.COMMAND;
+import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_HTML_PHP;
 import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_PHP;
 import static com.aptana.editor.php.internal.core.IPHPConstants.DEFAULT;
 import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_DOC_COMMENT;
@@ -63,7 +64,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	static
 	{
 		IContentTypeTranslator c = CommonEditorPlugin.getDefault().getContentTypeTranslator();
-		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_PHP), new QualifiedContentType("source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CONTENT_TYPE_PHP), new QualifiedContentType("source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_SINGLE), new QualifiedContentType(
 				"string.quoted.single.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_DOUBLE), new QualifiedContentType(
