@@ -2880,11 +2880,14 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				if (currentClass != null)
 				{
 					Set<Object> dispatcherTypes = new HashSet<Object>(1);
-					dispatcherTypes.add(ElementsIndexingUtils.getFirstNameInPath(currentClass.getClassEntry()
-							.getEntryPath()));
-					VariablePathReference reference = new VariablePathReference(dispatcherTypes, remainingPath);
-					result = new HashSet<Object>(1);
-					result.add(reference);
+					IElementEntry classEntry = currentClass.getClassEntry();
+					if (classEntry != null)
+					{
+						dispatcherTypes.add(ElementsIndexingUtils.getFirstNameInPath(classEntry.getEntryPath()));
+						VariablePathReference reference = new VariablePathReference(dispatcherTypes, remainingPath);
+						result = new HashSet<Object>(1);
+						result.add(reference);
+					}
 				}
 				else
 				{
