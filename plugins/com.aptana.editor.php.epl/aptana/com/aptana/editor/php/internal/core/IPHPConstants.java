@@ -4,6 +4,14 @@ import org.eclipse.jface.text.IDocument;
 
 public interface IPHPConstants
 {
+	/**
+	 * PHP document type
+	 */
+	public String CONTENT_TYPE_HTML_PHP = "com.aptana.contenttype.html.php"; //$NON-NLS-1$
+	
+	/**
+	 * PHP partitions type
+	 */
 	public String CONTENT_TYPE_PHP = "com.aptana.contenttype.php"; //$NON-NLS-1$
 
 	/**

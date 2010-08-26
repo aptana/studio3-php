@@ -361,7 +361,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			{
 				int curlyOpenOffset = getPervPairMatchOffset("{", curlyLexeme.getStartingOffset() - 1, document); //$NON-NLS-1$
 				Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, curlyOpenOffset);
-				command.text += getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
+				if (firstLexemeInLine != null)
+				{
+					command.text += getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
+				}
 			}
 			else
 			{
@@ -385,8 +388,11 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						{
 							Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider,
 									curlyOpenOffset);
-							command.text = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset())
-									+ command.text;
+							if (firstLexemeInLine != null)
+							{
+								command.text = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset())
+										+ command.text;
+							}
 						}
 					}
 					else
@@ -403,8 +409,11 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						{
 							Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider,
 									curlyOpenOffset);
-							command.text = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset())
-									+ command.text;
+							if (firstLexemeInLine != null)
+							{
+								command.text = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset())
+										+ command.text;
+							}
 						}
 					}
 				}

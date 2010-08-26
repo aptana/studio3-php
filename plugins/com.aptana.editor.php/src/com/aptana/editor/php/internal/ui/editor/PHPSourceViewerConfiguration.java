@@ -58,7 +58,7 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	@Override
 	protected String getTopContentType()
 	{
-		return IPHPConstants.CONTENT_TYPE_PHP;
+		return IPHPConstants.CONTENT_TYPE_HTML_PHP;
 	}
 
 	/*

@@ -63,7 +63,7 @@ public class LocalModule extends AbstractBuildPathResource implements IModule
 	 */
 	public LocalModule(IFile file, IBuildPath buildPath)
 	{
-		super(buildPath, file.getFullPath() == null ? null : file.getLocation().toOSString());
+		super(buildPath, (file.getFullPath() == null || file.getLocation() == null) ? null : file.getLocation().toOSString());
 		this.file = file;
 	}
 

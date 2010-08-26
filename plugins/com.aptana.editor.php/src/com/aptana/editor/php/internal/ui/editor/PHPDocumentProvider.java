@@ -24,7 +24,7 @@ public class PHPDocumentProvider extends CompositeDocumentProvider implements IP
 
 	protected PHPDocumentProvider()
 	{
-		super(IPHPConstants.CONTENT_TYPE_PHP, HTMLSourceConfiguration.getDefault(),
+		super(IPHPConstants.CONTENT_TYPE_HTML_PHP, HTMLSourceConfiguration.getDefault(),
 				PHPSourceConfiguration.getDefault(), PHPPartitionerSwitchStrategy.getDefault());
 	}
 
