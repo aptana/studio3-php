@@ -1000,7 +1000,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (clazz instanceof ClassPHPEntryValue)
 			{
 				String superClassname = ((ClassPHPEntryValue) clazz).getSuperClassname();
-				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, aliases, namespace);
+				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, aliases, namespace, false);
 				if (superClassEntry != null && superClassEntry.size() == 1)
 				{
 					result.addAll(superClassEntry);
@@ -1011,7 +1011,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else
 		{
-			return getClassEntries(index, left, module, aliases, namespace);
+			return getClassEntries(index, left, module, aliases, namespace, true);
 		}
 	}
 
@@ -1053,10 +1053,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @param clazz
 	 *            - class name.
 	 * @param namespace
+	 * @param isStaticDereferencing 
 	 * @return variable entries.
 	 */
 	private static Set<IElementEntry> getClassEntries(IElementsIndex index, String clazz, IModule module,
-			Map<String, String> aliases, String namespace)
+			Map<String, String> aliases, String namespace, boolean isStaticDereferencing)
 	{
 		if (clazz != null && clazz.startsWith(GLOBAL_NAMESPACE))
 		{
@@ -1073,7 +1074,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		for (IElementEntry entry : leftEntries)
 		{
-			if (module == null || module.equals(entry.getModule()))
+			if (isStaticDereferencing || module == null || module.equals(entry.getModule()))
 			{
 				ClassPHPEntryValue value = (ClassPHPEntryValue) entry.getValue();
 				if (ContentAssistUtils.isInNamespace(value, namespace))
@@ -1267,7 +1268,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else
 			{
-				return getClassEntries(index, left, module, aliases, namespace);
+				return getClassEntries(index, left, module, aliases, namespace, false);
 			}
 		}
 	}
