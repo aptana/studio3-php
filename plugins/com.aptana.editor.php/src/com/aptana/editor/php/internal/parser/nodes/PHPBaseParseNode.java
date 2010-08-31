@@ -184,6 +184,16 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 		return this.nameNode;
 	}
 
+	@Override
+	public String getText()
+	{
+		if (this.nameNode == null)
+		{
+			return super.getText();
+		}
+		return this.nameNode.getName();
+	}
+
 	/**
 	 * Override the default ParseBaseNode implementation to add a name check.
 	 */
