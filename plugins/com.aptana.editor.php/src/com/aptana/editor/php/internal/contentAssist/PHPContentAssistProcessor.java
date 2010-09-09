@@ -2349,7 +2349,9 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					Set<Object> types = m.getTypes();
 					if (types.size() == 1)
 					{
-						if (types.iterator().next().toString().startsWith(IPHPIndexConstants.LAMBDA_TYPE))
+						Object[] array = types.toArray(new Object[1]);
+						if (array[0] != null && array[0].toString() != null)
+						if (array[0].toString().startsWith(IPHPIndexConstants.LAMBDA_TYPE))
 						{
 							return getFunctionEntryEnhancement(elementEntry, proposalContent);
 						}
