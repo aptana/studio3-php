@@ -3315,7 +3315,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			VariablePHPEntryValue entryValue = new VariablePHPEntryValue(modifier, false, false, true, fieldTypes, pos,
 					currentNamespace);
 
-			if (currentClass != null)
+			if (currentClass != null && currentClass.getClassEntry() != null)
 			{
 				String entryPath = currentClass.getClassEntry().getEntryPath() + IElementsIndex.DELIMITER;
 
