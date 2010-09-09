@@ -5,6 +5,7 @@ import java_cup.runtime.Symbol;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.php.internal.core.ast.scanner.php4.ParserConstants;
 
+import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
 public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
@@ -100,6 +101,22 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
 					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+				}
+				PHPBuiltins builtins = PHPBuiltins.getInstance();
+				if (builtins != null)
+				{
+					if (builtins.isBuiltinFunction(tokenContent))
+					{
+						return scanner.getToken("support.function"); //$NON-NLS-1$
+					}
+					else if (builtins.isBuiltinClass(tokenContent))
+					{
+						return scanner.getToken("support.class"); //$NON-NLS-1$
+					}
+					else if (builtins.isBuiltinConstant(tokenContent))
+					{
+						return scanner.getToken("support.constant"); //$NON-NLS-1$
+					}
 				}
 			default:
 				return scanner.getToken("default.php"); //$NON-NLS-1$

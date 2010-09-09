@@ -69,7 +69,8 @@ public final class PHPBuiltins
 	// Holds a function name map to the resource name that contains it
 	private HashMap<String, String> builtInFunctions = new HashMap<String, String>();
 	// Holds a Class/Constant name map to the resource name that contains it
-	private HashMap<String, String> builtInClassesAndConstants = new HashMap<String, String>();
+	private HashMap<String, String> builtInClasses = new HashMap<String, String>();
+	private HashMap<String, String> builtInConstants = new HashMap<String, String>();
 
 	private TreeSet<Object> builtins;
 	private boolean initializing;
@@ -338,7 +339,17 @@ public final class PHPBuiltins
 
 	public boolean isBuiltinClassOrConstant(String name)
 	{
-		return builtInClassesAndConstants.containsKey(name);
+		return builtInClasses.containsKey(name) || builtInConstants.containsKey(name);
+	}
+
+	public boolean isBuiltinConstant(String name)
+	{
+		return builtInConstants.containsKey(name);
+	}
+
+	public boolean isBuiltinClass(String name)
+	{
+		return builtInClasses.containsKey(name);
 	}
 
 	/**
@@ -360,7 +371,11 @@ public final class PHPBuiltins
 		}
 		else if (isBuiltinClassOrConstant(entry))
 		{
-			path = builtInClassesAndConstants.get(entry);
+			path = builtInClasses.get(entry);
+			if (path == null)
+			{
+				path = builtInConstants.get(entry);
+			}
 		}
 		if (path != null)
 		{
@@ -433,7 +448,7 @@ public final class PHPBuiltins
 			 * (!(obj instanceof PHPParseNode)) { continue; } int typeIndex = ((PHPParseNode)obj).getTypeIndex(); if
 			 * (typeIndex == PHPParseNode.KEYWORD_NODE || typeIndex == PHPParseNode.CONST_NODE || obj instanceof
 			 * PHPConstantNode) { String nodeName = ((PHPParseNode)obj).getNodeName(); String string =
-			 * builtInClassesAndConstants.get(nodeName); if (string != null && (string.endsWith("basic.php") ||
+			 * builtInClasses.get(nodeName); if (string != null && (string.endsWith("basic.php") ||
 			 * string.endsWith("standard.php"))) { System.out.println("<string case-insensitive=\"true\">"
 			 * +nodeName+"</string>"); count++; } } }
 			 */
@@ -599,13 +614,13 @@ public final class PHPBuiltins
 	{
 		if (child instanceof PHPClassParseNode)
 		{
-			builtInClassesAndConstants.put(child.getNameNode().getName(), url.toString().intern());
+			builtInClasses.put(child.getNameNode().getName(), url.toString().intern());
 			IParseNode[] children = child.getChildren();
 			for (IParseNode node : children)
 			{
 				if (node instanceof PHPFunctionParseNode || node instanceof PHPVariableParseNode)
 				{
-					builtInClassesAndConstants.put(child.getNameNode().getName() + IElementsIndex.DELIMITER
+					builtInClasses.put(child.getNameNode().getName() + IElementsIndex.DELIMITER
 							+ node.getNameNode().getName(), url.toString().intern());
 				}
 			}
@@ -632,7 +647,7 @@ public final class PHPBuiltins
 			builtins.add(node);
 			// if (docsFromBuiltinSource)
 			// {
-			builtInClassesAndConstants.put(child.getNameNode().getName(), url.toString().intern());
+			builtInConstants.put(child.getNameNode().getName(), url.toString().intern());
 			// }
 		}
 	}
@@ -704,7 +719,8 @@ public final class PHPBuiltins
 		this.php5Names = new HashSet<Object>();
 		this.php53Names = new HashSet<Object>();
 		this.builtInFunctions = new HashMap<String, String>();
-		this.builtInClassesAndConstants = new HashMap<String, String>();
+		this.builtInClasses = new HashMap<String, String>();
+		this.builtInConstants = new HashMap<String, String>();
 
 		if (monitor == null)
 		{
