@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -42,20 +43,21 @@ public class ContentAssistCollectors
 	 *            - types to collect variables from.
 	 * @param exactMatch
 	 *            - whether to check for exact match of the variable name.
+	 * @param aliases
 	 * @param namespace
 	 * @param filter
 	 *            - filter to apply.
 	 * @return types
 	 */
 	public static Set<IElementEntry> collectVariableEntries(IElementsIndex index, String varName, Set<String> types,
-			boolean exactMatch, final String namespace)
+			boolean exactMatch, Map<String, String> aliases, final String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// searching for variables
 		String rightVarName = varName.substring(1);
 		for (String leftType : types)
 		{
-			String typeName = processTypeName(namespace, leftType);
+			String typeName = processTypeName(aliases, namespace, leftType);
 			String entryPath = typeName + rightVarName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)
@@ -175,6 +177,7 @@ public class ContentAssistCollectors
 	 *            - types to collect variables from.
 	 * @param exactMatch
 	 *            - whether to check for exact match of the variable name.
+	 * @param aliases
 	 * @param filter
 	 *            - filter to apply.
 	 * @param namespace
@@ -182,14 +185,14 @@ public class ContentAssistCollectors
 	 * @return types
 	 */
 	public static Set<IElementEntry> collectConstEntries(IElementsIndex index, String varName, Set<String> types,
-			boolean exactMatch, String namespace)
+			boolean exactMatch, Map<String, String> aliases, String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// searching for variables
 		String rightVarName = varName;
 		for (String leftType : types)
 		{
-			String typeName = processTypeName(namespace, leftType);
+			String typeName = processTypeName(aliases, namespace, leftType);
 			String entryPath = typeName + rightVarName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)
@@ -213,18 +216,27 @@ public class ContentAssistCollectors
 	/**
 	 * Prepare the type name with the namespace.
 	 * 
+	 * @param aliases
 	 * @param namespace
 	 *            The namespace (should be without the separaotr at the beginning)
 	 * @param typeName
 	 *            The type that we want to append the namespace with
 	 * @return A processed type name with a namespace prefix, in case a valid namespace was passed.
 	 */
-	private static String processTypeName(String namespace, String typeName)
+	private static String processTypeName(Map<String, String> aliases, String namespace, String typeName)
 	{
 		String result = typeName;
 		if (namespace != null)
 		{
-			if (!typeName.startsWith(namespace) && !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
+			if (typeName.startsWith(namespace + '\\'))
+			{
+				String type = typeName.substring(namespace.length() + 1);
+				if (aliases.containsValue(type))
+				{
+					result = type;
+				}
+			}
+			else if (!aliases.containsValue(typeName) && !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
 			{
 				result = namespace + PHPContentAssistProcessor.GLOBAL_NAMESPACE + typeName;
 			}
@@ -243,11 +255,12 @@ public class ContentAssistCollectors
 	 *            - types to collect functions (methods) from.
 	 * @param exactMatch
 	 *            - whether to check for exact match of the function name.
+	 * @param aliases
 	 * @param namespace
 	 * @return types
 	 */
 	public static Set<IElementEntry> collectFunctionEntries(IElementsIndex index, String funcName, Set<String> types,
-			boolean exactMatch, String namespace)
+			boolean exactMatch, Map<String, String> aliases, String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 
@@ -255,7 +268,7 @@ public class ContentAssistCollectors
 		String rightMethodName = funcName;
 		for (String leftType : types)
 		{
-			String typeName = processTypeName(namespace, leftType);
+			String typeName = processTypeName(aliases, namespace, leftType);
 			String entryPath = typeName + rightMethodName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)

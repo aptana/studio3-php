@@ -1002,10 +1002,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			value.setStartOffset(classDeclaration.getStart());
 			value.setEndOffset(classDeclaration.getEnd());
 
-			IElementEntry currentClassEntry = reporter.reportEntry(IPHPIndexConstants.CLASS_CATEGORY, classDeclaration
-					.getName().getName(), value, module);
+			String className = classDeclaration
+					.getName().getName();
+			IElementEntry currentClassEntry = reporter.reportEntry(IPHPIndexConstants.CLASS_CATEGORY, className, value, module);
 			currentClass = new ClassScopeInfo(currentClassEntry);
-
 			return true;
 		}
 
