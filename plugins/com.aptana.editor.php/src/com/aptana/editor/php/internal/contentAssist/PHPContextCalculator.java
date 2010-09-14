@@ -656,7 +656,8 @@ public class PHPContextCalculator
 
 			public boolean acceptElementEntry(IElementEntry element)
 			{
-				return element.getValue() instanceof NamespacePHPEntryValue;
+				Object value = element.getValue();
+				return value instanceof NamespacePHPEntryValue || value instanceof ClassPHPEntryValue ;
 			}
 		};
 		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.NAMESPACE_CATEGORY });

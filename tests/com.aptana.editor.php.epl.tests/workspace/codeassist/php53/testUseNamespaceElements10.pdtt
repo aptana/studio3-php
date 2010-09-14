@@ -1,0 +1,30 @@
+--TEST--
+Use statement test.
+Completion of a method for a class that was defined as 'used'
+--FILE--
+<?php
+
+namespace Test\NamespaceTest;
+
+class Test
+{
+    public function testMe()
+    {
+        return $this;
+    }
+}
+
+namespace Test2\Namespace2Test;
+use Test\NamespaceTest\Test;
+
+class TestClass
+{
+    public function test2()
+    {
+        $x = new Test();
+        $x->|
+    }
+}
+?>
+--EXPECT--
+method(testMe)

@@ -1,0 +1,25 @@
+--TEST--
+Use statement test.
+Test the CA when source variable is defined at a different namespace and is referenced 
+using the 'as' keyword
+--FILE--
+<?php
+
+namespace Test\NamespaceTest;
+
+class Test
+{
+    public function testMe()
+    {
+        return $this;
+    }
+}
+
+namespace Test2\Namespace2Test;
+use Test\NamespaceTest\Test as SomeTest;
+
+$t = new SomeTest();
+$t->|
+?>
+--EXPECT--
+method(testMe)

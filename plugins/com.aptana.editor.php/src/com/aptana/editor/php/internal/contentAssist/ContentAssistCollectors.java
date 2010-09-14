@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
@@ -228,7 +229,7 @@ public class ContentAssistCollectors
 		String result = typeName;
 		if (namespace != null)
 		{
-			if (typeName.startsWith(namespace + '\\'))
+			if (typeName.startsWith(namespace + PHPContentAssistProcessor.GLOBAL_NAMESPACE))
 			{
 				String type = typeName.substring(namespace.length() + 1);
 				if (aliases.containsValue(type))
@@ -236,7 +237,7 @@ public class ContentAssistCollectors
 					result = type;
 				}
 			}
-			else if (!aliases.containsValue(typeName) && !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
+			else if (!aliases.containsValue(typeName) && !typeName.contains(PHPContentAssistProcessor.GLOBAL_NAMESPACE) && !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
 			{
 				result = namespace + PHPContentAssistProcessor.GLOBAL_NAMESPACE + typeName;
 			}

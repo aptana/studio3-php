@@ -12,6 +12,7 @@ package com.aptana.editor.php.internal.contentAssist;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.EXTENDS_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.IMPLEMENTS_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NEW_PROPOSAL_CONTEXT_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NAMESPACE_PROPOSAL_CONTEXT_TYPE;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -475,8 +476,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						globalImports, getModule(), proposeBuiltins, true);
 			}
 
-			return simpleIdentifierCompletion(start, content, identifier.toLowerCase(),
-					reportedScopeUnderClassOrFunction, globalImports, getModule(), proposeBuiltins, true, false);
+			return simpleIdentifierCompletion(start, content, identifier, reportedScopeUnderClassOrFunction,
+					globalImports, getModule(), proposeBuiltins, true, false);
 		}
 
 		return EMPTY_PROPOSAL;
@@ -1526,7 +1527,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// "Names that contain a backslash but do not begin with a backslash like my\name can be resolved in 2 different
 		// ways. If there is an import statement that aliases another name to my, then the import alias is applied to
 		// the my in my\name.Otherwise, the current namespace name is prepended to my\name."
-		if (!name.startsWith(GLOBAL_NAMESPACE))
+		if (proposalContext != null && NAMESPACE_PROPOSAL_CONTEXT_TYPE.equals(proposalContext.getType()))
+		{
+			// Do nothing
+			// We keep the name as it is, since we are in a 'use' statement.
+		}
+		else if (!name.startsWith(GLOBAL_NAMESPACE))
 		{
 			name = getNameByAlias(name, index, namespace, aliases, namespaceEntries);
 		}
@@ -1547,7 +1553,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 			}
 		}
-
 		List<IElementEntry> entries;
 		if (variableCompletion
 				&& (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.VAR_CATEGORY)))
@@ -1622,6 +1627,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						separatorIndex = nsLookup.lastIndexOf(GLOBAL_NAMESPACE);
 					}
 					entries.addAll(collectedNs);
+					if (proposalContext != null && NAMESPACE_PROPOSAL_CONTEXT_TYPE.equals(proposalContext.getType()))
+					{
+						// When we are dealing with a 'use' statement, collect and display the Classes that exists under
+						// the 'used' namespace.
+						entries.addAll(index.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, name));
+					}
+
 				}
 			}
 
@@ -1939,7 +1951,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				if (entry.getValue() instanceof NamespacePHPEntryValue)
 				{
 					name = origName;
-					lowerCase = origName;
+					lowerCase = origName.toLowerCase();
 
 					if (lowerCase.startsWith(GLOBAL_NAMESPACE))
 					{
@@ -1979,7 +1991,31 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						}
 					}
 				}
-
+				else if (currentContext != null && !usedNames.contains(firstName)
+						&& NAMESPACE_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType())
+						&& entry.getValue() instanceof ClassPHPEntryValue)
+				{
+					ClassPHPEntryValue classEntry = (ClassPHPEntryValue) entry.getValue();
+					String classNamespace = classEntry.getNameSpace();
+					if (classNamespace != null && classNamespace.length() > 0)
+					{
+						int prefixIndex = origName.indexOf(classNamespace);
+						if (prefixIndex > -1)
+						{
+							// we have to make some adjustments here since we compute the 'use' namespace and then the
+							// Class name.
+							String completionContent = classNamespace + '\\' + firstName;
+							proposal = createProposal(entry, offset, name, completionContent, module,
+									applyDollarSymbol, index, newInstanceCompletion);
+							if (proposal != null)
+							{
+								usedNames.add(firstName);
+								result.add(proposal);
+							}
+							continue;
+						}
+					}
+				}
 				String lowerCaseFirstName = firstName.toLowerCase();
 				if (firstName != null
 						&& (lowerCaseFirstName.startsWith(lowerCase) || entry.getEntryPath().toLowerCase().startsWith(

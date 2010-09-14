@@ -1,5 +1,6 @@
 --TEST--
-Should NOT complete namespace elements using wrong namespace prefix
+Should NOT complete namespace elements using wrong namespace prefix.
+Shalom: Note that this is different then the PDT test. There, they expect no completion
 --FILE--
 <?
 namespace NS;
@@ -11,4 +12,4 @@ $AAA = "";
 NS\|
 ?>
 --EXPECT--
-
+type(AAA)

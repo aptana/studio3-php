@@ -15,12 +15,8 @@ namespace NS2\NS22 { class Foo {} }
 namespace test{
 	use \NS1\|
 }
-
-/*
-TODO: Have this in the assist
-type(A)
-*/
 ?>
 --EXPECT--
 type(NS1\NS11)
 type(NS1\NS12)
+type(NS1\A)

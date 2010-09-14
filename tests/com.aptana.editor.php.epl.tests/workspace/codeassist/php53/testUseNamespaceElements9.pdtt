@@ -1,0 +1,17 @@
+--TEST--
+Use statement test.
+--FILE--
+<?php
+namespace Test\NamespaceTest;
+class Test
+{
+    public function testMe()
+    {
+        return $this;
+    }
+}
+namespace Test2\Namespace2Test;
+use Test\NamespaceTest\|
+?>
+--EXPECT--
+type(Test\NamespaceTest\Test)
