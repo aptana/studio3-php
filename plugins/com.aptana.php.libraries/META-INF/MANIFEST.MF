@@ -11,4 +11,4 @@ Export-Package: gnu.trove,
  gnu.trove.decorator,
  java_cup,
  java_cup.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
