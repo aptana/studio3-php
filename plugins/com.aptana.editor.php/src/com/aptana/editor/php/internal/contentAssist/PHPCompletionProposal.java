@@ -351,7 +351,6 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 	/**
 	 * A simple strings comparison of completion proposals.
 	 */
-	@Override
 	public int compareTo(PHPCompletionProposal otherProposal)
 	{
 

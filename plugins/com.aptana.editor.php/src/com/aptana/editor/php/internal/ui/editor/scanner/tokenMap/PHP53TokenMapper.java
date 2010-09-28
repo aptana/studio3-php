@@ -11,7 +11,6 @@ import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 {
 
-	@Override
 	public IToken mapToken(Symbol sym, PHPCodeScanner scanner)
 	{
 		switch (sym.sym)

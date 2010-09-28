@@ -263,7 +263,6 @@ public class PHPDocTag extends Comment implements IPHPDocTag {
 	/**
 	 * Returns {@link #getTagKind()} for this doc tag type.
 	 */
-	@Override
 	public int getID()
 	{
 		return getTagKind();

@@ -282,13 +282,11 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		return super.getOutlineElementAt(caret);
 	}
 
-	@Override
 	public String getLanguage()
 	{
 		return PHPMimeType.MimeType;
 	}
 
-	@Override
 	public void phpVersionChanged(PHPVersion newVersion)
 	{
 		Job refreshJob = new UIJob("Refresh document") //$NON-NLS-1$

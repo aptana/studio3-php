@@ -89,7 +89,6 @@ public class EditorUtils
 		final PHPSourceEditor[] editorResult = new PHPSourceEditor[1];
 		display.syncExec(new Runnable()
 		{
-			@Override
 			public void run()
 			{
 				IWorkbench workbench = PlatformUI.getWorkbench();

@@ -61,7 +61,6 @@ public class PHPParser implements IParser
 	/**
 	 * Override the default implementation to provide support for PHP nodes inside JavaScript.
 	 */
-	@Override
 	public IParseNode parse(IParseState parseState) throws java.lang.Exception
 	{
 		String source = new String(parseState.getSource());

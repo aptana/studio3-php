@@ -434,7 +434,6 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	/**
 	 * Reacts to any changes in the properties for the Mark Occurrences
 	 */
-	@Override
 	public void propertyChange(PropertyChangeEvent event)
 	{
 		final String property = event.getProperty();
@@ -513,7 +512,6 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	 * The parser itself should already set the latest AST on the shared AST provider, so we should be fine with the new
 	 * positions on the AST.
 	 */
-	@Override
 	public void parseFinished()
 	{
 		Job updateOccurrences = new UIJob("Updating occurrences...") //$NON-NLS-1$

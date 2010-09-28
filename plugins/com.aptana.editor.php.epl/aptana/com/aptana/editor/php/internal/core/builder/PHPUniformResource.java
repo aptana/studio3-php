@@ -39,7 +39,6 @@ public class PHPUniformResource extends AbstractUniformResource
 	 * (non-Javadoc)
 	 * @see com.aptana.core.resources.IUniformResource#getURI()
 	 */
-	@Override
 	public URI getURI()
 	{
 		return uri;

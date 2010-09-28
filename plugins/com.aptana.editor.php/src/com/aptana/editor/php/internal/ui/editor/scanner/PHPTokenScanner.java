@@ -165,7 +165,6 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 	 * (non-Javadoc)
 	 * @see com.aptana.editor.php.internal.ui.editor.scanner.IPHPTokenScanner#getPHPVersion()
 	 */
-	@Override
 	public PHPVersion getPHPVersion()
 	{
 		return phpVersion;

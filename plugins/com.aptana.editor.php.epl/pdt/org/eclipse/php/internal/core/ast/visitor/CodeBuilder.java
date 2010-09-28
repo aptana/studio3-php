@@ -942,581 +942,498 @@ public class CodeBuilder implements Visitor
 		return true;
 	}
 
-	@Override
 	public void endVisit(ArrayAccess arrayAccess)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ArrayCreation arrayCreation)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ArrayElement arrayElement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Assignment assignment)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ASTError astError)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(BackTickExpression backTickExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Block block)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(BreakStatement breakStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(CastExpression castExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(CatchClause catchClause)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ClassDeclaration classDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ClassInstanceCreation classInstanceCreation)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ClassName className)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(CloneExpression cloneExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Comment comment)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ConditionalExpression conditionalExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ContinueStatement continueStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(DeclareStatement declareStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(DoStatement doStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(EchoStatement echoStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(EmptyStatement emptyStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ExpressionStatement expressionStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(FieldAccess fieldAccess)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(FieldsDeclaration fieldsDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ForEachStatement forEachStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(FormalParameter formalParameter)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ForStatement forStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(FunctionDeclaration functionDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(FunctionInvocation functionInvocation)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(FunctionName functionName)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(GlobalStatement globalStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Identifier identifier)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(IfStatement ifStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(IgnoreError ignoreError)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Include include)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(InfixExpression infixExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(InLineHtml inLineHtml)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(InstanceOfExpression instanceOfExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(InterfaceDeclaration interfaceDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ListVariable listVariable)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(MethodDeclaration methodDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(MethodInvocation methodInvocation)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ParenthesisExpression parenthesisExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(PostfixExpression postfixExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(PrefixExpression prefixExpression)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Program program)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Quote quote)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Reference reference)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ReflectionVariable reflectionVariable)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ReturnStatement returnStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Scalar scalar)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(SingleFieldDeclaration singleFieldDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(StaticConstantAccess staticConstantAccess)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(StaticFieldAccess staticFieldAccess)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(StaticMethodInvocation staticMethodInvocation)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(StaticStatement staticStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(SwitchCase switchCase)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(SwitchStatement switchStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ThrowStatement throwStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(TryStatement tryStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(UnaryOperation unaryOperation)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(Variable variable)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(WhileStatement whileStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(ASTNode node)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void postVisit(ASTNode node)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void preVisit(ASTNode node)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public boolean visit(SingleFieldDeclaration singleFieldDeclaration)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean visit(ASTNode node)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public void endVisit(ConstantDeclaration classConstantDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(GotoLabel gotoLabel)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(GotoStatement gotoStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(NamespaceName namespaceName)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(NamespaceDeclaration namespaceDeclaration)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(UseStatement useStatement)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void endVisit(UseStatementPart useStatementPart)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public boolean visit(GotoLabel gotoLabel)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean visit(GotoStatement gotoStatement)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean visit(NamespaceName namespaceName)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean visit(NamespaceDeclaration namespaceDeclaration)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean visit(UseStatement useStatement)
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean visit(UseStatementPart useStatementPart)
 	{
 		// TODO Auto-generated method stub

@@ -43,20 +43,17 @@ public class MethodBinding implements IMethodBinding{
 		return null;
 	}
 
-	@Override
 	public String getKey()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public int getKind()
 	{
 		return IBinding.METHOD;
 	}
 
-	@Override
 	public boolean isDeprecated()
 	{
 		// TODO Auto-generated method stub

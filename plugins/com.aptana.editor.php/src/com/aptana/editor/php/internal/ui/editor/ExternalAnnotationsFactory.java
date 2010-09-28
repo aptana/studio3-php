@@ -17,7 +17,6 @@ public class ExternalAnnotationsFactory implements IAnnotationModelFactory
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.filebuffers.IAnnotationModelFactory#createAnnotationModel(org.eclipse.core.runtime.IPath)
 	 */
-	@Override
 	public IAnnotationModel createAnnotationModel(IPath location)
 	{
 		return new ExternalSourceModuleAnnotationModel(location);

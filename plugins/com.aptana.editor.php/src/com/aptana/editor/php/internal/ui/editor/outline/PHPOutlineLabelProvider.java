@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.swt.graphics.Image;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
@@ -119,7 +120,7 @@ public class PHPOutlineLabelProvider extends LabelProvider
 		{
 			INameNode nameNode = parseNode.getNameNode();
 			String name = nameNode.getName();
-			if (name == null || name.isEmpty())
+			if (StringUtil.isEmpty(name))
 			{
 				return parseNode.getNodeName();
 			}
