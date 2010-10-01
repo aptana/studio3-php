@@ -227,6 +227,7 @@
          point="com.aptana.parsing.parser">
       <parser
             class="com.aptana.editor.php.internal.parser.PHPParser"
+            content-type="com.aptana.contenttype.html.php"
             language="text/php">
       </parser>
    </extension>
