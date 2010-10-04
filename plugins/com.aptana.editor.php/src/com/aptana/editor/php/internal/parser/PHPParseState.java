@@ -22,13 +22,11 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	 * (non-Javadoc)
 	 * @see com.aptana.editor.php.internal.parser.IPHPParseState#getPHPVersion()
 	 */
-	@Override
 	public PHPVersion getPHPVersion()
 	{
 		return phpVersion;
 	}
 
-	@Override
 	public void phpVersionChanged(PHPVersion newVersion)
 	{
 		this.phpVersion = newVersion;

@@ -38,7 +38,6 @@ public class BasicPHPDocTag implements IPHPDocTag
 	/**
 	 * This one returns -1 on every call.
 	 */
-	@Override
 	public int getTagKind()
 	{
 		return -1;

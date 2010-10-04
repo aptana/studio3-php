@@ -74,7 +74,6 @@ public class SourceRange implements ISourceRange {
 	 */
 	public static ISourceRange[] reverseSortByOffset(ISourceRange[] ranges) {
 		Comparator<ISourceRange> comparator = new Comparator<ISourceRange>() {
-			@Override
 			public int compare(ISourceRange o1, ISourceRange o2)
 			{
 				return o2.getOffset() - o1.getOffset();

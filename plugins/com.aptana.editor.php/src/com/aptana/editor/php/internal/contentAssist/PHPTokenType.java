@@ -22,7 +22,6 @@ public class PHPTokenType implements ITypePredicate
 		this.type = type;
 	}
 
-	@Override
 	public boolean isDefined()
 	{
 		return true;

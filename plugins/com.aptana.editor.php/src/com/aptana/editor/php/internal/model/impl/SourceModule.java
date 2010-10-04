@@ -292,7 +292,6 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 	 * (non-Javadoc)
 	 * @see com.aptana.editor.php.core.model.ISourceModule#getSourceAsCharArray()
 	 */
-	@Override
 	public char[] getSourceAsCharArray() throws CoreException
 	{
 		Object resource = getResource();

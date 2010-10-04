@@ -15,13 +15,11 @@ public class CodeLocation implements ICodeLocation
 		this.lexeme = lexeme;
 	}
 
-	@Override
 	public String getFullPath()
 	{
 		return path;
 	}
 
-	@Override
 	public Lexeme<PHPTokenType> getStartLexeme()
 	{
 		return lexeme;

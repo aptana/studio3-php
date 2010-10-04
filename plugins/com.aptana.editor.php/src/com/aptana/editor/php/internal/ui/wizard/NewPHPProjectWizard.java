@@ -457,7 +457,6 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 		BasicNewProjectResourceWizard.updatePerspective(configElement);
 	}
 
-	@Override
 	public void setInitializationData(IConfigurationElement config, String propertyName, Object data)
 			throws CoreException
 	{

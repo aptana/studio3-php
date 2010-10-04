@@ -40,19 +40,16 @@ public class PHPScopeScanner implements ITokenScanner
 	private char[] content;
 	private IDocument document;
 
-	@Override
 	public int getTokenLength()
 	{
 		return lexer.yylength();
 	}
 
-	@Override
 	public int getTokenOffset()
 	{
 		return regionOffset + lexer.getTokenStart();
 	}
 
-	@Override
 	public IToken nextToken()
 	{
 		try
@@ -151,7 +148,6 @@ public class PHPScopeScanner implements ITokenScanner
 		return null;
 	}
 
-	@Override
 	public void setRange(IDocument document, int offset, int length)
 	{
 		this.document = document;

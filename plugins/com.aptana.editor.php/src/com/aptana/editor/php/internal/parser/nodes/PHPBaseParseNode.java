@@ -164,7 +164,6 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 		return getNodeName();
 	}
 
-	@Override
 	public void setNameNode(String name, int startOffset, int endOffset)
 	{
 		this.nameNode = new NameNode(name, startOffset, endOffset);

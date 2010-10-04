@@ -133,7 +133,6 @@ public class PHPLibrary implements IPHPLibrary
 		return Collections.singletonList(getPath().getAbsolutePath());
 	}
 
-	@Override
 	public String getId()
 	{
 		return element.getAttribute("id"); //$NON-NLS-1$

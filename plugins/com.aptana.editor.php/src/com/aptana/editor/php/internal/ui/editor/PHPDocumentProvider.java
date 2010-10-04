@@ -55,7 +55,6 @@ public class PHPDocumentProvider extends CompositeDocumentProvider implements IP
 		super.disconnect(element);
 	}
 
-	@Override
 	public void phpVersionChanged(PHPVersion newVersion)
 	{
 		this.phpVersion = newVersion;

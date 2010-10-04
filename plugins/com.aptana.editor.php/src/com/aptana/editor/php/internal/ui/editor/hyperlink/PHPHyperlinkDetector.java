@@ -102,19 +102,16 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 			this.typeLabel = typeLabel;
 		}
 
-		@Override
 		public IRegion getHyperlinkRegion()
 		{
 			return region;
 		}
 
-		@Override
 		public String getHyperlinkText()
 		{
 			return hyperlinkText;
 		}
 
-		@Override
 		public String getTypeLabel()
 		{
 			return typeLabel;

@@ -945,25 +945,21 @@ public class PHPContextCalculator
 			this.contextPosition = contextPosition;
 		}
 
-		@Override
 		public String getContextDisplayString()
 		{
 			return contextInformation.getContextDisplayString();
 		}
 
-		@Override
 		public Image getImage()
 		{
 			return contextInformation.getImage();
 		}
 
-		@Override
 		public String getInformationDisplayString()
 		{
 			return contextInformation.getContextDisplayString();
 		}
 
-		@Override
 		public int getContextInformationPosition()
 		{
 			return contextPosition;

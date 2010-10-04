@@ -164,7 +164,6 @@ public abstract class AbstractPHPEntryValue implements IReportable, ILanguageNod
 	/* (non-Javadoc)
 	 * @see com.aptana.parsing.ast.ILanguageNode#getLanguage()
 	 */
-	@Override
 	public String getLanguage()
 	{
 		return PHPMimeType.MimeType;

@@ -24,7 +24,7 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.core,
  com.aptana.theme,
  beaver;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.editor.php,
  com.aptana.editor.php.core,
