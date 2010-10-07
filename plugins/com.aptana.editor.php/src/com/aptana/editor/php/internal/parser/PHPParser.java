@@ -24,6 +24,7 @@ import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.IParser;
 import com.aptana.parsing.ast.IParseNode;
+import com.aptana.parsing.ast.IParseRootNode;
 import com.aptana.parsing.ast.ParseNode;
 import com.aptana.parsing.ast.ParseRootNode;
 
@@ -61,11 +62,11 @@ public class PHPParser implements IParser
 	/**
 	 * Override the default implementation to provide support for PHP nodes inside JavaScript.
 	 */
-	public IParseNode parse(IParseState parseState) throws java.lang.Exception
+	public IParseRootNode parse(IParseState parseState) throws java.lang.Exception
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], startingOffset, startingOffset
+		IParseRootNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], startingOffset, startingOffset
 				+ source.length());
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
