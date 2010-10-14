@@ -33,7 +33,6 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
 import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.CommonSourceViewerConfiguration;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.common.parsing.FileService;
 import com.aptana.editor.html.HTMLEditor;
@@ -97,8 +96,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	// Mark Occurrences management
 	private OccurrencesUpdater occurrencesUpdater;
 	
-	private CommonSourceViewerConfiguration fSourceViewerConfiguration;
-
 	/**
 	 * Constructs a new PHP source editor.
 	 */
@@ -122,9 +119,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 				CommonEditorPlugin.getDefault().getPreferenceStore(), EditorsPlugin.getDefault().getPreferenceStore() });
 		setPreferenceStore(store);
 
-		fSourceViewerConfiguration = new PHPSourceViewerConfiguration(getPreferenceStore(), this);
-			
-		setSourceViewerConfiguration(fSourceViewerConfiguration);
+		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		documentProvider = new PHPDocumentProvider();
 		setDocumentProvider(documentProvider);
 		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor?
@@ -242,13 +237,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
 		PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
 		occurrencesUpdater.dispose();
-		
-		if (fSourceViewerConfiguration != null)
-		{
-			fSourceViewerConfiguration.dispose();
-			fSourceViewerConfiguration = null;
-		}
-		
 		super.dispose();
 	}
 
