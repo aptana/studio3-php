@@ -667,14 +667,14 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 		{
 			if (prev)
 				buffer.append(" | "); //$NON-NLS-1$
-			buffer.append("MOVED_FROM(" + ((AbstractModelElement) getMovedFromElement()).toStringWithAncestors() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+			buffer.append("MOVED_FROM(" + ((AbstractModelElement) getMovedFromElement()).toStringIncludingAncestors() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			prev = true;
 		}
 		if ((flags & IModelElementDelta.F_MOVED_TO) != 0)
 		{
 			if (prev)
 				buffer.append(" | "); //$NON-NLS-1$
-			buffer.append("MOVED_TO(" + ((AbstractModelElement) getMovedToElement()).toStringWithAncestors() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+			buffer.append("MOVED_TO(" + ((AbstractModelElement) getMovedToElement()).toStringIncludingAncestors() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			prev = true;
 		}
 		if ((flags & IModelElementDelta.F_ADDED_TO_BUILDPATH) != 0)

@@ -1,3 +1,37 @@
+/**
+ * This file Copyright (c) 2005-2010 Aptana, Inc. This program is
+ * dual-licensed under both the Aptana Public License and the GNU General
+ * Public license. You may elect to use one or the other of these licenses.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT. Redistribution, except as permitted by whichever of
+ * the GPL or APL you select, is prohibited.
+ *
+ * 1. For the GPL license (GPL), you can redistribute and/or modify this
+ * program under the terms of the GNU General Public License,
+ * Version 3, as published by the Free Software Foundation.  You should
+ * have received a copy of the GNU General Public License, Version 3 along
+ * with this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * 
+ * Aptana provides a special exception to allow redistribution of this file
+ * with certain other free and open source software ("FOSS") code and certain additional terms
+ * pursuant to Section 7 of the GPL. You may view the exception and these
+ * terms on the web at http://www.aptana.com/legal/gpl/.
+ * 
+ * 2. For the Aptana Public License (APL), this program and the
+ * accompanying materials are made available under the terms of the APL
+ * v1.0 which accompanies this distribution, and is available at
+ * http://www.aptana.com/legal/apl/.
+ * 
+ * You may view the GPL, Aptana's exception and additional terms, and the
+ * APL in the file titled license.html at the root of the corresponding
+ * plugin containing this source file.
+ * 
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.model.impl;
 
 import com.aptana.editor.php.core.model.IModelElement;
@@ -9,15 +43,16 @@ import com.aptana.editor.php.core.model.env.ModelElementInfo;
 import com.aptana.editor.php.internal.model.ModelManager;
 
 /**
- * AbstractModelElement
+ * Abstract model element
  * 
  * @author Denis Denisenko
  */
 public abstract class AbstractModelElement implements IModelElement
 {
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.IModelElement#getAncestor(int)
 	 */
 	public IModelElement getAncestor(int ancestorType)
 	{
@@ -35,16 +70,18 @@ public abstract class AbstractModelElement implements IModelElement
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.IModelElement#getSourceProject()
 	 */
 	public ISourceProject getSourceProject()
 	{
 		return (ISourceProject) getAncestor(IModelElement.PROJECT);
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.IModelElement#accept(com.aptana.editor.php.core.model.IModelElementVisitor)
 	 */
 	public void accept(IModelElementVisitor visitor)
 	{
@@ -59,8 +96,9 @@ public abstract class AbstractModelElement implements IModelElement
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.model.IModelElement#getModel()
 	 */
 	public ISourceModel getModel()
 	{
@@ -86,76 +124,89 @@ public abstract class AbstractModelElement implements IModelElement
 	public String toDebugString()
 	{
 
-		StringBuffer buffer = new StringBuffer();
-		this.toStringInfo(0, buffer, true/* show resolved info */);
-		return buffer.toString();
+		StringBuilder builder = new StringBuilder();
+		this.fillStringInfo(0, builder, true);
+		return builder.toString();
 	}
 
 	/**
-	 * @param tab
-	 * @param buffer
+	 * @param tabsCount
+	 * @param builder
 	 * @param showResolvedInfo
 	 */
-	protected void toStringInfo(int tab, StringBuffer buffer, boolean showResolvedInfo)
+	protected void fillStringInfo(int tabsCount, StringBuilder builder, boolean showResolvedInfo)
 	{
-		buffer.append(this.tabString(tab));
-		toStringName(buffer);
+		builder.append(this.getStringTabs(tabsCount));
+		toStringName(builder);
 	}
 
 	/**
-	 * Adds element name to a buffer.
+	 * Adds element name to a builder.
 	 * 
-	 * @param buffer
-	 *            - buffer.
+	 * @param builder
+	 *            - builder.
 	 */
-	protected void toStringName(StringBuffer buffer)
+	protected void toStringName(StringBuilder builder)
 	{
-		buffer.append(getElementName());
+		builder.append(getElementName());
 	}
 
 	/**
 	 * Gets string consisting from tabs.
 	 * 
-	 * @param tab
+	 * @param count
 	 *            - number of tabs.
 	 * @return string
 	 */
-	protected String tabString(int tab)
+	protected String getStringTabs(int count)
 	{
-		StringBuffer buffer = new StringBuffer();
-		for (int i = tab; i > 0; i--)
-			buffer.append("  "); //$NON-NLS-1$
-		return buffer.toString();
+		StringBuilder builder = new StringBuilder();
+		for (int i = count; i > 0; i--)
+			builder.append("  "); //$NON-NLS-1$
+		return builder.toString();
 	}
 
 	/**
-	 * Debug.
+	 * Returns a String representation which includes the ancestors of this model element.<br>
+	 * For debug purposes.
+	 * 
+	 * @return A string representation including the ancestors
 	 */
-	public String toStringWithAncestors()
+	public String toStringIncludingAncestors()
 	{
-		return toStringWithAncestors(true/* show resolved info */);
+		return toStringIncludingAncestors(true);
 	}
 
 	/**
-	 * Debug.
+	 * Returns a String representation which includes the ancestors of this model element.<br>
+	 * For debug purposes.
+	 * 
+	 * @param includeResolvedInfo
+	 * @return A string representation including the ancestors
 	 */
-	public String toStringWithAncestors(boolean showResolvedInfo)
+	public String toStringIncludingAncestors(boolean includeResolvedInfo)
 	{
-		StringBuffer buffer = new StringBuffer();
-		this.toStringInfo(0, buffer, showResolvedInfo);
-		this.toStringAncestors(buffer);
-		return buffer.toString();
+		StringBuilder builder = new StringBuilder();
+		fillStringInfo(0, builder, includeResolvedInfo);
+		fillStringAncestors(builder);
+		return builder.toString();
 	}
 
-	protected void toStringAncestors(StringBuffer buffer)
+	/**
+	 * Fill the StringBuilder with the ancestors strings.
+	 * 
+	 * @param builder
+	 *            A {@link StringBuilder} to fill.
+	 */
+	protected void fillStringAncestors(StringBuilder builder)
 	{
 		AbstractModelElement parentElement = (AbstractModelElement) this.getParent();
 		if (parentElement != null && parentElement.getParent() != null)
 		{
-			buffer.append(" [in "); //$NON-NLS-1$
-			parentElement.toStringInfo(0, buffer, false);
-			parentElement.toStringAncestors(buffer);
-			buffer.append("]"); //$NON-NLS-1$
+			builder.append(" [ in "); //$NON-NLS-1$
+			parentElement.fillStringInfo(0, builder, false);
+			parentElement.fillStringAncestors(builder);
+			builder.append(" ]"); //$NON-NLS-1$
 		}
 	}
 }
