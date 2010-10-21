@@ -6,13 +6,13 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
-import org.eclipse.php.internal.ui.util.StatusLineMessageTimerManager;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 import com.aptana.editor.php.internal.ui.editor.hyperlink.PHPHyperlinkDetector;
+import com.aptana.ui.util.StatusLineMessageTimerManager;
 
 /**
  * An Open-Declaration action for PHP elements.
