@@ -95,7 +95,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	// Mark Occurrences management
 	private OccurrencesUpdater occurrencesUpdater;
-
+	
 	/**
 	 * Constructs a new PHP source editor.
 	 */
@@ -128,7 +128,10 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	protected FileService createFileService()
 	{
-		phpParseState = new PHPParseState();
+		if (phpParseState == null)
+		{
+			phpParseState = new PHPParseState();
+		}
 		return new FileService(PHPMimeType.MimeType, phpParseState);
 	}
 
@@ -181,6 +184,10 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		super.doSetInput(input);
 		// Register as a PHP version listener and re-set the document to trigger a refresh and re-parse.
 		IResource resource = (IResource) input.getAdapter(IResource.class);
+		if (phpParseState == null)
+		{
+			phpParseState = new PHPParseState();
+		}
 		if (resource != null)
 		{
 			// In case this is the second time we hit that doSetInput, we need to re-register the listeners to make sure

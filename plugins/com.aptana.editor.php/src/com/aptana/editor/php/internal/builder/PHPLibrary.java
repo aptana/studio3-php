@@ -71,7 +71,7 @@ public class PHPLibrary implements IPHPLibrary
 			File bundleFile;
 			try
 			{
-				bundleFile = getBundleFile(bundle);
+				bundleFile = FileLocator.getBundleFile(bundle);
 			}
 			catch (IOException e)
 			{
@@ -81,34 +81,6 @@ public class PHPLibrary implements IPHPLibrary
 			return new File(bundleFile, attribute);
 		}
 		return null;
-	}
-
-	/**
-	 * Returns a file for the contents of the specified bundle. Depending on how the bundle is installed the returned
-	 * file may be a directory or a jar file containing the bundle content.
-	 * 
-	 * @param bundle
-	 *            the bundle
-	 * @return a file with the contents of the bundle
-	 * @throws IOException
-	 *             if an error occurs during the resolution
-	 * @since org.eclipse.equinox.common 3.4
-	 */
-	public static File getBundleFile(Bundle bundle) throws IOException
-	{
-		URL rootEntry = bundle.getEntry("/"); //$NON-NLS-1$
-		rootEntry = FileLocator.resolve(rootEntry);
-		if ("file".equals(rootEntry.getProtocol())) //$NON-NLS-1$
-			return new File(rootEntry.getPath());
-		if ("jar".equals(rootEntry.getProtocol())) { //$NON-NLS-1$
-			String path = rootEntry.getPath();
-			if (path.startsWith("file:")) { //$NON-NLS-1$
-				// strip off the file: and the !/
-				path = path.substring(5, path.length() - 2);
-				return new File(path);
-			}
-		}
-		throw new IOException("Unknown protocol"); //$NON-NLS-1$
 	}
 
 	public boolean isTurnedOn()
