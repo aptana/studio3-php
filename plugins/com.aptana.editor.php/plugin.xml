@@ -72,9 +72,8 @@
                      value="org.eclipse.core.resources.IProject">
                </instanceof>
                <test
-                     args="com.aptana.editor.php.phpNature"
-                     property="com.aptana.editor.php.nature"
-                     value="true">
+                     property="org.eclipse.core.resources.projectNature"
+                     value="com.aptana.editor.php.phpNature">
                </test>
             </and>
          </enabledWhen>
