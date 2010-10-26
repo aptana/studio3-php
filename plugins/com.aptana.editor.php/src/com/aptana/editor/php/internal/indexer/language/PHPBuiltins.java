@@ -30,8 +30,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
+import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -397,6 +397,10 @@ public final class PHPBuiltins
 	{
 		try
 		{
+			if (PHPEditorPlugin.DEBUG || PHPEditorPlugin.INDEXER_DEBUG)
+			{
+				System.out.println("Indexing the PHP API libraries..."); //$NON-NLS-1$
+			}
 			this.builtins = new TreeSet<Object>(new Comparator<Object>()
 			{
 				public int compare(Object arg0, Object arg1)
@@ -713,7 +717,6 @@ public final class PHPBuiltins
 	public synchronized void clean(IProgressMonitor monitor)
 	{
 		long start = System.currentTimeMillis();
-		this.builtins = null;
 		initializing = true;
 		this.php4Names = new HashSet<Object>();
 		this.php5Names = new HashSet<Object>();
@@ -727,7 +730,10 @@ public final class PHPBuiltins
 			initializing = false;
 			throw new IllegalArgumentException("The progress monitor should not be null"); //$NON-NLS-1$
 		}
-		initBuiltins(monitor);
+		if (this.builtins == null)
+		{
+			initBuiltins(monitor);
+		}
 		initializing = false;
 		if (PHPEditorPlugin.INDEXER_DEBUG)
 		{

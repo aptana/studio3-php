@@ -163,10 +163,24 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			ParenthesisExpression pa = (ParenthesisExpression) expr;
 			expr = pa.getExpression();
 		}
-		if (expr != null && expr.getType() == ASTNode.SCALAR)
+		String expStringValue = null;
+		if (expr != null)
 		{
-			nodeBuilder.handleIncludedFile(includeType, ((Scalar) expr).getStringValue(), null, expr.getStart(), expr
-					.getEnd() - 1, -1, -1);
+			int type = expr.getType();
+			if (type == ASTNode.SCALAR)
+			{
+				expStringValue = ((Scalar) expr).getStringValue();
+			}
+			else if (type == ASTNode.INFIX_EXPRESSION)
+			{
+				// This expression may contain nested infix-expressions, so we just grab the text directly.
+				expStringValue = this.source.substring(expr.getStart(), expr.getEnd());
+			}
+		}
+		if (expStringValue != null)
+		{
+			nodeBuilder.handleIncludedFile(includeType, expStringValue, null, expr.getStart(), expr.getEnd() - 1, -1,
+					-1);
 		}
 		return super.visit(include);
 	}

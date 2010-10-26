@@ -1002,9 +1002,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			value.setStartOffset(classDeclaration.getStart());
 			value.setEndOffset(classDeclaration.getEnd());
 
-			String className = classDeclaration
-					.getName().getName();
-			IElementEntry currentClassEntry = reporter.reportEntry(IPHPIndexConstants.CLASS_CATEGORY, className, value, module);
+			String className = classDeclaration.getName().getName();
+			IElementEntry currentClassEntry = reporter.reportEntry(IPHPIndexConstants.CLASS_CATEGORY, className, value,
+					module);
 			currentClass = new ClassScopeInfo(currentClassEntry);
 			return true;
 		}
@@ -1962,9 +1962,19 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				{
 					return true;
 				}
-				if (subExpr instanceof Scalar)
+				String includePath = null;
+				int type = subExpr.getType();
+				if (type == ASTNode.SCALAR)
 				{
-					String includePath = ((Scalar) subExpr).getStringValue();
+					includePath = ((Scalar) subExpr).getStringValue();
+				}
+				else if (type == ASTNode.INFIX_EXPRESSION)
+				{
+					// This expression may contain nested infix-expressions, so we just grab the text directly.
+					includePath = PDTPHPModuleIndexer.this._contents.substring(subExpr.getStart(), subExpr.getEnd());
+				}
+				if (includePath != null)
+				{
 					if (includePath == null || includePath.length() == 0)
 					{
 						return true;
