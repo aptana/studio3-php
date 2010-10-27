@@ -376,11 +376,9 @@ public final class BuildPathManager
 			 */
 			public void resourceChanged(IResourceChangeEvent event)
 			{
-				final List<IProject> added = new ArrayList<IProject>();
-				final List<IProject> removed = new ArrayList<IProject>();
-
+				final Set<IProject> added = new HashSet<IProject>();
+				final Set<IProject> removed = new HashSet<IProject>();
 				IResourceDelta delta = event.getDelta();
-
 				if (delta != null)
 				{
 					IResourceDelta[] affectedChildren = event.getDelta().getAffectedChildren();
@@ -395,15 +393,23 @@ public final class BuildPathManager
 								switch (resourceDelta.getKind())
 								{
 									case IResourceDelta.ADDED:
-										if (project.hasNature(PHPNature.NATURE_ID))
+										if (project.isAccessible())
 										{
-											added.add(project);
+											addProject(project, added);
 										}
 										break;
 									case IResourceDelta.REMOVED:
-										if (project.hasNature(PHPNature.NATURE_ID))
+										removeProject(project, removed);
+										break;
+									case IResourceDelta.CHANGED:
+										// This will deal with the open (and potential close)
+										if (project.isAccessible())
 										{
-											removed.add(project);
+											addProject(project, added);
+										}
+										else
+										{
+											removeProject(project, removed);
 										}
 										break;
 								}
@@ -417,6 +423,7 @@ public final class BuildPathManager
 				}
 				else
 				{
+					// Deal with closing project
 					if (event.getResource() instanceof IProject && event.getType() == IResourceChangeEvent.PRE_CLOSE)
 					{
 						removed.add((IProject) event.getResource());
@@ -425,6 +432,22 @@ public final class BuildPathManager
 				if (!added.isEmpty() || !removed.isEmpty())
 				{
 					handleChanged(added, removed);
+				}
+			}
+
+			private void addProject(IProject project, Set<IProject> toAdd) throws CoreException
+			{
+				if (project.hasNature(PHPNature.NATURE_ID) && !buildPaths.containsKey(project))
+				{
+					toAdd.add(project);
+				}
+			}
+
+			private void removeProject(IProject project, Set<IProject> toRemove) throws CoreException
+			{
+				if (buildPaths.containsKey(project))
+				{
+					toRemove.add(project);
 				}
 			}
 
@@ -458,7 +481,7 @@ public final class BuildPathManager
 	 * @param removed
 	 *            - remove projects.
 	 */
-	public void handleChanged(List<IProject> added, List<IProject> removed)
+	public void handleChanged(Set<IProject> added, Set<IProject> removed)
 	{
 		List<IBuildPath> addedPaths = new ArrayList<IBuildPath>();
 		List<IBuildPath> removedPaths = new ArrayList<IBuildPath>();
