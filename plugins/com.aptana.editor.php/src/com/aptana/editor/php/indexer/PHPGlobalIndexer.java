@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -1116,8 +1117,8 @@ public final class PHPGlobalIndexer
 					// The content of the indexMapping file will be updated only on the next loading of the Studio.
 					indexFile.delete();
 				}
-				List<IProject> targetProject = new ArrayList<IProject>(1);
-				List<IProject> empty = new ArrayList<IProject>(0);
+				Set<IProject> targetProject = new HashSet<IProject>(1);
+				Set<IProject> empty = new HashSet<IProject>(0);
 				// TODO - SG Check the threading issue that might happen with the global indexer in the buildpathmanager
 				// call
 				mainIndex.removeIndex(buildPath);
@@ -1163,7 +1164,7 @@ public final class PHPGlobalIndexer
 			savingJob.setPriority(Job.BUILD);
 		}
 	}
-	
+
 	/**
 	 * Clean all the projects in the workspace.
 	 */
