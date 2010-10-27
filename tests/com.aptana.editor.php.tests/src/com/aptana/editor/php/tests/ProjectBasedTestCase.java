@@ -81,12 +81,11 @@ public abstract class ProjectBasedTestCase extends TestCase
 		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
 		if (!project.exists())
 		{
-			project.create(new NullProgressMonitor());
+			project.create(description, new NullProgressMonitor());
 		}
 		if (!project.isOpen())
 		{
 			project.open(new NullProgressMonitor());
-			project.setDescription(description, new NullProgressMonitor());
 			try
 			{
 				setProjectOptions(project);

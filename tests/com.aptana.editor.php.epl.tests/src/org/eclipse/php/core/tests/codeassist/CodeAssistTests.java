@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.text.Document;
@@ -54,35 +55,36 @@ import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 
 @SuppressWarnings("nls")
-public class CodeAssistTests extends AbstractPDTTTest {
+public class CodeAssistTests extends AbstractPDTTTest
+{
 
 	protected static final char OFFSET_CHAR = '|';
 	protected static final Map<PHPVersion, String[]> TESTS = new LinkedHashMap<PHPVersion, String[]>();
-	static {
-		TESTS.put(PHPVersion.PHP5, new String[] {
-				"/workspace/codeassist/php5/exclusive",
-				"/workspace/codeassist/php5" });
-		TESTS.put(PHPVersion.PHP5_3, new String[] {
-				"/workspace/codeassist/php5", "/workspace/codeassist/php53" });
+	static
+	{
+		TESTS.put(PHPVersion.PHP5,
+				new String[] { "/workspace/codeassist/php5/exclusive", "/workspace/codeassist/php5" });
+		TESTS.put(PHPVersion.PHP5_3, new String[] { "/workspace/codeassist/php5", "/workspace/codeassist/php53" });
 	};
 
 	protected static IProject project;
 	protected static IFile testFile;
 
-	public static void setUpSuite() throws Exception {
-		project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				"CodeAssistTests");
-		if (project.exists()) {
+	public static void setUpSuite() throws Exception
+	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		project = workspace.getRoot().getProject("CodeAssistTests");
+		if (project.exists())
+		{
 			return;
 		}
-
-		project.create(null);
-		project.open(null);
-
 		// configure nature
-		IProjectDescription desc = project.getDescription();
-		desc.setNatureIds(new String[] { PHPNature.NATURE_ID });
-		project.setDescription(desc, null);
+		IProjectDescription projectDescription = workspace.newProjectDescription("CodeAssistTests");
+		projectDescription.setNatureIds(new String[] { PHPNature.NATURE_ID });
+		project.create(projectDescription, null);
+		project.open(null);
+		
+
 		PHPBuiltins.getInstance();
 		PHPGlobalIndexer.getInstance();
 		ModelManager.getInstance();
@@ -90,64 +92,77 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		{
 			Thread.sleep(4000L);
 		}
-		catch (InterruptedException ie){}
+		catch (InterruptedException ie)
+		{
+		}
 	}
 
-	public static void tearDownSuite() throws Exception {
+	public static void tearDownSuite() throws Exception
+	{
 		project.close(null);
 		project.delete(true, true, null);
 		project = null;
 	}
 
-	public CodeAssistTests(String description) {
+	public CodeAssistTests(String description)
+	{
 		super(description);
 	}
 
-	public static Test suite() {
+	public static Test suite()
+	{
 
 		TestSuite suite = new TestSuite("Auto Code Assist Tests");
 
-		for (final PHPVersion phpVersion : TESTS.keySet()) {
+		for (final PHPVersion phpVersion : TESTS.keySet())
+		{
 			TestSuite phpVerSuite = new TestSuite(phpVersion.getAlias());
 
-			for (String testsDirectory : TESTS.get(phpVersion)) {
+			for (String testsDirectory : TESTS.get(phpVersion))
+			{
 
-				for (final String fileName : getPDTTFiles(testsDirectory)) {
-					try {
-						final CodeAssistPdttFile pdttFile = new CodeAssistPdttFile(
-								fileName);
-						phpVerSuite.addTest(new CodeAssistTests(phpVersion
-								.getAlias()
-								+ " - /" + fileName) {
+				for (final String fileName : getPDTTFiles(testsDirectory))
+				{
+					try
+					{
+						final CodeAssistPdttFile pdttFile = new CodeAssistPdttFile(fileName);
+						phpVerSuite.addTest(new CodeAssistTests(phpVersion.getAlias() + " - /" + fileName)
+						{
 
-							protected void setUp() throws Exception {
-								TestUtils.setProjectPhpVersion(project,
-										phpVersion);
+							protected void setUp() throws Exception
+							{
+								TestUtils.setProjectPhpVersion(project, phpVersion);
 								pdttFile.applyPreferences();
 							}
 
-							protected void tearDown() throws Exception {
-								if (testFile != null) {
+							protected void tearDown() throws Exception
+							{
+								if (testFile != null)
+								{
 									testFile.delete(true, null);
 									testFile = null;
 								}
 							}
 
-							protected void runTest() throws Throwable {
-								ICompletionProposal[] proposals = getProposals(pdttFile
-										.getFile());
+							protected void runTest() throws Throwable
+							{
+								ICompletionProposal[] proposals = getProposals(pdttFile.getFile());
 								compareProposals(proposals, pdttFile);
 							}
 						});
-					} catch (final Exception e) {
-						phpVerSuite.addTest(new TestCase(fileName) { // dummy
+					}
+					catch (final Exception e)
+					{
+						phpVerSuite.addTest(new TestCase(fileName)
+						{ // dummy
 									// test
 									// indicating
 									// PDTT
 									// file
 									// parsing
 									// failure
-									protected void runTest() throws Throwable {
+									protected void runTest() throws Throwable
+									{
 										throw e;
 									}
 								});
@@ -158,12 +173,15 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		}
 
 		// Create a setup wrapper
-		TestSetup setup = new TestSetup(suite) {
-			protected void setUp() throws Exception {
+		TestSetup setup = new TestSetup(suite)
+		{
+			protected void setUp() throws Exception
+			{
 				setUpSuite();
 			}
 
-			protected void tearDown() throws Exception {
+			protected void tearDown() throws Exception
+			{
 				tearDownSuite();
 			}
 		};
@@ -171,17 +189,19 @@ public class CodeAssistTests extends AbstractPDTTTest {
 	}
 
 	/**
-	 * Creates test file with the specified content and calculates the offset at
-	 * OFFSET_CHAR. Offset character itself is stripped off.
+	 * Creates test file with the specified content and calculates the offset at OFFSET_CHAR. Offset character itself is
+	 * stripped off.
 	 * 
 	 * @param data
 	 *            File data
 	 * @return offset where's the offset character set.
 	 * @throws Exception
 	 */
-	protected static int createFile(String data) throws Exception {
+	protected static int createFile(String data) throws Exception
+	{
 		int offset = data.lastIndexOf(OFFSET_CHAR);
-		if (offset == -1) {
+		if (offset == -1)
+		{
 			throw new IllegalArgumentException("Offset character is not set");
 		}
 
@@ -189,7 +209,8 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
 		testFile = project.getFile("test.php");
-		if (testFile.exists()) {
+		if (testFile.exists())
+		{
 			testFile.refreshLocal(IResource.DEPTH_ZERO, null);
 			testFile.delete(true, null);
 		}
@@ -203,23 +224,24 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		return offset;
 	}
 
-	protected static ISourceModule getSourceModule() {
+	protected static ISourceModule getSourceModule()
+	{
 		return ModelUtils.getModule(testFile);
 	}
 
-	public static ICompletionProposal[] getProposals(String data)
-			throws Exception {
+	public static ICompletionProposal[] getProposals(String data) throws Exception
+	{
 		int offset = createFile(data);
 		return getProposals(offset);
 	}
 
-	public static ICompletionProposal[] getProposals(int offset)
-			throws Exception {
+	public static ICompletionProposal[] getProposals(int offset) throws Exception
+	{
 		return getProposals(getSourceModule(), offset);
 	}
 
-	public static ICompletionProposal[] getProposals(ISourceModule sourceModule,
-			int offset) throws Exception {
+	public static ICompletionProposal[] getProposals(ISourceModule sourceModule, int offset) throws Exception
+	{
 		PHPSourceEditor editor = new PHPSourceEditor();
 		Object resource = sourceModule.getResource();
 		if (resource instanceof IResource)
@@ -233,11 +255,10 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		PHPContentAssistProcessor processor = new PHPContentAssistProcessor(editor);
 		// 
 		IDocument document = new Document(new String(sourceModule.getSourceAsCharArray()));
-		CompositePartitionScanner partitionScanner = new CompositePartitionScanner(PHPSourceConfiguration
-				.getDefault().createSubPartitionScanner(), new NullSubPartitionScanner(),
-				new NullPartitionerSwitchStrategy());
-		ExtendedFastPartitioner partitioner = new ExtendedFastPartitioner(partitionScanner, PHPSourceConfiguration.getDefault()
-				.getContentTypes());
+		CompositePartitionScanner partitionScanner = new CompositePartitionScanner(PHPSourceConfiguration.getDefault()
+				.createSubPartitionScanner(), new NullSubPartitionScanner(), new NullPartitionerSwitchStrategy());
+		ExtendedFastPartitioner partitioner = new ExtendedFastPartitioner(partitionScanner, PHPSourceConfiguration
+				.getDefault().getContentTypes());
 		partitionScanner.setPartitioner(partitioner);
 		partitioner.connect(document);
 		document.setDocumentPartitioner(partitioner);
@@ -245,16 +266,18 @@ public class CodeAssistTests extends AbstractPDTTTest {
 		return computeCompletionProposals;
 	}
 
-	public static void compareProposals(ICompletionProposal[] proposals,
-			CodeAssistPdttFile pdttFile) throws Exception {
+	public static void compareProposals(ICompletionProposal[] proposals, CodeAssistPdttFile pdttFile) throws Exception
+	{
 		ExpectedProposal[] expectedProposals = pdttFile.getExpectedProposals();
 
 		boolean proposalsEqual = true;
-		if (proposals.length == expectedProposals.length) {
+		if (proposals.length == expectedProposals.length)
+		{
 			Set<String> actualProposals = new HashSet<String>();
 			for (ICompletionProposal proposal : proposals)
 			{
-				String string = new String(((PHPCompletionProposal)proposal).getReplacementString().replaceAll("\\(\\)", "").toLowerCase());
+				String string = new String(((PHPCompletionProposal) proposal).getReplacementString().replaceAll(
+						"\\(\\)", "").toLowerCase());
 				if (string.startsWith("$"))
 				{
 					actualProposals.add(string.substring(1).trim());
@@ -264,8 +287,8 @@ public class CodeAssistTests extends AbstractPDTTTest {
 					actualProposals.add(string.trim());
 				}
 			}
-			for (ExpectedProposal expectedProposal : pdttFile
-					.getExpectedProposals()) {
+			for (ExpectedProposal expectedProposal : pdttFile.getExpectedProposals())
+			{
 				String name = expectedProposal.name.toLowerCase();
 				if (expectedProposal.type == IModelElement.FIELD && name.startsWith("$"))
 				{
@@ -278,18 +301,20 @@ public class CodeAssistTests extends AbstractPDTTTest {
 					break;
 				}
 			}
-		} else {
+		}
+		else
+		{
 			proposalsEqual = false;
 		}
 
-		if (!proposalsEqual) {
+		if (!proposalsEqual)
+		{
 			StringBuilder errorBuf = new StringBuilder();
-			errorBuf
-					.append("\nEXPECTED COMPLETIONS LIST:\n-----------------------------\n");
+			errorBuf.append("\nEXPECTED COMPLETIONS LIST:\n-----------------------------\n");
 			errorBuf.append(pdttFile.getExpected());
-			errorBuf
-					.append("\nACTUAL COMPLETIONS LIST:\n-----------------------------\n");
-			for (ICompletionProposal p : proposals) {
+			errorBuf.append("\nACTUAL COMPLETIONS LIST:\n-----------------------------\n");
+			for (ICompletionProposal p : proposals)
+			{
 				errorBuf.append("keyword(").append(p.getDisplayString()).append(")\n");
 			}
 			fail(errorBuf.toString());
