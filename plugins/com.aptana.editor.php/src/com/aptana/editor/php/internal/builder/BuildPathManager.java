@@ -50,7 +50,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -81,85 +80,6 @@ public final class BuildPathManager
 	};
 
 	private static Mutex mutex = new Mutex();
-
-	/**
-	 * Projects delta visitor.
-	 * 
-	 * @author Denis Denisenko
-	 */
-	private class ProjectsDeltaVisitor implements IResourceDeltaVisitor
-	{
-		/**
-		 * Added projects to fill.
-		 */
-		private List<IProject> added;
-
-		/**
-		 * Removed projects to fill.
-		 */
-		private List<IProject> removed;
-
-		/**
-		 * ProjectsDeltaVisitor constructor.
-		 * 
-		 * @param added
-		 *            - added projects list to fill.
-		 * @param removed
-		 *            - removed projects list to fill.
-		 */
-		public ProjectsDeltaVisitor(List<IProject> added, List<IProject> removed)
-		{
-			this.added = added;
-			this.removed = removed;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean visit(IResourceDelta delta) throws CoreException
-		{
-			IResource resource = delta.getResource();
-
-			// ignoring inaccessible resources
-			if (!resource.isAccessible() && delta.getKind() != IResourceDelta.REMOVED)
-			{
-				return false;
-			}
-
-			if (!(resource instanceof IProject))
-			{
-				return true;
-			}
-
-			IProject project = (IProject) resource;
-
-			switch (delta.getKind())
-			{
-				case IResourceDelta.ADDED:
-					added.add(project);
-					break;
-				case IResourceDelta.REMOVED:
-					removed.add(project);
-					break;
-				case IResourceDelta.CHANGED:
-					if (getBuildPathByResource(project) == null && project.hasNature(PHPNature.NATURE_ID))
-					{
-						added.add(project);
-					}
-					else
-					{
-						if (!project.isOpen() || !project.hasNature(PHPNature.NATURE_ID))
-						{
-							removed.add(project);
-						}
-					}
-				default:
-					break;
-			}
-
-			return true;
-		}
-	}
 
 	/**
 	 * Build path manager instance.
@@ -460,15 +380,39 @@ public final class BuildPathManager
 				final List<IProject> removed = new ArrayList<IProject>();
 
 				IResourceDelta delta = event.getDelta();
+
 				if (delta != null)
 				{
-					try
+					IResourceDelta[] affectedChildren = event.getDelta().getAffectedChildren();
+					for (IResourceDelta resourceDelta : affectedChildren)
 					{
-						delta.accept(new ProjectsDeltaVisitor(added, removed));
-					}
-					catch (CoreException e)
-					{
-						PHPEditorPlugin.logError(e);
+						IResource resource = resourceDelta.getResource();
+						if (resource instanceof IProject)
+						{
+							IProject project = resource.getProject();
+							try
+							{
+								switch (resourceDelta.getKind())
+								{
+									case IResourceDelta.ADDED:
+										if (project.hasNature(PHPNature.NATURE_ID))
+										{
+											added.add(project);
+										}
+										break;
+									case IResourceDelta.REMOVED:
+										if (project.hasNature(PHPNature.NATURE_ID))
+										{
+											removed.add(project);
+										}
+										break;
+								}
+							}
+							catch (CoreException e)
+							{
+								PHPEditorPlugin.logError(e);
+							}
+						}
 					}
 				}
 				else
