@@ -11,6 +11,7 @@ public class Messages extends NLS
 	public static String OpenDeclarationAction_cannotOpenDeclataion;
 	public static String PHPEditorPlugin_indexingJobMessage;
 	public static String PHPSourceEditor_markOccurrencesJob_name;
+	public static String openDeclaration_label;
 	private static ResourceBundle fResourceBundle;
 	static
 	{

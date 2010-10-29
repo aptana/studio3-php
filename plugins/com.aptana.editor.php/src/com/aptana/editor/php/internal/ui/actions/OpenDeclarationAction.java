@@ -24,7 +24,7 @@ public class OpenDeclarationAction extends TextEditorAction
 
 	public OpenDeclarationAction(ResourceBundle bundle, ITextEditor editor)
 	{
-		super(bundle, "openDeclaration.", editor); //$NON-NLS-1$
+		super(bundle, "openDeclaration_", editor); //$NON-NLS-1$
 	}
 
 	/**
