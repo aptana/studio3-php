@@ -219,6 +219,12 @@
             content-type="com.aptana.contenttype.html.php"
             language="text/php">
       </parser>
+      <!-- Register the PHP parser to work on partitions as well. This is needed for the code-formatting process. -->
+      <parser
+            class="com.aptana.editor.php.internal.parser.PHPParser"
+            content-type="com.aptana.contenttype.php"
+            language="text/php">
+      </parser>
    </extension>
    <extension
          point="com.aptana.editor.php.indexer">

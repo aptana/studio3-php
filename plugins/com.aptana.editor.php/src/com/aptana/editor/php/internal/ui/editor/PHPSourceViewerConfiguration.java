@@ -123,9 +123,12 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	protected IContentAssistProcessor getContentAssistProcessor(ISourceViewer sourceViewer, String contentType)
 	{
 		AbstractThemeableEditor editor = this.getAbstractThemeableEditor();
-		if (contentType.startsWith(IPHPConstants.PREFIX))
+		if (editor != null)
 		{
-			return new PHPContentAssistProcessor(editor);
+			if (contentType.startsWith(IPHPConstants.PREFIX))
+			{
+				return new PHPContentAssistProcessor(editor);
+			}
 		}
 		// In any other case, call the HTMLSourceViewerConfiguration to compute the assist processor.
 		return HTMLSourceViewerConfiguration.getContentAssistProcessor(contentType, editor);

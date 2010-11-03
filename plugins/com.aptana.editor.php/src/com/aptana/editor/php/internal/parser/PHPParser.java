@@ -2,6 +2,7 @@ package com.aptana.editor.php.internal.parser;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -118,7 +119,9 @@ public class PHPParser implements IParser
 				PHPEditorPlugin.logError(t);
 			}
 			reconciled(program, false, new NullProgressMonitor());
-		} else {
+		}
+		else
+		{
 			reconciled(null, false, new NullProgressMonitor());
 		}
 		return root;
@@ -133,30 +136,40 @@ public class PHPParser implements IParser
 	 * @throws java.lang.Exception
 	 * @see {@link #parse(IParseState)}
 	 */
-	public IParseNode parse(InputStream source) throws java.lang.Exception
+	public IParseRootNode parse(InputStream source) throws java.lang.Exception
 	{
-		Program ast = null;
-		try
-		{
-			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			// TODO: Shalom - Have this parser in a PHP parsers pool?
-
-			ASTParser parser = ASTParser.newParser(new InputStreamReader(source), version);
-			ast = parser.createAST(null);
-		}
-		catch (Exception e)
-		{
-			// TODO: handle exception
-			PHPEditorPlugin.logError(e);
-		}
+		Program ast = parseAST(new InputStreamReader(source));
 		if (ast != null)
 		{
-			IParseNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
+			IParseRootNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
 					.getEnd());
 			processChildren(ast, root, null);
 			return root;
 		}
 		return new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], 0, 0);
+	}
+
+	/**
+	 * Parse an return a {@link Program} (AST) for the given PHP source.<br>
+	 * This method is only parsing and does not update any state.
+	 * 
+	 * @param reader
+	 * @return A {@link Program} AST; Null, in case an error occurred. 
+	 */
+	public Program parseAST(Reader reader)
+	{
+		Program ast = null;
+		try
+		{
+			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
+			ASTParser parser = ASTParser.newParser(reader, version);
+			ast = parser.createAST(null);
+		}
+		catch (Exception e)
+		{
+			PHPEditorPlugin.logError(e);
+		}
+		return ast;
 	}
 
 	/**
