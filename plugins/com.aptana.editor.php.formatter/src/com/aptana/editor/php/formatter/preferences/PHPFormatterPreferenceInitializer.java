@@ -72,7 +72,6 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putBoolean(PHPFormatterConstants.INDENT_CASE_BODY, true);
 		store.putBoolean(PHPFormatterConstants.INDENT_GROUP_BODY, true);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT, false);
-		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_FINALLY_STATEMENT, false);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT, false);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT, false);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT, false);

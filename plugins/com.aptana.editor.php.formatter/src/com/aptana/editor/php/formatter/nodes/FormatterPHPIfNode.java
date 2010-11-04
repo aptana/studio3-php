@@ -34,12 +34,16 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org.eclipse.php.internal.core.ast.nodes.IfStatement;
+
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.parsing.ast.IParseNode;
 
 /**
- * @author Shalom
+ * PHP if-statement formatter node
+ * 
+ * @author Shalom Gibly <sgibly@aptana.com>
  */
 public class FormatterPHPIfNode extends FormatterPHPDeclarationNode
 {
@@ -51,15 +55,15 @@ public class FormatterPHPIfNode extends FormatterPHPDeclarationNode
 	 * @param hasBlockedChild
 	 * @param node
 	 */
-	public FormatterPHPIfNode(IFormatterDocument document, boolean hasBlockedChild, IParseNode node)
+	public FormatterPHPIfNode(IFormatterDocument document, boolean hasBlockedChild, ASTNode node)
 	{
 		super(document, hasBlockedChild, node);
 		// Check if this node is located in the 'false' block of a parent 'if'. In that case, we can say for sure that
 		// this 'if' arrives right after an 'else'.
-		if (node.getParent().getNodeType() == JSNodeTypes.IF)
+		if (node.getParent().getType() == ASTNode.IF_STATEMENT)
 		{
-			JSIfNode parentIfNode = (JSIfNode) node.getParent();
-			inElseIf = parentIfNode.getFalseBlock() == node;
+			IfStatement parentIfNode = (IfStatement) node.getParent();
+			inElseIf = parentIfNode.getFalseStatement() == node;
 		}
 	}
 

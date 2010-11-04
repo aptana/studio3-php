@@ -36,6 +36,8 @@ package com.aptana.editor.php.formatter;
 
 import java.io.StringReader;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
@@ -85,8 +87,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	protected static final String[] NEW_LINES_POSITIONS = { PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT,
 			PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT,
 			PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT,
-			PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT,
-			PHPFormatterConstants.NEW_LINES_BEFORE_FINALLY_STATEMENT };
+			PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT };
 
 	/**
 	 * Indentation constants
@@ -95,6 +96,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			PHPFormatterConstants.INDENT_CASE_BODY, PHPFormatterConstants.INDENT_SWITCH_BODY,
 			PHPFormatterConstants.INDENT_FUNCTION_BODY, PHPFormatterConstants.INDENT_GROUP_BODY };
 
+	private static Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
 	private String lineSeparator;
 
 	/**
@@ -163,7 +165,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public TextEdit format(String source, int offset, int length, int indentationLevel) throws FormatterException
 	{
-		String input = source.substring(offset, offset + length);
+		int offsetIncludedOpenTag = Math.max(0, findOpenTagOffset(source, offset));
+		String input = source.substring(offsetIncludedOpenTag, offset + length);
 
 		// We do not use a parse-state for the PHP, since we are just interested in the AST and do not want to update
 		// anything in the indexing.
@@ -178,14 +181,28 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
 						.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
-				final String output = format(input, rootNode, indentationLevel, offset);
+				final String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag);
 				if (output != null)
 				{
 					if (!input.equals(output))
 					{
 						if (equalsIgnoreWhitespaces(input, output))
 						{
-							return new ReplaceEdit(offset, length, output);
+							// We match the output to all possible PHP open-tags and then trim it to remove it with any
+							// other white-space that appear before it.
+							// For example, this output:
+							//     <?php
+							//       function foo() {}
+							// Will be trimmed to:
+							//   <-- new-line
+							//     function foo() {}  
+							int inPHPOffset = 0;
+							Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
+							if (matcher.find())
+							{
+								inPHPOffset = matcher.end();
+							}
+							return new ReplaceEdit(offset, length, output.substring(inPHPOffset));
 						}
 						else
 						{
@@ -212,6 +229,26 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			FormatterPlugin.logError(e);
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the offset of the PHP open tag that that precedes the given offset location.
+	 * 
+	 * @param source
+	 * @param offset
+	 * @return
+	 */
+	private int findOpenTagOffset(String source, int offset)
+	{
+		// We just look for the '<' char and that should cover all cases.
+		for (; offset >= 0; offset--)
+		{
+			if (source.charAt(offset) == '<')
+			{
+				break;
+			}
+		}
+		return offset;
 	}
 
 	/*

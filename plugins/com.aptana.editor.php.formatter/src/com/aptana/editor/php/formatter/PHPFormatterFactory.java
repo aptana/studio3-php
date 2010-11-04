@@ -74,7 +74,6 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 			PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT,
 			PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT,
 			PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT,
-			PHPFormatterConstants.NEW_LINES_BEFORE_FINALLY_STATEMENT,
 			PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION_IN_EXPRESSION,
 			PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION, PHPFormatterConstants.PRESERVED_LINES,
 			PHPFormatterConstants.BRACE_POSITION_BLOCK, PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE,

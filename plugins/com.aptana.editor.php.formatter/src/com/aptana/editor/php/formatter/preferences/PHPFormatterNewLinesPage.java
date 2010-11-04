@@ -84,8 +84,6 @@ public class PHPFormatterNewLinesPage extends FormatterModifyTabPage
 				Messages.PHPFormatterNewLinesPage_newLineBreakElseIf);
 		manager.createCheckbox(group, PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT,
 				Messages.PHPFormatterNewLinesPage_newLineBeforeCatch);
-		manager.createCheckbox(group, PHPFormatterConstants.NEW_LINES_BEFORE_FINALLY_STATEMENT,
-				Messages.PHPFormatterNewLinesPage_newLineBeforeFinally);
 		manager.createCheckbox(group, PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT,
 				Messages.PHPFormatterNewLinesPage_newLineBeforeWhileInDo);
 	}

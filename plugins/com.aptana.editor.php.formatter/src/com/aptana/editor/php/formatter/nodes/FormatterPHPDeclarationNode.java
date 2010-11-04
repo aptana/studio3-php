@@ -34,15 +34,16 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
-import com.aptana.parsing.ast.IParseNode;
 
 /**
  * A PHP declaration formatter node.<br>
- * This node represents a declaration part of a javascript block. It can be a function declaration, an if statement
- * part, a while statement declaration etc. Everything up to the open bracket (if exists) will be in this 'declaration'.
+ * This node represents a declaration part of a PHP block. It can be a function declaration, an if statement part, a
+ * while statement declaration etc. Everything up to the open bracket (if exists) will be in this 'declaration'.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
@@ -50,7 +51,7 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 {
 
 	protected boolean hasBlockedChild;
-	protected IParseNode node;
+	protected ASTNode node;
 
 	/**
 	 * @param document
@@ -60,7 +61,7 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 	 *            can be overwritten by a preference setting.
 	 * @param node
 	 */
-	public FormatterPHPDeclarationNode(IFormatterDocument document, boolean hasBlockedChild, IParseNode node)
+	public FormatterPHPDeclarationNode(IFormatterDocument document, boolean hasBlockedChild, ASTNode node)
 	{
 		super(document);
 		this.hasBlockedChild = hasBlockedChild;
@@ -77,22 +78,19 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 	{
 		// To change this behavior, it's recommended to create a designated subclass and override this method to return
 		// the value set in the preferences.
-		if (node instanceof JSBinaryOperatorNode)
-		{
-			return false;
-		}
+		// if (node instanceof JSBinaryOperatorNode)
+		// {
+		// return false;
+		// }
 		if (isPartOfExpression(node))
 		{
 			return false;
 		}
-		switch (node.getNodeType())
+		switch (node.getType())
 		{
-			case JSNodeTypes.CATCH:
+			case ASTNode.CATCH_CLAUSE:
 				return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT);
-			case JSNodeTypes.FINALLY:
-				return !hasBlockedChild
-						|| getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_FINALLY_STATEMENT);
-			case JSNodeTypes.FUNCTION:
+			case ASTNode.FUNCTION_DECLARATION:
 				if (isPartOfExpression(node.getParent()))
 				{
 					return false;
@@ -108,23 +106,19 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 	 * @param node
 	 * @return
 	 */
-	public static boolean isPartOfExpression(IParseNode node)
+	public static boolean isPartOfExpression(ASTNode node)
 	{
 		if (node == null)
 		{
 			return false;
 		}
-		switch (node.getNodeType())
+		switch (node.getType())
 		{
-			case JSNodeTypes.DECLARATION:
-			case JSNodeTypes.ASSIGN:
-			case JSNodeTypes.RETURN:
-			case JSNodeTypes.INVOKE:
-			case JSNodeTypes.GROUP:
-			case JSNodeTypes.ARGUMENTS:
-			case JSNodeTypes.CONDITIONAL:
-			case JSNodeTypes.NAME_VALUE_PAIR:
-			case JSNodeTypes.GET_PROPERTY:
+			case ASTNode.CLASS_NAME:
+			case ASTNode.ASSIGNMENT:
+			case ASTNode.RETURN_STATEMENT:
+			case ASTNode.GOTO_STATEMENT:
+			case ASTNode.CONDITIONAL_EXPRESSION:
 				return true;
 		}
 		return false;
@@ -137,11 +131,6 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 	@Override
 	public int getSpacesCountBefore()
 	{
-		// TODO preferences?
-		if (node.getParent().getNodeType() == JSNodeTypes.GROUP)
-		{
-			return 0;
-		}
 		return 1;
 	}
 

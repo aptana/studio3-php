@@ -68,7 +68,6 @@ public class Messages extends NLS
 	public static String PHPFormatterNewLinesPage_newLineBeforeCatch;
 	public static String PHPFormatterNewLinesPage_newLineBeforeElse;
 	public static String PHPFormatterNewLinesPage_newLineBreakElseIf;
-	public static String PHPFormatterNewLinesPage_newLineBeforeFinally;
 	public static String PHPFormatterNewLinesPage_newLineBeforeIf;
 	public static String PHPFormatterNewLinesPage_newLineBeforeWhileInDo;
 
