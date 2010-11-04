@@ -48,12 +48,15 @@ import com.aptana.formatter.ui.CodeFormatterConstants;
 public class FormatterPHPBlockNode extends FormatterBlockWithBeginEndNode
 {
 
+	private boolean isStandAloneBlock;
+
 	/**
 	 * @param document
 	 */
-	public FormatterPHPBlockNode(IFormatterDocument document)
+	public FormatterPHPBlockNode(IFormatterDocument document, boolean isStandAloneBlock)
 	{
 		super(document);
+		this.isStandAloneBlock = isStandAloneBlock;
 	}
 
 	/*
@@ -83,7 +86,7 @@ public class FormatterPHPBlockNode extends FormatterBlockWithBeginEndNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		return CodeFormatterConstants.NEW_LINE.equals(getDocument()
+		return isStandAloneBlock || CodeFormatterConstants.NEW_LINE.equals(getDocument()
 				.getString(PHPFormatterConstants.BRACE_POSITION_BLOCK));
 	}
 

@@ -49,7 +49,7 @@ public class FormatterPHPLoopNode extends FormatterPHPBlockNode
 	 */
 	public FormatterPHPLoopNode(IFormatterDocument document, boolean hasCurlyBlock)
 	{
-		super(document);
+		super(document, false);
 		this.hasCurlyBlock = hasCurlyBlock;
 	}
 

@@ -51,7 +51,7 @@ public class FormatterPHPCaseBodyNode extends FormatterPHPBlockNode
 	 */
 	public FormatterPHPCaseBodyNode(IFormatterDocument document)
 	{
-		super(document);
+		super(document, false);
 	}
 
 	/*

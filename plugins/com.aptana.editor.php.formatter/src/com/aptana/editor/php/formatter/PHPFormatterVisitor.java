@@ -116,7 +116,6 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
 import com.aptana.formatter.FormatterDocument;
-import com.aptana.formatter.nodes.AbstractFormatterNodeBuilder;
 
 /**
  * @author Shalom
@@ -125,13 +124,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 {
 
 	private FormatterDocument document;
-	private AbstractFormatterNodeBuilder builder;
+	private PHPFormatterNodeBuilder builder;
 
 	/**
 	 * @param builder
 	 * @param document
 	 */
-	public PHPFormatterVisitor(FormatterDocument document, AbstractFormatterNodeBuilder builder)
+	public PHPFormatterVisitor(FormatterDocument document, PHPFormatterNodeBuilder builder)
 	{
 		this.document = document;
 		this.builder = builder;
@@ -275,8 +274,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ASTError astError)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(astError);
+		builder.setHasErrors(true);
+		return false;
 	}
 
 	/*
@@ -311,8 +310,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Block block)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(block);
+		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, block.getParent().getType() == ASTNode.PROGRAM);
+		blockNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
+		builder.push(blockNode);
+		block.childrenAccept(this);
+		int end = block.getEnd();
+		builder.checkedPop(blockNode, end - 1);
+		if (block.isCurly())
+		{
+			blockNode.setEnd(builder.createTextNode(document, end - 1, end));
+		}
+		else
+		{
+			blockNode.setEnd(builder.createTextNode(document, end, end));
+		}
+		return false;
 	}
 
 	/*
@@ -1117,7 +1129,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void pushBlockNode(ASTNode block, boolean consumeEndingSemicolon)
 	{
-		FormatterPHPBlockNode bodyNode = new FormatterPHPBlockNode(document);
+		FormatterPHPBlockNode bodyNode = new FormatterPHPBlockNode(document, false);
 		bodyNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
 		builder.push(bodyNode);
 		// visit the children

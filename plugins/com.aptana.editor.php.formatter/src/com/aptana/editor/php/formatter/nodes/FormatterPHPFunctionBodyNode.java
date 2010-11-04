@@ -56,7 +56,7 @@ public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
 	 */
 	public FormatterPHPFunctionBodyNode(IFormatterDocument document, boolean functionPartOfExpression)
 	{
-		super(document);
+		super(document, false);
 		this.functionPartOfExpression = functionPartOfExpression;
 	}
 

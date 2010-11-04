@@ -51,7 +51,7 @@ public class FormatterPHPSwitchNode extends FormatterPHPBlockNode
 	 */
 	public FormatterPHPSwitchNode(IFormatterDocument document)
 	{
-		super(document);
+		super(document, false);
 	}
 
 	/*

@@ -47,7 +47,7 @@ public interface PHPFormatterConstants
 	/**
 	 * PHP formatter ID.
 	 */
-	public static final String FORMATTER_ID = "js.formatter"; //$NON-NLS-1$
+	public static final String FORMATTER_ID = "php.formatter"; //$NON-NLS-1$
 
 	public static final String FORMATTER_TAB_CHAR = FORMATTER_ID + '.' + CodeFormatterConstants.FORMATTER_TAB_CHAR;
 	public static final String FORMATTER_TAB_SIZE = FORMATTER_ID + '.' + CodeFormatterConstants.FORMATTER_TAB_SIZE;
