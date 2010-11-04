@@ -253,7 +253,9 @@
    <extension point="org.eclipse.ui.editors.annotationTypes">
 		<type name="com.aptana.php.ui.occurrences">
 		</type>		
-		<type name="com.aptana.php.ui.occurrences.write">
+		<type
+        name="com.aptana.php.ui.occurrences.write"
+        super="com.aptana.php.ui.occurrences">
 		</type>
    </extension>
    <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
