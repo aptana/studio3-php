@@ -59,9 +59,9 @@ public interface PHPFormatterConstants
 	// Indentation
 	public static final String INDENT_BLOCKS = FORMATTER_ID + ".indent.blocks"; //$NON-NLS-1$
 	public static final String INDENT_FUNCTION_BODY = FORMATTER_ID + ".indent.function.body"; //$NON-NLS-1$
+	public static final String INDENT_TYPE_BODY = FORMATTER_ID + ".indent.class.body"; //$NON-NLS-1$
 	public static final String INDENT_SWITCH_BODY = FORMATTER_ID + ".indent.switch.body"; //$NON-NLS-1$
 	public static final String INDENT_CASE_BODY = FORMATTER_ID + ".indent.case.body"; //$NON-NLS-1$
-	public static final String INDENT_GROUP_BODY = FORMATTER_ID + ".indent.group.body"; //$NON-NLS-1$
 	public static final String FORMATTER_INDENTATION_SIZE = FORMATTER_ID + '.'
 			+ CodeFormatterConstants.FORMATTER_INDENTATION_SIZE;
 
@@ -73,13 +73,13 @@ public interface PHPFormatterConstants
 
 	// Empty lines
 	public static final String LINES_AFTER_FUNCTION_DECLARATION = FORMATTER_ID + ".line.after.function.declaration"; //$NON-NLS-1$
-	public static final String LINES_AFTER_FUNCTION_DECLARATION_IN_EXPRESSION = FORMATTER_ID
-			+ ".line.after.function.declaration.expression"; //$NON-NLS-1$
+	public static final String LINES_AFTER_TYPE_DECLARATION = FORMATTER_ID + ".line.after.class.declaration"; //$NON-NLS-1$
 	public static final String PRESERVED_LINES = FORMATTER_ID + ".line.preserve"; //$NON-NLS-1$
 
 	// Braces position
 	public static final String BRACE_POSITION_FUNCTION_DECLARATION = FORMATTER_ID
 			+ ".brace.position.function.declaration"; //$NON-NLS-1$
+	public static final String BRACE_POSITION_TYPE_DECLARATION = FORMATTER_ID + ".brace.position.class.declaration"; //$NON-NLS-1$
 	public static final String BRACE_POSITION_BLOCK = FORMATTER_ID + ".brace.position.blocks"; //$NON-NLS-1$
 	public static final String BRACE_POSITION_BLOCK_IN_SWITCH = FORMATTER_ID + ".brace.position.switch.block"; //$NON-NLS-1$
 	public static final String BRACE_POSITION_BLOCK_IN_CASE = FORMATTER_ID + ".brace.position.case.block"; //$NON-NLS-1$

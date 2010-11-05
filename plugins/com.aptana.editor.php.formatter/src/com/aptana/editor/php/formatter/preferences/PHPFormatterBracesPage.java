@@ -88,6 +88,8 @@ public class PHPFormatterBracesPage extends FormatterModifyTabPage
 				GridData.FILL_HORIZONTAL);
 		manager.createCombo(group, PHPFormatterConstants.BRACE_POSITION_BLOCK, Messages.PHPFormatterBracesPage_blocks,
 				bracesOptionKeys, bracesOptionNames);
+		manager.createCombo(group, PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION,
+				Messages.PHPFormatterBracesPage_classDeclaraion, bracesOptionKeys, bracesOptionNames);
 		manager.createCombo(group, PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION,
 				Messages.PHPFormatterBracesPage_functionDeclaraion, bracesOptionKeys, bracesOptionNames);
 		manager.createCombo(group, PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH,

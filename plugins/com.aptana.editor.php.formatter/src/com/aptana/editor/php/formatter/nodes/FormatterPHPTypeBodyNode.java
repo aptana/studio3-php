@@ -40,24 +40,21 @@ import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.ui.CodeFormatterConstants;
 
 /**
- * A PHP function body formatter node.<br>
- * This node represents the body part of the function (everything between the curly-brackets).
+ * A PHP class/interface body formatter node.<br>
+ * This node represents the body part of the class/interface (everything between the curly-brackets).
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
+public class FormatterPHPTypeBodyNode extends FormatterPHPBlockNode
 {
-
-	private boolean functionPartOfExpression;
 
 	/**
 	 * @param document
 	 * @param functionPartOfExpression
 	 */
-	public FormatterPHPFunctionBodyNode(IFormatterDocument document, boolean functionPartOfExpression)
+	public FormatterPHPTypeBodyNode(IFormatterDocument document)
 	{
 		super(document, false);
-		this.functionPartOfExpression = functionPartOfExpression;
 	}
 
 	/*
@@ -69,7 +66,7 @@ public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
 	{
 		// adds a new line before the start curly bracket
 		return CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
-				PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION));
+				PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION));
 	}
 
 	/*
@@ -79,7 +76,7 @@ public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isIndenting()
 	{
-		return getDocument().getBoolean(PHPFormatterConstants.INDENT_FUNCTION_BODY);
+		return getDocument().getBoolean(PHPFormatterConstants.INDENT_TYPE_BODY);
 	}
 
 	/*
@@ -101,10 +98,6 @@ public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
 	@Override
 	protected int getBlankLinesAfter(IFormatterContext context)
 	{
-		if (functionPartOfExpression)
-		{
-			return 0;
-		}
-		return getDocument().getInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION);
+		return getDocument().getInt(PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION);
 	}
 }

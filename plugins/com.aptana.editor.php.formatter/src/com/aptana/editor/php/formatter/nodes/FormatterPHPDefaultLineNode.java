@@ -61,7 +61,12 @@ public class FormatterPHPDefaultLineNode extends FormatterBlockWithBeginNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		return true;
+		IFormatterDocument document = getDocument();
+		if (document.getLength() > getEndOffset() - 1)
+		{
+			return document.charAt(getEndOffset() - 1) == ';';
+		}
+		return false;
 	}
 
 }

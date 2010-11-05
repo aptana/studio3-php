@@ -34,6 +34,8 @@
  */
 package com.aptana.editor.php.formatter;
 
+import java.util.List;
+
 import org.eclipse.php.internal.core.ast.nodes.ASTError;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org.eclipse.php.internal.core.ast.nodes.ArrayAccess;
@@ -102,6 +104,7 @@ import org.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org.eclipse.php.internal.core.ast.nodes.ThrowStatement;
 import org.eclipse.php.internal.core.ast.nodes.TryStatement;
+import org.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
 import org.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
@@ -111,10 +114,12 @@ import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPDefaultLineNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.formatter.FormatterDocument;
 
 /**
@@ -122,6 +127,9 @@ import com.aptana.formatter.FormatterDocument;
  */
 public class PHPFormatterVisitor extends AbstractVisitor
 {
+
+	private static final char[] SEMICOLON_AND_COLON = new char[] { ';', ',' };
+	private static final char[] SEMICOLON = new char[] { ';' };
 
 	private FormatterDocument document;
 	private PHPFormatterNodeBuilder builder;
@@ -310,7 +318,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Block block)
 	{
-		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, block.getParent().getType() == ASTNode.PROGRAM);
+		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document,
+				block.getParent().getType() == ASTNode.PROGRAM);
 		blockNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
 		builder.push(blockNode);
 		block.childrenAccept(this);
@@ -318,7 +327,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(blockNode, end - 1);
 		if (block.isCurly())
 		{
-			blockNode.setEnd(builder.createTextNode(document, end - 1, end));
+			int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
+			blockNode.setEnd(builder.createTextNode(document, end - 1, endWithSemicolon));
 		}
 		else
 		{
@@ -372,8 +382,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ClassDeclaration classDeclaration)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(classDeclaration);
+		visitTypeDeclaration(classDeclaration);
+		return false;
 	}
 
 	/*
@@ -611,7 +621,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		body.childrenAccept(this);
 		int bodyEnd = body.getEnd();
 		builder.checkedPop(bodyNode, bodyEnd - 1);
-		int end = locateColonOrSemicolonInLine(bodyEnd, document);
+		int end = locateCharMatchInLine(bodyEnd, SEMICOLON_AND_COLON, document);
 		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, end));
 		return false;
 	}
@@ -624,8 +634,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FunctionInvocation functionInvocation)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(functionInvocation);
+		FormatterPHPDefaultLineNode lineNode = new FormatterPHPDefaultLineNode(document);
+		int end = locateCharMatchInLine(functionInvocation.getEnd(), SEMICOLON, document);
+		lineNode.setBegin(builder.createTextNode(document, functionInvocation.getStart(), end));
+		builder.push(lineNode);
+		builder.checkedPop(lineNode, -1);
+		return false;
 	}
 
 	/*
@@ -762,8 +776,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(InterfaceDeclaration interfaceDeclaration)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(interfaceDeclaration);
+		visitTypeDeclaration(interfaceDeclaration);
+		return false;
 	}
 
 	/*
@@ -799,8 +813,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(MethodDeclaration methodDeclaration)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(methodDeclaration);
+		// return true to have a continuous visit of the child function.
+		return true;
 	}
 
 	/*
@@ -1123,6 +1137,46 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	// ###################### Helper Methods ###################### //
 
 	/**
+	 * Visit class/interface declaration
+	 * 
+	 * @param typeDeclaration
+	 */
+	private void visitTypeDeclaration(TypeDeclaration typeDeclaration)
+	{
+		// Locate the end offset of the declaration (before the block starts)
+		Block body = typeDeclaration.getBody();
+		int declarationBeginEnd = body.getStart() - 1;
+		List<Identifier> interfaces = typeDeclaration.interfaces();
+		if (interfaces != null && !interfaces.isEmpty())
+		{
+			declarationBeginEnd = interfaces.get(interfaces.size() - 1).getEnd();
+		}
+		else if (typeDeclaration.getType() == ASTNode.CLASS_DECLARATION
+				&& ((ClassDeclaration) typeDeclaration).getSuperClass() != null)
+		{
+			declarationBeginEnd = ((ClassDeclaration) typeDeclaration).getSuperClass().getEnd();
+		}
+		else
+		{
+			declarationBeginEnd = typeDeclaration.getName().getEnd();
+		}
+		FormatterPHPDeclarationNode typeNode = new FormatterPHPDeclarationNode(document, true, typeDeclaration);
+		typeNode.setBegin(builder.createTextNode(document, typeDeclaration.getStart(), declarationBeginEnd));
+		builder.push(typeNode);
+		builder.checkedPop(typeNode, -1);
+
+		// add the class body
+		FormatterPHPTypeBodyNode typeBodyNode = new FormatterPHPTypeBodyNode(document);
+		typeBodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
+		builder.push(typeBodyNode);
+		body.childrenAccept(this);
+		int end = body.getEnd();
+		builder.checkedPop(typeBodyNode, end - 1);
+		int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
+		typeBodyNode.setEnd(builder.createTextNode(document, end - 1, endWithSemicolon));
+	}
+
+	/**
 	 * Push a FormatterPHPBlockNode
 	 * 
 	 * @param block
@@ -1138,28 +1192,33 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int end = block.getEnd();
 		if (consumeEndingSemicolon)
 		{
-			end = locateColonOrSemicolonInLine(end, document);
+			end = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
 		}
 		bodyNode.setEnd(builder.createTextNode(document, block.getEnd() - 1, end));
 	}
 
 	/**
-	 * Scan for a colon or a semicolon terminator located at the same line. Return the given offset if non is found.
+	 * Scan for a list of char terminator located at the same line. Return the given offset if non is found.
 	 * 
 	 * @param offset
+	 * @param chars
+	 *            An array of chars to match
 	 * @param document
-	 * @return The semicolon offset; The given offset if a semicolon not found.
+	 * @return The first match offset; The given offset if a match not found.
 	 */
-	private int locateColonOrSemicolonInLine(int offset, FormatterDocument document)
+	private int locateCharMatchInLine(int offset, char[] chars, FormatterDocument document)
 	{
 		int i = offset;
 		int size = document.getLength();
 		for (; i < size; i++)
 		{
 			char c = document.charAt(i);
-			if (c == ';' || c == ',')
+			for (char toMatch : chars)
 			{
-				return i + 1;
+				if (c == toMatch)
+				{
+					return i + 1;
+				}
 			}
 			if (c == '\n' || c == '\r')
 			{

@@ -68,10 +68,10 @@ public class PHPFormatterBlankLinesPage extends FormatterModifyTabPage
 	{
 		Group blankLinesGroup = SWTFactory.createGroup(parent, Messages.PHPFormatterBlankLinesPage_blankLinesGroupLabel,
 				2, 1, GridData.FILL_HORIZONTAL);
+		manager.createNumber(blankLinesGroup, PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION,
+				Messages.PHPFormatterBlankLinesPage_afterClassDeclaration);
 		manager.createNumber(blankLinesGroup, PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION,
 				Messages.PHPFormatterBlankLinesPage_afterFunctionDeclaration);
-		manager.createNumber(blankLinesGroup, PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION_IN_EXPRESSION,
-				Messages.PHPFormatterBlankLinesPage_afterFunctionDeclarationInExpression);
 
 		Group preserveLinesGroup = SWTFactory.createGroup(parent,
 				Messages.PHPFormatterBlankLinesPage_existingBlankLinesGroupLabel, 2, 1, GridData.FILL_HORIZONTAL);

@@ -42,13 +42,14 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "com.aptana.editor.php.formatter.preferences.Messages"; //$NON-NLS-1$
+	public static String PHPFormatterBlankLinesPage_afterClassDeclaration;
 	public static String PHPFormatterBlankLinesPage_afterFunctionDeclaration;
-	public static String PHPFormatterBlankLinesPage_afterFunctionDeclarationInExpression;
 	public static String PHPFormatterBlankLinesPage_blankLinesGroupLabel;
 	public static String PHPFormatterBlankLinesPage_existingBlankLinesGroupLabel;
 	public static String PHPFormatterBlankLinesPage_existingBlankLinesToPreserve;
 	public static String PHPFormatterBracesPage_blocks;
 	public static String PHPFormatterBracesPage_caseStateMent;
+	public static String PHPFormatterBracesPage_classDeclaraion;
 	public static String PHPFormatterBracesPage_functionDeclaraion;
 	public static String PHPFormatterBracesPage_switchStatement;
 	public static String PHPFormatterCommentsPage_enableWrapping;
@@ -74,8 +75,8 @@ public class Messages extends NLS
 	public static String PHPFormatterIndentationTabPage_statementsWithinBlocks;
 	public static String PHPFormatterIndentationTabPage_statementsWithinSwitch;
 	public static String PHPFormatterIndentationTabPage_statementsWithinCase;
+	public static String PHPFormatterIndentationTabPage_statementsWithinTypes;
 	public static String PHPFormatterIndentationTabPage_statementsWithinFunctions;
-	public static String PHPFormatterIndentationTabPage_statementsWithinJSGroups;
 	static
 	{
 		// initialize resource bundle

@@ -79,7 +79,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	protected static final String[] BRACE_POSITIONS = { PHPFormatterConstants.BRACE_POSITION_BLOCK,
 			PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE, PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH,
-			PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION };
+			PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION,
+			PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION };
 
 	/**
 	 * New-lines constants
@@ -94,7 +95,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	protected static final String[] INDENTATIONS = { PHPFormatterConstants.INDENT_BLOCKS,
 			PHPFormatterConstants.INDENT_CASE_BODY, PHPFormatterConstants.INDENT_SWITCH_BODY,
-			PHPFormatterConstants.INDENT_FUNCTION_BODY, PHPFormatterConstants.INDENT_GROUP_BODY };
+			PHPFormatterConstants.INDENT_FUNCTION_BODY, PHPFormatterConstants.INDENT_TYPE_BODY };
 
 	private static Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
 	private String lineSeparator;
@@ -191,11 +192,11 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 							// We match the output to all possible PHP open-tags and then trim it to remove it with any
 							// other white-space that appear before it.
 							// For example, this output:
-							//     <?php
-							//       function foo() {}
+							// <?php
+							// function foo() {}
 							// Will be trimmed to:
-							//   <-- new-line
-							//     function foo() {}  
+							// <-- new-line
+							// function foo() {}
 							int inPHPOffset = 0;
 							Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
 							if (matcher.find())
@@ -317,10 +318,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		FormatterDocument document = new FormatterDocument(input);
 		document.setInt(PHPFormatterConstants.FORMATTER_TAB_SIZE, getInt(PHPFormatterConstants.FORMATTER_TAB_SIZE));
 		document.setBoolean(PHPFormatterConstants.WRAP_COMMENTS, getBoolean(PHPFormatterConstants.WRAP_COMMENTS));
+		document.setInt(PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION,
+				getInt(PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION));
 		document.setInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION,
 				getInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION));
-		document.setInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION_IN_EXPRESSION,
-				getInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION_IN_EXPRESSION));
 		document.setInt(ScriptFormattingContextProperties.CONTEXT_ORIGINAL_OFFSET, offset);
 
 		// Set the indentation values

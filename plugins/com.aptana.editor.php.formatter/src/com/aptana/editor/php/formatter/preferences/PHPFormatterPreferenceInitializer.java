@@ -67,20 +67,21 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putBoolean(PHPFormatterConstants.WRAP_COMMENTS, false);
 		store.putInt(PHPFormatterConstants.WRAP_COMMENTS_LENGTH, 80);
 		store.putBoolean(PHPFormatterConstants.INDENT_BLOCKS, true);
+		store.putBoolean(PHPFormatterConstants.INDENT_TYPE_BODY, true);
 		store.putBoolean(PHPFormatterConstants.INDENT_FUNCTION_BODY, true);
 		store.putBoolean(PHPFormatterConstants.INDENT_SWITCH_BODY, true);
 		store.putBoolean(PHPFormatterConstants.INDENT_CASE_BODY, true);
-		store.putBoolean(PHPFormatterConstants.INDENT_GROUP_BODY, true);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT, false);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT, false);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT, false);
 		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT, false);
+		store.putInt(PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION, 1);
 		store.putInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION, 1);
-		store.putInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION_IN_EXPRESSION, 0);
 		store.putInt(PHPFormatterConstants.PRESERVED_LINES, 1);
 		store.put(PHPFormatterConstants.BRACE_POSITION_BLOCK, CodeFormatterConstants.SAME_LINE);
 		store.put(PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE, CodeFormatterConstants.SAME_LINE);
 		store.put(PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH, CodeFormatterConstants.SAME_LINE);
+		store.put(PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION, CodeFormatterConstants.SAME_LINE);
 		store.put(PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION, CodeFormatterConstants.SAME_LINE);
 		try
 		{

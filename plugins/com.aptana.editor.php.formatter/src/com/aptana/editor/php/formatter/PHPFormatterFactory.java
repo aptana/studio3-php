@@ -33,6 +33,7 @@
  * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.editor.php.formatter;
+
 import java.net.URL;
 import java.util.Map;
 
@@ -69,16 +70,16 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 			PHPFormatterConstants.FORMATTER_TAB_SIZE, PHPFormatterConstants.WRAP_COMMENTS,
 			PHPFormatterConstants.WRAP_COMMENTS_LENGTH, PHPFormatterConstants.INDENT_BLOCKS,
 			PHPFormatterConstants.INDENT_CASE_BODY, PHPFormatterConstants.INDENT_SWITCH_BODY,
-			PHPFormatterConstants.INDENT_FUNCTION_BODY, PHPFormatterConstants.INDENT_GROUP_BODY,
+			PHPFormatterConstants.INDENT_FUNCTION_BODY, PHPFormatterConstants.INDENT_TYPE_BODY,
 			PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT,
 			PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT,
 			PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT,
 			PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT,
-			PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION_IN_EXPRESSION,
-			PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION, PHPFormatterConstants.PRESERVED_LINES,
-			PHPFormatterConstants.BRACE_POSITION_BLOCK, PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE,
-			PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH,
-			PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION };
+			PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION, PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION,
+			PHPFormatterConstants.PRESERVED_LINES, PHPFormatterConstants.BRACE_POSITION_BLOCK,
+			PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE, PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH,
+			PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION,
+			PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION };
 
 	public PreferenceKey[] getPreferenceKeys()
 	{

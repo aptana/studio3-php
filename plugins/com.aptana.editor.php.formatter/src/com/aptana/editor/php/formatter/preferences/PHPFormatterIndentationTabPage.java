@@ -118,14 +118,14 @@ public class PHPFormatterIndentationTabPage extends FormatterModifyTabPage
 				GridData.FILL_HORIZONTAL);
 		manager.createCheckbox(group, PHPFormatterConstants.INDENT_BLOCKS,
 				Messages.PHPFormatterIndentationTabPage_statementsWithinBlocks);
+		manager.createCheckbox(group, PHPFormatterConstants.INDENT_TYPE_BODY,
+				Messages.PHPFormatterIndentationTabPage_statementsWithinTypes);
 		manager.createCheckbox(group, PHPFormatterConstants.INDENT_FUNCTION_BODY,
 				Messages.PHPFormatterIndentationTabPage_statementsWithinFunctions);
 		manager.createCheckbox(group, PHPFormatterConstants.INDENT_SWITCH_BODY,
 				Messages.PHPFormatterIndentationTabPage_statementsWithinSwitch);
 		manager.createCheckbox(group, PHPFormatterConstants.INDENT_CASE_BODY,
 				Messages.PHPFormatterIndentationTabPage_statementsWithinCase);
-		manager.createCheckbox(group, PHPFormatterConstants.INDENT_GROUP_BODY,
-				Messages.PHPFormatterIndentationTabPage_statementsWithinJSGroups);
 	}
 
 	/**
