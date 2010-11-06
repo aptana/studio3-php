@@ -1007,8 +1007,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(StaticMethodInvocation staticMethodInvocation)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(staticMethodInvocation);
+		// TODO - Need to handle a line break in the invocation...
+		FormatterPHPDefaultLineNode lineNode = new FormatterPHPDefaultLineNode(document);
+		int end = locateCharMatchInLine(staticMethodInvocation.getEnd(), SEMICOLON, document);
+		lineNode.setBegin(builder.createTextNode(document, staticMethodInvocation.getStart(), end));
+		builder.push(lineNode);
+		builder.checkedPop(lineNode, -1);
+		return false;
 	}
 
 	/*

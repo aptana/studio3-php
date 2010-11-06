@@ -44,6 +44,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.php.formatter.preferences.PHPFormatterModifyDialog;
+import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
 import com.aptana.formatter.AbstractScriptFormatterFactory;
 import com.aptana.formatter.IScriptFormatter;
@@ -121,5 +122,14 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 	public IPreferenceStore getPreferenceStore()
 	{
 		return PHPCodeFormatterPlugin.getDefault().getPreferenceStore();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.IScriptFormatterFactory#getPartitioningConfiguration()
+	 */
+	public Object getPartitioningConfiguration()
+	{
+		return PHPSourceConfiguration.getDefault();
 	}
 }
