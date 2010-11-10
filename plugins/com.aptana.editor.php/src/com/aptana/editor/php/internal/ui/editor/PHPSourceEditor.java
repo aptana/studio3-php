@@ -475,7 +475,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
 			if (files == null || files.length == 0)
 			{
-				return createLocalFileModule(uri);
+				return createSystemFileModule(uri, false);
 			}
 			this.isOutOfWorkspace = false;
 
@@ -487,7 +487,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 					{
 						// we are outside of PHP project (probably web project or
 						// other)
-						return createLocalFileModule(uri);
+						return createSystemFileModule(uri, true);
 					}
 				}
 				catch (CoreException e)
@@ -522,10 +522,10 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		return super.getProgressMonitor();
 	}
 
-	private IModule createLocalFileModule(URI uri)
+	private IModule createSystemFileModule(URI uri, boolean isInWorkspace)
 	{
 		File file = new File(uri.getPath());
-		FileSystemModule fileSystemModule = new FileSystemModule(file, new SingleFileBuildPath(file));
+		FileSystemModule fileSystemModule = new FileSystemModule(file, new SingleFileBuildPath(file), isInWorkspace);
 		this.isOutOfWorkspace = true;
 		module = fileSystemModule;
 		sourceModule = null;

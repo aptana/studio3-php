@@ -42,7 +42,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -150,7 +152,16 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		}
 		else if (module instanceof FileSystemModule)
 		{
-			return ((FileSystemModule) module).getExternalFile();
+			FileSystemModule fsm = (FileSystemModule) module;
+			// In case this 'FileSystemModule' is actually pointing to a location in the workspace, which is not under a
+			// PHP project, we return an IFile for the path of this resource so that the error annotations will work on
+			// it (see https://aptana.lighthouseapp.com/projects/35272-studio/tickets/1346)
+			if (fsm.isInWorkspace())
+			{
+				IPath iPath = Path.fromOSString(fsm.getFullPath());
+				return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(iPath);
+			}
+			return fsm.getExternalFile();
 		}
 		return null;
 	}
