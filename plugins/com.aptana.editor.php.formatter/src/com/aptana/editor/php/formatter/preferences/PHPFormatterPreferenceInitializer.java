@@ -34,13 +34,13 @@
  */
 package com.aptana.editor.php.formatter.preferences;
 
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.*;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.editor.php.formatter.PHPCodeFormatterPlugin;
-import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.epl.FormatterPlugin;
 import com.aptana.formatter.ui.CodeFormatterConstants;
 
@@ -61,28 +61,36 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 	{
 		IEclipsePreferences store = new DefaultScope().getNode(PHPCodeFormatterPlugin.PLUGIN_ID);
 
-		store.put(PHPFormatterConstants.FORMATTER_TAB_CHAR, CodeFormatterConstants.SPACE);
-		store.put(PHPFormatterConstants.FORMATTER_TAB_SIZE, "4"); //$NON-NLS-1$
-		store.put(PHPFormatterConstants.FORMATTER_INDENTATION_SIZE, "4"); //$NON-NLS-1$
-		store.putBoolean(PHPFormatterConstants.WRAP_COMMENTS, false);
-		store.putInt(PHPFormatterConstants.WRAP_COMMENTS_LENGTH, 80);
-		store.putBoolean(PHPFormatterConstants.INDENT_BLOCKS, true);
-		store.putBoolean(PHPFormatterConstants.INDENT_TYPE_BODY, true);
-		store.putBoolean(PHPFormatterConstants.INDENT_FUNCTION_BODY, true);
-		store.putBoolean(PHPFormatterConstants.INDENT_SWITCH_BODY, true);
-		store.putBoolean(PHPFormatterConstants.INDENT_CASE_BODY, true);
-		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT, false);
-		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT, false);
-		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT, false);
-		store.putBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT, false);
-		store.putInt(PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION, 1);
-		store.putInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION, 1);
-		store.putInt(PHPFormatterConstants.PRESERVED_LINES, 1);
-		store.put(PHPFormatterConstants.BRACE_POSITION_BLOCK, CodeFormatterConstants.SAME_LINE);
-		store.put(PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE, CodeFormatterConstants.SAME_LINE);
-		store.put(PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH, CodeFormatterConstants.SAME_LINE);
-		store.put(PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION, CodeFormatterConstants.SAME_LINE);
-		store.put(PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION, CodeFormatterConstants.SAME_LINE);
+		store.put(FORMATTER_TAB_CHAR, CodeFormatterConstants.SPACE);
+		store.put(FORMATTER_TAB_SIZE, "4"); //$NON-NLS-1$
+		store.put(FORMATTER_INDENTATION_SIZE, "4"); //$NON-NLS-1$
+		store.putBoolean(WRAP_COMMENTS, false);
+		store.putInt(WRAP_COMMENTS_LENGTH, 80);
+		store.putBoolean(INDENT_BLOCKS, true);
+		store.putBoolean(INDENT_TYPE_BODY, true);
+		store.putBoolean(INDENT_FUNCTION_BODY, true);
+		store.putBoolean(INDENT_SWITCH_BODY, true);
+		store.putBoolean(INDENT_CASE_BODY, true);
+		store.putBoolean(NEW_LINES_BEFORE_CATCH_STATEMENT, false);
+		store.putBoolean(NEW_LINES_BEFORE_ELSE_STATEMENT, false);
+		store.putBoolean(NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT, false);
+		store.putBoolean(NEW_LINES_BEFORE_DO_WHILE_STATEMENT, false);
+		store.putInt(LINES_AFTER_TYPE_DECLARATION, 1);
+		store.putInt(LINES_AFTER_FUNCTION_DECLARATION, 1);
+		store.putInt(PRESERVED_LINES, 1);
+		store.put(BRACE_POSITION_BLOCK, CodeFormatterConstants.SAME_LINE);
+		store.put(BRACE_POSITION_BLOCK_IN_CASE, CodeFormatterConstants.SAME_LINE);
+		store.put(BRACE_POSITION_BLOCK_IN_SWITCH, CodeFormatterConstants.SAME_LINE);
+		store.put(BRACE_POSITION_TYPE_DECLARATION, CodeFormatterConstants.SAME_LINE);
+		store.put(BRACE_POSITION_FUNCTION_DECLARATION, CodeFormatterConstants.SAME_LINE);
+		store.putInt(SPACES_BEFORE_METHOD_INVOCATION, 0);
+		store.putInt(SPACES_AFTER_METHOD_INVOCATION, 0);
+		store.putInt(SPACES_BEFORE_STATIC_INVOCATION, 0);
+		store.putInt(SPACES_AFTER_STATIC_INVOCATION, 0);
+		store.putInt(SPACES_BEFORE_ASSIGNMENT, 1);
+		store.putInt(SPACES_AFTER_ASSIGNMENT, 1);
+		store.putInt(SPACES_BEFORE_COMMAS, 0);
+		store.putInt(SPACES_AFTER_COMMAS, 1);
 		try
 		{
 			store.flush();

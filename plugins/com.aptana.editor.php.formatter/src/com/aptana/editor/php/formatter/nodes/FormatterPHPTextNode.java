@@ -34,70 +34,80 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
-import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.formatter.IFormatterContext;
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+
+import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.ui.CodeFormatterConstants;
+import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
 
 /**
- * A PHP function body formatter node.<br>
- * This node represents the body part of the function (everything between the curly-brackets).
+ * A generic PHP text node formatter.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
+public class FormatterPHPTextNode extends FormatterBlockWithBeginNode
 {
+
+	private boolean shouldConsumePreviousSpaces;
+	@SuppressWarnings("unused")
+	private ASTNode previousNode;
+	@SuppressWarnings("unused")
+	private ASTNode thisNode;
 
 	/**
 	 * @param document
-	 * @param functionPartOfExpression
 	 */
-	public FormatterPHPFunctionBodyNode(IFormatterDocument document)
+	public FormatterPHPTextNode(IFormatterDocument document)
 	{
-		super(document, false);
+		super(document);
+	}
+
+	/**
+	 * @param document
+	 * @param shouldConsumePreviousSpaces
+	 */
+	public FormatterPHPTextNode(IFormatterDocument document, boolean shouldConsumePreviousSpaces)
+	{
+		this(document);
+		this.shouldConsumePreviousSpaces = shouldConsumePreviousSpaces;
+	}
+
+	/**
+	 * @param document
+	 * @param shouldConsumePreviousSpaces
+	 * @param previousNode
+	 *            - May be null
+	 * @param thisNode
+	 *            - May be null
+	 */
+	public FormatterPHPTextNode(IFormatterDocument document, boolean shouldConsumePreviousSpaces, ASTNode previousNode,
+			ASTNode thisNode)
+	{
+		this(document, shouldConsumePreviousSpaces);
+		this.previousNode = previousNode;
+		this.thisNode = thisNode;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
-	 */
-	@Override
-	protected boolean isAddingBeginNewLine()
-	{
-		// adds a new line before the start curly bracket
-		return CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
-				PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isIndenting()
-	 */
-	@Override
-	protected boolean isIndenting()
-	{
-		return getDocument().getBoolean(PHPFormatterConstants.INDENT_FUNCTION_BODY);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.editor.js.formatter.nodes.FormatterPHPBlockNode#shouldConsumePreviousWhiteSpaces()
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#shouldConsumePreviousWhiteSpaces()
 	 */
 	@Override
 	public boolean shouldConsumePreviousWhiteSpaces()
 	{
-		return !isAddingBeginNewLine();
+		return shouldConsumePreviousSpaces;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode#getBlankLinesAfter(com.aptana.formatter.IFormatterContext
-	 * )
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountBefore()
 	 */
 	@Override
-	protected int getBlankLinesAfter(IFormatterContext context)
+	public int getSpacesCountBefore()
 	{
-		return getDocument().getInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION);
+		// TODO - When the PHP formatter is improved to include white-spaces formatting, we should handle those here for
+		// the simple text nodes by looking into the previous and the current ASTNodes.
+		return super.getSpacesCountBefore();
 	}
+
 }

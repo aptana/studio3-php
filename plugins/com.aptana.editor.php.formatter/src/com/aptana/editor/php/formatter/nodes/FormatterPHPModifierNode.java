@@ -34,27 +34,27 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
-import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.ui.CodeFormatterConstants;
 
 /**
- * A PHP function body formatter node.<br>
- * This node represents the body part of the function (everything between the curly-brackets).
+ * A PHP formatter node for modifiers (e.g. 'public', 'private', 'static' etc.)
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
+public class FormatterPHPModifierNode extends FormatterPHPTextNode
 {
+
+	private boolean isFirstModifier;
 
 	/**
 	 * @param document
-	 * @param functionPartOfExpression
+	 * @param isFirstModifier
 	 */
-	public FormatterPHPFunctionBodyNode(IFormatterDocument document)
+	public FormatterPHPModifierNode(IFormatterDocument document, boolean isFirstModifier)
 	{
-		super(document, false);
+		// We only consume the previous spaces if this modifier is not the first one in the line.
+		super(document, !isFirstModifier);
+		this.isFirstModifier = isFirstModifier;
 	}
 
 	/*
@@ -64,40 +64,22 @@ public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		// adds a new line before the start curly bracket
-		return CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
-				PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION));
+		// TODO Auto-generated method stub
+		return isFirstModifier;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isIndenting()
+	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode#getSpacesCountBefore()
 	 */
 	@Override
-	protected boolean isIndenting()
+	public int getSpacesCountBefore()
 	{
-		return getDocument().getBoolean(PHPFormatterConstants.INDENT_FUNCTION_BODY);
+		if (isFirstModifier)
+		{
+			return 0;
+		}
+		return 1;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.editor.js.formatter.nodes.FormatterPHPBlockNode#shouldConsumePreviousWhiteSpaces()
-	 */
-	@Override
-	public boolean shouldConsumePreviousWhiteSpaces()
-	{
-		return !isAddingBeginNewLine();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode#getBlankLinesAfter(com.aptana.formatter.IFormatterContext
-	 * )
-	 */
-	@Override
-	protected int getBlankLinesAfter(IFormatterContext context)
-	{
-		return getDocument().getInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION);
-	}
 }

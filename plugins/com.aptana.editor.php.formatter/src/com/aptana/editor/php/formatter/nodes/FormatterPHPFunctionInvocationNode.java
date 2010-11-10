@@ -34,27 +34,35 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.ui.CodeFormatterConstants;
+import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
 
 /**
- * A PHP function body formatter node.<br>
- * This node represents the body part of the function (everything between the curly-brackets).
+ * A functoin invokation formatter node.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
+public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginNode
 {
+
+	private final FunctionInvocation invocationNode;
+	private final boolean hasSemicolon;
 
 	/**
 	 * @param document
-	 * @param functionPartOfExpression
+	 * @param invocationNode
+	 * @param hasSemicolon
 	 */
-	public FormatterPHPFunctionBodyNode(IFormatterDocument document)
+	public FormatterPHPFunctionInvocationNode(IFormatterDocument document, FunctionInvocation invocationNode,
+			boolean hasSemicolon)
 	{
-		super(document, false);
+		super(document);
+		this.invocationNode = invocationNode;
+		this.hasSemicolon = hasSemicolon;
 	}
 
 	/*
@@ -64,40 +72,47 @@ public class FormatterPHPFunctionBodyNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		// adds a new line before the start curly bracket
-		return CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
-				PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION));
+		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isIndenting()
-	 */
 	@Override
-	protected boolean isIndenting()
+	protected boolean isAddingEndNewLine()
 	{
-		return getDocument().getBoolean(PHPFormatterConstants.INDENT_FUNCTION_BODY);
+		return hasSemicolon;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.editor.js.formatter.nodes.FormatterPHPBlockNode#shouldConsumePreviousWhiteSpaces()
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#shouldConsumePreviousWhiteSpaces()
 	 */
 	@Override
 	public boolean shouldConsumePreviousWhiteSpaces()
 	{
-		return !isAddingBeginNewLine();
+		switch (invocationNode.getParent().getType())
+		{
+			case ASTNode.STATIC_METHOD_INVOCATION:
+			case ASTNode.METHOD_INVOCATION:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode#getBlankLinesAfter(com.aptana.formatter.IFormatterContext
-	 * )
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountBefore()
 	 */
 	@Override
-	protected int getBlankLinesAfter(IFormatterContext context)
+	public int getSpacesCountBefore()
 	{
-		return getDocument().getInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION);
+		switch (invocationNode.getParent().getType())
+		{
+			case ASTNode.STATIC_METHOD_INVOCATION:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_METHOD_INVOCATION);
+			case ASTNode.METHOD_INVOCATION:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_STATIC_INVOCATION);
+			default:
+				return super.getSpacesCountBefore();
+		}
 	}
 }

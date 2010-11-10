@@ -35,6 +35,8 @@
 package com.aptana.editor.php.formatter;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.php.internal.core.ast.nodes.ASTError;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
@@ -59,6 +61,7 @@ import org.eclipse.php.internal.core.ast.nodes.DeclareStatement;
 import org.eclipse.php.internal.core.ast.nodes.DoStatement;
 import org.eclipse.php.internal.core.ast.nodes.EchoStatement;
 import org.eclipse.php.internal.core.ast.nodes.EmptyStatement;
+import org.eclipse.php.internal.core.ast.nodes.Expression;
 import org.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
 import org.eclipse.php.internal.core.ast.nodes.FieldAccess;
 import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
@@ -112,22 +115,32 @@ import org.eclipse.php.internal.core.ast.nodes.Variable;
 import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
+import com.aptana.editor.php.formatter.nodes.FormatterPHPAssignmentNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPDefaultLineNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPInvocationTextNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPModifierNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.formatter.FormatterDocument;
 
 /**
- * @author Shalom
+ * A PHP formatter node builder.
+ * 
+ * @author Shalom Gibly <sgibly@aptana.com>
  */
 public class PHPFormatterVisitor extends AbstractVisitor
 {
 
+	// Match words in a string
+	private static final Pattern WORD_PATTERN = Pattern.compile("\\w+"); //$NON-NLS-1$
+	public static final String INVOCATION_ARROW = "->"; //$NON-NLS-1$
+	public static final String STATIC_INVOCATION = "::"; //$NON-NLS-1$
 	private static final char[] SEMICOLON_AND_COLON = new char[] { ';', ',' };
 	private static final char[] SEMICOLON = new char[] { ';' };
 
@@ -549,18 +562,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * FieldsDeclaration)
-	 */
-	@Override
-	public boolean visit(FieldsDeclaration fieldsDeclaration)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(fieldsDeclaration);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
 	 * ForEachStatement)
 	 */
 	@Override
@@ -614,8 +615,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(declarationNode, -1);
 
 		// Then, push the body
-		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document, FormatterPHPDeclarationNode
-				.isPartOfExpression(functionDeclaration.getParent()));
+		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
 		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
 		builder.push(bodyNode);
 		body.childrenAccept(this);
@@ -634,11 +634,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FunctionInvocation functionInvocation)
 	{
-		FormatterPHPDefaultLineNode lineNode = new FormatterPHPDefaultLineNode(document);
-		int end = locateCharMatchInLine(functionInvocation.getEnd(), SEMICOLON, document);
-		lineNode.setBegin(builder.createTextNode(document, functionInvocation.getStart(), end));
-		builder.push(lineNode);
-		builder.checkedPop(lineNode, -1);
+		visitFunctionInvocation(functionInvocation);
 		return false;
 	}
 
@@ -813,8 +809,51 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(MethodDeclaration methodDeclaration)
 	{
+		FunctionDeclaration function = methodDeclaration.getFunction();
+		visitModifiers(methodDeclaration, function);
 		// return true to have a continuous visit of the child function.
 		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * FieldsDeclaration)
+	 */
+	@Override
+	public boolean visit(FieldsDeclaration fieldsDeclaration)
+	{
+		// A class field declaration is treated in a similar way we treat a class method declaration
+		Variable[] variableNames = fieldsDeclaration.getVariableNames();
+		Variable firstVariable = variableNames[0];
+		visitModifiers(fieldsDeclaration, firstVariable);
+		// visit the variables and their values
+		Expression[] initialValues = fieldsDeclaration.getInitialValues();
+		for (int i = 0; i < variableNames.length; i++)
+		{
+			Variable v = variableNames[i];
+			Expression e = initialValues[i];
+			v.accept(this);
+			if (e != null)
+			{
+				// We have a value assigned to this variable
+				FormatterPHPAssignmentNode assignmentNode = new FormatterPHPAssignmentNode(document);
+				assignmentNode.setBegin(builder.createTextNode(document, v.getEnd(), e.getStart()));
+				builder.push(assignmentNode);
+				builder.checkedPop(assignmentNode, -1);
+				e.accept(this);
+			}
+			if (i + 1 < variableNames.length)
+			{
+				// we need to add a comma node
+				FormatterPHPCommaNode commaNode = new FormatterPHPCommaNode(document);
+				int start = (e != null) ? e.getEnd() : v.getEnd();
+				commaNode.setBegin(builder.createTextNode(document, start, variableNames[i + 1].getStart()));
+				builder.push(commaNode);
+				builder.checkedPop(commaNode, -1);
+			}
+		}
+		return false;
 	}
 
 	/*
@@ -825,8 +864,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(MethodInvocation methodInvocation)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(methodInvocation);
+		visitInvocation(methodInvocation.getDispatcher(), methodInvocation.getMethod(), INVOCATION_ARROW);
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * StaticMethodInvocation)
+	 */
+	@Override
+	public boolean visit(StaticMethodInvocation staticMethodInvocation)
+	{
+		visitInvocation(staticMethodInvocation.getClassName(), staticMethodInvocation.getMethod(), STATIC_INVOCATION);
+		return false;
 	}
 
 	/*
@@ -1002,23 +1053,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * StaticMethodInvocation)
-	 */
-	@Override
-	public boolean visit(StaticMethodInvocation staticMethodInvocation)
-	{
-		// TODO - Need to handle a line break in the invocation...
-		FormatterPHPDefaultLineNode lineNode = new FormatterPHPDefaultLineNode(document);
-		int end = locateCharMatchInLine(staticMethodInvocation.getEnd(), SEMICOLON, document);
-		lineNode.setBegin(builder.createTextNode(document, staticMethodInvocation.getStart(), end));
-		builder.push(lineNode);
-		builder.checkedPop(lineNode, -1);
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
 	 * StaticStatement)
 	 */
 	@Override
@@ -1026,6 +1060,18 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		// TODO Auto-generated method stub
 		return super.visit(staticStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * SwitchStatement)
+	 */
+	@Override
+	public boolean visit(SwitchStatement switchStatement)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(switchStatement);
 	}
 
 	/*
@@ -1039,18 +1085,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		// TODO Auto-generated method stub
 		return super.visit(switchCase);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * SwitchStatement)
-	 */
-	@Override
-	public boolean visit(SwitchStatement switchStatement)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(switchStatement);
 	}
 
 	/*
@@ -1123,7 +1157,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Variable variable)
 	{
-		// TODO Auto-generated method stub
+		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document);
+		textNode.setBegin(builder.createTextNode(document, variable.getStart(), variable.getEnd()));
+		builder.push(textNode);
+		builder.checkedPop(textNode, -1);
 		return super.visit(variable);
 	}
 
@@ -1179,6 +1216,80 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(typeBodyNode, end - 1);
 		int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
 		typeBodyNode.setEnd(builder.createTextNode(document, end - 1, endWithSemicolon));
+	}
+
+	/**
+	 * Visit an invocation node. This node can be a static invocation or a method invocation. We expect to get a left
+	 * ASTNode that is the 'caller' and a right FunctionInvocation which is being invoked.
+	 * 
+	 * @param leftASTNode
+	 * @param method
+	 * @param invocationString
+	 */
+	private void visitInvocation(ASTNode leftASTNode, FunctionInvocation method, String invocationString)
+	{
+		FormatterPHPTextNode leftFormatterNode = new FormatterPHPTextNode(document);
+		leftFormatterNode.setBegin(builder.createTextNode(document, leftASTNode.getStart(), leftASTNode.getEnd()));
+		builder.push(leftFormatterNode);
+		builder.checkedPop(leftFormatterNode, -1);
+
+		// push the invocation text
+		String txt = document.get(leftASTNode.getEnd(), method.getStart());
+		int invocationOffset = txt.indexOf(invocationString) + leftASTNode.getEnd();
+		FormatterPHPInvocationTextNode invocationNode = new FormatterPHPInvocationTextNode(document, invocationString);
+		invocationNode.setBegin(builder.createTextNode(document, invocationOffset, invocationOffset
+				+ invocationString.length()));
+		builder.push(invocationNode);
+		builder.checkedPop(invocationNode, -1);
+
+		// Push the method (the FunctionInvocation)
+		visitFunctionInvocation(method);
+	}
+
+	/**
+	 * A visit for a function invocation. This visit can be performed in numerous occasions, so we have it as a separate
+	 * method that will be called in those occasions.
+	 * 
+	 * @param functionInvocation
+	 */
+	private void visitFunctionInvocation(FunctionInvocation functionInvocation)
+	{
+		int fiEnd = functionInvocation.getEnd();
+		int end = locateCharMatchInLine(fiEnd, SEMICOLON, document);
+		boolean hasSemicolon = fiEnd != end;
+		FormatterPHPFunctionInvocationNode node = new FormatterPHPFunctionInvocationNode(document, functionInvocation,
+				hasSemicolon);
+		node.setBegin(builder.createTextNode(document, functionInvocation.getStart(), end));
+		builder.push(node);
+		builder.checkedPop(node, -1);
+	}
+
+	/**
+	 * Visits the modifiers section. This section can appear before a method or a variable in a class, before class
+	 * definitions etc.
+	 * 
+	 * @param node
+	 *            The node that holds the modifier
+	 * @param nextNode
+	 *            The next node that appears right after the modifiers.
+	 */
+	private void visitModifiers(ASTNode node, ASTNode nextNode)
+	{
+		// The gap between the start and the function holds the modifiers (if exist).
+		// We create a node for each of these modifiers to remove any extra spaces they have between them.
+		int startOffset = node.getStart();
+		String modifiers = document.get(startOffset, nextNode.getStart());
+		Matcher matcher = WORD_PATTERN.matcher(modifiers);
+		boolean isFirst = true;
+		while (matcher.find())
+		{
+			FormatterPHPModifierNode modifierNode = new FormatterPHPModifierNode(document, isFirst);
+			modifierNode.setBegin(builder.createTextNode(document, matcher.start() + startOffset, matcher.end()
+					+ startOffset));
+			builder.push(modifierNode);
+			builder.checkedPop(modifierNode, -1);
+			isFirst = false;
+		}
 	}
 
 	/**

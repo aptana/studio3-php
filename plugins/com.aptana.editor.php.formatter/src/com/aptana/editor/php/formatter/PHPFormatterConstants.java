@@ -83,4 +83,14 @@ public interface PHPFormatterConstants
 	public static final String BRACE_POSITION_BLOCK = FORMATTER_ID + ".brace.position.blocks"; //$NON-NLS-1$
 	public static final String BRACE_POSITION_BLOCK_IN_SWITCH = FORMATTER_ID + ".brace.position.switch.block"; //$NON-NLS-1$
 	public static final String BRACE_POSITION_BLOCK_IN_CASE = FORMATTER_ID + ".brace.position.case.block"; //$NON-NLS-1$
+	
+	// Spaces
+	public static final String SPACES_BEFORE_STATIC_INVOCATION = FORMATTER_ID + ".spaces.before.staticInvocation"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_STATIC_INVOCATION = FORMATTER_ID + ".spaces.after.staticInvocation"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_METHOD_INVOCATION = FORMATTER_ID + ".spaces.before.methodInvocation"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_METHOD_INVOCATION = FORMATTER_ID + ".spaces.after.mothodInvocation"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_ASSIGNMENT = FORMATTER_ID + ".spaces.before.assignment"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_ASSIGNMENT = FORMATTER_ID + ".spaces.after.assignment"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_COMMAS = FORMATTER_ID + ".spaces.before.commas"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_COMMAS = FORMATTER_ID + ".spaces.after.commas"; //$NON-NLS-1$
 }

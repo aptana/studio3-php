@@ -34,6 +34,8 @@
  */
 package com.aptana.editor.php.formatter;
 
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.*;
+
 import java.io.StringReader;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -77,25 +79,28 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	/**
 	 * Brace positions constants
 	 */
-	protected static final String[] BRACE_POSITIONS = { PHPFormatterConstants.BRACE_POSITION_BLOCK,
-			PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE, PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH,
-			PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION,
-			PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION };
+	protected static final String[] BRACE_POSITIONS = { BRACE_POSITION_BLOCK, BRACE_POSITION_BLOCK_IN_CASE,
+			BRACE_POSITION_BLOCK_IN_SWITCH, BRACE_POSITION_FUNCTION_DECLARATION, BRACE_POSITION_TYPE_DECLARATION };
 
 	/**
 	 * New-lines constants
 	 */
-	protected static final String[] NEW_LINES_POSITIONS = { PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT,
-			PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT,
-			PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT,
-			PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT };
+	protected static final String[] NEW_LINES_POSITIONS = { NEW_LINES_BEFORE_CATCH_STATEMENT,
+			NEW_LINES_BEFORE_DO_WHILE_STATEMENT, NEW_LINES_BEFORE_ELSE_STATEMENT,
+			NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT };
 
 	/**
 	 * Indentation constants
 	 */
-	protected static final String[] INDENTATIONS = { PHPFormatterConstants.INDENT_BLOCKS,
-			PHPFormatterConstants.INDENT_CASE_BODY, PHPFormatterConstants.INDENT_SWITCH_BODY,
-			PHPFormatterConstants.INDENT_FUNCTION_BODY, PHPFormatterConstants.INDENT_TYPE_BODY };
+	protected static final String[] INDENTATIONS = { INDENT_BLOCKS, INDENT_CASE_BODY, INDENT_SWITCH_BODY,
+			INDENT_FUNCTION_BODY, INDENT_TYPE_BODY };
+
+	/**
+	 * Spaces constants
+	 */
+	protected static final String[] SPACES = { SPACES_AFTER_METHOD_INVOCATION, SPACES_AFTER_STATIC_INVOCATION,
+			SPACES_BEFORE_METHOD_INVOCATION, SPACES_BEFORE_STATIC_INVOCATION, SPACES_BEFORE_ASSIGNMENT,
+			SPACES_AFTER_ASSIGNMENT, SPACES_BEFORE_COMMAS, SPACES_AFTER_COMMAS };
 
 	private static Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
 	private String lineSeparator;
@@ -258,7 +263,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public int getIndentSize()
 	{
-		return getInt(PHPFormatterConstants.FORMATTER_INDENTATION_SIZE);
+		return getInt(FORMATTER_INDENTATION_SIZE);
 	}
 
 	/*
@@ -267,7 +272,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public String getIndentType()
 	{
-		return getString(PHPFormatterConstants.FORMATTER_TAB_CHAR);
+		return getString(FORMATTER_TAB_CHAR);
 	}
 
 	/*
@@ -276,7 +281,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public int getTabSize()
 	{
-		return getInt(PHPFormatterConstants.FORMATTER_TAB_SIZE);
+		return getInt(FORMATTER_TAB_SIZE);
 	}
 
 	/**
@@ -299,8 +304,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		new PHPFormatterNodeRewriter(parseResult, document).rewrite(root);
 		IFormatterContext context = new PHPFormatterContext(indentationLevel);
 		FormatterWriter writer = new FormatterWriter(document, lineSeparator, createIndentGenerator());
-		writer.setWrapLength(getInt(PHPFormatterConstants.WRAP_COMMENTS_LENGTH));
-		writer.setLinesPreserve(getInt(PHPFormatterConstants.PRESERVED_LINES));
+		writer.setWrapLength(getInt(WRAP_COMMENTS_LENGTH));
+		writer.setLinesPreserve(getInt(PRESERVED_LINES));
 		root.accept(context, writer);
 		writer.flush(context);
 		// Unlike other formatters, we allow errors in the PHP AST for now.
@@ -316,12 +321,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	private FormatterDocument createFormatterDocument(String input, int offset)
 	{
 		FormatterDocument document = new FormatterDocument(input);
-		document.setInt(PHPFormatterConstants.FORMATTER_TAB_SIZE, getInt(PHPFormatterConstants.FORMATTER_TAB_SIZE));
-		document.setBoolean(PHPFormatterConstants.WRAP_COMMENTS, getBoolean(PHPFormatterConstants.WRAP_COMMENTS));
-		document.setInt(PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION,
-				getInt(PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION));
-		document.setInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION,
-				getInt(PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION));
+		document.setInt(FORMATTER_TAB_SIZE, getInt(FORMATTER_TAB_SIZE));
+		document.setBoolean(WRAP_COMMENTS, getBoolean(WRAP_COMMENTS));
+		document.setInt(LINES_AFTER_TYPE_DECLARATION, getInt(LINES_AFTER_TYPE_DECLARATION));
+		document.setInt(LINES_AFTER_FUNCTION_DECLARATION, getInt(LINES_AFTER_FUNCTION_DECLARATION));
 		document.setInt(ScriptFormattingContextProperties.CONTEXT_ORIGINAL_OFFSET, offset);
 
 		// Set the indentation values
@@ -336,6 +339,11 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		}
 		// Set the braces values
 		for (String key : BRACE_POSITIONS)
+		{
+			document.setString(key, getString(key));
+		}
+		// Set the spaces values
+		for (String key : SPACES)
 		{
 			document.setString(key, getString(key));
 		}
