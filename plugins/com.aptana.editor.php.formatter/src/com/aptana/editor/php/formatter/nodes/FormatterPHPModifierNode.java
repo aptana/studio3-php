@@ -82,4 +82,11 @@ public class FormatterPHPModifierNode extends FormatterPHPTextNode
 		return 1;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	 */
+	public int getSpacesCountAfter() {
+		return 1;
+	}
 }

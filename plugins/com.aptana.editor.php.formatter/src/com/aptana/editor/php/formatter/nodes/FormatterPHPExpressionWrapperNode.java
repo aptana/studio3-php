@@ -34,66 +34,39 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
+import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
 
 /**
- * A generic PHP text node formatter.
- * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPTextNode extends FormatterBlockWithBeginNode
+public class FormatterPHPExpressionWrapperNode extends FormatterBlockWithBeginEndNode
 {
 
-	private boolean shouldConsumePreviousSpaces;
-	private int spacesCountBefore;
+	private ASTNode node;
 
 	/**
 	 * @param document
 	 */
-	public FormatterPHPTextNode(IFormatterDocument document)
+	public FormatterPHPExpressionWrapperNode(IFormatterDocument document, ASTNode node)
 	{
 		super(document);
-	}
-
-	/**
-	 * @param document
-	 * @param shouldConsumePreviousSpaces
-	 */
-	public FormatterPHPTextNode(IFormatterDocument document, boolean shouldConsumePreviousSpaces)
-	{
-		this(document);
-		this.shouldConsumePreviousSpaces = shouldConsumePreviousSpaces;
-	}
-
-	/**
-	 * @param document
-	 * @param shouldConsumePreviousSpaces
-	 * @param spacesCountBefore
-	 */
-	public FormatterPHPTextNode(IFormatterDocument document, boolean shouldConsumePreviousSpaces, int spacesCountBefore)
-	{
-		this(document, shouldConsumePreviousSpaces);
-		this.spacesCountBefore = spacesCountBefore;
+		this.node = node;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#shouldConsumePreviousWhiteSpaces()
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
 	 */
 	@Override
-	public boolean shouldConsumePreviousWhiteSpaces()
+	protected boolean isAddingBeginNewLine()
 	{
-		return shouldConsumePreviousSpaces;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountBefore()
-	 */
-	@Override
-	public int getSpacesCountBefore()
-	{
-		return spacesCountBefore;
+		if (getDocument().get(node.getEnd() - 1, node.getEnd()).charAt(0) == ';')
+		{
+			return true;
+		}
+		return false;
 	}
 }

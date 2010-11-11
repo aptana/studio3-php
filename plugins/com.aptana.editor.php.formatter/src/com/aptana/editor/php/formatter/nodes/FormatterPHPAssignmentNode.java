@@ -38,7 +38,8 @@ import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
 
 /**
- * A PHP assignment formatter node.
+ * A PHP assignment formatter node.<br>
+ * An assignment node is always defined to consume the spaces before, and the spacing is controlled by the preferences.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
@@ -62,6 +63,16 @@ public class FormatterPHPAssignmentNode extends FormatterPHPTextNode
 	public int getSpacesCountBefore()
 	{
 		return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	 */
+	@Override
+	public int getSpacesCountAfter()
+	{
+		return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT);
 	}
 
 }

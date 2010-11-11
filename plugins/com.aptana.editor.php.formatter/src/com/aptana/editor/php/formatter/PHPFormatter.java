@@ -345,7 +345,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		// Set the spaces values
 		for (String key : SPACES)
 		{
-			document.setString(key, getString(key));
+			document.setInt(key, getInt(key));
 		}
 		return document;
 	}

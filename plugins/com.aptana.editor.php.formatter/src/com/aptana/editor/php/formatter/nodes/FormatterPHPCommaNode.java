@@ -32,13 +32,14 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.formatter;
+package com.aptana.editor.php.formatter.nodes;
 
-import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
+import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
 
 /**
- * A formatter node for PHP commas.
+ * A PHP comma formatter node.<br>
+ * A comma node can be defined to consume or not to consume the spaces that appear before it.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
@@ -46,6 +47,19 @@ public class FormatterPHPCommaNode extends FormatterPHPTextNode
 {
 
 	/**
+	 * Constructs a new FormatterPHPCommaNode.
+	 * 
+	 * @param document
+	 * @param consumeSpacesBefore
+	 */
+	public FormatterPHPCommaNode(IFormatterDocument document, boolean consumeSpacesBefore)
+	{
+		super(document, consumeSpacesBefore);
+	}
+
+	/**
+	 * Constructs a new FormatterPHPCommaNode. By default, the spaces before the comma will be consumed.
+	 * 
 	 * @param document
 	 */
 	public FormatterPHPCommaNode(IFormatterDocument document)
@@ -62,4 +76,15 @@ public class FormatterPHPCommaNode extends FormatterPHPTextNode
 	{
 		return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COMMAS);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	 */
+	@Override
+	public int getSpacesCountAfter()
+	{
+		return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COMMAS);
+	}
+
 }

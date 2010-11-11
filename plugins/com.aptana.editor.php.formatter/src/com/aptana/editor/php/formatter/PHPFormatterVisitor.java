@@ -117,9 +117,11 @@ import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.editor.php.formatter.nodes.FormatterPHPAssignmentNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPCommaNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
@@ -542,8 +544,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ExpressionStatement expressionStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(expressionStatement);
+		FormatterPHPExpressionWrapperNode expressionNode = new FormatterPHPExpressionWrapperNode(document,
+				expressionStatement);
+		int start = expressionStatement.getStart();
+		int end = expressionStatement.getEnd();
+		expressionNode.setBegin(builder.createTextNode(document, start, start));
+		builder.push(expressionNode);
+		expressionStatement.childrenAccept(this);
+		int startEnd = expressionNode.getEndOffset();
+		expressionNode.setEnd(builder.createTextNode(document, startEnd, end));
+		builder.checkedPop(expressionNode, -1);
+		return false;
 	}
 
 	/*
@@ -833,22 +844,26 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			Variable v = variableNames[i];
 			Expression e = initialValues[i];
-			v.accept(this);
+			visitTextNode(v, true, 0);
 			if (e != null)
 			{
 				// We have a value assigned to this variable
 				FormatterPHPAssignmentNode assignmentNode = new FormatterPHPAssignmentNode(document);
-				assignmentNode.setBegin(builder.createTextNode(document, v.getEnd(), e.getStart()));
+				String text = document.get(v.getEnd(), e.getStart());
+				int startIndex = v.getEnd() + text.indexOf('=');
+				assignmentNode.setBegin(builder.createTextNode(document, startIndex, startIndex + 1));
 				builder.push(assignmentNode);
 				builder.checkedPop(assignmentNode, -1);
-				e.accept(this);
+				visitTextNode(e, true, 0);
 			}
 			if (i + 1 < variableNames.length)
 			{
 				// we need to add a comma node
 				FormatterPHPCommaNode commaNode = new FormatterPHPCommaNode(document);
-				int start = (e != null) ? e.getEnd() : v.getEnd();
-				commaNode.setBegin(builder.createTextNode(document, start, variableNames[i + 1].getStart()));
+				int startIndex = (e != null) ? e.getEnd() : v.getEnd();
+				String text = document.get(startIndex, variableNames[i + 1].getStart());
+				startIndex += text.indexOf(',');
+				commaNode.setBegin(builder.createTextNode(document, startIndex, startIndex + 1));
 				builder.push(commaNode);
 				builder.checkedPop(commaNode, -1);
 			}
@@ -1010,8 +1025,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Scalar scalar)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(scalar);
+		visitTextNode(scalar, true, 0);
+		return false;
 	}
 
 	/*
@@ -1157,11 +1172,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Variable variable)
 	{
-		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document);
-		textNode.setBegin(builder.createTextNode(document, variable.getStart(), variable.getEnd()));
-		builder.push(textNode);
-		builder.checkedPop(textNode, -1);
-		return super.visit(variable);
+		visitTextNode(variable, false, 0);
+		return false;
 	}
 
 	/*
@@ -1290,6 +1302,22 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			builder.checkedPop(modifierNode, -1);
 			isFirst = false;
 		}
+	}
+
+	/**
+	 * A simple visit of a node that pushes a PHP text node which consumes any white-spaces before that node by request.
+	 * 
+	 * @param node
+	 * @param consumePreviousWhitespaces
+	 * @param spacesCountBefore
+	 */
+	private void visitTextNode(ASTNode node, boolean consumePreviousWhitespaces, int spacesCountBefore)
+	{
+		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document, consumePreviousWhitespaces,
+				spacesCountBefore);
+		textNode.setBegin(builder.createTextNode(document, node.getStart(), node.getEnd()));
+		builder.push(textNode);
+		builder.checkedPop(textNode, node.getEnd());
 	}
 
 	/**
