@@ -117,8 +117,11 @@ import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.editor.php.formatter.nodes.FormatterPHPAssignmentNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseBodyNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCommaNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPDefaultLineNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
@@ -127,9 +130,11 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPInvocationTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPModifierNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.formatter.FormatterDocument;
+import com.aptana.formatter.nodes.IFormatterContainerNode;
 
 /**
  * A PHP formatter node builder.
@@ -183,7 +188,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// Construct the 'true' part of the 'if' and visit its children
 		if (isCurlyTrueBlock)
 		{
-			pushBlockNode(trueStatement, isEmptyFalseBlock);
+			visitBlockNode(trueStatement, isEmptyFalseBlock);
 		}
 		else
 		{
@@ -210,7 +215,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			builder.push(elseNode);
 			if (isCurlyFalseBlock)
 			{
-				pushBlockNode(falseStatement, true);
+				visitBlockNode(falseStatement, true);
 			}
 			else
 			{
@@ -299,18 +304,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		builder.setHasErrors(true);
 		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ASTNode)
-	 */
-	@Override
-	public boolean visit(ASTNode node)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(node);
 	}
 
 	/*
@@ -615,25 +608,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FunctionDeclaration functionDeclaration)
 	{
-		// First, push the function declaration node
-		FormatterPHPDeclarationNode declarationNode = new FormatterPHPDeclarationNode(document, true,
-				functionDeclaration);
-		Block body = functionDeclaration.getBody();
-		int parametersCloseBracket = builder.locateCharBackward(document, ')', body.getStart()) + 1;
-		declarationNode.setBegin(builder.createTextNode(document, functionDeclaration.getStart(),
-				parametersCloseBracket));
-		builder.push(declarationNode);
-		builder.checkedPop(declarationNode, -1);
-
-		// Then, push the body
-		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
-		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
-		builder.push(bodyNode);
-		body.childrenAccept(this);
-		int bodyEnd = body.getEnd();
-		builder.checkedPop(bodyNode, bodyEnd - 1);
-		int end = locateCharMatchInLine(bodyEnd, SEMICOLON_AND_COLON, document);
-		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, end));
+		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getBody());
 		return false;
 	}
 
@@ -795,8 +770,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(lambdaFunctionDeclaration);
+		visitFunctionDeclaration(lambdaFunctionDeclaration, lambdaFunctionDeclaration.getBody());
+		return false;
 	}
 
 	/*
@@ -1013,8 +988,38 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ReturnStatement returnStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(returnStatement);
+		if (isIncludingSemicolon(returnStatement))
+		{
+			IFormatterContainerNode lineNode = pushLineNode(returnStatement);
+			returnStatement.childrenAccept(this);
+			builder.checkedPop(lineNode, lineNode.getEndOffset());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Common push and return of a FormatterPHPDefaultLineNode (a line that terminates with a semicolon).
+	 * 
+	 * @param node
+	 * @return
+	 */
+	private FormatterPHPDefaultLineNode pushLineNode(ASTNode node)
+	{
+		FormatterPHPDefaultLineNode lineNode = new FormatterPHPDefaultLineNode(document);
+		int start = node.getStart();
+		lineNode.setBegin(builder.createTextNode(document, start, start));
+		builder.push(lineNode);
+		return lineNode;
+	}
+
+	/**
+	 * @param returnStatement
+	 * @return
+	 */
+	private boolean isIncludingSemicolon(ReturnStatement returnStatement)
+	{
+		return document.charAt(returnStatement.getEnd() - 1) == ';';
 	}
 
 	/*
@@ -1085,8 +1090,27 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(SwitchStatement switchStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(switchStatement);
+		Block body = switchStatement.getBody();
+		// Push the switch-case declaration node
+		FormatterPHPDeclarationNode switchNode = new FormatterPHPDeclarationNode(document, true, switchStatement);
+		int rightParenthesis = builder.locateCharBackward(document, ')', body.getStart());
+		switchNode.setBegin(builder.createTextNode(document, switchStatement.getStart(), rightParenthesis + 1));
+		builder.push(switchNode);
+		builder.checkedPop(switchNode, -1);
+
+		// push a switch-case body node
+		int blockStart = body.getStart();
+		FormatterPHPSwitchNode blockNode = new FormatterPHPSwitchNode(document);
+		blockNode.setBegin(builder.createTextNode(document, blockStart, blockStart + 1));
+		builder.push(blockNode);
+		// visit the children under that block node
+		body.childrenAccept(this);
+		int endingOffset = switchStatement.getEnd();
+		// pop the block node
+		builder.checkedPop(blockNode, endingOffset - 1);
+		int endWithSemicolon = locateCharMatchInLine(endingOffset, SEMICOLON_AND_COLON, document);
+		blockNode.setEnd(builder.createTextNode(document, endingOffset - 1, endWithSemicolon));
+		return false;
 	}
 
 	/*
@@ -1098,8 +1122,44 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(SwitchCase switchCase)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(switchCase);
+		List<Statement> actions = switchCase.actions();
+		boolean hasBlockedChild = (actions.size() == 1 && actions.get(0).getType() == ASTNode.BLOCK);
+		// compute the colon position
+		int colonOffset;
+		if (actions.size() > 0)
+		{
+			colonOffset = builder.locateCharBackward(document, ':', actions.get(0).getStart()) + 1;
+		}
+		else
+		{
+			colonOffset = builder.locateCharForward(document, ':', switchCase.getValue().getEnd() + 1);
+		}
+		// push the case/default node till the colon
+		FormatterPHPCaseNode caseNode = new FormatterPHPCaseNode(document, hasBlockedChild);
+		caseNode.setBegin(builder.createTextNode(document, switchCase.getStart(), colonOffset));
+		builder.push(caseNode);
+		if (hasBlockedChild)
+		{
+			Block body = (Block) actions.get(0);
+			// we have a 'case' with a curly-block
+			FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document);
+			caseBodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
+			builder.push(caseBodyNode);
+			body.childrenAccept(this);
+			int endingOffset = body.getEnd() - 1;
+			builder.checkedPop(caseBodyNode, endingOffset);
+			int end = locateCharMatchInLine(endingOffset + 1, SEMICOLON_AND_COLON, document);
+			caseBodyNode.setEnd(builder.createTextNode(document, endingOffset, end));
+		}
+		else
+		{
+			for (Statement st : actions)
+			{
+				st.accept(this);
+			}
+		}
+		builder.checkedPop(caseNode, switchCase.getEnd());
+		return false;
 	}
 
 	/*
@@ -1191,7 +1251,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	// ###################### Helper Methods ###################### //
 
 	/**
-	 * Visit class/interface declaration
+	 * Visit and push a class/interface declaration
 	 * 
 	 * @param typeDeclaration
 	 */
@@ -1231,8 +1291,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Visit an invocation node. This node can be a static invocation or a method invocation. We expect to get a left
-	 * ASTNode that is the 'caller' and a right FunctionInvocation which is being invoked.
+	 * Visit and push an invocation node. This node can be a static invocation or a method invocation. We expect to get
+	 * a left ASTNode that is the 'caller' and a right FunctionInvocation which is being invoked.
 	 * 
 	 * @param leftASTNode
 	 * @param method
@@ -1277,8 +1337,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Visits the modifiers section. This section can appear before a method or a variable in a class, before class
-	 * definitions etc.
+	 * Visits and push a modifiers section. This section can appear before a method or a variable in a class, before
+	 * class definitions etc.
 	 * 
 	 * @param node
 	 *            The node that holds the modifier
@@ -1305,7 +1365,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * A simple visit of a node that pushes a PHP text node which consumes any white-spaces before that node by request.
+	 * A simple visit and push of a node that pushes a PHP text node which consumes any white-spaces before that node by
+	 * request.
 	 * 
 	 * @param node
 	 * @param consumePreviousWhitespaces
@@ -1321,11 +1382,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Push a FormatterPHPBlockNode
+	 * Visit and push a FormatterPHPBlockNode
 	 * 
 	 * @param block
 	 */
-	private void pushBlockNode(ASTNode block, boolean consumeEndingSemicolon)
+	private void visitBlockNode(ASTNode block, boolean consumeEndingSemicolon)
 	{
 		FormatterPHPBlockNode bodyNode = new FormatterPHPBlockNode(document, false);
 		bodyNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
@@ -1339,6 +1400,34 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			end = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
 		}
 		bodyNode.setEnd(builder.createTextNode(document, block.getEnd() - 1, end));
+	}
+
+	/**
+	 * Push a function declaration. The declaration can be a 'regular' function or can be a lambda function.
+	 * 
+	 * @param functionDeclaration
+	 * @param body
+	 */
+	private void visitFunctionDeclaration(ASTNode functionDeclaration, Block body)
+	{
+		// First, push the function declaration node
+		FormatterPHPDeclarationNode declarationNode = new FormatterPHPDeclarationNode(document, true,
+				functionDeclaration);
+		int parametersCloseBracket = builder.locateCharBackward(document, ')', body.getStart()) + 1;
+		declarationNode.setBegin(builder.createTextNode(document, functionDeclaration.getStart(),
+				parametersCloseBracket));
+		builder.push(declarationNode);
+		builder.checkedPop(declarationNode, -1);
+
+		// Then, push the body
+		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
+		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
+		builder.push(bodyNode);
+		body.childrenAccept(this);
+		int bodyEnd = body.getEnd();
+		builder.checkedPop(bodyNode, bodyEnd - 1);
+		int end = locateCharMatchInLine(bodyEnd, SEMICOLON_AND_COLON, document);
+		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, end));
 	}
 
 	/**
