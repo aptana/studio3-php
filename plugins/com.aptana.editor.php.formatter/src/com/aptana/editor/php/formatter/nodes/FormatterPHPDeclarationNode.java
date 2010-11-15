@@ -90,6 +90,8 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 		{
 			case ASTNode.CATCH_CLAUSE:
 				return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT);
+			case ASTNode.LAMBDA_FUNCTION_DECLARATION:
+				return false;
 			case ASTNode.FUNCTION_DECLARATION:
 				if (isPartOfExpression(node.getParent()))
 				{

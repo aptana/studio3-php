@@ -64,7 +64,7 @@ public class FormatterPHPDefaultLineNode extends FormatterBlockWithBeginNode
 		IFormatterDocument document = getDocument();
 		if (document.getLength() > getEndOffset() - 1)
 		{
-			return document.charAt(getEndOffset() - 1) == ';';
+			return document.charAt(getEndOffset()) == ';';
 		}
 		return false;
 	}
