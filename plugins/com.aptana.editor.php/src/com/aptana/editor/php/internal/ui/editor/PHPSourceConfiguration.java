@@ -33,6 +33,7 @@ import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
+import com.aptana.editor.html.IHTMLConstants;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
 public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration
@@ -64,7 +65,12 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	static
 	{
 		IContentTypeTranslator c = CommonEditorPlugin.getDefault().getContentTypeTranslator();
-		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CONTENT_TYPE_PHP), new QualifiedContentType("source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IDocument.DEFAULT_CONTENT_TYPE),
+				new QualifiedContentType("text.html.basic")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CONTENT_TYPE_PHP), new QualifiedContentType(
+				"source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IHTMLConstants.CONTENT_TYPE_HTML),
+				new QualifiedContentType("text.html.basic")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_SINGLE), new QualifiedContentType(
 				"string.quoted.single.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_DOUBLE), new QualifiedContentType(
@@ -73,10 +79,11 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 				"comment.line.double-slash.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_DOC_COMMENT), new QualifiedContentType(
 				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType(
-		        "comment.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.START_SWITCH_TAG), new QualifiedContentType("punctuation.section.embedded.begin.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType("punctuation.section.embedded.end.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType("comment.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.START_SWITCH_TAG),
+				new QualifiedContentType("punctuation.section.embedded.begin.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType(
+				"punctuation.section.embedded.end.php")); //$NON-NLS-1$
 	}
 
 	public static PHPSourceConfiguration getDefault()
