@@ -126,6 +126,8 @@ public class PHPFormatterIndentationTabPage extends FormatterModifyTabPage
 				Messages.PHPFormatterIndentationTabPage_statementsWithinSwitch);
 		manager.createCheckbox(group, PHPFormatterConstants.INDENT_CASE_BODY,
 				Messages.PHPFormatterIndentationTabPage_statementsWithinCase);
+		manager.createCheckbox(group, PHPFormatterConstants.INDENT_BREAK_IN_CASE,
+				Messages.PHPFormatterIndentationTabPage_breakWithinCase);
 	}
 
 	/**

@@ -62,6 +62,7 @@ public interface PHPFormatterConstants
 	public static final String INDENT_TYPE_BODY = FORMATTER_ID + ".indent.class.body"; //$NON-NLS-1$
 	public static final String INDENT_SWITCH_BODY = FORMATTER_ID + ".indent.switch.body"; //$NON-NLS-1$
 	public static final String INDENT_CASE_BODY = FORMATTER_ID + ".indent.case.body"; //$NON-NLS-1$
+	public static final String INDENT_BREAK_IN_CASE = FORMATTER_ID + ".indent.breakInCase"; //$NON-NLS-1$
 	public static final String FORMATTER_INDENTATION_SIZE = FORMATTER_ID + '.'
 			+ CodeFormatterConstants.FORMATTER_INDENTATION_SIZE;
 
@@ -83,7 +84,7 @@ public interface PHPFormatterConstants
 	public static final String BRACE_POSITION_BLOCK = FORMATTER_ID + ".brace.position.blocks"; //$NON-NLS-1$
 	public static final String BRACE_POSITION_BLOCK_IN_SWITCH = FORMATTER_ID + ".brace.position.switch.block"; //$NON-NLS-1$
 	public static final String BRACE_POSITION_BLOCK_IN_CASE = FORMATTER_ID + ".brace.position.case.block"; //$NON-NLS-1$
-	
+
 	// Spaces
 	public static final String SPACES_BEFORE_STATIC_INVOCATION = FORMATTER_ID + ".spaces.before.staticInvocation"; //$NON-NLS-1$
 	public static final String SPACES_AFTER_STATIC_INVOCATION = FORMATTER_ID + ".spaces.after.staticInvocation"; //$NON-NLS-1$
@@ -93,4 +94,6 @@ public interface PHPFormatterConstants
 	public static final String SPACES_AFTER_ASSIGNMENT = FORMATTER_ID + ".spaces.after.assignment"; //$NON-NLS-1$
 	public static final String SPACES_BEFORE_COMMAS = FORMATTER_ID + ".spaces.before.commas"; //$NON-NLS-1$
 	public static final String SPACES_AFTER_COMMAS = FORMATTER_ID + ".spaces.after.commas"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_CASE_COLON = FORMATTER_ID + ".spaces.after.case.colon"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_CASE_COLON = FORMATTER_ID + ".spaces.before.case.colon"; //$NON-NLS-1$
 }

@@ -71,6 +71,7 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putBoolean(INDENT_FUNCTION_BODY, true);
 		store.putBoolean(INDENT_SWITCH_BODY, true);
 		store.putBoolean(INDENT_CASE_BODY, true);
+		store.putBoolean(INDENT_BREAK_IN_CASE, true);
 		store.putBoolean(NEW_LINES_BEFORE_CATCH_STATEMENT, false);
 		store.putBoolean(NEW_LINES_BEFORE_ELSE_STATEMENT, false);
 		store.putBoolean(NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT, false);
@@ -91,6 +92,8 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putInt(SPACES_AFTER_ASSIGNMENT, 1);
 		store.putInt(SPACES_BEFORE_COMMAS, 0);
 		store.putInt(SPACES_AFTER_COMMAS, 1);
+		store.putInt(SPACES_BEFORE_CASE_COLON, 1);
+		store.putInt(SPACES_AFTER_CASE_COLON, 1);
 		try
 		{
 			store.flush();

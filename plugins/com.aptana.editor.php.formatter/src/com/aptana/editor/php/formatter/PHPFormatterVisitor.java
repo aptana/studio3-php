@@ -118,6 +118,7 @@ import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPAssignmentNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseBodyNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseColonNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCommaNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
@@ -133,6 +134,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPModifierNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
+import com.aptana.editor.php.formatter.nodes.PHPFormatterBreakNode;
 import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
 
@@ -335,7 +337,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(blockNode, end - 1);
 		if (block.isCurly())
 		{
-			int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
+			int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document, false);
 			blockNode.setEnd(builder.createTextNode(document, end - 1, endWithSemicolon));
 		}
 		else
@@ -353,33 +355,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(BreakStatement breakStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(breakStatement);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * CastExpression)
-	 */
-	@Override
-	public boolean visit(CastExpression castExpression)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(castExpression);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.CatchClause
-	 * )
-	 */
-	@Override
-	public boolean visit(CatchClause catchClause)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(catchClause);
+		PHPFormatterBreakNode breakNode = new PHPFormatterBreakNode(document, breakStatement.getParent());
+		breakNode.setBegin(builder.createTextNode(document, breakStatement.getStart(), breakStatement.getEnd()));
+		builder.push(breakNode);
+		builder.checkedPop(breakNode, -1);
+		return false;
 	}
 
 	/*
@@ -1091,6 +1071,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(SwitchStatement switchStatement)
 	{
 		Block body = switchStatement.getBody();
+		// In case the body is not curly, we are dealing with an alternative syntax (e.g. colon and 'endswitch' instead
+		// of curly open and close for the body).
+		boolean isAlternativeSyntax = !body.isCurly();
 		// Push the switch-case declaration node
 		FormatterPHPDeclarationNode switchNode = new FormatterPHPDeclarationNode(document, true, switchStatement);
 		int rightParenthesis = builder.locateCharBackward(document, ')', body.getStart());
@@ -1106,10 +1089,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// visit the children under that block node
 		body.childrenAccept(this);
 		int endingOffset = switchStatement.getEnd();
+		int endWithSemicolon = locateCharMatchInLine(endingOffset, SEMICOLON, document, isAlternativeSyntax);
+		endingOffset--;
+		if (isAlternativeSyntax)
+		{
+			// deduct the 'endswitch' length.
+			// we already removed 1 offset above, so we remove the extra 8.
+			endingOffset -= 8;
+		}
 		// pop the block node
-		builder.checkedPop(blockNode, endingOffset - 1);
-		int endWithSemicolon = locateCharMatchInLine(endingOffset, SEMICOLON_AND_COLON, document);
-		blockNode.setEnd(builder.createTextNode(document, endingOffset - 1, endWithSemicolon));
+		builder.checkedPop(blockNode, endingOffset);
+		blockNode.setEnd(builder.createTextNode(document, endingOffset, endWithSemicolon));
 		return false;
 	}
 
@@ -1128,37 +1118,85 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int colonOffset;
 		if (actions.size() > 0)
 		{
-			colonOffset = builder.locateCharBackward(document, ':', actions.get(0).getStart()) + 1;
+			colonOffset = builder.locateCharBackward(document, ':', actions.get(0).getStart());
 		}
 		else
 		{
-			colonOffset = builder.locateCharForward(document, ':', switchCase.getValue().getEnd() + 1);
+			colonOffset = builder.locateCharForward(document, ':', switchCase.getValue().getEnd());
 		}
-		// push the case/default node till the colon
-		FormatterPHPCaseNode caseNode = new FormatterPHPCaseNode(document, hasBlockedChild);
-		caseNode.setBegin(builder.createTextNode(document, switchCase.getStart(), colonOffset));
+		// push the case/default node till the colon.
+		// We create a begin-end node that will hold a case-colon node as an inner child to manage its spacing.
+		FormatterPHPCaseNode caseNode = new FormatterPHPCaseNode(document);
+		// get the value-end offset. In case it's a 'default' case, set the end at the end offset of the word 'default'
+		int valueEnd = switchCase.isDefault() ? switchCase.getStart() + 7 : switchCase.getValue().getEnd();
+		caseNode.setBegin(builder.createTextNode(document, switchCase.getStart(), valueEnd));
+		caseNode.setEnd(builder.createTextNode(document, colonOffset + 1, colonOffset + 1));
 		builder.push(caseNode);
+		// push the colon node
+		FormatterPHPCaseColonNode caseColonNode = new FormatterPHPCaseColonNode(document, hasBlockedChild);
+		caseColonNode.setBegin(builder.createTextNode(document, colonOffset, colonOffset + 1));
+		builder.push(caseColonNode);
+		builder.checkedPop(caseColonNode, -1);
+		builder.checkedPop(caseNode, -1);
+		// push the case/default content
+		FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document, hasBlockedChild);
 		if (hasBlockedChild)
 		{
 			Block body = (Block) actions.get(0);
 			// we have a 'case' with a curly-block
-			FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document);
 			caseBodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
 			builder.push(caseBodyNode);
 			body.childrenAccept(this);
 			int endingOffset = body.getEnd() - 1;
 			builder.checkedPop(caseBodyNode, endingOffset);
-			int end = locateCharMatchInLine(endingOffset + 1, SEMICOLON_AND_COLON, document);
+			int end = locateCharMatchInLine(endingOffset + 1, SEMICOLON_AND_COLON, document, false);
 			caseBodyNode.setEnd(builder.createTextNode(document, endingOffset, end));
 		}
 		else
 		{
-			for (Statement st : actions)
+			if (!actions.isEmpty())
 			{
-				st.accept(this);
+				int start = actions.get(0).getStart();
+				int end = actions.get(actions.size() - 1).getEnd();
+				caseBodyNode.setBegin(builder.createTextNode(document, start, start));
+				builder.push(caseBodyNode);
+				for (Statement st : actions)
+				{
+					st.accept(this);
+				}
+				builder.checkedPop(caseBodyNode, switchCase.getEnd());
+				caseBodyNode.setEnd(builder.createTextNode(document, end, end));
 			}
 		}
-		builder.checkedPop(caseNode, switchCase.getEnd());
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * CastExpression)
+	 */
+	@Override
+	public boolean visit(CastExpression castExpression)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(castExpression);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.CatchClause
+	 * )
+	 */
+	@Override
+	public boolean visit(CatchClause catchClause)
+	{
+		// TODO Auto-generated method stub
+		int declarationEnd = catchClause.getClassName().getEnd();
+		declarationEnd = builder.locateCharForward(document, ')', declarationEnd) + 1;
+		visitCommonDeclaration(catchClause, declarationEnd, true);
+		visitBlockNode(catchClause.getBody(), true);
 		return false;
 	}
 
@@ -1183,8 +1221,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(TryStatement tryStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(tryStatement);
+		visitCommonDeclaration(tryStatement, tryStatement.getStart() + 3, true);
+		visitBlockNode(tryStatement.getBody(), true);
+		List<CatchClause> catchClauses = tryStatement.catchClauses();
+		for (CatchClause catchClause : catchClauses)
+		{
+			catchClause.accept(this);
+		}
+		return false;
 	}
 
 	/*
@@ -1286,7 +1330,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		body.childrenAccept(this);
 		int end = body.getEnd();
 		builder.checkedPop(typeBodyNode, end - 1);
-		int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
+		int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document, false);
 		typeBodyNode.setEnd(builder.createTextNode(document, end - 1, endWithSemicolon));
 	}
 
@@ -1327,7 +1371,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private void visitFunctionInvocation(FunctionInvocation functionInvocation)
 	{
 		int fiEnd = functionInvocation.getEnd();
-		int end = locateCharMatchInLine(fiEnd, SEMICOLON, document);
+		int end = locateCharMatchInLine(fiEnd, SEMICOLON, document, false);
 		boolean hasSemicolon = fiEnd != end;
 		FormatterPHPFunctionInvocationNode node = new FormatterPHPFunctionInvocationNode(document, functionInvocation,
 				hasSemicolon);
@@ -1397,13 +1441,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int end = block.getEnd();
 		if (consumeEndingSemicolon)
 		{
-			end = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document);
+			end = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document, false);
 		}
 		bodyNode.setEnd(builder.createTextNode(document, block.getEnd() - 1, end));
 	}
 
 	/**
-	 * Push a function declaration. The declaration can be a 'regular' function or can be a lambda function.
+	 * Visit and push a function declaration. The declaration can be a 'regular' function or can be a lambda function.
 	 * 
 	 * @param functionDeclaration
 	 * @param body
@@ -1426,20 +1470,38 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		body.childrenAccept(this);
 		int bodyEnd = body.getEnd();
 		builder.checkedPop(bodyNode, bodyEnd - 1);
-		int end = locateCharMatchInLine(bodyEnd, SEMICOLON_AND_COLON, document);
+		int end = locateCharMatchInLine(bodyEnd, SEMICOLON_AND_COLON, document, false);
 		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, end));
 	}
 
 	/**
-	 * Scan for a list of char terminator located at the same line. Return the given offset if non is found.
+	 * Visit and push a common declaration part of an expression.s
+	 * 
+	 * @param node
+	 * @param declarationEndOffset
+	 * @param hasBlockedBody
+	 */
+	private void visitCommonDeclaration(ASTNode node, int declarationEndOffset, boolean hasBlockedBody)
+	{
+		FormatterPHPDeclarationNode declarationNode = new FormatterPHPDeclarationNode(document, hasBlockedBody, node);
+		declarationNode.setBegin(builder.createTextNode(document, node.getStart(), declarationEndOffset));
+		builder.push(declarationNode);
+		builder.checkedPop(declarationNode, -1);
+	}
+
+	/**
+	 * Scan for a list of char terminator located at the <b>same line</b>. Return the given offset if non is found.
 	 * 
 	 * @param offset
 	 * @param chars
 	 *            An array of chars to match
 	 * @param document
+	 * @param ignoreNonWhitespace
+	 *            In case this flag is false, any non-whitespace char that appear before we located a requested char
+	 *            will stop the search. In case it's true, the search will continue till the end of the line.
 	 * @return The first match offset; The given offset if a match not found.
 	 */
-	private int locateCharMatchInLine(int offset, char[] chars, FormatterDocument document)
+	private int locateCharMatchInLine(int offset, char[] chars, FormatterDocument document, boolean ignoreNonWhitespace)
 	{
 		int i = offset;
 		int size = document.getLength();
@@ -1457,7 +1519,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			{
 				break;
 			}
-			if (c != ' ' || c != '\t')
+			if (!ignoreNonWhitespace && (c != ' ' || c != '\t'))
 			{
 				break;
 			}

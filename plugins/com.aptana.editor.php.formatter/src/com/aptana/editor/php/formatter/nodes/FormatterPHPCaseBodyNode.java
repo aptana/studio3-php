@@ -46,12 +46,16 @@ import com.aptana.formatter.ui.CodeFormatterConstants;
 public class FormatterPHPCaseBodyNode extends FormatterPHPBlockNode
 {
 
+	private boolean hasBlockedChild;
+
 	/**
 	 * @param document
+	 * @param hasBlockedChild
 	 */
-	public FormatterPHPCaseBodyNode(IFormatterDocument document)
+	public FormatterPHPCaseBodyNode(IFormatterDocument document, boolean hasBlockedChild)
 	{
 		super(document, false);
+		this.hasBlockedChild = hasBlockedChild;
 	}
 
 	/*
@@ -61,14 +65,25 @@ public class FormatterPHPCaseBodyNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isIndenting()
 	{
-		return getDocument().getBoolean(PHPFormatterConstants.INDENT_CASE_BODY);
+		return !hasBlockedChild || getDocument().getBoolean(PHPFormatterConstants.INDENT_CASE_BODY);
 	}
 
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		return CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
-				PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE));
+		return !hasBlockedChild
+				|| CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
+						PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode#shouldConsumePreviousWhiteSpaces()
+	 */
+	@Override
+	public boolean shouldConsumePreviousWhiteSpaces()
+	{
+		return true;
 	}
 
 }

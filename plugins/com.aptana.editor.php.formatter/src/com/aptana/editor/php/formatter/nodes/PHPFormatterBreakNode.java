@@ -34,24 +34,83 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+
+import com.aptana.editor.php.formatter.PHPFormatterConstants;
+import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
+import com.aptana.formatter.IFormatterWriter;
+import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
 
 /**
- * A PHP 'case' formatter node.<br>
- * This node represents a 'case' or 'default' part of a switch-case block.
+ * A PHP 'break' formatter node.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPCaseNode extends FormatterBlockWithBeginEndNode
+public class PHPFormatterBreakNode extends FormatterBlockWithBeginNode
 {
 
+	private ASTNode parentNode;
+
 	/**
+	 * Constructs a new PHPFormatterBreakNode.<br>
+	 * A parent ASTNode should be provided to compute the formatting according to the preference that matches it. For
+	 * example, a 'break' in a switch-case might behave differently then a 'break' in a 'for' statement.
+	 * 
 	 * @param document
-	 * @param hasBlockedChild
+	 * @param parentNode
+	 *            The parent ASTNode of the 'break' statement.
 	 */
-	public FormatterPHPCaseNode(IFormatterDocument document)
+	public PHPFormatterBreakNode(IFormatterDocument document, ASTNode parentNode)
 	{
 		super(document);
+		this.parentNode = parentNode;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockWithBeginNode#accept(com.aptana.formatter.IFormatterContext,
+	 * com.aptana.formatter.IFormatterWriter)
+	 */
+	@Override
+	public void accept(IFormatterContext context, IFormatterWriter visitor) throws Exception
+	{
+		// We override the accept of the break to control the indentation of it.
+		// We might want to de-dent it in some cases, such as a 'break' in a 'switch-case' block.
+		boolean isDeDenting = false;
+		if (parentNode.getType() == ASTNode.SWITCH_CASE)
+		{
+			if (!getDocument().getBoolean(PHPFormatterConstants.INDENT_BREAK_IN_CASE))
+			{
+				context.decIndent();
+				isDeDenting = true;
+			}
+		}
+		super.accept(context, visitor);
+		if (isDeDenting)
+		{
+			context.incIndent();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
+	 */
+	@Override
+	protected boolean isAddingBeginNewLine()
+	{
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
+	 */
+	@Override
+	protected boolean isAddingEndNewLine()
+	{
+		return true;
+	}
+
 }

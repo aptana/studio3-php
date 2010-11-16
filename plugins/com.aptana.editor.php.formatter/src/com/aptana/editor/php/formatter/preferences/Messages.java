@@ -77,6 +77,7 @@ public class Messages extends NLS
 	public static String PHPFormatterIndentationTabPage_statementsWithinCase;
 	public static String PHPFormatterIndentationTabPage_statementsWithinTypes;
 	public static String PHPFormatterIndentationTabPage_statementsWithinFunctions;
+	public static String PHPFormatterIndentationTabPage_breakWithinCase;
 	static
 	{
 		// initialize resource bundle

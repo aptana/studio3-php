@@ -34,24 +34,62 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
+import com.aptana.formatter.ui.CodeFormatterConstants;
 
 /**
- * A PHP 'case' formatter node.<br>
- * This node represents a 'case' or 'default' part of a switch-case block.
+ * A PHP case-colon formatter node.<br>
+ * This formatter node handled the colon spacing when appears in a switch-case statements.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPCaseNode extends FormatterBlockWithBeginEndNode
+public class FormatterPHPCaseColonNode extends FormatterPHPTextNode
 {
 
+	private final boolean caseInBlock;
+
 	/**
+	 * Constructs a new FormatterPHPCommaNode.
+	 * 
 	 * @param document
-	 * @param hasBlockedChild
+	 * @param caseInBlock
+	 *            Indicate that the case/default content that comes after this colon is inside a curly block.
 	 */
-	public FormatterPHPCaseNode(IFormatterDocument document)
+	public FormatterPHPCaseColonNode(IFormatterDocument document, boolean caseInBlock)
 	{
-		super(document);
+		super(document, true);
+		this.caseInBlock = caseInBlock;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode#getSpacesCountBefore()
+	 */
+	@Override
+	public int getSpacesCountBefore()
+	{
+		return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CASE_COLON);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
+	 */
+	protected boolean isAddingEndNewLine()
+	{
+		return !caseInBlock
+				|| CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
+						PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	 */
+	@Override
+	public int getSpacesCountAfter()
+	{
+		return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CASE_COLON);
 	}
 }
