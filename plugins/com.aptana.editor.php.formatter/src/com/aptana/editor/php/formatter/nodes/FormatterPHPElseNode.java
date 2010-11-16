@@ -131,6 +131,7 @@ public class FormatterPHPElseNode extends FormatterBlockWithBeginNode
 			else if (visitor.endsWithNewLine())
 			{
 				visitor.writeIndent(context);
+				wroteIndent = true;
 			}
 
 			int indent = context.getIndent();

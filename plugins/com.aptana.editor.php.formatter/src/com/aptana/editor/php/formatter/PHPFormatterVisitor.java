@@ -115,6 +115,7 @@ import org.eclipse.php.internal.core.ast.nodes.Variable;
 import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPAssignmentNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseBodyNode;
@@ -179,18 +180,18 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		Statement trueStatement = ifStatement.getTrueStatement();
 
 		boolean isEmptyFalseBlock = (falseStatement == null);
-		boolean isCurlyTrueBlock = (trueStatement.getType() == ASTNode.BLOCK);
-		boolean isCurlyFalseBlock = (!isEmptyFalseBlock && falseStatement.getType() == ASTNode.BLOCK);
+		boolean hasTrueBlock = (trueStatement.getType() == ASTNode.BLOCK);
+		boolean hasFalseBlock = (!isEmptyFalseBlock && falseStatement.getType() == ASTNode.BLOCK);
 		// First, construct the if condition node
-		FormatterPHPIfNode conditionNode = new FormatterPHPIfNode(document, isCurlyTrueBlock, ifStatement);
+		FormatterPHPIfNode conditionNode = new FormatterPHPIfNode(document, hasTrueBlock, ifStatement);
 		conditionNode.setBegin(builder.createTextNode(document, ifStatement.getStart(), ifStatement.getCondition()
 				.getEnd() + 1));
 		builder.push(conditionNode);
 
 		// Construct the 'true' part of the 'if' and visit its children
-		if (isCurlyTrueBlock)
+		if (hasTrueBlock)
 		{
-			visitBlockNode(trueStatement, isEmptyFalseBlock);
+			visitBlockNode((Block) trueStatement, ifStatement, isEmptyFalseBlock);
 		}
 		else
 		{
@@ -211,13 +212,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int elseBlockStart = elsePos + trueBlockEnd + 1;
 			int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
 			boolean isElseIf = (falseStatement.getType() == ASTNode.IF_STATEMENT);
-			FormatterPHPElseNode elseNode = new FormatterPHPElseNode(document, isCurlyFalseBlock, isElseIf,
-					isCurlyTrueBlock);
+			FormatterPHPElseNode elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock);
 			elseNode.setBegin(builder.createTextNode(document, elseBlockStart, elseBlockDeclarationEnd));
 			builder.push(elseNode);
-			if (isCurlyFalseBlock)
+			if (hasFalseBlock)
 			{
-				visitBlockNode(falseStatement, true);
+				visitBlockNode((Block) falseStatement, ifStatement, true);
 			}
 			else
 			{
@@ -1196,7 +1196,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int declarationEnd = catchClause.getClassName().getEnd();
 		declarationEnd = builder.locateCharForward(document, ')', declarationEnd) + 1;
 		visitCommonDeclaration(catchClause, declarationEnd, true);
-		visitBlockNode(catchClause.getBody(), true);
+		visitBlockNode(catchClause.getBody(), catchClause, true);
 		return false;
 	}
 
@@ -1222,7 +1222,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(TryStatement tryStatement)
 	{
 		visitCommonDeclaration(tryStatement, tryStatement.getStart() + 3, true);
-		visitBlockNode(tryStatement.getBody(), true);
+		visitBlockNode(tryStatement.getBody(), tryStatement, true);
 		List<CatchClause> catchClauses = tryStatement.catchClauses();
 		for (CatchClause catchClause : catchClauses)
 		{
@@ -1426,24 +1426,82 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Visit and push a FormatterPHPBlockNode
+	 * Visit and push a FormatterPHPBlockNode. <br>
+	 * The given body can represent a curly-braces body, or even an alternative syntax body. This method will check the
+	 * block to see if it's curly, and if not, it will try to match the alternative syntax closer according to the given
+	 * parent node type.
 	 * 
 	 * @param block
+	 *            The block
+	 * @param parent
+	 *            The block's parent
+	 * @see http://www.php.net/manual/en/control-structures.alternative-syntax.php
 	 */
-	private void visitBlockNode(ASTNode block, boolean consumeEndingSemicolon)
+	private void visitBlockNode(Block block, ASTNode parent, boolean consumeEndingSemicolon)
 	{
-		FormatterPHPBlockNode bodyNode = new FormatterPHPBlockNode(document, false);
-		bodyNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
-		builder.push(bodyNode);
+		boolean isAlternativeSyntaxBlock = !block.isCurly();
+		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, false);
+		blockNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
+		builder.push(blockNode);
 		// visit the children
 		block.childrenAccept(this);
-		builder.checkedPop(bodyNode, block.getEnd() - 1);
 		int end = block.getEnd();
-		if (consumeEndingSemicolon)
+		int closingStartOffset = end;
+		if (isAlternativeSyntaxBlock)
 		{
-			end = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document, false);
+			// The AST does not provide the block-end right on the alternative syntax closer, so we need to check for
+			// white spaces and update the end in this case.
+			for (; closingStartOffset < document.getLength(); closingStartOffset++)
+			{
+				if (!Character.isWhitespace(document.charAt(closingStartOffset)))
+				{
+					break;
+				}
+			}
 		}
-		bodyNode.setEnd(builder.createTextNode(document, block.getEnd() - 1, end));
+		else
+		{
+			closingStartOffset--;
+		}
+		int endWithSemicolon;
+		if (!isAlternativeSyntaxBlock && !consumeEndingSemicolon)
+		{
+			endWithSemicolon = block.getEnd();
+		}
+		else
+		{
+			endWithSemicolon = locateCharMatchInLine(closingStartOffset, SEMICOLON, document, isAlternativeSyntaxBlock);
+		}
+
+		// pop the block node
+		builder.checkedPop(blockNode, Math.min(closingStartOffset, end));
+		blockNode.setEnd(builder.createTextNode(document, closingStartOffset, endWithSemicolon));
+	}
+
+	/**
+	 * Returns the string value that represents the closing of an alternative syntax block. In case non exists, this
+	 * method returns an empty string.
+	 * 
+	 * @param parent
+	 * @return The alternative syntax block-closing string.
+	 */
+	private String getAlternativeSyntaxCloser(ASTNode parent)
+	{
+		switch (parent.getType())
+		{
+			case ASTNode.IF_STATEMENT:
+				return "endif"; //$NON-NLS-1$
+			case ASTNode.WHILE_STATEMENT:
+				return "endwhile"; //$NON-NLS-1$
+			case ASTNode.FOR_EACH_STATEMENT:
+				return "endforeach"; //$NON-NLS-1$
+			case ASTNode.FOR_STATEMENT:
+				return "endfor"; //$NON-NLS-1$
+			case ASTNode.SWITCH_STATEMENT:
+				return "endswitch"; //$NON-NLS-1$
+			default:
+				return StringUtil.EMPTY;
+		}
 	}
 
 	/**
