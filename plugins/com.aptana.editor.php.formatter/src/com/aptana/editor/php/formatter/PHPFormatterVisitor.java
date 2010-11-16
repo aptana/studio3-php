@@ -205,17 +205,24 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// Construct the 'false' part if exist.
 			// Note that the JS parser does not provide us with the start offset of the 'else' keyword, so we need
 			// to locate it in between the end of the 'true' block and the begin of the 'false' block.
+			// However, in case we have an 'elseif' case, the offset of the false block points to the start of the
+			// 'elseif' word.
 			int trueBlockEnd = trueStatement.getEnd();
 			int falseBlockStart = falseStatement.getStart();
 			String segment = document.get(trueBlockEnd + 1, falseBlockStart);
 			int elsePos = segment.toLowerCase().indexOf("else"); //$NON-NLS-1$
-			int elseBlockStart = elsePos + trueBlockEnd + 1;
-			int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
 			boolean isElseIf = (falseStatement.getType() == ASTNode.IF_STATEMENT);
-			FormatterPHPElseNode elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock);
-			elseNode.setBegin(builder.createTextNode(document, elseBlockStart, elseBlockDeclarationEnd));
-			builder.push(elseNode);
-			if (hasFalseBlock)
+			boolean isConnectedElsif = (isElseIf && elsePos < 0);
+			FormatterPHPElseNode elseNode = null;
+			if (!isConnectedElsif)
+			{
+				int elseBlockStart = elsePos + trueBlockEnd + 1;
+				int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
+				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock);
+				elseNode.setBegin(builder.createTextNode(document, elseBlockStart, elseBlockDeclarationEnd));
+				builder.push(elseNode);
+			}
+			if (!isConnectedElsif && hasFalseBlock)
 			{
 				visitBlockNode((Block) falseStatement, ifStatement, true);
 			}
@@ -231,7 +238,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 					falseStatement.accept(this);
 					int falseBlockEnd = falseStatement.getEnd();
 					builder.checkedPop(elseIfNode, falseBlockEnd);
-					elseIfNode.setEnd(builder.createTextNode(document, falseBlockEnd, falseBlockEnd));
+					int end = elseIfNode.getEndOffset();
+					elseIfNode.setEnd(builder.createTextNode(document, end, end));
 				}
 				else
 				{
@@ -239,7 +247,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 					falseStatement.accept(this);
 				}
 			}
-			builder.checkedPop(elseNode, falseStatement.getEnd());
+			if (elseNode != null)
+			{
+				builder.checkedPop(elseNode, falseStatement.getEnd());
+			}
 		}
 		return false;
 	}
