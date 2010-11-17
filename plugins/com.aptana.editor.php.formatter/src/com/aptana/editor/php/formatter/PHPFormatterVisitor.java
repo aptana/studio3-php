@@ -124,6 +124,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCommaNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDefaultLineNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPEchoNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
@@ -493,8 +494,40 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(EchoStatement echoStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(echoStatement);
+		FormatterPHPEchoNode echoNode = new FormatterPHPEchoNode(document);
+		int start = echoStatement.getStart();
+		echoNode.setBegin(builder.createTextNode(document, start, start + 4));
+		builder.push(echoNode);
+		builder.checkedPop(echoNode, -1);
+		// push the expressions one at a time, with comma nodes between them.
+		List<Expression> expressions = echoStatement.expressions();
+		for (int i = 0; i < expressions.size(); i++)
+		{
+			Expression expression = expressions.get(i);
+			expression.accept(this);
+			// add a comma if needed
+			if (i + 1 < expressions.size())
+			{
+				FormatterPHPCommaNode commaNode = new FormatterPHPCommaNode(document);
+				int startIndex = expression.getEnd();
+				String text = document.get(startIndex, expressions.get(i + 1).getStart());
+				startIndex += text.indexOf(',');
+				commaNode.setBegin(builder.createTextNode(document, startIndex, startIndex + 1));
+				builder.push(commaNode);
+				builder.checkedPop(commaNode, -1);
+			}
+		}
+		// locate the comma at the end of the expression. If exists, push it as a node.
+		int end = expressions.get(expressions.size() - 1).getEnd();
+		int semicolonOffsetInLine = builder.locateCharForward(document, ';', end);
+		if (semicolonOffsetInLine != end)
+		{
+			FormatterPHPTextNode semicolonNode = new FormatterPHPTextNode(document, true, 0);
+			semicolonNode.setBegin(builder.createTextNode(document, semicolonOffsetInLine, semicolonOffsetInLine + 1));
+			builder.push(semicolonNode);
+			builder.checkedPop(semicolonNode, -1);
+		}
+		return false;
 	}
 
 	/*
@@ -1437,6 +1470,15 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			builder.checkedPop(modifierNode, -1);
 			isFirst = false;
 		}
+		if (isFirst)
+		{
+			// if we got to this point with the 'isFirst' as 'true', we know that the modifiers are empty.
+			// in this case, we need to push an empty modifiers node.
+			FormatterPHPModifierNode emptyModifier = new FormatterPHPModifierNode(document, isFirst);
+			emptyModifier.setBegin(builder.createTextNode(document, startOffset, startOffset));
+			builder.push(emptyModifier);
+			builder.checkedPop(emptyModifier, -1);
+		}
 	}
 
 	/**
@@ -1634,7 +1676,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Scan for a list of char terminator located at the <b>same line</b>. Return the given offset if non is found.
+	 * Scan for a list of char terminator located at the <b>same line</b>. Return the given offset if non is found.<br>
+	 * <b>See important note in the @return tag.</b>
 	 * 
 	 * @param offset
 	 * @param chars
@@ -1643,7 +1686,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param ignoreNonWhitespace
 	 *            In case this flag is false, any non-whitespace char that appear before we located a requested char
 	 *            will stop the search. In case it's true, the search will continue till the end of the line.
-	 * @return The first match offset; The given offset if a match not found.
+	 * @return The first match offset; The given offset if a match not found. <b>Note that the returned offset is in a
+	 *         +1 position from the real character offset. This is to ease the caller process of adapting it to the
+	 *         formatter-document's offsets.</b>
 	 */
 	private int locateCharMatchInLine(int offset, char[] chars, FormatterDocument document, boolean ignoreNonWhitespace)
 	{
