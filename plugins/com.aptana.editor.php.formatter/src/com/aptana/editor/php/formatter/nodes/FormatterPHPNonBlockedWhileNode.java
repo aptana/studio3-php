@@ -65,4 +65,25 @@ public class FormatterPHPNonBlockedWhileNode extends FormatterBlockWithBeginNode
 	{
 		return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#shouldConsumePreviousWhiteSpaces()
+	 */
+	@Override
+	public boolean shouldConsumePreviousWhiteSpaces()
+	{
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountBefore()
+	 */
+	@Override
+	public int getSpacesCountBefore()
+	{
+		return 1;
+	}
+
 }

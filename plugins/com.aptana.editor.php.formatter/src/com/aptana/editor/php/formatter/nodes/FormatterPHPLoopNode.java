@@ -37,20 +37,22 @@ package com.aptana.editor.php.formatter.nodes;
 import com.aptana.formatter.IFormatterDocument;
 
 /**
- * @author Shalom
+ * PHP formatter loop node (for while, for, foreach etc.)
+ * 
+ * @author Shalom Gibly <sgibly@aptana.com>
  */
 public class FormatterPHPLoopNode extends FormatterPHPBlockNode
 {
 
-	private boolean hasCurlyBlock;
+	private boolean hasBlock;
 
 	/**
 	 * @param document
 	 */
-	public FormatterPHPLoopNode(IFormatterDocument document, boolean hasCurlyBlock)
+	public FormatterPHPLoopNode(IFormatterDocument document, boolean hasBlock)
 	{
 		super(document, false);
-		this.hasCurlyBlock = hasCurlyBlock;
+		this.hasBlock = hasBlock;
 	}
 
 	/*
@@ -60,8 +62,7 @@ public class FormatterPHPLoopNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		// TODO Auto-generated method stub
-		return !hasCurlyBlock || super.isAddingBeginNewLine();
+		return !hasBlock || super.isAddingBeginNewLine();
 	}
 
 	/*
@@ -71,8 +72,7 @@ public class FormatterPHPLoopNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isIndenting()
 	{
-		// TODO Auto-generated method stub
-		return !hasCurlyBlock || super.isIndenting();
+		return !hasBlock || super.isIndenting();
 	}
 
 }

@@ -131,7 +131,9 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPInvocationTextNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPLoopNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPModifierNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPNonBlockedWhileNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
@@ -485,19 +487,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.DoStatement
-	 * )
-	 */
-	@Override
-	public boolean visit(DoStatement doStatement)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(doStatement);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
 	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.EchoStatement
 	 * )
 	 */
@@ -557,18 +546,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * ForEachStatement)
-	 */
-	@Override
-	public boolean visit(ForEachStatement forEachStatement)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(forEachStatement);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
 	 * FormalParameter)
 	 */
 	@Override
@@ -587,8 +564,63 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ForStatement forStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(forStatement);
+		Statement body = forStatement.getBody();
+		int declarationEnd = builder.locateCharBackward(document, ')', body.getStart()) + 1;
+		visitCommonLoopBlock(forStatement, declarationEnd, forStatement.getBody());
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * ForEachStatement)
+	 */
+	@Override
+	public boolean visit(ForEachStatement forEachStatement)
+	{
+		int declarationEnd = forEachStatement.getStatement().getStart();
+		declarationEnd = builder.locateCharBackward(document, ')', declarationEnd) + 1;
+		visitCommonLoopBlock(forEachStatement, declarationEnd, forEachStatement.getStatement());
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * WhileStatement)
+	 */
+	@Override
+	public boolean visit(WhileStatement whileStatement)
+	{
+		int declarationEnd = whileStatement.getCondition().getEnd();
+		declarationEnd = builder.locateCharForward(document, ')', declarationEnd) + 1;
+		visitCommonLoopBlock(whileStatement, declarationEnd, whileStatement.getBody());
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.DoStatement
+	 * )
+	 */
+	@Override
+	public boolean visit(DoStatement doStatement)
+	{
+		Statement body = doStatement.getBody();
+		// First, push the 'do' declaration node and its body
+		visitCommonLoopBlock(doStatement, doStatement.getStart() + 2, body);
+		// now deal with the 'while' condition part. we need to include the word 'while' that appears
+		// somewhere between the block-end and the condition start.
+		// We wrap this node as a begin-end node that will hold the condition internals as children
+		FormatterPHPNonBlockedWhileNode whileNode = new FormatterPHPNonBlockedWhileNode(document);
+		// Search for the exact 'while' start offset
+		int whileBeginOffset = builder.locateCharForward(document, 'w', body.getEnd());
+		int conditionEnd = locateCharMatchInLine(doStatement.getEnd(), SEMICOLON, document, true);
+		whileNode.setBegin(builder.createTextNode(document, whileBeginOffset, conditionEnd));
+		builder.push(whileNode);
+		builder.checkedPop(whileNode, -1);
+		return false;
 	}
 
 	/*
@@ -1291,18 +1323,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * WhileStatement)
-	 */
-	@Override
-	public boolean visit(WhileStatement whileStatement)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(whileStatement);
-	}
-
 	// ###################### Helper Methods ###################### //
 
 	/**
@@ -1420,6 +1440,50 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
+	 * @param node
+	 * @param declarationEndOffset
+	 * @param body
+	 */
+	private void visitCommonLoopBlock(ASTNode node, int declarationEndOffset, Statement body)
+	{
+		boolean hasBlockedBody = (body != null && body.getType() == ASTNode.BLOCK);
+		boolean emptyBody = (body != null && body.getType() == ASTNode.EMPTY_STATEMENT);
+		visitCommonDeclaration(node, declarationEndOffset, hasBlockedBody);
+		if (hasBlockedBody)
+		{
+			visitBlockNode((Block) body, node, true);
+		}
+		else if (body != null)
+		{
+			if (!emptyBody)
+			{
+				// wrap the body with a loop node
+				FormatterPHPLoopNode loopNode = new FormatterPHPLoopNode(document, false);
+				int start = body.getStart();
+				int end = body.getEnd();
+				loopNode.setBegin(builder.createTextNode(document, start, start));
+				builder.push(loopNode);
+				body.accept(this);
+				builder.checkedPop(loopNode, end);
+				loopNode.setEnd(builder.createTextNode(document, end, end));
+			}
+			else
+			{
+				// create and push a special node that represents this empty statement.
+				// When visiting a loop, this statement will probably only holds a semicolon char, so we make sure
+				// we attach the char to the end of the previous node.
+				if (body.getLength() > 0)
+				{
+					FormatterPHPTextNode emptyStatement = new FormatterPHPTextNode(document, true, 0);
+					emptyStatement.setBegin(builder.createTextNode(document, body.getStart(), body.getEnd()));
+					builder.push(emptyStatement);
+					builder.checkedPop(emptyStatement, -1);
+				}
+			}
+		}
+	}
+
+	/**
 	 * A simple visit and push of a node that pushes a PHP text node which consumes any white-spaces before that node by
 	 * request.
 	 * 
@@ -1482,37 +1546,22 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		else
 		{
 			endWithSemicolon = locateCharMatchInLine(closingStartOffset, SEMICOLON, document, isAlternativeSyntaxBlock);
+			if (isAlternativeSyntaxBlock)
+			{
+				String alternativeSyntaxCloser = getAlternativeSyntaxCloser(parent);
+				int alternativeCloserLength = alternativeSyntaxCloser.length();
+				if (closingStartOffset - alternativeCloserLength >= 0
+						&& document.get(closingStartOffset - alternativeCloserLength, closingStartOffset).toLowerCase()
+								.equals(alternativeSyntaxCloser))
+				{
+					closingStartOffset -= alternativeCloserLength;
+				}
+			}
 		}
 
 		// pop the block node
 		builder.checkedPop(blockNode, Math.min(closingStartOffset, end));
 		blockNode.setEnd(builder.createTextNode(document, closingStartOffset, endWithSemicolon));
-	}
-
-	/**
-	 * Returns the string value that represents the closing of an alternative syntax block. In case non exists, this
-	 * method returns an empty string.
-	 * 
-	 * @param parent
-	 * @return The alternative syntax block-closing string.
-	 */
-	private String getAlternativeSyntaxCloser(ASTNode parent)
-	{
-		switch (parent.getType())
-		{
-			case ASTNode.IF_STATEMENT:
-				return "endif"; //$NON-NLS-1$
-			case ASTNode.WHILE_STATEMENT:
-				return "endwhile"; //$NON-NLS-1$
-			case ASTNode.FOR_EACH_STATEMENT:
-				return "endforeach"; //$NON-NLS-1$
-			case ASTNode.FOR_STATEMENT:
-				return "endfor"; //$NON-NLS-1$
-			case ASTNode.SWITCH_STATEMENT:
-				return "endswitch"; //$NON-NLS-1$
-			default:
-				return StringUtil.EMPTY;
-		}
 	}
 
 	/**
@@ -1556,6 +1605,32 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		declarationNode.setBegin(builder.createTextNode(document, node.getStart(), declarationEndOffset));
 		builder.push(declarationNode);
 		builder.checkedPop(declarationNode, -1);
+	}
+
+	/**
+	 * Returns the string value that represents the closing of an alternative syntax block. In case non exists, this
+	 * method returns an empty string.
+	 * 
+	 * @param parent
+	 * @return The alternative syntax block-closing string.
+	 */
+	private String getAlternativeSyntaxCloser(ASTNode parent)
+	{
+		switch (parent.getType())
+		{
+			case ASTNode.IF_STATEMENT:
+				return "endif"; //$NON-NLS-1$
+			case ASTNode.WHILE_STATEMENT:
+				return "endwhile"; //$NON-NLS-1$
+			case ASTNode.FOR_EACH_STATEMENT:
+				return "endforeach"; //$NON-NLS-1$
+			case ASTNode.FOR_STATEMENT:
+				return "endfor"; //$NON-NLS-1$
+			case ASTNode.SWITCH_STATEMENT:
+				return "endswitch"; //$NON-NLS-1$
+			default:
+				return StringUtil.EMPTY;
+		}
 	}
 
 	/**
