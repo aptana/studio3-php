@@ -85,6 +85,9 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType(
 				"punctuation.section.embedded.end.php")); //$NON-NLS-1$
 	}
+	
+	private PHPSourceConfiguration() {
+	}
 
 	public static PHPSourceConfiguration getDefault()
 	{
@@ -238,7 +241,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		return doubleQuotedStringScanner;
 	}
 
-	protected IToken getToken(String tokenName)
+	private IToken getToken(String tokenName)
 	{
 		return new Token(tokenName);
 	}
