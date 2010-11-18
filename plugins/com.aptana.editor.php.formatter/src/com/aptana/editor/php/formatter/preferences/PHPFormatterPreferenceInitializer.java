@@ -94,6 +94,14 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putInt(SPACES_AFTER_COMMAS, 1);
 		store.putInt(SPACES_BEFORE_CASE_COLON, 1);
 		store.putInt(SPACES_AFTER_CASE_COLON, 1);
+		store.putInt(SPACES_BEFORE_COLON, 1);
+		store.putInt(SPACES_AFTER_COLON, 1);
+		store.putInt(SPACES_BEFORE_SEMICOLON, 0);
+		store.putInt(SPACES_AFTER_SEMICOLON, 1);
+		store.putInt(SPACES_BEFORE_DOT, 0);
+		store.putInt(SPACES_AFTER_DOT, 0);
+		store.putInt(SPACES_BEFORE_ARROW, 1);
+		store.putInt(SPACES_AFTER_ARROW, 1);
 		try
 		{
 			store.flush();

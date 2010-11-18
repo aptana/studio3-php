@@ -116,15 +116,12 @@ import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.core.util.StringUtil;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPAssignmentNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseColonNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPCommaNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDefaultLineNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPEchoNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
@@ -132,13 +129,17 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPInvocationTextNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPKeywordNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPLoopNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPModifierNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPNonBlockedWhileNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPOperatorNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.editor.php.formatter.nodes.PHPFormatterBreakNode;
+import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
+import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
 
@@ -457,8 +458,73 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ConstantDeclaration classConstantDeclaration)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(classConstantDeclaration);
+		// push the 'const' keyword.
+		pushKeyword(classConstantDeclaration.getStart(), 5, true);
+		// Push the declarations. Each has an assignment char and they are separated by commas.
+		List<? extends ASTNode> leftNodes = classConstantDeclaration.names();
+		List<? extends ASTNode> rightNodes = classConstantDeclaration.initializers();
+		visitNodeLists(leftNodes.toArray(new ASTNode[leftNodes.size()]), rightNodes.toArray(new ASTNode[rightNodes
+				.size()]), TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
+		// locate the semicolon at the end of the expression. If exists, push it as a node.
+		int end = rightNodes.get(rightNodes.size() - 1).getEnd();
+		pushSemicolon(end);
+		return false;
+	}
+
+	/**
+	 * This method is used to visit and push nodes that are separated with some delimiter, and potentially have
+	 * operators between them.<br>
+	 * For example, const A='a', B='b';
+	 * 
+	 * @param leftNodes
+	 *            A list of ASTNodes.
+	 * @param rightNodes
+	 *            A list of ASTNodes that are pairing with the leftNodes. In case there are no pairs, this list may be
+	 *            null. However, if there are pairs (such as assignments), the size of this group must match the size of
+	 *            the left group.
+	 * @param pairsOperator
+	 *            The operator {@link TypeOperator} that should appear between the left and the right pair, when there
+	 *            are pairs. May be null only when the rightNodes are null.
+	 * @param pairsSeparator
+	 *            A separator that appears between the leftNodes. If there are pairs, the separator appears between one
+	 *            pair to the other (may only be null in case a separator is not needed, e.g. we have only one
+	 *            item/pair)
+	 */
+	private void visitNodeLists(ASTNode[] leftNodes, ASTNode[] rightNodes, TypeOperator pairsOperator,
+			TypePunctuation pairsSeparator)
+	{
+		// push the expressions one at a time, with comma nodes between them.
+		for (int i = 0; i < leftNodes.length; i++)
+		{
+			ASTNode left = leftNodes[i];
+			ASTNode right = (rightNodes != null) ? rightNodes[i] : null;
+			left.accept(this);
+			if (right != null && pairsOperator != null)
+			{
+				FormatterPHPOperatorNode node = new FormatterPHPOperatorNode(document, pairsOperator);
+				int startIndex = left.getEnd();
+				String text = document.get(startIndex, right.getStart());
+				String typeStr = pairsOperator.toString();
+				startIndex += text.indexOf(typeStr);
+				node.setBegin(builder.createTextNode(document, startIndex, startIndex + typeStr.length()));
+				builder.push(node);
+				builder.checkedPop(node, -1);
+				right.accept(this);
+			}
+			// add a separator if needed
+			if (i + 1 < leftNodes.length)
+			{
+				FormatterPHPPunctuationNode separatorNode = new FormatterPHPPunctuationNode(document, pairsSeparator);
+				int startIndex = left.getEnd();
+				String text = document.get(startIndex, leftNodes[i + 1].getStart());
+				String separatorStr = pairsSeparator.toString();
+				startIndex += text.indexOf(separatorStr);
+				separatorNode
+						.setBegin(builder.createTextNode(document, startIndex, startIndex + separatorStr.length()));
+				builder.push(separatorNode);
+				builder.checkedPop(separatorNode, -1);
+			}
+		}
 	}
 
 	/*
@@ -494,11 +560,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(EchoStatement echoStatement)
 	{
-		FormatterPHPEchoNode echoNode = new FormatterPHPEchoNode(document);
-		int start = echoStatement.getStart();
-		echoNode.setBegin(builder.createTextNode(document, start, start + 4));
-		builder.push(echoNode);
-		builder.checkedPop(echoNode, -1);
+		// push the 'echo' keyword.
+		pushKeyword(echoStatement.getStart(), 4, true);
 		// push the expressions one at a time, with comma nodes between them.
 		List<Expression> expressions = echoStatement.expressions();
 		for (int i = 0; i < expressions.size(); i++)
@@ -508,7 +571,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// add a comma if needed
 			if (i + 1 < expressions.size())
 			{
-				FormatterPHPCommaNode commaNode = new FormatterPHPCommaNode(document);
+				FormatterPHPPunctuationNode commaNode = new FormatterPHPPunctuationNode(document, TypePunctuation.COMMA);
 				int startIndex = expression.getEnd();
 				String text = document.get(startIndex, expressions.get(i + 1).getStart());
 				startIndex += text.indexOf(',');
@@ -517,16 +580,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				builder.checkedPop(commaNode, -1);
 			}
 		}
-		// locate the comma at the end of the expression. If exists, push it as a node.
+		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = expressions.get(expressions.size() - 1).getEnd();
-		int semicolonOffsetInLine = builder.locateCharForward(document, ';', end);
-		if (semicolonOffsetInLine != end)
-		{
-			FormatterPHPTextNode semicolonNode = new FormatterPHPTextNode(document, true, 0);
-			semicolonNode.setBegin(builder.createTextNode(document, semicolonOffsetInLine, semicolonOffsetInLine + 1));
-			builder.push(semicolonNode);
-			builder.checkedPop(semicolonNode, -1);
-		}
+		pushSemicolon(end);
 		return false;
 	}
 
@@ -538,8 +594,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(EmptyStatement emptyStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(emptyStatement);
+		visitTextNode(emptyStatement, true, 0);
+		return false;
 	}
 
 	/*
@@ -574,18 +630,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		// TODO Auto-generated method stub
 		return super.visit(fieldAccess);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * FormalParameter)
-	 */
-	@Override
-	public boolean visit(FormalParameter formalParameter)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(formalParameter);
 	}
 
 	/*
@@ -664,7 +708,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FunctionDeclaration functionDeclaration)
 	{
-		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getBody());
+		visitFunctionDeclaration(functionDeclaration, functionDeclaration.formalParameters(), functionDeclaration
+				.getBody());
 		return false;
 	}
 
@@ -740,8 +785,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Identifier identifier)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(identifier);
+		visitTextNode(identifier, true, 0);
+		return false;
 	}
 
 	/*
@@ -826,7 +871,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
-		visitFunctionDeclaration(lambdaFunctionDeclaration, lambdaFunctionDeclaration.getBody());
+		visitFunctionDeclaration(lambdaFunctionDeclaration, lambdaFunctionDeclaration.formalParameters(),
+				lambdaFunctionDeclaration.getBody());
 		return false;
 	}
 
@@ -871,34 +917,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		visitModifiers(fieldsDeclaration, firstVariable);
 		// visit the variables and their values
 		Expression[] initialValues = fieldsDeclaration.getInitialValues();
-		for (int i = 0; i < variableNames.length; i++)
-		{
-			Variable v = variableNames[i];
-			Expression e = initialValues[i];
-			visitTextNode(v, true, 0);
-			if (e != null)
-			{
-				// We have a value assigned to this variable
-				FormatterPHPAssignmentNode assignmentNode = new FormatterPHPAssignmentNode(document);
-				String text = document.get(v.getEnd(), e.getStart());
-				int startIndex = v.getEnd() + text.indexOf('=');
-				assignmentNode.setBegin(builder.createTextNode(document, startIndex, startIndex + 1));
-				builder.push(assignmentNode);
-				builder.checkedPop(assignmentNode, -1);
-				visitTextNode(e, true, 0);
-			}
-			if (i + 1 < variableNames.length)
-			{
-				// we need to add a comma node
-				FormatterPHPCommaNode commaNode = new FormatterPHPCommaNode(document);
-				int startIndex = (e != null) ? e.getEnd() : v.getEnd();
-				String text = document.get(startIndex, variableNames[i + 1].getStart());
-				startIndex += text.indexOf(',');
-				commaNode.setBegin(builder.createTextNode(document, startIndex, startIndex + 1));
-				builder.push(commaNode);
-				builder.checkedPop(commaNode, -1);
-			}
-		}
+		// visit the variables and their initial values
+		visitNodeLists(variableNames, initialValues, TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
 		return false;
 	}
 
@@ -1165,7 +1185,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// visit the children under that block node
 		body.childrenAccept(this);
 		int endingOffset = switchStatement.getEnd();
-		int endWithSemicolon = locateCharMatchInLine(endingOffset, SEMICOLON, document, isAlternativeSyntax);
 		endingOffset--;
 		if (isAlternativeSyntax)
 		{
@@ -1173,9 +1192,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// we already removed 1 offset above, so we remove the extra 8.
 			endingOffset -= 8;
 		}
+		blockNode.setEnd(builder.createTextNode(document, endingOffset, endingOffset + 1));
 		// pop the block node
-		builder.checkedPop(blockNode, endingOffset);
-		blockNode.setEnd(builder.createTextNode(document, endingOffset, endWithSemicolon));
+		builder.checkedPop(blockNode, -1);
 		return false;
 	}
 
@@ -1352,7 +1371,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Variable variable)
 	{
-		visitTextNode(variable, false, 0);
+		visitTextNode(variable, true, 0);
 		return false;
 	}
 
@@ -1463,7 +1482,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		boolean isFirst = true;
 		while (matcher.find())
 		{
-			FormatterPHPModifierNode modifierNode = new FormatterPHPModifierNode(document, isFirst);
+			FormatterPHPKeywordNode modifierNode = new FormatterPHPKeywordNode(document, isFirst);
 			modifierNode.setBegin(builder.createTextNode(document, matcher.start() + startOffset, matcher.end()
 					+ startOffset));
 			builder.push(modifierNode);
@@ -1474,7 +1493,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// if we got to this point with the 'isFirst' as 'true', we know that the modifiers are empty.
 			// in this case, we need to push an empty modifiers node.
-			FormatterPHPModifierNode emptyModifier = new FormatterPHPModifierNode(document, isFirst);
+			FormatterPHPKeywordNode emptyModifier = new FormatterPHPKeywordNode(document, isFirst);
 			emptyModifier.setBegin(builder.createTextNode(document, startOffset, startOffset));
 			builder.push(emptyModifier);
 			builder.checkedPop(emptyModifier, -1);
@@ -1514,13 +1533,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				// create and push a special node that represents this empty statement.
 				// When visiting a loop, this statement will probably only holds a semicolon char, so we make sure
 				// we attach the char to the end of the previous node.
-				if (body.getLength() > 0)
-				{
-					FormatterPHPTextNode emptyStatement = new FormatterPHPTextNode(document, true, 0);
-					emptyStatement.setBegin(builder.createTextNode(document, body.getStart(), body.getEnd()));
-					builder.push(emptyStatement);
-					builder.checkedPop(emptyStatement, -1);
-				}
+				body.accept(this);
 			}
 		}
 	}
@@ -1564,56 +1577,37 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		block.childrenAccept(this);
 		int end = block.getEnd();
 		int closingStartOffset = end;
-		if (isAlternativeSyntaxBlock)
-		{
-			// The AST does not provide the block-end right on the alternative syntax closer, so we need to check for
-			// white spaces and update the end in this case.
-			for (; closingStartOffset < document.getLength(); closingStartOffset++)
-			{
-				if (!Character.isWhitespace(document.charAt(closingStartOffset)))
-				{
-					break;
-				}
-			}
-		}
-		else
+		if (!isAlternativeSyntaxBlock)
 		{
 			closingStartOffset--;
 		}
-		int endWithSemicolon;
-		if (!isAlternativeSyntaxBlock && !consumeEndingSemicolon)
+		if (isAlternativeSyntaxBlock)
 		{
-			endWithSemicolon = block.getEnd();
-		}
-		else
-		{
-			endWithSemicolon = locateCharMatchInLine(closingStartOffset, SEMICOLON, document, isAlternativeSyntaxBlock);
-			if (isAlternativeSyntaxBlock)
+			String alternativeSyntaxCloser = getAlternativeSyntaxCloser(parent);
+			int alternativeCloserLength = alternativeSyntaxCloser.length();
+			if (closingStartOffset - alternativeCloserLength >= 0
+					&& document.get(closingStartOffset - alternativeCloserLength, closingStartOffset).toLowerCase()
+							.equals(alternativeSyntaxCloser))
 			{
-				String alternativeSyntaxCloser = getAlternativeSyntaxCloser(parent);
-				int alternativeCloserLength = alternativeSyntaxCloser.length();
-				if (closingStartOffset - alternativeCloserLength >= 0
-						&& document.get(closingStartOffset - alternativeCloserLength, closingStartOffset).toLowerCase()
-								.equals(alternativeSyntaxCloser))
-				{
-					closingStartOffset -= alternativeCloserLength;
-				}
+				closingStartOffset -= alternativeCloserLength;
 			}
 		}
 
 		// pop the block node
 		builder.checkedPop(blockNode, Math.min(closingStartOffset, end));
-		blockNode.setEnd(builder.createTextNode(document, closingStartOffset, endWithSemicolon));
+		blockNode.setEnd(builder.createTextNode(document, closingStartOffset, Math.max(closingStartOffset, end)));
 	}
 
 	/**
 	 * Visit and push a function declaration. The declaration can be a 'regular' function or can be a lambda function.
 	 * 
 	 * @param functionDeclaration
+	 * @param parameters
 	 * @param body
 	 */
-	private void visitFunctionDeclaration(ASTNode functionDeclaration, Block body)
+	private void visitFunctionDeclaration(ASTNode functionDeclaration, List<FormalParameter> parameters, Block body)
 	{
+		// TODO - Handle the FormalParameters here
 		// First, push the function declaration node
 		FormatterPHPDeclarationNode declarationNode = new FormatterPHPDeclarationNode(document, true,
 				functionDeclaration);
@@ -1672,6 +1666,40 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				return "endswitch"; //$NON-NLS-1$
 			default:
 				return StringUtil.EMPTY;
+		}
+	}
+
+	/**
+	 * Push a keyword (e.g. 'const', 'echo', 'private' etc.)
+	 * 
+	 * @param start
+	 * @param keywordLength
+	 * @param isFirstInLine
+	 */
+	private void pushKeyword(int start, int keywordLength, boolean isFirstInLine)
+	{
+		FormatterPHPKeywordNode echoNode = new FormatterPHPKeywordNode(document, isFirstInLine);
+		echoNode.setBegin(builder.createTextNode(document, start, start + keywordLength));
+		builder.push(echoNode);
+		builder.checkedPop(echoNode, -1);
+	}
+
+	/**
+	 * Locate and push a semicolon node.
+	 * 
+	 * @param offsetToSearch
+	 *            - The offset that will be used as the start for the search of the semicolon.
+	 */
+	private void pushSemicolon(int offsetToSearch)
+	{
+		int semicolonOffsetInLine = builder.locateCharForward(document, ';', offsetToSearch);
+		if (semicolonOffsetInLine != offsetToSearch || document.charAt(semicolonOffsetInLine) == ';')
+		{
+			FormatterPHPPunctuationNode semicolonNode = new FormatterPHPPunctuationNode(document,
+					TypePunctuation.SEMICOLON);
+			semicolonNode.setBegin(builder.createTextNode(document, semicolonOffsetInLine, semicolonOffsetInLine + 1));
+			builder.push(semicolonNode);
+			builder.checkedPop(semicolonNode, -1);
 		}
 	}
 

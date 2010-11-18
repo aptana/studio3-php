@@ -34,24 +34,30 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import com.aptana.editor.php.formatter.PHPFormatterConstants;
+import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.IFormatterDocument;
 
 /**
- * A PHP formatter node for 'echo' statements.
+ * A PHP formatter node for punctuation elements, such as commas, colons etc.<br>
+ * A punctuation node is defined, by default, to consume all white spaces in front of it.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPEchoNode extends FormatterPHPTextNode
+public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 {
 
+	private final TypePunctuation nodeType;
+
 	/**
+	 * Constructs a new FormatterPHPCommaNode.
+	 * 
 	 * @param document
-	 * @param isFirstModifier
 	 */
-	public FormatterPHPEchoNode(IFormatterDocument document)
+	public FormatterPHPPunctuationNode(IFormatterDocument document, TypePunctuation nodeType)
 	{
-		// We only consume the previous spaces if this modifier is not the first one in the line.
-		super(document, false);
+		super(document, true);
+		this.nodeType = nodeType;
 	}
 
 	/*
@@ -61,15 +67,41 @@ public class FormatterPHPEchoNode extends FormatterPHPTextNode
 	@Override
 	public int getSpacesCountBefore()
 	{
-		return 0;
+		switch (nodeType)
+		{
+			case CASE_COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CASE_COLON);
+			case COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COLON);
+			case COMMA:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COMMAS);
+			case SEMICOLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_SEMICOLON);
+			default:
+				return super.getSpacesCountBefore();
+		}
+
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
 	 */
+	@Override
 	public int getSpacesCountAfter()
 	{
-		return 1;
+		switch (nodeType)
+		{
+			case CASE_COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CASE_COLON);
+			case COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COLON);
+			case COMMA:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COMMAS);
+			case SEMICOLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_SEMICOLON);
+			default:
+				return super.getSpacesCountBefore();
+		}
 	}
 }

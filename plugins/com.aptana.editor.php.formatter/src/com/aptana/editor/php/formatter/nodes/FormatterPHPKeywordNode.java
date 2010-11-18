@@ -34,25 +34,42 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
-import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
 
 /**
- * A PHP assignment formatter node.<br>
- * An assignment node is always defined to consume the spaces before, and the spacing is controlled by the preferences.
+ * A PHP formatter node for keywords, such as modifiers (e.g. 'public', 'private', 'static' etc.), 'echo', 'const' etc.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPAssignmentNode extends FormatterPHPTextNode
+public class FormatterPHPKeywordNode extends FormatterPHPTextNode
 {
 
+	private boolean isFirstInLine;
+
 	/**
+	 * Constructs a new FormatterPHPKeywordNode
+	 * 
 	 * @param document
-	 * @param invocactionString
+	 * @param isFirstInLine
+	 *            Flag this keyword as the first in the line. This will the value that the
+	 *            {@link #isAddingBeginNewLine()} returns. When it's false, previous white spaces will be consumed.
 	 */
-	public FormatterPHPAssignmentNode(IFormatterDocument document)
+	public FormatterPHPKeywordNode(IFormatterDocument document, boolean isFirstInLine)
 	{
-		super(document, true);
+		// We only consume the previous spaces if this modifier is not the first one in the line.
+		super(document, !isFirstInLine);
+		this.isFirstInLine = isFirstInLine;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
+	 */
+	@Override
+	protected boolean isAddingBeginNewLine()
+	{
+		// TODO Auto-generated method stub
+		return isFirstInLine;
 	}
 
 	/*
@@ -62,17 +79,19 @@ public class FormatterPHPAssignmentNode extends FormatterPHPTextNode
 	@Override
 	public int getSpacesCountBefore()
 	{
-		return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT);
+		if (isFirstInLine)
+		{
+			return 0;
+		}
+		return 1;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
 	 */
-	@Override
 	public int getSpacesCountAfter()
 	{
-		return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT);
+		return 1;
 	}
-
 }

@@ -34,38 +34,30 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import com.aptana.editor.php.formatter.PHPFormatterConstants;
+import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.formatter.IFormatterDocument;
 
 /**
- * A PHP formatter node for modifiers (e.g. 'public', 'private', 'static' etc.)
+ * A PHP formatter node for operator elements, such as assignments, arrows etc.<br>
+ * An operator node is defined, by default, to consume all white spaces in front of it.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPModifierNode extends FormatterPHPTextNode
+public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 {
 
-	private boolean isFirstModifier;
+	private final TypeOperator nodeType;
 
 	/**
+	 * Constructs a new FormatterPHPOperatorNode.
+	 * 
 	 * @param document
-	 * @param isFirstModifier
 	 */
-	public FormatterPHPModifierNode(IFormatterDocument document, boolean isFirstModifier)
+	public FormatterPHPOperatorNode(IFormatterDocument document, TypeOperator nodeType)
 	{
-		// We only consume the previous spaces if this modifier is not the first one in the line.
-		super(document, !isFirstModifier);
-		this.isFirstModifier = isFirstModifier;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
-	 */
-	@Override
-	protected boolean isAddingBeginNewLine()
-	{
-		// TODO Auto-generated method stub
-		return isFirstModifier;
+		super(document, true);
+		this.nodeType = nodeType;
 	}
 
 	/*
@@ -75,18 +67,37 @@ public class FormatterPHPModifierNode extends FormatterPHPTextNode
 	@Override
 	public int getSpacesCountBefore()
 	{
-		if (isFirstModifier)
+		switch (nodeType)
 		{
-			return 0;
+			case ASSIGNMENT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT);
+			case DOT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_DOT);
+			case ARROW:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ARROW);
+			default:
+				return super.getSpacesCountBefore();
 		}
-		return 1;
+
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
 	 */
-	public int getSpacesCountAfter() {
-		return 1;
+	@Override
+	public int getSpacesCountAfter()
+	{
+		switch (nodeType)
+		{
+			case ASSIGNMENT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT);
+			case DOT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_DOT);
+			case ARROW:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARROW);
+			default:
+				return super.getSpacesCountBefore();
+		}
 	}
 }

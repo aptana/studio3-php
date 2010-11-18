@@ -96,4 +96,13 @@ public interface PHPFormatterConstants
 	public static final String SPACES_AFTER_COMMAS = FORMATTER_ID + ".spaces.after.commas"; //$NON-NLS-1$
 	public static final String SPACES_BEFORE_CASE_COLON = FORMATTER_ID + ".spaces.after.case.colon"; //$NON-NLS-1$
 	public static final String SPACES_AFTER_CASE_COLON = FORMATTER_ID + ".spaces.before.case.colon"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_COLON = FORMATTER_ID + ".spaces.before.colon"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_COLON = FORMATTER_ID + ".spaces.after.colon"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_SEMICOLON = FORMATTER_ID + ".spaces.before.semicolon"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_SEMICOLON = FORMATTER_ID + ".spaces.after.semicolon"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_DOT = FORMATTER_ID + ".spaces.before.dot"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_DOT = FORMATTER_ID + ".spaces.after.dot"; //$NON-NLS-1$
+	public static final String SPACES_BEFORE_ARROW = FORMATTER_ID + ".spaces.before.arrow"; //$NON-NLS-1$
+	public static final String SPACES_AFTER_ARROW = FORMATTER_ID + ".spaces.after.arrow"; //$NON-NLS-1$
+
 }

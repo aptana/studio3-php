@@ -35,6 +35,7 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
+import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.ui.CodeFormatterConstants;
 
@@ -44,7 +45,7 @@ import com.aptana.formatter.ui.CodeFormatterConstants;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPCaseColonNode extends FormatterPHPTextNode
+public class FormatterPHPCaseColonNode extends FormatterPHPPunctuationNode
 {
 
 	private final boolean caseInBlock;
@@ -58,18 +59,8 @@ public class FormatterPHPCaseColonNode extends FormatterPHPTextNode
 	 */
 	public FormatterPHPCaseColonNode(IFormatterDocument document, boolean caseInBlock)
 	{
-		super(document, true);
+		super(document, TypePunctuation.CASE_COLON);
 		this.caseInBlock = caseInBlock;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode#getSpacesCountBefore()
-	 */
-	@Override
-	public int getSpacesCountBefore()
-	{
-		return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CASE_COLON);
 	}
 
 	/*
@@ -81,15 +72,5 @@ public class FormatterPHPCaseColonNode extends FormatterPHPTextNode
 		return !caseInBlock
 				|| CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
 						PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
-	 */
-	@Override
-	public int getSpacesCountAfter()
-	{
-		return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CASE_COLON);
 	}
 }

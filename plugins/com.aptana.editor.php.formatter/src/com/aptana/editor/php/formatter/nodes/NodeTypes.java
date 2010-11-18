@@ -34,57 +34,73 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
-import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.formatter.IFormatterDocument;
-
 /**
- * A PHP comma formatter node.<br>
- * A comma node can be defined to consume or not to consume the spaces that appear before it.
+ * A class that holds definitions for arbitrary node types, such as punctuation and operators types.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPCommaNode extends FormatterPHPTextNode
+public class NodeTypes
 {
+	/**
+	 * Supported node types for punctuation.
+	 */
+	public enum TypePunctuation
+	{
+		COLON
+		{
+			public String toString()
+			{
+				return ":"; //$NON-NLS-1$
+			}
+		},
+		CASE_COLON
+		{
+			public String toString()
+			{
+				return ":"; //$NON-NLS-1$
+			}
+		},
+		SEMICOLON
+		{
+			public String toString()
+			{
+				return ";"; //$NON-NLS-1$
+			}
+		},
+		COMMA
+		{
+			public String toString()
+			{
+				return ","; //$NON-NLS-1$
+			}
+		}
+	};
 
 	/**
-	 * Constructs a new FormatterPHPCommaNode.
-	 * 
-	 * @param document
-	 * @param consumeSpacesBefore
+	 * Supported node types for operators.
 	 */
-	public FormatterPHPCommaNode(IFormatterDocument document, boolean consumeSpacesBefore)
+	public enum TypeOperator
 	{
-		super(document, consumeSpacesBefore);
-	}
-
-	/**
-	 * Constructs a new FormatterPHPCommaNode. By default, the spaces before the comma will be consumed.
-	 * 
-	 * @param document
-	 */
-	public FormatterPHPCommaNode(IFormatterDocument document)
-	{
-		super(document, true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode#getSpacesCountBefore()
-	 */
-	@Override
-	public int getSpacesCountBefore()
-	{
-		return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COMMAS);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
-	 */
-	@Override
-	public int getSpacesCountAfter()
-	{
-		return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COMMAS);
-	}
-
+		ASSIGNMENT
+		{
+			public String toString()
+			{
+				return "="; //$NON-NLS-1$
+			}
+		},
+		DOT
+		{
+			public String toString()
+			{
+				return "."; //$NON-NLS-1$
+			}
+		},
+		ARROW
+		{
+			public String toString()
+			{
+				return "->"; //$NON-NLS-1$
+			}
+		}
+	};
 }
