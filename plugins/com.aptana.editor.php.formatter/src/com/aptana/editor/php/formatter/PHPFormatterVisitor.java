@@ -954,8 +954,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(NamespaceDeclaration namespaceDeclaration)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(namespaceDeclaration);
+		pushKeyword(namespaceDeclaration.getStart(), 9, true);
+		namespaceDeclaration.getName().accept(this);
+		pushSemicolon(namespaceDeclaration.getEnd() - 1);
+		// FIXME !! 
+		namespaceDeclaration.getBody().accept(this);
+		return false;
 	}
 
 	/*
@@ -967,8 +971,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(NamespaceName namespaceName)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(namespaceName);
+		List<Identifier> segments = namespaceName.segments();
+		int start = namespaceName.getStart();
+		if (namespaceName.isGlobal())
+		{
+			// look for the '\' that came before the name and push it separately.
+			start = builder.locateCharBackward(document, '\\', start);
+			FormatterPHPPunctuationNode separatorNode = new FormatterPHPPunctuationNode(document,
+					TypePunctuation.NAMESPACE_SEPARATOR);
+			separatorNode.setBegin(builder.createTextNode(document, start, start + 1));
+			builder.push(separatorNode);
+			builder.checkedPop(separatorNode, -1);
+		}
+		// Push the rest of the segments as a list of nodes.
+		visitNodeLists(segments.toArray(new ASTNode[segments.size()]), null, null, TypePunctuation.NAMESPACE_SEPARATOR);
+		return false;
 	}
 
 	/*
@@ -1287,7 +1304,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(CatchClause catchClause)
 	{
-		// TODO Auto-generated method stub
 		int declarationEnd = catchClause.getClassName().getEnd();
 		declarationEnd = builder.locateCharForward(document, ')', declarationEnd) + 1;
 		visitCommonDeclaration(catchClause, declarationEnd, true);
@@ -1347,8 +1363,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(UseStatement useStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(useStatement);
+		pushKeyword(useStatement.getStart(), 3, true);
+		List<UseStatementPart> parts = useStatement.parts();
+		visitNodeLists(parts.toArray(new ASTNode[parts.size()]), null, null, TypePunctuation.COMMA);
+		pushSemicolon(useStatement.getEnd() - 1);
+		return false;
 	}
 
 	/*
@@ -1359,8 +1378,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(UseStatementPart useStatementPart)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(useStatementPart);
+		NamespaceName namespaceName = useStatementPart.getName();
+		Identifier alias = useStatementPart.getAlias();
+		// visit the namespace name
+		namespaceName.accept(this);
+		// in case it has an alias, add the 'as' node and then visit the alias name.
+		if (alias != null)
+		{
+			String text = document.get(namespaceName.getEnd(), alias.getStart());
+			int asOffset = text.toLowerCase().indexOf("as"); //$NON-NLS-1$
+			asOffset += namespaceName.getEnd();
+			pushKeyword(asOffset, 2, false);
+			alias.accept(this);
+		}
+		return false;
 	}
 
 	/*

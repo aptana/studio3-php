@@ -73,6 +73,13 @@ public class NodeTypes
 			{
 				return ","; //$NON-NLS-1$
 			}
+		},
+		NAMESPACE_SEPARATOR
+		{
+			public String toString()
+			{
+				return "\\"; //$NON-NLS-1$
+			}
 		}
 	};
 
