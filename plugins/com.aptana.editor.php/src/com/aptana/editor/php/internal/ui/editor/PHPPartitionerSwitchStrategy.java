@@ -16,18 +16,12 @@ public class PHPPartitionerSwitchStrategy extends PartitionerSwitchStrategy
 			{ "<%", "%>" } //$NON-NLS-1$ //$NON-NLS-2$
 	};
 
-	private static final String[][] ESCAPE_PAIRS = new String[][] {
-	// Escape from the beginning of a single line comment to the end of the line.
-	// Closing php tags will be ignored.
-	{ "//", null }, //$NON-NLS-1$
-	};
-
 	/**
 	 * 
 	 */
 	private PHPPartitionerSwitchStrategy()
 	{
-		super(PHP_PAIRS, ESCAPE_PAIRS);
+		super(PHP_PAIRS);
 	}
 
 	public static PHPPartitionerSwitchStrategy getDefault()
