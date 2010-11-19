@@ -72,6 +72,10 @@ public class NodeTypes
 	{
 		ASSIGNMENT("="), //$NON-NLS-1$
 		DOT("."), //$NON-NLS-1$
+		BIGGER(">"), //$NON-NLS-1$
+		SMALLER("<"), //$NON-NLS-1$
+		BIGGER_OR_EQUAL(">="), //$NON-NLS-1$
+		SMALLER_OR_EQUAL("<="), //$NON-NLS-1$
 		DOT_EQUAL(".="), //$NON-NLS-1$
 		PLUS_EQUAL("+="), //$NON-NLS-1$
 		MINUS_EQUAL("-="), //$NON-NLS-1$
@@ -97,7 +101,9 @@ public class NodeTypes
 		NOT_EQUAL("!="), //$NON-NLS-1$
 		NOT_TYPE_EQUAL("!=="), //$NON-NLS-1$
 		ARROW("->"), //$NON-NLS-1$
-		STATIC_INVOCATION("::"); //$NON-NLS-1$
+		STATIC_INVOCATION("::"), //$NON-NLS-1$
+		KEY_VALUE("=>"), //$NON-NLS-1$
+		CONDITIONAL("?"); //$NON-NLS-1$
 
 		String name;
 

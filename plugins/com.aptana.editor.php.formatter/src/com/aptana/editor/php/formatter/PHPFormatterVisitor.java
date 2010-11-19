@@ -282,8 +282,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ArrayCreation arrayCreation)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(arrayCreation);
+		// we need to make sure we do not add a new line in front of the 'array' in some cases,
+		// therefore, we push a common declaration. We set the 'hasBlockedBody' to true to avoid
+		// indentation.
+		int declarationEndOffset = arrayCreation.getStart() + 5;
+		visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
+		List<ArrayElement> elements = arrayCreation.elements();
+		pushParametersInParentheses(arrayCreation, declarationEndOffset, elements.toArray(new ASTNode[elements.size()]));
+		return false;
 	}
 
 	/*
@@ -295,8 +301,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ArrayElement arrayElement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(arrayElement);
+		Expression key = arrayElement.getKey();
+		Expression value = arrayElement.getValue();
+		ASTNode[] leftNodes = new ASTNode[1];
+		ASTNode[] rightNodes = null;
+		if (key == null)
+		{
+			leftNodes[0] = value;
+		}
+		else
+		{
+			leftNodes[0] = key;
+			rightNodes = new ASTNode[] { value };
+		}
+		visitNodeLists(leftNodes, rightNodes, TypeOperator.KEY_VALUE, null);
+		return false;
 	}
 
 	/*
@@ -465,8 +484,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ConditionalExpression conditionalExpression)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(conditionalExpression);
+		Expression condition = conditionalExpression.getCondition();
+		condition.accept(this);
+		Expression ifTrue = conditionalExpression.getIfTrue();
+		Expression ifFalse = conditionalExpression.getIfFalse();
+		// push the conditional operator
+		int conditionalOpOffset = condition.getEnd() + document.get(condition.getEnd(), ifTrue.getStart()).indexOf('?');
+		pushTypeOperator(TypeOperator.CONDITIONAL, conditionalOpOffset);
+		// visit the true part
+		ifTrue.accept(this);
+		// push the colon separator
+		int colonOffset = ifTrue.getEnd() + document.get(ifTrue.getEnd(), ifFalse.getStart()).indexOf(':');
+		pushTypePunctuation(TypePunctuation.COLON, colonOffset);
+		// visit the false part
+		ifFalse.accept(this);
+		return false;
 	}
 
 	/*
@@ -520,28 +552,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			left.accept(this);
 			if (right != null && pairsOperator != null)
 			{
-				FormatterPHPOperatorNode node = new FormatterPHPOperatorNode(document, pairsOperator);
 				int startIndex = left.getEnd();
 				String text = document.get(startIndex, right.getStart());
 				String typeStr = pairsOperator.toString();
 				startIndex += text.indexOf(typeStr);
-				node.setBegin(builder.createTextNode(document, startIndex, startIndex + typeStr.length()));
-				builder.push(node);
-				builder.checkedPop(node, -1);
+				pushTypeOperator(pairsOperator, startIndex);
 				right.accept(this);
 			}
 			// add a separator if needed
 			if (i + 1 < leftNodes.length)
 			{
-				FormatterPHPPunctuationNode separatorNode = new FormatterPHPPunctuationNode(document, pairsSeparator);
 				int startIndex = left.getEnd();
 				String text = document.get(startIndex, leftNodes[i + 1].getStart());
 				String separatorStr = pairsSeparator.toString();
 				startIndex += text.indexOf(separatorStr);
-				separatorNode
-						.setBegin(builder.createTextNode(document, startIndex, startIndex + separatorStr.length()));
-				builder.push(separatorNode);
-				builder.checkedPop(separatorNode, -1);
+				pushTypePunctuation(pairsSeparator, startIndex);
 			}
 		}
 	}
@@ -590,13 +615,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// add a comma if needed
 			if (i + 1 < expressions.size())
 			{
-				FormatterPHPPunctuationNode commaNode = new FormatterPHPPunctuationNode(document, TypePunctuation.COMMA);
 				int startIndex = expression.getEnd();
 				String text = document.get(startIndex, expressions.get(i + 1).getStart());
 				startIndex += text.indexOf(',');
-				commaNode.setBegin(builder.createTextNode(document, startIndex, startIndex + 1));
-				builder.push(commaNode);
-				builder.checkedPop(commaNode, -1);
+				pushTypePunctuation(TypePunctuation.COMMA, startIndex);
 			}
 		}
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
@@ -1022,11 +1044,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// look for the '\' that came before the name and push it separately.
 			start = builder.locateCharBackward(document, '\\', start);
-			FormatterPHPPunctuationNode separatorNode = new FormatterPHPPunctuationNode(document,
-					TypePunctuation.NAMESPACE_SEPARATOR);
-			separatorNode.setBegin(builder.createTextNode(document, start, start + 1));
-			builder.push(separatorNode);
-			builder.checkedPop(separatorNode, -1);
+			pushTypePunctuation(TypePunctuation.NAMESPACE_SEPARATOR, start);
 		}
 		// Push the rest of the segments as a list of nodes.
 		visitNodeLists(segments.toArray(new ASTNode[segments.size()]), null, null, TypePunctuation.NAMESPACE_SEPARATOR);
@@ -1041,8 +1059,15 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ParenthesisExpression parenthesisExpression)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(parenthesisExpression);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		int start = parenthesisExpression.getStart();
+		parenthesesNode.setBegin(builder.createTextNode(document, start, start + 1));
+		builder.push(parenthesesNode);
+		parenthesisExpression.childrenAccept(this);
+		builder.checkedPop(parenthesesNode, -1);
+		int end = parenthesisExpression.getEnd();
+		parenthesesNode.setEnd(builder.createTextNode(document, end - 1, end));
+		return false;
 	}
 
 	/*
@@ -1519,8 +1544,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void pushParametersInParentheses(ASTNode parentNode, ASTNode leftNode, ASTNode[] parameters)
 	{
+		pushParametersInParentheses(parentNode, leftNode.getEnd(), parameters);
+	}
+
+	/**
+	 * Push a FormatterPHPParenthesesNode that contains a parameters array. <br>
+	 * Each parameter in the parameters list is expected to be separated from the others with a comma.
+	 * 
+	 * @param arrayCreation
+	 * @param declarationEndOffset
+	 * @param array
+	 */
+	private void pushParametersInParentheses(ASTNode parentNode, int declarationEndOffset, ASTNode[] parameters)
+	{
 		int parentEnd = parentNode.getEnd();
-		int openParen = builder.locateCharForward(document, '(', leftNode.getEnd());
+		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
 		int closeParen = builder.locateCharBackward(document, ')', parentEnd);
 		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
@@ -1742,17 +1780,29 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			rightOffset = parentNode.getEnd();
 		}
-		TypeOperator typeOperator = TypeOperator.getTypeOperator(operatorString);
-		FormatterPHPOperatorNode operatorNode = new FormatterPHPOperatorNode(document, typeOperator);
 		int operatorOffset = document.get(leftOffset, rightOffset).indexOf(operatorString) + leftOffset;
-		operatorNode.setBegin(builder
-				.createTextNode(document, operatorOffset, operatorOffset + operatorString.length()));
-		builder.push(operatorNode);
-		builder.checkedPop(operatorNode, -1);
+		TypeOperator typeOperator = TypeOperator.getTypeOperator(operatorString);
+		pushTypeOperator(typeOperator, operatorOffset);
 		if (right != null)
 		{
 			right.accept(this);
 		}
+	}
+
+	private void pushTypeOperator(TypeOperator operator, int startOffset)
+	{
+		FormatterPHPOperatorNode node = new FormatterPHPOperatorNode(document, operator);
+		node.setBegin(builder.createTextNode(document, startOffset, startOffset + operator.toString().length()));
+		builder.push(node);
+		builder.checkedPop(node, -1);
+	}
+
+	private void pushTypePunctuation(TypePunctuation punctuation, int startOffset)
+	{
+		FormatterPHPPunctuationNode node = new FormatterPHPPunctuationNode(document, punctuation);
+		node.setBegin(builder.createTextNode(document, startOffset, startOffset + punctuation.toString().length()));
+		builder.push(node);
+		builder.checkedPop(node, -1);
 	}
 
 	/**
@@ -1790,10 +1840,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void pushKeyword(int start, int keywordLength, boolean isFirstInLine)
 	{
-		FormatterPHPKeywordNode echoNode = new FormatterPHPKeywordNode(document, isFirstInLine);
-		echoNode.setBegin(builder.createTextNode(document, start, start + keywordLength));
-		builder.push(echoNode);
-		builder.checkedPop(echoNode, -1);
+		FormatterPHPKeywordNode keywordNode = new FormatterPHPKeywordNode(document, isFirstInLine);
+		keywordNode.setBegin(builder.createTextNode(document, start, start + keywordLength));
+		builder.push(keywordNode);
+		builder.checkedPop(keywordNode, -1);
 	}
 
 	/**

@@ -93,6 +93,7 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 			case ASTNode.LAMBDA_FUNCTION_DECLARATION:
 				return false;
 			case ASTNode.FUNCTION_DECLARATION:
+			case ASTNode.ARRAY_CREATION:
 				if (isPartOfExpression(node.getParent()))
 				{
 					return false;
