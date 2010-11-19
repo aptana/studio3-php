@@ -67,6 +67,7 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putBoolean(WRAP_COMMENTS, false);
 		store.putInt(WRAP_COMMENTS_LENGTH, 80);
 		store.putBoolean(INDENT_BLOCKS, true);
+		store.putBoolean(INDENT_NAMESPACE_BLOCKS, false);
 		store.putBoolean(INDENT_TYPE_BODY, true);
 		store.putBoolean(INDENT_FUNCTION_BODY, true);
 		store.putBoolean(INDENT_SWITCH_BODY, true);

@@ -91,7 +91,6 @@ import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
 import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org.eclipse.php.internal.core.ast.nodes.PostfixExpression;
 import org.eclipse.php.internal.core.ast.nodes.PrefixExpression;
-import org.eclipse.php.internal.core.ast.nodes.Program;
 import org.eclipse.php.internal.core.ast.nodes.Quote;
 import org.eclipse.php.internal.core.ast.nodes.Reference;
 import org.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
@@ -112,6 +111,7 @@ import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
 import org.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org.eclipse.php.internal.core.ast.nodes.Variable;
+import org.eclipse.php.internal.core.ast.nodes.VariableBase;
 import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
@@ -131,6 +131,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPInvocationTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPKeywordNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPLoopNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPNamespaceBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPNonBlockedWhileNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPOperatorNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
@@ -307,8 +308,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Assignment assignment)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(assignment);
+		VariableBase leftHandSide = assignment.getLeftHandSide();
+		Expression rightHandSide = assignment.getRightHandSide();
+		String operationString = assignment.getOperationString();
+		visitLeftRightExpression(assignment, leftHandSide, rightHandSide, operationString);
+		return false;
 	}
 
 	/*
@@ -343,6 +347,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Block block)
 	{
+		// the default visit for a block assumes that there is an open char for that block, but not necessarily a
+		// closing char. See also visitBlockNode() for other block visiting options.
 		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document,
 				block.getParent().getType() == ASTNode.PROGRAM);
 		blockNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
@@ -822,8 +828,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(InfixExpression infixExpression)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(infixExpression);
+		String operatorString = InfixExpression.getOperator(infixExpression.getOperator());
+		ASTNode left = infixExpression.getLeft();
+		ASTNode right = infixExpression.getRight();
+		visitLeftRightExpression(infixExpression, left, right, operatorString);
+		return false;
 	}
 
 	/*
@@ -955,10 +964,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(NamespaceDeclaration namespaceDeclaration)
 	{
 		pushKeyword(namespaceDeclaration.getStart(), 9, true);
-		namespaceDeclaration.getName().accept(this);
-		pushSemicolon(namespaceDeclaration.getEnd() - 1);
-		// FIXME !! 
-		namespaceDeclaration.getBody().accept(this);
+		NamespaceName namespaceName = namespaceDeclaration.getName();
+		namespaceName.accept(this);
+		pushSemicolon(namespaceName.getEnd());
+		// visit the namespace body block. This block is invisible one, but we wrap it in a special
+		// namespace block to allow indentation customization.
+		FormatterPHPNamespaceBlockNode bodyNode = new FormatterPHPNamespaceBlockNode(document);
+		Block body = namespaceDeclaration.getBody();
+		int start = body.getStart();
+		int end = body.getEnd();
+		bodyNode.setBegin(builder.createTextNode(document, start, start));
+		builder.push(bodyNode);
+		body.childrenAccept(this);
+		bodyNode.setEnd(builder.createTextNode(document, end, end));
+		builder.checkedPop(bodyNode, namespaceDeclaration.getEnd());
 		return false;
 	}
 
@@ -1008,8 +1027,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(PostfixExpression postfixExpression)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(postfixExpression);
+		VariableBase left = postfixExpression.getVariable();
+		visitLeftRightExpression(postfixExpression, left, null, postfixExpression.getOperationString());
+		return false;
 	}
 
 	/*
@@ -1020,20 +1040,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(PrefixExpression prefixExpression)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(prefixExpression);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Program)
-	 */
-	@Override
-	public boolean visit(Program program)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(program);
+		VariableBase right = prefixExpression.getVariable();
+		visitLeftRightExpression(prefixExpression, null, right, prefixExpression.getOperationString());
+		return false;
 	}
 
 	/*
@@ -1044,8 +1053,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Quote quote)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(quote);
+		visitTextNode(quote, true, 0);
+		return false;
 	}
 
 	/*
@@ -1319,8 +1328,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ThrowStatement throwStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(throwStatement);
+		pushKeyword(throwStatement.getStart(), 5, true);
+		Expression expression = throwStatement.getExpression();
+		expression.accept(this);
+		pushSemicolon(expression.getEnd());
+		return false;
 	}
 
 	/*
@@ -1672,6 +1684,48 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		declarationNode.setBegin(builder.createTextNode(document, node.getStart(), declarationEndOffset));
 		builder.push(declarationNode);
 		builder.checkedPop(declarationNode, -1);
+	}
+
+	/**
+	 * Visit an expression with left node, right node and an operator in between.<br>
+	 * Note that the left or the right may be null o support expressions such as {@link PostfixExpression}.
+	 * 
+	 * @param left
+	 * @param right
+	 * @param operatorString
+	 */
+	private void visitLeftRightExpression(ASTNode parentNode, ASTNode left, ASTNode right, String operatorString)
+	{
+		int leftOffset;
+		int rightOffset;
+		if (left != null)
+		{
+			left.accept(this);
+			leftOffset = left.getEnd();
+		}
+		else
+		{
+			leftOffset = parentNode.getStart();
+		}
+		if (right != null)
+		{
+			rightOffset = right.getStart();
+		}
+		else
+		{
+			rightOffset = parentNode.getEnd();
+		}
+		TypeOperator typeOperator = TypeOperator.getTypeOperator(operatorString);
+		FormatterPHPOperatorNode operatorNode = new FormatterPHPOperatorNode(document, typeOperator);
+		int operatorOffset = document.get(leftOffset, rightOffset).indexOf(operatorString) + leftOffset;
+		operatorNode.setBegin(builder
+				.createTextNode(document, operatorOffset, operatorOffset + operatorString.length()));
+		builder.push(operatorNode);
+		builder.checkedPop(operatorNode, -1);
+		if (right != null)
+		{
+			right.accept(this);
+		}
 	}
 
 	/**

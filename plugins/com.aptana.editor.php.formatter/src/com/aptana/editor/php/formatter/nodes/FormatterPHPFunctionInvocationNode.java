@@ -92,6 +92,10 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 		{
 			case ASTNode.STATIC_METHOD_INVOCATION:
 			case ASTNode.METHOD_INVOCATION:
+			case ASTNode.ASSIGNMENT:
+			case ASTNode.INFIX_EXPRESSION:
+			case ASTNode.POSTFIX_EXPRESSION:
+			case ASTNode.PREFIX_EXPRESSION:
 				return true;
 			default:
 				return false;

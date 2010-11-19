@@ -35,71 +35,41 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.formatter.IFormatterDocument;
 
 /**
- * A PHP formatter node for operator elements, such as assignments, arrows etc.<br>
- * An operator node is defined, by default, to consume all white spaces in front of it.
+ * A Namespace block formatter node.<br>
+ * This block appears after a 'namespace MyNamespace\Classes;' expressions.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPOperatorNode extends FormatterPHPTextNode
+public class FormatterPHPNamespaceBlockNode extends FormatterPHPBlockNode
 {
 
-	private final TypeOperator nodeType;
-
 	/**
-	 * Constructs a new FormatterPHPOperatorNode.
-	 * 
 	 * @param document
+	 * @param isStandAloneBlock
 	 */
-	public FormatterPHPOperatorNode(IFormatterDocument document, TypeOperator nodeType)
+	public FormatterPHPNamespaceBlockNode(IFormatterDocument document)
 	{
 		super(document, true);
-		this.nodeType = nodeType;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode#getSpacesCountBefore()
+	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode#isAddingBeginNewLine()
 	 */
-	@Override
-	public int getSpacesCountBefore()
+	protected boolean isAddingBeginNewLine()
 	{
-		// TODO - Add the rest of the operators
-		switch (nodeType)
-		{
-			case ASSIGNMENT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT);
-			case DOT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_DOT);
-			case ARROW:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ARROW);
-			default:
-				return super.getSpacesCountBefore();
-		}
-
+		return true;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode#isIndenting()
 	 */
-	@Override
-	public int getSpacesCountAfter()
+	protected boolean isIndenting()
 	{
-		// TODO - Add the rest of the operators
-		switch (nodeType)
-		{
-			case ASSIGNMENT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT);
-			case DOT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_DOT);
-			case ARROW:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARROW);
-			default:
-				return super.getSpacesCountBefore();
-		}
+		return getDocument().getBoolean(PHPFormatterConstants.INDENT_NAMESPACE_BLOCKS);
 	}
 }

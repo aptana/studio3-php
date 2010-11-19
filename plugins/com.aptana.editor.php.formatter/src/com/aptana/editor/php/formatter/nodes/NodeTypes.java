@@ -46,40 +46,22 @@ public class NodeTypes
 	 */
 	public enum TypePunctuation
 	{
-		COLON
+		COLON(":"), //$NON-NLS-1$
+		CASE_COLON(":"), //$NON-NLS-1$
+		SEMICOLON(";"), //$NON-NLS-1$
+		COMMA(","), //$NON-NLS-1$
+		NAMESPACE_SEPARATOR("\\"); //$NON-NLS-1$
+
+		String name;
+
+		TypePunctuation(String name)
 		{
-			public String toString()
-			{
-				return ":"; //$NON-NLS-1$
-			}
-		},
-		CASE_COLON
+			this.name = name;
+		}
+
+		public String toString()
 		{
-			public String toString()
-			{
-				return ":"; //$NON-NLS-1$
-			}
-		},
-		SEMICOLON
-		{
-			public String toString()
-			{
-				return ";"; //$NON-NLS-1$
-			}
-		},
-		COMMA
-		{
-			public String toString()
-			{
-				return ","; //$NON-NLS-1$
-			}
-		},
-		NAMESPACE_SEPARATOR
-		{
-			public String toString()
-			{
-				return "\\"; //$NON-NLS-1$
-			}
+			return name;
 		}
 	};
 
@@ -88,26 +70,63 @@ public class NodeTypes
 	 */
 	public enum TypeOperator
 	{
-		ASSIGNMENT
+		ASSIGNMENT("="), //$NON-NLS-1$
+		DOT("."), //$NON-NLS-1$
+		DOT_EQUAL(".="), //$NON-NLS-1$
+		PLUS_EQUAL("+="), //$NON-NLS-1$
+		MINUS_EQUAL("-="), //$NON-NLS-1$
+		MULTIPLY_EQUAL("*="), //$NON-NLS-1$
+		DIVIDE_EQUAL("/="), //$NON-NLS-1$
+		MULTIPLY("*"), //$NON-NLS-1$
+		PLUS("+"), //$NON-NLS-1$
+		MINUS("+"), //$NON-NLS-1$
+		DIVIDE("/"), //$NON-NLS-1$
+		INCREMENT("++"), //$NON-NLS-1$
+		DECREMENT("--"), //$NON-NLS-1$
+		OR("||"), //$NON-NLS-1$
+		AND("&&"), //$NON-NLS-1$
+		XOR("^"), //$NON-NLS-1$
+		BINARY_OR("|"), //$NON-NLS-1$
+		BINARY_AND("&"), //$NON-NLS-1$
+		BINARY_OR_EQUAL("|="), //$NON-NLS-1$
+		BINARY_AND_EQUAL("&="), //$NON-NLS-1$
+		EQUALITY("=="), //$NON-NLS-1$
+		TYPE_EQUAL("==="), //$NON-NLS-1$
+		TILDA("~"), //$NON-NLS-1$
+		NOT("!"), //$NON-NLS-1$
+		NOT_EQUAL("!="), //$NON-NLS-1$
+		NOT_TYPE_EQUAL("!=="), //$NON-NLS-1$
+		ARROW("->"); //$NON-NLS-1$
+
+		String name;
+
+		TypeOperator(String name)
 		{
-			public String toString()
-			{
-				return "="; //$NON-NLS-1$
-			}
-		},
-		DOT
+			this.name = name;
+		}
+
+		public String toString()
 		{
-			public String toString()
-			{
-				return "."; //$NON-NLS-1$
-			}
-		},
-		ARROW
+			return name;
+		}
+
+		/**
+		 * Returns a {@link TypeOperator} by a string.
+		 * 
+		 * @param operationString
+		 * @return The matching {@link TypeOperator}; Null, if no match was found.
+		 */
+		public static TypeOperator getTypeOperator(String operationString)
 		{
-			public String toString()
+			TypeOperator[] values = values();
+			for (TypeOperator operator : values)
 			{
-				return "->"; //$NON-NLS-1$
+				if (operator.toString().equals(operationString))
+				{
+					return operator;
+				}
 			}
+			return null;
 		}
 	};
 }

@@ -73,6 +73,7 @@ public class Messages extends NLS
 	public static String PHPFormatterNewLinesPage_newLineBeforeWhileInDo;
 
 	public static String PHPFormatterIndentationTabPage_statementsWithinBlocks;
+	public static String PHPFormatterIndentationTabPage_statementsWithinNamespaceBlocks;
 	public static String PHPFormatterIndentationTabPage_statementsWithinSwitch;
 	public static String PHPFormatterIndentationTabPage_statementsWithinCase;
 	public static String PHPFormatterIndentationTabPage_statementsWithinTypes;

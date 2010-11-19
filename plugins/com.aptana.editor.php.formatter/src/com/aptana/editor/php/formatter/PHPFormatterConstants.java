@@ -58,6 +58,7 @@ public interface PHPFormatterConstants
 
 	// Indentation
 	public static final String INDENT_BLOCKS = FORMATTER_ID + ".indent.blocks"; //$NON-NLS-1$
+	public static final String INDENT_NAMESPACE_BLOCKS = FORMATTER_ID + ".indent.namespace.blocks"; //$NON-NLS-1$
 	public static final String INDENT_FUNCTION_BODY = FORMATTER_ID + ".indent.function.body"; //$NON-NLS-1$
 	public static final String INDENT_TYPE_BODY = FORMATTER_ID + ".indent.class.body"; //$NON-NLS-1$
 	public static final String INDENT_SWITCH_BODY = FORMATTER_ID + ".indent.switch.body"; //$NON-NLS-1$
@@ -104,5 +105,4 @@ public interface PHPFormatterConstants
 	public static final String SPACES_AFTER_DOT = FORMATTER_ID + ".spaces.after.dot"; //$NON-NLS-1$
 	public static final String SPACES_BEFORE_ARROW = FORMATTER_ID + ".spaces.before.arrow"; //$NON-NLS-1$
 	public static final String SPACES_AFTER_ARROW = FORMATTER_ID + ".spaces.after.arrow"; //$NON-NLS-1$
-
 }

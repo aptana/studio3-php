@@ -92,8 +92,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	/**
 	 * Indentation constants
 	 */
-	protected static final String[] INDENTATIONS = { INDENT_BLOCKS, INDENT_CASE_BODY, INDENT_SWITCH_BODY,
-			INDENT_FUNCTION_BODY, INDENT_TYPE_BODY, INDENT_BREAK_IN_CASE };
+	protected static final String[] INDENTATIONS = { INDENT_BLOCKS, INDENT_NAMESPACE_BLOCKS, INDENT_CASE_BODY,
+			INDENT_SWITCH_BODY, INDENT_FUNCTION_BODY, INDENT_TYPE_BODY, INDENT_BREAK_IN_CASE };
 
 	/**
 	 * Spaces constants
