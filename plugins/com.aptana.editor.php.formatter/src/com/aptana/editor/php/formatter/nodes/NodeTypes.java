@@ -96,7 +96,8 @@ public class NodeTypes
 		NOT("!"), //$NON-NLS-1$
 		NOT_EQUAL("!="), //$NON-NLS-1$
 		NOT_TYPE_EQUAL("!=="), //$NON-NLS-1$
-		ARROW("->"); //$NON-NLS-1$
+		ARROW("->"), //$NON-NLS-1$
+		STATIC_INVOCATION("::"); //$NON-NLS-1$
 
 		String name;
 

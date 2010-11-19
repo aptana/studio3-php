@@ -128,12 +128,12 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPInvocationTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPKeywordNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPLoopNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPNamespaceBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPNonBlockedWhileNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPOperatorNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPParenthesesNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
@@ -403,8 +403,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ClassInstanceCreation classInstanceCreation)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(classInstanceCreation);
+		ClassName className = classInstanceCreation.getClassName();
+		int creationEnd = classInstanceCreation.getEnd();
+		boolean hasParentheses = creationEnd != className.getEnd();
+		pushKeyword(classInstanceCreation.getStart(), 3, false);
+		className.accept(this);
+		if (hasParentheses)
+		{
+			// create a constructor node
+			List<Expression> ctorParams = classInstanceCreation.ctorParams();
+			pushParametersInParentheses(classInstanceCreation, className, ctorParams.toArray(new ASTNode[ctorParams
+					.size()]));
+		}
+		// check and push a semicolon (if appears after the end of this instance creation)
+		// pushSemicolon(creationEnd, false, true);
+		return false;
 	}
 
 	/*
@@ -416,8 +429,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ClassName className)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(className);
+		visitTextNode(className, true, 1);
+		return false;
 	}
 
 	/*
@@ -473,7 +486,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				.size()]), TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = rightNodes.get(rightNodes.size() - 1).getEnd();
-		pushSemicolon(end);
+		pushSemicolon(end, false, true);
 		return false;
 	}
 
@@ -588,7 +601,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = expressions.get(expressions.size() - 1).getEnd();
-		pushSemicolon(end);
+		pushSemicolon(end, false, true);
 		return false;
 	}
 
@@ -612,16 +625,25 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ExpressionStatement expressionStatement)
 	{
-		FormatterPHPExpressionWrapperNode expressionNode = new FormatterPHPExpressionWrapperNode(document,
-				expressionStatement);
+		int expressionEnd = expressionStatement.getEnd();
+		boolean endsWithSemicolon = document.charAt(expressionEnd - 1) == ';';
+		FormatterPHPExpressionWrapperNode expressionNode = new FormatterPHPExpressionWrapperNode(document);
 		int start = expressionStatement.getStart();
-		int end = expressionStatement.getEnd();
+		int end = expressionEnd;
+		if (endsWithSemicolon)
+		{
+			end--;
+		}
 		expressionNode.setBegin(builder.createTextNode(document, start, start));
 		builder.push(expressionNode);
 		expressionStatement.childrenAccept(this);
-		int startEnd = expressionNode.getEndOffset();
-		expressionNode.setEnd(builder.createTextNode(document, startEnd, end));
+		expressionNode.setEnd(builder.createTextNode(document, end, end));
 		builder.checkedPop(expressionNode, -1);
+		// push a semicolon if we have one
+		if (endsWithSemicolon)
+		{
+			pushSemicolon(end, false, true);
+		}
 		return false;
 	}
 
@@ -939,7 +961,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(MethodInvocation methodInvocation)
 	{
-		visitInvocation(methodInvocation.getDispatcher(), methodInvocation.getMethod(), INVOCATION_ARROW);
+		visitLeftRightExpression(methodInvocation, methodInvocation.getDispatcher(), methodInvocation.getMethod(),
+				INVOCATION_ARROW);
+		// note: we push the semicolon as part of the function-invocation that we have in this node.
 		return false;
 	}
 
@@ -951,7 +975,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(StaticMethodInvocation staticMethodInvocation)
 	{
-		visitInvocation(staticMethodInvocation.getClassName(), staticMethodInvocation.getMethod(), STATIC_INVOCATION);
+		visitLeftRightExpression(staticMethodInvocation, staticMethodInvocation.getClassName(), staticMethodInvocation
+				.getMethod(), STATIC_INVOCATION);
+		// note: we push the semicolon as part of the function-invocation that we have in this node.
 		return false;
 	}
 
@@ -966,7 +992,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushKeyword(namespaceDeclaration.getStart(), 9, true);
 		NamespaceName namespaceName = namespaceDeclaration.getName();
 		namespaceName.accept(this);
-		pushSemicolon(namespaceName.getEnd());
+		pushSemicolon(namespaceName.getEnd(), false, true);
 		// visit the namespace body block. This block is invisible one, but we wrap it in a special
 		// namespace block to allow indentation customization.
 		FormatterPHPNamespaceBlockNode bodyNode = new FormatterPHPNamespaceBlockNode(document);
@@ -1331,7 +1357,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushKeyword(throwStatement.getStart(), 5, true);
 		Expression expression = throwStatement.getExpression();
 		expression.accept(this);
-		pushSemicolon(expression.getEnd());
+		pushSemicolon(expression.getEnd(), false, true);
 		return false;
 	}
 
@@ -1378,7 +1404,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushKeyword(useStatement.getStart(), 3, true);
 		List<UseStatementPart> parts = useStatement.parts();
 		visitNodeLists(parts.toArray(new ASTNode[parts.size()]), null, null, TypePunctuation.COMMA);
-		pushSemicolon(useStatement.getEnd() - 1);
+		pushSemicolon(useStatement.getEnd() - 1, false, true);
 		return false;
 	}
 
@@ -1461,34 +1487,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Visit and push an invocation node. This node can be a static invocation or a method invocation. We expect to get
-	 * a left ASTNode that is the 'caller' and a right FunctionInvocation which is being invoked.
-	 * 
-	 * @param leftASTNode
-	 * @param method
-	 * @param invocationString
-	 */
-	private void visitInvocation(ASTNode leftASTNode, FunctionInvocation method, String invocationString)
-	{
-		FormatterPHPTextNode leftFormatterNode = new FormatterPHPTextNode(document);
-		leftFormatterNode.setBegin(builder.createTextNode(document, leftASTNode.getStart(), leftASTNode.getEnd()));
-		builder.push(leftFormatterNode);
-		builder.checkedPop(leftFormatterNode, -1);
-
-		// push the invocation text
-		String txt = document.get(leftASTNode.getEnd(), method.getStart());
-		int invocationOffset = txt.indexOf(invocationString) + leftASTNode.getEnd();
-		FormatterPHPInvocationTextNode invocationNode = new FormatterPHPInvocationTextNode(document, invocationString);
-		invocationNode.setBegin(builder.createTextNode(document, invocationOffset, invocationOffset
-				+ invocationString.length()));
-		builder.push(invocationNode);
-		builder.checkedPop(invocationNode, -1);
-
-		// Push the method (the FunctionInvocation)
-		visitFunctionInvocation(method);
-	}
-
-	/**
 	 * A visit for a function invocation. This visit can be performed in numerous occasions, so we have it as a separate
 	 * method that will be called in those occasions.
 	 * 
@@ -1496,14 +1494,43 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void visitFunctionInvocation(FunctionInvocation functionInvocation)
 	{
-		int fiEnd = functionInvocation.getEnd();
-		int end = locateCharMatchInLine(fiEnd, SEMICOLON, document, false);
-		boolean hasSemicolon = fiEnd != end;
-		FormatterPHPFunctionInvocationNode node = new FormatterPHPFunctionInvocationNode(document, functionInvocation,
-				hasSemicolon);
-		node.setBegin(builder.createTextNode(document, functionInvocation.getStart(), end));
+		FunctionName functionName = functionInvocation.getFunctionName();
+		// push the function name
+		FormatterPHPFunctionInvocationNode node = new FormatterPHPFunctionInvocationNode(document, functionInvocation);
+		node.setBegin(builder.createTextNode(document, functionName.getStart(), functionName.getEnd()));
 		builder.push(node);
 		builder.checkedPop(node, -1);
+		// push the parenthesis and the parameters (if exist)
+		List<Expression> invocationParameters = functionInvocation.parameters();
+		ASTNode[] parameters = invocationParameters.toArray(new ASTNode[invocationParameters.size()]);
+		pushParametersInParentheses(functionInvocation, functionName, parameters);
+	}
+
+	/**
+	 * Push a FormatterPHPParenthesesNode that contains a parameters array. <br>
+	 * Each parameter in the parameters list is expected to be separated from the others with a comma.
+	 * 
+	 * @param parentNode
+	 *            The parent ASTNode that will be used to locate the end offset of the parentheses
+	 * @param leftNode
+	 *            The node that appears left to the open parentheses.
+	 * @param parameters
+	 *            An array of ASTnodes that holds the parameters
+	 */
+	private void pushParametersInParentheses(ASTNode parentNode, ASTNode leftNode, ASTNode[] parameters)
+	{
+		int parentEnd = parentNode.getEnd();
+		int openParen = builder.locateCharForward(document, '(', leftNode.getEnd());
+		int closeParen = builder.locateCharBackward(document, ')', parentEnd);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
+		builder.push(parenthesesNode);
+		if (parameters != null && parameters.length > 0)
+		{
+			visitNodeLists(parameters, null, null, TypePunctuation.COMMA);
+		}
+		builder.checkedPop(parenthesesNode, -1);
+		parenthesesNode.setEnd(builder.createTextNode(document, closeParen, closeParen + 1));
 	}
 
 	/**
@@ -1774,18 +1801,59 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * 
 	 * @param offsetToSearch
 	 *            - The offset that will be used as the start for the search of the semicolon.
+	 * @param ignoreNonWhitespace
+	 *            indicate that a non-whitespace chars that appear before the semicolon will be ignored. If this flag is
+	 *            false, and a non-whitespace appear between the given offset and the semicolon, the method will
+	 *            <b>not</b> push a semicolon node.
+	 * @param isLineTerminating
+	 *            Indicates that this semicolon is a line terminating one.
 	 */
-	private void pushSemicolon(int offsetToSearch)
+	private void pushSemicolon(int offsetToSearch, boolean ignoreNonWhitespace, boolean isLineTerminating)
 	{
-		int semicolonOffsetInLine = builder.locateCharForward(document, ';', offsetToSearch);
-		if (semicolonOffsetInLine != offsetToSearch || document.charAt(semicolonOffsetInLine) == ';')
+		int semicolonOffset = builder.locateCharForward(document, ';', offsetToSearch);
+		if (semicolonOffset != offsetToSearch || document.charAt(semicolonOffset) == ';')
 		{
+			String segment = document.get(offsetToSearch, semicolonOffset);
+			if (!ignoreNonWhitespace && segment.trim().length() > 0)
+			{
+				return;
+			}
+			if (isLineTerminating)
+			{
+				// We need to make sure that the termination only happens when the line does not
+				// have a terminator already.
+				int lineEnd = locateWhitespaceLineEndingOffset(semicolonOffset + 1);
+				isLineTerminating = lineEnd < 0;
+			}
 			FormatterPHPPunctuationNode semicolonNode = new FormatterPHPPunctuationNode(document,
-					TypePunctuation.SEMICOLON);
-			semicolonNode.setBegin(builder.createTextNode(document, semicolonOffsetInLine, semicolonOffsetInLine + 1));
+					TypePunctuation.SEMICOLON, isLineTerminating);
+			semicolonNode.setBegin(builder.createTextNode(document, semicolonOffset, semicolonOffset + 1));
 			builder.push(semicolonNode);
 			builder.checkedPop(semicolonNode, -1);
 		}
+	}
+
+	/**
+	 * Locate a line ending offset. The line should only contain whitespace characters.
+	 * 
+	 * @return The line ending offset, or -1 in case not found.
+	 */
+	private int locateWhitespaceLineEndingOffset(int start)
+	{
+		int length = document.getLength();
+		for (int offset = start; offset < length; offset++)
+		{
+			char c = document.charAt(offset);
+			if (c == '\n' || c == '\r')
+			{
+				return offset;
+			}
+			if (!Character.isWhitespace(c))
+			{
+				return -1;
+			}
+		}
+		return -1;
 	}
 
 	/**

@@ -42,7 +42,7 @@ import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
 
 /**
- * A functoin invokation formatter node.
+ * A function invocation formatter node.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
@@ -50,35 +50,16 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 {
 
 	private final FunctionInvocation invocationNode;
-	private final boolean hasSemicolon;
 
 	/**
 	 * @param document
 	 * @param invocationNode
 	 * @param hasSemicolon
 	 */
-	public FormatterPHPFunctionInvocationNode(IFormatterDocument document, FunctionInvocation invocationNode,
-			boolean hasSemicolon)
+	public FormatterPHPFunctionInvocationNode(IFormatterDocument document, FunctionInvocation invocationNode)
 	{
 		super(document);
 		this.invocationNode = invocationNode;
-		this.hasSemicolon = hasSemicolon;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
-	 */
-	@Override
-	protected boolean isAddingBeginNewLine()
-	{
-		return false;
-	}
-
-	@Override
-	protected boolean isAddingEndNewLine()
-	{
-		return hasSemicolon;
 	}
 
 	/*

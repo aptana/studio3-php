@@ -38,19 +38,40 @@ import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
 
 /**
+ * A PHP node formatter for parentheses, which can be used for any other single char open and close pair, such as
+ * brackets etc.
+ * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPExpressionWrapperNode extends FormatterBlockWithBeginEndNode
+public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 {
-
 
 	/**
 	 * @param document
-	 * @param endsWithSemicolon
 	 */
-	public FormatterPHPExpressionWrapperNode(IFormatterDocument document)
+	public FormatterPHPParenthesesNode(IFormatterDocument document)
 	{
 		super(document);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountBefore()
+	 */
+	@Override
+	public int getSpacesCountBefore()
+	{
+		// TODO: add a preference for that.
+		return 0;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#shouldConsumePreviousWhiteSpaces()
+	 */
+	@Override
+	public boolean shouldConsumePreviousWhiteSpaces()
+	{
+		return true;
+	}
 }

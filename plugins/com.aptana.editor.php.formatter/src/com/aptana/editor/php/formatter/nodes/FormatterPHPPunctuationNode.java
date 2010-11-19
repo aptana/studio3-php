@@ -47,17 +47,34 @@ import com.aptana.formatter.IFormatterDocument;
 public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 {
 
-	private final TypePunctuation nodeType;
+	private TypePunctuation nodeType;
+	private boolean forceLineTermination;
 
 	/**
 	 * Constructs a new FormatterPHPCommaNode.
 	 * 
 	 * @param document
+	 * @param nodeType
 	 */
 	public FormatterPHPPunctuationNode(IFormatterDocument document, TypePunctuation nodeType)
 	{
 		super(document, true);
 		this.nodeType = nodeType;
+	}
+
+	/**
+	 * Constructs a new FormatterPHPCommaNode.
+	 * 
+	 * @param document
+	 * @param nodeType
+	 * @param forceLineTermination
+	 *            - Force this node to terminate with a new line
+	 */
+	public FormatterPHPPunctuationNode(IFormatterDocument document, TypePunctuation nodeType,
+			boolean forceLineTermination)
+	{
+		this(document, nodeType);
+		this.forceLineTermination = forceLineTermination;
 	}
 
 	/*
@@ -103,5 +120,15 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 			default:
 				return super.getSpacesCountBefore();
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
+	 */
+	@Override
+	protected boolean isAddingEndNewLine()
+	{
+		return forceLineTermination || super.isAddingEndNewLine();
 	}
 }
