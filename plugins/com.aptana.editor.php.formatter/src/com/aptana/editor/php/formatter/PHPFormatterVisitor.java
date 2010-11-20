@@ -188,11 +188,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		boolean hasTrueBlock = (trueStatement.getType() == ASTNode.BLOCK);
 		boolean hasFalseBlock = (!isEmptyFalseBlock && falseStatement.getType() == ASTNode.BLOCK);
 		// First, construct the if condition node
+		int start = ifStatement.getStart();
 		FormatterPHPIfNode conditionNode = new FormatterPHPIfNode(document, hasTrueBlock, ifStatement);
-		conditionNode.setBegin(builder.createTextNode(document, ifStatement.getStart(), ifStatement.getCondition()
-				.getEnd() + 1));
+		conditionNode.setBegin(builder.createTextNode(document, start, start + 2));
 		builder.push(conditionNode);
-
+		// push the condition elements that appear in parentheses
+		pushNodeInParentheses(start + 2, trueStatement.getStart(), ifStatement.getCondition());
 		// Construct the 'true' part of the 'if' and visit its children
 		if (hasTrueBlock)
 		{
@@ -288,7 +289,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int declarationEndOffset = arrayCreation.getStart() + 5;
 		visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
 		List<ArrayElement> elements = arrayCreation.elements();
-		pushParametersInParentheses(arrayCreation, declarationEndOffset, elements.toArray(new ASTNode[elements.size()]));
+		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements.toArray(new ASTNode[elements
+				.size()]));
 		return false;
 	}
 
@@ -431,8 +433,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// create a constructor node
 			List<Expression> ctorParams = classInstanceCreation.ctorParams();
-			pushParametersInParentheses(classInstanceCreation, className, ctorParams.toArray(new ASTNode[ctorParams
-					.size()]));
+			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams
+					.toArray(new ASTNode[ctorParams.size()]));
 		}
 		// check and push a semicolon (if appears after the end of this instance creation)
 		// pushSemicolon(creationEnd, false, true);
@@ -758,8 +760,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FunctionDeclaration functionDeclaration)
 	{
-		visitFunctionDeclaration(functionDeclaration, functionDeclaration.formalParameters(), functionDeclaration
-				.getBody());
+		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getFunctionName(), functionDeclaration
+				.formalParameters(), functionDeclaration.getBody());
 		return false;
 	}
 
@@ -924,7 +926,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
-		visitFunctionDeclaration(lambdaFunctionDeclaration, lambdaFunctionDeclaration.formalParameters(),
+		visitFunctionDeclaration(lambdaFunctionDeclaration, null, lambdaFunctionDeclaration.formalParameters(),
 				lambdaFunctionDeclaration.getBody());
 		return false;
 	}
@@ -1528,44 +1530,49 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the parenthesis and the parameters (if exist)
 		List<Expression> invocationParameters = functionInvocation.parameters();
 		ASTNode[] parameters = invocationParameters.toArray(new ASTNode[invocationParameters.size()]);
-		pushParametersInParentheses(functionInvocation, functionName, parameters);
+		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), parameters);
 	}
 
 	/**
 	 * Push a FormatterPHPParenthesesNode that contains a parameters array. <br>
 	 * Each parameter in the parameters list is expected to be separated from the others with a comma.
 	 * 
-	 * @param parentNode
-	 *            The parent ASTNode that will be used to locate the end offset of the parentheses
-	 * @param leftNode
-	 *            The node that appears left to the open parentheses.
-	 * @param parameters
-	 *            An array of ASTnodes that holds the parameters
-	 */
-	private void pushParametersInParentheses(ASTNode parentNode, ASTNode leftNode, ASTNode[] parameters)
-	{
-		pushParametersInParentheses(parentNode, leftNode.getEnd(), parameters);
-	}
-
-	/**
-	 * Push a FormatterPHPParenthesesNode that contains a parameters array. <br>
-	 * Each parameter in the parameters list is expected to be separated from the others with a comma.
-	 * 
-	 * @param arrayCreation
 	 * @param declarationEndOffset
-	 * @param array
+	 * @param expressionEndOffset
+	 * @param parameters
 	 */
-	private void pushParametersInParentheses(ASTNode parentNode, int declarationEndOffset, ASTNode[] parameters)
+	private void pushParametersInParentheses(int declarationEndOffset, int expressionEndOffset, ASTNode[] parameters)
 	{
-		int parentEnd = parentNode.getEnd();
 		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
-		int closeParen = builder.locateCharBackward(document, ')', parentEnd);
+		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
 		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		if (parameters != null && parameters.length > 0)
 		{
 			visitNodeLists(parameters, null, null, TypePunctuation.COMMA);
+		}
+		builder.checkedPop(parenthesesNode, -1);
+		parenthesesNode.setEnd(builder.createTextNode(document, closeParen, closeParen + 1));
+	}
+
+	/**
+	 * Push a FormatterPHPParenthesesNode that contains an ASTNode (expression). <br>
+	 * 
+	 * @param declarationEndOffset
+	 * @param expressionEndOffset
+	 * @param node
+	 */
+	private void pushNodeInParentheses(int declarationEndOffset, int expressionEndOffset, ASTNode node)
+	{
+		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
+		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
+		builder.push(parenthesesNode);
+		if (node != null)
+		{
+			node.accept(this);
 		}
 		builder.checkedPop(parenthesesNode, -1);
 		parenthesesNode.setEnd(builder.createTextNode(document, closeParen, closeParen + 1));
@@ -1710,21 +1717,23 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * Visit and push a function declaration. The declaration can be a 'regular' function or can be a lambda function.
 	 * 
 	 * @param functionDeclaration
+	 * @param functionName
 	 * @param parameters
 	 * @param body
 	 */
-	private void visitFunctionDeclaration(ASTNode functionDeclaration, List<FormalParameter> parameters, Block body)
+	private void visitFunctionDeclaration(ASTNode functionDeclaration, Identifier functionName,
+			List<FormalParameter> parameters, Block body)
 	{
-		// TODO - Handle the FormalParameters here
 		// First, push the function declaration node
-		FormatterPHPDeclarationNode declarationNode = new FormatterPHPDeclarationNode(document, true,
-				functionDeclaration);
-		int parametersCloseBracket = builder.locateCharBackward(document, ')', body.getStart()) + 1;
-		declarationNode.setBegin(builder.createTextNode(document, functionDeclaration.getStart(),
-				parametersCloseBracket));
-		builder.push(declarationNode);
-		builder.checkedPop(declarationNode, -1);
-
+		int declarationEnd = functionDeclaration.getStart() + 8;
+		visitCommonDeclaration(functionDeclaration, declarationEnd, true);
+		// push the function name node, if exists
+		if (functionName != null)
+		{
+			visitTextNode(functionName, true, 1);
+		}
+		// push the function parameters
+		pushParametersInParentheses(declarationEnd, body.getStart(), parameters.toArray(new ASTNode[parameters.size()]));
 		// Then, push the body
 		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
 		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
@@ -1732,8 +1741,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		body.childrenAccept(this);
 		int bodyEnd = body.getEnd();
 		builder.checkedPop(bodyNode, bodyEnd - 1);
-		int end = locateCharMatchInLine(bodyEnd, SEMICOLON_AND_COLON, document, false);
-		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, end));
+		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, bodyEnd));
 	}
 
 	/**

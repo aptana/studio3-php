@@ -77,6 +77,7 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 			case ASTNode.INFIX_EXPRESSION:
 			case ASTNode.POSTFIX_EXPRESSION:
 			case ASTNode.PREFIX_EXPRESSION:
+			case ASTNode.CONDITIONAL_EXPRESSION:
 				return true;
 			default:
 				return false;
