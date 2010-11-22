@@ -35,7 +35,6 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
@@ -49,14 +48,14 @@ import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
 public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginNode
 {
 
-	private final FunctionInvocation invocationNode;
+	private final ASTNode invocationNode;
 
 	/**
 	 * @param document
 	 * @param invocationNode
 	 * @param hasSemicolon
 	 */
-	public FormatterPHPFunctionInvocationNode(IFormatterDocument document, FunctionInvocation invocationNode)
+	public FormatterPHPFunctionInvocationNode(IFormatterDocument document, ASTNode invocationNode)
 	{
 		super(document);
 		this.invocationNode = invocationNode;
@@ -78,6 +77,7 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 			case ASTNode.POSTFIX_EXPRESSION:
 			case ASTNode.PREFIX_EXPRESSION:
 			case ASTNode.CONDITIONAL_EXPRESSION:
+			case ASTNode.ARRAY_ACCESS:
 				return true;
 			default:
 				return false;

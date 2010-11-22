@@ -35,38 +35,30 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
 
 /**
- * A default PHP line formatter node.<br>
- * We define a line as some code that terminates with a semicolon.
+ * A PHP formatter node that provides new line at the beginning, but no new line at the end of the begin-node.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPDefaultLineNode extends FormatterBlockWithBeginNode
+public class FormatterPHPLineStartingNode extends FormatterPHPTextNode
 {
 
 	/**
 	 * @param document
 	 */
-	public FormatterPHPDefaultLineNode(IFormatterDocument document)
+	public FormatterPHPLineStartingNode(IFormatterDocument document)
 	{
 		super(document);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
 	 */
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		IFormatterDocument document = getDocument();
-		if (document.getLength() > getEndOffset() - 1)
-		{
-			return document.charAt(getEndOffset()) == ';';
-		}
-		return false;
+		return true;
 	}
 
 }

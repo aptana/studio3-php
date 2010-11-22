@@ -48,16 +48,18 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 {
 
 	private final TypeOperator nodeType;
+	private boolean isUnary;
 
 	/**
 	 * Constructs a new FormatterPHPOperatorNode.
 	 * 
 	 * @param document
 	 */
-	public FormatterPHPOperatorNode(IFormatterDocument document, TypeOperator nodeType)
+	public FormatterPHPOperatorNode(IFormatterDocument document, TypeOperator nodeType, boolean isUnary)
 	{
 		super(document, true);
 		this.nodeType = nodeType;
+		this.isUnary = isUnary;
 	}
 
 	/*
@@ -67,6 +69,11 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 	@Override
 	public int getSpacesCountBefore()
 	{
+		if (isUnary)
+		{
+			// TODO - prefs
+			return 0;
+		}
 		// TODO - Add the rest of the operators
 		switch (nodeType)
 		{
@@ -89,6 +96,11 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 	@Override
 	public int getSpacesCountAfter()
 	{
+		if (isUnary)
+		{
+			// TODO - prefs
+			return 0;
+		}
 		// TODO - Add the rest of the operators
 		switch (nodeType)
 		{

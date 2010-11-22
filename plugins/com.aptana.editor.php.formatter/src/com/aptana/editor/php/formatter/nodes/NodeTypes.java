@@ -42,12 +42,14 @@ package com.aptana.editor.php.formatter.nodes;
 public class NodeTypes
 {
 	/**
-	 * Supported node types for punctuation.
+	 * Supported node types for punctuation.<br>
+	 * A punctuation type can only have a single char in its name.
 	 */
 	public enum TypePunctuation
 	{
 		COLON(":"), //$NON-NLS-1$
 		CASE_COLON(":"), //$NON-NLS-1$
+		GOTO_COLON(":"), //$NON-NLS-1$
 		SEMICOLON(";"), //$NON-NLS-1$
 		COMMA(","), //$NON-NLS-1$
 		NAMESPACE_SEPARATOR("\\"); //$NON-NLS-1$
@@ -56,6 +58,10 @@ public class NodeTypes
 
 		TypePunctuation(String name)
 		{
+			if (name == null || name.length() != 1)
+			{
+				throw new IllegalArgumentException("Cannot create a TypePunctuation with the name: " + name); //$NON-NLS-1$
+			}
 			this.name = name;
 		}
 
@@ -83,7 +89,7 @@ public class NodeTypes
 		DIVIDE_EQUAL("/="), //$NON-NLS-1$
 		MULTIPLY("*"), //$NON-NLS-1$
 		PLUS("+"), //$NON-NLS-1$
-		MINUS("+"), //$NON-NLS-1$
+		MINUS("-"), //$NON-NLS-1$
 		DIVIDE("/"), //$NON-NLS-1$
 		INCREMENT("++"), //$NON-NLS-1$
 		DECREMENT("--"), //$NON-NLS-1$

@@ -46,7 +46,26 @@ import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
 public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 {
 
+	private boolean asWrapper;
+
 	/**
+	 * Constructs a new FormatterPHPParenthesesNode
+	 * 
+	 * @param document
+	 * @param asWrapper
+	 *            Indicate that these parentheses do not have an open and close brackets, but is acting as a wrapper
+	 *            node for an expression that appears inside it. For example, an 'echo' statement without the
+	 *            parentheses.
+	 */
+	public FormatterPHPParenthesesNode(IFormatterDocument document, boolean asWrapper)
+	{
+		this(document);
+		this.asWrapper = asWrapper;
+	}
+
+	/**
+	 * Constructs a new FormatterPHPParenthesesNode
+	 * 
 	 * @param document
 	 */
 	public FormatterPHPParenthesesNode(IFormatterDocument document)
@@ -62,6 +81,10 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	public int getSpacesCountBefore()
 	{
 		// TODO: add a preference for that.
+		if (isAsWrapper())
+		{
+			return 1;
+		}
 		return 0;
 	}
 
@@ -73,5 +96,13 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	public boolean shouldConsumePreviousWhiteSpaces()
 	{
 		return true;
+	}
+
+	/**
+	 * @return the asWrapper
+	 */
+	public boolean isAsWrapper()
+	{
+		return asWrapper;
 	}
 }
