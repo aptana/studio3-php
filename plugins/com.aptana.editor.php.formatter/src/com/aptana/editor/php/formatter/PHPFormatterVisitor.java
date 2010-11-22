@@ -495,7 +495,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int cloneStart = cloneExpression.getStart();
 		pushFunctionInvocationName(cloneExpression, cloneStart, cloneStart + 5);
 		// push the expression as if it's in a parentheses expression
-		List<? extends ASTNode> expressionInList = Arrays.asList(cloneExpression);
+		List<ASTNode> expressionInList = new ArrayList<ASTNode>(1);
+		expressionInList.add(cloneExpression.getExpression());
 		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList);
 		return false;
 	}
