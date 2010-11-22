@@ -78,6 +78,8 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 			case ASTNode.PREFIX_EXPRESSION:
 			case ASTNode.CONDITIONAL_EXPRESSION:
 			case ASTNode.ARRAY_ACCESS:
+			case ASTNode.LIST_VARIABLE:
+			case ASTNode.REFERENCE:
 				return true;
 			default:
 				return false;

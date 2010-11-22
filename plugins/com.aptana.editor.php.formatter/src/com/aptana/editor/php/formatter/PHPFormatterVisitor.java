@@ -453,7 +453,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		ClassName className = classInstanceCreation.getClassName();
 		int creationEnd = classInstanceCreation.getEnd();
 		boolean hasParentheses = creationEnd != className.getEnd();
-		pushKeyword(classInstanceCreation.getStart(), 3, false);
+		// push the 'new' keyword. We push it as a text node and not as a keyword to handle cases
+		// were we have a reference preceding the new-instance creation ('&new MyClass')
+		int start = classInstanceCreation.getStart();
+		visitTextNode(start, start + 3, true, 0);
 		className.accept(this);
 		if (hasParentheses)
 		{
@@ -910,8 +913,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(IgnoreError ignoreError)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(ignoreError);
+		// push the first sign ('@') as a simple text node.
+		int start = ignoreError.getStart();
+		int end = start + 1;
+		visitTextNode(start, end, true, 0);
+		// visit the expression
+		ignoreError.getExpression().accept(this);
+		return false;
 	}
 
 	/*
@@ -1016,8 +1024,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ListVariable listVariable)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(listVariable);
+		List<VariableBase> variables = listVariable.variables();
+		int start = listVariable.getStart();
+		pushFunctionInvocationName(listVariable, start, start + 4);
+		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables.toArray(new ASTNode[variables.size()]));
+		return false;
 	}
 
 	/*
@@ -1050,6 +1061,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		Expression[] initialValues = fieldsDeclaration.getInitialValues();
 		// visit the variables and their initial values
 		visitNodeLists(variableNames, initialValues, TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
+		// locate the push the semicolon at the end
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, fieldsDeclaration.getEnd() - 1, false, true);
 		return false;
 	}
 
@@ -1195,8 +1208,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Reference reference)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(reference);
+		// push the first reference sign ('&') as a simple text node.
+		int start = reference.getStart();
+		int end = start + 1;
+		visitTextNode(start, end, true, 0);
+		// visit the referenced expression
+		reference.getExpression().accept(this);
+		return false;
 	}
 
 	/*
@@ -1208,12 +1226,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(ReflectionVariable reflectionVariable)
 	{
 		// push the first dollar sign as a simple text node.
-		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document, true, 0);
 		int start = reflectionVariable.getStart();
 		int end = start + 1;
-		textNode.setBegin(builder.createTextNode(document, start, end));
-		builder.push(textNode);
-		builder.checkedPop(textNode, end);
+		visitTextNode(start, end, true, 0);
 		// visit the name variable
 		reflectionVariable.getName().accept(this);
 		return false;
@@ -1254,25 +1269,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
-	 * SingleFieldDeclaration)
-	 */
-	@Override
-	public boolean visit(SingleFieldDeclaration singleFieldDeclaration)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(singleFieldDeclaration);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
 	 * StaticConstantAccess)
 	 */
 	@Override
 	public boolean visit(StaticConstantAccess classConstantAccess)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(classConstantAccess);
+		visitLeftRightExpression(classConstantAccess, classConstantAccess.getClassName(), classConstantAccess
+				.getConstant(), TypeOperator.STATIC_INVOCATION.toString());
+		return false;
 	}
 
 	/*
@@ -1283,8 +1287,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(StaticFieldAccess staticFieldAccess)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(staticFieldAccess);
+		visitLeftRightExpression(staticFieldAccess, staticFieldAccess.getClassName(), staticFieldAccess.getField(),
+				TypeOperator.STATIC_INVOCATION.toString());
+		return false;
 	}
 
 	/*
@@ -1295,8 +1300,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(StaticStatement staticStatement)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(staticStatement);
+		pushKeyword(staticStatement.getStart(), 6, true);
+		List<Expression> expressions = staticStatement.expressions();
+		visitNodeLists(expressions.toArray(new ASTNode[expressions.size()]), null, null, TypePunctuation.COMMA);
+		// push the ending semicolon
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, staticStatement.getEnd() - 1, false, true);
+		return false;
 	}
 
 	/*
@@ -1415,8 +1424,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(CastExpression castExpression)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(castExpression);
+		Expression expression = castExpression.getExpression();
+		// push the parentheses with the case type inside them
+		int castCloserOffset = builder.locateCharBackward(document, ')', expression.getStart());
+		visitTextNode(castExpression.getStart(), castCloserOffset, true, 0);
+		// push the expression
+		expression.accept(this);
+		return false;
 	}
 
 	/*
