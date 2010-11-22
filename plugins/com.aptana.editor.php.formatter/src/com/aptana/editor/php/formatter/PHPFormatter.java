@@ -37,6 +37,8 @@ package com.aptana.editor.php.formatter;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.*;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,7 +105,11 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			SPACES_AFTER_ASSIGNMENT, SPACES_BEFORE_COMMAS, SPACES_AFTER_COMMAS, SPACES_BEFORE_CASE_COLON,
 			SPACES_AFTER_CASE_COLON, SPACES_BEFORE_COLON, SPACES_AFTER_COLON, SPACES_BEFORE_SEMICOLON,
 			SPACES_AFTER_SEMICOLON, SPACES_BEFORE_DOT, SPACES_AFTER_DOT, SPACES_BEFORE_ARROW, SPACES_AFTER_ARROW };
+
+	// Regex patterns
 	private static Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
+	private static Pattern PHP_COMMENTS_PATTERN = Pattern.compile("((?s)(/\\*.*?\\*/))|(//.*|#.*)");//$NON-NLS-1$
+
 	private String lineSeparator;
 
 	/**
@@ -193,7 +199,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				{
 					if (!input.equals(output))
 					{
-						if (equalsIgnoreWhitespaces(input, output))
+						if (equalContent(input, output))
 						{
 							// We match the output to all possible PHP open-tags and then trim it to remove it with any
 							// other white-space that appear before it.
@@ -236,6 +242,78 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			FormatterPlugin.logError(e);
 		}
 		return null;
+	}
+
+	/**
+	 * @param input
+	 * @param output
+	 * @return
+	 */
+	private boolean equalContent(String input, String output)
+	{
+		// first, strip out all the comments from the input and the output.
+		// save those comments for later comparison.
+		StringBuilder inputBuffer = new StringBuilder(input.length());
+		StringBuilder outputBuffer = new StringBuilder(output.length());
+		List<String> inputComments = new ArrayList<String>();
+		List<String> outputComments = new ArrayList<String>();
+		Matcher inputCommentsMatcher = PHP_COMMENTS_PATTERN.matcher(input);
+		Matcher outputCommentsMatcher = PHP_COMMENTS_PATTERN.matcher(output);
+		int inputOffset = 0;
+		int outputOffset = 0;
+		while (inputCommentsMatcher.find())
+		{
+			inputComments.add(inputCommentsMatcher.group());
+			inputBuffer.append(input.subSequence(inputOffset, inputCommentsMatcher.start()));
+			inputOffset = inputCommentsMatcher.end() + 1;
+		}
+		inputBuffer.append(input.subSequence(inputOffset, input.length()));
+		while (outputCommentsMatcher.find())
+		{
+			outputComments.add(outputCommentsMatcher.group());
+			outputBuffer.append(output.subSequence(outputOffset, outputCommentsMatcher.start()));
+			outputOffset = outputCommentsMatcher.end() + 1;
+
+		}
+		outputBuffer.append(output.subSequence(outputOffset, output.length()));
+		return equalComments(inputComments, outputComments)
+				&& equalsIgnoreWhitespaces(inputBuffer.toString(), outputBuffer.toString());
+	}
+
+	/**
+	 * Compare a list of comments
+	 * 
+	 * @param inputComments
+	 * @param outputComments
+	 * @return
+	 */
+	private boolean equalComments(List<String> inputComments, List<String> outputComments)
+	{
+		if (inputComments.size() != outputComments.size())
+		{
+			return false;
+		}
+		for (int i = 0; i < inputComments.size(); i++)
+		{
+			String inputComment = inputComments.get(i);
+			String outputComment = outputComments.get(i);
+			inputComment = stripComment(inputComment);
+			outputComment = stripComment(outputComment);
+			if (!inputComment.equals(outputComment)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Remove any whitespace, '*', '//' or '#' from a comment string
+	 * 
+	 * @param inputComment
+	 */
+	private String stripComment(String comment)
+	{
+		return comment.replaceAll("\\s|\\*|#|//", ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**

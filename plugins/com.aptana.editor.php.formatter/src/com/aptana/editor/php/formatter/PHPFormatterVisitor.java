@@ -55,7 +55,6 @@ import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org.eclipse.php.internal.core.ast.nodes.ClassName;
 import org.eclipse.php.internal.core.ast.nodes.CloneExpression;
-import org.eclipse.php.internal.core.ast.nodes.Comment;
 import org.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
 import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ContinueStatement;
@@ -499,18 +498,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		expressionInList.add(cloneExpression.getExpression());
 		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList);
 		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Comment)
-	 */
-	@Override
-	public boolean visit(Comment comment)
-	{
-		// TODO Auto-generated method stub
-		return super.visit(comment);
 	}
 
 	/*

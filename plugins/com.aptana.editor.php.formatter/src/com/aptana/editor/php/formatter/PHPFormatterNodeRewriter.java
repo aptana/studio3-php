@@ -34,10 +34,15 @@
  */
 package com.aptana.editor.php.formatter;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.php.internal.core.ast.nodes.Comment;
+import org.eclipse.php.internal.core.ast.nodes.Program;
+
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCommentNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPASTWrappingNode;
 import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.nodes.FormatterNodeRewriter;
@@ -63,19 +68,28 @@ public class PHPFormatterNodeRewriter extends FormatterNodeRewriter
 	 */
 	public PHPFormatterNodeRewriter(IParseRootNode parseResultRoot, FormatterDocument document)
 	{
-		// TODO - Handle the PHP comments on the Program AST
-		IParseNode[] comments = parseResultRoot.getCommentNodes();
+		List<Comment> comments = null;
+		// the root node should hold a single Program (AST) that was inserted as a ParseNode.
+		if (parseResultRoot.getChildCount() == 1)
+		{
+			IParseNode child = parseResultRoot.getChild(0);
+			if (child instanceof PHPASTWrappingNode)
+			{
+				Program ast = ((PHPASTWrappingNode) child).getAST();
+				comments = ast.comments();
+			}
+		}
 		insertComments(document, comments);
 	}
 
-	private void insertComments(FormatterDocument document, IParseNode[] comments)
+	private void insertComments(FormatterDocument document, List<Comment> comments)
 	{
-		for (IParseNode node : comments)
+		for (Comment node : comments)
 		{
 			// in case we have a multi-line block comment, we actually break the comment to its lines and
 			// create a comment node for each line.
-			int startingOffset = node.getStartingOffset();
-			int endingOffset = node.getEndingOffset() + 1;
+			int startingOffset = node.getStart();
+			int endingOffset = node.getEnd();
 			String commentText = document.get(startingOffset, endingOffset);
 			if (commentText.startsWith(MULTI_LINE_COMMENT_PREFIX))
 			{
