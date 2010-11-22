@@ -34,6 +34,8 @@
  */
 package com.aptana.editor.php.formatter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,7 +98,6 @@ import org.eclipse.php.internal.core.ast.nodes.Reference;
 import org.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
 import org.eclipse.php.internal.core.ast.nodes.ReturnStatement;
 import org.eclipse.php.internal.core.ast.nodes.Scalar;
-import org.eclipse.php.internal.core.ast.nodes.SingleFieldDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.Statement;
 import org.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
 import org.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
@@ -300,8 +301,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int declarationEndOffset = arrayCreation.getStart() + 5;
 		visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
 		List<ArrayElement> elements = arrayCreation.elements();
-		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements.toArray(new ASTNode[elements
-				.size()]));
+		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements);
 		return false;
 	}
 
@@ -316,16 +316,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		Expression key = arrayElement.getKey();
 		Expression value = arrayElement.getValue();
-		ASTNode[] leftNodes = new ASTNode[1];
-		ASTNode[] rightNodes = null;
+		List<ASTNode> leftNodes = new ArrayList<ASTNode>(1);
+		List<ASTNode> rightNodes = null;
 		if (key == null)
 		{
-			leftNodes[0] = value;
+			leftNodes.add(value);
 		}
 		else
 		{
-			leftNodes[0] = key;
-			rightNodes = new ASTNode[] { value };
+			leftNodes.add(key);
+			rightNodes = new ArrayList<ASTNode>(1);
+			rightNodes.add(value);
 		}
 		visitNodeLists(leftNodes, rightNodes, TypeOperator.KEY_VALUE, null);
 		return false;
@@ -462,8 +463,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// create a constructor node
 			List<Expression> ctorParams = classInstanceCreation.ctorParams();
-			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams
-					.toArray(new ASTNode[ctorParams.size()]));
+			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams);
 		}
 		// check and push a semicolon (if appears after the end of this instance creation)
 		// pushSemicolon(creationEnd, false, true);
@@ -495,8 +495,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int cloneStart = cloneExpression.getStart();
 		pushFunctionInvocationName(cloneExpression, cloneStart, cloneStart + 5);
 		// push the expression as if it's in a parentheses expression
-		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), new ASTNode[] { cloneExpression
-				.getExpression() });
+		List<? extends ASTNode> expressionInList = Arrays.asList(cloneExpression);
+		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList);
 		return false;
 	}
 
@@ -550,8 +550,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// Push the declarations. Each has an assignment char and they are separated by commas.
 		List<? extends ASTNode> leftNodes = classConstantDeclaration.names();
 		List<? extends ASTNode> rightNodes = classConstantDeclaration.initializers();
-		visitNodeLists(leftNodes.toArray(new ASTNode[leftNodes.size()]), rightNodes.toArray(new ASTNode[rightNodes
-				.size()]), TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
+		visitNodeLists(leftNodes, rightNodes, TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = rightNodes.get(rightNodes.size() - 1).getEnd();
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
@@ -577,14 +576,15 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 *            pair to the other (may only be null in case a separator is not needed, e.g. we have only one
 	 *            item/pair)
 	 */
-	private void visitNodeLists(ASTNode[] leftNodes, ASTNode[] rightNodes, TypeOperator pairsOperator,
-			TypePunctuation pairsSeparator)
+	private void visitNodeLists(List<? extends ASTNode> leftNodes, List<? extends ASTNode> rightNodes,
+			TypeOperator pairsOperator, TypePunctuation pairsSeparator)
 	{
 		// push the expressions one at a time, with comma nodes between them.
-		for (int i = 0; i < leftNodes.length; i++)
+		int leftSize = leftNodes.size();
+		for (int i = 0; i < leftSize; i++)
 		{
-			ASTNode left = leftNodes[i];
-			ASTNode right = (rightNodes != null) ? rightNodes[i] : null;
+			ASTNode left = leftNodes.get(i);
+			ASTNode right = (rightNodes != null) ? rightNodes.get(i) : null;
 			left.accept(this);
 			if (right != null && pairsOperator != null)
 			{
@@ -596,10 +596,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				right.accept(this);
 			}
 			// add a separator if needed
-			if (i + 1 < leftNodes.length)
+			if (i + 1 < leftNodes.size())
 			{
 				int startIndex = left.getEnd();
-				String text = document.get(startIndex, leftNodes[i + 1].getStart());
+				String text = document.get(startIndex, leftNodes.get(i + 1).getStart());
 				String separatorStr = pairsSeparator.toString();
 				startIndex += text.indexOf(separatorStr);
 				pushTypePunctuation(pairsSeparator, startIndex);
@@ -653,8 +653,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		// push the list of names and values
-		visitNodeLists(directiveNames.toArray(new ASTNode[directiveNames.size()]), directiveValues
-				.toArray(new ASTNode[directiveValues.size()]), TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
+		visitNodeLists(directiveNames, directiveValues, TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
 		builder.checkedPop(parenthesesNode, -1);
 		parenthesesNode.setEnd(builder.createTextNode(document, closeParen, closeParen + 1));
 		if (body != null)
@@ -678,8 +677,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(echoStatement, echoStart, echoStart + 4);
 		// push the expressions one at a time, with comma nodes between them.
 		List<Expression> expressions = echoStatement.expressions();
-		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions.toArray(new ASTNode[expressions
-				.size()]));
+		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = expressions.get(expressions.size() - 1).getEnd();
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
@@ -846,7 +844,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		pushKeyword(globalStatement.getStart(), 6, true);
 		List<Variable> variables = globalStatement.variables();
-		visitNodeLists(variables.toArray(new ASTNode[variables.size()]), null, null, TypePunctuation.COMMA);
+		visitNodeLists(variables, null, null, TypePunctuation.COMMA);
 		// we also need to push the semicolon for the global
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, globalStatement.getEnd() - 1, false, true);
 		return false;
@@ -1027,7 +1025,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<VariableBase> variables = listVariable.variables();
 		int start = listVariable.getStart();
 		pushFunctionInvocationName(listVariable, start, start + 4);
-		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables.toArray(new ASTNode[variables.size()]));
+		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables);
 		return false;
 	}
 
@@ -1060,7 +1058,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// visit the variables and their values
 		Expression[] initialValues = fieldsDeclaration.getInitialValues();
 		// visit the variables and their initial values
-		visitNodeLists(variableNames, initialValues, TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
+		List<? extends ASTNode> variablesList = Arrays.asList(variableNames);
+		List<? extends ASTNode> valuesList = (initialValues != null) ? Arrays.asList(initialValues) : null;
+		visitNodeLists(variablesList, valuesList, TypeOperator.ASSIGNMENT, TypePunctuation.COMMA);
 		// locate the push the semicolon at the end
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, fieldsDeclaration.getEnd() - 1, false, true);
 		return false;
@@ -1138,7 +1138,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			pushTypePunctuation(TypePunctuation.NAMESPACE_SEPARATOR, start);
 		}
 		// Push the rest of the segments as a list of nodes.
-		visitNodeLists(segments.toArray(new ASTNode[segments.size()]), null, null, TypePunctuation.NAMESPACE_SEPARATOR);
+		visitNodeLists(segments, null, null, TypePunctuation.NAMESPACE_SEPARATOR);
 		return false;
 	}
 
@@ -1302,7 +1302,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		pushKeyword(staticStatement.getStart(), 6, true);
 		List<Expression> expressions = staticStatement.expressions();
-		visitNodeLists(expressions.toArray(new ASTNode[expressions.size()]), null, null, TypePunctuation.COMMA);
+		visitNodeLists(expressions, null, null, TypePunctuation.COMMA);
 		// push the ending semicolon
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, staticStatement.getEnd() - 1, false, true);
 		return false;
@@ -1510,7 +1510,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		pushKeyword(useStatement.getStart(), 3, true);
 		List<UseStatementPart> parts = useStatement.parts();
-		visitNodeLists(parts.toArray(new ASTNode[parts.size()]), null, null, TypePunctuation.COMMA);
+		visitNodeLists(parts, null, null, TypePunctuation.COMMA);
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, useStatement.getEnd() - 1, false, true);
 		return false;
 	}
@@ -1606,8 +1606,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(functionInvocation, functionName.getStart(), functionName.getEnd());
 		// push the parenthesis and the parameters (if exist)
 		List<Expression> invocationParameters = functionInvocation.parameters();
-		ASTNode[] parameters = invocationParameters.toArray(new ASTNode[invocationParameters.size()]);
-		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), parameters);
+		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters);
 	}
 
 	/**
@@ -1633,13 +1632,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param expressionEndOffset
 	 * @param parameters
 	 */
-	private void pushParametersInParentheses(int declarationEndOffset, int expressionEndOffset, ASTNode[] parameters)
+	private void pushParametersInParentheses(int declarationEndOffset, int expressionEndOffset,
+			List<? extends ASTNode> parameters)
 	{
 		// in some cases, we get a ParethesisExpression inside a single parameter.
 		// for those cases, we skip the parentheses node push and go straight to the
 		// push of the ParethesisExpression, which should handle the rest.
-		boolean pushParenthesisNode = parameters.length != 1 || parameters.length == 1
-				&& parameters[0].getType() != ASTNode.PARENTHESIS_EXPRESSION;
+		boolean pushParenthesisNode = parameters.size() != 1 || parameters.size() == 1
+				&& parameters.get(0).getType() != ASTNode.PARENTHESIS_EXPRESSION;
 		FormatterPHPParenthesesNode parenthesesNode = null;
 		if (pushParenthesisNode)
 		{
@@ -1657,7 +1657,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			builder.push(parenthesesNode);
 		}
 
-		if (parameters != null && parameters.length > 0)
+		if (parameters != null && parameters.size() > 0)
 		{
 			visitNodeLists(parameters, null, null, TypePunctuation.COMMA);
 		}
@@ -1897,7 +1897,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			declarationEnd = functionName.getEnd();
 		}
 		// push the function parameters
-		pushParametersInParentheses(declarationEnd, body.getStart(), parameters.toArray(new ASTNode[parameters.size()]));
+		pushParametersInParentheses(declarationEnd, body.getStart(), parameters);
 		// Then, push the body
 		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
 		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
