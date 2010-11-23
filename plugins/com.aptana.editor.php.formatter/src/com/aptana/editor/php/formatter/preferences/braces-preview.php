@@ -1,3 +1,4 @@
+<?php
 /**
  * Preview...
  */
@@ -6,39 +7,32 @@ function foo() {
 do {
 } while(true);
 try {
-alert('hello');
-} catch(e) {
-} finally {
-}
+print('hello');
+} catch(Exception $e) {
+} 
 }
 
-function bar(a) {
+function bar($a) {
 if (true) {
 return;
 }
 // If-Else
 if (false) {
-alert('hello');
+echo('hello');
 } else
-if (a > 0) {
-alert(a);
+if ($a > 0) {
+echo($a);
 } else {
-alert(0);
+echo('oops!');
 }
 }
 // Switch-Case
-switch (a) {
+switch ($a) {
 case 1:
-alert('1');
+print('1');
 break;
 case 2:
 break;
 default:
-alert('none');
+print('none');
 }
-// Groups
-(
-function fooInGroup() {
-
-}
-)

@@ -61,7 +61,7 @@ import com.aptana.formatter.ui.util.SWTFactory;
  */
 public class PHPFormatterIndentationTabPage extends FormatterModifyTabPage
 {
-	private static final String INDENTATION_PREVIEW_FILE = "indentation-preview.js"; //$NON-NLS-1$
+	private static final String INDENTATION_PREVIEW_FILE = "indentation-preview.php"; //$NON-NLS-1$
 	private final String[] TAB_OPTION_ITEMS = new String[] { CodeFormatterConstants.SPACE, CodeFormatterConstants.TAB,
 			CodeFormatterConstants.MIXED };
 	private final String[] TAB_OPTION_NAMES = new String[] {

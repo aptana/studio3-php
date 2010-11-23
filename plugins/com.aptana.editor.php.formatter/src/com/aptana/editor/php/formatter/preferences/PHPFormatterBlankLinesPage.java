@@ -54,7 +54,7 @@ import com.aptana.formatter.ui.util.SWTFactory;
 public class PHPFormatterBlankLinesPage extends FormatterModifyTabPage
 {
 
-	private static final String BLANK_LINES_PREVIEW_FILE = "blank-lines-preview.js"; //$NON-NLS-1$
+	private static final String BLANK_LINES_PREVIEW_FILE = "blank-lines-preview.php"; //$NON-NLS-1$
 
 	/**
 	 * @param dialog

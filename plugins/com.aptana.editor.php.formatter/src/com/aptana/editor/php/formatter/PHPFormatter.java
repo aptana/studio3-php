@@ -37,8 +37,6 @@ package com.aptana.editor.php.formatter;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.*;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -255,55 +253,29 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		// save those comments for later comparison.
 		StringBuilder inputBuffer = new StringBuilder(input.length());
 		StringBuilder outputBuffer = new StringBuilder(output.length());
-		List<String> inputComments = new ArrayList<String>();
-		List<String> outputComments = new ArrayList<String>();
+		StringBuilder inputComments = new StringBuilder();
+		StringBuilder outputComments = new StringBuilder();
 		Matcher inputCommentsMatcher = PHP_COMMENTS_PATTERN.matcher(input);
 		Matcher outputCommentsMatcher = PHP_COMMENTS_PATTERN.matcher(output);
 		int inputOffset = 0;
 		int outputOffset = 0;
 		while (inputCommentsMatcher.find())
 		{
-			inputComments.add(inputCommentsMatcher.group());
+			inputComments.append(inputCommentsMatcher.group());
 			inputBuffer.append(input.subSequence(inputOffset, inputCommentsMatcher.start()));
 			inputOffset = inputCommentsMatcher.end() + 1;
 		}
 		inputBuffer.append(input.subSequence(inputOffset, input.length()));
 		while (outputCommentsMatcher.find())
 		{
-			outputComments.add(outputCommentsMatcher.group());
+			outputComments.append(outputCommentsMatcher.group());
 			outputBuffer.append(output.subSequence(outputOffset, outputCommentsMatcher.start()));
 			outputOffset = outputCommentsMatcher.end() + 1;
 
 		}
 		outputBuffer.append(output.subSequence(outputOffset, output.length()));
-		return equalComments(inputComments, outputComments)
+		return stripComment(inputComments.toString()).equals(stripComment(outputComments.toString()))
 				&& equalsIgnoreWhitespaces(inputBuffer.toString(), outputBuffer.toString());
-	}
-
-	/**
-	 * Compare a list of comments
-	 * 
-	 * @param inputComments
-	 * @param outputComments
-	 * @return
-	 */
-	private boolean equalComments(List<String> inputComments, List<String> outputComments)
-	{
-		if (inputComments.size() != outputComments.size())
-		{
-			return false;
-		}
-		for (int i = 0; i < inputComments.size(); i++)
-		{
-			String inputComment = inputComments.get(i);
-			String outputComment = outputComments.get(i);
-			inputComment = stripComment(inputComment);
-			outputComment = stripComment(outputComment);
-			if (!inputComment.equals(outputComment)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**

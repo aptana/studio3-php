@@ -54,7 +54,7 @@ import com.aptana.formatter.ui.util.SWTFactory;
 public class PHPFormatterNewLinesPage extends FormatterModifyTabPage
 {
 
-	private static final String NEW_LINES_PREVIEW_FILE = "indentation-preview.js"; //$NON-NLS-1$
+	private static final String NEW_LINES_PREVIEW_FILE = "indentation-preview.php"; //$NON-NLS-1$
 
 	/**
 	 * Constructor.

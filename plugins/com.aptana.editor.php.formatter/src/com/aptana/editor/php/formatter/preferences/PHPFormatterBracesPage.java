@@ -56,7 +56,7 @@ import com.aptana.formatter.ui.util.SWTFactory;
 public class PHPFormatterBracesPage extends FormatterModifyTabPage
 {
 
-	private static final String BRACES_PREVIEW_FILE = "braces-preview.js"; //$NON-NLS-1$
+	private static final String BRACES_PREVIEW_FILE = "braces-preview.php"; //$NON-NLS-1$
 
 	private final String[] bracesOptionNames = new String[] {
 			FormatterMessages.BracesTabPage_position_option_SAME_LINE,

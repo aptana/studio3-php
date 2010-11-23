@@ -53,7 +53,7 @@ import com.aptana.formatter.ui.util.SWTFactory;
  */
 public class PHPFormatterCommentsPage extends FormatterModifyTabPage
 {
-	private static final String WRAPPING_PREVIEW_FILE = "wrapping-preview.js"; //$NON-NLS-1$
+	private static final String WRAPPING_PREVIEW_FILE = "wrapping-preview.php"; //$NON-NLS-1$
 
 	/**
 	 * @param dialog
