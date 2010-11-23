@@ -117,7 +117,7 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putInt(SPACES_BEFORE_PARENTHESES, 0);
 		store.putInt(SPACES_AFTER_PARENTHESES, 0);
 		// Not for UI customization
-		store.putInt(SPACES_BEFORE_NAMESPACE_SEPARATOR, 1);
+		store.putInt(SPACES_BEFORE_NAMESPACE_SEPARATOR, 0);
 		store.putInt(SPACES_AFTER_NAMESPACE_SEPARATOR, 0);
 		store.putInt(SPACES_BEFORE_COLON, 0);
 		store.putInt(SPACES_AFTER_COLON, 1);
