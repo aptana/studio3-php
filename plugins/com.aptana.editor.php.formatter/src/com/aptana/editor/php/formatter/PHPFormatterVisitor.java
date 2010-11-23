@@ -138,7 +138,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
-import com.aptana.editor.php.formatter.nodes.PHPFormatterBreakNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPBreakNode;
 import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.FormatterDocument;
@@ -413,7 +413,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int end = breakStatement.getEnd();
 		if (expression == null)
 		{
-			PHPFormatterBreakNode breakNode = new PHPFormatterBreakNode(document, breakStatement.getParent());
+			FormatterPHPBreakNode breakNode = new FormatterPHPBreakNode(document, breakStatement.getParent());
 			breakNode.setBegin(builder.createTextNode(document, start, end));
 			builder.push(breakNode);
 			builder.checkedPop(breakNode, -1);

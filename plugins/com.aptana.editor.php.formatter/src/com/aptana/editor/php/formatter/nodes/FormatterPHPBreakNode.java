@@ -34,23 +34,63 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+
+import com.aptana.editor.php.formatter.PHPFormatterConstants;
+import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
-import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
+import com.aptana.formatter.IFormatterWriter;
+import com.aptana.formatter.nodes.FormatterBlockWithBeginNode;
 
 /**
- * A PHP formatter node for Object blocks (such as hashes etc.)
+ * A PHP 'break' formatter node.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPObjectNode extends FormatterBlockWithBeginEndNode
+public class FormatterPHPBreakNode extends FormatterBlockWithBeginNode
 {
 
+	private ASTNode parentNode;
+
 	/**
+	 * Constructs a new FormatterPHPBreakNode.<br>
+	 * A parent ASTNode should be provided to compute the formatting according to the preference that matches it. For
+	 * example, a 'break' in a switch-case might behave differently then a 'break' in a 'for' statement.
+	 * 
 	 * @param document
+	 * @param parentNode
+	 *            The parent ASTNode of the 'break' statement.
 	 */
-	public FormatterPHPObjectNode(IFormatterDocument document)
+	public FormatterPHPBreakNode(IFormatterDocument document, ASTNode parentNode)
 	{
 		super(document);
+		this.parentNode = parentNode;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockWithBeginNode#accept(com.aptana.formatter.IFormatterContext,
+	 * com.aptana.formatter.IFormatterWriter)
+	 */
+	@Override
+	public void accept(IFormatterContext context, IFormatterWriter visitor) throws Exception
+	{
+		// We override the accept of the break to control the indentation of it.
+		// We might want to de-dent it in some cases, such as a 'break' in a 'switch-case' block.
+		boolean isDeDenting = false;
+		if (parentNode.getType() == ASTNode.SWITCH_CASE)
+		{
+			if (!getDocument().getBoolean(PHPFormatterConstants.INDENT_BREAK_IN_CASE))
+			{
+				context.decIndent();
+				isDeDenting = true;
+			}
+		}
+		super.accept(context, visitor);
+		if (isDeDenting)
+		{
+			context.incIndent();
+		}
 	}
 
 	/*
@@ -60,8 +100,7 @@ public class FormatterPHPObjectNode extends FormatterBlockWithBeginEndNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		// TODO preferences?
-		return false;
+		return true;
 	}
 
 	/*
@@ -71,18 +110,6 @@ public class FormatterPHPObjectNode extends FormatterBlockWithBeginEndNode
 	@Override
 	protected boolean isAddingEndNewLine()
 	{
-		// TODO preferences?
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isIndenting()
-	 */
-	@Override
-	protected boolean isIndenting()
-	{
-		// TODO preferences?
 		return true;
 	}
 
