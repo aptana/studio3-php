@@ -96,9 +96,9 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 		switch (invocationNode.getParent().getType())
 		{
 			case ASTNode.STATIC_METHOD_INVOCATION:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_METHOD_INVOCATION);
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_STATIC_INVOCATION_OPERATOR);
 			case ASTNode.METHOD_INVOCATION:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_STATIC_INVOCATION);
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARROW_OPERATOR);
 			default:
 				return super.getSpacesCountBefore();
 		}

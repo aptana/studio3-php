@@ -2,6 +2,7 @@
 /**
  * Preview...
  */
+namespace MyNamespace\Preview;
 // Functions
 function foo() {
 do {

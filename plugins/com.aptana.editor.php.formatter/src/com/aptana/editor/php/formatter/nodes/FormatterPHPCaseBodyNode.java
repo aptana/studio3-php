@@ -65,7 +65,7 @@ public class FormatterPHPCaseBodyNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isIndenting()
 	{
-		return !hasBlockedChild || getDocument().getBoolean(PHPFormatterConstants.INDENT_CASE_BODY);
+		return getDocument().getBoolean(PHPFormatterConstants.INDENT_CASE_BODY);
 	}
 
 	@Override

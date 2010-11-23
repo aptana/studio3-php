@@ -37,7 +37,7 @@ package com.aptana.editor.php.formatter.preferences;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * @author Shalom
+ * @author Shalom Gibly <sgibly@aptana.com>
  */
 public class Messages extends NLS
 {
@@ -70,6 +70,7 @@ public class Messages extends NLS
 	public static String PHPFormatterNewLinesPage_newLineBeforeElse;
 	public static String PHPFormatterNewLinesPage_newLineBreakElseIf;
 	public static String PHPFormatterNewLinesPage_newLineBeforeIf;
+	public static String PHPFormatterModifyDialog_whiteSpacesTabName;
 	public static String PHPFormatterNewLinesPage_newLineBeforeWhileInDo;
 
 	public static String PHPFormatterIndentationTabPage_statementsWithinBlocks;
@@ -79,6 +80,24 @@ public class Messages extends NLS
 	public static String PHPFormatterIndentationTabPage_statementsWithinTypes;
 	public static String PHPFormatterIndentationTabPage_statementsWithinFunctions;
 	public static String PHPFormatterIndentationTabPage_breakWithinCase;
+	public static String PHPFormatterWhiteSpacesPage_after;
+	public static String PHPFormatterWhiteSpacesPage_arithmeticOperators;
+	public static String PHPFormatterWhiteSpacesPage_assignments;
+	public static String PHPFormatterWhiteSpacesPage_before;
+	public static String PHPFormatterWhiteSpacesPage_caseColon;
+	public static String PHPFormatterWhiteSpacesPage_parentheses;
+	public static String PHPFormatterWhiteSpacesPage_commas;
+	public static String PHPFormatterWhiteSpacesPage_concatenationOperator;
+	public static String PHPFormatterWhiteSpacesPage_conditionalOperators;
+	public static String PHPFormatterWhiteSpacesPage_invocationOperators;
+	public static String PHPFormatterWhiteSpacesPage_keyValueOperator;
+	public static String PHPFormatterWhiteSpacesPage_operatorsGroupTitle;
+	public static String PHPFormatterWhiteSpacesPage_postfixOperators;
+	public static String PHPFormatterWhiteSpacesPage_prefixOperators;
+	public static String PHPFormatterWhiteSpacesPage_puctuationElementsGroupTitle;
+	public static String PHPFormatterWhiteSpacesPage_relationalOperators;
+	public static String PHPFormatterWhiteSpacesPage_staticInvocationOperator;
+	public static String PHPFormatterWhiteSpacesPage_unaryOperators;
 	static
 	{
 		// initialize resource bundle

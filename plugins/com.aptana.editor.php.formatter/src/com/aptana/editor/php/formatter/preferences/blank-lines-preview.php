@@ -14,3 +14,4 @@ function plus($a,$b) {
 return $a+$b;
 }
 }
+$a = array(1,2,3);

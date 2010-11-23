@@ -117,9 +117,9 @@ import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPBreakNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseColonNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
@@ -138,7 +138,6 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPBreakNode;
 import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.FormatterDocument;
@@ -519,7 +518,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		ifTrue.accept(this);
 		// push the colon separator
 		int colonOffset = ifTrue.getEnd() + document.get(ifTrue.getEnd(), ifFalse.getStart()).indexOf(':');
-		pushTypePunctuation(TypePunctuation.COLON, colonOffset);
+		pushTypeOperator(TypeOperator.CONDITIONAL_COLON, colonOffset, false);
 		// visit the false part
 		ifFalse.accept(this);
 		return false;
@@ -1157,8 +1156,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(PostfixExpression postfixExpression)
 	{
-		VariableBase left = postfixExpression.getVariable();
-		visitLeftRightExpression(postfixExpression, left, null, postfixExpression.getOperationString());
+		VariableBase var = postfixExpression.getVariable();
+		TypeOperator op;
+		if (postfixExpression.getOperator() == PostfixExpression.OP_INC)
+		{
+			op = TypeOperator.POSTFIX_INCREMENT;
+		}
+		else
+		{
+			op = TypeOperator.POSTFIX_DECREMENT;
+		}
+		var.accept(this);
+		int leftOffset = var.getEnd();
+		int operatorOffset = document.get(leftOffset, postfixExpression.getEnd()).indexOf(op.toString()) + leftOffset;
+		pushTypeOperator(op, operatorOffset, false);
 		return false;
 	}
 
@@ -1170,8 +1181,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(PrefixExpression prefixExpression)
 	{
-		VariableBase right = prefixExpression.getVariable();
-		visitLeftRightExpression(prefixExpression, null, right, prefixExpression.getOperationString());
+		VariableBase var = prefixExpression.getVariable();
+		TypeOperator op;
+		if (prefixExpression.getOperator() == PrefixExpression.OP_INC)
+		{
+			op = TypeOperator.PREFIX_INCREMENT;
+		}
+		else
+		{
+			op = TypeOperator.PREFIX_DECREMENT;
+		}
+		int leftOffset = prefixExpression.getStart();
+		int operatorOffset = document.get(leftOffset, var.getStart()).indexOf(op.toString()) + leftOffset;
+		pushTypeOperator(op, operatorOffset, false);
+		var.accept(this);
 		return false;
 	}
 
@@ -1359,7 +1382,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 		// push the case/default node till the colon.
 		// We create a begin-end node that will hold a case-colon node as an inner child to manage its spacing.
-		FormatterPHPCaseNode caseNode = new FormatterPHPCaseNode(document);
+		FormatterPHPExpressionWrapperNode caseNode = new FormatterPHPExpressionWrapperNode(document);
 		// get the value-end offset. In case it's a 'default' case, set the end at the end offset of the word 'default'
 		int valueEnd = switchCase.isDefault() ? switchCase.getStart() + 7 : switchCase.getValue().getEnd();
 		caseNode.setBegin(builder.createTextNode(document, switchCase.getStart(), valueEnd));
@@ -1913,7 +1936,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/**
 	 * Visit an expression with left node, right node and an operator in between.<br>
-	 * Note that the left or the right may be null o support expressions such as {@link PostfixExpression}.
+	 * Note that the left <b>or</b> the right may be null.
 	 * 
 	 * @param left
 	 * @param right

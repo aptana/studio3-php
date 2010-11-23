@@ -46,7 +46,6 @@ import com.aptana.formatter.IFormatterDocument;
  */
 public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 {
-
 	private final TypeOperator nodeType;
 	private boolean isUnary;
 
@@ -71,22 +70,63 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 	{
 		if (isUnary)
 		{
-			// TODO - prefs
-			return 0;
+			return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_UNARY_OPERATOR);
 		}
-		// TODO - Add the rest of the operators
 		switch (nodeType)
 		{
-			case ASSIGNMENT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT);
-			case DOT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_DOT);
 			case ARROW:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ARROW);
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ARROW_OPERATOR);
+			case STATIC_INVOCATION:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_STATIC_INVOCATION_OPERATOR);
+			case KEY_VALUE:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_KEY_VALUE_OPERATOR);
+			case ASSIGNMENT:
+			case DOT_EQUAL:
+			case PLUS_EQUAL:
+			case MINUS_EQUAL:
+			case MULTIPLY_EQUAL:
+			case DIVIDE_EQUAL:
+			case OR_EQUAL:
+			case AND_EQUAL:
+			case TILDE_EQUAL:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT_OPERATOR);
+			case EQUAL:
+			case TYPE_EQUAL:
+			case NOT_EQUAL:
+			case NOT_TYPE_EQUAL:
+			case GREATER_THAN:
+			case LESS_THAN:
+			case GREATER_THAN_OR_EQUAL:
+			case LESS_THAN_OR_EQUAL:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_RELATIONAL_OPERATORS);
+			case DOT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CONCATENATION_OPERATOR);
+			case CONDITIONAL:
+			case CONDITIONAL_COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CONDITIONAL_OPERATOR);
+			case POSTFIX_DECREMENT:
+			case POSTFIX_INCREMENT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_POSTFIX_OPERATOR);
+			case PREFIX_DECREMENT:
+			case PREFIX_INCREMENT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_PREFIX_OPERATOR);
+			case MULTIPLY:
+			case PLUS:
+			case MINUS:
+			case DIVIDE:
+			case MODULUS:
+			case XOR:
+			case BINARY_AND:
+			case BINARY_OR:
+			case AND:
+			case OR:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ARITHMETIC_OPERATOR);
+			case TILDE:
+			case NOT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_UNARY_OPERATOR);
 			default:
 				return super.getSpacesCountBefore();
 		}
-
 	}
 
 	/*
@@ -98,18 +138,60 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 	{
 		if (isUnary)
 		{
-			// TODO - prefs
-			return 0;
+			return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_UNARY_OPERATOR);
 		}
-		// TODO - Add the rest of the operators
 		switch (nodeType)
 		{
-			case ASSIGNMENT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT);
-			case DOT:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_DOT);
 			case ARROW:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARROW);
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARROW_OPERATOR);
+			case STATIC_INVOCATION:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_STATIC_INVOCATION_OPERATOR);
+			case KEY_VALUE:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_KEY_VALUE_OPERATOR);
+			case ASSIGNMENT:
+			case DOT_EQUAL:
+			case PLUS_EQUAL:
+			case MINUS_EQUAL:
+			case MULTIPLY_EQUAL:
+			case DIVIDE_EQUAL:
+			case OR_EQUAL:
+			case AND_EQUAL:
+			case TILDE_EQUAL:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT_OPERATOR);
+			case EQUAL:
+			case TYPE_EQUAL:
+			case NOT_EQUAL:
+			case NOT_TYPE_EQUAL:
+			case GREATER_THAN:
+			case LESS_THAN:
+			case GREATER_THAN_OR_EQUAL:
+			case LESS_THAN_OR_EQUAL:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_RELATIONAL_OPERATORS);
+			case DOT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CONCATENATION_OPERATOR);
+			case CONDITIONAL:
+			case CONDITIONAL_COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CONDITIONAL_OPERATOR);
+			case POSTFIX_DECREMENT:
+			case POSTFIX_INCREMENT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_POSTFIX_OPERATOR);
+			case PREFIX_DECREMENT:
+			case PREFIX_INCREMENT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_PREFIX_OPERATOR);
+			case MULTIPLY:
+			case PLUS:
+			case MINUS:
+			case DIVIDE:
+			case MODULUS:
+			case XOR:
+			case BINARY_AND:
+			case BINARY_OR:
+			case AND:
+			case OR:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARITHMETIC_OPERATOR);
+			case TILDE:
+			case NOT:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_UNARY_OPERATOR);
 			default:
 				return super.getSpacesCountBefore();
 		}

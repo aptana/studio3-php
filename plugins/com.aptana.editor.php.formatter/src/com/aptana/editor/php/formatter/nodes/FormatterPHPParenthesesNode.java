@@ -34,6 +34,7 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
 
@@ -80,12 +81,24 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	@Override
 	public int getSpacesCountBefore()
 	{
-		// TODO: add a preference for that.
 		if (isAsWrapper())
 		{
 			return 1;
 		}
-		return 0;
+		return getInt(PHPFormatterConstants.SPACES_BEFORE_PARENTHESES);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	 */
+	@Override
+	public int getSpacesCountAfter()
+	{
+		if (isAsWrapper())
+		{
+			return 0;
+		}
+		return getInt(PHPFormatterConstants.SPACES_AFTER_PARENTHESES);
 	}
 
 	/*

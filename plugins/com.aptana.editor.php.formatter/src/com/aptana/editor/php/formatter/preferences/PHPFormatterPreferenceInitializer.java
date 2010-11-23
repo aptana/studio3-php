@@ -35,6 +35,7 @@
 package com.aptana.editor.php.formatter.preferences;
 
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.*;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -85,24 +86,41 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.put(BRACE_POSITION_BLOCK_IN_SWITCH, CodeFormatterConstants.SAME_LINE);
 		store.put(BRACE_POSITION_TYPE_DECLARATION, CodeFormatterConstants.SAME_LINE);
 		store.put(BRACE_POSITION_FUNCTION_DECLARATION, CodeFormatterConstants.SAME_LINE);
-		store.putInt(SPACES_BEFORE_METHOD_INVOCATION, 0);
-		store.putInt(SPACES_AFTER_METHOD_INVOCATION, 0);
-		store.putInt(SPACES_BEFORE_STATIC_INVOCATION, 0);
-		store.putInt(SPACES_AFTER_STATIC_INVOCATION, 0);
-		store.putInt(SPACES_BEFORE_ASSIGNMENT, 1);
-		store.putInt(SPACES_AFTER_ASSIGNMENT, 1);
+		store.putInt(SPACES_BEFORE_STATIC_INVOCATION_OPERATOR, 0);
+		store.putInt(SPACES_AFTER_STATIC_INVOCATION_OPERATOR, 0);
+		store.putInt(SPACES_BEFORE_ASSIGNMENT_OPERATOR, 1);
+		store.putInt(SPACES_AFTER_ASSIGNMENT_OPERATOR, 1);
 		store.putInt(SPACES_BEFORE_COMMAS, 0);
 		store.putInt(SPACES_AFTER_COMMAS, 1);
-		store.putInt(SPACES_BEFORE_CASE_COLON, 1);
-		store.putInt(SPACES_AFTER_CASE_COLON, 1);
-		store.putInt(SPACES_BEFORE_COLON, 1);
-		store.putInt(SPACES_AFTER_COLON, 1);
+		store.putInt(SPACES_BEFORE_CASE_COLON_OPERATOR, 1);
+		store.putInt(SPACES_AFTER_CASE_COLON_OPERATOR, 1);
 		store.putInt(SPACES_BEFORE_SEMICOLON, 0);
 		store.putInt(SPACES_AFTER_SEMICOLON, 1);
-		store.putInt(SPACES_BEFORE_DOT, 0);
-		store.putInt(SPACES_AFTER_DOT, 0);
-		store.putInt(SPACES_BEFORE_ARROW, 1);
-		store.putInt(SPACES_AFTER_ARROW, 1);
+		store.putInt(SPACES_BEFORE_CONCATENATION_OPERATOR, 1);
+		store.putInt(SPACES_AFTER_CONCATENATION_OPERATOR, 1);
+		store.putInt(SPACES_BEFORE_ARROW_OPERATOR, 1);
+		store.putInt(SPACES_AFTER_ARROW_OPERATOR, 1);
+		store.putInt(SPACES_BEFORE_KEY_VALUE_OPERATOR, 1);
+		store.putInt(SPACES_AFTER_KEY_VALUE_OPERATOR, 1);
+		store.putInt(SPACES_BEFORE_RELATIONAL_OPERATORS, 1);
+		store.putInt(SPACES_AFTER_RELATIONAL_OPERATORS, 1);
+		store.putInt(SPACES_BEFORE_CONDITIONAL_OPERATOR, 1);
+		store.putInt(SPACES_AFTER_CONDITIONAL_OPERATOR, 1);
+		store.putInt(SPACES_BEFORE_POSTFIX_OPERATOR, 0);
+		store.putInt(SPACES_AFTER_POSTFIX_OPERATOR, 0);
+		store.putInt(SPACES_BEFORE_PREFIX_OPERATOR, 0);
+		store.putInt(SPACES_AFTER_PREFIX_OPERATOR, 0);
+		store.putInt(SPACES_BEFORE_ARITHMETIC_OPERATOR, 1);
+		store.putInt(SPACES_AFTER_ARITHMETIC_OPERATOR, 1);
+		store.putInt(SPACES_BEFORE_UNARY_OPERATOR, 0);
+		store.putInt(SPACES_AFTER_UNARY_OPERATOR, 0);
+		store.putInt(SPACES_BEFORE_PARENTHESES, 0);
+		store.putInt(SPACES_AFTER_PARENTHESES, 0);
+		// Not for UI customization
+		store.putInt(SPACES_BEFORE_NAMESPACE_SEPARATOR, 1);
+		store.putInt(SPACES_AFTER_NAMESPACE_SEPARATOR, 0);
+		store.putInt(SPACES_BEFORE_COLON, 0);
+		store.putInt(SPACES_AFTER_COLON, 1);
 		try
 		{
 			store.flush();

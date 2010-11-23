@@ -87,13 +87,15 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 		switch (nodeType)
 		{
 			case CASE_COLON:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CASE_COLON);
-			case COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CASE_COLON_OPERATOR);
+			case GOTO_COLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COLON);
 			case COMMA:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COMMAS);
 			case SEMICOLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_SEMICOLON);
+			case NAMESPACE_SEPARATOR:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_NAMESPACE_SEPARATOR);
 			default:
 				return super.getSpacesCountBefore();
 		}
@@ -110,13 +112,15 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 		switch (nodeType)
 		{
 			case CASE_COLON:
-				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CASE_COLON);
-			case COLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CASE_COLON_OPERATOR);
+			case GOTO_COLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COLON);
 			case COMMA:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COMMAS);
 			case SEMICOLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_SEMICOLON);
+			case NAMESPACE_SEPARATOR:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_NAMESPACE_SEPARATOR);
 			default:
 				return super.getSpacesCountBefore();
 		}

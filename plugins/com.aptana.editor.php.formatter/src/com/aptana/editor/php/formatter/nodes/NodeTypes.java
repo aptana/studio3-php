@@ -47,7 +47,6 @@ public class NodeTypes
 	 */
 	public enum TypePunctuation
 	{
-		COLON(":"), //$NON-NLS-1$
 		CASE_COLON(":"), //$NON-NLS-1$
 		GOTO_COLON(":"), //$NON-NLS-1$
 		SEMICOLON(";"), //$NON-NLS-1$
@@ -78,38 +77,43 @@ public class NodeTypes
 	{
 		ASSIGNMENT("="), //$NON-NLS-1$
 		DOT("."), //$NON-NLS-1$
-		BIGGER(">"), //$NON-NLS-1$
-		SMALLER("<"), //$NON-NLS-1$
-		BIGGER_OR_EQUAL(">="), //$NON-NLS-1$
-		SMALLER_OR_EQUAL("<="), //$NON-NLS-1$
+		GREATER_THAN(">"), //$NON-NLS-1$
+		LESS_THAN("<"), //$NON-NLS-1$
+		GREATER_THAN_OR_EQUAL(">="), //$NON-NLS-1$
+		LESS_THAN_OR_EQUAL("<="), //$NON-NLS-1$
 		DOT_EQUAL(".="), //$NON-NLS-1$
 		PLUS_EQUAL("+="), //$NON-NLS-1$
 		MINUS_EQUAL("-="), //$NON-NLS-1$
 		MULTIPLY_EQUAL("*="), //$NON-NLS-1$
 		DIVIDE_EQUAL("/="), //$NON-NLS-1$
+		TILDE_EQUAL("~="), //$NON-NLS-1$
 		MULTIPLY("*"), //$NON-NLS-1$
 		PLUS("+"), //$NON-NLS-1$
 		MINUS("-"), //$NON-NLS-1$
 		DIVIDE("/"), //$NON-NLS-1$
-		INCREMENT("++"), //$NON-NLS-1$
-		DECREMENT("--"), //$NON-NLS-1$
+		MODULUS("%"), //$NON-NLS-1$
+		POSTFIX_INCREMENT("++"), //$NON-NLS-1$
+		PREFIX_INCREMENT("++"), //$NON-NLS-1$
+		POSTFIX_DECREMENT("--"), //$NON-NLS-1$
+		PREFIX_DECREMENT("--"), //$NON-NLS-1$
 		OR("||"), //$NON-NLS-1$
 		AND("&&"), //$NON-NLS-1$
 		XOR("^"), //$NON-NLS-1$
 		BINARY_OR("|"), //$NON-NLS-1$
 		BINARY_AND("&"), //$NON-NLS-1$
-		BINARY_OR_EQUAL("|="), //$NON-NLS-1$
-		BINARY_AND_EQUAL("&="), //$NON-NLS-1$
-		EQUALITY("=="), //$NON-NLS-1$
+		OR_EQUAL("|="), //$NON-NLS-1$
+		AND_EQUAL("&="), //$NON-NLS-1$
+		EQUAL("=="), //$NON-NLS-1$
 		TYPE_EQUAL("==="), //$NON-NLS-1$
-		TILDA("~"), //$NON-NLS-1$
+		TILDE("~"), //$NON-NLS-1$
 		NOT("!"), //$NON-NLS-1$
 		NOT_EQUAL("!="), //$NON-NLS-1$
 		NOT_TYPE_EQUAL("!=="), //$NON-NLS-1$
 		ARROW("->"), //$NON-NLS-1$
 		STATIC_INVOCATION("::"), //$NON-NLS-1$
 		KEY_VALUE("=>"), //$NON-NLS-1$
-		CONDITIONAL("?"); //$NON-NLS-1$
+		CONDITIONAL("?"), //$NON-NLS-1$
+		CONDITIONAL_COLON(":"); //$NON-NLS-1$
 
 		String name;
 

@@ -62,6 +62,7 @@ public class PHPFormatterModifyDialog extends FormatterModifyDialog
 		addTabPage(Messages.PHPFormatterModifyDialog_intentationTabName, new PHPFormatterIndentationTabPage(this));
 		addTabPage(Messages.PHPFormatterModifyDialog_blankLinesTabName, new PHPFormatterBlankLinesPage(this));
 		addTabPage(Messages.PHPFormatterModifyDialog_bracesTabName, new PHPFormatterBracesPage(this));
+		addTabPage(Messages.PHPFormatterModifyDialog_whiteSpacesTabName, new PHPFormatterWhiteSpacesPage(this));
 		addTabPage(Messages.PHPFormatterModifyDialog_commentsTabName, new PHPFormatterCommentsPage(this));
 	}
 }

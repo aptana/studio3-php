@@ -80,7 +80,7 @@ public class FormatterPHPBreakNode extends FormatterBlockWithBeginNode
 		boolean isDeDenting = false;
 		if (parentNode.getType() == ASTNode.SWITCH_CASE)
 		{
-			if (!getDocument().getBoolean(PHPFormatterConstants.INDENT_BREAK_IN_CASE))
+			if (!getDocument().getBoolean(PHPFormatterConstants.INDENT_BREAK_IN_CASE) && getDocument().getBoolean(PHPFormatterConstants.INDENT_CASE_BODY))
 			{
 				context.decIndent();
 				isDeDenting = true;
