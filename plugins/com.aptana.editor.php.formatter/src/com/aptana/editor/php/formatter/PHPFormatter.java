@@ -143,7 +143,22 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			ITypedRegion partition = document.getPartition(offset);
 			if (partition != null && partition.getOffset() == offset)
 			{
-				return super.detectIndentationLevel(document, offset);
+				int indentationLevel = super.detectIndentationLevel(document, offset);
+				// Do some checks to see if we need to return a reduced indentation level.
+				// In php, we don't want the indent addition at the beginning.
+				char onOffset = document.getChar(offset);
+				if (onOffset == '\r')
+				{
+					if (document.getChar(offset + 1) != '\n')
+					{
+						return indentationLevel - 1;
+					}
+				}
+				else if (onOffset == '\n')
+				{
+					return indentationLevel - 1;
+				}
+				return indentationLevel;
 			}
 			String source = document.get();
 			PHPParser parser = (PHPParser) checkoutParser();
