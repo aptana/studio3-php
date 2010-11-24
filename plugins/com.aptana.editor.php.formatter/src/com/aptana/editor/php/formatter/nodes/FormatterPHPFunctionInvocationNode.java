@@ -80,6 +80,9 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 			case ASTNode.ARRAY_ACCESS:
 			case ASTNode.LIST_VARIABLE:
 			case ASTNode.REFERENCE:
+			case ASTNode.FOR_STATEMENT:
+			case ASTNode.WHILE_STATEMENT:
+			case ASTNode.FOR_EACH_STATEMENT:
 				return true;
 			default:
 				return false;
