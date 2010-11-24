@@ -127,6 +127,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPImplicitBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPKeywordNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPLineStartingNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPLoopNode;
@@ -199,8 +200,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 		else
 		{
-			// Just visit the children
-			trueStatement.accept(this);
+			// Wrap with an empty block node and visit the children
+			wrapInImplicitBlock(trueStatement);
 		}
 		builder.checkedPop(conditionNode, trueStatement.getEnd());
 
@@ -213,7 +214,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// 'elseif' word.
 			int trueBlockEnd = trueStatement.getEnd();
 			int falseBlockStart = falseStatement.getStart();
-			String segment = document.get(trueBlockEnd + 1, falseBlockStart);
+			String segment = (trueBlockEnd != falseBlockStart) ? document.get(trueBlockEnd + 1, falseBlockStart)
+					: StringUtil.EMPTY;
 			int elsePos = segment.toLowerCase().indexOf("else"); //$NON-NLS-1$
 			boolean isElseIf = (falseStatement.getType() == ASTNode.IF_STATEMENT);
 			boolean isConnectedElsif = (isElseIf && elsePos < 0);
@@ -247,8 +249,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				}
 				else
 				{
-					// Just visit the children
-					falseStatement.accept(this);
+					// Wrap with an empty block node and visit the children
+					wrapInImplicitBlock(falseStatement);
 				}
 			}
 			if (elseNode != null)
@@ -2081,6 +2083,24 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			builder.push(punctuationNode);
 			builder.checkedPop(punctuationNode, -1);
 		}
+	}
+
+	/**
+	 * Wrap a given node in an implicit block node and visit the node to insert it as a child of that block.
+	 * 
+	 * @param node
+	 *            The node to wrap and visit.
+	 */
+	private void wrapInImplicitBlock(ASTNode node)
+	{
+		FormatterPHPImplicitBlockNode emptyBlock = new FormatterPHPImplicitBlockNode(document, false, false, 0);
+		int start = node.getStart();
+		int end = node.getEnd();
+		emptyBlock.setBegin(builder.createTextNode(document, start, start));
+		builder.push(emptyBlock);
+		node.accept(this);
+		builder.checkedPop(emptyBlock, -1);
+		emptyBlock.setEnd(builder.createTextNode(document, end, end));
 	}
 
 	/**
