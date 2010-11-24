@@ -94,6 +94,8 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COMMAS);
 			case SEMICOLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_SEMICOLON);
+			case FOR_SEMICOLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_FOR_SEMICOLON);
 			case NAMESPACE_SEPARATOR:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_NAMESPACE_SEPARATOR);
 			default:
@@ -119,6 +121,8 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COMMAS);
 			case SEMICOLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_SEMICOLON);
+			case FOR_SEMICOLON:
+				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_FOR_SEMICOLON);
 			case NAMESPACE_SEPARATOR:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_NAMESPACE_SEPARATOR);
 			default:

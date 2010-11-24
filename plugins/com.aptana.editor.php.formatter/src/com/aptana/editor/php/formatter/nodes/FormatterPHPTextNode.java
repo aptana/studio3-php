@@ -47,6 +47,7 @@ public class FormatterPHPTextNode extends FormatterBlockWithBeginNode
 
 	private boolean shouldConsumePreviousSpaces;
 	private int spacesCountBefore;
+	private int spacesCountAfter;
 
 	/**
 	 * @param document
@@ -71,10 +72,12 @@ public class FormatterPHPTextNode extends FormatterBlockWithBeginNode
 	 * @param shouldConsumePreviousSpaces
 	 * @param spacesCountBefore
 	 */
-	public FormatterPHPTextNode(IFormatterDocument document, boolean shouldConsumePreviousSpaces, int spacesCountBefore)
+	public FormatterPHPTextNode(IFormatterDocument document, boolean shouldConsumePreviousSpaces,
+			int spacesCountBefore, int spacesCountAfter)
 	{
 		this(document, shouldConsumePreviousSpaces);
 		this.spacesCountBefore = spacesCountBefore;
+		this.spacesCountAfter = spacesCountAfter;
 	}
 
 	/*
@@ -96,4 +99,15 @@ public class FormatterPHPTextNode extends FormatterBlockWithBeginNode
 	{
 		return spacesCountBefore;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	 */
+	@Override
+	public int getSpacesCountAfter()
+	{
+		return spacesCountAfter;
+	}
+
 }

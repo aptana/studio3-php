@@ -130,7 +130,6 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPImplicitBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPKeywordNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPLineStartingNode;
-import com.aptana.editor.php.formatter.nodes.FormatterPHPLoopNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPNamespaceBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPNonBlockedWhileNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPOperatorNode;
@@ -201,7 +200,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		else
 		{
 			// Wrap with an empty block node and visit the children
-			wrapInImplicitBlock(trueStatement);
+			wrapInImplicitBlock(trueStatement, false);
 		}
 		builder.checkedPop(conditionNode, trueStatement.getEnd());
 
@@ -250,7 +249,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				else
 				{
 					// Wrap with an empty block node and visit the children
-					wrapInImplicitBlock(falseStatement);
+					wrapInImplicitBlock(falseStatement, false);
 				}
 			}
 			if (elseNode != null)
@@ -739,9 +738,34 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ForStatement forStatement)
 	{
+		List<Expression> initializers = forStatement.initializers();
+		List<Expression> conditions = forStatement.conditions();
+		List<Expression> updaters = forStatement.updaters();
 		Statement body = forStatement.getBody();
-		int declarationEnd = builder.locateCharBackward(document, ')', body.getStart()) + 1;
-		visitCommonLoopBlock(forStatement, declarationEnd, forStatement.getBody());
+		// visit the 'for' keyword
+		int declarationEndOffset = forStatement.getStart() + 3;
+		visitCommonDeclaration(forStatement, declarationEndOffset, true);
+		// visit the elements in the parentheses
+		int expressionEndOffset = (body != null) ? body.getStart() : forStatement.getEnd();
+		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
+		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
+		builder.push(parenthesesNode);
+		// visit the initializers, the conditions and the updaters.
+		// between them, push the semicolons
+		visitNodeLists(initializers, null, null, TypePunctuation.COMMA);
+		int semicolonOffset = builder.locateCharForward(document, ';', declarationEndOffset);
+		pushTypePunctuation(TypePunctuation.FOR_SEMICOLON, semicolonOffset);
+		visitNodeLists(conditions, null, null, TypePunctuation.COMMA);
+		semicolonOffset = builder.locateCharForward(document, ';', semicolonOffset + 1);
+		pushTypePunctuation(TypePunctuation.FOR_SEMICOLON, semicolonOffset);
+		visitNodeLists(updaters, null, null, TypePunctuation.COMMA);
+		// close the parentheses node.
+		builder.checkedPop(parenthesesNode, -1);
+		parenthesesNode.setEnd(builder.createTextNode(document, closeParen, closeParen + 1));
+		// in case we have a 'body', visit it.
+		commonVisitBlockBody(forStatement, body);
 		return false;
 	}
 
@@ -753,9 +777,43 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ForEachStatement forEachStatement)
 	{
-		int declarationEnd = forEachStatement.getStatement().getStart();
-		declarationEnd = builder.locateCharBackward(document, ')', declarationEnd) + 1;
-		visitCommonLoopBlock(forEachStatement, declarationEnd, forEachStatement.getStatement());
+		Expression expression = forEachStatement.getExpression();
+		Expression key = forEachStatement.getKey(); // the 'key' is optional
+		Expression value = forEachStatement.getValue();
+		Statement body = forEachStatement.getStatement();
+		// visit the 'foreach' keyword
+		int declarationEndOffset = forEachStatement.getStart() + 7;
+		visitCommonDeclaration(forEachStatement, declarationEndOffset, true);
+		// visit the elements in the parentheses
+		int expressionEndOffset = (body != null) ? body.getStart() : forEachStatement.getEnd();
+		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
+		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
+		builder.push(parenthesesNode);
+		// push the expression
+		visitTextNode(expression, true, 0);
+		// add the 'as' node (it's between the expression and the key/value)
+		int endLookupForAs = (key != null) ? key.getStart() : value.getStart();
+		String txt = document.get(expression.getEnd(), endLookupForAs);
+		int asStart = expression.getEnd() + txt.toLowerCase().indexOf("as"); //$NON-NLS-1$
+		visitTextNode(asStart, asStart + 2, true, 1, 1);
+		// push the key and the value.
+		if (key != null)
+		{
+			visitLeftRightExpression(null, key, value, TypeOperator.KEY_VALUE.toString());
+		}
+		else
+		{
+			// push only the value as a text node
+			visitTextNode(value, true, 1);
+		}
+		// close the parentheses node.
+		builder.checkedPop(parenthesesNode, -1);
+		parenthesesNode.setEnd(builder.createTextNode(document, closeParen, closeParen + 1));
+
+		// in case we have a 'body', visit it.
+		commonVisitBlockBody(forEachStatement, body);
 		return false;
 	}
 
@@ -767,9 +825,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(WhileStatement whileStatement)
 	{
-		int declarationEnd = whileStatement.getCondition().getEnd();
-		declarationEnd = builder.locateCharForward(document, ')', declarationEnd) + 1;
-		visitCommonLoopBlock(whileStatement, declarationEnd, whileStatement.getBody());
+		visitCommonLoopBlock(whileStatement, whileStatement.getStart() + 5, whileStatement.getBody(), whileStatement
+				.getCondition());
 		return false;
 	}
 
@@ -784,7 +841,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		Statement body = doStatement.getBody();
 		// First, push the 'do' declaration node and its body
-		visitCommonLoopBlock(doStatement, doStatement.getStart() + 2, body);
+		visitCommonLoopBlock(doStatement, doStatement.getStart() + 2, body, null);
 		// now deal with the 'while' condition part. we need to include the word 'while' that appears
 		// somewhere between the block-end and the condition start.
 		// We wrap this node as a begin-end node that will hold the condition internals as children
@@ -1780,28 +1837,39 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param declarationEndOffset
 	 * @param body
 	 */
-	private void visitCommonLoopBlock(ASTNode node, int declarationEndOffset, Statement body)
+	private void visitCommonLoopBlock(ASTNode node, int declarationEndOffset, Statement body, ASTNode condition)
+	{
+		visitCommonDeclaration(node, declarationEndOffset, true);
+		// if we have conditions, visit them as well
+		if (condition != null)
+		{
+			int conditionEnd = (body != null) ? body.getStart() : node.getEnd();
+			pushNodeInParentheses('(', ')', declarationEndOffset, conditionEnd, condition);
+		}
+		// visit the body
+		commonVisitBlockBody(node, body);
+	}
+
+	/**
+	 * A common visit for a body ASTNode, which can be a Block or a different statement that will be wrapped in an
+	 * implicit block node.
+	 * 
+	 * @param parent
+	 * @param body
+	 */
+	private void commonVisitBlockBody(ASTNode parent, ASTNode body)
 	{
 		boolean hasBlockedBody = (body != null && body.getType() == ASTNode.BLOCK);
 		boolean emptyBody = (body != null && body.getType() == ASTNode.EMPTY_STATEMENT);
-		visitCommonDeclaration(node, declarationEndOffset, hasBlockedBody);
 		if (hasBlockedBody)
 		{
-			visitBlockNode((Block) body, node, true);
+			visitBlockNode((Block) body, parent, true);
 		}
 		else if (body != null)
 		{
 			if (!emptyBody)
 			{
-				// wrap the body with a loop node
-				FormatterPHPLoopNode loopNode = new FormatterPHPLoopNode(document, false);
-				int start = body.getStart();
-				int end = body.getEnd();
-				loopNode.setBegin(builder.createTextNode(document, start, start));
-				builder.push(loopNode);
-				body.accept(this);
-				builder.checkedPop(loopNode, end);
-				loopNode.setEnd(builder.createTextNode(document, end, end));
+				wrapInImplicitBlock(body, true);
 			}
 			else
 			{
@@ -1839,8 +1907,24 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void visitTextNode(int startOffset, int endOffset, boolean consumePreviousWhitespaces, int spacesCountBefore)
 	{
+		visitTextNode(startOffset, endOffset, consumePreviousWhitespaces, spacesCountBefore, 0);
+	}
+
+	/**
+	 * A simple visit and push of a node that pushes a PHP text node which consumes any white-spaces before that node by
+	 * request.
+	 * 
+	 * @param startOffset
+	 * @param endOffset
+	 * @param consumePreviousWhitespaces
+	 * @param spacesCountBefore
+	 * @param spacesCountAfter
+	 */
+	private void visitTextNode(int startOffset, int endOffset, boolean consumePreviousWhitespaces,
+			int spacesCountBefore, int spacesCountAfter)
+	{
 		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document, consumePreviousWhitespaces,
-				spacesCountBefore);
+				spacesCountBefore, spacesCountAfter);
 		textNode.setBegin(builder.createTextNode(document, startOffset, endOffset));
 		builder.push(textNode);
 		builder.checkedPop(textNode, endOffset);
@@ -1983,7 +2067,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void pushSpaceConsumingNode(int offset)
 	{
-		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document, true, 0);
+		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document, true, 0, 0);
 		textNode.setBegin(builder.createTextNode(document, offset, offset));
 		builder.push(textNode);
 		builder.checkedPop(textNode, offset);
@@ -2090,10 +2174,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * 
 	 * @param node
 	 *            The node to wrap and visit.
+	 * @param indent
 	 */
-	private void wrapInImplicitBlock(ASTNode node)
+	private void wrapInImplicitBlock(ASTNode node, boolean indent)
 	{
-		FormatterPHPImplicitBlockNode emptyBlock = new FormatterPHPImplicitBlockNode(document, false, false, 0);
+		FormatterPHPImplicitBlockNode emptyBlock = new FormatterPHPImplicitBlockNode(document, false, indent, 0);
 		int start = node.getStart();
 		int end = node.getEnd();
 		emptyBlock.setBegin(builder.createTextNode(document, start, start));

@@ -85,6 +85,7 @@ public class Messages extends NLS
 	public static String PHPFormatterWhiteSpacesPage_assignments;
 	public static String PHPFormatterWhiteSpacesPage_before;
 	public static String PHPFormatterWhiteSpacesPage_caseColon;
+	public static String PHPFormatterWhiteSpacesPage_semicolonsInFor;
 	public static String PHPFormatterWhiteSpacesPage_parentheses;
 	public static String PHPFormatterWhiteSpacesPage_commas;
 	public static String PHPFormatterWhiteSpacesPage_concatenationOperator;

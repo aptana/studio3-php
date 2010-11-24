@@ -2,6 +2,9 @@
 /**
  * White Spaces...
  */
+for($i = 0, $j = 0; $i < 8 && $j > 0; $i++, --$j) {
+    echo $i . $j;
+}
 $a = array(1, 2, 3, 4 => 'four');
 if($a[1] >= 5) {
     switch ($a[2]) {

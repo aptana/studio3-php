@@ -93,6 +93,14 @@ public class PHPFormatterWhiteSpacesPage extends FormatterModifyTabPage
 				Messages.PHPFormatterWhiteSpacesPage_before);
 		manager.createNumber(punctuationGroup, PHPFormatterConstants.SPACES_AFTER_PARENTHESES,
 				Messages.PHPFormatterWhiteSpacesPage_after);
+		
+		// Semicolon in 'for' statements
+		label = new Label(punctuationGroup, SWT.NONE);
+		label.setText(Messages.PHPFormatterWhiteSpacesPage_semicolonsInFor);
+		manager.createNumber(punctuationGroup, PHPFormatterConstants.SPACES_BEFORE_FOR_SEMICOLON,
+				Messages.PHPFormatterWhiteSpacesPage_before);
+		manager.createNumber(punctuationGroup, PHPFormatterConstants.SPACES_AFTER_FOR_SEMICOLON,
+				Messages.PHPFormatterWhiteSpacesPage_after);
 
 		// Case colons
 		label = new Label(punctuationGroup, SWT.NONE);

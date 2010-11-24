@@ -50,8 +50,9 @@ public class NodeTypes
 		CASE_COLON(":"), //$NON-NLS-1$
 		GOTO_COLON(":"), //$NON-NLS-1$
 		SEMICOLON(";"), //$NON-NLS-1$
+		FOR_SEMICOLON(";"), //$NON-NLS-1$
 		COMMA(","), //$NON-NLS-1$
-		NAMESPACE_SEPARATOR("\\"); //$NON-NLS-1$
+		NAMESPACE_SEPARATOR("\\");//$NON-NLS-1$
 
 		String name;
 
