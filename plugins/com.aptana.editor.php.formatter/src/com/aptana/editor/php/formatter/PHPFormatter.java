@@ -256,7 +256,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 							// Will be trimmed to:
 							// <-- new-line
 							// function foo() {}
-							;
 							if (isSelection)
 							{
 								output = leftTrim(output.trim().substring(PHP_PREFIX.length()), spacesCount);
