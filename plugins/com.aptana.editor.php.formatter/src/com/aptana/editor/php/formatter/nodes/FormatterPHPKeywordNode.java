@@ -68,7 +68,7 @@ public class FormatterPHPKeywordNode extends FormatterPHPTextNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		return isFirstInLine;
+		return true;
 	}
 
 	/*
@@ -91,6 +91,6 @@ public class FormatterPHPKeywordNode extends FormatterPHPTextNode
 	 */
 	public int getSpacesCountAfter()
 	{
-		return 1;
+		return (this.getStartOffset() == this.getEndOffset()) ? 0 : 1;
 	}
 }

@@ -35,6 +35,7 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
@@ -76,12 +77,6 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		// To change this behavior, it's recommended to create a designated subclass and override this method to return
-		// the value set in the preferences.
-		// if (node instanceof JSBinaryOperatorNode)
-		// {
-		// return false;
-		// }
 		if (isPartOfExpression(node))
 		{
 			return false;
@@ -109,7 +104,7 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 	 * @param node
 	 * @return
 	 */
-	public static boolean isPartOfExpression(ASTNode node)
+	public boolean isPartOfExpression(ASTNode node)
 	{
 		if (node == null)
 		{
@@ -122,8 +117,9 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 			case ASTNode.RETURN_STATEMENT:
 			case ASTNode.GOTO_STATEMENT:
 			case ASTNode.CONDITIONAL_EXPRESSION:
-			case ASTNode.METHOD_DECLARATION:
 				return true;
+			case ASTNode.METHOD_DECLARATION:
+				return node.getStart() != this.node.getStart();
 		}
 		return false;
 	}

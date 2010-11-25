@@ -1085,8 +1085,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		FunctionDeclaration function = methodDeclaration.getFunction();
 		visitModifiers(methodDeclaration, function);
-		// return true to have a continuous visit of the child function.
-		return true;
+		function.accept(this);
+		return false;
 	}
 
 	/*
