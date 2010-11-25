@@ -35,7 +35,6 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
