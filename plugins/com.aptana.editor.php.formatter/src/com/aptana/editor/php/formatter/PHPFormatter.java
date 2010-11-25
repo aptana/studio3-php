@@ -42,7 +42,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.formatter.FormattingContextProperties;
+import org.eclipse.jface.text.formatter.IFormattingContext;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 import org.eclipse.text.edits.MultiTextEdit;
@@ -112,6 +115,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			SPACES_AFTER_NAMESPACE_SEPARATOR, SPACES_BEFORE_PARENTHESES, SPACES_AFTER_PARENTHESES,
 			SPACES_BEFORE_FOR_SEMICOLON, SPACES_AFTER_FOR_SEMICOLON };
 
+	// PHP basic prefix
+	private static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
 	// Regex patterns
 	private static Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
 	private static Pattern PHP_COMMENTS_PATTERN = Pattern.compile("((?s)(/\\*.*?\\*/))|(//.*|#.*)");//$NON-NLS-1$
@@ -132,9 +137,14 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	/**
 	 * Detects the indentation level.
 	 */
-	public int detectIndentationLevel(IDocument document, int offset)
+	public int detectIndentationLevel(IDocument document, int offset, boolean isSelection,
+			IFormattingContext formattingContext)
 	{
 		int indent = 0;
+		if (isSelection)
+		{
+			offset = ((IRegion) formattingContext.getProperty(FormattingContextProperties.CONTEXT_REGION)).getOffset();
+		}
 		try
 		{
 			// detect the indentation offset with the parser, only if the given offset is not the first one in the
@@ -197,11 +207,27 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * (non-Javadoc)
 	 * @see com.aptana.formatter.ui.IScriptFormatter#format(java.lang.String, int, int, int)
 	 */
-	public TextEdit format(String source, int offset, int length, int indentationLevel) throws FormatterException
+	public TextEdit format(String source, int offset, int length, int indentationLevel, boolean isSelection,
+			IFormattingContext context) throws FormatterException
 	{
-		int offsetIncludedOpenTag = Math.max(0, findOpenTagOffset(source, offset));
-		String input = source.substring(offsetIncludedOpenTag, offset + length);
-
+		int offsetIncludedOpenTag = offset;
+		String input;
+		int spacesCount = -1;
+		if (isSelection)
+		{
+			IRegion region = (IRegion) context.getProperty(FormattingContextProperties.CONTEXT_REGION);
+			offset = region.getOffset();
+			length = region.getLength();
+			// we need to prepend a <?php prefix to the input. Otherwise, the AST will not get generated.
+			input = source.substring(offset, offset + length);
+			spacesCount = countLeftWhitespaceChars(input);
+			input = PHP_PREFIX + input;
+		}
+		else
+		{
+			offsetIncludedOpenTag = Math.max(0, findOpenTagOffset(source, offset));
+			input = source.substring(offsetIncludedOpenTag, offset + length);
+		}
 		// We do not use a parse-state for the PHP, since we are just interested in the AST and do not want to update
 		// anything in the indexing.
 		try
@@ -215,7 +241,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
 						.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
-				final String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag);
+				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection);
 				if (output != null)
 				{
 					if (!input.equals(output))
@@ -230,13 +256,20 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 							// Will be trimmed to:
 							// <-- new-line
 							// function foo() {}
-							int inPHPOffset = 0;
-							Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
-							if (matcher.find())
+							;
+							if (isSelection)
 							{
-								inPHPOffset = matcher.end();
+								output = leftTrim(output.trim().substring(PHP_PREFIX.length()), spacesCount);
 							}
-							return new ReplaceEdit(offset, length, output.substring(inPHPOffset));
+							else
+							{
+								Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
+								if (matcher.find())
+								{
+									output = output.substring(matcher.end());
+								}
+							}
+							return new ReplaceEdit(offset, length, output);
 						}
 						else
 						{
@@ -370,7 +403,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * @return A formatted string
 	 * @throws Exception
 	 */
-	private String format(String input, IParseRootNode parseResult, int indentationLevel, int offset) throws Exception
+	private String format(String input, IParseRootNode parseResult, int indentationLevel, int offset,
+			boolean isSelection) throws Exception
 	{
 		final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 		final FormatterDocument document = createFormatterDocument(input, offset);
