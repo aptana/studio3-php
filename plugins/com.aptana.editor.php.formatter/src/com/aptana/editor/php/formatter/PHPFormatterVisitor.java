@@ -207,7 +207,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (!isEmptyFalseBlock)
 		{
 			// Construct the 'false' part if exist.
-			// Note that the JS parser does not provide us with the start offset of the 'else' keyword, so we need
+			// Note that the PHP parser does not provide us with the start offset of the 'else' keyword, so we need
 			// to locate it in between the end of the 'true' block and the begin of the 'false' block.
 			// However, in case we have an 'elseif' case, the offset of the false block points to the start of the
 			// 'elseif' word.

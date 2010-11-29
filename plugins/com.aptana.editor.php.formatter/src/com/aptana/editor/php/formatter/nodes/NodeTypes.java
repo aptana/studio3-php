@@ -34,6 +34,10 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A class that holds definitions for arbitrary node types, such as punctuation and operators types.
  * 
@@ -118,6 +122,20 @@ public class NodeTypes
 
 		String name;
 
+		private static Map<String, TypeOperator> OPERATORS_MAP;
+
+		/**
+		 * static initializer
+		 */
+		static
+		{
+			OPERATORS_MAP = new HashMap<String, TypeOperator>();
+			for (TypeOperator type : EnumSet.allOf(TypeOperator.class))
+			{
+				OPERATORS_MAP.put(type.toString(), type);
+			}
+		}
+
 		TypeOperator(String name)
 		{
 			this.name = name;
@@ -136,15 +154,7 @@ public class NodeTypes
 		 */
 		public static TypeOperator getTypeOperator(String operationString)
 		{
-			TypeOperator[] values = values();
-			for (TypeOperator operator : values)
-			{
-				if (operator.toString().equals(operationString))
-				{
-					return operator;
-				}
-			}
-			return null;
+			return OPERATORS_MAP.get(operationString);
 		}
 	};
 }

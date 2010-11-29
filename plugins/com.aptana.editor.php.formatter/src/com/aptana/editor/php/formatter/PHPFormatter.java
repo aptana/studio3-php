@@ -52,6 +52,7 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParser;
 import com.aptana.editor.php.internal.parser.nodes.PHPASTWrappingNode;
@@ -118,8 +119,9 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	// PHP basic prefix
 	private static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
 	// Regex patterns
-	private static Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
-	private static Pattern PHP_COMMENTS_PATTERN = Pattern.compile("((?s)(/\\*.*?\\*/))|(//.*|#.*)");//$NON-NLS-1$
+	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
+	private static final Pattern PHP_COMMENTS_PATTERN = Pattern.compile("((?s)(/\\*.*?\\*/))|(//.*|#.*)");//$NON-NLS-1$
+	private static final Pattern COMMENTS_STRIPPING_PATTERN = Pattern.compile("\\s|\\*|#|//"); //$NON-NLS-1$
 
 	private String lineSeparator;
 
@@ -128,7 +130,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * 
 	 * @param preferences
 	 */
-	protected PHPFormatter(String lineSeparator, Map<String, ? extends Object> preferences, String mainContentType)
+	protected PHPFormatter(String lineSeparator, Map<String, String> preferences, String mainContentType)
 	{
 		super(preferences, mainContentType);
 		this.lineSeparator = lineSeparator;
@@ -340,7 +342,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	private String stripComment(String comment)
 	{
-		return comment.replaceAll("\\s|\\*|#|//", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		return COMMENTS_STRIPPING_PATTERN.matcher(comment).replaceAll(StringUtil.EMPTY);
 	}
 
 	/**
@@ -353,12 +355,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	private int findOpenTagOffset(String source, int offset)
 	{
 		// We just look for the '<' char and that should cover all cases.
-		for (; offset >= 0; offset--)
+		int openOffset = source.lastIndexOf('<', offset);
+		if (openOffset > -1)
 		{
-			if (source.charAt(offset) == '<')
-			{
-				break;
-			}
+			return openOffset;
 		}
 		return offset;
 	}

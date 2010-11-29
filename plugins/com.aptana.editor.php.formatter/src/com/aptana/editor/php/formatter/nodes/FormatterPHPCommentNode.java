@@ -50,8 +50,8 @@ import com.aptana.formatter.nodes.FormatterCommentNode;
 public class FormatterPHPCommentNode extends FormatterCommentNode
 {
 
-	private final boolean isFirstline;
-	private final boolean isMultiLine;
+	private boolean isFirstline;
+	private boolean isMultiLine;
 
 	/**
 	 * Constructs a new formatter node for PHP comments
@@ -84,7 +84,7 @@ public class FormatterPHPCommentNode extends FormatterCommentNode
 		context.setComment(true);
 		if (getDocument().getBoolean(getWrappingKey()))
 		{
-			final boolean savedWrapping = context.isWrapping();
+			boolean savedWrapping = context.isWrapping();
 			context.setWrapping(true);
 			writeCommentLine(visitor, context, getStartOffset(), getEndOffset());
 			context.setWrapping(savedWrapping);

@@ -45,7 +45,7 @@ import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.ast.ParseRootNode;
 
 /**
- * JS formatter node builder.<br>
+ * PHP formatter node builder.<br>
  * This builder generates the formatter nodes that will then be processed by the {@link PHPFormatterNodeRewriter} to
  * produce the output for the code formatting process.
  * 

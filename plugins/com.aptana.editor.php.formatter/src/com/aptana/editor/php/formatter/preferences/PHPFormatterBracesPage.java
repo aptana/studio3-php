@@ -84,7 +84,7 @@ public class PHPFormatterBracesPage extends FormatterModifyTabPage
 	@Override
 	protected void createOptions(IFormatterControlManager manager, Composite parent)
 	{
-		Group group = SWTFactory.createGroup(parent, "Braces positions", 2, 1, //$NON-NLS-1$
+		Group group = SWTFactory.createGroup(parent, Messages.PHPFormatterBracesPage_group, 2, 1,
 				GridData.FILL_HORIZONTAL);
 		manager.createCombo(group, PHPFormatterConstants.BRACE_POSITION_BLOCK, Messages.PHPFormatterBracesPage_blocks,
 				bracesOptionKeys, bracesOptionNames);

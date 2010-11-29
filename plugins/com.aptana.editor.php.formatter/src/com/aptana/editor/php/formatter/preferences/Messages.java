@@ -47,6 +47,7 @@ public class Messages extends NLS
 	public static String PHPFormatterBlankLinesPage_blankLinesGroupLabel;
 	public static String PHPFormatterBlankLinesPage_existingBlankLinesGroupLabel;
 	public static String PHPFormatterBlankLinesPage_existingBlankLinesToPreserve;
+	public static String PHPFormatterBracesPage_group;
 	public static String PHPFormatterBracesPage_blocks;
 	public static String PHPFormatterBracesPage_caseStateMent;
 	public static String PHPFormatterBracesPage_classDeclaraion;
