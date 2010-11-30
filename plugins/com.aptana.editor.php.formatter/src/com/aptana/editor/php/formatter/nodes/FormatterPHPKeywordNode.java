@@ -68,7 +68,7 @@ public class FormatterPHPKeywordNode extends FormatterPHPTextNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		return true;
+		return this.isFirstInLine;
 	}
 
 	/*
