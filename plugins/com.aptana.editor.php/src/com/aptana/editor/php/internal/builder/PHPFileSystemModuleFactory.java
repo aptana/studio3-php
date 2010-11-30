@@ -97,7 +97,7 @@ public final class PHPFileSystemModuleFactory
 					}
 				}
 				// This should catch all the PHP associated file-types
-				return new FileSystemModule(resource, buildPath);
+				return new FileSystemModule(resource, buildPath, false);
 			}
 			// int pointIndex = name.indexOf('.');
 			//			

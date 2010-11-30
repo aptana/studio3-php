@@ -11,6 +11,7 @@ import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 
+import com.aptana.core.util.IOUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.model.ISourceModule;
@@ -138,12 +139,15 @@ public class PHPParser implements IParser
 	 */
 	public IParseRootNode parse(InputStream source) throws java.lang.Exception
 	{
-		Program ast = parseAST(new InputStreamReader(source));
+		String input = IOUtil.read(source);
+		Program ast = parseAST(new StringReader(input));
 		if (ast != null)
 		{
+			
 			IParseRootNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
 					.getEnd());
-			processChildren(ast, root, null);
+			// We have to pass in the source itself to support accurate PHPDoc display.
+			processChildren(ast, root, input);
 			return root;
 		}
 		return new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], 0, 0);

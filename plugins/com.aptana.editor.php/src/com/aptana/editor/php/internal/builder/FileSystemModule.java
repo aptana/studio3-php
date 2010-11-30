@@ -56,6 +56,7 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 	 */
 	private File file;
 	private PHPUniformResource uniformResource;
+	private boolean isInWorkspace;
 
 	/**
 	 * FileSystemModule constructor.
@@ -64,11 +65,15 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 	 *            - file.
 	 * @param buildPath
 	 *            - build path.
+	 * @param isInWorkspace
+	 *            - mark this file-system module as one that also exists in the workspace, but probably not in a PHP
+	 *            project.
 	 */
-	public FileSystemModule(File file, IBuildPath buildPath)
+	public FileSystemModule(File file, IBuildPath buildPath, boolean isInWorkspace)
 	{
 		super(buildPath, file.getAbsolutePath());
 		this.file = file;
+		this.isInWorkspace = isInWorkspace;
 	}
 
 	/**
@@ -153,5 +158,13 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 			uniformResource = new PHPUniformResource(file);
 		}
 		return uniformResource;
+	}
+
+	/**
+	 * @return the isInWorkspace
+	 */
+	public boolean isInWorkspace()
+	{
+		return isInWorkspace;
 	}
 }
