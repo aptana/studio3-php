@@ -116,6 +116,8 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 			case ASTNode.RETURN_STATEMENT:
 			case ASTNode.GOTO_STATEMENT:
 			case ASTNode.CONDITIONAL_EXPRESSION:
+			case ASTNode.SINGLE_FIELD_DECLARATION:
+			case ASTNode.ARRAY_CREATION:
 				return true;
 			case ASTNode.METHOD_DECLARATION:
 				return node.getStart() != this.node.getStart();
