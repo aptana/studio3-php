@@ -501,17 +501,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		}
 	}
 
-	/**
-	 * Returns true if the PHP editor's preferences are set to mark PHP elements occurrences.
-	 * 
-	 * @return True, if mark occurrences is on; False, in case it's off.
-	 */
-	public boolean isMarkingOccurrences()
-	{
-		IPreferenceStore store = PHPEplPlugin.getDefault().getPreferenceStore();
-		return store != null && store.getBoolean(PreferenceConstants.EDITOR_MARK_OCCURRENCES);
-	}
-
 	/*
 	 * Override this one to expose the progress monitor to the current package.
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#getProgressMonitor()

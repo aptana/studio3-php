@@ -31,6 +31,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
+import com.aptana.editor.common.preferences.IPreferenceConstants;
+
 public class MarkOccurrencesConfigurationBlock implements
 		IPreferenceConfigurationBlock {
 
@@ -71,7 +73,7 @@ public class MarkOccurrencesConfigurationBlock implements
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(
 				OverlayPreferenceStore.BOOLEAN,
-				PreferenceConstants.EDITOR_MARK_OCCURRENCES));
+				com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(
 				OverlayPreferenceStore.BOOLEAN,
 				PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES));
@@ -146,7 +148,7 @@ public class MarkOccurrencesConfigurationBlock implements
 		label = PHPUIMessages
 				.getString("MarkOccurrencesConfigurationBlock_markOccurrences"); //$NON-NLS-1$
 		Button master = addCheckBox(composite, label,
-				PreferenceConstants.EDITOR_MARK_OCCURRENCES, 0);
+				com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, 0);
 
 		addFiller(composite);
 

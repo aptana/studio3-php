@@ -106,7 +106,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	protected void initialize(IPreferenceStore store)
 	{
 		// Setup the Mark Occurrences
-		fMarkOccurrenceAnnotations = store.getBoolean(PreferenceConstants.EDITOR_MARK_OCCURRENCES);
+		fMarkOccurrenceAnnotations = store.getBoolean(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES);
 		fStickyOccurrenceAnnotations = store.getBoolean(PreferenceConstants.EDITOR_STICKY_OCCURRENCES);
 		fMarkTypeOccurrences = store.getBoolean(PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES);
 		fMarkMethodOccurrences = store.getBoolean(PreferenceConstants.EDITOR_MARK_METHOD_OCCURRENCES);
@@ -443,7 +443,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		{
 			newBooleanValue = Boolean.valueOf(newValue.toString()).booleanValue();
 		}
-		if (PreferenceConstants.EDITOR_MARK_OCCURRENCES.equals(property))
+		if (com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES.equals(property))
 		{
 			if (newBooleanValue != fMarkOccurrenceAnnotations)
 			{
