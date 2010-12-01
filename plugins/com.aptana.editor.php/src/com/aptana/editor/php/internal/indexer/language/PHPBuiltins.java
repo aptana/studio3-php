@@ -118,7 +118,7 @@ public final class PHPBuiltins
 		addSuperGlobal("$HTTP_SERVER_VARS", "$HTTP_SERVER_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
 		addSuperGlobal("$HTTP_COOKIE_VARS", "$HTTP_COOKIE_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
 		// ///////////////////////////////////
-		addKeyword("abstract", "abstract"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("abstract", "abstract", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("array", "array"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "ARRAY_CAST", "Array Cast"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		addKeyword("as", "as"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -149,7 +149,7 @@ public final class PHPBuiltins
 		addKeyword("exit", "exit"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("die", "EXIT", "exit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		addKeyword("extends", "extends"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("final", "final"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("final", "final", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("for", "for"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("foreach", "foreach"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("function", "function"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -161,7 +161,7 @@ public final class PHPBuiltins
 		addKeyword("include_once", "include_once"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("instanceof", "instanceof"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "INT_CAST", "Integer Cast"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		addKeyword("interface", "interface"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("interface", "interface", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("isset", "isset"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("list", "list"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("and", "LOGICAL_AND", "Logical and"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -170,9 +170,9 @@ public final class PHPBuiltins
 		addKeyword("new", "new"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "OBJECT_CAST", "Object Cast"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		addKeyword("print", "print"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("private", "private"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("protected", "protected"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("public", "public"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("private", "private", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("protected", "protected", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("public", "public", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("require", "require"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("require_once", "require_once"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("return", "return"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -183,7 +183,6 @@ public final class PHPBuiltins
 		addKeyword("try", "try"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("unset", "unset"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "UNSET_CAST", "Unset Case"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		addKeyword("use", "use"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("var", "var"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("while", "while"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("namespace", "namespace", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
