@@ -12,9 +12,7 @@ package com.aptana.editor.php.internal.indexer.language;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * 
  * @author Pavel Petrochenko
- *
  */
 public final class Messages extends NLS
 {
@@ -24,17 +22,22 @@ public final class Messages extends NLS
 	 * KEYWORD_LABEL
 	 */
 	public static String KEYWORD_LABEL;
-	
+
 	/**
 	 * KEYWORD_LABEL
 	 */
 	public static String SUPERGLOBAL_LABEL;
-	
+
 	/**
 	 * MAGIC_CONSTANT_LABEL
 	 */
 	public static String MAGIC_CONSTANT_LABEL;
-	
+
+	/**
+	 * MAGIC_METHOD_LABEL
+	 */
+	public static String MAGIC_METHOD_LABEL;
+
 	public static String PHPBuiltins_addingPhp4;
 
 	public static String PHPBuiltins_addingPhp5;
@@ -47,14 +50,14 @@ public final class Messages extends NLS
 	 * PREDEFINED_CONSTANT_LABEL
 	 */
 	public static String PREDEFINED_CONSTANT_LABEL;
-	
-	
+
 	private Messages()
 	{
-		
+
 	}
 
-	static{
-		NLS.initializeMessages(BUNDLE_NAME,Messages.class);
+	static
+	{
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 }
