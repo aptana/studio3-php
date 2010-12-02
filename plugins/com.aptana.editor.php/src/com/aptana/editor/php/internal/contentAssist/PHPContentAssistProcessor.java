@@ -2252,17 +2252,20 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// }
 		PHPOutlineItem outlineItem = new PHPOutlineItem(EMPTY_RANGE, node);
 		Image image = labelProvider.getImage(outlineItem);
-		String dispString = node.getNodeName();
+		final String dispString = node.getNodeName();
 		IContextInformation contextInformation = null;
 		IDocumentationResolver resolver = new IDocumentationResolver()
 		{
-
 			public String resolveDocumentation()
 			{
 				String additionalInfo = ContentAssistUtils.getDocumentation(node, name2);
 				return additionalInfo;
 			}
 
+			public String getProposalContent()
+			{
+				return dispString;
+			}
 		};
 		int objType = 0;
 		String fileOloc = EMPTY_STRING;
