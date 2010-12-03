@@ -11,8 +11,8 @@ package com.aptana.editor.php.internal.contentAssist;
 
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.EXTENDS_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.IMPLEMENTS_PROPOSAL_CONTEXT_TYPE;
-import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NEW_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NAMESPACE_PROPOSAL_CONTEXT_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NEW_PROPOSAL_CONTEXT_TYPE;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -435,6 +435,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 
 			// Foo::hello()->goodbye()...
+			if (content.charAt(start) == '(')
+			{
+				return EMPTY_PROPOSAL;
+			}
 			if (DEREFERENCE_OP.equals(callPath.get(1)))
 			{
 				return dereferencingCompletion(getIndex(content, start), callPath, start, getModule());
