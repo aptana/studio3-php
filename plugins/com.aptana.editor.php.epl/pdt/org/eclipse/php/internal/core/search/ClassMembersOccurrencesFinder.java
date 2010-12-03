@@ -12,6 +12,7 @@
 package org.eclipse.php.internal.core.search;
 
 import java.util.List;
+import java.util.Stack;
 
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org.eclipse.php.internal.core.ast.nodes.Assignment;
@@ -48,6 +49,7 @@ import com.aptana.editor.php.core.typebinding.ITypeBinding;
  */
 public class ClassMembersOccurrencesFinder extends AbstractOccurrencesFinder {
 
+	private static final String THIS = "this"; //$NON-NLS-1$
 	public static final String ID = "ClassMembersOccurrencesFinder"; //$NON-NLS-1$
 	private String classMemberName; // The member's name
 	private String typeDeclarationName; // Class or Interface name // TODO - use
@@ -112,7 +114,10 @@ public class ClassMembersOccurrencesFinder extends AbstractOccurrencesFinder {
 		IType[] types = new IType[2];
 		ITypeBinding typeBinding = null;
 		ASTNode parent = identifier.getParent();
-		if (parent.getType() == ASTNode.VARIABLE) {
+		if (THIS.equals(identifier.getName())) {
+			// [Aptana Mod - Support '$this']
+			return resolveDeclaringClassType(identifier.getParent());
+		} else if (parent.getType() == ASTNode.VARIABLE) {
 			Variable var = (Variable) parent;
 			ASTNode varParent = var.getParent();
 			if (varParent.getType() == ASTNode.ARRAY_ACCESS) {
@@ -258,20 +263,54 @@ public class ClassMembersOccurrencesFinder extends AbstractOccurrencesFinder {
 		}
 	}
 
+	// Holds the last class name that we entered into.
+	private Stack<String> currentClass = new Stack<String>();
+	
 	/**
 	 * context + Mark var on: ... public $a; ...
 	 */
 	public boolean visit(ClassDeclaration classDeclaration) {
+		currentClass.push(classDeclaration.getName().getName());
 		checkTypeDeclaration(classDeclaration);
 		return false;
 	}
-
+	
+	/*
+	 * [Aptana Mod - Support '$this']
+	 * (non-Javadoc)
+	 * @see org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.ClassDeclaration)
+	 */
+	public void endVisit(ClassDeclaration classDeclaration) {
+		if (!currentClass.isEmpty()) {
+			currentClass.pop();
+		}
+	}
+	
 	/**
 	 * context
 	 */
 	public boolean visit(InterfaceDeclaration interfaceDeclaration) {
 		checkTypeDeclaration(interfaceDeclaration);
 		return false;
+	}
+
+
+	/* [Aptana Mod - Support '$this']
+	 * (non-Javadoc)
+	 * @see org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Identifier)
+	 */
+	@Override
+	public boolean visit(Identifier identifier)
+	{
+		if (THIS.equals(identifier.getName()) && classMemberName.equals(THIS)) {
+			// Check the the identifier is declared in the same type (class)
+			String wrappingClass = (currentClass.isEmpty()) ? null : currentClass.peek();
+			if (wrappingClass != null && wrappingClass.equals(typeDeclarationName)) {
+				addOccurrence(new OccurrenceLocation(identifier.getStart() - 1, identifier.getLength() + 1,
+						getOccurrenceType(identifier), fDescription));
+			}
+		}
+		return super.visit(identifier);
 	}
 
 	/**
