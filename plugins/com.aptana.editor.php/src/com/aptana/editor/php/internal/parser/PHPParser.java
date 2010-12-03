@@ -7,6 +7,7 @@ import java.io.StringReader;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.php.internal.core.ast.nodes.AST;
 import org.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org.eclipse.php.internal.core.ast.nodes.Program;
 
@@ -83,10 +84,11 @@ public class PHPParser implements IParser
 			}
 			aboutToBeReconciled();
 		}
+		ASTParser parser = null;
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			ASTParser parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule);
+			parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule);
 			program = parser.createAST(null);
 		}
 		catch (Exception e)
@@ -122,6 +124,14 @@ public class PHPParser implements IParser
 		}
 		else
 		{
+			if (parser != null)
+			{
+				AST ast = parser.getAST();
+				if (ast != null)
+				{
+					ast.flushErrors();
+				}
+			}
 			reconciled(null, false, new NullProgressMonitor());
 		}
 		return root;

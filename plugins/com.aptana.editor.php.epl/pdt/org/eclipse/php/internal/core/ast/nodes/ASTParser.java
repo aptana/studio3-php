@@ -205,7 +205,6 @@ public class ASTParser {
 		}
 		Program p = (Program) symbol.value;
 		AST ast = p.getAST();
-
 		p.setSourceModule(sourceModule);
 
 		// now reset the ast default node flag back to differntate between
@@ -217,7 +216,15 @@ public class ASTParser {
 		ast.setOriginalModificationCount(ast.modificationCount());
 		return p;
 	}
-
+	
+	/**
+	 * Returns the AST that was originally created with this ASTParser.
+	 * [Aptana Mod]
+	 */
+	public AST getAST() {
+		return this.ast;
+	}
+	
 	/********************************************************************************
 	 * NOT THREAD SAFE IMPLEMENTATION STARTS HERE
 	 *********************************************************************************/
