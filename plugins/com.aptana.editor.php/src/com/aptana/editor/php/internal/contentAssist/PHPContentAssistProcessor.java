@@ -45,6 +45,7 @@ import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org.eclipse.swt.graphics.Image;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
 import com.aptana.editor.common.contentassist.LexemeProvider;
@@ -3128,7 +3129,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			ITypedRegion partition = viewer.getDocument().getDocumentPartitioner().getPartition(offset);
 			// trying to get dereference entries
 			List<String> callPath = ParsingUtils
-					.parseCallPath(partition, content, info.getNameEndPos() - 1, OPS, false);
+					.parseCallPath(partition, content, info.getNameEndPos() , OPS, false);
 			if (callPath == null || callPath.isEmpty())
 			{
 				return new IContextInformation[0];
@@ -3172,7 +3173,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 			IElementEntry funcEntry = entries.iterator().next();
 			IContextInformation ci = PHPContextCalculator.computeArgContextInformation(funcEntry, info.getNameEndPos());
-			if (ci == null)
+			if (ci == null || StringUtil.isEmpty(ci.getInformationDisplayString()))
 			{
 				return new IContextInformation[0];
 			}
