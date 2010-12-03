@@ -1,7 +1,6 @@
 package com.aptana.editor.php.internal.parser;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -143,7 +142,7 @@ public class PHPParser implements IParser
 		Program ast = parseAST(new StringReader(input));
 		if (ast != null)
 		{
-			
+
 			IParseRootNode root = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
 					.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
@@ -158,7 +157,7 @@ public class PHPParser implements IParser
 	 * This method is only parsing and does not update any state.
 	 * 
 	 * @param reader
-	 * @return A {@link Program} AST; Null, in case an error occurred. 
+	 * @return A {@link Program} AST; Null, in case an error occurred.
 	 */
 	public Program parseAST(Reader reader)
 	{
@@ -166,7 +165,9 @@ public class PHPParser implements IParser
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			ASTParser parser = ASTParser.newParser(reader, version);
+			// TODO - Perhaps we'll need to pass a preference value for the 'short-tags' instead of passing 'true' by
+			// default.
+			ASTParser parser = ASTParser.newParser(reader, version, true);
 			ast = parser.createAST(null);
 		}
 		catch (Exception e)

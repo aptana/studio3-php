@@ -115,7 +115,7 @@ public class ClassMembersOccurrencesFinder extends AbstractOccurrencesFinder {
 		if (parent.getType() == ASTNode.VARIABLE) {
 			Variable var = (Variable) parent;
 			ASTNode varParent = var.getParent();
-			if (var.getParent().getType() == ASTNode.ARRAY_ACCESS) {
+			if (varParent.getType() == ASTNode.ARRAY_ACCESS) {
 				varParent = varParent.getParent();
 			}
 			if (varParent.getType() == ASTNode.FIELD_ACCESS

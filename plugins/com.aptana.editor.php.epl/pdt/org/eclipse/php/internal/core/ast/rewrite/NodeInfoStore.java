@@ -22,7 +22,6 @@ import org.eclipse.php.internal.core.ast.rewrite.RewriteEventStore.CopySourceInf
 /**
  *
  */
-@SuppressWarnings("unchecked")
 public final class NodeInfoStore {
 	private AST ast;
 
@@ -76,6 +75,7 @@ public final class NodeInfoStore {
 	 *            {@link NodeInfoStore}.
 	 * @return Returns a place holder node.
 	 */
+	@SuppressWarnings("nls")
 	public final ASTNode newPlaceholderNode(int nodeType) {
 		try {
 			ASTNode node = this.ast.createInstance(nodeType);
@@ -83,44 +83,43 @@ public final class NodeInfoStore {
 			switch (node.getType()) {
 			case ASTNode.ASSIGNMENT:
 				Assignment assignment = (Assignment) node;
-				assignment.setLeftHandSide(this.ast.newVariable("a")); //$NON-NLS-1$
+				assignment.setLeftHandSide(this.ast.newVariable("a"));
 				assignment.setOperator(Assignment.OP_EQUAL);
-				assignment.setRightHandSide(this.ast.newVariable("a")); //$NON-NLS-1$
+				assignment.setRightHandSide(this.ast.newVariable("a"));
 				break;
 			case ASTNode.INFIX_EXPRESSION:
 				InfixExpression expression = (InfixExpression) node;
-				expression.setLeft(this.ast.newScalar("a")); //$NON-NLS-1$
+				expression.setLeft(this.ast.newScalar("a"));
 				expression.setOperator(InfixExpression.OP_MINUS);
-				expression.setRight(this.ast.newVariable("a")); //$NON-NLS-1$
+				expression.setRight(this.ast.newVariable("a"));
 				break;
 			case ASTNode.VARIABLE:
 				Variable variable = (Variable) node;
-				variable.setName(this.ast.newIdentifier("")); //$NON-NLS-1$
+				variable.setName(this.ast.newIdentifier(""));
 				break;
-			case ASTNode.FIELD_DECLARATION:
-				// ((FieldsDeclaration)
-				// node).fragments().add(this.ast.newVariableDeclarationFragment());
+			case ASTNode.FOR_STATEMENT:
+				ForStatement forStatement = (ForStatement) node;
+				Assignment assignment1 = this.ast.newAssignment();
+				assignment1.setLeftHandSide(this.ast.newVariable("a"));
+				assignment1.setOperator(Assignment.OP_EQUAL);
+				assignment1.setRightHandSide(this.ast.newVariable("a"));
+				forStatement.initializers().add(assignment1);
+
+				InfixExpression expression1 = this.ast.newInfixExpression();
+				expression1.setLeft(this.ast.newScalar("a"));
+				expression1.setOperator(InfixExpression.OP_IS_NOT_EQUAL);
+				expression1.setRight(this.ast.newVariable("a"));
+
+				forStatement.conditions().add(expression1);
+
+				PostfixExpression pexp = this.ast.newPostfixExpression();
+				pexp.setOperator(PostfixExpression.OP_INC);
+				pexp.setVariable(this.ast.newVariable("a"));
+
+				forStatement.updaters().add(pexp);
+				forStatement.setBody(this.ast.newBlock());
+
 				break;
-			// case ASTNode.MODIFIER:
-			// ((Modifier)
-			// node).setKeyword(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
-			// break;
-			case ASTNode.TRY_STATEMENT:
-				// ((TryStatement) node).setFinally(this.ast.newBlock()); //
-				// have to set at least a finally block to be legal code
-				break;
-			// case ASTNode.VARIABLE_DECLARATION_EXPRESSION :
-			// ((VariableDeclarationExpression)
-			// node).fragments().add(this.ast.newVariableDeclarationFragment());
-			// break;
-			// case ASTNode.FIELD_DECLARATION :
-			// ((VariableDeclarationStatement)
-			// node).fragments().add(this.ast.newVariableDeclarationFragment());
-			// break;
-			// case ASTNode.PARAMETERIZED_TYPE :
-			// ((ParameterizedType)
-			// node).typeArguments().add(this.ast.newWildcardType());
-			// break;
 			}
 			return node;
 		} catch (IllegalArgumentException e) {

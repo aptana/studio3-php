@@ -49,24 +49,26 @@ public class ASTParser {
 	 * THREAD SAFE AST PARSER STARTS HERE
 	 */
 	private final AST ast;
-	private final ISourceModule module;
+	private final ISourceModule sourceModule;
 
-	private ASTParser(Reader reader, PHPVersion phpVersion, boolean useASPTags)
-			throws IOException {
-		this(reader, phpVersion, useASPTags, null);
+	private ASTParser(Reader reader, PHPVersion phpVersion, boolean useASPTags,
+			boolean useShortTags) throws IOException {
+		this(reader, phpVersion, useASPTags, useShortTags, null);
 	}
 
 	private ASTParser(Reader reader, PHPVersion phpVersion, boolean useASPTags,
-			ISourceModule module) throws IOException {
+			boolean useShortTags, ISourceModule sourceModule)
+			throws IOException {
 
-		this.module = module;
+		this.sourceModule = sourceModule;
 		Object resource = null;
-		if (module != null)
+		if (sourceModule != null)
 		{
-			resource = module.getResource();
+			resource = sourceModule.getResource();
 		}
-		this.ast = new AST(reader, phpVersion, useASPTags, resource);
+		this.ast = new AST(reader, phpVersion, useASPTags, useShortTags, resource);
 		this.ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+
 		// set resolve binding property and the binding resolver
 		// TODO: Shalom - Binding resolver
 //		if (sourceModule != null) {
@@ -83,9 +85,10 @@ public class ASTParser {
 	/**
 	 * Factory methods for ASTParser
 	 */
-	public static ASTParser newParser(PHPVersion version) {
+	public static ASTParser newParser(PHPVersion version, boolean useShortTags) {
 		try {
-			return new ASTParser(new StringReader(""), version, false); //$NON-NLS-1$
+			return new ASTParser(new StringReader(""), version, false, //$NON-NLS-1$
+					useShortTags);
 		} catch (IOException e) {
 			assert false;
 			// Since we use empty reader we cannot have an IOException here
@@ -96,45 +99,53 @@ public class ASTParser {
 	/**
 	 * Factory methods for ASTParser
 	 */
-	// public static ASTParser newParser(ISourceModule sourceModule) {
-	// PHPVersion phpVersion = PHPVersionProvider.getPHPVersion(sourceModule
-	// .getResource().getProject());
-	// return newParser(phpVersion, sourceModule);
-	// }
+	public static ASTParser newParser(PHPVersion version) {
+		return newParser(version, true);
+	}
+
+	/**
+	 * Factory methods for ASTParser
+	 */
+//	public static ASTParser newParser(ISourceModule sourceModule) {
+//		PHPVersion phpVersion = ProjectOptions.getPhpVersion(sourceModule
+//				.getScriptProject().getProject());
+//
+//		return newParser(phpVersion, sourceModule);
+//	}
 
 	public static ASTParser newParser(PHPVersion version,
-			ISourceModule module) {
-		if (module == null) {
+			ISourceModule sourceModule) {
+		if (sourceModule == null) {
 			throw new IllegalStateException(
-					"ASTParser - Can't parser with null IModule"); //$NON-NLS-1$
+					"ASTParser - Can't parser with null ISourceModule"); //$NON-NLS-1$
 		}
 		try {
+			// use short tags by default (TODO - add a preference for that)
 			final ASTParser parser = new ASTParser(new StringReader(""), //$NON-NLS-1$
-					version, false, module);
-			parser.setSource(module.getSourceAsCharArray());
+					version, false, true, sourceModule);
+			parser.setSource(sourceModule.getSourceAsCharArray());
 			return parser;
-		} catch (CoreException ce) {
-			PHPEplPlugin.logError(ce);
-			return null;
-		} catch (IOException e) {
-			return null;
+		} catch (Exception e) {
+		    PHPEplPlugin.logError(e);
 		}
-	}
-
-		
-	public static ASTParser newParser(Reader reader, PHPVersion version)
-			throws IOException {
-		return new ASTParser(reader, version, false);
+		return null;
 	}
 
 	public static ASTParser newParser(Reader reader, PHPVersion version,
-			boolean useASPTags) throws IOException {
-		return new ASTParser(reader, version, useASPTags);
+			boolean useShortTags) throws IOException {
+		return new ASTParser(reader, version, false, useShortTags);
 	}
 
 	public static ASTParser newParser(Reader reader, PHPVersion version,
-			boolean useASPTags, ISourceModule module) throws IOException {
-		return new ASTParser(reader, version, useASPTags, module);
+			boolean useASPTags, boolean useShortTags) throws IOException {
+		return new ASTParser(reader, version, useASPTags, useShortTags);
+	}
+
+	public static ASTParser newParser(Reader reader, PHPVersion version,
+			boolean useASPTags, ISourceModule sourceModule) throws IOException {
+		// use short tags by default (TODO - add a preference for that)
+		return new ASTParser(reader, version, useASPTags,
+				true, sourceModule);
 	}
 
 	/**
@@ -195,7 +206,7 @@ public class ASTParser {
 		Program p = (Program) symbol.value;
 		AST ast = p.getAST();
 
-		p.setSourceModule(module);
+		p.setSourceModule(sourceModule);
 
 		// now reset the ast default node flag back to differntate between
 		// original nodes
@@ -254,26 +265,29 @@ public class ASTParser {
 	 * @throws IOException
 	 */
 	public static AstLexer getLexer(AST ast, Reader reader,
-			PHPVersion phpVersion, boolean aspTagsAsPhp) throws IOException {
+			PHPVersion phpVersion, boolean aspTagsAsPhp, boolean useShortTags)
+			throws IOException {
 		if (PHPVersion.PHP4 == phpVersion) {
 			final org.eclipse.php.internal.core.ast.scanner.php4.PhpAstLexer lexer4 = getLexer4(reader);
 			lexer4.setUseAspTagsAsPhp(aspTagsAsPhp);
+			lexer4.setUseShortTags(useShortTags);
 			lexer4.setAST(ast);
 			return lexer4;
 		} else if (PHPVersion.PHP5 == phpVersion) {
 			final org.eclipse.php.internal.core.ast.scanner.php5.PhpAstLexer lexer5 = getLexer5(reader);
 			lexer5.setUseAspTagsAsPhp(aspTagsAsPhp);
+			lexer5.setUseShortTags(useShortTags);
 			lexer5.setAST(ast);
 			return lexer5;
 		} else if (PHPVersion.PHP5_3 == phpVersion) {
 			final org.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer lexer53 = getLexer53(reader);
 			lexer53.setUseAspTagsAsPhp(aspTagsAsPhp);
+			lexer53.setUseShortTags(useShortTags);
 			lexer53.setAST(ast);
 			return lexer53;
 		} else {
-			throw new IllegalArgumentException(CoreMessages
-					.getString("ASTParser_1") //$NON-NLS-1$
-					+ phpVersion);
+			throw new IllegalArgumentException(
+					CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
 		}
 	}
 
@@ -293,9 +307,8 @@ public class ASTParser {
 			parser.setAST(ast);
 			return parser;
 		} else {
-			throw new IllegalArgumentException(CoreMessages
-					.getString("ASTParser_1") //$NON-NLS-1$
-					+ phpVersion);
+			throw new IllegalArgumentException(
+					CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
 		}
 
 	}
