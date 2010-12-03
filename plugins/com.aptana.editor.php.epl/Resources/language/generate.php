@@ -182,11 +182,29 @@ function parse_phpdoc_functions ($phpdocDir) {
 					$description = $match[1].$match[6];
 					$has_object_style = true;
 				}
+				if (preg_match ('@^(.*?)<classsynopsis>.*?<classname>(.*)</classname>.*?<constructorsynopsis>.*?<methodname>(.*?)</methodname>(.*?)</constructorsynopsis>.*?</classsynopsis>(.*)$@s', $description, $match)) {
+					$functionsDoc[$refname]['classname'] = trim($match[2]);
+					$functionsDoc[$refname]['methodname'] = trim($match[3]);
+					$parameters = $match[4];
+					$description = $match[1].$match[5];
+					$has_object_style = true;
+				}				
 				if (preg_match ('@<methodsynopsis>.*?<type>(.*?)</type>.*?<methodname>(.*?)</methodname>(.*?)</methodsynopsis>@s', $description, $match)) {
 					if ($has_object_style) {
 						$function_alias = trim($match[2]);
 					} else {
-						$functionsDoc[$refname]['returntype'] = trim($match[1]);
+						//For return type of simplexml_load_string and simplexml_load_file.
+						if(preg_match ('@<refsect1\s+role=["\']returnvalues["\']>(.*?)</refsect1>@s', $xml, $match1)){
+							$returnvalues = $match1[1];
+							if(preg_match ('@<type>object</type> of class <type>(.*?)</type>@s', $returnvalues, $match1)){
+								$functionsDoc[$refname]['returntype'] = trim($match1[1]);
+							}else{
+								$functionsDoc[$refname]['returntype'] = trim($match[1]);
+							}
+						}
+						else{
+							$functionsDoc[$refname]['returntype'] = trim($match[1]);
+						}
 						$functionsDoc[$refname]['methodname'] = trim($match[2]);
 						$parameters = $match[3];
 					}
