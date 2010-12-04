@@ -80,10 +80,13 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		c.addTranslation(new QualifiedContentType(PHP_DOC_COMMENT), new QualifiedContentType(
 				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType("comment.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.START_SWITCH_TAG),
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.START_SWITCH_TAG),
 				new QualifiedContentType("punctuation.section.embedded.begin.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType(
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType(
 				"punctuation.section.embedded.end.php")); //$NON-NLS-1$
+	}
+	
+	private PHPSourceConfiguration() {
 	}
 
 	public static PHPSourceConfiguration getDefault()
@@ -238,7 +241,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		return doubleQuotedStringScanner;
 	}
 
-	protected IToken getToken(String tokenName)
+	private IToken getToken(String tokenName)
 	{
 		return new Token(tokenName);
 	}
