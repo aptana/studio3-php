@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import java_cup.runtime.Scanner;
+import java_cup.runtime.lr_parser;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.text.IDocument;
@@ -35,44 +36,44 @@ import com.aptana.core.resources.IUniformResource;
 import com.aptana.editor.php.internal.core.builder.BuildProblemReporter;
 
 /**
- * Umbrella owner and abstract syntax tree node factory.
- * An <code>AST</code> instance serves as the common owner of any number of
- * AST nodes, and as the factory for creating new AST nodes owned by that 
- * instance.
+ * Umbrella owner and abstract syntax tree node factory. An <code>AST</code>
+ * instance serves as the common owner of any number of AST nodes, and as the
+ * factory for creating new AST nodes owned by that instance.
  * <p>
  * Abstract syntax trees may be hand constructed by clients, using the
  * <code>new<i>TYPE</i></code> factory methods to create new nodes, and the
- * various <code>set<i>CHILD</i></code> methods 
- * (see {@link org.eclipse.php.internal.core.ast.nodes.ASTNode} and its subclasses)
+ * various <code>set<i>CHILD</i></code> methods (see
+ * {@link org.eclipse.php.internal.core.ast.nodes.ASTNode} and its subclasses)
  * to connect them together.
  * </p>
  * <p>
- * Each AST node belongs to a unique AST instance, called the owning AST.
- * The children of an AST node always have the same owner as their parent node.
- * If a node from one AST is to be added to a different AST, the subtree must
- * be cloned first to ensures that the added nodes have the correct owning AST.
+ * Each AST node belongs to a unique AST instance, called the owning AST. The
+ * children of an AST node always have the same owner as their parent node. If a
+ * node from one AST is to be added to a different AST, the subtree must be
+ * cloned first to ensures that the added nodes have the correct owning AST.
  * </p>
  * <p>
  * There can be any number of AST nodes owned by a single AST instance that are
- * unparented. Each of these nodes is the root of a separate little tree of nodes.
- * The method <code>ASTNode.getProgramRoot()</code> navigates from any node to the root
- * of the tree that it is contained in. Ordinarily, an AST instance has one main
- * tree (rooted at a <code>Program</code>), with newly-created nodes appearing
- * as additional roots until they are parented somewhere under the main tree.
- * One can navigate from any node to its AST instance, but not conversely.
+ * unparented. Each of these nodes is the root of a separate little tree of
+ * nodes. The method <code>ASTNode.getProgramRoot()</code> navigates from any
+ * node to the root of the tree that it is contained in. Ordinarily, an AST
+ * instance has one main tree (rooted at a <code>Program</code>), with
+ * newly-created nodes appearing as additional roots until they are parented
+ * somewhere under the main tree. One can navigate from any node to its AST
+ * instance, but not conversely.
  * </p>
  * <p>
- * The class {@link ASTParser} parses a string
- * containing a PHP source code and returns an abstract syntax tree
- * for it. The resulting nodes carry source ranges relating the node back to
- * the original source characters.
+ * The class {@link ASTParser} parses a string containing a PHP source code and
+ * returns an abstract syntax tree for it. The resulting nodes carry source
+ * ranges relating the node back to the original source characters.
  * </p>
  * <p>
- * Programs created by <code>ASTParser</code> from a
- * source document can be serialized after arbitrary modifications
- * with minimal loss of original formatting. Here is an example:
+ * Programs created by <code>ASTParser</code> from a source document can be
+ * serialized after arbitrary modifications with minimal loss of original
+ * formatting. Here is an example:
+ * 
  * <pre>
- *  
+ * 
  * Document doc = new Document("<?\n class X {} \n echo 'hello world';\n  ?>");
  * ASTParser parser = ASTParser.newParser(AST.PHP5);
  * parser.setSource(doc.get().toCharArray());
@@ -86,13 +87,13 @@ import com.aptana.editor.php.internal.core.builder.BuildProblemReporter;
  * UndoEdit undo = edits.apply(document);
  * 
  * </pre>
- * See also {@link ASTRewrite} for
- * an alternative way to describe and serialize changes to a
- * read-only AST.
+ * 
+ * See also {@link ASTRewrite} for an alternative way to describe and serialize
+ * changes to a read-only AST.
  * </p>
  * <p>
- * Clients may create instances of this class using {@link #newAST(int)}, 
- * but this class is not intended to be subclassed.
+ * Clients may create instances of this class using {@link #newAST(int)}, but
+ * this class is not intended to be subclassed.
  * </p>
  * 
  * @see ASTParser
@@ -102,24 +103,25 @@ import com.aptana.editor.php.internal.core.builder.BuildProblemReporter;
 public class AST {
 
 	/**
-	 * The scanner capabilities to the AST - all has package access
-	 * to enable ASTParser access  
+	 * The scanner capabilities to the AST - all has package access to enable
+	 * ASTParser access
 	 */
 	final AstLexer lexer;
-	final AbstractASTParser parser;
+	final lr_parser parser;
 	final PHPVersion apiLevel;
 	final boolean useASPTags;
 
 	/**
-	 * The event handler for this AST. 
-	 * Initially an event handler that does not nothing.
+	 * The event handler for this AST. Initially an event handler that does not
+	 * nothing.
+	 * 
 	 * @since 3.0
 	 */
 	private NodeEventHandler eventHandler = new NodeEventHandler();
 
 	/**
-	 * Internal modification count; initially 0; increases monotonically
-	 * <b>by one or more</b> as the AST is successively modified.
+	 * Internal modification count; initially 0; increases monotonically <b>by
+	 * one or more</b> as the AST is successively modified.
 	 */
 	private long modificationCount = 0;
 
@@ -127,18 +129,20 @@ public class AST {
 	 * Internal original modification count; value is equals to <code>
 	 * modificationCount</code> at the end of the parse (<code>ASTParser
 	 * </code>). If this ast is not created with a parser then value is 0.
+	 * 
 	 * @since 3.0
 	 */
 	private long originalModificationCount = 0;
 
 	/**
-	 * When disableEvents > 0, events are not reported and
-	 * the modification count stays fixed.
+	 * When disableEvents > 0, events are not reported and the modification
+	 * count stays fixed.
 	 * <p>
-	 * This mechanism is used in lazy initialization of a node
-	 * to prevent events from being reported for the modification
-	 * of the node as well as for the creation of the missing child.
+	 * This mechanism is used in lazy initialization of a node to prevent events
+	 * from being reported for the modification of the node as well as for the
+	 * creation of the missing child.
 	 * </p>
+	 * 
 	 * @since 3.0
 	 */
 	private int disableEvents = 0;
@@ -146,6 +150,7 @@ public class AST {
 	/**
 	 * Internal object unique to the AST instance. Readers must synchronize on
 	 * this object when the modifying instance fields.
+	 * 
 	 * @since 3.0
 	 */
 	private final Object internalASTLock = new Object();
@@ -156,7 +161,8 @@ public class AST {
 	private int defaultNodeFlag = 0;
 
 	/**
-	 * Internal ast rewriter used to record ast modification when record mode is enabled.
+	 * Internal ast rewriter used to record ast modification when record mode is
+	 * enabled.
 	 */
 	InternalASTRewrite rewriter;
 	
@@ -167,13 +173,16 @@ public class AST {
 	private BuildProblemReporter problemReporter;
 
 	/**
-	 * The binding resolver for this AST. Initially a binding resolver that
-	 * does not resolve names at all.
+	 * The binding resolver for this AST. Initially a binding resolver that does
+	 * not resolve names at all.
 	 */
 	// private BindingResolver resolver = new BindingResolver();
 
-	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp) throws IOException {
-		this(reader, apiLevel, aspTagsAsPhp, null);
+	/**
+	 * Creates a new AST.
+	 */
+	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp, boolean useShortTags) throws IOException {
+		this(reader, apiLevel, aspTagsAsPhp, useShortTags, null);
 	}
 	
 	/**
@@ -187,7 +196,7 @@ public class AST {
 	 *            dealing with a script outside the workspace (may be null) - [Aptana Mod]
 	 * @throws IOException
 	 */
-	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp, Object resource) throws IOException
+	public AST(Reader reader, PHPVersion apiLevel, boolean aspTagsAsPhp,  boolean useShortTags, Object resource) throws IOException
 	{
 		this.resource = resource;
 		if (this.resource != null)
@@ -196,13 +205,14 @@ public class AST {
 		}
 		this.useASPTags = aspTagsAsPhp;
 		this.apiLevel = apiLevel;
-		this.lexer = getLexerInstance(reader, apiLevel, aspTagsAsPhp);
+		this.lexer = getLexerInstance(reader, apiLevel, aspTagsAsPhp,
+				useShortTags);
 		this.parser = getParserInstance(apiLevel, this.lexer);
 		this.reportedErrors = new ArrayList<ASTError>();
 	}
-
+	
 	/**
-	 * Clears the reported errors from this AST.
+	 * Constructs a scanner from a given reader
 	 * 
 	 * @param hasErrors
 	 */
@@ -268,38 +278,47 @@ public class AST {
 	 * @return
 	 * @throws IOException
 	 */
-	private AstLexer getLexerInstance(Reader reader, PHPVersion phpVersion, boolean aspTagsAsPhp) throws IOException {
+	private AstLexer getLexerInstance(Reader reader, PHPVersion phpVersion,
+			boolean aspTagsAsPhp, boolean useShortTags) throws IOException {
 		if (PHPVersion.PHP4 == phpVersion) {
 			final AstLexer lexer4 = getLexer4(reader);
 			lexer4.setUseAspTagsAsPhp(aspTagsAsPhp);
+			lexer4.setUseShortTags(useShortTags);
 			return lexer4;
 		} else if (PHPVersion.PHP5 == phpVersion) {
 			final AstLexer lexer5 = getLexer5(reader);
 			lexer5.setUseAspTagsAsPhp(aspTagsAsPhp);
+			lexer5.setUseShortTags(useShortTags);
 			return lexer5;
 		} else if (PHPVersion.PHP5_3 == phpVersion) {
 			final AstLexer lexer53 = getLexer53(reader);
 			lexer53.setUseAspTagsAsPhp(aspTagsAsPhp);
+			lexer53.setUseShortTags(useShortTags);
 			return lexer53;
 		} else {
-			throw new IllegalArgumentException(CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
+			throw new IllegalArgumentException(CoreMessages
+					.getString("ASTParser_1") //$NON-NLS-1$
+					+ phpVersion);
 		}
 	}
 
 	private AstLexer getLexer53(Reader reader) throws IOException {
-		final org.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer phpAstLexer5 = new org.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer(reader);
+		final org.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer phpAstLexer5 = new org.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer(
+				reader);
 		phpAstLexer5.setAST(this);
 		return phpAstLexer5;
 	}
 
 	private AstLexer getLexer5(Reader reader) throws IOException {
-		final org.eclipse.php.internal.core.ast.scanner.php5.PhpAstLexer phpAstLexer5 = new org.eclipse.php.internal.core.ast.scanner.php5.PhpAstLexer(reader);
+		final org.eclipse.php.internal.core.ast.scanner.php5.PhpAstLexer phpAstLexer5 = new org.eclipse.php.internal.core.ast.scanner.php5.PhpAstLexer(
+				reader);
 		phpAstLexer5.setAST(this);
 		return phpAstLexer5;
 	}
 
 	private AstLexer getLexer4(Reader reader) throws IOException {
-		final org.eclipse.php.internal.core.ast.scanner.php4.PhpAstLexer phpAstLexer4 = new org.eclipse.php.internal.core.ast.scanner.php4.PhpAstLexer(reader);
+		final org.eclipse.php.internal.core.ast.scanner.php4.PhpAstLexer phpAstLexer4 = new org.eclipse.php.internal.core.ast.scanner.php4.PhpAstLexer(
+				reader);
 		phpAstLexer4.setAST(this);
 		return phpAstLexer4;
 	}
@@ -307,11 +326,17 @@ public class AST {
 	private AbstractASTParser getParserInstance(PHPVersion phpVersion, Scanner lexer) {
 		AbstractASTParser parser;
 		if (PHPVersion.PHP4 == phpVersion) {
-			parser = new org.eclipse.php.internal.core.ast.scanner.php4.PhpAstParser(lexer);
+			parser = new org.eclipse.php.internal.core.ast.scanner.php4.PhpAstParser(
+					lexer);
+			parser.setAST(this);
 		} else if (PHPVersion.PHP5 == phpVersion) {
-			parser = new org.eclipse.php.internal.core.ast.scanner.php5.PhpAstParser(lexer);
+			parser = new org.eclipse.php.internal.core.ast.scanner.php5.PhpAstParser(
+					lexer);
+			parser.setAST(this);
 		} else if (PHPVersion.PHP5_3 == phpVersion) {
-			parser = new org.eclipse.php.internal.core.ast.scanner.php53.PhpAstParser(lexer);
+			parser = new org.eclipse.php.internal.core.ast.scanner.php53.PhpAstParser(
+					lexer);
+			parser.setAST(this);
 		} else {
 			throw new IllegalArgumentException(CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
 		}
@@ -324,9 +349,9 @@ public class AST {
 	}
 
 	/**
-	 * Returns the modification count for this AST. The modification count
-	 * is a non-negative value that increases (by 1 or perhaps by more) as
-	 * this AST or its nodes are changed. The initial value is unspecified.
+	 * Returns the modification count for this AST. The modification count is a
+	 * non-negative value that increases (by 1 or perhaps by more) as this AST
+	 * or its nodes are changed. The initial value is unspecified.
 	 * <p>
 	 * The following things count as modifying an AST:
 	 * <ul>
@@ -336,17 +361,17 @@ public class AST {
 	 * <li>setting a non-node attribute of a node owned by this AST.</li>
 	 * </ul>
 	 * </p>
-	 * Operations which do not entail creating or modifying existing nodes
-	 * do not increase the modification count.
+	 * Operations which do not entail creating or modifying existing nodes do
+	 * not increase the modification count.
 	 * <p>
-	 * N.B. This method may be called several times in the course
-	 * of a single client operation. The only promise is that the modification
-	 * count increases monotonically as the AST or its nodes change; there is
-	 * no promise that a modifying operation increases the count by exactly 1.
+	 * N.B. This method may be called several times in the course of a single
+	 * client operation. The only promise is that the modification count
+	 * increases monotonically as the AST or its nodes change; there is no
+	 * promise that a modifying operation increases the count by exactly 1.
 	 * </p>
-	 *
+	 * 
 	 * @return the current value (non-negative) of the modification counter of
-	 *    this AST
+	 *         this AST
 	 */
 	public long modificationCount() {
 		return this.modificationCount;
@@ -364,8 +389,8 @@ public class AST {
 	 * </ul>
 	 * </p>
 	 * <p>
-	 * N.B. This method may be called several times in the course
-	 * of a single client operation.
+	 * N.B. This method may be called several times in the course of a single
+	 * client operation.
 	 * </p>
 	 */
 	void modifying() {
@@ -379,9 +404,8 @@ public class AST {
 	}
 
 	/**
-	 * Disable events.
-	 * This method is thread-safe for AST readers.
-	 *
+	 * Disable events. This method is thread-safe for AST readers.
+	 * 
 	 * @see #reenableEvents()
 	 * @since 3.0
 	 */
@@ -390,13 +414,13 @@ public class AST {
 			// guard against concurrent access by another reader
 			this.disableEvents++;
 		}
-		// while disableEvents > 0 no events will be reported, and mod count will stay fixed
+		// while disableEvents > 0 no events will be reported, and mod count
+		// will stay fixed
 	}
 
 	/**
-	 * Reenable events.
-	 * This method is thread-safe for AST readers.
-	 *
+	 * Reenable events. This method is thread-safe for AST readers.
+	 * 
 	 * @see #disableEvents()
 	 * @since 3.0
 	 */
@@ -409,13 +433,17 @@ public class AST {
 
 	/**
 	 * Reports that the given node is about to lose a child.
-	 *
-	 * @param node the node about to be modified
-	 * @param child the node about to be removed
-	 * @param property the child or child list property descriptor
+	 * 
+	 * @param node
+	 *            the node about to be modified
+	 * @param child
+	 *            the node about to be removed
+	 * @param property
+	 *            the child or child list property descriptor
 	 * @since 3.0
 	 */
-	void preRemoveChildEvent(ASTNode node, ASTNode child, StructuralPropertyDescriptor property) {
+	void preRemoveChildEvent(ASTNode node, ASTNode child,
+			StructuralPropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
 		synchronized (this.internalASTLock) {
 			// guard against concurrent access by a reader doing lazy init
@@ -438,13 +466,17 @@ public class AST {
 
 	/**
 	 * Reports that the given node jsut lost a child.
-	 *
-	 * @param node the node that was modified
-	 * @param child the child node that was removed
-	 * @param property the child or child list property descriptor
+	 * 
+	 * @param node
+	 *            the node that was modified
+	 * @param child
+	 *            the child node that was removed
+	 * @param property
+	 *            the child or child list property descriptor
 	 * @since 3.0
 	 */
-	void postRemoveChildEvent(ASTNode node, ASTNode child, StructuralPropertyDescriptor property) {
+	void postRemoveChildEvent(ASTNode node, ASTNode child,
+			StructuralPropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
 		synchronized (this.internalASTLock) {
 			// guard against concurrent access by a reader doing lazy init
@@ -467,14 +499,19 @@ public class AST {
 
 	/**
 	 * Reports that the given node is about have a child replaced.
-	 *
-	 * @param node the node about to be modified
-	 * @param child the child node about to be removed
-	 * @param newChild the replacement child
-	 * @param property the child or child list property descriptor
+	 * 
+	 * @param node
+	 *            the node about to be modified
+	 * @param child
+	 *            the child node about to be removed
+	 * @param newChild
+	 *            the replacement child
+	 * @param property
+	 *            the child or child list property descriptor
 	 * @since 3.0
 	 */
-	void preReplaceChildEvent(ASTNode node, ASTNode child, ASTNode newChild, StructuralPropertyDescriptor property) {
+	void preReplaceChildEvent(ASTNode node, ASTNode child, ASTNode newChild,
+			StructuralPropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
 		synchronized (this.internalASTLock) {
 			// guard against concurrent access by a reader doing lazy init
@@ -487,7 +524,8 @@ public class AST {
 			}
 		}
 		try {
-			this.eventHandler.preReplaceChildEvent(node, child, newChild, property);
+			this.eventHandler.preReplaceChildEvent(node, child, newChild,
+					property);
 			// N.B. even if event handler blows up, the AST is not
 			// corrupted since node has not been changed yet
 		} finally {
@@ -497,14 +535,19 @@ public class AST {
 
 	/**
 	 * Reports that the given node has just had a child replaced.
-	 *
-	 * @param node the node modified
-	 * @param child the child removed
-	 * @param newChild the replacement child
-	 * @param property the child or child list property descriptor
+	 * 
+	 * @param node
+	 *            the node modified
+	 * @param child
+	 *            the child removed
+	 * @param newChild
+	 *            the replacement child
+	 * @param property
+	 *            the child or child list property descriptor
 	 * @since 3.0
 	 */
-	void postReplaceChildEvent(ASTNode node, ASTNode child, ASTNode newChild, StructuralPropertyDescriptor property) {
+	void postReplaceChildEvent(ASTNode node, ASTNode child, ASTNode newChild,
+			StructuralPropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
 		synchronized (this.internalASTLock) {
 			// guard against concurrent access by a reader doing lazy init
@@ -517,7 +560,8 @@ public class AST {
 			}
 		}
 		try {
-			this.eventHandler.postReplaceChildEvent(node, child, newChild, property);
+			this.eventHandler.postReplaceChildEvent(node, child, newChild,
+					property);
 			// N.B. even if event handler blows up, the AST is not
 			// corrupted since node has not been changed yet
 		} finally {
@@ -527,13 +571,17 @@ public class AST {
 
 	/**
 	 * Reports that the given node is about to gain a child.
-	 *
-	 * @param node the node that to be modified
-	 * @param child the node that to be added as a child
-	 * @param property the child or child list property descriptor
+	 * 
+	 * @param node
+	 *            the node that to be modified
+	 * @param child
+	 *            the node that to be added as a child
+	 * @param property
+	 *            the child or child list property descriptor
 	 * @since 3.0
 	 */
-	void preAddChildEvent(ASTNode node, ASTNode child, StructuralPropertyDescriptor property) {
+	void preAddChildEvent(ASTNode node, ASTNode child,
+			StructuralPropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
 		synchronized (this.internalASTLock) {
 			// guard against concurrent access by a reader doing lazy init
@@ -556,13 +604,17 @@ public class AST {
 
 	/**
 	 * Reports that the given node has just gained a child.
-	 *
-	 * @param node the node that was modified
-	 * @param child the node that was added as a child
-	 * @param property the child or child list property descriptor
+	 * 
+	 * @param node
+	 *            the node that was modified
+	 * @param child
+	 *            the node that was added as a child
+	 * @param property
+	 *            the child or child list property descriptor
 	 * @since 3.0
 	 */
-	void postAddChildEvent(ASTNode node, ASTNode child, StructuralPropertyDescriptor property) {
+	void postAddChildEvent(ASTNode node, ASTNode child,
+			StructuralPropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
 		synchronized (this.internalASTLock) {
 			// guard against concurrent access by a reader doing lazy init
@@ -584,11 +636,13 @@ public class AST {
 	}
 
 	/**
-	 * Reports that the given node is about to change the value of a
-	 * non-child property.
-	 *
-	 * @param node the node to be modified
-	 * @param property the property descriptor
+	 * Reports that the given node is about to change the value of a non-child
+	 * property.
+	 * 
+	 * @param node
+	 *            the node to be modified
+	 * @param property
+	 *            the property descriptor
 	 * @since 3.0
 	 */
 	void preValueChangeEvent(ASTNode node, SimplePropertyDescriptor property) {
@@ -613,11 +667,13 @@ public class AST {
 	}
 
 	/**
-	 * Reports that the given node has just changed the value of a
-	 * non-child property.
-	 *
-	 * @param node the node that was modified
-	 * @param property the property descriptor
+	 * Reports that the given node has just changed the value of a non-child
+	 * property.
+	 * 
+	 * @param node
+	 *            the node that was modified
+	 * @param property
+	 *            the property descriptor
 	 * @since 3.0
 	 */
 	void postValueChangeEvent(ASTNode node, SimplePropertyDescriptor property) {
@@ -643,8 +699,9 @@ public class AST {
 
 	/**
 	 * Reports that the given node is about to be cloned.
-	 *
-	 * @param node the node to be cloned
+	 * 
+	 * @param node
+	 *            the node to be cloned
 	 * @since 3.0
 	 */
 	void preCloneNodeEvent(ASTNode node) {
@@ -669,9 +726,11 @@ public class AST {
 
 	/**
 	 * Reports that the given node has just been cloned.
-	 *
-	 * @param node the node that was cloned
-	 * @param clone the clone of <code>node</code>
+	 * 
+	 * @param node
+	 *            the node that was cloned
+	 * @param clone
+	 *            the clone of <code>node</code>
 	 * @since 3.0
 	 */
 	void postCloneNodeEvent(ASTNode node, ASTNode clone) {
@@ -700,7 +759,7 @@ public class AST {
 
 	/**
 	 * Returns the event handler for this AST.
-	 *
+	 * 
 	 * @return the event handler for this AST
 	 * @since 3.0
 	 */
@@ -710,8 +769,9 @@ public class AST {
 
 	/**
 	 * Sets the event handler for this AST.
-	 *
-	 * @param eventHandler the event handler for this AST
+	 * 
+	 * @param eventHandler
+	 *            the event handler for this AST
 	 * @since 3.0
 	 */
 	void setEventHandler(NodeEventHandler eventHandler) {
@@ -723,7 +783,7 @@ public class AST {
 
 	/**
 	 * Returns default node flags of new nodes of this AST.
-	 *
+	 * 
 	 * @return the default node flags of new nodes of this AST
 	 * @since 3.0
 	 */
@@ -733,8 +793,9 @@ public class AST {
 
 	/**
 	 * Sets default node flags of new nodes of this AST.
-	 *
-	 * @param flag node flags of new nodes of this AST
+	 * 
+	 * @param flag
+	 *            node flags of new nodes of this AST
 	 * @since 3.0
 	 */
 	void setDefaultNodeFlag(int flag) {
@@ -742,8 +803,9 @@ public class AST {
 	}
 
 	/**
-	 * Set <code>originalModificationCount</code> to the current modification count
-	 *
+	 * Set <code>originalModificationCount</code> to the current modification
+	 * count
+	 * 
 	 * @since 3.0
 	 */
 	void setOriginalModificationCount(long count) {
@@ -770,11 +832,12 @@ public class AST {
 	 * <li><code>"void"</code></li>
 	 * </ul>
 	 * </p>
-	 *
-	 * @param name the name of a well known type
-	 * @return the corresponding type binding, or <code>null</code> if the
-	 *   named type is not considered well known or if no binding can be found
-	 *   for it
+	 * 
+	 * @param name
+	 *            the name of a well known type
+	 * @return the corresponding type binding, or <code>null</code> if the named
+	 *         type is not considered well known or if no binding can be found
+	 *         for it
 	 */
 	public ITypeBinding resolveWellKnownType(String name) {
 		//		if (name == null) {
@@ -786,8 +849,9 @@ public class AST {
 
 	/**
 	 * Sets the binding resolver for this AST.
-	 *
-	 * @param resolver the new binding resolver for this AST
+	 * 
+	 * @param resolver
+	 *            the new binding resolver for this AST
 	 */
 	//	void setBindingResolver(BindingResolver resolver) {
 	//		if (resolver == null) {
@@ -797,33 +861,35 @@ public class AST {
 	//	}
 
 	/**
-	 * Checks that this AST operation is not used when
-	 * building level JLS2 ASTs.
-
+	 * Checks that this AST operation is not used when building level JLS2 ASTs.
+	 * 
 	 * @exception UnsupportedOperationException
 	 * @since 3.0
 	 */
 	void unsupportedIn2() {
 		if (this.apiLevel == PHPVersion.PHP4) {
-			throw new UnsupportedOperationException("Operation not supported in JLS2 AST"); //$NON-NLS-1$
+			throw new UnsupportedOperationException(
+					"Operation not supported in JLS2 AST"); //$NON-NLS-1$
 		}
 	}
 
 	/**
-	 * Checks that this AST operation is only used when
-	 * building level JLS2 ASTs.
-
+	 * Checks that this AST operation is only used when building level JLS2
+	 * ASTs.
+	 * 
 	 * @exception UnsupportedOperationException
 	 * @since 3.0
 	 */
 	void supportedOnlyIn2() {
 		if (this.apiLevel != PHPVersion.PHP4) {
-			throw new UnsupportedOperationException("Operation not supported in JLS2 AST"); //$NON-NLS-1$
+			throw new UnsupportedOperationException(
+					"Operation not supported in JLS2 AST"); //$NON-NLS-1$
 		}
 	}
 
 	/**
 	 * new Class[] {AST.class}
+	 * 
 	 * @since 3.0
 	 */
 	@SuppressWarnings("unchecked")
@@ -831,6 +897,7 @@ public class AST {
 
 	/**
 	 * new Object[] {this}
+	 * 
 	 * @since 3.0
 	 */
 	private final Object[] THIS_AST = new Object[] { this };
@@ -846,13 +913,15 @@ public class AST {
 	private int bits;
 
 	/**
-	 * Creates an unparented node of the given node class
-	 * (non-abstract subclass of {@link ASTNode}). 
+	 * Creates an unparented node of the given node class (non-abstract subclass
+	 * of {@link ASTNode}).
 	 * 
-	 * @param nodeClass AST node class
+	 * @param nodeClass
+	 *            AST node class
 	 * @return a new unparented node owned by this AST
-	 * @exception IllegalArgumentException if <code>nodeClass</code> is
-	 * <code>null</code> or is not a concrete node type class
+	 * @exception IllegalArgumentException
+	 *                if <code>nodeClass</code> is <code>null</code> or is not a
+	 *                concrete node type class
 	 * @since 3.0
 	 */
 	@SuppressWarnings("unchecked")
@@ -885,17 +954,19 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented node of the given node type.
-	 * This convenience method is equivalent to:
+	 * Creates an unparented node of the given node type. This convenience
+	 * method is equivalent to:
+	 * 
 	 * <pre>
 	 * createInstance(ASTNode.nodeClassForType(nodeType))
 	 * </pre>
-	 *
-	 * @param nodeType AST node type, one of the node type
-	 * constants declared on {@link ASTNode}
+	 * 
+	 * @param nodeType
+	 *            AST node type, one of the node type constants declared on
+	 *            {@link ASTNode}
 	 * @return a new unparented node owned by this AST
-	 * @exception IllegalArgumentException if <code>nodeType</code> is
-	 * not a legal AST node type
+	 * @exception IllegalArgumentException
+	 *                if <code>nodeType</code> is not a legal AST node type
 	 * @since 3.0
 	 */
 	@SuppressWarnings("unchecked")
@@ -905,23 +976,22 @@ public class AST {
 		return createInstance(nodeClass);
 	}
 
-	//=============================== TYPES ===========================
+	// =============================== TYPES ===========================
 
 	/**
-	 * Enables the recording of changes to the given compilation
-	 * unit and its descendents. The compilation unit must have
-	 * been created by <code>ASTParser</code> and still be in
-	 * its original state. Once recording is on,
-	 * arbitrary changes to the subtree rooted at the compilation
-	 * unit are recorded internally. Once the modification has
-	 * been completed, call <code>rewrite</code> to get an object
-	 * representing the corresponding edits to the original
-	 * source code string.
-	 *
-	 * @exception IllegalArgumentException if this compilation unit is
-	 * marked as unmodifiable, or if this compilation unit has already
-	 * been tampered with, or if recording has already been enabled,
-	 * or if <code>root</code> is not owned by this AST
+	 * Enables the recording of changes to the given compilation unit and its
+	 * descendents. The compilation unit must have been created by
+	 * <code>ASTParser</code> and still be in its original state. Once recording
+	 * is on, arbitrary changes to the subtree rooted at the compilation unit
+	 * are recorded internally. Once the modification has been completed, call
+	 * <code>rewrite</code> to get an object representing the corresponding
+	 * edits to the original source code string.
+	 * 
+	 * @exception IllegalArgumentException
+	 *                if this compilation unit is marked as unmodifiable, or if
+	 *                this compilation unit has already been tampered with, or
+	 *                if recording has already been enabled, or if
+	 *                <code>root</code> is not owned by this AST
 	 * @see Program#recordModifications()
 	 * @since 3.0
 	 */
@@ -929,11 +999,13 @@ public class AST {
 		if (this.modificationCount != this.originalModificationCount) {
 			throw new IllegalArgumentException("AST is already modified"); //$NON-NLS-1$
 		} else if (this.rewriter != null) {
-			throw new IllegalArgumentException("AST modifications are already recorded"); //$NON-NLS-1$
+			throw new IllegalArgumentException(
+					"AST modifications are already recorded"); //$NON-NLS-1$
 		} else if ((root.getFlags() & ASTNode.PROTECT) != 0) {
 			throw new IllegalArgumentException("Root node is unmodifiable"); //$NON-NLS-1$
 		} else if (root.getAST() != this) {
-			throw new IllegalArgumentException("Root node is not owned by this ast"); //$NON-NLS-1$
+			throw new IllegalArgumentException(
+					"Root node is not owned by this ast"); //$NON-NLS-1$
 		}
 
 		this.rewriter = new InternalASTRewrite(root);
@@ -941,24 +1013,26 @@ public class AST {
 	}
 
 	/**
-	 * Converts all modifications recorded into an object
-	 * representing the corresponding text edits to the
-	 * given document containing the original source
-	 * code for the compilation unit that gave rise to
-	 * this AST.
-	 *
-	 * @param document original document containing source code
-	 * for the compilation unit
-	 * @param options the table of formatter options
-	 * (key type: <code>String</code>; value type: <code>String</code>);
-	 * or <code>null</code> to use the standard global options
-	 * {@link PHPCore#getOptions() PHPCore.getOptions()}.
-	 * @return text edit object describing the changes to the
-	 * document corresponding to the recorded AST modifications
-	 * @exception IllegalArgumentException if the document passed is
-	 * <code>null</code> or does not correspond to this AST
-	 * @exception IllegalStateException if <code>recordModifications</code>
-	 * was not called to enable recording
+	 * Converts all modifications recorded into an object representing the
+	 * corresponding text edits to the given document containing the original
+	 * source code for the compilation unit that gave rise to this AST.
+	 * 
+	 * @param document
+	 *            original document containing source code for the compilation
+	 *            unit
+	 * @param options
+	 *            the table of formatter options (key type: <code>String</code>;
+	 *            value type: <code>String</code>); or <code>null</code> to use
+	 *            the standard global options {@link PHPCore#getOptions()
+	 *            PHPCore.getOptions()}.
+	 * @return text edit object describing the changes to the document
+	 *         corresponding to the recorded AST modifications
+	 * @exception IllegalArgumentException
+	 *                if the document passed is <code>null</code> or does not
+	 *                correspond to this AST
+	 * @exception IllegalStateException
+	 *                if <code>recordModifications</code> was not called to
+	 *                enable recording
 	 * @see Program#rewrite(IDocument, Map)
 	 * @since 3.0
 	 */
@@ -968,14 +1042,15 @@ public class AST {
 			throw new IllegalArgumentException();
 		}
 		if (this.rewriter == null) {
-			throw new IllegalStateException("Modifications record is not enabled"); //$NON-NLS-1$
+			throw new IllegalStateException(
+					"Modifications record is not enabled"); //$NON-NLS-1$
 		}
 		return this.rewriter.rewriteAST(document, options);
 	}
 
 	/**
 	 * Returns true if the ast tree was created with bindings, false otherwise
-	 *
+	 * 
 	 * @return true if the ast tree was created with bindings, false otherwise
 	 * @since 3.3
 	 */
@@ -984,60 +1059,64 @@ public class AST {
 	}
 
 	/**
-	 * Returns true if the ast tree was created with statements recovery, false otherwise
-	 *
-	 * @return true if the ast tree was created with statements recovery, false otherwise
+	 * Returns true if the ast tree was created with statements recovery, false
+	 * otherwise
+	 * 
+	 * @return true if the ast tree was created with statements recovery, false
+	 *         otherwise
 	 * @since 3.3
 	 */
-	/*	public boolean hasStatementsRecovery() {
-			return (this.bits & IProgram.ENABLE_STATEMENTS_RECOVERY) != 0;
-		}
-	*/
+	/*
+	 * public boolean hasStatementsRecovery() { return (this.bits &
+	 * IProgram.ENABLE_STATEMENTS_RECOVERY) != 0; }
+	 */
 	/**
-	 * Returns true if the ast tree was created with bindings recovery, false otherwise
-	 *
-	 * @return true if the ast tree was created with bindings recovery, false otherwise
+	 * Returns true if the ast tree was created with bindings recovery, false
+	 * otherwise
+	 * 
+	 * @return true if the ast tree was created with bindings recovery, false
+	 *         otherwise
 	 * @since 3.3
 	 */
-	/*	public boolean hasBindingsRecovery() {
-			return (this.bits & IProgram.ENABLE_BINDINGS_RECOVERY) != 0;
-		}
-	*/
+	/*
+	 * public boolean hasBindingsRecovery() { return (this.bits &
+	 * IProgram.ENABLE_BINDINGS_RECOVERY) != 0; }
+	 */
 	void setFlag(int newValue) {
 		this.bits |= newValue;
 	}
 
 	/**
-	 * @return The lexer used by this AST 
+	 * @return The lexer used by this AST
 	 */
 	public AstLexer lexer() {
 		return lexer;
 	}
 
 	/**
-	 * @return The parser used by this AST 
+	 * @return The parser used by this AST
 	 */
-	public AbstractASTParser parser() {
+	public lr_parser parser() {
 		return parser;
 	}
 
 	/**
-	 * @return The API level used by this AST 
+	 * @return The API level used by this AST
 	 */
 	public PHPVersion apiLevel() {
 		return apiLevel;
 	}
 
 	/**
-	 * @return true if this AST "permits" ASP tags 
+	 * @return true if this AST "permits" ASP tags
 	 */
 	public boolean useASPTags() {
 		return useASPTags;
 	}
 
 	/**
-	 * @return true if this AST "permits" ASP tags 
-	 * @throws IOException 
+	 * @return true if this AST "permits" ASP tags
+	 * @throws IOException
 	 */
 	public void setSource(Reader reader) throws IOException {
 		if (reader == null) {
@@ -1060,12 +1139,14 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ArrayAccess}.
+	 * 
 	 * @param variableName
 	 * @param index
 	 * @param arrayType
 	 * @return a new ArrayAccess
 	 */
-	public ArrayAccess newArrayAccess(VariableBase variableName, Expression index, int arrayType) {
+	public ArrayAccess newArrayAccess(VariableBase variableName,
+			Expression index, int arrayType) {
 		ArrayAccess arrayAccess = new ArrayAccess(this);
 		arrayAccess.setName(variableName);
 		arrayAccess.setIndex(index);
@@ -1075,11 +1156,13 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ArrayAccess}. Default array type is VARIABLE_ARRAY
+	 * 
 	 * @param variableName
 	 * @param index
 	 * @return a new ArrayAccess
 	 */
-	public ArrayAccess newArrayAccess(VariableBase variableName, Expression index) {
+	public ArrayAccess newArrayAccess(VariableBase variableName,
+			Expression index) {
 		ArrayAccess arrayAccess = new ArrayAccess(this);
 		arrayAccess.setName(variableName);
 		arrayAccess.setIndex(index);
@@ -1099,7 +1182,9 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ArrayCreation}.
-	 * @param elements - List of {@link ArrayElement} 
+	 * 
+	 * @param elements
+	 *            - List of {@link ArrayElement}
 	 * @return a new ArrayCreation.
 	 */
 	public ArrayCreation newArrayCreation(List<ArrayElement> elements) {
@@ -1120,8 +1205,11 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ArrayElement}.
-	 * @param key - an {@link Expression} rapresenting the element key
-	 * @param value - an {@link Expression} rapresenting the element value
+	 * 
+	 * @param key
+	 *            - an {@link Expression} rapresenting the element key
+	 * @param value
+	 *            - an {@link Expression} rapresenting the element value
 	 * @return a new ArrayElement.
 	 */
 	public ArrayElement newArrayElement(Expression key, Expression value) {
@@ -1144,12 +1232,16 @@ public class AST {
 	/**
 	 * Creates a new {@link Assignment}.
 	 * 
-	 * @param leftHandSide A {@link VariableBase}
-	 * @param operator The assignment operator
-	 * @param rightHandSide An {@link Expression}
+	 * @param leftHandSide
+	 *            A {@link VariableBase}
+	 * @param operator
+	 *            The assignment operator
+	 * @param rightHandSide
+	 *            An {@link Expression}
 	 * @return A new Assignment.
 	 */
-	public Assignment newAssignment(VariableBase leftHandSide, int operator, Expression rightHandSide) {
+	public Assignment newAssignment(VariableBase leftHandSide, int operator,
+			Expression rightHandSide) {
 		Assignment assignment = new Assignment(this);
 		assignment.setLeftHandSide(leftHandSide);
 		assignment.setOperator(operator);
@@ -1179,7 +1271,9 @@ public class AST {
 
 	/**
 	 * Creates a new {@link BackTickExpression}.
-	 * @param expressions - List of {@link Expression}
+	 * 
+	 * @param expressions
+	 *            - List of {@link Expression}
 	 * @return A new BackTickExpression.
 	 */
 	public BackTickExpression newBackTickExpression(List<Expression> expressions) {
@@ -1189,9 +1283,9 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented block node owned by this AST, for an empty list
-	 * of statements.
-	 *
+	 * Creates an unparented block node owned by this AST, for an empty list of
+	 * statements.
+	 * 
 	 * @return a new unparented, empty curly block node
 	 */
 	public Block newBlock() {
@@ -1201,9 +1295,11 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented block node owned by this AST, for an empty list
-	 * of statements.
-	 * @param statements - List of {@link Statement}
+	 * Creates an unparented block node owned by this AST, for an empty list of
+	 * statements.
+	 * 
+	 * @param statements
+	 *            - List of {@link Statement}
 	 * @return a new unparented, empty block node
 	 */
 	public Block newBlock(List<Statement> statements) {
@@ -1226,7 +1322,9 @@ public class AST {
 
 	/**
 	 * Creates a new {@link BreakStatement}.
-	 * @param expression.
+	 * 
+	 * @param expression
+	 *            .
 	 * @return A new BreakStatement.
 	 */
 	public BreakStatement newBreakStatement(Expression expression) {
@@ -1247,6 +1345,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link CastExpression}.
+	 * 
 	 * @param expression
 	 * @param castType
 	 * @return A new CastExpression.
@@ -1270,12 +1369,14 @@ public class AST {
 
 	/**
 	 * Creates a new {@link CatchClause}.
+	 * 
 	 * @param className
 	 * @param variable
 	 * @param statement
 	 * @return A new CatchClause.
 	 */
-	public CatchClause newCatchClause(Identifier className, Variable variable, Block statement) {
+	public CatchClause newCatchClause(Identifier className, Variable variable,
+			Block statement) {
 		CatchClause catchClause = new CatchClause(this);
 		catchClause.setClassName(className);
 		catchClause.setVariable(variable);
@@ -1289,18 +1390,22 @@ public class AST {
 	 * @return A new ClassConstantDeclaration.
 	 */
 	public ConstantDeclaration newClassConstantDeclaration() {
-		ConstantDeclaration classConstantDeclaration = new ConstantDeclaration(this);
+		ConstantDeclaration classConstantDeclaration = new ConstantDeclaration(
+				this);
 		return classConstantDeclaration;
 	}
 
 	/**
 	 * Creates a new {@link ConstantDeclaration}.
+	 * 
 	 * @param names
 	 * @param initializers
 	 * @return A new ClassConstantDeclaration.
 	 */
-	public ConstantDeclaration newClassConstantDeclaration(List<Identifier> names, List<Expression> initializers) {
-		ConstantDeclaration classConstantDeclaration = new ConstantDeclaration(this);
+	public ConstantDeclaration newClassConstantDeclaration(
+			List<Identifier> names, List<Expression> initializers) {
+		ConstantDeclaration classConstantDeclaration = new ConstantDeclaration(
+				this);
 		classConstantDeclaration.initializers().addAll(initializers);
 		classConstantDeclaration.names().addAll(names);
 		return classConstantDeclaration;
@@ -1318,6 +1423,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ClassDeclaration}.
+	 * 
 	 * @param modifier
 	 * @param className
 	 * @param superClass
@@ -1325,14 +1431,15 @@ public class AST {
 	 * @param body
 	 * @return A new ClassDeclaration.
 	 */
-	public ClassDeclaration newClassDeclaration(int modifier, String className, String superClass, List<Identifier> interfaces, Block body) {
+	public ClassDeclaration newClassDeclaration(int modifier, String className,
+			String superClass, List<Identifier> interfaces, Block body) {
 		ClassDeclaration classDeclaration = new ClassDeclaration(this);
 		classDeclaration.setModifier(modifier);
 		classDeclaration.setName(newIdentifier(className));
-		if(superClass != null) {
-			 classDeclaration.setSuperClass(newIdentifier(superClass));
+		if (superClass != null) {
+			classDeclaration.setSuperClass(newIdentifier(superClass));
 		} else {
-			 classDeclaration.setSuperClass(null);
+			classDeclaration.setSuperClass(null);
 		}
 		classDeclaration.interfaces().addAll(interfaces);
 		classDeclaration.setBody(body);
@@ -1345,18 +1452,22 @@ public class AST {
 	 * @return A new ClassInstanceCreation.
 	 */
 	public ClassInstanceCreation newClassInstanceCreation() {
-		ClassInstanceCreation classInstanceCreation = new ClassInstanceCreation(this);
+		ClassInstanceCreation classInstanceCreation = new ClassInstanceCreation(
+				this);
 		return classInstanceCreation;
 	}
 
 	/**
 	 * Creates a new {@link ClassInstanceCreation}.
+	 * 
 	 * @param className
 	 * @param ctorParams
 	 * @return A new ClassInstanceCreation.
 	 */
-	public ClassInstanceCreation newClassInstanceCreation(ClassName className, List<Expression> ctorParams) {
-		ClassInstanceCreation classInstanceCreation = new ClassInstanceCreation(this);
+	public ClassInstanceCreation newClassInstanceCreation(ClassName className,
+			List<Expression> ctorParams) {
+		ClassInstanceCreation classInstanceCreation = new ClassInstanceCreation(
+				this);
 		classInstanceCreation.setClassName(className);
 		classInstanceCreation.ctorParams().addAll(ctorParams);
 		return classInstanceCreation;
@@ -1374,6 +1485,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ClassName}.
+	 * 
 	 * @param name
 	 * @return A new ClassName.
 	 */
@@ -1395,6 +1507,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link CloneExpression}.
+	 * 
 	 * @param expr
 	 * @return A new CloneExpression.
 	 */
@@ -1416,6 +1529,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link Comment}.
+	 * 
 	 * @param commentType
 	 * @return A new Comment.
 	 */
@@ -1431,19 +1545,23 @@ public class AST {
 	 * @return A new ConditionalExpression.
 	 */
 	public ConditionalExpression newConditionalExpression() {
-		ConditionalExpression conditionalExpression = new ConditionalExpression(this);
+		ConditionalExpression conditionalExpression = new ConditionalExpression(
+				this);
 		return conditionalExpression;
 	}
 
 	/**
 	 * Creates a new {@link ConditionalExpression}.
+	 * 
 	 * @param condition
 	 * @param ifTrue
 	 * @param ifFalse
 	 * @return A new ConditionalExpression.
 	 */
-	public ConditionalExpression newConditionalExpression(Expression condition, Expression ifTrue, Expression ifFalse) {
-		ConditionalExpression conditionalExpression = new ConditionalExpression(this);
+	public ConditionalExpression newConditionalExpression(Expression condition,
+			Expression ifTrue, Expression ifFalse) {
+		ConditionalExpression conditionalExpression = new ConditionalExpression(
+				this);
 		conditionalExpression.setCondition(condition);
 		conditionalExpression.setIfTrue(ifTrue);
 		conditionalExpression.setIfFalse(ifFalse);
@@ -1462,6 +1580,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ContinueStatement}.
+	 * 
 	 * @param expr
 	 * @return A new ContinueStatement.
 	 */
@@ -1473,12 +1592,15 @@ public class AST {
 
 	/**
 	 * Creates a new {@link DeclareStatement}.
+	 * 
 	 * @param directiveNames
 	 * @param directiveValues
 	 * @param body
 	 * @return A new DeclareStatement.
 	 */
-	public DeclareStatement newDeclareStatement(List<Identifier> directiveNames, List<Expression> directiveValues, Statement body) {
+	public DeclareStatement newDeclareStatement(
+			List<Identifier> directiveNames, List<Expression> directiveValues,
+			Statement body) {
 		DeclareStatement declareStatement = new DeclareStatement(this);
 		declareStatement.directiveNames().addAll(directiveNames);
 		declareStatement.directiveValues().addAll(directiveValues);
@@ -1498,6 +1620,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link DoStatement}.
+	 * 
 	 * @param condition
 	 * @param body
 	 * @return A new DoStatement.
@@ -1521,6 +1644,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link EchoStatement}.
+	 * 
 	 * @param expressions
 	 * @return A new EchoStatement.
 	 */
@@ -1533,7 +1657,9 @@ public class AST {
 	/**
 	 * Creates a new {@link EchoStatement} with a given {@link Expression}.
 	 * 
-	 * @param expression An {@link Expression} to set into the returned {@link EchoStatement}.
+	 * @param expression
+	 *            An {@link Expression} to set into the returned
+	 *            {@link EchoStatement}.
 	 * @return A new EchoStatement with the given Expression.
 	 */
 	public EchoStatement newEchoStatement(Expression expression) {
@@ -1563,9 +1689,12 @@ public class AST {
 	}
 
 	/**
-	 * Creates a new {@link ExpressionStatement} with a given {@link Expression} as an expression.
+	 * Creates a new {@link ExpressionStatement} with a given {@link Expression}
+	 * as an expression.
 	 * 
-	 * @param identifier The {@link Expression} that is the expression of the statement.
+	 * @param identifier
+	 *            The {@link Expression} that is the expression of the
+	 *            statement.
 	 * @return A new ExpressionStatement
 	 */
 	public ExpressionStatement newExpressionStatement(Expression expression) {
@@ -1586,8 +1715,9 @@ public class AST {
 
 	/**
 	 * Creates a new {@link FieldAccess}.
+	 * 
 	 * @param dispatcher
-	 * @param field 
+	 * @param field
 	 * @return A new FieldAccess.
 	 */
 	public FieldAccess newFieldAccess(VariableBase dispatcher, Variable field) {
@@ -1609,11 +1739,13 @@ public class AST {
 
 	/**
 	 * Creates a new {@link FieldsDeclaration}.
+	 * 
 	 * @param modifier
 	 * @param variablesAndDefaults
 	 * @return A new FieldsDeclaration.
 	 */
-	public FieldsDeclaration newFieldsDeclaration(int modifier, List<SingleFieldDeclaration> variablesAndDefaults) {
+	public FieldsDeclaration newFieldsDeclaration(int modifier,
+			List<SingleFieldDeclaration> variablesAndDefaults) {
 		FieldsDeclaration fieldsDeclaration = new FieldsDeclaration(this);
 		fieldsDeclaration.setModifier(modifier);
 		List<SingleFieldDeclaration> fields = fieldsDeclaration.fields();
@@ -1633,13 +1765,15 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ForEachStatement}.
+	 * 
 	 * @param expression
 	 * @param key
 	 * @param value
 	 * @param statement
 	 * @return A new ForEachStatement.
 	 */
-	public ForEachStatement newForEachStatement(Expression expression, Expression key, Expression value, Statement statement) {
+	public ForEachStatement newForEachStatement(Expression expression,
+			Expression key, Expression value, Statement statement) {
 		ForEachStatement forEachStatement = new ForEachStatement(this);
 		forEachStatement.setExpression(expression);
 		forEachStatement.setKey(key);
@@ -1660,13 +1794,18 @@ public class AST {
 
 	/**
 	 * Creates a new {@link FormalParameter}.
+	 * 
 	 * @param type
 	 * @param parameterName
 	 * @param defaultValue
-	 * @param isMandatory The mandatory field is only effective when the API level is AST.PHP4
+	 * @param isMandatory
+	 *            The mandatory field is only effective when the API level is
+	 *            AST.PHP4
 	 * @return A new FormalParameter.
 	 */
-	public FormalParameter newFormalParameter(Identifier type, Expression parameterName, Expression defaultValue, boolean isMandatory) {
+	public FormalParameter newFormalParameter(Identifier type,
+			Expression parameterName, Expression defaultValue,
+			boolean isMandatory) {
 		FormalParameter formalParameter = new FormalParameter(this);
 		formalParameter.setParameterType(type);
 		formalParameter.setParameterName(parameterName);
@@ -1689,13 +1828,16 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ForStatement}.
+	 * 
 	 * @param initializers
 	 * @param conditions
 	 * @param updaters
 	 * @param body
 	 * @return A new ForStatement.
 	 */
-	public ForStatement newForStatement(List<Expression> initializers, List<Expression> conditions, List<Expression> updaters, Statement body) {
+	public ForStatement newForStatement(List<Expression> initializers,
+			List<Expression> conditions, List<Expression> updaters,
+			Statement body) {
 		ForStatement forStatement = new ForStatement(this);
 		forStatement.initializers().addAll(initializers);
 		forStatement.updaters().addAll(updaters);
@@ -1716,13 +1858,16 @@ public class AST {
 
 	/**
 	 * Creates a new {@link FunctionDeclaration}.
+	 * 
 	 * @param functionName
 	 * @param formalParameters
 	 * @param body
 	 * @param isReference
 	 * @return A new FunctionDeclaration.
 	 */
-	public FunctionDeclaration newFunctionDeclaration(Identifier functionName, List<FormalParameter> formalParameters, Block body, final boolean isReference) {
+	public FunctionDeclaration newFunctionDeclaration(Identifier functionName,
+			List<FormalParameter> formalParameters, Block body,
+			final boolean isReference) {
 		FunctionDeclaration functionDeclaration = new FunctionDeclaration(this);
 		functionDeclaration.setFunctionName(functionName);
 		functionDeclaration.formalParameters().addAll(formalParameters);
@@ -1743,11 +1888,14 @@ public class AST {
 
 	/**
 	 * Creates a new {@link FunctionInvocation}.
+	 * 
 	 * @param functionName
-	 * @param parameters (can be null to indicate no parameters)
+	 * @param parameters
+	 *            (can be null to indicate no parameters)
 	 * @return A new FunctionInvocation.
 	 */
-	public FunctionInvocation newFunctionInvocation(FunctionName functionName, List<Expression> parameters) {
+	public FunctionInvocation newFunctionInvocation(FunctionName functionName,
+			List<Expression> parameters) {
 		FunctionInvocation functionInvocation = new FunctionInvocation(this);
 		functionInvocation.setFunctionName(functionName);
 		if (parameters != null) {
@@ -1768,6 +1916,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link FunctionName}.
+	 * 
 	 * @param functionName
 	 * @return A new FunctionName.
 	 */
@@ -1789,6 +1938,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link FieldsDeclaration}.
+	 * 
 	 * @param variables
 	 * @return A new FieldsDeclaration.
 	 */
@@ -1811,10 +1961,12 @@ public class AST {
 	/**
 	 * Creates and returns a new unparented simple name node for the given
 	 * identifier. The identifier should be a legal PHP identifier.
-	 *
-	 * @param identifier the identifier
+	 * 
+	 * @param identifier
+	 *            the identifier
 	 * @return a new unparented simple name node
-	 * @exception IllegalArgumentException if the identifier is invalid
+	 * @exception IllegalArgumentException
+	 *                if the identifier is invalid
 	 */
 	public Identifier newIdentifier(String identifier) {
 
@@ -1838,12 +1990,14 @@ public class AST {
 
 	/**
 	 * Creates a new {@link IfStatement}.
+	 * 
 	 * @param condition
 	 * @param trueStatement
 	 * @param falseStatement
 	 * @return A new IfStatement.
 	 */
-	public IfStatement newIfStatement(Expression condition, Statement trueStatement, Statement falseStatement) {
+	public IfStatement newIfStatement(Expression condition,
+			Statement trueStatement, Statement falseStatement) {
 		IfStatement ifStatement = new IfStatement(this);
 		ifStatement.setCondition(condition);
 		ifStatement.setTrueStatement(trueStatement);
@@ -1863,6 +2017,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link IgnoreError}.
+	 * 
 	 * @param expression
 	 * @return A new IgnoreError.
 	 */
@@ -1884,6 +2039,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link Include}.
+	 * 
 	 * @param expression
 	 * @param type
 	 * @return A new Include.
@@ -1907,12 +2063,14 @@ public class AST {
 
 	/**
 	 * Creates a new {@link InfixExpression}.
+	 * 
 	 * @param left
 	 * @param operator
 	 * @param right
 	 * @return A new InfixExpression.
 	 */
-	public InfixExpression newInfixExpression(Expression left, int operator, Expression right) {
+	public InfixExpression newInfixExpression(Expression left, int operator,
+			Expression right) {
 		InfixExpression infixExpression = new InfixExpression(this);
 		infixExpression.setLeft(left);
 		infixExpression.setOperator(operator);
@@ -1936,19 +2094,23 @@ public class AST {
 	 * @return A new InstanceOfExpression.
 	 */
 	public InstanceOfExpression newInstanceOfExpression() {
-		InstanceOfExpression instanceOfExpression = new InstanceOfExpression(this);
+		InstanceOfExpression instanceOfExpression = new InstanceOfExpression(
+				this);
 
 		return instanceOfExpression;
 	}
 
 	/**
 	 * Creates a new {@link InstanceOfExpression}.
+	 * 
 	 * @param expr
-	 * @param className 
+	 * @param className
 	 * @return A new InstanceOfExpression.
 	 */
-	public InstanceOfExpression newInstanceOfExpression(Expression expr, ClassName className) {
-		InstanceOfExpression instanceOfExpression = new InstanceOfExpression(this);
+	public InstanceOfExpression newInstanceOfExpression(Expression expr,
+			ClassName className) {
+		InstanceOfExpression instanceOfExpression = new InstanceOfExpression(
+				this);
 		instanceOfExpression.setClassName(className);
 		instanceOfExpression.setExpression(expr);
 		return instanceOfExpression;
@@ -1960,19 +2122,23 @@ public class AST {
 	 * @return A new InterfaceDeclaration.
 	 */
 	public InterfaceDeclaration newInterfaceDeclaration() {
-		InterfaceDeclaration interfaceDeclaration = new InterfaceDeclaration(this);
+		InterfaceDeclaration interfaceDeclaration = new InterfaceDeclaration(
+				this);
 		return interfaceDeclaration;
 	}
 
 	/**
 	 * Creates a new {@link InterfaceDeclaration}.
+	 * 
 	 * @param interfaceName
 	 * @param interfaces
 	 * @param body
 	 * @return A new InterfaceDeclaration.
 	 */
-	public InterfaceDeclaration newInterfaceDeclaration(Identifier interfaceName, List<Identifier> interfaces, Block body) {
-		InterfaceDeclaration interfaceDeclaration = new InterfaceDeclaration(this);
+	public InterfaceDeclaration newInterfaceDeclaration(
+			Identifier interfaceName, List<Identifier> interfaces, Block body) {
+		InterfaceDeclaration interfaceDeclaration = new InterfaceDeclaration(
+				this);
 		interfaceDeclaration.setName(interfaceName);
 		interfaceDeclaration.interfaces().addAll(interfaces);
 		interfaceDeclaration.setBody(body);
@@ -1991,7 +2157,8 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ListVariable}.
-	 * @param variables 
+	 * 
+	 * @param variables
 	 * @return A new ListVariable.
 	 */
 	public ListVariable newListVariable(List<VariableBase> variables) {
@@ -2012,11 +2179,13 @@ public class AST {
 
 	/**
 	 * Creates a new {@link MethodDeclaration}.
+	 * 
 	 * @param modifier
-	 * @param function 
+	 * @param function
 	 * @return A new MethodDeclaration.
 	 */
-	public MethodDeclaration newMethodDeclaration(int modifier, FunctionDeclaration function) {
+	public MethodDeclaration newMethodDeclaration(int modifier,
+			FunctionDeclaration function) {
 		MethodDeclaration methodDeclaration = new MethodDeclaration(this);
 		methodDeclaration.setModifier(modifier);
 		methodDeclaration.setFunction(function);
@@ -2035,12 +2204,14 @@ public class AST {
 
 	/**
 	 * Creates a new {@link MethodInvocation}.
+	 * 
 	 * @param dispatcher
 	 * @param method
-	
+	 * 
 	 * @return A new MethodInvocation.
 	 */
-	public MethodInvocation newMethodInvocation(VariableBase dispatcher, FunctionInvocation method) {
+	public MethodInvocation newMethodInvocation(VariableBase dispatcher,
+			FunctionInvocation method) {
 		MethodInvocation methodInvocation = new MethodInvocation(this);
 		methodInvocation.setDispatcher(dispatcher);
 		methodInvocation.setMethod(method);
@@ -2053,17 +2224,20 @@ public class AST {
 	 * @return A new ParenthesisExpression.
 	 */
 	public ParenthesisExpression newParenthesisExpression() {
-		ParenthesisExpression parenthesisExpression = new ParenthesisExpression(this);
+		ParenthesisExpression parenthesisExpression = new ParenthesisExpression(
+				this);
 		return parenthesisExpression;
 	}
 
 	/**
 	 * Creates a new {@link ParenthesisExpression}.
+	 * 
 	 * @param expression
 	 * @return A new ParenthesisExpression.
 	 */
 	public ParenthesisExpression newParenthesisExpression(Expression expression) {
-		ParenthesisExpression parenthesisExpression = new ParenthesisExpression(this);
+		ParenthesisExpression parenthesisExpression = new ParenthesisExpression(
+				this);
 		parenthesisExpression.setExpression(expression);
 		return parenthesisExpression;
 	}
@@ -2080,11 +2254,13 @@ public class AST {
 
 	/**
 	 * Creates a new {@link PostfixExpression}.
+	 * 
 	 * @param variable
-	 * @param operator 
+	 * @param operator
 	 * @return A new PostfixExpression.
 	 */
-	public PostfixExpression newPostfixExpression(VariableBase variable, int operator) {
+	public PostfixExpression newPostfixExpression(VariableBase variable,
+			int operator) {
 		PostfixExpression postfixExpression = new PostfixExpression(this);
 		postfixExpression.setVariable(variable);
 		postfixExpression.setOperator(operator);
@@ -2103,11 +2279,13 @@ public class AST {
 
 	/**
 	 * Creates a new {@link PrefixExpression}.
+	 * 
 	 * @param variable
 	 * @param operator
 	 * @return A new PrefixExpression.
 	 */
-	public PrefixExpression newPrefixExpression(VariableBase variable, int operator) {
+	public PrefixExpression newPrefixExpression(VariableBase variable,
+			int operator) {
 		PrefixExpression prefixExpression = new PrefixExpression(this);
 		prefixExpression.setVariable(variable);
 		prefixExpression.setOperator(operator);
@@ -2129,7 +2307,8 @@ public class AST {
 	 * 
 	 * @return A new Program.
 	 */
-	public Program newProgram(List<Statement> statements, List<Comment> commentList) {
+	public Program newProgram(List<Statement> statements,
+			List<Comment> commentList) {
 		Program program = new Program(this);
 		program.statements().addAll(statements);
 		program.comments().addAll(commentList);
@@ -2148,6 +2327,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link Quote}.
+	 * 
 	 * @param expressions
 	 * @param type
 	 * @return A new Quote.
@@ -2171,6 +2351,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link Reference}.
+	 * 
 	 * @param expression
 	 * @return A new Reference.
 	 */
@@ -2192,6 +2373,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ReflectionVariable}.
+	 * 
 	 * @param expression
 	 * @return A new ReflectionVariable.
 	 */
@@ -2213,6 +2395,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ReturnStatement}.
+	 * 
 	 * @param expression
 	 * @return A new ReturnStatement.
 	 */
@@ -2235,8 +2418,11 @@ public class AST {
 	/**
 	 * Creates a new scalar with a given type.
 	 * 
-	 * @param string The scalar's value.
-	 * @param scalarType The scalar's type (e.g. Scalar.TYPE_STRING, Scalar.TYPE_INT etc.).
+	 * @param string
+	 *            The scalar's value.
+	 * @param scalarType
+	 *            The scalar's type (e.g. Scalar.TYPE_STRING, Scalar.TYPE_INT
+	 *            etc.).
 	 * @return A new {@link Scalar}.
 	 */
 	public Scalar newScalar(String string, int scalarType) {
@@ -2248,7 +2434,8 @@ public class AST {
 	/**
 	 * Creates a new scalar with a default Scalar.TYPE_INT type.
 	 * 
-	 * @param string The scalar's value.
+	 * @param string
+	 *            The scalar's value.
 	 * @return A new {@link Scalar}.
 	 */
 	public Scalar newScalar(String string) {
@@ -2263,18 +2450,22 @@ public class AST {
 	 * @return A new SingleFieldDeclaration.
 	 */
 	public SingleFieldDeclaration newSingleFieldDeclaration() {
-		SingleFieldDeclaration singleFieldDeclaration = new SingleFieldDeclaration(this);
+		SingleFieldDeclaration singleFieldDeclaration = new SingleFieldDeclaration(
+				this);
 		return singleFieldDeclaration;
 	}
 
 	/**
 	 * Creates a new {@link SingleFieldDeclaration}.
+	 * 
 	 * @param name
 	 * @param value
 	 * @return A new SingleFieldDeclaration.
 	 */
-	public SingleFieldDeclaration newSingleFieldDeclaration(Variable name, Expression value) {
-		SingleFieldDeclaration singleFieldDeclaration = new SingleFieldDeclaration(this);
+	public SingleFieldDeclaration newSingleFieldDeclaration(Variable name,
+			Expression value) {
+		SingleFieldDeclaration singleFieldDeclaration = new SingleFieldDeclaration(
+				this);
 		singleFieldDeclaration.setName(name);
 		singleFieldDeclaration.setValue(value);
 		return singleFieldDeclaration;
@@ -2286,18 +2477,22 @@ public class AST {
 	 * @return A new StaticConstantAccess.
 	 */
 	public StaticConstantAccess newStaticConstantAccess() {
-		StaticConstantAccess staticConstantAccess = new StaticConstantAccess(this);
+		StaticConstantAccess staticConstantAccess = new StaticConstantAccess(
+				this);
 		return staticConstantAccess;
 	}
 
 	/**
 	 * Creates a new {@link StaticConstantAccess}.
+	 * 
 	 * @param className
 	 * @param constant
 	 * @return A new StaticConstantAccess.
 	 */
-	public StaticConstantAccess newStaticConstantAccess(Identifier className, Identifier constant) {
-		StaticConstantAccess staticConstantAccess = new StaticConstantAccess(this);
+	public StaticConstantAccess newStaticConstantAccess(Identifier className,
+			Identifier constant) {
+		StaticConstantAccess staticConstantAccess = new StaticConstantAccess(
+				this);
 		staticConstantAccess.setClassName(className);
 		staticConstantAccess.setConstant(constant);
 		return staticConstantAccess;
@@ -2315,11 +2510,13 @@ public class AST {
 
 	/**
 	 * Creates a new {@link StaticFieldAccess}.
+	 * 
 	 * @param className
 	 * @param field
 	 * @return A new StaticFieldAccess.
 	 */
-	public StaticFieldAccess newStaticFieldAccess(Identifier className, Variable field) {
+	public StaticFieldAccess newStaticFieldAccess(Identifier className,
+			Variable field) {
 		StaticFieldAccess staticFieldAccess = new StaticFieldAccess(this);
 		staticFieldAccess.setClassName(className);
 		staticFieldAccess.setField(field);
@@ -2332,18 +2529,22 @@ public class AST {
 	 * @return A new StaticMethodInvocation.
 	 */
 	public StaticMethodInvocation newStaticMethodInvocation() {
-		StaticMethodInvocation staticMethodInvocation = new StaticMethodInvocation(this);
+		StaticMethodInvocation staticMethodInvocation = new StaticMethodInvocation(
+				this);
 		return staticMethodInvocation;
 	}
 
 	/**
 	 * Creates a new {@link StaticMethodInvocation}.
+	 * 
 	 * @param className
 	 * @param method
 	 * @return A new StaticMethodInvocation.
 	 */
-	public StaticMethodInvocation newStaticMethodInvocation(Identifier className, FunctionInvocation method) {
-		StaticMethodInvocation staticMethodInvocation = new StaticMethodInvocation(this);
+	public StaticMethodInvocation newStaticMethodInvocation(
+			Identifier className, FunctionInvocation method) {
+		StaticMethodInvocation staticMethodInvocation = new StaticMethodInvocation(
+				this);
 		staticMethodInvocation.setClassName(className);
 		staticMethodInvocation.setMethod(method);
 		return staticMethodInvocation;
@@ -2361,6 +2562,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link StaticStatement}.
+	 * 
 	 * @param expressions
 	 * @return A new StaticStatement.
 	 */
@@ -2382,12 +2584,14 @@ public class AST {
 
 	/**
 	 * Creates a new {@link SwitchCase}.
+	 * 
 	 * @param value
 	 * @param actions
 	 * @param isDefault
 	 * @return A new SwitchCase.
 	 */
-	public SwitchCase newSwitchCase(Expression value, List<Statement> actions, boolean isDefault) {
+	public SwitchCase newSwitchCase(Expression value, List<Statement> actions,
+			boolean isDefault) {
 		SwitchCase switchCase = new SwitchCase(this);
 		switchCase.setValue(value);
 		switchCase.actions().addAll(actions);
@@ -2407,6 +2611,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link SwitchStatement}.
+	 * 
 	 * @param expression
 	 * @param body
 	 * @return A new SwitchStatement.
@@ -2430,6 +2635,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link ThrowStatement}.
+	 * 
 	 * @param expression
 	 * @return A new ThrowStatement.
 	 */
@@ -2451,11 +2657,13 @@ public class AST {
 
 	/**
 	 * Creates a new {@link TryStatement}.
+	 * 
 	 * @param tryStatement
 	 * @param catchClauses
 	 * @return A new TryStatement.
 	 */
-	public TryStatement newTryStatement(Block block, List<CatchClause> catchClauses) {
+	public TryStatement newTryStatement(Block block,
+			List<CatchClause> catchClauses) {
 		TryStatement tryStatement = new TryStatement(this);
 		tryStatement.setBody(block);
 		tryStatement.catchClauses().addAll(catchClauses);
@@ -2474,6 +2682,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link UnaryOperation}.
+	 * 
 	 * @param expression
 	 * @param operator
 	 * @return A new UnaryOperation.
@@ -2488,7 +2697,9 @@ public class AST {
 	/**
 	 * Creates a new {@link Variable}.
 	 * 
-	 * The returned Variable is not dollared and does not have any name {@link Expression}.
+	 * The returned Variable is not dollared and does not have any name
+	 * {@link Expression}.
+	 * 
 	 * @return A new {@link Variable}.
 	 */
 	public Variable newVariable() {
@@ -2499,8 +2710,10 @@ public class AST {
 	/**
 	 * Creates a new {@link Variable} with a given name expression.
 	 * 
-	 * @param name A name {@link Expression}
-	 * @param isDollared Indicate that this variable is dollared.
+	 * @param name
+	 *            A name {@link Expression}
+	 * @param isDollared
+	 *            Indicate that this variable is dollared.
 	 * @return A new {@link Variable}.
 	 */
 	public Variable newVariable(Expression name, boolean isDollared) {
@@ -2513,7 +2726,8 @@ public class AST {
 	/**
 	 * Creates a new dollared {@link Variable} with a given name .
 	 * 
-	 * @param name A name {@link String}
+	 * @param name
+	 *            A name {@link String}
 	 * @return A new {@link Variable}.
 	 */
 	public Variable newVariable(String name) {
@@ -2535,6 +2749,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link WhileStatement}.
+	 * 
 	 * @param condition
 	 * @param body
 	 * @return A new WhileStatement.
@@ -2545,15 +2760,20 @@ public class AST {
 		whileStatement.setBody(body);
 		return whileStatement;
 	}
-	
+
 	/**
 	 * Creates a new {@link NamespaceName}.
+	 * 
 	 * @param name
-	 * @param isglobal - Whether the namespace has a '\' prefix
-	 * @param iscurrent - Whether the namespace has a 'namespace' prefix
+	 * @param isglobal
+	 *            - Whether the namespace has a '\' prefix
+	 * @param iscurrent
+	 *            - Whether the namespace has a 'namespace' prefix
 	 * @return A new NamespaceName.
 	 */
-	public NamespaceName newNamespaceName(final Collection<Identifier> segments, final boolean isglobal, final boolean iscurrent) {
+	public NamespaceName newNamespaceName(
+			final Collection<Identifier> segments, final boolean isglobal,
+			final boolean iscurrent) {
 		NamespaceName namespaceName = new NamespaceName(this);
 		namespaceName.segments().addAll(segments);
 		namespaceName.setGlobal(isglobal);
@@ -2563,32 +2783,38 @@ public class AST {
 
 	/**
 	 * Creates a new {@link NamespaceDeclaration}.
+	 * 
 	 * @param name
 	 * @param body
 	 * @return A new NamespaceDeclaration.
 	 */
-	public NamespaceDeclaration newNamespaceDeclaration(NamespaceName name, Block body) {
-		NamespaceDeclaration namespaceDeclaration = new NamespaceDeclaration(this);
+	public NamespaceDeclaration newNamespaceDeclaration(NamespaceName name,
+			Block body) {
+		NamespaceDeclaration namespaceDeclaration = new NamespaceDeclaration(
+				this);
 		namespaceDeclaration.setName(name);
 		namespaceDeclaration.setBody(body);
 		return namespaceDeclaration;
 	}
-	
+
 	/**
 	 * Creates a new {@link UseStatementPart}.
+	 * 
 	 * @param name
 	 * @param alias
 	 * @return A new UseStatementPart.
 	 */
-	public UseStatementPart newUseStatementPart(NamespaceName name, Identifier alias) {
+	public UseStatementPart newUseStatementPart(NamespaceName name,
+			Identifier alias) {
 		UseStatementPart usePart = new UseStatementPart(this);
 		usePart.setName(name);
 		usePart.setAlias(alias);
 		return usePart;
 	}
-	
+
 	/**
 	 * Creates a new {@link UseStatement}.
+	 * 
 	 * @param parts
 	 * @return A new UseStatement.
 	 */
@@ -2600,6 +2826,7 @@ public class AST {
 
 	/**
 	 * Creates a new {@link GotoLabel}.
+	 * 
 	 * @param label
 	 * @return A new GotoLabel.
 	 */
@@ -2608,9 +2835,10 @@ public class AST {
 		gotoLabel.setName(label);
 		return gotoLabel;
 	}
-	
+
 	/**
 	 * Creates a new {@link GotoStatement}.
+	 * 
 	 * @param label
 	 * @return A new GotoStatement.
 	 */
@@ -2619,14 +2847,19 @@ public class AST {
 		gotoStatement.setLabel(label);
 		return gotoStatement;
 	}
-	
+
 	/**
 	 * Creates a new {@link LambdaFunctionDeclaration}.
+	 * 
 	 * @param label
 	 * @return A new LambdaFunctionDeclaration.
 	 */
-	public LambdaFunctionDeclaration newLambdaFunctionDeclaration(final Collection<FormalParameter> formalParameters, final Collection<Variable> lexicalVars, final Block body, final boolean isReference, final boolean isStatic) {
-		LambdaFunctionDeclaration lfDeclaration = new LambdaFunctionDeclaration(this);
+	public LambdaFunctionDeclaration newLambdaFunctionDeclaration(
+			final Collection<FormalParameter> formalParameters,
+			final Collection<Variable> lexicalVars, final Block body,
+			final boolean isReference, final boolean isStatic) {
+		LambdaFunctionDeclaration lfDeclaration = new LambdaFunctionDeclaration(
+				this);
 		lfDeclaration.setBody(body);
 		lfDeclaration.setIsReference(isReference);
 		lfDeclaration.formalParameters().addAll(formalParameters);

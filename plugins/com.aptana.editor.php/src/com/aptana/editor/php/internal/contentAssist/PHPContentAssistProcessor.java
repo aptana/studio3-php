@@ -11,8 +11,8 @@ package com.aptana.editor.php.internal.contentAssist;
 
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.EXTENDS_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.IMPLEMENTS_PROPOSAL_CONTEXT_TYPE;
-import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NEW_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NAMESPACE_PROPOSAL_CONTEXT_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NEW_PROPOSAL_CONTEXT_TYPE;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -45,6 +45,7 @@ import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org.eclipse.swt.graphics.Image;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
 import com.aptana.editor.common.contentassist.LexemeProvider;
@@ -435,6 +436,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 
 			// Foo::hello()->goodbye()...
+			if (content.charAt(start) == '(')
+			{
+				return EMPTY_PROPOSAL;
+			}
 			if (DEREFERENCE_OP.equals(callPath.get(1)))
 			{
 				return dereferencingCompletion(getIndex(content, start), callPath, start, getModule());
@@ -2252,17 +2257,20 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// }
 		PHPOutlineItem outlineItem = new PHPOutlineItem(EMPTY_RANGE, node);
 		Image image = labelProvider.getImage(outlineItem);
-		String dispString = node.getNodeName();
+		final String dispString = node.getNodeName();
 		IContextInformation contextInformation = null;
 		IDocumentationResolver resolver = new IDocumentationResolver()
 		{
-
 			public String resolveDocumentation()
 			{
 				String additionalInfo = ContentAssistUtils.getDocumentation(node, name2);
 				return additionalInfo;
 			}
 
+			public String getProposalContent()
+			{
+				return dispString;
+			}
 		};
 		int objType = 0;
 		String fileOloc = EMPTY_STRING;
@@ -3121,7 +3129,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			ITypedRegion partition = viewer.getDocument().getDocumentPartitioner().getPartition(offset);
 			// trying to get dereference entries
 			List<String> callPath = ParsingUtils
-					.parseCallPath(partition, content, info.getNameEndPos() - 1, OPS, false);
+					.parseCallPath(partition, content, info.getNameEndPos() , OPS, false);
 			if (callPath == null || callPath.isEmpty())
 			{
 				return new IContextInformation[0];
@@ -3165,7 +3173,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 			IElementEntry funcEntry = entries.iterator().next();
 			IContextInformation ci = PHPContextCalculator.computeArgContextInformation(funcEntry, info.getNameEndPos());
-			if (ci == null)
+			if (ci == null || StringUtil.isEmpty(ci.getInformationDisplayString()))
 			{
 				return new IContextInformation[0];
 			}

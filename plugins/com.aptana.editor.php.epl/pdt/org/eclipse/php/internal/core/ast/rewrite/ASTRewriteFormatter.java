@@ -16,35 +16,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.BadPositionCategoryException;
-import org.eclipse.jface.text.DefaultPositionUpdater;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.*;
 import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.Block;
-import org.eclipse.php.internal.core.ast.nodes.BodyDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Comment;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Statement;
+import org.eclipse.php.internal.core.ast.nodes.*;
 import org.eclipse.php.internal.core.format.DefaultCodeFormattingProcessor;
 import org.eclipse.php.internal.core.format.ICodeFormattingProcessor;
 import org.eclipse.php.internal.core.format.IFormatterProcessorFactory;
-import org.eclipse.text.edits.DeleteEdit;
-import org.eclipse.text.edits.InsertEdit;
-import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.*;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
@@ -53,7 +33,6 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author shalom (based on JDT code)
  */
-@SuppressWarnings({"unused", "unchecked"})
 /* package */final class ASTRewriteFormatter {
 
 	// TODO - Need a code cleanup
@@ -155,10 +134,11 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 	private final Map options;
 	private IDocument document;
 	private PHPVersion phpVersion;
+	private boolean useShortTags;
 
 	public ASTRewriteFormatter(IDocument document, NodeInfoStore placeholders,
 			RewriteEventStore eventStore, Map options, String lineDelimiter,
-			PHPVersion version) {
+			PHPVersion version, boolean useShortTags) {
 		this.document = document;
 		this.placeholders = placeholders;
 		this.eventStore = eventStore;
@@ -307,8 +287,8 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 			int length, int indentationLevel) {
 		try {
 			ICodeFormattingProcessor codeFormatter = createCodeFormatter(
-					this.options, new Region(offset, length), createDocument(
-							string, null));
+					this.options, new Region(offset, length),
+					createDocument(string, null));
 			return codeFormatter.getTextEdits();
 		} catch (Exception e) {
 			PHPEplPlugin.logError(e);
@@ -320,7 +300,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 			IRegion region, IDocument document) throws Exception {
 		if (getContentFomatter() != null) {
 			return contentFormatter.getCodeFormattingProcessor(document,
-					phpVersion, region);
+					phpVersion, useShortTags, region);
 		}
 		return new DefaultCodeFormattingProcessor(options);
 	}
@@ -374,11 +354,6 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 	 *             IllegalArgumentException is thrown.
 	 */
 	private TextEdit formatNode(ASTNode node, String str, int indentationLevel) {
-		// (shalom) We create chunk of php codes that we inject to the
-		// formatter.
-		// Every node is created with a <?php prefix and, optionally, some more
-		// prefix string that is needed for the formatting.
-		int code;
 		String prefix = "<?php "; //$NON-NLS-1$
 		String suffix = ""; //$NON-NLS-1$
 		if (node instanceof Statement) {
@@ -404,8 +379,8 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 		}
 
 		String concatStr = prefix + str + suffix;
-		TextEdit edit = formatString(0, concatStr, prefix.length(), str
-				.length(), indentationLevel);
+		TextEdit edit = formatString(0, concatStr, prefix.length(),
+				str.length(), indentationLevel);
 
 		if (prefix.length() > 0) {
 			edit = shifEdit(edit, prefix.length(), prefix);

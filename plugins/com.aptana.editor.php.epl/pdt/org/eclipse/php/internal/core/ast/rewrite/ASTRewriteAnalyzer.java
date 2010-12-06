@@ -139,7 +139,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * generates text edits (text manipulation API) that describe the required code
  * changes.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "nls"})
 public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 	TextEdit currentEdit;
@@ -151,7 +151,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	private final Stack sourceCopyEndNodes;
 
 	private final char[] content;
-	@SuppressWarnings("unused")
 	private final IDocument document;
 	private final LineInformation lineInfo;
 	private final ASTRewriteFormatter formatter;
@@ -205,7 +204,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		this.sourceCopyEndNodes = new Stack();
 
 		this.formatter = new ASTRewriteFormatter(document, nodeInfos,
-				eventStore, options, lineDelim, scanner.getPHPVersion());
+				eventStore, options, lineDelim, scanner.getPHPVersion(), true);
 
 		this.extendedSourceRangeComputer = extendedSourceRangeComputer;
 		this.lineCommentEndOffsets = new LineCommentEndOffsets(comments);
@@ -296,7 +295,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		return false;
 	}
 
-	@SuppressWarnings("unused")
 	private final boolean isCollapsed(ASTNode node) {
 		return this.nodeInfos.isCollapsed(node);
 	}
@@ -491,8 +489,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup) {
 		TextEdit targetEdit;
 		SourceModifier modifier = new SourceModifier(sourceIndentLevel,
-				destIndentString, this.formatter.getTabWidth(), this.formatter
-						.getIndentWidth());
+				destIndentString, this.formatter.getTabWidth(),
+				this.formatter.getIndentWidth());
 
 		if (sourceEdit instanceof MoveSourceEdit) {
 			MoveSourceEdit moveEdit = (MoveSourceEdit) sourceEdit;
@@ -798,7 +796,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		return doVisit(parent, property, offset);
 	}
 
-	@SuppressWarnings("unused")
 	private int rewriteDocumentation(ASTNode node,
 			StructuralPropertyDescriptor property) {
 		int pos = rewriteNode(node, property, node.getStart(),
@@ -906,8 +903,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					TextEditGroup editGroup = getEditGroup(event);
 					int dotEnd = getScanner().getTokenEndOffset(
 							SymbolsProvider.getSymbol(
-									SymbolsProvider.DOT_SYMBOL_ID, scanner
-											.getPHPVersion()),
+									SymbolsProvider.OBJECT_OP_SYMBOL_ID,
+									scanner.getPHPVersion()),
 							node.getStart() + node.getLength());
 					doTextRemoveAndVisit(startPos, dotEnd - startPos, node,
 							editGroup);
@@ -930,8 +927,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				try {
 					return getScanner().getTokenEndOffset(
 							SymbolsProvider.getSymbol(
-									SymbolsProvider.DOT_SYMBOL_ID, scanner
-											.getPHPVersion()), offset + length);
+									SymbolsProvider.OBJECT_OP_SYMBOL_ID,
+									scanner.getPHPVersion()), offset + length);
 				} catch (CoreException e) {
 					handleException(e);
 				}
@@ -1068,11 +1065,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			}
 			leadString.append(createIndentString(insertIndent));
 		}
-		return listRewriter.rewriteList(parent, property, insertPos, leadString
-				.toString());
+		return listRewriter.rewriteList(parent, property, insertPos,
+				leadString.toString());
 	}
 
-	@SuppressWarnings("unused")
 	private int rewriteOptionalTypeParameters(ASTNode parent,
 			StructuralPropertyDescriptor property, int offset, String keyword,
 			boolean adjustOnNext, boolean needsSpaceOnRemoveAll) {
@@ -1095,8 +1091,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					int posBeforeOpenBracket = getScanner()
 							.getTokenStartOffset(
 									SymbolsProvider.getSymbol(
-											SymbolsProvider.LESS_ID, scanner
-													.getPHPVersion()), pos);
+											SymbolsProvider.LESS_ID,
+											scanner.getPHPVersion()), pos);
 					if (posBeforeOpenBracket != pos) {
 						needsSpaceOnRemoveAll = false;
 					}
@@ -1108,8 +1104,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					// next element
 					int endPos = getScanner().getTokenEndOffset(
 							SymbolsProvider.getSymbol(
-									SymbolsProvider.GREATER_ID, scanner
-											.getPHPVersion()), pos); // set pos
+									SymbolsProvider.GREATER_ID,
+									scanner.getPHPVersion()), pos); // set pos
 					// to
 					// '>'
 					endPos = getScanner()
@@ -1173,7 +1169,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup = getEditGroup(event);
 			if ((Boolean) event.getNewValue()) {
 				// Add a dollar sign to the variable
-				this.doTextInsert(variable.getStart(), "$", editGroup); //$NON-NLS-1$
+				this.doTextInsert(variable.getStart(), "$", editGroup);
 			} else {
 				// Remove the dollar sign from the variable
 				this.doTextRemove(variable.getStart(), 1, editGroup);
@@ -1187,8 +1183,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * @throws CoreException
 	 */
 	private int getLeftBraceStartPosition(int pos) throws CoreException {
-		return getSymbolStartPosition(pos, SymbolsProvider.getSymbol(
-				SymbolsProvider.LBRACE_ID, scanner.getPHPVersion()));
+		return getSymbolStartPosition(
+				pos,
+				SymbolsProvider.getSymbol(SymbolsProvider.LBRACE_ID,
+						scanner.getPHPVersion()));
 	}
 
 	/*
@@ -1197,8 +1195,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * @throws CoreException
 	 */
 	private int getRightBraceStartPosition(int pos) throws CoreException {
-		return getSymbolStartPosition(pos, SymbolsProvider.getSymbol(
-				SymbolsProvider.RBRACE_ID, scanner.getPHPVersion()));
+		return getSymbolStartPosition(
+				pos,
+				SymbolsProvider.getSymbol(SymbolsProvider.RBRACE_ID,
+						scanner.getPHPVersion()));
 	}
 
 	/*
@@ -1208,8 +1208,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * @throws CoreException
 	 */
 	private int getLeftParenthesesStartPosition(int pos) throws CoreException {
-		return getSymbolStartPosition(pos, SymbolsProvider.getSymbol(
-				SymbolsProvider.LPAREN_ID, scanner.getPHPVersion()));
+		return getSymbolStartPosition(
+				pos,
+				SymbolsProvider.getSymbol(SymbolsProvider.LPAREN_ID,
+						scanner.getPHPVersion()));
 	}
 
 	/*
@@ -1218,10 +1220,11 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * 
 	 * @throws CoreException
 	 */
-	@SuppressWarnings("unused")
 	private int getRightParenthesesStartPosition(int pos) throws CoreException {
-		return getSymbolStartPosition(pos, SymbolsProvider.getSymbol(
-				SymbolsProvider.RPAREN_ID, scanner.getPHPVersion()));
+		return getSymbolStartPosition(
+				pos,
+				SymbolsProvider.getSymbol(SymbolsProvider.RPAREN_ID,
+						scanner.getPHPVersion()));
 	}
 
 	/*
@@ -1230,8 +1233,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * @throws CoreException
 	 */
 	private int getLeftBracketStartPosition(int pos) throws CoreException {
-		return getSymbolStartPosition(pos, SymbolsProvider.getSymbol(
-				SymbolsProvider.LBRACKET_ID, scanner.getPHPVersion()));
+		return getSymbolStartPosition(
+				pos,
+				SymbolsProvider.getSymbol(SymbolsProvider.LBRACKET_ID,
+						scanner.getPHPVersion()));
 	}
 
 	/*
@@ -1239,10 +1244,11 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * 
 	 * @throws CoreException
 	 */
-	@SuppressWarnings("unused")
 	private int getRightBracketStartPosition(int pos) throws CoreException {
-		return getSymbolStartPosition(pos, SymbolsProvider.getSymbol(
-				SymbolsProvider.RBRACKET_ID, scanner.getPHPVersion()));
+		return getSymbolStartPosition(
+				pos,
+				SymbolsProvider.getSymbol(SymbolsProvider.RBRACKET_ID,
+						scanner.getPHPVersion()));
 	}
 
 	/*
@@ -1381,12 +1387,12 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			// prepare the modifiers 'syms'
 			PHPVersion phpVersion = this.scanner.getPHPVersion();
 			int modifiers[] = new int[] {
-					SymbolsProvider.getModifierSym("public", phpVersion), //$NON-NLS-1$
-					SymbolsProvider.getModifierSym("private", phpVersion), //$NON-NLS-1$
-					SymbolsProvider.getModifierSym("protected", phpVersion), //$NON-NLS-1$
-					SymbolsProvider.getModifierSym("static", phpVersion), //$NON-NLS-1$
-					SymbolsProvider.getModifierSym("abstract", phpVersion), //$NON-NLS-1$
-					SymbolsProvider.getModifierSym("final", phpVersion) }; //$NON-NLS-1$
+					SymbolsProvider.getModifierSym("public", phpVersion),
+					SymbolsProvider.getModifierSym("private", phpVersion),
+					SymbolsProvider.getModifierSym("protected", phpVersion),
+					SymbolsProvider.getModifierSym("static", phpVersion),
+					SymbolsProvider.getModifierSym("abstract", phpVersion),
+					SymbolsProvider.getModifierSym("final", phpVersion) };
 			loop: while (true) {
 				if (TokenScanner.isComment(tok)) {
 					tok = scanner.readNext(/* true */); // next non-comment
@@ -1442,7 +1448,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 	class ModifierRewriter extends ListRewriter {
 
-		@SuppressWarnings("unused")
 		private final Prefix annotationSeparation;
 
 		public ModifierRewriter(Prefix annotationSeparation) {
@@ -1468,7 +1473,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private int rewriteModifiers2(ASTNode node,
 			ChildListPropertyDescriptor property, int pos) {
 		// RewriteEvent event = getEvent(node, property);
@@ -1629,7 +1633,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		int pos = content.length; // TODO - Check if this is right (using 0
 		// cause for the code to be inserted before
 		// the <?php section).
-		rewriteNodeList(node, Program.STATEMENTS_PROPERTY, pos, "", ""); //$NON-NLS-1$  //$NON-NLS-2$
+		rewriteNodeList(node, Program.STATEMENTS_PROPERTY, pos, "", "");
 		// int startPos = rewriteNode(node, Program.PACKAGE_PROPERTY, 0,
 		// ASTRewriteFormatter.NONE);
 		//
@@ -1658,7 +1662,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		return false;
 	}
 
-	@SuppressWarnings("unused")
 	private void rewriteReturnType(MethodDeclaration node,
 			boolean isConstructor, boolean isConstructorChange) {
 		// TODO
@@ -1707,8 +1710,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);
 		}
-		rewriteModifiers(node, MethodDeclaration.MODIFIER_PROPERTY, node
-				.getStart());
+		rewriteModifiers(node, MethodDeclaration.MODIFIER_PROPERTY,
+				node.getStart());
 		rewriteRequiredNode(node, MethodDeclaration.FUNCTION_PROPERTY);
 		return false;
 	}
@@ -1744,21 +1747,21 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			} else if (propertyDescriptor == WhileStatement.BODY_PROPERTY) {
 				Symbol symbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_WHILE_ID, scanner.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endwhile", symbol); //$NON-NLS-1$
+				rewriteBlock(node, editGroup, shouldBeCurly, "endwhile", symbol);
 			} else if (propertyDescriptor == ForStatement.BODY_PROPERTY) {
 				Symbol symbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_FOR_ID, scanner.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endfor", symbol); //$NON-NLS-1$
+				rewriteBlock(node, editGroup, shouldBeCurly, "endfor", symbol);
 			} else if (propertyDescriptor == ForEachStatement.STATEMENT_PROPERTY) {
 				Symbol symbol = SymbolsProvider
-						.getSymbol(SymbolsProvider.END_FOREACH_ID, scanner
-								.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endforeach", //$NON-NLS-1$
+						.getSymbol(SymbolsProvider.END_FOREACH_ID,
+								scanner.getPHPVersion());
+				rewriteBlock(node, editGroup, shouldBeCurly, "endforeach",
 						symbol);
 			} else if (propertyDescriptor == SwitchStatement.BODY_PROPERTY) {
 				Symbol symbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_SWITCH_ID, scanner.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endswitch", //$NON-NLS-1$
+				rewriteBlock(node, editGroup, shouldBeCurly, "endswitch",
 						symbol);
 			}
 		}
@@ -1786,10 +1789,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		if (propertyDescriptor == IfStatement.TRUE_STATEMENT_PROPERTY) {
 			if (shouldBeCurly) {
 				// Change the if's open block char to the opening brace char
-				doTextReplace(blockStart, 1, "{", editGroup); //$NON-NLS-1$
+				doTextReplace(blockStart, 1, "{", editGroup);
 				// Change the closing mark to be a closing brace
 
-				doTextInsert(blockEnd + 1, "\n}", editGroup); //$NON-NLS-1$
+				doTextInsert(blockEnd + 1, "\n}", editGroup);
 				// remove the endif token at this stage
 				Symbol endIfSymbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_IF_ID, scanner.getPHPVersion());
@@ -1806,11 +1809,11 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					handleException(e);
 				}
 			} else {
-				doTextReplace(blockStart, 1, ":", editGroup); //$NON-NLS-1$
+				doTextReplace(blockStart, 1, ":", editGroup);
 				// In case that we don't have a false statement, add the endif
 				// word
 				if (ifStatement.getFalseStatement() == null) {
-					doTextReplace(blockEnd, 1, "endif;", editGroup); //$NON-NLS-1$
+					doTextReplace(blockEnd, 1, "endif;", editGroup);
 				} else {
 					doTextRemove(blockEnd, 1, editGroup);
 				}
@@ -1820,13 +1823,13 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			// brace
 			if (shouldBeCurly) {
 				// replace the opening colon char to a brace char
-				doTextReplace(blockStart, 1, "{", editGroup); //$NON-NLS-1$
+				doTextReplace(blockStart, 1, "{", editGroup);
 				// close the block with a brace
-				doTextInsert(blockEnd + 1, "\n}", editGroup); //$NON-NLS-1$
+				doTextInsert(blockEnd + 1, "\n}", editGroup);
 			} else {
-				doTextReplace(blockStart, 1, ":", editGroup); //$NON-NLS-1$
+				doTextReplace(blockStart, 1, ":", editGroup);
 				// End the if statement
-				doTextReplace(blockEnd, 1, "endif;", editGroup); //$NON-NLS-1$
+				doTextReplace(blockEnd, 1, "endif;", editGroup);
 			}
 		}
 	}
@@ -1853,9 +1856,9 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		// }
 		if (shouldBeCurly) {
 			// Change the if's open block char to the opening brace char
-			doTextReplace(blockStart, 1, "{", editGroup); //$NON-NLS-1$
+			doTextReplace(blockStart, 1, "{", editGroup);
 			// Change the closing mark to be a closing brace
-			doTextInsert(blockEnd + 1, "\n}", editGroup); //$NON-NLS-1$
+			doTextInsert(blockEnd + 1, "\n}", editGroup);
 			try {
 				// We scan for the Block end position by looking for the
 				// symbol's start offset.
@@ -1875,7 +1878,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				handleException(e);
 			}
 		} else {
-			doTextReplace(blockStart, 1, ":", editGroup); //$NON-NLS-1$
+			doTextReplace(blockStart, 1, ":", editGroup);
 			// In case that we don't have a false statement, add the keyword
 			doTextReplace(blockEnd - 1, 1, keyword + ';', editGroup);
 		}
@@ -1959,8 +1962,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 							.getStart());
 					int closePos = arrayAccess.getEnd() - 1;
 					TextEditGroup editGroup = getEditGroup(event);
-					doTextReplace(openPos, 1, "{", editGroup); //$NON-NLS-1$
-					doTextReplace(closePos, 1, "}", editGroup); //$NON-NLS-1$
+					doTextReplace(openPos, 1, "{", editGroup);
+					doTextReplace(closePos, 1, "}", editGroup);
 				} else {
 					// the modification was from a variable hashtable to a
 					// variable array.
@@ -1968,8 +1971,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 							.getStart());
 					int closePos = arrayAccess.getEnd() - 1;
 					TextEditGroup editGroup = getEditGroup(event);
-					doTextReplace(openPos, 1, "[", editGroup); //$NON-NLS-1$
-					doTextReplace(closePos, 1, "]", editGroup); //$NON-NLS-1$
+					doTextReplace(openPos, 1, "[", editGroup);
+					doTextReplace(closePos, 1, "]", editGroup);
 				}
 			} catch (CoreException ce) {
 				handleException(ce);
@@ -1987,7 +1990,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(node);
 		}
 		rewriteNodeList(node, ArrayCreation.ELEMENTS_PROPERTY, node.getStart(),
-				"", ", "); //$NON-NLS-1$  //$NON-NLS-2$
+				"", ", ");
 		return false;
 	}
 
@@ -2039,8 +2042,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		}
 		try {
 			int offset = getScanner().getTokenEndOffset(
-					SymbolsProvider.getSymbol(SymbolsProvider.BREAK_ID, scanner
-							.getPHPVersion()), node.getStart());
+					SymbolsProvider.getSymbol(SymbolsProvider.BREAK_ID,
+							scanner.getPHPVersion()), node.getStart());
 			rewriteNode(node, BreakStatement.EXPRESSION_PROPERTY, offset,
 					ASTRewriteFormatter.SPACE); // space between break and label
 		} catch (CoreException e) {
@@ -2103,8 +2106,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			try {
 				int pos = getLeftParenthesesStartPosition(node.getStart()) + 1;
 				rewriteNodeList(node,
-						ClassInstanceCreation.CTOR_PARAMS_PROPERTY, pos, "", //$NON-NLS-1$
-						", "); //$NON-NLS-1$
+						ClassInstanceCreation.CTOR_PARAMS_PROPERTY, pos, "",
+						", ");
 			} catch (Exception e) {
 				handleException(e);
 			}
@@ -2226,11 +2229,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);
 		}
-		rewriteModifiers(node, FieldsDeclaration.MODIFIER_PROPERTY, node
-				.getStart());
-		rewriteNodeList(node, FieldsDeclaration.FIELDS_PROPERTY, node
-				.getStart()
-				+ node.getModifierString().length(), "", ", "); //$NON-NLS-1$  //$NON-NLS-2$
+		rewriteModifiers(node, FieldsDeclaration.MODIFIER_PROPERTY,
+				node.getStart());
+		rewriteNodeList(node, FieldsDeclaration.FIELDS_PROPERTY,
+				node.getStart() + node.getModifierString().length(), "", ", ");
 		return false;
 	}
 
@@ -2280,7 +2282,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			break;
 		case RewriteEvent.INSERTED:
 			ASTNode newNode = (ASTNode) event.getNewValue();
-			doTextInsert(pos, " = ", editGroup); //$NON-NLS-1$
+			doTextInsert(pos, " = ", editGroup);
 			doTextInsert(pos, newNode, 0, false, editGroup);
 			break;
 		case RewriteEvent.REMOVED:
@@ -2321,7 +2323,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			pos = getScanner().getTokenEndOffset(semicolonSym, pos);
 
 			pos = rewriteNodeList(node, ForStatement.EXPRESSION_PROPERTY, pos,
-					"", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+					"", ", ");
 
 			if (isChanged(node, ForStatement.UPDATERS_PROPERTY)) {
 				int startOffset = getScanner().getTokenEndOffset(semicolonSym,
@@ -2444,8 +2446,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			String operation = InfixExpression
 					.getOperator((Integer) getNewValue(node,
 							InfixExpression.OPERATOR_PROPERTY));
-			replaceOperation(pos, operation, getEditGroup(node,
-					InfixExpression.OPERATOR_PROPERTY));
+			replaceOperation(pos, operation,
+					getEditGroup(node, InfixExpression.OPERATOR_PROPERTY));
 		}
 		pos = rewriteRequiredNode(node, InfixExpression.RIGHT_OPERAND_PROPERTY);
 		return false;
@@ -2461,8 +2463,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 						.getNextStartOffset(leftOperandEnd/* , true */); // instanceof
 
 				if (offset == leftOperandEnd) {
-					doTextInsert(offset, String.valueOf(' '), getEditGroup(
-							node, desc));
+					doTextInsert(offset, String.valueOf(' '),
+							getEditGroup(node, desc));
 				}
 			} catch (CoreException e) {
 				handleException(e);
@@ -2481,8 +2483,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				}
 				if (offset == getExtendedOffset((ASTNode) getOriginalValue(
 						node, desc))) {
-					doTextInsert(offset, String.valueOf(' '), getEditGroup(
-							node, desc));
+					doTextInsert(offset, String.valueOf(' '),
+							getEditGroup(node, desc));
 				}
 			} catch (CoreException e) {
 				handleException(e);
@@ -2499,7 +2501,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	// }
 	// int startPos= node.getStart() + 3;
 	//		String separator= getLineDelimiter() + getIndentAtOffset(node.getStart())  + " * "; //$NON-NLS-1$
-	//		
+	//
 	// rewriteNodeList(node, Javadoc.TAGS_PROPERTY, startPos, separator,
 	// separator);
 	// return false;
@@ -2512,7 +2514,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	// if (!hasChildrenChanges(node)) {
 	// return doVisitUnchangedChildren(node);
 	// }
-	//		
+	//
 	// rewriteRequiredNode(node, LabeledStatement.LABEL_PROPERTY);
 	// rewriteRequiredNode(node, LabeledStatement.BODY_PROPERTY);
 	// return false;
@@ -2528,7 +2530,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(node);
 		}
 
-		@SuppressWarnings("unused")
 		int pos = rewriteOptionalQualifier(node,
 				MethodInvocation.DISPATCHER_PROPERTY, node.getStart());
 		// pos = rewriteRequiredNode(node, MethodInvocation.NAME_PROPERTY);
@@ -2561,8 +2562,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(node);
 		}
 
-		rewriteOperation(node, PrefixExpression.OPERATOR_PROPERTY, node
-				.getStart());
+		rewriteOperation(node, PrefixExpression.OPERATOR_PROPERTY,
+				node.getStart());
 		rewriteRequiredNode(node, PrefixExpression.VARIABLE_PROPERTY);
 		return false;
 	}
@@ -2584,7 +2585,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					pos = valueEnd;
 				}
 			}
-			rewriteNodeList(node, SwitchCase.ACTIONS_PROPERTY, pos, "", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			rewriteNodeList(node, SwitchCase.ACTIONS_PROPERTY, pos, "", "");
 		}
 		return rewriteRequiredNodeVisit(node, SwitchCase.VALUE_PROPERTY);
 	}
@@ -2630,8 +2631,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				StringBuffer leadString = new StringBuffer();
 				leadString.append(getLineDelimiter());
 				leadString.append(createIndentString(insertIndent));
-				listRewriter.rewriteList(body, property, pos, leadString
-						.toString());
+				listRewriter.rewriteList(body, property, pos,
+						leadString.toString());
 			} catch (CoreException e) {
 				handleException(e);
 			}
@@ -2653,8 +2654,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 		try {
 			int offset = getScanner().getTokenEndOffset(
-					SymbolsProvider.getSymbol(SymbolsProvider.THROW_ID, scanner
-							.getPHPVersion()), node.getStart());
+					SymbolsProvider.getSymbol(SymbolsProvider.THROW_ID,
+							scanner.getPHPVersion()), node.getStart());
 			ensureSpaceBeforeReplace(node, ThrowStatement.EXPRESSION_PROPERTY,
 					offset, 0);
 
@@ -2678,11 +2679,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		int pos = rewriteRequiredNode(node, TryStatement.BODY_PROPERTY);
 
 		if (isChanged(node, TryStatement.CATCH_CLAUSES_PROPERTY)) {
-			@SuppressWarnings("unused")
 			int indent = getIndent(node.getStart());
 			// String prefix = this.formatter.CATCH_BLOCK.getPrefix(indent);
 			// TODO - Get the formatter prefix for the catch clause indentation
-			String prefix = ""; //$NON-NLS-1$
+			String prefix = "";
 			pos = rewriteNodeList(node, TryStatement.CATCH_CLAUSES_PROPERTY,
 					pos, prefix, prefix);
 		} else {
@@ -2773,7 +2773,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				start = ((ForEachStatement) node).getValue().getStart();
 			}
 			doTextInsert(start, newValue, 0, false, editGroup);
-			doTextInsert(start, "=>", editGroup); //$NON-NLS-1$
+			doTextInsert(start, "=>", editGroup);
 			break;
 		case RewriteEvent.REMOVED:
 			Expression removedExpression = (Expression) event
@@ -2826,8 +2826,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(backTickExpression);
 		}
 		rewriteNodeList(backTickExpression,
-				BackTickExpression.EXPRESSIONS_PROPERTY, backTickExpression
-						.getStart(), "", ""); //$NON-NLS-1$ //$NON-NLS-2$
+				BackTickExpression.EXPRESSIONS_PROPERTY,
+				backTickExpression.getStart(), "", "");
 		return false;
 	}
 
@@ -2874,8 +2874,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				pos = classDeclaration.getSuperClass().getEnd();
 			}
 			rewriteNodeList(classDeclaration,
-					ClassDeclaration.INTERFACES_PROPERTY, pos, " implements ", //$NON-NLS-1$
-					", "); //$NON-NLS-1$
+					ClassDeclaration.INTERFACES_PROPERTY, pos, " implements ",
+					", ");
 			// Rewrite the name and the body
 			return rewriteRequiredNodeVisit(classDeclaration,
 					ClassDeclaration.NAME_PROPERTY,
@@ -2899,8 +2899,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup = getEditGroup(event);
 			int start = classDeclaration.getStart();
 			int classKeywordStart = getScanner().getTokenStartOffset(
-					SymbolsProvider.getSymbol(SymbolsProvider.CLASS_ID, scanner
-							.getPHPVersion()), start);
+					SymbolsProvider.getSymbol(SymbolsProvider.CLASS_ID,
+							scanner.getPHPVersion()), start);
 			int modifier = (Integer) event.getNewValue();
 			switch (modifier) {
 			case ClassDeclaration.MODIFIER_NONE:
@@ -2934,7 +2934,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			case RewriteEvent.INSERTED:
 				Identifier superClass = (Identifier) event.getNewValue();
 				int insertionPos = classDeclaration.getName().getEnd();
-				String extendsKeyword = " extends "; //$NON-NLS-1$
+				String extendsKeyword = " extends ";
 				doTextInsert(insertionPos, extendsKeyword, editGroup);
 				doTextInsert(insertionPos, superClass, 0, false, editGroup);
 				break;
@@ -2945,8 +2945,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				if (classDeclaration.interfaces().size() > 0) {
 					deletionEnd = getScanner().getTokenStartOffset(
 							SymbolsProvider.getSymbol(
-									SymbolsProvider.IMPLEMENTS_ID, scanner
-											.getPHPVersion()),
+									SymbolsProvider.IMPLEMENTS_ID,
+									scanner.getPHPVersion()),
 							classDeclaration.getStart());
 				} else {
 					deletionEnd = classDeclaration.getBody().getStart();
@@ -2954,7 +2954,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				int deletionStart = classDeclaration.getName().getEnd();
 				doTextRemove(deletionStart, deletionEnd - deletionStart,
 						editGroup);
-				doTextInsert(deletionStart, " ", editGroup); //$NON-NLS-1$
+				doTextInsert(deletionStart, " ", editGroup);
 				break;
 			case RewriteEvent.REPLACED:
 				rewriteRequiredNode(classDeclaration,
@@ -2969,7 +2969,6 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * 
 	 * @param classDeclaration
 	 */
-	@SuppressWarnings("unused")
 	private void rewriteInterfaces(ClassDeclaration classDeclaration) {
 
 	}
@@ -3040,7 +3039,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(echoStatement);
 		}
 		rewriteNodeList(echoStatement, EchoStatement.EXPRESSIONS_PROPERTY,
-				echoStatement.getStart(), "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+				echoStatement.getStart(), "", ", ");
 		return false;
 	}
 
@@ -3083,7 +3082,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				if (formalParameter.getAST().apiLevel() == PHPVersion.PHP5) {
 					throw new CoreException(
 							new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID,
-									"Could not set a FormalParameter 'isMandatory' property for PHP5 AST")); //$NON-NLS-1$
+									"Could not set a FormalParameter 'isMandatory' property for PHP5 AST"));
 				}
 				// Rewrite the isMandatory field
 				RewriteEvent event = getEvent(formalParameter,
@@ -3097,7 +3096,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 						// characters including the space)
 						doTextRemove(formalParameter.getStart(), 6, editGroup);
 					} else {
-						doTextInsert(formalParameter.getStart(), "const ", //$NON-NLS-1$
+						doTextInsert(formalParameter.getStart(), "const ",
 								editGroup);
 					}
 				}
@@ -3132,14 +3131,14 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				ASTNode originalValue = (ASTNode) event.getOriginalValue();
 				if (originalValue == null || originalValue.getLength() == 0) {
 					// Add another space to split the type from the name
-					doTextInsert(pos, " ", getEditGroup(event)); //$NON-NLS-1$
+					doTextInsert(pos, " ", getEditGroup(event));
 				}
 				break;
 			case RewriteEvent.INSERTED:
 				Identifier identifier = (Identifier) event.getNewValue();
 				String name = identifier.getName();
 				if (name != null) {
-					if (!name.endsWith(" ") && !name.endsWith("\t")) { //$NON-NLS-1$ //$NON-NLS-2$
+					if (!name.endsWith(" ") && !name.endsWith("\t")) {
 						name += ' ';
 					}
 					doTextInsert(formalParameter.getStart(), name,
@@ -3148,8 +3147,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				break;
 			case RewriteEvent.REMOVED:
 				originalValue = (ASTNode) event.getOriginalValue();
-				doTextRemove(originalValue.getStart(), originalValue
-						.getLength(), getEditGroup(event));
+				doTextRemove(originalValue.getStart(),
+						originalValue.getLength(), getEditGroup(event));
 				break;
 			}
 		}
@@ -3174,7 +3173,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				Scalar scalar = (Scalar) event.getNewValue();
 				String scalarValue = scalar.getStringValue();
 				if (scalar != null) {
-					doTextInsert(formalParameter.getStart(), " = " //$NON-NLS-1$
+					doTextInsert(formalParameter.getStart(), " = "
 							+ scalarValue, getEditGroup(event));
 				}
 				break;
@@ -3246,9 +3245,9 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					editGroup);
 			if (isReference) {
 				// we need to insert the &
-				doTextInsert(startDeletionFrom, " &", editGroup); //$NON-NLS-1$
+				doTextInsert(startDeletionFrom, " &", editGroup);
 			} else {
-				doTextInsert(startDeletionFrom, " ", editGroup); //$NON-NLS-1$
+				doTextInsert(startDeletionFrom, " ", editGroup);
 			}
 		}
 	}
@@ -3308,7 +3307,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(globalStatement);
 		}
 		rewriteNodeList(globalStatement, GlobalStatement.VARIABLES_PROPERTY,
-				globalStatement.getStart(), "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+				globalStatement.getStart(), "", ", ");
 		return false;
 	}
 
@@ -3377,8 +3376,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			if (event != null && event.getChangeKind() == RewriteEvent.REPLACED) {
 				TextEditGroup editGroup = getEditGroup(event);
 				int typeEndOffset = Include.getType(include.getIncludeType())
-						.length()
-						+ include.getStart();
+						.length() + include.getStart();
 				ASTNode newNode = (ASTNode) event.getNewValue();
 				ASTNode originalNode = (ASTNode) event.getOriginalValue();
 				// In case that the offset of the original node started right at
@@ -3441,7 +3439,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			// Rewrite the extended interfaces
 			rewriteNodeList(interfaceDeclaration,
 					InterfaceDeclaration.INTERFACES_PROPERTY,
-					interfaceDeclaration.getName().getEnd(), " extends ", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+					interfaceDeclaration.getName().getEnd(), " extends ", ", ");
 			// Rewrite the name and the body
 			return rewriteRequiredNodeVisit(interfaceDeclaration,
 					InterfaceDeclaration.NAME_PROPERTY,
@@ -3464,7 +3462,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(listVariable);
 		}
 		rewriteNodeList(listVariable, ListVariable.VARIABLES_PROPERTY,
-				listVariable.getStart(), "", ","); //$NON-NLS-1$ //$NON-NLS-2$
+				listVariable.getStart(), "", ",");
 		return false;
 	}
 
@@ -3522,8 +3520,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			break;
 
 		}
-		rewriteNodeList(quote, Quote.EXPRESSIONS_PROPERTY, expressionStart, "", //$NON-NLS-1$
-				""); //$NON-NLS-1$
+		rewriteNodeList(quote, Quote.EXPRESSIONS_PROPERTY, expressionStart, "",
+				"");
 		// In case that the original expressions list was empty, we should add a
 		// new line
 		List originalValue = (List) getOriginalValue(quote,
@@ -3531,8 +3529,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		List newValue = (List) getNewValue(quote, Quote.EXPRESSIONS_PROPERTY);
 		if ((originalValue == null || originalValue.size() == 0)
 				&& newValue != null && newValue.size() > 0) {
-			doTextInsert(expressionStart, "\n", getEditGroup(quote, //$NON-NLS-1$
-					Quote.EXPRESSIONS_PROPERTY));
+			doTextInsert(expressionStart, "\n",
+					getEditGroup(quote, Quote.EXPRESSIONS_PROPERTY));
 		}
 	}
 
@@ -3571,24 +3569,24 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					}
 
 					int newType = (Integer) event.getNewValue();
-					String newStart = ""; //$NON-NLS-1$
-					String newEnd = ""; //$NON-NLS-1$
+					String newStart = "";
+					String newEnd = "";
 					switch (newType) {
 					case Quote.QT_SINGLE:
-						newStart = "'"; //$NON-NLS-1$
-						newEnd = "'"; //$NON-NLS-1$
+						newStart = "'";
+						newEnd = "'";
 						break;
 					case Quote.QT_QUOTE:
-						newStart = "\""; //$NON-NLS-1$
-						newEnd = "\""; //$NON-NLS-1$
+						newStart = "\"";
+						newEnd = "\"";
 						break;
 					case Quote.QT_NOWDOC:
-						newStart = "<<<'Heredoc'\n"; //$NON-NLS-1$
-						newEnd = "\nHeredoc;\n"; //$NON-NLS-1$
+						newStart = "<<<'Heredoc'\n";
+						newEnd = "\nHeredoc;\n";
 						break;
 					case Quote.QT_HEREDOC:
-						newStart = "<<<Heredoc\n"; //$NON-NLS-1$
-						newEnd = "\nHeredoc;\n"; //$NON-NLS-1$
+						newStart = "<<<Heredoc\n";
+						newEnd = "\nHeredoc;\n";
 						break;
 					}
 					doTextReplace(quoteStart, expressionsStart - quoteStart,
@@ -3641,7 +3639,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		if (event != null) {
 			String newValue = (String) event.getNewValue();
 			if (newValue == null) {
-				newValue = ""; //$NON-NLS-1$
+				newValue = "";
 			}
 			if (event != null) {
 				int kind = event.getChangeKind();
@@ -3715,7 +3713,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(staticStatement);
 		}
 		rewriteNodeList(staticStatement, StaticStatement.EXPRESSIONS_PROPERTY,
-				staticStatement.getStart(), "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+				staticStatement.getStart(), "", ", ");
 		return false;
 	}
 
@@ -3783,9 +3781,9 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 						startOffset - startDeletionFrom, editGroup);
 				if (isReference) {
 					// we need to insert the &
-					doTextInsert(startDeletionFrom, " & ", editGroup); //$NON-NLS-1$
+					doTextInsert(startDeletionFrom, " & ", editGroup);
 				} else {
-					doTextInsert(startDeletionFrom, " ", editGroup); //$NON-NLS-1$
+					doTextInsert(startDeletionFrom, " ", editGroup);
 				}
 			} catch (CoreException e) {
 				handleException(e);
@@ -3859,7 +3857,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup = getEditGroup(event);
 			if ((Boolean) event.getNewValue()) {
 				// Add the '\' to the namespace name
-				this.doTextInsert(namespaceName.getStart(), "\\", editGroup); //$NON-NLS-1$
+				this.doTextInsert(namespaceName.getStart(), "\\", editGroup);
 			} else {
 				// Remove the '\' from the namespace name
 				this.doTextRemove(namespaceName.getStart(), 1, editGroup);
@@ -3870,7 +3868,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup = getEditGroup(event);
 			if ((Boolean) event.getNewValue()) {
 				// Add the 'namespace' to the namespace name
-				this.doTextInsert(namespaceName.getStart(), "namespace\\", //$NON-NLS-1$
+				this.doTextInsert(namespaceName.getStart(), "namespace\\",
 						editGroup);
 			} else {
 				// Remove the 'namespace' from the namespace name
@@ -3888,7 +3886,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 		if (isChanged(namespaceName, NamespaceName.ELEMENTS_PROPERTY)) {
 			rewriteNodeList(namespaceName, NamespaceName.ELEMENTS_PROPERTY,
-					pos, "", "\\"); //$NON-NLS-1$ //$NON-NLS-2$
+					pos, "", "\\");
 		} else {
 			voidVisit(namespaceName, NamespaceName.ELEMENTS_PROPERTY);
 		}
@@ -3897,8 +3895,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	}
 
 	public boolean visit(UseStatement useStatement) {
-		rewriteNodeList(useStatement, UseStatement.PARTS_PROPERTY, useStatement
-				.getStart(), "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+		rewriteNodeList(useStatement, UseStatement.PARTS_PROPERTY,
+				useStatement.getStart(), "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
 		return false;
 	}
 

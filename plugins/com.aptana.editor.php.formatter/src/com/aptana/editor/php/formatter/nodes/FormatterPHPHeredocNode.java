@@ -34,63 +34,49 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Region;
+
+import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
+import com.aptana.formatter.IFormatterWriter;
+import com.aptana.formatter.nodes.FormatterTextNode;
 
 /**
- * A PHP formatter node for keywords, such as modifiers (e.g. 'public', 'private', 'static' etc.), 'echo', 'const' etc.
+ * A PHP formatter node for HEREDOC and NOWDOC nodes.<br>
+ * These nodes should not be formatted when written back.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class FormatterPHPKeywordNode extends FormatterPHPTextNode
+public class FormatterPHPHeredocNode extends FormatterTextNode
 {
 
-	private boolean isFirstInLine;
+	private IRegion heredocRegion;
 
 	/**
-	 * Constructs a new FormatterPHPKeywordNode
+	 * Constructs a new FormatterPHPHeredocNode
 	 * 
 	 * @param document
-	 * @param isFirstInLine
-	 *            Flag this keyword as the first in the line. This will the value that the
-	 *            {@link #isAddingBeginNewLine()} returns. When it's false, previous white spaces will be consumed.
+	 * @param startOffset
+	 * @param endOffset
 	 */
-	public FormatterPHPKeywordNode(IFormatterDocument document, boolean isFirstInLine)
+	public FormatterPHPHeredocNode(IFormatterDocument document, int startOffset, int endOffset)
 	{
-		// We only consume the previous spaces if this modifier is not the first one in the line.
-		super(document, !isFirstInLine);
-		this.isFirstInLine = isFirstInLine;
+		super(document, startOffset, endOffset);
+		heredocRegion = new Region(startOffset, endOffset - startOffset);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
+	/**
+	 * Override the default implementation to exclude the content from begin indented/formatted. (non-Javadoc)
+	 * 
+	 * @see com.aptana.formatter.nodes.FormatterTextNode#accept(com.aptana.formatter.IFormatterContext,
+	 *      com.aptana.formatter.IFormatterWriter)
 	 */
-	@Override
-	protected boolean isAddingBeginNewLine()
+	public void accept(IFormatterContext context, IFormatterWriter visitor) throws Exception
 	{
-		return this.isFirstInLine;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode#getSpacesCountBefore()
-	 */
-	@Override
-	public int getSpacesCountBefore()
-	{
-		if (isFirstInLine)
-		{
-			return 0;
-		}
-		return 1;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
-	 */
-	public int getSpacesCountAfter()
-	{
-		return (this.getStartOffset() == this.getEndOffset()) ? 0 : 1;
+		IFormatterContext heredocContext = context.copy();
+		heredocContext.setIndenting(false);
+		visitor.write(heredocContext, getStartOffset(), getEndOffset());
+		visitor.excludeRegion(heredocRegion);
 	}
 }

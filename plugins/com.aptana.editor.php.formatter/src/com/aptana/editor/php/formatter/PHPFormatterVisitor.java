@@ -126,6 +126,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPHeredocNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPImplicitBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPKeywordNode;
@@ -141,6 +142,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.FormatterDocument;
+import com.aptana.formatter.nodes.IFormatterContainerNode;
 
 /**
  * A PHP formatter node builder.
@@ -1265,7 +1267,18 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Quote quote)
 	{
-		visitTextNode(quote, true, 0);
+		int quoteType = quote.getQuoteType();
+		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC)
+		{
+			FormatterPHPHeredocNode heredocNode = new FormatterPHPHeredocNode(document, quote.getStart(), quote
+					.getEnd());
+			IFormatterContainerNode parentNode = builder.peek();
+			parentNode.addChild(heredocNode);
+		}
+		else
+		{
+			visitTextNode(quote, true, 0);
+		}
 		return false;
 	}
 
