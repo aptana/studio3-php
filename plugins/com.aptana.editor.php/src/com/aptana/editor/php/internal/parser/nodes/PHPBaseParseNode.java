@@ -34,7 +34,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode()
 	{
-		super(PHPMimeType.MimeType);
+		super(PHPMimeType.MIME_TYPE);
 		name = EMPTY;
 	}
 
@@ -49,7 +49,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String name)
 	{
-		super(PHPMimeType.MimeType);
+		super(PHPMimeType.MIME_TYPE);
 		this.nodeType = nodeType;
 		this.name = name.length() != 0 ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;

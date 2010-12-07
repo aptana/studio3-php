@@ -8,5 +8,5 @@ public class PHPMimeType
 	/**
 	 * The PHP MIME type
 	 */
-	public static final String MimeType = "text/php"; //$NON-NLS-1$
+	public static final String MIME_TYPE = "text/php"; //$NON-NLS-1$
 }
