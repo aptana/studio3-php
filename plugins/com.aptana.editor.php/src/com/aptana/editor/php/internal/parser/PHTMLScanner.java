@@ -72,4 +72,16 @@ public class PHTMLScanner extends HTMLScanner
 		}
 		return super.getTokenType(data);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.parsing.CompositeTokenScanner#reset()
+	 */
+	@Override
+	protected void reset()
+	{
+		super.reset();
+		isInPHP = false;
+	}
+
 }

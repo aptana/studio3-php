@@ -47,10 +47,11 @@ public class PHTMLTokens
 	public static final short EOF = 0;
 	public static final short PHP = 200;
 	public static final short PHP_END = 201;
-	private static final short MAXIMUM = 2;
+	public static final short PHP_HEREDOC = 202;
+	private static final short MAXIMUM = 3;
 	private static final short OFFSET = 100;
 
-	private static final String[] NAMES = { "EOF", "PHP", "PHP_END" };
+	private static final String[] NAMES = { "EOF", "PHP", "PHP_END", "PHP_HEREDOC" };
 	private static final String NAME_UNKNOWN = "UNKNOWN"; //$NON-NLS-1$
 
 	private static Map<String, Short> nameIndexMap;

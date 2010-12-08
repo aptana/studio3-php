@@ -73,6 +73,10 @@ public class PHTMLTokenScanner extends HTMLTokenScanner
 			wordRule.addWord(word, token);
 		}
 		rules.add(wordRule);
+		
+		// Special heredoc and nowdoc rule
+		HeredocRule heredocRule = new HeredocRule(createToken(getTokenName(PHTMLTokens.PHP_HEREDOC)));
+		rules.add(heredocRule);
 
 		// Add rule for double quotes
 		rules.add(new MultiLineRule("\"", "\"", createToken(HTMLTokenType.DOUBLE_QUOTED_STRING.getScope()), '\\')); //$NON-NLS-1$ //$NON-NLS-2$
