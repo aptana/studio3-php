@@ -20,7 +20,7 @@ import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.nodes.*;
 import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
-
+@SuppressWarnings({"unchecked", "nls", "deprecation"})
 public class ASTRewriteFlattener extends AbstractVisitor {
 
 	public static String asString(ASTNode node, RewriteEventStore store) {
