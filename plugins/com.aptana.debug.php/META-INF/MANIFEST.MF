@@ -6,6 +6,9 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-Activator: com.aptana.debug.php.PHPDebugPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ com.aptana.debug.php.epl;bundle-version="3.0.0",
+ com.jcraft.jsch,
+ org.eclipse.jsch.core
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
