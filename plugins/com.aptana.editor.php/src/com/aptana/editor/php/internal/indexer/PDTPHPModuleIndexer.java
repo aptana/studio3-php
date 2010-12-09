@@ -18,6 +18,7 @@ import java.util.Stack;
 
 import java_cup.runtime.Symbol;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.php.core.compiler.PHPFlags;
@@ -86,6 +87,7 @@ import com.aptana.editor.php.indexer.IIndexingASTVisitor;
 import com.aptana.editor.php.indexer.IModuleIndexer;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IProgramIndexer;
+import com.aptana.editor.php.internal.builder.ProjectBuildPath;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
@@ -3977,7 +3979,12 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		try
 		{
 			Reader reader = new StringReader(contents);
-			PHPVersion phpVersion = null; // TODO - Shalom: Get the right version from the module
+			IProject project = null;
+			if (module.getBuildPath() instanceof ProjectBuildPath)
+			{
+				project = ((ProjectBuildPath)module.getBuildPath()).getProject();
+			}
+			PHPVersion phpVersion = PHPVersionProvider.getPHPVersion(project);
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
 			ASTParser parser = ASTParser.newParser(reader, version, true, ModelUtils.convertModule(module));
 			return parser.createAST(null);

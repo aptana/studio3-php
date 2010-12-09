@@ -29,7 +29,7 @@ public class CorePreferenceConstants
 	public static void initializeDefaultValues()
 	{
 		IPreferenceStore store = getPreferenceStore();
-		store.setDefault(Keys.PHP_VERSION, IPHPCoreConstants.PHP5);
+		store.setDefault(Keys.PHP_VERSION, IPHPCoreConstants.PHP53);
 		store.setDefault(Keys.EDITOR_USE_ASP_TAGS, false);
 
 		store.setDefault(IPHPCoreConstants.FORMATTER_USE_TABS, true);

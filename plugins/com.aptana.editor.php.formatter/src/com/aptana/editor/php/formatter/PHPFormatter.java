@@ -178,7 +178,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
+				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(), ast
 						.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
@@ -234,13 +234,13 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		// anything in the indexing.
 		try
 		{
-			PHPParser parser = (PHPParser) checkoutParser();
+			PHPParser parser = (PHPParser) checkoutParser(PHPMimeType.MIME_TYPE);
 			Program ast = parser.parseAST(new StringReader(input));
 			checkinParser(parser);
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
+				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(), ast
 						.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection);

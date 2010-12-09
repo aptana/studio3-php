@@ -61,7 +61,7 @@ public final class PHPLocalModuleFactory
 	/**
 	 * PHP content type.
 	 */
-	private static final String PHP_CONTENT_TYPE = "com.aptana.contenttype.html.php"; //$NON-NLS-1$
+	private static final String PHP_CONTENT_TYPE = "com.aptana.contenttype.phtml.php"; //$NON-NLS-1$
 
 	/**
 	 * Gets module by local resource.
