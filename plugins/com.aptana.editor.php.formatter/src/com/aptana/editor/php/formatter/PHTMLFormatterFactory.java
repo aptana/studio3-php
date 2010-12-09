@@ -51,4 +51,14 @@ public class PHTMLFormatterFactory extends HTMLFormatterFactory
 	{
 		return new PHTMLFormatter(lineSeparator, preferences, getMainContentType());
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatterFactory#isContributingToUI()
+	 */
+	@Override
+	public boolean isContributingToUI()
+	{
+		return false;
+	}
 }
