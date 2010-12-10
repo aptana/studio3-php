@@ -11,6 +11,10 @@
  *******************************************************************************/
 package org.eclipse.php.internal.ui.preferences;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.php.internal.ui.PHPUIMessages;
+import org.eclipse.swt.widgets.Composite;
+
 import com.aptana.editor.common.preferences.CommonEditorPreferencePage;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
@@ -30,6 +34,40 @@ public final class PHPPreferencePage extends
 		setPreferenceStore( PHPEplPlugin.getDefault().getPreferenceStore());
 	}
 	
-	
+
+	@Override
+	protected void createMarkOccurrenceOptions(Composite parent)
+	{
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markTypeOccurrences"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_METHOD_OCCURRENCES,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markMethodOccurrences"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_FUNCTION_OCCURRENCES,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markFunctionOccurrences"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_CONSTANT_OCCURRENCES,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markConstantOccurrences"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_GLOBAL_VARIABLE_OCCURRENCES,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markGlobalVariableOccurrences"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_LOCAL_VARIABLE_OCCURRENCES,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markLocalVariableOccurrences"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markMethodExitPoints"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_IMPLEMENTORS,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markImplementors"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_BREAK_CONTINUE_TARGETS,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markBreakContinueTargets"), parent));
+
+		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_STICKY_OCCURRENCES,
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_stickyOccurrences"), parent));
+		
+	}	
 
 }
