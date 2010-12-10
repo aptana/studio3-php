@@ -22,6 +22,7 @@ import org.eclipse.php.internal.core.ast.rewrite.RewriteEventStore.CopySourceInf
 /**
  *
  */
+@SuppressWarnings("unchecked")
 public final class NodeInfoStore {
 	private AST ast;
 
