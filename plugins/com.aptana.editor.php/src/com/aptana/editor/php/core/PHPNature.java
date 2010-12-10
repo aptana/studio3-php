@@ -34,12 +34,12 @@
  */
 package com.aptana.editor.php.core;
 
-import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
+import com.aptana.core.build.UnifiedBuilder;
+import com.aptana.core.util.ResourceUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
@@ -80,7 +80,8 @@ public final class PHPNature implements IProjectNature
 	 */
 	public void configure() throws CoreException
 	{
-		addToBuildSpec(PHPEditorPlugin.BUILDER_ID);
+		ResourceUtil.addBuilder(getProject(), PHPEditorPlugin.BUILDER_ID);
+		ResourceUtil.addBuilder(getProject(), UnifiedBuilder.ID);
 	}
 
 	/*
@@ -89,7 +90,8 @@ public final class PHPNature implements IProjectNature
 	 */
 	public void deconfigure() throws CoreException
 	{
-		removeFromBuildSpec(PHPEditorPlugin.BUILDER_ID);
+		ResourceUtil.removeBuilder(getProject(), PHPEditorPlugin.BUILDER_ID);
+		ResourceUtil.removeBuilderIfOrphaned(getProject(), UnifiedBuilder.ID);
 	}
 
 	/*
@@ -109,97 +111,5 @@ public final class PHPNature implements IProjectNature
 	{
 		this.fProject = project;
 
-	}
-
-	/**
-	 * Adds a builder to the build spec for the given fProject.
-	 */
-	protected void addToBuildSpec(String builderID) throws CoreException
-	{
-
-		IProjectDescription description = this.fProject.getDescription();
-		int scriptCommandIndex = getBuildSpecIndex(description.getBuildSpec());
-
-		if (scriptCommandIndex == -1)
-		{
-			// Add a PHP command to the build spec
-			ICommand command = description.newCommand();
-			command.setBuilderName(builderID);
-			setBuildSpec(description, command);
-		}
-	}
-
-	/**
-	 * Removes a builder with the given ID from the fProject specifications.
-	 * 
-	 * @param builderID
-	 *            A builder ID.
-	 * @throws CoreException
-	 */
-	protected void removeFromBuildSpec(String builderID) throws CoreException
-	{
-
-		IProjectDescription desc = fProject.getDescription();
-		ICommand[] buildSpec = desc.getBuildSpec();
-		for (int i = 0; i < buildSpec.length; i++)
-		{
-			if (buildSpec[i].getBuilderName().equals(builderID))
-			{
-				ICommand[] newBuildSpec = new ICommand[buildSpec.length - 1];
-				System.arraycopy(buildSpec, 0, newBuildSpec, 0, i);
-				System.arraycopy(buildSpec, i + 1, newBuildSpec, i, buildSpec.length - i - 1);
-				desc.setBuildSpec(newBuildSpec);
-				fProject.setDescription(desc, null);
-				return;
-			}
-		}
-	}
-
-	/**
-	 * Sets a build-spec on the current fProject.
-	 * 
-	 * @param description
-	 * @param newCommand
-	 * @throws CoreException
-	 */
-	protected void setBuildSpec(IProjectDescription description, ICommand newCommand) throws CoreException
-	{
-
-		ICommand[] prevBuildSpec = description.getBuildSpec();
-		int index = getBuildSpecIndex(prevBuildSpec);
-		ICommand[] buildSpecs;
-		if (index == -1)
-		{
-			buildSpecs = new ICommand[prevBuildSpec.length + 1];
-			System.arraycopy(prevBuildSpec, 0, buildSpecs, 1, prevBuildSpec.length);
-			buildSpecs[0] = newCommand;
-		}
-		else
-		{
-			prevBuildSpec[index] = newCommand;
-			buildSpecs = prevBuildSpec;
-		}
-
-		description.setBuildSpec(buildSpecs);
-		fProject.setDescription(description, null);
-	}
-
-	/**
-	 * Returns the index of the PHP builder ID.
-	 * 
-	 * @param buildSpec
-	 * @return The index of the PHP builder in the build-spec array.
-	 */
-	private int getBuildSpecIndex(ICommand[] buildSpec)
-	{
-
-		for (int i = 0; i < buildSpec.length; i++)
-		{
-			if (buildSpec[i].getBuilderName().equals(PHPEditorPlugin.BUILDER_ID))
-			{
-				return i;
-			}
-		}
-		return -1;
 	}
 }

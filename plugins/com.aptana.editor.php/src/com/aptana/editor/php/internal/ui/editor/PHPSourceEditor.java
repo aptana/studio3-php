@@ -132,7 +132,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			phpParseState = new PHPParseState();
 		}
-		return new FileService(PHPMimeType.MimeType, phpParseState);
+		return new FileService(PHPMimeType.MIME_TYPE, phpParseState);
 	}
 
 	/*
@@ -291,7 +291,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	public String getLanguage()
 	{
-		return PHPMimeType.MimeType;
+		return PHPMimeType.MIME_TYPE;
 	}
 
 	public void phpVersionChanged(PHPVersion newVersion)

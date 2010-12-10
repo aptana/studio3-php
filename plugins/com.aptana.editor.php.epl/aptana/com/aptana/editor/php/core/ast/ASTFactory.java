@@ -26,6 +26,6 @@ public class ASTFactory
 	 */
 	public static AstLexer getAstLexer(PHPVersion phpVersion, Reader reader) throws IOException
 	{
-		return ASTParser.getLexer(null, reader, phpVersion, true);
+		return ASTParser.getLexer(null, reader, phpVersion, true, true);
 	}
 }

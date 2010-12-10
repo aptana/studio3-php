@@ -14,7 +14,7 @@ public class PHTMLOutlineLabelProvider extends HTMLOutlineLabelProvider
 	 */
 	public PHTMLOutlineLabelProvider()
 	{
-		addSubLanguage(PHPMimeType.MimeType, new PHPOutlineLabelProvider());
+		addSubLanguage(PHPMimeType.MIME_TYPE, new PHPOutlineLabelProvider());
 	}
 
 	/**

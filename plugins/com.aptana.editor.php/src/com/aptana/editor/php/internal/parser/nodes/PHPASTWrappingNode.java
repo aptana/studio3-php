@@ -58,7 +58,7 @@ public class PHPASTWrappingNode extends ParseNode
 	 */
 	public PHPASTWrappingNode(Program ast)
 	{
-		super(PHPMimeType.MimeType);
+		super(PHPMimeType.MIME_TYPE);
 		this.ast = ast;
 	}
 

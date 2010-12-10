@@ -166,6 +166,6 @@ public abstract class AbstractPHPEntryValue implements IReportable, ILanguageNod
 	 */
 	public String getLanguage()
 	{
-		return PHPMimeType.MimeType;
+		return PHPMimeType.MIME_TYPE;
 	}
 }
