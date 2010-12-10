@@ -15,9 +15,11 @@ import org.eclipse.ui.IStartup;
 /**
  * This class is loaded when the UI is loading and starts the daemon that is defined as 'best match'.
  */
-public class DaemonStartup implements IStartup {
+public class DaemonStartup implements IStartup
+{
 
-	public void earlyStartup() {
+	public void earlyStartup()
+	{
 		// Do nothing. Let the plugin startup do the daemon loading.
 	}
 }

@@ -7,8 +7,14 @@ Bundle-Activator: com.aptana.debug.php.PHPDebugPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- com.aptana.debug.php.epl;bundle-version="3.0.0",
  com.jcraft.jsch,
- org.eclipse.jsch.core
+ org.eclipse.jsch.core,
+ org.eclipse.debug.core,
+ com.aptana.core;bundle-version="3.0.0",
+ com.aptana.editor.php;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
+Export-Package: com.aptana.debug.php,
+ com.aptana.debug.php.core.launch.remote,
+ com.aptana.debug.php.core.tunneling,
+ com.aptana.debug.php.core.util
