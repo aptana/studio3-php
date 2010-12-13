@@ -12,6 +12,7 @@ package org.eclipse.php.internal.debug.core;
 
 
 
+
 /**
  * Constants for the PHP debugger.
  */
@@ -108,4 +109,9 @@ public interface IPHPDebugConstants {
 	public static final String DEBUGGING_START_FROM_URL = "debugContinue"; //$NON-NLS-1$
 	
 	public static final String PREF_STEP_FILTERS_LIST = ID_PHP_DEBUG_CORE + ".pref_step_filters_list"; //$NON-NLS-1$
+	
+	/**
+	 * Secondary ID of breakpoint 
+	 */
+	public static final String SECONDARY_ID_KEY = "secondary_id"; //$NON-NLS-1$
 }

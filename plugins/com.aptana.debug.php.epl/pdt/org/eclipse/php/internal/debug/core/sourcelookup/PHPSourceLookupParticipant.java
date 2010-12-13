@@ -12,6 +12,7 @@ package org.eclipse.php.internal.debug.core.sourcelookup;
 
 import java.io.File;
 
+import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;

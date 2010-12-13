@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org.eclipse.php.internal.debug.core.launching.PHPLaunchUtilities;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * A process crash detector is a {@link Runnable} that hooks a PHP process error stream and blocks until the process terminates.
  * Then, the detector determines if the process terminated as a result of an abnormal crash, or as a result
@@ -64,7 +66,7 @@ public class ProcessCrashDetector implements Runnable {
 		try {
 			int exitValue = process.exitValue();
 			if (exitValue > 255 || exitValue < 0) {
-				IdeLog.logError(Activator.getDefault(), PHPDebugCoreMessages.Debugger_Error_Crash_Message, new Exception(builder.toString()));
+				PHPDebugEPLPlugin.logError(PHPDebugCoreMessages.Debugger_Error_Crash_Message, new Exception(builder.toString()));
 				PHPLaunchUtilities.showDebuggerErrorMessage(PHPDebugCoreMessages.Debugger_General_Error, PHPDebugCoreMessages.Debugger_Error_Crash_Message);
 			}
 		} catch (Throwable t) {

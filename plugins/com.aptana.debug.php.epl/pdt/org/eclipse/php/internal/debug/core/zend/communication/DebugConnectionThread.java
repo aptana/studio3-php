@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -48,6 +47,8 @@ import org.eclipse.php.debug.core.debugger.messages.IDebugNotificationMessage;
 import org.eclipse.php.debug.core.debugger.messages.IDebugRequestMessage;
 import org.eclipse.php.debug.core.debugger.messages.IDebugResponseMessage;
 import org.eclipse.php.debug.core.debugger.parameters.IDebugParametersKeys;
+import org.eclipse.php.internal.core.util.BlockingQueue;
+import org.eclipse.php.internal.core.util.collections.IntHashtable;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.Logger;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
@@ -70,7 +71,7 @@ import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestCo
 import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestEvent;
 import org.eclipse.swt.widgets.Display;
 
-import sun.text.IntHashtable;
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * The debug connection thread is responsible of initializing and handle a single debug session that was
@@ -138,7 +139,7 @@ public class DebugConnectionThread implements Runnable {
 			}
 			//			getCommunicationAdministrator().connectionEstablished();
 		} catch (Exception exc) {
-			Activator.log(exc);
+			PHPDebugEPLPlugin.logError(exc);
 		}
 	}
 
@@ -193,11 +194,11 @@ public class DebugConnectionThread implements Runnable {
 		} catch (SocketException se) {
 			// probably because the remote host disconnected
 			// Just log a warning (might be removed in the near future)
-			if (Activator.DEBUG) {
+			if (PHPDebugEPLPlugin.DEBUG) {
 				Logger.log(Logger.WARNING, se.getMessage(), se);
 			}
 		} catch (Exception exc) {
-			Activator.log(exc);
+			PHPDebugEPLPlugin.logError(exc);
 		}
 	}
 
@@ -208,7 +209,7 @@ public class DebugConnectionThread implements Runnable {
 	 * @return A response for the delivered request.
 	 */
 	public Object sendRequest(Object request) throws Exception {
-		if (Activator.DEBUG) {
+		if (PHPDebugEPLPlugin.DEBUG) {
 			System.out.println("Sending syncrhonic request: " + request);
 		}
 		try {
@@ -233,7 +234,7 @@ public class DebugConnectionThread implements Runnable {
 				synchronized (request) {
 					response = (IDebugResponseMessage) responseTable.remove(theMsg.getID());
 					if (response == null) {
-						if (Activator.DEBUG) {
+						if (PHPDebugEPLPlugin.DEBUG) {
 							System.out.println("Response is null. Waiting " + ((21 - timeoutCount) * peerResponseTimeout) + " milliseconds"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						if (timeoutCount == 15) { // Display a progress dialog after a quarter of the assigned time have passed.
@@ -252,7 +253,7 @@ public class DebugConnectionThread implements Runnable {
 				// if the response is null. it means that there is no answer from the server.
 				// This can be because on the peerResponseTimeout.
 				if (response == null && isConnected()) {
-					if (Activator.DEBUG) {
+					if (PHPDebugEPLPlugin.DEBUG) {
 						System.out.println("Communication problems (response is null)"); //$NON-NLS-1$
 					}
 					// Handle time out will stop the communication if need to stop.
@@ -270,15 +271,15 @@ public class DebugConnectionThread implements Runnable {
 				}
 			}
 			PHPLaunchUtilities.hideWaitForDebuggerMessage();
-			if (Activator.DEBUG) {
+			if (PHPDebugEPLPlugin.DEBUG) {
 				System.out.println("Received response: " + response); //$NON-NLS-1$
 			}
 			return response;
 
 		} catch (IOException e) { // Return null for any exception
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		} catch (InterruptedException e) {// Return null for any exception
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 		return null;
 	}
@@ -289,7 +290,7 @@ public class DebugConnectionThread implements Runnable {
 	 * @param responseHandler
 	 */
 	public void sendRequest(Object request, ResponseHandler responseHandler) {
-		if (Activator.DEBUG) {
+		if (PHPDebugEPLPlugin.DEBUG) {
 			System.out.println("Sending asynchronic request: " + request);
 		}
 		int msgId = lastRequestID++;
@@ -350,7 +351,7 @@ public class DebugConnectionThread implements Runnable {
 					socket.close();
 				}
 			} catch (Exception exc) {
-				Activator.log(exc);
+				PHPDebugEPLPlugin.logError(exc);
 			}
 			socket = null;
 		}
@@ -393,7 +394,7 @@ public class DebugConnectionThread implements Runnable {
 				inputManager.waitForStart(in);
 			}
 		} catch (Exception exc) {
-			Activator.log(exc);
+			PHPDebugEPLPlugin.logError(exc);
 		}
 	}
 
@@ -581,7 +582,7 @@ public class DebugConnectionThread implements Runnable {
 		String URL = launchConfiguration.getAttribute(PHPServerProxy.BASE_URL, ""); //$NON-NLS-1$
 
 		boolean stopAtFirstLine = project == null ? true : PHPProjectPreferences.getStopAtFirstLine(project);
-		int requestPort = Activator.getDebugPort(DebuggerCommunicationDaemon.ZEND_DEBUGGER_ID);
+		int requestPort = PHPDebugEPLPlugin.getDebugPort(DebuggerCommunicationDaemon.ZEND_DEBUGGER_ID);
 		boolean runWithDebug = launchConfiguration.getAttribute(IPHPDebugConstants.RUN_WITH_DEBUG_INFO, true);
 		if (launch.getLaunchMode().equals(ILaunchManager.DEBUG_MODE)) {
 			runWithDebug = false;
@@ -637,7 +638,7 @@ public class DebugConnectionThread implements Runnable {
 		String fileNameString = ScriptLocator.getScriptFile(launchConfiguration);
 		if (fileNameString == null) {
 			// Abort
-			IdeLog.logError(Activator.getDefault(), "Zend Debugger aborted. Script name was null.");
+			PHPDebugEPLPlugin.logError("Zend Debugger aborted. Script name was null.");
 			return;
 		}
 		boolean runWithDebugInfo = launchConfiguration.getAttribute(IPHPDebugConstants.RUN_WITH_DEBUG_INFO, true);
@@ -666,7 +667,7 @@ public class DebugConnectionThread implements Runnable {
 		}
 		
 		boolean stopAtFirstLine = PHPProjectPreferences.getStopAtFirstLine(project);
-		int requestPort = Activator.getDebugPort(DebuggerCommunicationDaemon.ZEND_DEBUGGER_ID);
+		int requestPort = PHPDebugEPLPlugin.getDebugPort(DebuggerCommunicationDaemon.ZEND_DEBUGGER_ID);
 
 		IPath phpExe = new Path(phpExeString);
 		PHPProcess process = new PHPProcess(launch, phpExe.toOSString());
@@ -842,7 +843,7 @@ public class DebugConnectionThread implements Runnable {
 				try {
 					IDebugMessage newInputMessage = (IDebugMessage) inputMessageQueue.queueOut();
 
-					if (Activator.DEBUG) {
+					if (PHPDebugEPLPlugin.DEBUG) {
 						System.out.println("New message received: " + newInputMessage);
 					}
 
@@ -880,7 +881,7 @@ public class DebugConnectionThread implements Runnable {
 								IDebugMessageHandler messageHandler = createMessageHandler(newInputMessage);
 
 								if (messageHandler != null) {
-									if (Activator.DEBUG) {
+									if (PHPDebugEPLPlugin.DEBUG) {
 										System.out.println("Creating message handler: " + messageHandler.getClass().getName().replaceFirst(".*\\.", ""));
 									}
 									// handle the request
@@ -923,12 +924,12 @@ public class DebugConnectionThread implements Runnable {
 								handleConnectionClosed();
 							}
 						} catch (Exception e) { // error processing the current message.
-							Activator.log(e);
+							PHPDebugEPLPlugin.logError(e);
 						}
 					}
 
 				} catch (Exception e) {
-					Activator.log(e);
+					PHPDebugEPLPlugin.logError(e);
 				}
 			}
 		}
@@ -1106,7 +1107,7 @@ public class DebugConnectionThread implements Runnable {
 							}
 						}
 					} catch (InterruptedException e) {
-						if (Activator.DEBUG) {
+						if (PHPDebugEPLPlugin.DEBUG) {
 							System.out.println("interrupted: inWork = " + inWork + ", isAlive = " + isAlive); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
@@ -1122,7 +1123,7 @@ public class DebugConnectionThread implements Runnable {
 					int num = in.readInt();
 					if (num < 0) {
 						shutDown();
-						if (Activator.DEBUG) {
+						if (PHPDebugEPLPlugin.DEBUG) {
 							System.out.println("Socket error (length is negative): possibly Server is SSL, Client is not."); //$NON-NLS-1$
 						}
 						Logger.log(Logger.ERROR, "Socket error (length is negative): possibly Server is SSL, Client is not."); //$NON-NLS-1$
@@ -1139,7 +1140,7 @@ public class DebugConnectionThread implements Runnable {
 						if (!validProtocol && messageType != startMessageId) {
 							// display an error message that the protocol in used is wrong.
 							final String errorMessage = MessageFormat.format(PHPDebugCoreMessages.Debugger_Incompatible_Protocol, new Object[] { String.valueOf(RemoteDebugger.PROTOCOL_ID_LATEST) });
-							Status status = new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null);
+							Status status = new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null);
 							DebugPlugin.log(status);
 							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
@@ -1194,10 +1195,10 @@ public class DebugConnectionThread implements Runnable {
 					} // end of synchronized part.
 
 				} catch (IOException e) {
-					// Activator.log(e);
+					// PHPDebugEPLPlugin.logError(e);
 					shutDown();
 				} catch (Exception e) {
-					Activator.log(e);
+					PHPDebugEPLPlugin.logError(e);
 				}
 			}
 		}

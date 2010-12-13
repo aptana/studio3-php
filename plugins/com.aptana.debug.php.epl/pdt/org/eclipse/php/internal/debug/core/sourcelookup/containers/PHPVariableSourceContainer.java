@@ -20,6 +20,9 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
 import org.eclipse.debug.core.sourcelookup.containers.CompositeSourceContainer;
+import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
+
+import com.aptana.editor.php.internal.core.IPHPConstants;
 
 public class PHPVariableSourceContainer extends CompositeSourceContainer {
 
@@ -88,7 +91,7 @@ public class PHPVariableSourceContainer extends CompositeSourceContainer {
     }
 
     private void updateExtentionList() {
-        IContentType type = Platform.getContentTypeManager().getContentType(Constants.ContentTypeID_PHP);
+        IContentType type = Platform.getContentTypeManager().getContentType(IPHPConstants.CONTENT_TYPE_HTML_PHP);
         validExtensions = type.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
     }
 }

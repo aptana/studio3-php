@@ -27,6 +27,7 @@ import org.eclipse.ui.activities.WorkbenchActivityHelper;
 
 import com.aptana.debug.php.core.daemon.CommunicationDaemonRegistry;
 import com.aptana.debug.php.core.daemon.ICommunicationDaemon;
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * A registry class for all the PHP debuggers.
@@ -132,7 +133,7 @@ public class PHPDebuggersRegistry {
 	// Do this only once.
 	private void loadDebuggers() {
 		final IExtensionRegistry registry = Platform.getExtensionRegistry();
-		final IConfigurationElement[] elements = registry.getConfigurationElementsFor(Activator.getID(), EXTENSION_POINT_NAME);
+		final IConfigurationElement[] elements = registry.getConfigurationElementsFor(PHPDebugEPLPlugin.PLUGIN_ID, EXTENSION_POINT_NAME);
 		//We use the following HashMap in order to accumulate non PDT debugger configurations.
 		//that are extension to point: org.eclipse.php.debug.core.phpDebuggers
 		HashMap<String, AbstractDebuggerConfiguration> nonPDTConfigurations = new HashMap<String, AbstractDebuggerConfiguration>();

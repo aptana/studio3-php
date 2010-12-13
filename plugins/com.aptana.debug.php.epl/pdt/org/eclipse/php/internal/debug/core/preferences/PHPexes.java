@@ -20,12 +20,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileInfo;
+import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.php.internal.debug.core.Logger;
+import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 import org.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * A managing class for all the registered PHP Interpreters. As of PDT 1.0 this class can handle multiple debuggers.
@@ -372,7 +378,7 @@ public class PHPexes
 		// debugger types
 		// Our plug-in supports only one default debugger, so we should search and set the first CGI interpreter to be
 		// used as default.
-		String debuggerId = Activator.getCurrentDebuggerId();
+		String debuggerId = PHPDebugEPLPlugin.getCurrentDebuggerId();
 		PHPexeItem defaultItem = getDefaultItem(debuggerId);
 		if (defaultItem != null)
 		{
@@ -402,7 +408,7 @@ public class PHPexes
 				}
 				// Set the new default
 				prefs.setValue(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID, debuggerId);
-				Activator.getDefault().savePluginPreferences();
+				PHPDebugEPLPlugin.getDefault().savePluginPreferences();
 			}
 			PHPexeItem first = null;
 			PHPexeItem firstCGI = null;
@@ -585,7 +591,7 @@ public class PHPexes
 		{
 			prefs.setValue(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID, defaultItem.getDebuggerID());
 		}
-		Activator.getDefault().savePluginPreferences();
+		PHPDebugEPLPlugin.getDefault().savePluginPreferences();
 	}
 
 	public void addPHPExesListener(IPHPExesListener listener)

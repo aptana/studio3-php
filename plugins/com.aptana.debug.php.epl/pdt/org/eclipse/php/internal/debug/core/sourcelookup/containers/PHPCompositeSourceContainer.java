@@ -23,6 +23,8 @@ import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
 import org.eclipse.debug.core.sourcelookup.containers.CompositeSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.ProjectSourceContainer;
+import org.eclipse.php.internal.core.project.IIncludePathEntry;
+import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
 
 public class PHPCompositeSourceContainer extends CompositeSourceContainer {
 

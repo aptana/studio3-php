@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.zend.debugger;
 
+
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchesListener;
+import org.eclipse.php.internal.core.util.collections.IntHashtable;
+import org.eclipse.php.internal.core.util.collections.IntMap;
 import org.eclipse.swt.browser.Browser;
-
-import sun.text.IntHashtable;
-
 /**
  * This class is responsible for mapping debug session id's to the ILaunch that is responsible for
  * the session.
@@ -85,7 +85,7 @@ public class PHPSessionLaunchMapper implements ILaunchesListener {
 		// Remove any launch mapping if the launch was removed and we are still mapping it.
 		IntMap.Entry[] entries = new IntMap.Entry[map.size()];
 		map.entrySet().toArray(entries);
-		for (Entry entry : entries) {
+		for (IntMap.Entry entry : entries) {
 			for (ILaunch element : launches) {
 				if (entry.getValue() == element) {
 					map.remove(entry.getKey());

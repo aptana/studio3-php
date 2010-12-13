@@ -15,12 +15,15 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.php.debug.core.debugger.IDebugHandler;
 import org.eclipse.php.debug.core.debugger.handlers.IDebugMessageHandler;
 import org.eclipse.php.debug.core.debugger.messages.IDebugMessage;
+import org.eclipse.php.internal.core.util.FileUtils;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.model.PHPConditionalBreakpoint;
 import org.eclipse.php.internal.debug.core.preferences.stepFilters.DebugStepFilterController;
 import org.eclipse.php.internal.debug.core.zend.debugger.RemoteDebugger;
 import org.eclipse.php.internal.debug.core.zend.debugger.messages.ReadyNotification;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class ReadyNotificationHandler implements IDebugMessageHandler {
 
@@ -39,7 +42,7 @@ public class ReadyNotificationHandler implements IDebugMessageHandler {
 							return;
 						}
 					} catch (CoreException ce) {
-						Activator.log(ce);
+						PHPDebugEPLPlugin.logError(ce);
 					}
 				}
 			}

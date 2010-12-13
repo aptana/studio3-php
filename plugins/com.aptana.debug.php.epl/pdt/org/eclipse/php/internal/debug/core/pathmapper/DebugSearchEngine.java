@@ -68,6 +68,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 
 
 public class DebugSearchEngine {
@@ -452,7 +453,7 @@ public class DebugSearchEngine {
 		}
 
 		private void buildPHPFilePattern() {
-			IContentType type = Platform.getContentTypeManager().getContentType(Constants.ContentTypeID_PHP);
+			IContentType type = Platform.getContentTypeManager().getContentType(IPHPConstants.CONTENT_TYPE_HTML_PHP);
 			String[] phpExtensions = type.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
 			StringBuilder buf = new StringBuilder();
 			buf.append(".*\\.(");

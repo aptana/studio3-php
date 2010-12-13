@@ -23,6 +23,8 @@ import org.eclipse.php.debug.core.debugger.parameters.IWebDebugParametersInitial
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.Logger;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * Default debug parameters initializer.
  */
@@ -39,7 +41,7 @@ public class DefaultDebugParametersInitializer extends AbstractDebugParametersIn
 		if (port != null) {
 			parameters.put(DEBUG_PORT, port);
 		} else {
-			Activator.logErrorMessage("A port was not defined for the DefaultDebugParametersInitializer.");
+			PHPDebugEPLPlugin.logError("A port was not defined for the DefaultDebugParametersInitializer.");
 		}
 
 		if (getBooleanValue(launch.getAttribute(IDebugParametersKeys.PASSIVE_DEBUG))) {
@@ -49,7 +51,7 @@ public class DefaultDebugParametersInitializer extends AbstractDebugParametersIn
 		parameters.put(SEND_SESS_END, "1");
 
 		if (getBooleanValue(launch.getAttribute(IDebugParametersKeys.WEB_SERVER_DEBUGGER))) {
-			parameters.put(DEBUG_HOST, Activator.getDebugHosts());
+			parameters.put(DEBUG_HOST, PHPDebugEPLPlugin.getDebugHosts());
 			parameters.put(DEBUG_NO_CACHE, Long.toString(System.currentTimeMillis()));
 		}
 

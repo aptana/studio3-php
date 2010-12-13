@@ -336,6 +336,16 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	}
 
 	/**
+	 * Logs a warning.
+	 * 
+	 * @param msg
+	 */
+	public static void logWarning(String msg)
+	{
+		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, msg));
+	}
+
+	/**
 	 * Log a status.
 	 * 
 	 * @param status

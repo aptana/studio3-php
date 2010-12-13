@@ -43,6 +43,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
 import com.aptana.debug.php.core.launch.remote.RemoteDebugRedirector;
+import com.aptana.debug.php.core.util.NameValuePair;
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * A debug session initializer.
@@ -125,7 +127,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 			{
 				Logger.logException(e);
 				String errorMessage = PHPDebugCoreMessages.Debugger_Unexpected_Error_1;
-				throw new DebugException(new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e));
+				throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e));
 			}
 		}
 		
@@ -151,7 +153,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 		} catch (MalformedURLException e) {
 			Logger.logException(e);
 			String errorMessage = PHPDebugCoreMessages.Debugger_Unexpected_Error_1;
-			throw new DebugException(new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e));
+			throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e));
 		}
 		final DebugException[] exception = new DebugException[1];
 		final URL debugURL = requestURL;
@@ -193,7 +195,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 						
 						browser.openURL(debugURL);
 					}
-					if (Activator.DEBUG)
+					if (PHPDebugEPLPlugin.DEBUG)
 					{
 						System.out.println("Opening URL in a browser: " + debugURL.toString());
 					}
@@ -202,7 +204,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				{
 					Logger.logException("Error initializing the web browser.", t);
 					String errorMessage = PHPDebugCoreMessages.Debugger_Unexpected_Error_1;
-					exception[0] = new DebugException(new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, t));
+					exception[0] = new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, t));
 				}
 			}
 		});
@@ -253,7 +255,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 					}
 				}
 				String paramsString = getParams.toString();
-				if (!paramsString.isEmpty())
+				if (paramsString.length() != 0)
 				{
 					paramsString = '?' + paramsString;
 				}
@@ -264,7 +266,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				requestURL = new URL(requestURL.getProtocol(), requestURL.getHost(), requestURL.getPort(), requestURL.getPath() + paramsString);
 				
 				// Open the connection:
-				if (Activator.DEBUG) {
+				if (PHPDebugEPLPlugin.DEBUG) {
 					System.out.println("Opening URL connection: " + requestURL.toString());
 				}
 				HttpURLConnection urlConection = (HttpURLConnection) requestURL.openConnection();
@@ -282,7 +284,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 					while (k.hasMoreElements()) {
 						String key = k.nextElement();
 						String value = URLEncoder.encode(headers.get(key), IPHPDebugConstants.URL_ENCODING);
-						if (Activator.DEBUG) {
+						if (PHPDebugEPLPlugin.DEBUG) {
 							System.out.println("Adding HTTP header: " + key + "=" + value);
 						}
 						urlConection.addRequestProperty(key, value);
@@ -302,7 +304,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 							cookieBuf.append("; ");
 						}
 					}
-					if (Activator.DEBUG) {
+					if (PHPDebugEPLPlugin.DEBUG) {
 						System.out.println("Setting cookies: " + cookieBuf.toString());
 					}
 					urlConection.addRequestProperty("Cookie", cookieBuf.toString());
@@ -335,7 +337,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				if (headerKey == null) {
 					Logger.log(Logger.WARNING, "No HeaderKey returned by server. Most likely not started");
 					String errorMessage = PHPDebugCoreMessages.DebuggerConnection_Problem_1;
-					throw new DebugException(new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null));
+					throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null));
 				}
 
 				for (int i = 1; (headerKey = urlConection.getHeaderFieldKey(i)) != null; i++) {
@@ -344,7 +346,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 						if (!headerValue.equals("OK")) {
 							Logger.log(Logger.WARNING, "Unexpected Header Value returned by Server. " + headerValue);
 							String errorMessage = PHPDebugCoreMessages.DebuggerConnection_Problem_2 + " - " + headerValue;
-							throw new DebugException(new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null));
+							throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null));
 						}
 						break;
 					}
@@ -365,7 +367,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 		} catch (Exception e) {
 			Logger.logException("Unexpected exception communicating with Web server", e);
 			String errorMessage = e.getMessage();
-			throw new DebugException(new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e));
+			throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e));
 		}
 	}
 

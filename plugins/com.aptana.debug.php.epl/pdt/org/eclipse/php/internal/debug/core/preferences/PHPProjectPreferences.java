@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 public class PHPProjectPreferences {
 
 	public static String getPreferenceNodeQualifier() {
@@ -23,7 +25,7 @@ public class PHPProjectPreferences {
 	}
 
 	public static Preferences getModelPreferences() {
-		return Activator.getDefault().getPluginPreferences();
+		return PHPDebugEPLPlugin.getDefault().getPluginPreferences();
 	}
 
 	public static IScopeContext getProjectScope(IProject project) {

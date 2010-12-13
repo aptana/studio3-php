@@ -38,8 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.ui.IPluginContribution;
 import org.eclipse.ui.activities.WorkbenchActivityHelper;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * Provider of the custom interpreters defined by user.
@@ -139,7 +142,7 @@ public class CustomInterpretersProvider implements IInterpreterProvider
 					}
 
 					public String getPluginId() {
-						return Activator.ID;
+						return PHPDebugEPLPlugin.PLUGIN_ID;
 					}
 				});
 				if (!filterItem) {

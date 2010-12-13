@@ -22,6 +22,8 @@ import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.launching.PHPExecutableLaunchDelegate;
 import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * Sets default values for PHP Debug preferences
  */
@@ -29,7 +31,7 @@ public class PHPDebugCorePreferenceInitializer extends AbstractPreferenceInitial
 
 	public void initializeDefaultPreferences() {
 		//		IEclipsePreferences node = new DefaultScope().getNode(Activator.getDefault().getBundle().getSymbolicName());
-		Preferences preferences = Activator.getDefault().getPluginPreferences();
+		Preferences preferences = PHPDebugEPLPlugin.getDefault().getPluginPreferences();
 		// formatting preferences
 		preferences.setDefault(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, true);
 		preferences.setDefault(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, true);

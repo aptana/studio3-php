@@ -14,10 +14,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
 import org.eclipse.debug.core.sourcelookup.containers.ContainerSourceContainer;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 
 public class WorkspaceRootSourceContainer extends ContainerSourceContainer {
 
-	public static final String TYPE_ID = Activator.getID() + ".containerType.workspaceRoot"; //$NON-NLS-1$
+	public static final String TYPE_ID = PHPDebugEPLPlugin.PLUGIN_ID + ".containerType.workspaceRoot"; //$NON-NLS-1$
 
 	public WorkspaceRootSourceContainer() {
 		super(ResourcesPlugin.getWorkspace().getRoot(), false);

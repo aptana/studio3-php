@@ -30,6 +30,11 @@ import org.eclipse.php.debug.core.debugger.messages.IDebugNotificationMessage;
 import org.eclipse.php.debug.core.debugger.messages.IDebugRequestMessage;
 import org.eclipse.php.debug.core.debugger.messages.IDebugResponseMessage;
 import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
+import org.eclipse.php.internal.core.util.PHPSearchEngine;
+import org.eclipse.php.internal.core.util.PHPSearchEngine.ExternalFileResult;
+import org.eclipse.php.internal.core.util.PHPSearchEngine.IncludedFileResult;
+import org.eclipse.php.internal.core.util.PHPSearchEngine.ResourceResult;
+import org.eclipse.php.internal.core.util.PHPSearchEngine.Result;
 import org.eclipse.php.internal.debug.core.Logger;
 import org.eclipse.php.internal.debug.core.pathmapper.DebugSearchEngine;
 import org.eclipse.php.internal.debug.core.pathmapper.PathEntry;
@@ -75,6 +80,8 @@ import org.eclipse.php.internal.debug.core.zend.debugger.messages.StepOverReques
 import org.eclipse.php.internal.debug.core.zend.debugger.messages.StepOverResponse;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
 import org.eclipse.swt.widgets.Display;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * An IRemoteDebugger implementation.
@@ -762,7 +769,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 	}
 
 	public static void warnOlderDebugVersion() {
-		boolean dontShowWarning = Activator.getDefault().getPluginPreferences().getBoolean("DontShowOlderDebuggerWarning"); //$NON-NLS-1$
+		boolean dontShowWarning = PHPDebugEPLPlugin.getDefault().getPluginPreferences().getBoolean("DontShowOlderDebuggerWarning"); //$NON-NLS-1$
 		if (!dontShowWarning) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {

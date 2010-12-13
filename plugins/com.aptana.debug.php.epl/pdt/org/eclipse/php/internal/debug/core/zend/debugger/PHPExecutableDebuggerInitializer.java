@@ -23,9 +23,12 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
+import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.launching.PHPLaunchUtilities;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 import org.eclipse.swt.widgets.Display;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * A local PHP script debugger initializer.
@@ -108,7 +111,7 @@ public class PHPExecutableDebuggerInitializer {
 			// Make sure that we have executable permissions on the file.
 			PHPexes.changePermissions(new File(phpCmdArray[0]));
 			
-			if (Activator.DEBUG) {
+			if (PHPDebugEPLPlugin.DEBUG) {
 				System.out.println ("Executing: " + Arrays.toString(phpCmdArray));
 				System.out.println ("Process environment: " + Arrays.toString(environmetVars));
 			}
@@ -117,7 +120,7 @@ public class PHPExecutableDebuggerInitializer {
 			Process p;
 			File workingDirFile = new File(workingDir);
 			if (workingDirFile.exists()) {
-				if (Activator.DEBUG) {
+				if (PHPDebugEPLPlugin.DEBUG) {
 					System.out.println("Working directory: " + workingDir);
 				}
 				p = Runtime.getRuntime().exec(phpCmdArray, environmetVars, workingDirFile);

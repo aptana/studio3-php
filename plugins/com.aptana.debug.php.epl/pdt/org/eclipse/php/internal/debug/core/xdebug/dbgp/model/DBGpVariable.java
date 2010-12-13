@@ -22,6 +22,8 @@ import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.protocol.DBGpResponse;
 import org.w3c.dom.Node;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 
 	static final String PHP_BOOL = "bool"; //$NON-NLS-1$
@@ -133,7 +135,7 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 		// It does if you use the editor pane.
 		if (!verifyValue(expression)) {
 			//setValue called, but verifyValue failed
-			Status stat = new Status(Status.WARNING, Activator.ID, 0, PHPDebugCoreMessages.XDebug_DBGpVariable_0, null);
+			Status stat = new Status(Status.WARNING, PHPDebugEPLPlugin.PLUGIN_ID, 0, PHPDebugCoreMessages.XDebug_DBGpVariable_0, null);
 			throw new DebugException(stat);
 			//DebugUIPlugin.errorDialog(Display.getDefault().getActiveShell(), ActionMessages.AssignValueAction_2, MessageFormat.format(ActionMessages.AssignValueAction_3, new String[] {expression, name}), new StatusInfo(IStatus.ERROR, ActionMessages.AssignValueAction_4));  //           
 		} else {
@@ -143,7 +145,7 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 				fireChangeEvent(DebugEvent.CONTENT);
 			} else {
 				//program under debug rejected value change
-				throw new DebugException(new Status(IStatus.ERROR, Activator.ID, DebugException.TARGET_REQUEST_FAILED, PHPDebugCoreMessages.XDebug_DBGpVariable_1, null));
+				throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, DebugException.TARGET_REQUEST_FAILED, PHPDebugCoreMessages.XDebug_DBGpVariable_1, null));
 			}
 		}
 	}

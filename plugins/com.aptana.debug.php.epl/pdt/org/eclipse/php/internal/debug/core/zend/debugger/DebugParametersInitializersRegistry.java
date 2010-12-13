@@ -23,6 +23,8 @@ import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.php.debug.core.debugger.parameters.IDebugParametersInitializer;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * @author michael
  *
@@ -51,7 +53,7 @@ public class DebugParametersInitializersRegistry {
 	private DebugParametersInitializersRegistry() {
 
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = registry.getConfigurationElementsFor(Activator.getID(), EXTENSION_POINT_NAME);
+		IConfigurationElement[] elements = registry.getConfigurationElementsFor(PHPDebugEPLPlugin.PLUGIN_ID, EXTENSION_POINT_NAME);
 
 		for (int i = 0; i < elements.length; i++) {
 			final IConfigurationElement element = elements[i];
@@ -113,10 +115,10 @@ public class DebugParametersInitializersRegistry {
 	 */
 	public static IDebugParametersInitializer getCurrentDebugParametersInitializer() {
 		try {
-			String id = Activator.getDefault().getPluginPreferences().getString(IPHPDebugConstants.PHP_DEBUG_PARAMETERS_INITIALIZER);
+			String id = PHPDebugEPLPlugin.getDefault().getPluginPreferences().getString(IPHPDebugConstants.PHP_DEBUG_PARAMETERS_INITIALIZER);
 			return getParametersInitializer(id);
 		} catch (Exception e) {
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 		return null;
 	}
@@ -144,19 +146,19 @@ public class DebugParametersInitializersRegistry {
 			for (Enumeration e = factories.elements(); e.hasMoreElements();) {
 				DebugParametersInitializerFactory initializerFactory = (DebugParametersInitializerFactory) e.nextElement();
 				String configurationTypeId = initializerFactory.element.getAttribute(LAUNCH_CONFIGURATION_TYPE_ATTRIBUTE);
-				if ((configurationTypeId == null || "".equals(configurationTypeId)) && !Activator.getID().equals(initializerFactory.element.getNamespaceIdentifier())) {
+				if ((configurationTypeId == null || "".equals(configurationTypeId)) && !PHPDebugEPLPlugin.PLUGIN_ID.equals(initializerFactory.element.getNamespaceIdentifier())) {
 					return initializerFactory.createParametersInitializer();
 				}
 			}
 			//	Last, if nothing found get the default
 			for (Enumeration e = factories.elements(); e.hasMoreElements();) {
 				DebugParametersInitializerFactory initializerFactory = (DebugParametersInitializerFactory) e.nextElement();
-				if (Activator.getID().equals(initializerFactory.element.getNamespaceIdentifier())) {
+				if (PHPDebugEPLPlugin.PLUGIN_ID.equals(initializerFactory.element.getNamespaceIdentifier())) {
 					return initializerFactory.createParametersInitializer();
 				}
 			}
 		} catch (Exception e) {
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 		return getCurrentDebugParametersInitializer();
 	}

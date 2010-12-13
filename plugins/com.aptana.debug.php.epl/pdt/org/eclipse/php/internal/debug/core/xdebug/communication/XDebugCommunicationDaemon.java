@@ -48,6 +48,8 @@ import org.eclipse.php.internal.debug.core.xdebug.dbgp.session.DBGpSessionHandle
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.session.IDBGpSessionListener;
 import org.eclipse.swt.widgets.Display;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * XDebug communication daemon.
  * 
@@ -79,7 +81,7 @@ public class XDebugCommunicationDaemon extends AbstractDebuggerCommunicationDaem
 	 */
 	protected void initDeamonChangeListener() {
 		if (portChangeListener == null) {
-			Preferences preferences = Activator.getDefault().getPluginPreferences();
+			Preferences preferences = PHPDebugEPLPlugin.getDefault().getPluginPreferences();
 			portChangeListener = new PortChangeListener();
 			preferences.addPropertyChangeListener(portChangeListener);
 		}
@@ -90,7 +92,7 @@ public class XDebugCommunicationDaemon extends AbstractDebuggerCommunicationDaem
 	 * @return The port specified in the preferences.
 	 */
 	public int getReceiverPort() {
-		return Activator.getDebugPort(XDEBUG_DEBUGGER_ID);
+		return PHPDebugEPLPlugin.getDebugPort(XDEBUG_DEBUGGER_ID);
 	}
 
 	/**
@@ -150,8 +152,8 @@ public class XDebugCommunicationDaemon extends AbstractDebuggerCommunicationDaem
 					//Session not taken, we want to create a launch					
 					AcceptRemoteSession aSess = XDebugPreferenceMgr.getAcceptRemoteSession();
 					if (aSess != AcceptRemoteSession.off) {
-						// Aptana Mod - SG: Also check that the Activator.getDebugHosts() does not contain the remote address before ignoring.
-						if (aSess == AcceptRemoteSession.localhost && session.getRemoteAddress().isLoopbackAddress() == false && !Activator.getDebugHosts().contains(session.getRemoteHostname())) {
+						// Aptana Mod - SG: Also check that the PHPDebugEPLPlugin.getDebugHosts() does not contain the remote address before ignoring.
+						if (aSess == AcceptRemoteSession.localhost && session.getRemoteAddress().isLoopbackAddress() == false && !PHPDebugEPLPlugin.getDebugHosts().contains(session.getRemoteHostname())) {
 							session.endSession();
 						}
 						else if (aSess == AcceptRemoteSession.prompt) {
@@ -178,7 +180,7 @@ public class XDebugCommunicationDaemon extends AbstractDebuggerCommunicationDaem
 			}
 		}
 		catch(Exception e) {
-			IdeLog.logError(Activator.getDefault(), "Unexpected Exception: Listener thread still listening", e);
+			PHPDebugEPLPlugin.logError("Unexpected Exception: Listener thread still listening", e);
 			// DBGpLogger.logException("Unexpected Exception: Listener thread still listening", this, e);
 		}
 	}

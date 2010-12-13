@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * A set of useful utilities 
  */
@@ -69,7 +71,7 @@ public class DBGpLogger {
 	}
 
 	public static void logException(String info, Object obj, Throwable exc) {
-		ILog theLog = Activator.getDefault().getLog();
+		ILog theLog = PHPDebugEPLPlugin.getDefault().getLog();
 		StringBuffer msg = new StringBuffer();
 		if (obj != null) {
 			msg.append(obj.getClass().toString());
@@ -89,7 +91,7 @@ public class DBGpLogger {
 		ByteArrayOutputStream bs = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(bs);
 		exc.printStackTrace(ps);
-		IStatus stat = new Status(IStatus.ERROR, Activator.ID, IStatus.ERROR, msg + "\n" + bs.toString(), null);
+		IStatus stat = new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IStatus.ERROR, msg + "\n" + bs.toString(), null);
 		theLog.log(stat);
 	}
 
@@ -135,7 +137,7 @@ public class DBGpLogger {
 	 * @param type type of log message, ERROR, WARNING,INFO
 	 */
 	private static void doLog(String info, Object obj, Throwable exc, int type) {
-		ILog theLog = Activator.getDefault().getLog();
+		ILog theLog = PHPDebugEPLPlugin.getDefault().getLog();
 		StringBuffer msg = new StringBuffer();
 		if (obj != null) {
 			msg.append(obj.getClass().toString());
@@ -150,7 +152,7 @@ public class DBGpLogger {
 			msg.append(" msg: ");
 			msg.append(exc.getMessage());
 		}
-		IStatus stat = new Status(type, Activator.ID, type, msg.toString(), exc);
+		IStatus stat = new Status(type, PHPDebugEPLPlugin.PLUGIN_ID, type, msg.toString(), exc);
 		debug(msg.toString());
 		if (exc != null) {
 			debugException(exc);

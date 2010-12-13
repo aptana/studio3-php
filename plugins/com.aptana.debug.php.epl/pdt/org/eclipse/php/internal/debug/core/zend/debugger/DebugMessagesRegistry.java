@@ -22,8 +22,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.php.debug.core.debugger.handlers.IDebugMessageHandler;
 import org.eclipse.php.debug.core.debugger.messages.IDebugMessage;
+import org.eclipse.php.internal.core.util.collections.IntHashtable;
 
-import sun.text.IntHashtable;
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 
 public class DebugMessagesRegistry {
 
@@ -49,7 +51,7 @@ public class DebugMessagesRegistry {
 	private DebugMessagesRegistry() {
 
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = registry.getConfigurationElementsFor(Activator.getID(), EXTENSION_POINT_NAME);
+		IConfigurationElement[] elements = registry.getConfigurationElementsFor(PHPDebugEPLPlugin.PLUGIN_ID, EXTENSION_POINT_NAME);
 
 		Map<String, IConfigurationElement> configElementsMap = new HashMap<String, IConfigurationElement>();
 		for (final IConfigurationElement element : elements) {

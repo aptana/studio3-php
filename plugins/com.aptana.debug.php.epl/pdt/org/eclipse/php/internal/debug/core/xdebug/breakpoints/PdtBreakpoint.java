@@ -63,7 +63,7 @@ public class PdtBreakpoint implements DBGpBreakpoint {
 				//
 				// Include_Storage_Project contains the project it is found in.
 				fileName = (String) marker.getAttribute(IPHPDebugConstants.STORAGE_TYPE_INCLUDE);
-				fileName = marker.getAttribute(Constants.SECONDARY_ID_KEY, fileName); // gets the full path.
+				fileName = marker.getAttribute(IPHPDebugConstants.SECONDARY_ID_KEY, fileName); // gets the full path.
 
 				// adding bps to these include files has strange affects. If one fails to add the first time it is because it removes one
 				// from elsewhere, then you find you can add it. Multiple breakpoints in multiple files is possible but you experience this

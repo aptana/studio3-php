@@ -19,6 +19,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.php.debug.core.debugger.IDebugHandler;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 public class DebugHandlersRegistry {
 
 	private static final String EXTENSION_POINT_NAME = "phpDebugHandlers"; //$NON-NLS-1$
@@ -39,7 +41,7 @@ public class DebugHandlersRegistry {
 	private DebugHandlersRegistry() {
 
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = registry.getConfigurationElementsFor(Activator.getID(), EXTENSION_POINT_NAME);
+		IConfigurationElement[] elements = registry.getConfigurationElementsFor(PHPDebugEPLPlugin.PLUGIN_ID, EXTENSION_POINT_NAME);
 
 		for (int i = 0; i < elements.length; i++) {
 			final IConfigurationElement element = elements[i];

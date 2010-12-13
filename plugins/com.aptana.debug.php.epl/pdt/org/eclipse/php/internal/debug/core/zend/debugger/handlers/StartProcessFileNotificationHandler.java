@@ -37,6 +37,8 @@ import org.eclipse.php.internal.debug.core.zend.debugger.messages.ContinueProces
 import org.eclipse.php.internal.debug.core.zend.debugger.messages.StartProcessFileNotification;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 public class StartProcessFileNotificationHandler implements IDebugMessageHandler {
 
 	protected boolean isFirstFileToDebug;
@@ -71,7 +73,7 @@ public class StartProcessFileNotificationHandler implements IDebugMessageHandler
 		try {
 			debugType = launchConfiguration.getAttribute(IDebugParametersKeys.PHP_DEBUG_TYPE, ""); //$NON-NLS-1$
 		} catch (CoreException e) {
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 
 		String localPath = null;
@@ -120,7 +122,7 @@ public class StartProcessFileNotificationHandler implements IDebugMessageHandler
 						debugTarget.getRemoteDebugger().addBreakpoint(bpToSend);
 					}
 				} catch (CoreException e) {
-					Activator.log(e);
+					PHPDebugEPLPlugin.logError(e);
 				}
 			}
 			if (localPath != null) {
@@ -148,7 +150,7 @@ public class StartProcessFileNotificationHandler implements IDebugMessageHandler
 							runtimeBreakpoint.setID(bpToSend.getID());
 						}
 					} catch (CoreException e) {
-						Activator.log(e);
+						PHPDebugEPLPlugin.logError(e);
 					}
 				}
 			}
@@ -170,14 +172,14 @@ public class StartProcessFileNotificationHandler implements IDebugMessageHandler
 				l.add(bp);
 			}
 			try {
-				Object secondaryId = bp.getMarker().getAttribute(Constants.SECONDARY_ID_KEY);
+				Object secondaryId = bp.getMarker().getAttribute(IPHPDebugConstants.SECONDARY_ID_KEY);
 				if (secondaryId != null) {
 					if (new VirtualPath(localPath).equals(new VirtualPath((String) secondaryId))) {
 						l.add(bp);
 					}
 				}
 			} catch (CoreException e) {
-				Activator.log(e);
+				PHPDebugEPLPlugin.logError(e);
 			}
 		}
 		return l.toArray(new IBreakpoint[l.size()]);

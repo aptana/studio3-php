@@ -42,7 +42,8 @@ import org.eclipse.php.debug.core.debugger.parameters.IDebugParametersKeys;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.Logger;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
-import org.eclipse.php.internal.debug.core.phpIni.PHPINIDebuggerUtil;
+import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
+import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 import org.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon;
@@ -53,6 +54,7 @@ import org.eclipse.php.internal.debug.core.zend.debugger.ProcessCrashDetector;
 import org.eclipse.swt.widgets.Display;
 
 import com.aptana.debug.php.core.daemon.DebugDaemon;
+import com.aptana.debug.php.core.debugger.interpreter.phpIni.PHPINIDebuggerUtil;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {

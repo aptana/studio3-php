@@ -21,9 +21,12 @@ import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org.eclipse.php.internal.core.util.preferences.IXMLPreferencesStorable;
 import org.eclipse.php.internal.core.util.preferences.XMLPreferencesReader;
 import org.eclipse.php.internal.core.util.preferences.XMLPreferencesWriter;
+import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.preferences.IPHPExesListener;
 import org.eclipse.php.internal.debug.core.preferences.PHPExesEvent;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesListener, IServerManagerListener 
 {
@@ -41,9 +44,9 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	/**
 	 * 
 	 */
-	private static final String PATH_MAPPER_EXTENSION_ID = "com.aptana.ide.php.debug.core.pathMapper";
+	private static final String PATH_MAPPER_EXTENSION_ID = "com.aptana.debug.php.pathMapper";
 
-	private static final String PATH_MAPPER_PREF_KEY = Activator.getID() + ".pathMapper"; //$NON-NLS-1$
+	private static final String PATH_MAPPER_PREF_KEY = PHPDebugEPLPlugin.PLUGIN_ID + ".pathMapper"; //$NON-NLS-1$
 
 	private static PathMapperRegistry instance;
 	private HashMap<IServer, PathMapper> serverPathMapper;
@@ -130,21 +133,21 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 				}
 			}*/
 		} catch (CoreException e) {
-			Activator.log(e);
+			PHPDebugEPLPlugin.log(e);
 		}
 		return pathMapper;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void loadFromPreferences() {
-		HashMap[] elements = XMLPreferencesReader.read(Activator.getDefault().getPluginPreferences(), PATH_MAPPER_PREF_KEY);
+		HashMap[] elements = XMLPreferencesReader.read(PHPDebugEPLPlugin.getDefault().getPluginPreferences(), PATH_MAPPER_PREF_KEY);
 		if (elements.length == 1) {
 			restoreFromMap(elements[0]);
 		}
 	}
 
 	public static void storeToPreferences() {
-		XMLPreferencesWriter.write(Activator.getDefault().getPluginPreferences(), PATH_MAPPER_PREF_KEY, getInstance());
+		XMLPreferencesWriter.write(PHPDebugEPLPlugin.getDefault().getPluginPreferences(), PATH_MAPPER_PREF_KEY, getInstance());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -294,7 +297,7 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		}
 		catch (Throwable th)
 		{
-			IdeLog.logError(Activator.getDefault(), 
+			PHPDebugEPLPlugin.logError( 
 					"Unexpected exception while getting server path mappers", th);
 		}
 		

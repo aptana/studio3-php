@@ -28,6 +28,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 public class OldDebuggerWarningDialog extends Dialog {
 
 	public OldDebuggerWarningDialog(Shell parentShell) {
@@ -80,7 +82,7 @@ public class OldDebuggerWarningDialog extends Dialog {
 		button.setText("Don't show this message again.");
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				Activator.getDefault().getPluginPreferences().setValue("DontShowOlderDebuggerWarning", button.getSelection());
+				PHPDebugEPLPlugin.getDefault().getPluginPreferences().setValue("DontShowOlderDebuggerWarning", button.getSelection());
 			}
 		});
 

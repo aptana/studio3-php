@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unchecked")
-interface IntMap {
+public interface IntMap {
 
 	/**
 	 * Returns the number of key-value mappings in this map.  If the

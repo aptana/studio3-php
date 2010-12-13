@@ -13,6 +13,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.variables,
  org.eclipse.ui.browser,
  org.eclipse.equinox.security,
+ org.eclipse.core.filesystem,
  com.aptana.editor.php.epl;bundle-version="3.0.0",
  com.aptana.debug.php;bundle-version="3.0.0",
  com.aptana.editor.php;bundle-version="3.0.0"
@@ -58,7 +59,6 @@ Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime
    org.eclipse.php.debug.core.debugger.pathmapper,
    org.eclipse.php.internal.debug.core.preferences,
    org.eclipse.debug.core.model",
- org.eclipse.php.internal.debug.core.phpIni;uses:="org.eclipse.core.resources",
  org.eclipse.php.internal.debug.core.preferences;
   uses:="org.eclipse.core.runtime,
    org.eclipse.core.resources,

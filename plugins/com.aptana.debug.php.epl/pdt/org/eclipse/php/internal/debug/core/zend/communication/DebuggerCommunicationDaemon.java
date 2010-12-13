@@ -19,6 +19,7 @@ import org.eclipse.php.internal.debug.core.daemon.AbstractDebuggerCommunicationD
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 
 import com.aptana.debug.php.core.daemon.ICommunicationDaemon;
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * The debugger communication receiver holds a ServerSocket that remains open for the entire
@@ -54,7 +55,7 @@ public class DebuggerCommunicationDaemon extends AbstractDebuggerCommunicationDa
 	 */
 	protected void initDeamonChangeListener() {
 		if (portChangeListener == null) {
-			Preferences preferences = Activator.getDefault().getPluginPreferences();
+			Preferences preferences = PHPDebugEPLPlugin.getDefault().getPluginPreferences();
 			portChangeListener = new PortChangeListener();
 			preferences.addPropertyChangeListener(portChangeListener);
 		}
@@ -65,7 +66,7 @@ public class DebuggerCommunicationDaemon extends AbstractDebuggerCommunicationDa
 	 * @return The port specified in the preferences.
 	 */
 	public int getReceiverPort() {
-		return Activator.getDebugPort(ZEND_DEBUGGER_ID);
+		return PHPDebugEPLPlugin.getDebugPort(ZEND_DEBUGGER_ID);
 	}
 
 	/**

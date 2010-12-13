@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * An XDebug configuration dialog for editing/viewing the XDebug debugger configurations.
  * 
@@ -235,7 +237,7 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, proxyTextBox.getText());
 		DBGpProxyHandler.instance.configure();
 		
-		Activator.getDefault().savePluginPreferences(); // save
+		PHPDebugEPLPlugin.getDefault().savePluginPreferences(); // save
 		super.okPressed();
 	}
 

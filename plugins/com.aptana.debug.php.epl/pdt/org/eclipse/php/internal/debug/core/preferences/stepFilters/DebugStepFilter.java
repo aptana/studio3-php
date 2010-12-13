@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.preferences.stepFilters;
 
+import org.eclipse.php.internal.core.util.FileUtils;
+
 
 /**
  * This class represents a Debug Step Filter object.

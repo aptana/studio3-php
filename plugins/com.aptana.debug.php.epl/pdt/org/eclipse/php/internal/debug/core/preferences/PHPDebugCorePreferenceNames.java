@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.preferences;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 
 /**
  * Common preference keys used by PHP Debug
@@ -19,7 +21,7 @@ public class PHPDebugCorePreferenceNames {
 		// empty private constructor so users cannot instantiate class
 	}
 
-	private static final String Debug_ID = Activator.getID();
+	private static final String Debug_ID = PHPDebugEPLPlugin.PLUGIN_ID;
 
 	public static final String STOP_AT_FIRST_LINE = Debug_ID + "stop_at_first_line_string";//$NON-NLS-1$
 	public static final String ZEND_DEBUG_PORT = Debug_ID + "zend_debug_port";//$NON-NLS-1$

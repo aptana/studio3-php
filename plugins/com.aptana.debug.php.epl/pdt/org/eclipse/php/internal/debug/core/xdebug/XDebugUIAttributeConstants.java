@@ -10,13 +10,15 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.xdebug;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 
 public interface XDebugUIAttributeConstants {
 	// preference page constants
-	public static final String XDEBUG_PREF_PORT = Activator.ID + ".xdebug_port";
-	public static final String XDEBUG_PREF_SHOWSUPERGLOBALS = Activator.ID + ".xdebug_showSuperGlobals";
-	public static final String XDEBUG_PREF_ARRAYDEPTH = Activator.ID + ".xdebug_arrayDepth";
-	public static final String XDEBUG_PREF_MULTISESSION = Activator.ID + ".xdebug_multisession";
+	public static final String XDEBUG_PREF_PORT = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_port";
+	public static final String XDEBUG_PREF_SHOWSUPERGLOBALS = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_showSuperGlobals";
+	public static final String XDEBUG_PREF_ARRAYDEPTH = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_arrayDepth";
+	public static final String XDEBUG_PREF_MULTISESSION = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_multisession";
 	
 
 	// launch id constants

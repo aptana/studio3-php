@@ -1,5 +1,5 @@
 
-package org.eclipse.php.internal.debug.core.phpIni;
+package com.aptana.debug.php.core.debugger.interpreter.phpIni;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,14 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.php.internal.core.project.IIncludePathEntry;
+import org.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
+import org.eclipse.php.internal.core.util.PHPSearchEngine;
+import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
+import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PHPINIDebuggerUtil {
 
@@ -53,7 +60,7 @@ public class PHPINIDebuggerUtil {
 			}
 			m.close();
 		} catch (IOException e) {
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 	}
 
@@ -65,7 +72,7 @@ public class PHPINIDebuggerUtil {
 			}
 			m.close();
 		} catch (IOException e) {
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 	}
 	

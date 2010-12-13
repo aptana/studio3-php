@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpPreferences;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 public class XDebugPreferenceMgr {
 	
 	public static Preferences getPreferences() {
@@ -21,19 +23,19 @@ public class XDebugPreferenceMgr {
 	}
 
 	// general
-	public static final String XDEBUG_PREF_PORT = Activator.ID + ".xdebug_port";
-	public static final String XDEBUG_PREF_SHOWSUPERGLOBALS = Activator.ID + ".xdebug_showSuperGlobals";
-	public static final String XDEBUG_PREF_ARRAYDEPTH = Activator.ID + ".xdebug_arrayDepth";
-	public static final String XDEBUG_PREF_CHILDREN = Activator.ID + ".xdebug_children";
-	public static final String XDEBUG_PREF_MULTISESSION = Activator.ID + ".xdebug_multisession";
-	public static final String XDEBUG_PREF_REMOTESESSION = Activator.ID + ".xdebug_remotesession";
+	public static final String XDEBUG_PREF_PORT = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_port";
+	public static final String XDEBUG_PREF_SHOWSUPERGLOBALS = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_showSuperGlobals";
+	public static final String XDEBUG_PREF_ARRAYDEPTH = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_arrayDepth";
+	public static final String XDEBUG_PREF_CHILDREN = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_children";
+	public static final String XDEBUG_PREF_MULTISESSION = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_multisession";
+	public static final String XDEBUG_PREF_REMOTESESSION = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_remotesession";
 	//capture output
-	public static final String XDEBUG_PREF_CAPTURESTDOUT = Activator.ID + ".xdebug_capturestdout";
-	public static final String XDEBUG_PREF_CAPTURESTDERR = Activator.ID + ".xdebug_capturestderr";
+	public static final String XDEBUG_PREF_CAPTURESTDOUT = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_capturestdout";
+	public static final String XDEBUG_PREF_CAPTURESTDERR = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_capturestderr";
 	//proxy
-	public static final String XDEBUG_PREF_USEPROXY = Activator.ID + ".xdebug_useproxy";
-	public static final String XDEBUG_PREF_IDEKEY = Activator.ID + ".xdebug_idekey";
-	public static final String XDEBUG_PREF_PROXY = Activator.ID + ".xdebug_proxy";
+	public static final String XDEBUG_PREF_USEPROXY = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_useproxy";
+	public static final String XDEBUG_PREF_IDEKEY = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_idekey";
+	public static final String XDEBUG_PREF_PROXY = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_proxy";
 
 	public static enum AcceptRemoteSession {
 		off, localhost, any, prompt

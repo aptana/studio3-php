@@ -31,6 +31,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * Zend debugger configuration class.
  *
@@ -105,7 +107,7 @@ public class ZendDebuggerConfigurationDialog extends AbstractDebuggerConfigurati
 		prefs.setValue(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, fRunWithDebugInfo.getSelection());
 		prefs.setValue(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, fDebugTextBox.getText());
 		prefs.setValue(PHPDebugCorePreferenceNames.CLIENT_IP, fClientIP.getText());
-		Activator.getDefault().savePluginPreferences(); // save
+		PHPDebugEPLPlugin.getDefault().savePluginPreferences(); // save
 		super.okPressed();
 	}
 	/**

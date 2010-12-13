@@ -73,6 +73,8 @@ import org.eclipse.ui.browser.IWebBrowser;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDebugTarget, IStep, IBreakpointManagerListener, IDBGpSessionListener {
 
 	// used to identify this debug target with the associated
@@ -378,7 +380,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 				//either no file was found, or the user pressed the stop debugger 
 				if (isTerminated() == false) {
 					// stop wasn't pressed
-					IdeLog.logError(Activator.getDefault(), PHPDebugCoreMessages.XDebug_DBGpTarget_0);
+					PHPDebugEPLPlugin.logError(PHPDebugCoreMessages.XDebug_DBGpTarget_0);
 					session.endSession();
 					terminateDebugTarget(true);
 				}
@@ -687,7 +689,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 				// we were suspended at the time and not terminating so we have
 				// received an unexpected termination from the server side
 				final String errorMessage = PHPDebugCoreMessages.XDebugMessage_unexpectedTermination;
-				Status status = new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null);
+				Status status = new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, null);
 				DebugPlugin.log(status);
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {

@@ -19,7 +19,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
+import org.eclipse.php.internal.core.util.FileUtils;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * This Singleton class is used to bridge between the debugger and the
@@ -115,7 +119,7 @@ public class DebugStepFilterController implements IDebugStepFilterPrefListener {
 
 	//Returns ONLY enabled filters
 	private DebugStepFilter[] getAllEnabledFilters() {
-		IPreferenceStore store = PHPPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore store = PHPDebugEPLPlugin.getDefault().getPreferenceStore();
 		String[] parsedFilters = parseList(store.getString(IPHPDebugConstants.PREF_STEP_FILTERS_LIST));
 
 		ArrayList<DebugStepFilter> list = new ArrayList<DebugStepFilter>();
@@ -180,7 +184,7 @@ public class DebugStepFilterController implements IDebugStepFilterPrefListener {
 					path = element.getAttribute("path"); //$NON-NLS-1$
 					filterType = getFilterTypeId(element.getAttribute("type")); //$NON-NLS-1$
 				} catch (InvalidRegistryObjectException ire) {
-					Activator.log(ire);
+					PHPDebugEPLPlugin.logError(ire);
 					return;
 				}
 				listToAdd.add(new DebugStepFilter(filterType, isEnabled, true, path));

@@ -82,6 +82,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+
 /**
  * PHP Debug Target
  */
@@ -232,7 +234,7 @@ public class PHPDebugTarget extends PHPDebugElement implements IPHPDebugTarget, 
 				try {
 					debugHandler = DebugHandlersRegistry.getHandler(debugHandlerID);
 				} catch (Exception e) {
-					Activator.log(e);
+					PHPDebugEPLPlugin.logError(e);
 				}
 			}
 		}
@@ -599,11 +601,11 @@ public class PHPDebugTarget extends PHPDebugElement implements IPHPDebugTarget, 
 						if (resource instanceof IWorkspaceRoot) {
 							if (IPHPDebugConstants.STORAGE_TYPE_REMOTE.equals(marker.getAttribute(IPHPDebugConstants.STORAGE_TYPE))) {
 								fileName = (String) marker.getAttribute(IPHPDebugConstants.STORAGE_FILE);
-								fileName = marker.getAttribute(Constants.SECONDARY_ID_KEY, fileName);
+								fileName = marker.getAttribute(IPHPDebugConstants.SECONDARY_ID_KEY, fileName);
 							} else {
 								String includeFile = (String) marker.getAttribute(IPHPDebugConstants.STORAGE_FILE);
 								if (IPHPDebugConstants.STORAGE_TYPE_INCLUDE.equals(marker.getAttribute(IPHPDebugConstants.STORAGE_TYPE))) {
-									includeFile = marker.getAttribute(Constants.SECONDARY_ID_KEY, includeFile);
+									includeFile = marker.getAttribute(IPHPDebugConstants.SECONDARY_ID_KEY, includeFile);
 								}
 								fileName = RemoteDebugger.convertToRemoteFilename(includeFile, this);
 							}
@@ -616,7 +618,7 @@ public class PHPDebugTarget extends PHPDebugElement implements IPHPDebugTarget, 
 							// is taken correctly.
 							fileName = (String) marker.getAttribute(IPHPDebugConstants.STORAGE_FILE);
 							if (IPHPDebugConstants.STORAGE_TYPE_INCLUDE.equals(marker.getAttribute(IPHPDebugConstants.STORAGE_TYPE))) {
-								fileName = marker.getAttribute(Constants.SECONDARY_ID_KEY, fileName);
+								fileName = marker.getAttribute(IPHPDebugConstants.SECONDARY_ID_KEY, fileName);
 							}
 						} else {
 							IPath location = resource.getRawLocation();
@@ -993,7 +995,7 @@ public class PHPDebugTarget extends PHPDebugElement implements IPHPDebugTarget, 
 	 *
 	 */
 	public void fireError(String errorMessage, Exception e1) {
-		Status status = new Status(IStatus.ERROR, Activator.getID(), IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e1);
+		Status status = new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e1);
 		DebugEvent event = new DebugEvent(this, DebugEvent.MODEL_SPECIFIC);
 		event.setData(status);
 		fireEvent(event);
@@ -1126,14 +1128,14 @@ public class PHPDebugTarget extends PHPDebugElement implements IPHPDebugTarget, 
 						wc.getAttribute(IPHPDebugConstants.PHP_Project, project.getName());
 						wc.doSave();
 					} catch (CoreException e) {
-						Activator.log(e);
+						PHPDebugEPLPlugin.logError(e);
 					}
 				}
 
 				return pathEntry;
 			}
 		} catch (Exception e) {
-			Activator.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 		return null;
 	}

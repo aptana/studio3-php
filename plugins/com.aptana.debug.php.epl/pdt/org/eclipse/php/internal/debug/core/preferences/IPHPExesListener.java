@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.preferences;
 
+import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
+
 
 /**
  * A listener to events when adding/removing PHP Executables
