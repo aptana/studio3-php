@@ -88,4 +88,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.core.expressions,
  org.eclipse.ui.ide,
- com.aptana.core
+ com.aptana.core,
+ com.aptana.editor.common;bundle-version="3.0.0"

@@ -72,7 +72,7 @@ public class ToggleMarkOccurrencesAction extends TextEditorAction implements IPr
 	 */
 	public void run()
 	{
-		prefStore.setValue(PreferenceConstants.EDITOR_MARK_OCCURRENCES, isChecked());
+		prefStore.setValue(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, isChecked());
 	}
 
 	/*
@@ -121,7 +121,7 @@ public class ToggleMarkOccurrencesAction extends TextEditorAction implements IPr
 	 */
 	public void propertyChange(PropertyChangeEvent event)
 	{
-		if (event.getProperty().equals(PreferenceConstants.EDITOR_MARK_OCCURRENCES))
+		if (event.getProperty().equals(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES))
 		{
 			setChecked(Boolean.valueOf(event.getNewValue().toString()).booleanValue());
 		}

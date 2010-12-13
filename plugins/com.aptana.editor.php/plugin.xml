@@ -82,16 +82,10 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="com.aptana.ui.AptanaPreferencePage"
-            class="com.aptana.editor.php.PHPPreferencePage"
-            id="com.aptana.editor.php.preferences.php"
+            category="com.aptana.editor.common.preferences.EditorsPreferencePage"
+            class="org.eclipse.php.internal.ui.preferences.PHPPreferencePage"
+            id="com.aptana.editor.php.preference.PHPPreferencePage"
             name="PHP">
-      </page>
-      <page
-            category="com.aptana.editor.php.preferences.php"
-            class="org.eclipse.php.internal.ui.preferences.MarkOccurrencesPreferencePage"
-            id="com.aptana.editor.php.preference.markOccurrences"
-            name="Mark Occurrences">
       </page>
    </extension>
    <extension

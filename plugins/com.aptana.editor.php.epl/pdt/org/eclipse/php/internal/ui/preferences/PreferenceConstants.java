@@ -111,17 +111,6 @@ public class PreferenceConstants {
 	public static final String EDITOR_SMART_TAB = "smart_tab"; //$NON-NLS-1$
 
 	/**
-	 * A named preference that controls whether occurrences are marked in the
-	 * editor.
-	 * <p>
-	 * Value is of type <code>Boolean</code>.
-	 * </p>
-	 * 
-	 * @since 3.0
-	 */
-	public static final String EDITOR_MARK_OCCURRENCES = "markOccurrences"; //$NON-NLS-1$
-
-	/**
 	 * A named preference that controls whether occurrences are sticky in the
 	 * editor.
 	 * <p>
@@ -455,7 +444,7 @@ public class PreferenceConstants {
 		store.setDefault(APPEARANCE_ENABLE_VISIBILITY_SORT_ORDER, false);
 
 		// mark occurrences
-		store.setDefault(PreferenceConstants.EDITOR_MARK_OCCURRENCES, true);
+		store.setDefault(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_STICKY_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_MARK_METHOD_OCCURRENCES,
