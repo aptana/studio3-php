@@ -263,7 +263,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	 */
 	protected void installOpenTagCloser()
 	{
-		PHPOpenTagCloser.install(getSourceViewer());
+		new PHPOpenTagCloser(getSourceViewer()).install();
 	}
 
 	/*
