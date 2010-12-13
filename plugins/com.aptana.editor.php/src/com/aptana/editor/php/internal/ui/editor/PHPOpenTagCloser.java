@@ -2,7 +2,7 @@ package com.aptana.editor.php.internal.ui.editor;
 
 import org.eclipse.jface.text.ITextViewer;
 
-import com.aptana.editor.html.OpenTagCloser;
+import com.aptana.editor.html.HTMLOpenTagCloser;
 
 /**
  * An open tag closer that work within PHP files.<br>
@@ -11,19 +11,12 @@ import com.aptana.editor.html.OpenTagCloser;
  * @author Shalom Gibly <sgibly@aptana.com>
  */
 @SuppressWarnings("nls")
-public class PHPOpenTagCloser extends OpenTagCloser
+public class PHPOpenTagCloser extends HTMLOpenTagCloser
 {
 
 	public PHPOpenTagCloser(ITextViewer textViewer)
 	{
 		super(textViewer);
-	}
-
-	public static PHPOpenTagCloser install(ITextViewer textViewer)
-	{
-		PHPOpenTagCloser pairMatcher = new PHPOpenTagCloser(textViewer);
-		textViewer.getTextWidget().addVerifyKeyListener(pairMatcher);
-		return pairMatcher;
 	}
 
 	@Override
