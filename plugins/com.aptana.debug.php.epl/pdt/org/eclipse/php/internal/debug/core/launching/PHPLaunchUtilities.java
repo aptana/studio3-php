@@ -90,6 +90,9 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WebBrowserPreference;
 import org.eclipse.ui.internal.browser.WebBrowserView;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
+import com.aptana.debug.php.core.launch.DebugPortNotificationDialog;
+import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.core.tunneling.SSHTunnel;
 import com.aptana.debug.php.core.tunneling.SSHTunnelFactory;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
@@ -529,7 +532,7 @@ public class PHPLaunchUtilities
 	{
 		// check whether we should ask the user.
 		IPreferenceStore store = PHPDebugEPLPlugin.getDefault().getPreferenceStore();
-		String option = store.getString(PHPDebugCorePreferenceNames.NOTIFY_NON_STANDARD_PORT);
+		String option = store.getString(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT);
 		if (MessageDialogWithToggle.ALWAYS.equals(option))
 		{
 			IStatus warningStatus = null;
@@ -623,7 +626,7 @@ public class PHPLaunchUtilities
 	public static boolean shouldBreakOnJitFirstLine(final String remoteIP)
 	{
 		final IPreferenceStore store = PHPDebugEPLPlugin.getDefault().getPreferenceStore();
-		String option = store.getString(PHPDebugCorePreferenceNames.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT);
+		String option = store.getString(IPHPDebugCorePreferenceKeys.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT);
 		if (MessageDialogWithToggle.ALWAYS.equals(option))
 		{
 			return true;
@@ -643,7 +646,7 @@ public class PHPLaunchUtilities
 									IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 0,
 							PHPDebugCoreMessages.PHPLaunchUtilities_rememberDecision, false);
 					dialog.setPrefStore(store);
-					dialog.setPrefKey(PHPDebugCorePreferenceNames.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT);
+					dialog.setPrefKey(IPHPDebugCorePreferenceKeys.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT);
 					dialog.open();
 
 					resultHolder.setReturnCode(dialog.getReturnCode());
@@ -1336,7 +1339,7 @@ public class PHPLaunchUtilities
 	{
 		try
 		{
-			String debuggerID = launchConfiguration.getAttribute(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID, PHPDebugEPLPlugin.getCurrentDebuggerId());
+			String debuggerID = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, PHPDebugEPLPlugin.getCurrentDebuggerId());
 			AbstractDebuggerConfiguration debuggerConfiguration = PHPDebuggersRegistry.getDebuggerConfiguration(debuggerID);
 			return debuggerConfiguration.getPort();
 		}

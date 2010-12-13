@@ -54,7 +54,6 @@ import org.eclipse.php.internal.debug.core.Logger;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org.eclipse.php.internal.debug.core.launching.PHPLaunchUtilities;
 import org.eclipse.php.internal.debug.core.launching.PHPProcess;
-import org.eclipse.php.internal.debug.core.launching.ScriptLocator;
 import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.core.zend.debugger.DebugMessagesRegistry;
 import org.eclipse.php.internal.debug.core.zend.debugger.PHPSessionLaunchMapper;
@@ -71,6 +70,7 @@ import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestCo
 import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestEvent;
 import org.eclipse.swt.widgets.Display;
 
+import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**

@@ -82,6 +82,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -1098,7 +1099,7 @@ public class PHPDebugTarget extends PHPDebugElement implements IPHPDebugTarget, 
 					// Try to find a map point:
 					String debugFileName = launchConfiguration.getAttribute(PHPServerProxy.FILE_NAME, (String) null);
 					if (debugFileName == null) {
-						debugFileName = launchConfiguration.getAttribute(IPHPDebugConstants.ATTR_FILE, (String) null);
+						debugFileName = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
 					}
 					if (debugFileName != null) {
 						IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(debugFileName);

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: com.aptana.debug.php
+Bundle-SymbolicName: com.aptana.debug.php;singleton:=true
 Bundle-Version: 3.0.0.qualifier
 Bundle-Activator: com.aptana.debug.php.PHPDebugPlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -10,11 +10,15 @@ Require-Bundle: org.eclipse.ui,
  com.jcraft.jsch,
  org.eclipse.jsch.core,
  org.eclipse.debug.core,
+ org.eclipse.ui.ide,
  com.aptana.core;bundle-version="3.0.0",
  com.aptana.editor.php;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.debug.php,
+ com.aptana.debug.php.core,
+ com.aptana.debug.php.core.includePath,
+ com.aptana.debug.php.core.launch,
  com.aptana.debug.php.core.launch.remote,
  com.aptana.debug.php.core.tunneling,
  com.aptana.debug.php.core.util

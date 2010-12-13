@@ -61,6 +61,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.aptana.debug.php.core.debugger.interpreter.phpIni.PHPINIDebuggerUtil;
+import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDelegate {

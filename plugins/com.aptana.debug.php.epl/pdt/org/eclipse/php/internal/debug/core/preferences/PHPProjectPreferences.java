@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PHPProjectPreferences {
@@ -64,10 +65,10 @@ public class PHPProjectPreferences {
 	
 	public static String getDefaultDebuggerID(IProject project) {
 		Preferences prefs = getModelPreferences();
-		String debuggerID = prefs.getString(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID);
+		String debuggerID = prefs.getString(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID);
 		if (project != null && getElementSettingsForProject(project)) {
 			IScopeContext projectScope = getProjectScope(project);
-			debuggerID = projectScope.getNode(getPreferenceNodeQualifier()).get(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID, debuggerID);
+			debuggerID = projectScope.getNode(getPreferenceNodeQualifier()).get(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, debuggerID);
 		}
 		return debuggerID;
 	}

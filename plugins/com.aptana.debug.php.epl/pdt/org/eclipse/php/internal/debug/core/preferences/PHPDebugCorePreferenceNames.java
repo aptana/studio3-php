@@ -45,8 +45,4 @@ public class PHPDebugCorePreferenceNames {
 	public static final String TRANSFER_ENCODING = Debug_ID + "transfer_encoding";//$NON-NLS-1$
 	public static final String OUTPUT_ENCODING = Debug_ID + "output_encoding";//$NON-NLS-1$
 	public static final String CONFIGURATION_DELEGATE_CLASS = Debug_ID + "configuration_delegate_class";//$NON-NLS-1$
-	
-	public static final String PHP_DEBUGGER_ID = Debug_ID + "php_debugger_id";//$NON-NLS-1$
-	public static final String NOTIFY_NON_STANDARD_PORT = Debug_ID + "notifyNonStandardPort"; //$NON-NLS-1$
-	public static final String BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT = Debug_ID + "breakOnFirstLineForUnknownJIT"; //$NON-NLS-1$
 }

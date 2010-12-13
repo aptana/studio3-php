@@ -1,12 +1,11 @@
 /**
  * 
  */
-package org.eclipse.php.internal.debug.core.launching;
+package com.aptana.debug.php.core.launch;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
@@ -18,7 +17,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.debug.php.PHPDebugPlugin;
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 
 /**
  * The port notification dialog is designed to appear in case the debug session is initialized and the debug-client port
@@ -66,8 +66,8 @@ public class DebugPortNotificationDialog extends MessageDialogWithToggle
 		super(parentShell, dialogTitle, image, message, dialogImageType, new String[] { IDialogConstants.PROCEED_LABEL,
 				IDialogConstants.ABORT_LABEL }, 0, toggleMessage, toggleState);
 		this.detailedInformation = detailedInformation;
-		setPrefStore(PHPDebugEPLPlugin.getDefault().getPreferenceStore());
-		setPrefKey(PHPDebugCorePreferenceNames.NOTIFY_NON_STANDARD_PORT);
+		setPrefStore(PHPDebugPlugin.getDefault().getPreferenceStore());
+		setPrefKey(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT);
 	}
 
 	/**

@@ -32,7 +32,7 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package org.eclipse.php.internal.debug.core.launching;
+package com.aptana.debug.php.core.launch;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,24 +43,26 @@ import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.osgi.internal.profile.Profile;
-import org.eclipse.php.internal.debug.core.Logger;
-import org.eclipse.swt.internal.ole.win32.IStorage;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.PlatformUI;
 
-import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.core.resources.UniformResourceStorage;
+import com.aptana.debug.php.PHPDebugPlugin;
+
 
 /**
  * @author Max Stepanov
  */
-public class ActiveResourcePathGetterAdapter // implements IActiveResourcePathGetterAdapter
+public class ActiveResourcePathGetterAdapter implements IActiveResourcePathGetterAdapter
 {
 	/**
 	 * @see com.aptana.ide.debug.core.IActiveResourcePathGetterAdapter#getActiveResource()
@@ -150,7 +152,7 @@ public class ActiveResourcePathGetterAdapter // implements IActiveResourcePathGe
 							}
 							catch (MalformedURLException e)
 							{
-								PHPDebugEPLPlugin.logError(e);
+								PHPDebugPlugin.logError(e);
 							}
 						}
 					}
@@ -208,11 +210,11 @@ public class ActiveResourcePathGetterAdapter // implements IActiveResourcePathGe
 				}
 				catch (URISyntaxException e)
 				{
-					Logger.logException(e);
+					PHPDebugPlugin.logError(e);
 				}
 				catch (IOException e)
 				{
-					Logger.logException(e);
+					PHPDebugPlugin.logError(e);
 				}
 			}
 		}

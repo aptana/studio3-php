@@ -18,6 +18,7 @@ import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 
+import com.aptana.debug.php.core.includePath.PHPIncludePathUtils;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PHPINIDebuggerUtil {

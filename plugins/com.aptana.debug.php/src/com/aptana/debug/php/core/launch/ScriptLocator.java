@@ -1,4 +1,4 @@
-package org.eclipse.php.internal.debug.core.launching;
+package com.aptana.debug.php.core.launch;
 
 import java.net.MalformedURLException;
 
@@ -6,7 +6,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
+
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 
 /**
  * @author Pavel Petrochenko
@@ -26,9 +27,9 @@ public final class ScriptLocator
 	 * @throws CoreException 
 	 */
 	public static String getScriptFile(ILaunchConfiguration configuration) throws CoreException{
-		boolean attribute = configuration.getAttribute(IPHPDebugConstants.ATTR_USE_SPECIFIC_FILE, false);
+		boolean attribute = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, false);
 		if (attribute){
-			return configuration.getAttribute(IPHPDebugConstants.ATTR_FILE, (String) null);
+			return configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
 		}
 		try
 		{
@@ -55,7 +56,7 @@ public final class ScriptLocator
 	public static String getScriptFile(ILaunchConfiguration configuration, String fileConfKey)
 		throws CoreException
 	{
-		boolean attribute = configuration.getAttribute(IPHPDebugConstants.ATTR_USE_SPECIFIC_FILE, false);
+		boolean attribute = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, false);
 		if (attribute){
 			return configuration.getAttribute(fileConfKey, (String) null);
 		}

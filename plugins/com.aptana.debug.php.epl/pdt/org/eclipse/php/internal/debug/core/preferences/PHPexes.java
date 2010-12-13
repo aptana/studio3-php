@@ -31,6 +31,7 @@ import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 import org.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -589,7 +590,7 @@ public class PHPexes
 		prefs.setValue(PHPDebugCorePreferenceNames.INSTALLED_PHP_DEFAULTS, defaultsString.toString());
 		if (defaultItem != null)
 		{
-			prefs.setValue(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID, defaultItem.getDebuggerID());
+			prefs.setValue(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, defaultItem.getDebuggerID());
 		}
 		PHPDebugEPLPlugin.getDefault().savePluginPreferences();
 	}

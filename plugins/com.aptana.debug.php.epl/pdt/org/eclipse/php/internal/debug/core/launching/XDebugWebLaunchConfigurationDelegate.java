@@ -56,6 +56,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
 import com.aptana.debug.php.core.daemon.DebugDaemon;
+import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.core.launch.remote.RemoteDebugRedirector;
 import com.aptana.debug.php.core.tunneling.SSHTunnel;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;

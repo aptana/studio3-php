@@ -22,6 +22,7 @@ import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.launching.PHPExecutableLaunchDelegate;
 import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -41,10 +42,10 @@ public class PHPDebugCorePreferenceInitializer extends AbstractPreferenceInitial
 		preferences.setDefault(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, "UTF-8"); //$NON-NLS-1$
 		preferences.setDefault(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, "UTF-8"); //$NON-NLS-1$
 		preferences.setDefault(PHPDebugCorePreferenceNames.CONFIGURATION_DELEGATE_CLASS, PHPExecutableLaunchDelegate.class.getName());
-		preferences.setDefault(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID); // The default is Zend's debugger
+		preferences.setDefault(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID); // The default is Zend's debugger
 		preferences.setDefault(IPHPDebugConstants.PHP_DEBUG_PARAMETERS_INITIALIZER, "org.eclipse.php.debug.core.defaultInitializer"); //$NON-NLS-1$
-		preferences.setDefault(PHPDebugCorePreferenceNames.NOTIFY_NON_STANDARD_PORT, MessageDialogWithToggle.ALWAYS);
-		preferences.setDefault(PHPDebugCorePreferenceNames.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT, MessageDialogWithToggle.PROMPT);
+		preferences.setDefault(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT, MessageDialogWithToggle.ALWAYS);
+		preferences.setDefault(IPHPDebugCorePreferenceKeys.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT, MessageDialogWithToggle.PROMPT);
 
 		try {
 			StringBuilder b = new StringBuilder();

@@ -20,6 +20,7 @@ import org.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpProxyHandler;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.daemon.DebugDaemon;
 import com.aptana.debug.php.core.tunneling.SSHTunnelFactory;
 
@@ -133,7 +134,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	public static String getCurrentDebuggerId()
 	{
 		Preferences prefs = getDefault().getPluginPreferences();
-		return prefs.getString(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID);
+		return prefs.getString(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID);
 	}
 
 	/**

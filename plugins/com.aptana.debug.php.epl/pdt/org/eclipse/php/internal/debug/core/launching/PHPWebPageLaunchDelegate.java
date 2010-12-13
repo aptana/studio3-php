@@ -49,6 +49,7 @@ import org.eclipse.php.internal.debug.core.zend.debugger.PHPWebServerDebuggerIni
 import org.eclipse.swt.widgets.Display;
 
 import com.aptana.debug.php.core.daemon.DebugDaemon;
+import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.core.tunneling.SSHTunnel;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 

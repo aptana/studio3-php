@@ -27,9 +27,7 @@ public interface IPHPDebugConstants {
 	public static final String ATTR_WORKING_DIRECTORY = "ATTR_WORKING_DIRECTORY"; //$NON-NLS-1$
 	public static final String ATTR_EXECUTABLE_LOCATION = "ATTR_LOCATION"; //$NON-NLS-1$
 	public static final String ATTR_INI_LOCATION = "ATTR_INI_LOCATION"; //$NON-NLS-1$
-	public static final String ATTR_FILE = "ATTR_FILE"; //$NON-NLS-1$
 	public static final String ATTR_FILE_FULL_PATH = "ATTR_FILE_FULL_PATH"; //$NON-NLS-1$
-	public static final String ATTR_USE_SPECIFIC_FILE = "ATTR_USE_SPECIFIC_FILE"; //$NON-NLS-1$
 	public static final String ATTR_HTTP_POST = "ATTR_HTTP_POST"; //$NON-NLS-1$
 	public static final String ATTR_HTTP_GET = "ATTR_HTTP_GET"; //$NON-NLS-1$
 	/**Indicates that the URL field is auto-generated according to the user Server and resource selections.*/

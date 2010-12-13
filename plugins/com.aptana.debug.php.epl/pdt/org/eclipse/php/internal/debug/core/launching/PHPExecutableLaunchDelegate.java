@@ -53,8 +53,10 @@ import org.eclipse.php.internal.debug.core.zend.debugger.PHPSessionLaunchMapper;
 import org.eclipse.php.internal.debug.core.zend.debugger.ProcessCrashDetector;
 import org.eclipse.swt.widgets.Display;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.daemon.DebugDaemon;
 import com.aptana.debug.php.core.debugger.interpreter.phpIni.PHPINIDebuggerUtil;
+import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
@@ -131,7 +133,7 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 		
 		IProject project = null;
 		if (fileName == null){
-			fileName = configuration.getAttribute(IPHPDebugConstants.ATTR_FILE, (String) null);
+			fileName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
 		}
 		if (fileName != null) { 
 			IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(fileName);
@@ -322,7 +324,7 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 	}
 
 	protected boolean saveBeforeLaunch(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
-		String filePath = configuration.getAttribute(IPHPDebugConstants.ATTR_FILE, "");
+		String filePath = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, "");
 		if ("".equals(filePath)) {
 			return super.saveBeforeLaunch(configuration, mode, monitor);
 		}
