@@ -20,6 +20,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.net.ssl.SSLSocket;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -47,6 +49,7 @@ public class DBGpSession {
 	public static final String DEFAULT_OUTPUT_ENCODING = Charset.defaultCharset().name();
 
 	private Socket DBGpSocket;
+	private boolean isSSL;
 	private AsyncResponseHandlerJob responseHandler;
 	private DBGpCommand DBGpCmd;
 	private DataInputStream DBGpReader;
@@ -75,6 +78,7 @@ public class DBGpSession {
 	public DBGpSession(Socket connection) {
 		creationTime = System.currentTimeMillis();
 		DBGpSocket = connection;
+		isSSL = (connection instanceof SSLSocket);
 		sessionEncoding = DEFAULT_SESSION_ENCODING;
 
 		boolean isGood = false;
@@ -692,5 +696,15 @@ public class DBGpSession {
 	
 	public String getRemoteHostname() {
 		return DBGpSocket.getInetAddress().getHostName();
+	}
+
+	/**
+	 * [Aptana Mod]
+	 * Returns true if the socket for the session is an SSL socket.
+	 * 
+	 * @return True, if the connection is secured; False, otherwise.
+	 */
+	public boolean isSecure() {
+		return isSSL;
 	}	
 }

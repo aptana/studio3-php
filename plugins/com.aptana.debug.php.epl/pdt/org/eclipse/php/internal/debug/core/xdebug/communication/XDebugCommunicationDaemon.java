@@ -14,6 +14,7 @@
 package org.eclipse.php.internal.debug.core.xdebug.communication;
 
 import java.net.Socket;
+import java.net.URL;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.CoreException;
@@ -48,7 +49,9 @@ import org.eclipse.php.internal.debug.core.xdebug.dbgp.session.DBGpSessionHandle
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.session.IDBGpSessionListener;
 import org.eclipse.swt.widgets.Display;
 
+import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
 /**
  * XDebug communication daemon.
@@ -329,18 +332,19 @@ public class XDebugCommunicationDaemon extends AbstractDebuggerCommunicationDaem
 	private PathMapper resolveMapper(DBGpSession session)
 	{
 		//try to locate a relevant server definition so we can get its path mapper
-		PHPServerProxy server = null;
+		AbstractWebServerConfiguration server = null;
 		if (session.getSessionId() != null)
 		{
 			// In case that the remote session was triggered with a session id, there is a good
 			// chance that we already have this server. So we try to look for it in the PHPServersManager.
-			PHPServerProxy[] servers = PHPServersManager.getServers();
-			for (int i = 0; i < servers.length; i++)
+			AbstractWebServerConfiguration[] servers = PHPServersManager.getServers();
+			for (AbstractWebServerConfiguration serverConf : servers)
 			{
-				if (servers[i].getServer().getPort() == session.getRemotePort()
-						&& servers[i].getHost().equalsIgnoreCase(session.getRemoteHostname()))
+				URL baseURL = serverConf.getBaseURL();
+				if (baseURL.getPort() == session.getRemotePort()
+						&& baseURL.getHost().equalsIgnoreCase(session.getRemoteHostname()))
 				{
-					server = servers[i];
+					server = serverConf;
 					break;
 				}
 			}
@@ -360,7 +364,7 @@ public class XDebugCommunicationDaemon extends AbstractDebuggerCommunicationDaem
 			if (server == null)
 			{
 				// create it
-				server = PHPServersManager.createTemporaryServer(remoteHostname, 80);
+				server = PHPServersManager.createTemporaryServer(remoteHostname, 80, session.isSecure());
 				PHPServersManager.addTemporaryServer(server);
 			}
 		}

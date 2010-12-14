@@ -50,8 +50,10 @@ import org.eclipse.swt.widgets.Display;
 
 import com.aptana.debug.php.core.daemon.DebugDaemon;
 import com.aptana.debug.php.core.launch.ScriptLocator;
+import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.core.tunneling.SSHTunnel;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
 /**
  * A launch configuration delegate class for launching a PHP web page script.
@@ -101,7 +103,7 @@ public class PHPWebPageLaunchDelegate extends LaunchConfigurationDelegate {
 		}
 		// PHPLaunchUtilities.showDebugViews();
 		this.launch = launch;
-		PHPServerProxy server = PHPServersManager.getServer(configuration.getAttribute(PHPServerProxy.NAME, ""));
+		AbstractWebServerConfiguration server = PHPServersManager.getServer(configuration.getAttribute(PHPServerProxy.NAME, ""));
 		if (server == null) {
 			Logger.log(Logger.ERROR, "Launch configuration could not find server (server name = " + configuration.getAttribute(PHPServerProxy.NAME, "") + ')');
 			displayErrorMessage("Could not launch the session.\nThe application could not find the server that was defined for this launch.\nPlease modify your launch settings through the 'Debug Configurations' dialog.");

@@ -26,7 +26,10 @@ import org.eclipse.php.internal.debug.core.preferences.IPHPExesListener;
 import org.eclipse.php.internal.debug.core.preferences.PHPExesEvent;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 
+import com.aptana.debug.php.core.server.PHPServersManager;
+import com.aptana.debug.php.core.server.PHPWebServerConfiguration;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
 public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesListener, IServerManagerListener 
 {
@@ -49,14 +52,14 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	private static final String PATH_MAPPER_PREF_KEY = PHPDebugEPLPlugin.PLUGIN_ID + ".pathMapper"; //$NON-NLS-1$
 
 	private static PathMapperRegistry instance;
-	private HashMap<IServer, PathMapper> serverPathMapper;
-	private HashMap<PathMapper, IServer> pathMapperToServer;
+	private HashMap<AbstractWebServerConfiguration, PathMapper> serverPathMapper;
+	private HashMap<PathMapper, AbstractWebServerConfiguration> pathMapperToServer;
 	private HashMap<PHPexeItem, PathMapper> phpExePathMapper;
 
 	private PathMapperRegistry() {
-		serverPathMapper = new HashMap<IServer, PathMapper>();
+		serverPathMapper = new HashMap<AbstractWebServerConfiguration, PathMapper>();
 		phpExePathMapper = new HashMap<PHPexeItem, PathMapper>();
-		pathMapperToServer = new HashMap<PathMapper, IServer>();
+		pathMapperToServer = new HashMap<PathMapper, AbstractWebServerConfiguration>();
 		loadFromPreferences();
 		//create the link to servers manager here in order not to create tightly coupled relationship
 		PHPServersManager.addManagerListener(this);
@@ -89,29 +92,25 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	 * @param server Server instance
 	 * @return path mapper, or <code>null</code> if there's no one
 	 */
-	public static PathMapper getByServer(PHPServerProxy server) {
-		IServer serv = server.getServer();
-		PathMapper result = getInstance().serverPathMapper.get(serv);
+	public static PathMapper getByServer(AbstractWebServerConfiguration server) {
+		PathMapper result = getInstance().serverPathMapper.get(server);
 		if (result == null) {
-			result = getNewServerPathMapper(serv);
-			getInstance().serverPathMapper.put(serv, result);
-			getInstance().pathMapperToServer.put(result, serv);
+			result = getNewServerPathMapper(server);
+			getInstance().serverPathMapper.put(server, result);
+			getInstance().pathMapperToServer.put(result, server);
 		}
 		return result;
 	}
 
 	/**
-	 * Returns a new PHServerProxy that contains the {@link IServer} that is linked to the given {@link PathMapper}.
+	 * Returns the {@link AbstractWebServerConfiguration} that is linked to the given {@link PathMapper}.
 	 *  
 	 * @param mapper A PathMapper instance
-	 * @return A newly created PHPServerProxy; or <code>null</code> if no server is attached to the given mapper
+	 * @return A reference to the server attached to the given mapper; Null, in case none is attached.
 	 */
-	public static PHPServerProxy getByMapper(PathMapper mapper) {
-		IServer server = getInstance().pathMapperToServer.get(mapper);
-		if (server != null) {
-			return new PHPServerProxy(server);
-		}
-		return null;
+	public static AbstractWebServerConfiguration getByMapper(PathMapper mapper) {
+		AbstractWebServerConfiguration server = getInstance().pathMapperToServer.get(mapper);
+		return server;
 	}
 	
 	/**
@@ -122,7 +121,7 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	public static PathMapper getByLaunchConfiguration(ILaunchConfiguration launchConfiguration) {
 		PathMapper pathMapper = null;
 		try {
-			String serverName = launchConfiguration.getAttribute(PHPServerProxy.NAME, (String) null);
+			String serverName = launchConfiguration.getAttribute(PHPWebServerConfiguration.NAME_ATTR, (String) null);
 			if (serverName != null) {
 				pathMapper = getByServer(PHPServersManager.getServer(serverName));
 			}/* else {
@@ -133,7 +132,7 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 				}
 			}*/
 		} catch (CoreException e) {
-			PHPDebugEPLPlugin.log(e);
+			PHPDebugEPLPlugin.logError(e);
 		}
 		return pathMapper;
 	}
@@ -172,13 +171,13 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 			PathMapper pathMapper = new PathMapper();
 			pathMapper.restoreFromMap((HashMap) entryMap.get("mapper")); //$NON-NLS-1$
 			if (serverName != null) {
-				PHPServerProxy server = PHPServersManager.getServer(serverName);
+				AbstractWebServerConfiguration server = PHPServersManager.getServer(serverName);
 				if (server != null)
 				{
 					// SG: Revert Denis's xdebug changes for setting up a new path mapper without loading the mapper values from the preferences... grrrr!
 					// serverPathMapper.put(server.getServer(), getNewServerPathMapper(server.getServer()));
-					serverPathMapper.put(server.getServer(), pathMapper);
-					pathMapperToServer.put(pathMapper, server.getServer());
+					serverPathMapper.put(server, pathMapper);
+					pathMapperToServer.put(pathMapper, server);
 				}
 			} else if (phpExeFile != null) {
 				PHPexeItem phpExeItem = PHPexes.getInstance().getItemForFile(phpExeFile, phpIniFile);
@@ -196,14 +195,14 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		int c = 1;
 		while (i.hasNext()) {
 			HashMap entry = new HashMap();
-			IServer server = (IServer) i.next();
-			if (!server.isTransient())
-			{
+			AbstractWebServerConfiguration server = (AbstractWebServerConfiguration) i.next();
+//			if (!server.isTransient())
+//			{
 				PathMapper pathMapper = serverPathMapper.get(server);
 				entry.put("server", server.getName()); //$NON-NLS-1$
 				entry.put("mapper", pathMapper.storeToMap()); //$NON-NLS-1$
 				elements.put("item" + (c++), entry); //$NON-NLS-1$
-			}
+//			}
 		}
 		i = phpExePathMapper.keySet().iterator();
 		while (i.hasNext()) {
@@ -239,11 +238,11 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.ide.server.core.IServerManagerListener#serversChanged(com.aptana.ide.server.core.ServerManagerEvent)
+	 * @see com.aptana.ide.server.core.AbstractWebServerConfigurationManagerListener#serversChanged(com.aptana.ide.server.core.ServerManagerEvent)
 	 */
 	public void serversChanged(ServerManagerEvent event)
 	{
-		IServer server = event.getServer();
+		AbstractWebServerConfiguration server = event.getServer();
 		switch (event.getKind())
 		{
 			case ServerManagerEvent.KIND_ADDED:
@@ -268,7 +267,7 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		}
 	}
 	
-	private static PathMapper getNewServerPathMapper(IServer server)
+	private static PathMapper getNewServerPathMapper(AbstractWebServerConfiguration server)
 	{
 		PathMapper pathMapper = new PathMapper();
 		if (server.isTransient())
