@@ -25,6 +25,7 @@ import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
 import org.eclipse.php.internal.core.util.ScrolledCompositeImpl;
 import org.eclipse.php.internal.debug.core.pathmapper.PathEntry.Type;
+import org.eclipse.php.internal.ui.wizard.field.ListDialogField;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -42,6 +43,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import com.aptana.editor.php.internal.ui.PHPPluginImages;
+import com.aptana.editor.php.internal.ui.wizard.field.IListAdapter;
+import com.aptana.ui.util.StatusLineMessageTimerManager;
 
 
 public class PathMappingComposite extends Composite {

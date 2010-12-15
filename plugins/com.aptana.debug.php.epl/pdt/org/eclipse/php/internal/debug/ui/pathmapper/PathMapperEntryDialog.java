@@ -46,7 +46,8 @@ import org.eclipse.php.internal.core.project.options.includepath.IncludePathVari
 import org.eclipse.php.internal.debug.core.pathmapper.VirtualPath;
 import org.eclipse.php.internal.debug.core.pathmapper.PathEntry.Type;
 import org.eclipse.php.internal.debug.ui.pathmapper.PathMapperEntryDialog.WorkspaceBrowseDialog.IPFile;
-import org.eclipse.php.internal.ui.util.PHPPluginImages;
+import org.eclipse.php.internal.ui.util.PixelConverter;
+import org.eclipse.php.internal.ui.util.StatusInfo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -68,9 +69,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
-import com.aptana.ide.editor.php.core.PHPNature;
-import com.aptana.ide.editor.php.utils.PixelConverter;
-import com.aptana.ide.editor.php.utils.StatusInfo;
+import com.aptana.editor.php.core.PHPNature;
+import com.aptana.editor.php.internal.ui.PHPPluginImages;
 
 public class PathMapperEntryDialog extends StatusDialog {
 

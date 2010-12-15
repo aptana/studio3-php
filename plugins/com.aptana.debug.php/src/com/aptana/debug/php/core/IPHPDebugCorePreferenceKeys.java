@@ -43,9 +43,13 @@ public interface IPHPDebugCorePreferenceKeys
 {
 	public static final String DEBUGGER_ID = PHPDebugPlugin.PLUGIN_ID;
 
-	public static final String PHP_DEBUGGER_ID = DEBUGGER_ID + "php_debugger_id";//$NON-NLS-1$
-	public static final String NOTIFY_NON_STANDARD_PORT = DEBUGGER_ID + "notifyNonStandardPort"; //$NON-NLS-1$
-	public static final String BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT = DEBUGGER_ID + "breakOnFirstLineForUnknownJIT"; //$NON-NLS-1$
+	public static final String PHP_DEBUG_MODEL_PRESENTATION_ID = DEBUGGER_ID + ".presentation.phpModelPresentation"; //$NON-NLS-1$
+
+	public static final String PHP_DEBUGGER_ID = DEBUGGER_ID + ".php_debugger_id";//$NON-NLS-1$
+	public static final String NOTIFY_NON_STANDARD_PORT = DEBUGGER_ID + ".notifyNonStandardPort"; //$NON-NLS-1$
+	public static final String BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT = DEBUGGER_ID + ".breakOnFirstLineForUnknownJIT"; //$NON-NLS-1$
+	public static final String ALLOW_MULTIPLE_LAUNCHES = DEBUGGER_ID + ".allowMultipleLaunches"; //$NON-NLS-1$
+	public static final String SWITCH_BACK_TO_PREVIOUS_PERSPECTIVE = DEBUGGER_ID + ".switchBackToPreviousPerspective"; //$NON-NLS-1$
 
 	public static final String ATTR_USE_SPECIFIC_FILE = "ATTR_USE_SPECIFIC_FILE"; //$NON-NLS-1$
 	public static final String ATTR_FILE = "ATTR_FILE"; //$NON-NLS-1$

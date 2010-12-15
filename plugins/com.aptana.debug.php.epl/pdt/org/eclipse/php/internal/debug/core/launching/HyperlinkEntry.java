@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.launching;
 
-import org.eclipse.jface.text.hyperlink.IHyperlink;
-
+import org.eclipse.ui.console.IHyperlink;
 
 public class HyperlinkEntry {
     private IHyperlink fLink;
