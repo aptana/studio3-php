@@ -55,11 +55,15 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.daemon.DebugDaemon;
 import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.core.launch.remote.RemoteDebugRedirector;
+import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.core.tunneling.SSHTunnel;
+import com.aptana.debug.php.core.util.NameValuePair;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
 public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
 
@@ -82,9 +86,9 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 		}
 		// PHPLaunchUtilities.showDebugViews();
 		// Resolve the Server
-		PHPServerProxy server = PHPServersManager.getServer(configuration.getAttribute(PHPServerProxy.NAME, ""));//$NON-NLS-1$
+		AbstractWebServerConfiguration server = PHPServersManager.getServer(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""));//$NON-NLS-1$
 		if (server == null) {
-			Logger.log(Logger.ERROR, "Launch configuration could not find server (server name = " + configuration.getAttribute(PHPServerProxy.NAME, "") + ')');//$NON-NLS-1$ //$NON-NLS-2$
+			Logger.log(Logger.ERROR, "Launch configuration could not find server (server name = " + configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "") + ')');//$NON-NLS-1$ //$NON-NLS-2$
 			displayErrorMessage(PHPDebugCoreMessages.XDebug_WebLaunchConfigurationDelegate_1);
 			DebugPlugin.getDefault().getLaunchManager().removeLaunch(launch);
 			return;
@@ -92,11 +96,11 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 
 		// Get the project from the file name
 		// String fileName = configuration.getAttribute(PHPServerProxy.FILE_NAME, (String) null);
-		String fileName = ScriptLocator.getScriptFile(configuration, PHPServerProxy.FILE_NAME);
+		String fileName = ScriptLocator.getScriptFile(configuration, IPHPDebugCorePreferenceKeys.ATTR_SERVER_FILE_NAME);
 		if (fileName == null)
 		{
 			DebugPlugin.getDefault().getLaunchManager().removeLaunch(launch);
-			boolean specificFileLaunch = configuration.getAttribute(IPHPDebugConstants.ATTR_USE_SPECIFIC_FILE, false);
+			boolean specificFileLaunch = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, false);
 			if (specificFileLaunch) {
 				displayErrorMessage("Could not launch the session. \nMake sure that the selected script exists in your project");
 			} else {
@@ -139,7 +143,7 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 
 		// determine from eclipse config whether we use an internal browser, external browser or none
 		final boolean useInternalBrowser = launch.getLaunchConfiguration().getAttribute(IPHPDebugConstants.USE_INTERNAL_BROWSER, false);
-		String baseURL = new String(configuration.getAttribute(PHPServerProxy.BASE_URL, "").getBytes()); //$NON-NLS-1$
+		String baseURL = new String(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_BASE_URL, "").getBytes()); //$NON-NLS-1$
 		if (baseURL.endsWith("/")) //$NON-NLS-1$
 	    {
 			baseURL = baseURL.substring(0, baseURL.length() - 1);
@@ -287,7 +291,7 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 			{
 				try
 				{
-					final List postData = configuration.getAttribute(IPHPDebugConstants.ATTR_HTTP_POST,
+					final List postData = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_POST,
 							Collections.EMPTY_LIST);
 					// Has to be done from the UI thread since the Browser can be an internal one
 					Display.getDefault().asyncExec(new Runnable()
@@ -392,7 +396,7 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 			baseUrlBuilder.append('?');
 		}
 		// Add the launch HTTP GET parameters before the XDebug GET additions
-		List<String> requestParameters = configuration.getAttribute(IPHPDebugConstants.ATTR_HTTP_GET,
+		List<String> requestParameters = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_GET,
 				Collections.EMPTY_LIST);
 		try
 		{

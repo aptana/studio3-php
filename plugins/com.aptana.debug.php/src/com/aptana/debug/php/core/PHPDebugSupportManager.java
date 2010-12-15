@@ -1,8 +1,10 @@
-package com.aptana.debug.php.epl;
+package com.aptana.debug.php.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+
+import com.aptana.debug.php.PHPDebugPlugin;
 
 /**
  * @author Shalom Gibly <sgibly@aptana.com>
@@ -52,7 +54,7 @@ public class PHPDebugSupportManager
 	private void load()
 	{
 		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-				PHPDebugEPLPlugin.PLUGIN_ID, DEBUGGER_SUPPORT_EXTENSION);
+				PHPDebugPlugin.PLUGIN_ID, DEBUGGER_SUPPORT_EXTENSION);
 		for (IConfigurationElement element : elements)
 		{
 			if (LAUNCH_SUPPORT_ITEM.equals(element.getName()))
@@ -65,7 +67,7 @@ public class PHPDebugSupportManager
 					}
 					catch (CoreException e)
 					{
-						PHPDebugEPLPlugin.logError(e);
+						PHPDebugPlugin.logError(e);
 					}
 				}
 			}

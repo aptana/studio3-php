@@ -48,6 +48,7 @@ import org.eclipse.php.internal.debug.core.zend.debugger.PHPSessionLaunchMapper;
 import org.eclipse.php.internal.debug.core.zend.debugger.PHPWebServerDebuggerInitializer;
 import org.eclipse.swt.widgets.Display;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.daemon.DebugDaemon;
 import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.core.server.PHPServersManager;
@@ -103,9 +104,9 @@ public class PHPWebPageLaunchDelegate extends LaunchConfigurationDelegate {
 		}
 		// PHPLaunchUtilities.showDebugViews();
 		this.launch = launch;
-		AbstractWebServerConfiguration server = PHPServersManager.getServer(configuration.getAttribute(PHPServerProxy.NAME, ""));
+		AbstractWebServerConfiguration server = PHPServersManager.getServer(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""));
 		if (server == null) {
-			Logger.log(Logger.ERROR, "Launch configuration could not find server (server name = " + configuration.getAttribute(PHPServerProxy.NAME, "") + ')');
+			Logger.log(Logger.ERROR, "Launch configuration could not find server (server name = " + configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "") + ')');
 			displayErrorMessage("Could not launch the session.\nThe application could not find the server that was defined for this launch.\nPlease modify your launch settings through the 'Debug Configurations' dialog.");
 			terminated();
 			DebugPlugin.getDefault().getLaunchManager().removeLaunch(launch);
@@ -113,11 +114,11 @@ public class PHPWebPageLaunchDelegate extends LaunchConfigurationDelegate {
 			return;
 		}
 		// String fileName = configuration.getAttribute(Server.FILE_NAME, (String) null);
-		String fileName = ScriptLocator.getScriptFile(configuration, PHPServerProxy.FILE_NAME);
+		String fileName = ScriptLocator.getScriptFile(configuration, IPHPDebugCorePreferenceKeys.ATTR_SERVER_FILE_NAME);
 		if (fileName == null)
 		{
 			DebugPlugin.getDefault().getLaunchManager().removeLaunch(launch);
-			boolean specificFileLaunch = configuration.getAttribute(IPHPDebugConstants.ATTR_USE_SPECIFIC_FILE, false);
+			boolean specificFileLaunch = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, false);
 			if (specificFileLaunch) {
 				displayErrorMessage("Could not launch the session. \nMake sure that the selected script exists in your project");
 			} else {
@@ -158,7 +159,7 @@ public class PHPWebPageLaunchDelegate extends LaunchConfigurationDelegate {
 		wc.setAttribute(IDebugParametersKeys.PHP_DEBUG_TYPE, IDebugParametersKeys.PHP_WEB_PAGE_DEBUG);
 		wc.doSave();
 
-		String URL = new String(configuration.getAttribute(PHPServerProxy.BASE_URL, "").getBytes());
+		String URL = new String(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_BASE_URL, "").getBytes());
 		if (URL.endsWith("/")) //$NON-NLS-1$
 	    {
 			URL = URL.substring(0, URL.length() - 1);
@@ -237,8 +238,8 @@ public class PHPWebPageLaunchDelegate extends LaunchConfigurationDelegate {
 	 */
 	public boolean preLaunchCheck(final ILaunchConfiguration configuration, final String mode, IProgressMonitor monitor) throws CoreException {
 		// Check if the server exists
-		final String serverName = configuration.getAttribute(PHPServerProxy.NAME, "");
-		PHPServerProxy server = PHPServersManager.getServer(serverName);
+		final String serverName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "");
+		AbstractWebServerConfiguration server = PHPServersManager.getServer(serverName);
 		if (server == null) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {

@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
 import org.eclipse.debug.core.sourcelookup.containers.DirectorySourceContainer;
-import org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage;
 import org.eclipse.debug.core.sourcelookup.containers.ZipEntryStorage;
 import org.eclipse.php.internal.debug.core.Logger;
 
@@ -77,7 +76,7 @@ public class PHPDirectorySourceContainer extends DirectorySourceContainer {
 			} else if (lFileStorage[i] instanceof org.eclipse.debug.core.sourcelookup.containers.ZipEntryStorage) {
 				zipEntry = (org.eclipse.debug.core.sourcelookup.containers.ZipEntryStorage) lFileStorage[i];
 				ZipEntryStorage zStorage = new ZipEntryStorage(zipEntry.getArchive(), zipEntry.getZipEntry());
-				zStorage.setProject(project);
+				// zStorage.setProject(project);
 				storage[i] = zStorage;
 			} else {
 				storage[i] = lFileStorage[i];

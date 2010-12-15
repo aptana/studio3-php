@@ -16,17 +16,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
 import org.eclipse.debug.core.sourcelookup.containers.AbstractSourceContainer;
-import org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage;
 
 public class PHPFileSourceContainer extends AbstractSourceContainer {
 
     private File fFile;
     private LocalFileStorage fStorage;
-//    private IProject project;
 
     public PHPFileSourceContainer(File file, IProject project) {
         fFile = file;
-//        this.project = project;
         fStorage = new LocalFileStorage(fFile);
         fStorage.setProject(project);
     }

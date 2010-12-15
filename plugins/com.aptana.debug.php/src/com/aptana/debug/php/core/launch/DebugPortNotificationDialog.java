@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.aptana.debug.php.PHPDebugPlugin;
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
+import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.ui.util.SWTUtils;
 
 /**
  * The port notification dialog is designed to appear in case the debug session is initialized and the debug-client port
@@ -131,13 +133,14 @@ public class DebugPortNotificationDialog extends MessageDialogWithToggle
 				switch (s.getSeverity())
 				{
 					case IStatus.ERROR:
-						image = UnifiedEditorsPlugin.getImage("icons/error.png"); //$NON-NLS-1$
+						
+						image = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/error.png"); //$NON-NLS-1$
 						break;
 					case IStatus.INFO:
-						image = UnifiedEditorsPlugin.getImage("icons/information.png"); //$NON-NLS-1$
+						image = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/information.png"); //$NON-NLS-1$
 						break;
 					case IStatus.WARNING:
-						image = UnifiedEditorsPlugin.getImage("icons/warning.png"); //$NON-NLS-1$
+						image = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/warning.png"); //$NON-NLS-1$
 						break;
 				}
 				if (image != null) // we have a valid status

@@ -1360,7 +1360,7 @@ public class PHPLaunchUtilities
 	{
 		try
 		{
-			String url = launchConfiguration.getAttribute(PHPServerProxy.BASE_URL, "");//$NON-NLS-1$
+			String url = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_BASE_URL, "");//$NON-NLS-1$
 			if (url == null || url.length() == 0)
 			{
 				return null;

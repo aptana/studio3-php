@@ -1,4 +1,4 @@
-package com.aptana.debug.php.epl;
+package com.aptana.debug.php.core;
 
 import java.util.List;
 

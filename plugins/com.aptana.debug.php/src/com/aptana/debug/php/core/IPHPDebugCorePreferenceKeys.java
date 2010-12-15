@@ -38,16 +38,23 @@ import com.aptana.debug.php.PHPDebugPlugin;
 
 /**
  * @author Shalom Gibly <sgibly@aptana.com>
- *
  */
 public interface IPHPDebugCorePreferenceKeys
 {
 	public static final String DEBUGGER_ID = PHPDebugPlugin.PLUGIN_ID;
-	
+
 	public static final String PHP_DEBUGGER_ID = DEBUGGER_ID + "php_debugger_id";//$NON-NLS-1$
 	public static final String NOTIFY_NON_STANDARD_PORT = DEBUGGER_ID + "notifyNonStandardPort"; //$NON-NLS-1$
 	public static final String BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT = DEBUGGER_ID + "breakOnFirstLineForUnknownJIT"; //$NON-NLS-1$
-	
+
 	public static final String ATTR_USE_SPECIFIC_FILE = "ATTR_USE_SPECIFIC_FILE"; //$NON-NLS-1$
 	public static final String ATTR_FILE = "ATTR_FILE"; //$NON-NLS-1$
+	public static final String ATTR_AUTO_GENERATED_URL = "ATTR_AUTO_GENERATED_URL"; //$NON-NLS-1$
+
+	public static final String ATTR_SERVER_NAME = "ATTR_SERVER_NAME"; //$NON-NLS-1$
+	public static final String ATTR_SERVER_FILE_NAME = "ATTR_SERVER_FILE_NAME"; //$NON-NLS-1$
+	public static final String ATTR_SERVER_BASE_URL = "ATTR_SERVER_BASE_URL"; //$NON-NLS-1$
+
+	public static final String ATTR_HTTP_POST = "ATTR_HTTP_POST"; //$NON-NLS-1$
+	public static final String ATTR_HTTP_GET = "ATTR_HTTP_GET"; //$NON-NLS-1$
 }

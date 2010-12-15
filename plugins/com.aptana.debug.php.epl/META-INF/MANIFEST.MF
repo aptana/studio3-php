@@ -17,16 +17,20 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.editor.php.epl;bundle-version="3.0.0",
  com.aptana.debug.php;bundle-version="3.0.0",
  com.aptana.editor.php;bundle-version="3.0.0",
- com.aptana.webserver.core;bundle-version="3.0.0"
+ com.aptana.webserver.core;bundle-version="3.0.0",
+ com.aptana.ui;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime,org.eclipse.ui",
+ com.aptana.debug.php.core.debugger.interpreter.phpIni,
  com.aptana.debug.php.epl;uses:="org.eclipse.core.runtime,org.eclipse.ui.plugin,org.osgi.framework",
+ com.aptana.debug.php.ui.pathMapper,
  org.eclipse.php.debug.core.debugger;uses:="org.eclipse.php.internal.debug.core.zend.debugger,org.eclipse.php.internal.debug.core.zend.model",
  org.eclipse.php.debug.core.debugger.handlers;uses:="org.eclipse.php.internal.debug.core.zend.model,org.eclipse.php.debug.core.debugger.messages",
  org.eclipse.php.debug.core.debugger.messages,
  org.eclipse.php.debug.core.debugger.parameters;uses:="org.eclipse.debug.core",
  org.eclipse.php.debug.core.debugger.pathmapper;uses:="org.eclipse.php.internal.debug.core.pathmapper,org.eclipse.php.internal.core.util.preferences",
+ org.eclipse.php.internal.core.util,
  org.eclipse.php.internal.debug.core;
   uses:="org.eclipse.debug.core,
    org.eclipse.osgi.util,
@@ -34,6 +38,8 @@ Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime
    org.eclipse.php.internal.debug.core.zend.debugger",
  org.eclipse.php.internal.debug.core.daemon;uses:="com.aptana.debug.php.core.daemon",
  org.eclipse.php.internal.debug.core.debugger;uses:="org.eclipse.core.runtime,com.aptana.debug.php.core.daemon,org.eclipse.swt.widgets",
+ org.eclipse.php.internal.debug.core.interpreter.phpIni,
+ org.eclipse.php.internal.debug.core.interpreter.preferences,
  org.eclipse.php.internal.debug.core.launching;
   uses:="org.eclipse.debug.core,
    org.eclipse.core.runtime,
@@ -153,4 +159,8 @@ Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime
    org.eclipse.core.resources,
    org.eclipse.php.internal.debug.core.model,
    org.eclipse.debug.core.model",
- org.eclipse.php.internal.debug.core.zend.testConnection
+ org.eclipse.php.internal.debug.core.zend.testConnection,
+ org.eclipse.php.internal.debug.ui.pathmapper,
+ org.eclipse.php.internal.debug.ui.wizard,
+ org.eclipse.php.internal.debug.ui.wizard.exe,
+ org.eclipse.php.internal.debug.ui.wizard.web

@@ -39,7 +39,7 @@ public class PHPExternalArchiveSourceContainer extends AbstractSourceContainer {
         for (int i = 0; i < zipStorage.length; i++) {
             entry = (org.eclipse.debug.core.sourcelookup.containers.ZipEntryStorage) zipStorage[i];
             ZipEntryStorage zStorage = new ZipEntryStorage(entry.getArchive(), entry.getZipEntry());
-            zStorage.setProject(project);
+            // zStorage.setProject(project);
             PHPZipEntryStorage[i] = zStorage;
         }
         return PHPZipEntryStorage;

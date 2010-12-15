@@ -12,10 +12,13 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.core,
  org.eclipse.ui.ide,
  org.eclipse.core.filesystem,
+ org.eclipse.debug.ui,
  com.aptana.core;bundle-version="3.0.0",
+ com.aptana.editor.php.epl;bundle-version="3.0.0",
  com.aptana.editor.php;bundle-version="3.0.0",
  com.aptana.webserver.core;bundle-version="3.0.0",
- com.aptana.core.epl;bundle-version="3.0.0"
+ com.aptana.core.epl;bundle-version="3.0.0",
+ com.aptana.ui;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.debug.php,
@@ -25,4 +28,5 @@ Export-Package: com.aptana.debug.php,
  com.aptana.debug.php.core.launch.remote,
  com.aptana.debug.php.core.server,
  com.aptana.debug.php.core.tunneling,
- com.aptana.debug.php.core.util
+ com.aptana.debug.php.core.util,
+ com.aptana.debug.php.ui.launching

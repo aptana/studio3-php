@@ -47,7 +47,6 @@ import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.osgi.internal.profile.Profile;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -62,7 +61,7 @@ import com.aptana.debug.php.PHPDebugPlugin;
 /**
  * @author Max Stepanov
  */
-public class ActiveResourcePathGetterAdapter implements IActiveResourcePathGetterAdapter
+public class ActiveResourcePathGetterAdapter // implements IActiveResourcePathGetterAdapter
 {
 	/**
 	 * @see com.aptana.ide.debug.core.IActiveResourcePathGetterAdapter#getActiveResource()

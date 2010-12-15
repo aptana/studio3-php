@@ -2,6 +2,5 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="debugCommunicationDaemon" name="Debug Communication Daemon" schema="schema/debugCommunicationDaemon.exsd"/>
-   <extension-point id="debuggerSupport" name="Debugger Support" schema="schema/debuggerSupport.exsd"/>
 
 </plugin>
