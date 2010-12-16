@@ -18,13 +18,10 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileInfo;
-import org.eclipse.core.internal.filesystem.local.LocalFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
 
+import com.aptana.debug.php.core.util.FileUtils;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -454,17 +451,6 @@ public class PHPexeItem {
 	 * Change to executable permissions for non-windows machines.
 	 */
 	public static void changePermissions(File file) {
-		if (!Platform.getOS().equals(Platform.OS_WIN32)) {
-			LocalFile localFile = new LocalFile(file);
-			IFileInfo info = localFile.fetchInfo();
-			if (!info.getAttribute(EFS.ATTRIBUTE_EXECUTABLE)) {
-				info.setAttribute(EFS.ATTRIBUTE_EXECUTABLE, true);
-				try {
-					localFile.putInfo(info, EFS.SET_ATTRIBUTES, null);
-				} catch (CoreException e) {
-					PHPDebugEPLPlugin.logError("CoreException occured", e);
-				}
-			}
-		}
+		FileUtils.setExecutablePermissions(file);
 	}
 }

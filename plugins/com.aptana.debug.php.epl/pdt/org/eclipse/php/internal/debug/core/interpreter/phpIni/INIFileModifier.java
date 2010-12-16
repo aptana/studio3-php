@@ -17,12 +17,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.aptana.debug.php.ui.phpIni.INIFileSection;
+import com.aptana.debug.php.ui.phpIni.IPhpIniFileModifier;
+import com.aptana.debug.php.ui.phpIni.PHPIniEntry;
 
 /**
  * This class is used for modifying INI file.
@@ -30,334 +32,8 @@ import java.util.regex.Pattern;
  *
  * @author michael
  */
-public class INIFileModifier {
+public class INIFileModifier implements IPhpIniFileModifier {
 	
-	public static final int PHP_EXTENSION_VALIDATION_UNKNOWN = 0;
-	public static final int PHP_EXTENSION_VALIDATION_OK = 1;
-	public static final int PHP_EXTENSION_VALIDATION_ERROR = 2;
-	public static final int PHP_EXTENSION_VALIDATION_WARNING = 3;
-	
-	/*
-	 * Extensions indicators in the ini
-	 */
-	private static final String[] EXTENSION_ENTRIES = {"extension", "zend_extension", "zend_extension_ts"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	
-	/**
-	 * PHP ini entry.
-	 * @author Denis Denisenko, Shalom Gibly
-	 */
-	public static class PHPIniEntry implements Map.Entry<String, String>
-	{
-		/**
-		 * Key.
-		 */
-		private String key;
-		
-		/**
-		 * Value.
-		 */
-		private String value;
-		
-		/**
-		 * Whether entry is commented.
-		 */
-		private boolean commented;
-		
-		/**
-		 * Holds the validity state of this element.
-		 * 
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_OK
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_ERROR
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_WARNING
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_UNKNOWN
-		 */
-		private int validity;
-
-		/**
-		 * Holds the validation note (if exists). A validation note is either an error note or a warning note that was
-		 * generated while executing the PHP interpreter.
-		 */
-		private String validationNote;
-		
-		/**
-		 * Parent section.
-		 */
-		private final INIFileSection parent;
-		
-		/**
-		 * PHPIniEntry constructor.
-		 * @param key - entry key.
-		 * @param value - entry value.
-		 * @param parent - parent section.
-		 */
-		public PHPIniEntry(String key, String value, INIFileSection parent)
-		{
-			this.key = key;
-			this.value = value;
-			this.parent = parent;
-			this.validity = PHP_EXTENSION_VALIDATION_UNKNOWN;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public String getKey() {
-			return key;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public String getValue() {
-			return value;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public String setValue(String val) {
-			value = val;
-			return val;
-		}
-		
-		/**
-		 * Returns section.
-		 * @return section.
-		 */
-		public INIFileSection getSection()
-		{
-			return parent;
-		}
-		
-		/**
-		 * Returns the validation state of this entry. Note that the state is not set until the PHP ini validator is
-		 * invoked.
-		 * 
-		 * @return the validation state of this entry.
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_OK
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_ERROR
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_WARNING
-		 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_UNKNOWN
-		 */
-		public int getValidationState()
-		{
-			return validity;
-		}
-
-		/**
-		 * Sets the validation state and note for this entry.
-		 * 
-		 * @param state
-		 * @param validationNote
-		 */
-		public void setValidationState(int state, String validationNote)
-		{
-			this.validity = state;
-			this.validationNote = validationNote;
-		}
-
-		/**
-		 * Returns the validation note that was set for this element when the PHP ini validator was invoked.
-		 * 
-		 * @return the validation note; or null.
-		 */
-		public String getValidationNote()
-		{
-			return this.validationNote;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int hashCode()
-		{
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((key == null) ? 0 : key.hashCode());
-			result = prime * result + ((value == null) ? 0 : value.hashCode());
-			return result;
-		}
-
-		/**
-		 * Sets commented state.
-		 * 
-		 * @param commented - commented state to set.
-		 */
-		void setCommented(boolean commented)
-		{
-			this.commented = commented;
-		}
-
-		/**
-		 * Gets whether this entry is commented.
-		 * 
-		 * @return true if commented, false otherwise.
-		 */
-		public boolean getCommented()
-		{
-			return commented;
-		}
-
-		/**
-		 * Returns whether this entry marks a PHP extension entry.
-		 * Note: Commented entries will always return false.
-		 * @return True, if it's an extension entry; False, otherwise.
-		 */
-		public boolean isExtensionEntry()
-		{
-			if (getCommented()) {
-				return false;
-			}
-			for (String ext : EXTENSION_ENTRIES)
-			{
-				if (ext.equalsIgnoreCase(getKey()))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean equals(Object obj)
-		{
-			if (this == obj)
-			{
-				return true;
-			}
-			if (obj == null)
-			{
-				return false;
-			}
-			if (getClass() != obj.getClass())
-			{
-				return false;
-			}
-			final PHPIniEntry other = (PHPIniEntry) obj;
-			if (key == null)
-			{
-				if (other.key != null)
-				{
-					return false;
-				}
-			} 
-			else if (!key.equals(other.key))
-			{
-				return false;
-			}
-			if (value == null)
-			{
-				if (other.value != null)
-				{
-					return false;
-				}
-			} 
-			else if (!value.equals(other.value))
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-	
-	/**
-	 * INI file section.
-	 * @author Denis Denisenko
-	 *
-	 */
-	public class INIFileSection {
-		
-		/**
-		 * Section name.
-		 */
-		String name;
-		
-		/**
-		 * Section lines list.
-		 */
-		List<String> lines;
-		
-		/**
-		 * Section entries.
-		 */
-		List<PHPIniEntry> entries;
-
-		/**
-		 * INIFileSection constructor.
-		 * @param name - section name.
-		 */
-		public INIFileSection(String name) {
-			this.name = name;
-			this.lines = new LinkedList<String>();
-			this.entries = new ArrayList<PHPIniEntry>();
-		}
-		
-		/**
-		 * Gets section name.
-		 * @return section name.
-		 */
-		public String getName()
-		{
-			return name;
-		}
-		
-		/**
-		 * Gets read-only entries list.
-		 * @return read-only entries list.
-		 */
-		public List<PHPIniEntry> getEntries()
-		{
-			return Collections.unmodifiableList(entries);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int hashCode()
-		{
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			return result;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean equals(Object obj)
-		{
-			if (this == obj)
-			{
-				return true;
-			}
-			if (obj == null)
-			{
-				return false;
-			}
-			if (getClass() != obj.getClass())
-			{
-				return false;
-			}
-			final INIFileSection other = (INIFileSection) obj;
-			if (name == null)
-			{
-				if (other.name != null)
-				{
-					return false;
-				}
-			} 
-			else if (!name.equals(other.name))
-			{
-				return false;
-			}
-			return true;
-		}
-		
-		
-	}
-
 	private static final String GLOBAL_SECTION = "__global__"; //$NON-NLS-1$
 	private static final Pattern SECTION_PATTERN = Pattern.compile("\\[([^\\]]+)\\]"); //$NON-NLS-1$
 	//private static final Pattern NAME_VAL_PATTERN = Pattern.compile("([\\w]+)\\s*=\\s*(.*)"); //$NON-NLS-1$
@@ -464,8 +140,8 @@ public class INIFileModifier {
 			return;
 		}
 		
-		section.lines.add(lineIndex, name + '=' + value);
-		section.entries.add(entryIndex,
+		section.getLines().add(lineIndex, name + '=' + value);
+		section.getEntries().add(entryIndex,
 				new PHPIniEntry(name, value, section));
 		isDirty = true;
 		
@@ -483,8 +159,8 @@ public class INIFileModifier {
 			throw new NullPointerException();
 		}
 		
-		section.lines.add(0, name + '=' + value);
-		section.entries.add(0,
+		section.getLines().add(0, name + '=' + value);
+		section.getEntries().add(0,
 				new PHPIniEntry(name, value, section));
 		isDirty = true;
 	}
@@ -507,16 +183,16 @@ public class INIFileModifier {
 		//trimming the value
 		value = value.trim();
 		for (INIFileSection section : sections) {
-			if (section.name.equals(sectionName)) {
+			if (section.getName().equals(sectionName)) {
 				if (replace) {
 					//replacing values in the lines list
-					for (int i = 0; i < section.lines.size(); ++i) {
-						Matcher m = NAME_VAL_PATTERN.matcher(section.lines.get(i));
+					for (int i = 0; i < section.getLines().size(); ++i) {
+						Matcher m = NAME_VAL_PATTERN.matcher(section.getLines().get(i));
 						if (m.matches()) {
 							String oldName = m.group(1);
 							String oldValue = Pattern.quote(m.group(2));
 							if (oldName.equals(name) && (replacePattern == null || oldValue.equals(replacePattern))) {
-								section.lines.set(i, name + '=' + value);
+								section.getLines().set(i, name + '=' + value);
 							}
 						}
 					}
@@ -525,7 +201,7 @@ public class INIFileModifier {
 					 * Replacing values in the entries list.
 					 */
 					String val = value;
-					for (PHPIniEntry entry : section.entries)
+					for (PHPIniEntry entry : section.getEntries())
 					{
 						if (entry.getKey().equals(name)
 								&& Pattern.quote(entry.getValue()).equals(replacePattern))
@@ -535,9 +211,9 @@ public class INIFileModifier {
 					}
 					
 				} else {
-					section.entries.add(
+					section.getEntries().add(
 							new PHPIniEntry(name, value, section));
-					section.lines.add(name + '=' + value);
+					section.getLines().add(name + '=' + value);
 				}
 				break;
 			}
@@ -601,21 +277,21 @@ public class INIFileModifier {
 		}
 		boolean removed = false;
 		for (INIFileSection section : sections) {
-			if (sectionName == null || section.name.equals(sectionName)) {
-				for (int i = 0; i < section.lines.size(); ++i) {
-					Matcher m = NAME_VAL_PATTERN.matcher(section.lines.get(i));
+			if (sectionName == null || section.getName().equals(sectionName)) {
+				for (int i = 0; i < section.getLines().size(); ++i) {
+					Matcher m = NAME_VAL_PATTERN.matcher(section.getLines().get(i));
 					if (m.matches()) {
 						String oldName = m.group(1);
 						String oldValue = Pattern.quote(m.group(2));
 						if (oldName.equals(name) && (removePattern == null || oldValue.equals(removePattern))) {
-							section.lines.remove(i--);
+							section.getLines().remove(i--);
 							removed = true;
 						}
 					}
 				}
 				
 				List<PHPIniEntry> toRemove = new ArrayList<PHPIniEntry>();
-				for (PHPIniEntry entry : section.entries)
+				for (PHPIniEntry entry : section.getEntries())
 				{
 					if (entry.getKey().equals(name)
 							&& removePattern != null && Pattern.quote(entry.getValue()).equals(removePattern))
@@ -623,7 +299,7 @@ public class INIFileModifier {
 						toRemove.add(entry);
 					}
 				}
-				section.entries.removeAll(toRemove);
+				section.getEntries().removeAll(toRemove);
 				
 				if (sectionName != null) {
 					break;
@@ -635,12 +311,12 @@ public class INIFileModifier {
 	}
 	
 	/**
-	 * Gets read-only sections list.
-	 * @return read-only sections list.
+	 * Gets the sections list.
+	 * @return the sections list.
 	 */
 	public List<INIFileSection> getSections()
 	{
-		return Collections.unmodifiableList(sections);
+		return sections;
 	}
 
 	/**
@@ -685,20 +361,21 @@ public class INIFileModifier {
 			throw new NullPointerException();
 		}
 		for (INIFileSection section : sections) {
-			if (sectionName == null || section.name.equals(sectionName)) {
-				for (int i = 0; i < section.lines.size(); ++i) {
-					String line = section.lines.get(i);
+			if (sectionName == null || section.getName().equals(sectionName)) {
+				List<String> lines = section.getLines();
+				for (int i = 0; i < lines.size(); ++i) {
+					String line = lines.get(i);
 					Matcher m = NAME_VAL_PATTERN.matcher(line);
 					if (m.matches()) {
 						String oldName = m.group(1);
 						String oldValue = Pattern.quote(m.group(2));
 						if (!line.startsWith(";") && oldName.equals(name) && (commentPattern == null || oldValue.equals(commentPattern))) { //$NON-NLS-1$
-							section.lines.set(i, ';' + line);
+							lines.set(i, ';' + line);
 						}
 					}
 				}
 				
-				for (PHPIniEntry entry : section.entries)
+				for (PHPIniEntry entry : section.getEntries())
 				{
 					if (entry.getKey().equals(name)
 							&& !entry.getCommented()
@@ -731,9 +408,9 @@ public class INIFileModifier {
 			throw new NullPointerException();
 		}
 		for (INIFileSection section : sections) {
-			if (sectionName == null || section.name.equals(sectionName)) {
-				for (int i = 0; i < section.lines.size(); ++i) {
-					String line = section.lines.get(i);
+			if (sectionName == null || section.getName().equals(sectionName)) {
+				for (int i = 0; i < section.getLines().size(); ++i) {
+					String line = section.getLines().get(i);
 					Matcher m = NAME_VAL_PATTERN.matcher(line);
 					if (m.matches()) {
 						String oldName = m.group(1);
@@ -747,12 +424,12 @@ public class INIFileModifier {
 									break;
 								}
 							}
-							section.lines.set(i, line.substring(index));
+							section.getLines().set(i, line.substring(index));
 						}
 					}
 				}
 				
-				for (PHPIniEntry entry : section.entries)
+				for (PHPIniEntry entry : section.getEntries())
 				{
 					if (entry.getKey().equals(name)
 							&& entry.getCommented()
@@ -768,14 +445,6 @@ public class INIFileModifier {
 			}
 		}
 		isDirty = true;
-	}
-
-	/**
-	 * Writes all changes to the INI configuration file
-	 * @throws IOException
-	 */
-	public void close() throws IOException {
-		flush();
 	}
 
 	/**
@@ -805,9 +474,9 @@ public class INIFileModifier {
 					{
 						entry.setCommented(true);
 					}
-					currentSection.entries.add(entry);
+					currentSection.getEntries().add(entry);
 				}
-				currentSection.lines.add(line);
+				currentSection.getLines().add(line);
 			}
 		}
 		r.close();
@@ -821,10 +490,10 @@ public class INIFileModifier {
 	public void flush() throws IOException {
 		PrintWriter w = new PrintWriter(new FileWriter(configFile));
 		for (INIFileSection section : sections) {
-			if (section.name != GLOBAL_SECTION) {
-				w.println('[' + section.name + ']');
+			if (section.getName() != GLOBAL_SECTION) {
+				w.println('[' + section.getName() + ']');
 			}
-			for (String line : section.lines) {
+			for (String line : section.getLines()) {
 				w.println(line);
 			}
 		}
@@ -917,8 +586,8 @@ public class INIFileModifier {
 	private int getEntryLineIndex(PHPIniEntry entry)
 	{
 		INIFileSection section = entry.getSection();
-		for (int i = 0; i < section.lines.size(); ++i) {
-			String line = section.lines.get(i);
+		for (int i = 0; i < section.getLines().size(); ++i) {
+			String line = section.getLines().get(i);
 			Matcher m = NAME_VAL_PATTERN.matcher(line);
 			if (m.matches()) {
 				String name = m.group(1);
@@ -946,6 +615,6 @@ public class INIFileModifier {
 	private int getEntryIndex(PHPIniEntry entry)
 	{
 		INIFileSection section = entry.getSection();
-		return section.entries.indexOf(entry);
+		return section.getEntries().indexOf(entry);
 	}
 }

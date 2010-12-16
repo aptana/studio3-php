@@ -24,12 +24,13 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.editor.php;bundle-version="3.0.0",
  com.aptana.webserver.core;bundle-version="3.0.0",
  com.aptana.ui;bundle-version="3.0.0",
- com.aptana.editor.common;bundle-version="3.0.0"
+ com.aptana.editor.common;bundle-version="3.0.0",
+ com.aptana.core;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime,org.eclipse.ui",
- com.aptana.debug.php.core.debugger.interpreter.phpIni,
  com.aptana.debug.php.epl;uses:="org.eclipse.core.runtime,org.eclipse.ui.plugin,org.osgi.framework",
+ com.aptana.debug.php.ui.hover,
  com.aptana.debug.php.ui.launching,
  com.aptana.debug.php.ui.pathMapper,
  org.eclipse.php.debug.core.debugger;uses:="org.eclipse.php.internal.debug.core.zend.debugger,org.eclipse.php.internal.debug.core.zend.model",
@@ -176,6 +177,9 @@ Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime
  org.eclipse.php.internal.debug.ui.breakpoint.provider,
  org.eclipse.php.internal.debug.ui.console,
  org.eclipse.php.internal.debug.ui.launching,
+ org.eclipse.php.internal.debug.ui.launching.exe,
+ org.eclipse.php.internal.debug.ui.launching.server,
+ org.eclipse.php.internal.debug.ui.launching.server.zend,
  org.eclipse.php.internal.debug.ui.model,
  org.eclipse.php.internal.debug.ui.pathmapper,
  org.eclipse.php.internal.debug.ui.preferences,

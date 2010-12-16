@@ -15,12 +15,10 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
-import org.eclipse.php.internal.ui.preferences.AbstractPHPPreferencePageBlock;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
-import com.aptana.php.debug.core.Activator;
 
 /**
  * A PHP debug preferences page Workspace UI addon. This addon adds 3 check boxes for the debug perspective, debug info

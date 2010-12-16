@@ -8,11 +8,13 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.debug.ui.launching;
+package org.eclipse.php.internal.debug.ui.launching.exe;
 
 import java.util.ArrayList;
 
 import org.eclipse.debug.ui.*;
+import org.eclipse.php.internal.debug.ui.launching.LaunchConfigurationsTabsRegistry;
+import org.eclipse.php.internal.debug.ui.launching.PHPDebugArgumentsTab;
 
 /**
  * A PHP executable launch configuration tab group that loads all of its tabs

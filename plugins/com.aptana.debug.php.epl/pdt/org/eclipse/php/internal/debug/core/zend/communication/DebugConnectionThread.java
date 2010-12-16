@@ -70,6 +70,7 @@ import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestCo
 import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestEvent;
 import org.eclipse.swt.widgets.Display;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
@@ -579,7 +580,7 @@ public class DebugConnectionThread implements Runnable {
 
 		inputManager.setTransferEncoding(launchConfiguration.getAttribute(IDebugParametersKeys.TRANSFER_ENCODING, "")); //$NON-NLS-1$
 		inputManager.setOutputEncoding(launchConfiguration.getAttribute(IDebugParametersKeys.OUTPUT_ENCODING, "")); //$NON-NLS-1$
-		String URL = launchConfiguration.getAttribute(PHPServerProxy.BASE_URL, ""); //$NON-NLS-1$
+		String URL = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_BASE_URL, ""); //$NON-NLS-1$
 
 		boolean stopAtFirstLine = project == null ? true : PHPProjectPreferences.getStopAtFirstLine(project);
 		int requestPort = PHPDebugEPLPlugin.getDebugPort(DebuggerCommunicationDaemon.ZEND_DEBUGGER_ID);
@@ -645,7 +646,7 @@ public class DebugConnectionThread implements Runnable {
 		
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = null;
-		String file = launchConfiguration.getAttribute(IPHPDebugConstants.ATTR_FILE, (String) null);
+		String file = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
 		if (file != null) { 
 			IResource resource = workspaceRoot.findMember(file);
 			if (resource != null) {

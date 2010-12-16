@@ -9,7 +9,7 @@
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
 
-package org.eclipse.php.internal.debug.ui.launching;
+package org.eclipse.php.internal.debug.ui.launching.exe;
 
 import java.io.File;
 

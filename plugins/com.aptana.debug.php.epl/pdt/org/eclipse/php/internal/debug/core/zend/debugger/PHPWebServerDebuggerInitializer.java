@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.launch.remote.RemoteDebugRedirector;
 import com.aptana.debug.php.core.util.NameValuePair;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
@@ -97,7 +98,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 		List getData = Collections.EMPTY_LIST;
 		try
 		{
-			getData = launch.getLaunchConfiguration().getAttribute(IPHPDebugConstants.ATTR_HTTP_GET, Collections.EMPTY_LIST);
+			getData = launch.getLaunchConfiguration().getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_GET, Collections.EMPTY_LIST);
 		}
 		catch (CoreException e1)
 		{
@@ -162,7 +163,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 			public void run() {
 				try
 				{
-					List postData = launch.getLaunchConfiguration().getAttribute(IPHPDebugConstants.ATTR_HTTP_POST, Collections.EMPTY_LIST);
+					List postData = launch.getLaunchConfiguration().getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_POST, Collections.EMPTY_LIST);
 					boolean hasPostData = (postData != null && !postData.isEmpty());
 					IWebBrowser browser = null;
 					if (useInternalBrowser)
@@ -231,7 +232,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				// Initialize with additional GET parameters
 				// Aptana Mod - SG: Replace PDT's implementation. This one will not work with existing GET parameters that were manually entered into the target URL
 				// Also, add the debug parameter AFTER the script parameters to allow a normal flow of the PHP application.
-				List getRequestParameters = launch.getLaunchConfiguration().getAttribute(IPHPDebugConstants.ATTR_HTTP_GET, Collections.EMPTY_LIST);
+				List getRequestParameters = launch.getLaunchConfiguration().getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_GET, Collections.EMPTY_LIST);
 				String queryInURL = requestURL.getQuery();
 				if (queryInURL != null)
 				{
@@ -314,7 +315,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				try {
 					// Aptana Mod - SG: Replace PDT's implementation for the POST collection.
 					// We collect it from the configuration dialog settings.
-					List postRequestParameters = launch.getLaunchConfiguration().getAttribute(IPHPDebugConstants.ATTR_HTTP_POST, Collections.EMPTY_LIST);
+					List postRequestParameters = launch.getLaunchConfiguration().getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_POST, Collections.EMPTY_LIST);
 					// Initialize with additional POST parameters
 					StringBuilder postParams = new StringBuilder();
 					fillParams(postRequestParameters, postParams);

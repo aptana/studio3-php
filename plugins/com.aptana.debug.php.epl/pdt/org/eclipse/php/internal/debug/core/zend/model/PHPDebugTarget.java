@@ -1097,7 +1097,7 @@ public class PHPDebugTarget extends PHPDebugElement implements IPHPDebugTarget, 
 				// If such file doesn't exist in path mapper yet, add it:
 				if (pathEntry == null) {
 					// Try to find a map point:
-					String debugFileName = launchConfiguration.getAttribute(PHPServerProxy.FILE_NAME, (String) null);
+					String debugFileName = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_FILE_NAME, (String) null);
 					if (debugFileName == null) {
 						debugFileName = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
 					}

@@ -19,9 +19,9 @@ import java.util.LinkedList;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.internal.filesystem.local.LocalFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier.PHPIniEntry;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.debug.php.ui.phpIni.PHPIniEntry;
 import com.aptana.editor.php.util.StringUtils;
 
 public class PHPINIUtil {
@@ -70,7 +70,7 @@ public class PHPINIUtil {
 			valueBuf.append('\"');
 			m.removeAllEntries(INCLUDE_PATH);
 			m.addEntry(INCLUDE_PATH, valueBuf.toString());
-			m.close();
+			m.flush();
 		} catch (IOException e) {
 			PHPDebugEPLPlugin.logError("IOException occured", e);//$NON-NLS-1$
 		}

@@ -408,7 +408,7 @@ public class PHPexes
 					return;
 				}
 				// Set the new default
-				prefs.setValue(PHPDebugCorePreferenceNames.PHP_DEBUGGER_ID, debuggerId);
+				prefs.setValue(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, debuggerId);
 				PHPDebugEPLPlugin.getDefault().savePluginPreferences();
 			}
 			PHPexeItem first = null;

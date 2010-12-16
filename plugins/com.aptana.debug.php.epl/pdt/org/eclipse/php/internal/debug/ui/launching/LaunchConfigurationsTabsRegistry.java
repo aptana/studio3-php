@@ -19,8 +19,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.util.SafeRunnable;
-import org.eclipse.php.internal.debug.ui.Logger;
-import org.eclipse.php.internal.debug.ui.PHPDebugUIPlugin;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 

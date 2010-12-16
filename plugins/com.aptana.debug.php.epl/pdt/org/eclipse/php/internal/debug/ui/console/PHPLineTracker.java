@@ -17,7 +17,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.php.internal.debug.core.launching.HyperlinkEntry;
 import org.eclipse.php.internal.debug.core.launching.PHPHyperLink;
 import org.eclipse.php.internal.debug.core.launching.PHPProcess;
-import org.eclipse.php.internal.debug.ui.Logger;
 import org.eclipse.ui.console.IHyperlink;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;

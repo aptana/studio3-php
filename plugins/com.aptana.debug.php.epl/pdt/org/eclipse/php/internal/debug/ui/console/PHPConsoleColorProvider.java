@@ -32,7 +32,6 @@ import org.eclipse.php.internal.debug.core.launching.PHPHyperLink;
 import org.eclipse.php.internal.debug.core.launching.PHPProcess;
 import org.eclipse.php.internal.debug.core.launching.PHPStreamsProxy;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
-import org.eclipse.php.internal.debug.ui.PHPDebugUIPlugin;
 import org.eclipse.swt.graphics.Color;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;

@@ -32,35 +32,55 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.debug.php.core;
+package com.aptana.debug.php.core.util;
+
+import java.io.File;
+
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileInfo;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 
 import com.aptana.debug.php.PHPDebugPlugin;
 
 /**
+ * File utilities for the PHP debugger.
+ * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public interface IPHPDebugCorePreferenceKeys
+public class FileUtils
 {
-	public static final String DEBUGGER_ID = PHPDebugPlugin.PLUGIN_ID;
 
-	public static final String PHP_DEBUG_MODEL_PRESENTATION_ID = DEBUGGER_ID + ".presentation.phpModelPresentation"; //$NON-NLS-1$
-
-	public static final String PHP_DEBUGGER_ID = DEBUGGER_ID + ".php_debugger_id";//$NON-NLS-1$
-	public static final String NOTIFY_NON_STANDARD_PORT = DEBUGGER_ID + ".notifyNonStandardPort"; //$NON-NLS-1$
-	public static final String BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT = DEBUGGER_ID + ".breakOnFirstLineForUnknownJIT"; //$NON-NLS-1$
-	public static final String ALLOW_MULTIPLE_LAUNCHES = DEBUGGER_ID + ".allowMultipleLaunches"; //$NON-NLS-1$
-	public static final String SWITCH_BACK_TO_PREVIOUS_PERSPECTIVE = DEBUGGER_ID + ".switchBackToPreviousPerspective"; //$NON-NLS-1$
-	public static final String CONFIGURATION_DELEGATE_CLASS = DEBUGGER_ID + ".configurationDelegateClass"; //$NON-NLS-1$
-	
-	public static final String ATTR_USE_SPECIFIC_FILE = "ATTR_USE_SPECIFIC_FILE"; //$NON-NLS-1$
-	public static final String ATTR_FILE = "ATTR_FILE"; //$NON-NLS-1$
-	public static final String ATTR_AUTO_GENERATED_URL = "ATTR_AUTO_GENERATED_URL"; //$NON-NLS-1$
-
-	public static final String ATTR_SERVER_NAME = "ATTR_SERVER_NAME"; //$NON-NLS-1$
-	public static final String ATTR_SERVER_FILE_NAME = "ATTR_SERVER_FILE_NAME"; //$NON-NLS-1$
-	public static final String ATTR_SERVER_BASE_URL = "ATTR_SERVER_BASE_URL"; //$NON-NLS-1$
-
-	public static final String ATTR_HTTP_POST = "ATTR_HTTP_POST"; //$NON-NLS-1$
-	public static final String ATTR_HTTP_GET = "ATTR_HTTP_GET"; //$NON-NLS-1$
-
+	/**
+	 * Set a given file with executable permissions.<br>
+	 * Note that this method will only function on a non-Windows OS systems.
+	 * 
+	 * @param file
+	 *            The file to set with executable permissions.
+	 */
+	public static void setExecutablePermissions(File file)
+	{
+		if (!Platform.getOS().equals(Platform.OS_WIN32))
+		{
+			IFileStore fileStore = EFS.getLocalFileSystem().fromLocalFile(file);
+			if (fileStore != null)
+			{
+				IFileInfo fileInfo = fileStore.fetchInfo();
+				if (!fileInfo.getAttribute(EFS.ATTRIBUTE_EXECUTABLE))
+				{
+					fileInfo.setAttribute(EFS.ATTRIBUTE_EXECUTABLE, true);
+					try
+					{
+						fileStore.putInfo(fileInfo, EFS.SET_ATTRIBUTES, new NullProgressMonitor());
+					}
+					catch (CoreException e)
+					{
+						PHPDebugPlugin.logError(e);
+					}
+				}
+			}
+		}
+	}
 }

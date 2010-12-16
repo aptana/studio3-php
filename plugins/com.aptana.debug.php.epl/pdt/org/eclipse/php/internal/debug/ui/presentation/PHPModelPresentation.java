@@ -103,7 +103,7 @@ public class PHPModelPresentation extends LabelProvider implements IDebugModelPr
 
 	protected ImageDescriptorRegistry getDebugImageRegistry() {
 		if (fDebugImageRegistry == null) {
-			fDebugImageRegistry = PHPDebugUIPlugin.getImageDescriptorRegistry();
+			fDebugImageRegistry = PHPDebugEPLPlugin.getImageDescriptorRegistry();
 		}
 		return fDebugImageRegistry;
 	}

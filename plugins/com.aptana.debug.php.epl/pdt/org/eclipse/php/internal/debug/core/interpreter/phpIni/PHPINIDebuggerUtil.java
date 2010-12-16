@@ -1,5 +1,5 @@
 
-package com.aptana.debug.php.core.debugger.interpreter.phpIni;
+package org.eclipse.php.internal.debug.core.interpreter.phpIni;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +14,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.php.internal.core.project.IIncludePathEntry;
 import org.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
 import org.eclipse.php.internal.core.util.PHPSearchEngine;
-import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
-import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 
 import com.aptana.debug.php.core.includePath.PHPIncludePathUtils;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.debug.php.ui.phpIni.IPhpIniFileModifier;
 
 public class PHPINIDebuggerUtil {
 
@@ -31,7 +30,7 @@ public class PHPINIDebuggerUtil {
 
 	private static void modifyDebuggerExtensionPath(File phpIniFile, String extensionPath, boolean isXdebug) {
 		try {
-			INIFileModifier m = new INIFileModifier(phpIniFile);
+			IPhpIniFileModifier m = new INIFileModifier(phpIniFile);
 			if (isXdebug) {
 				if (Platform.OS_WIN32.equals(Platform.getOS())) {
 					if (m.removeAllEntries(ZEND_EXTENSION_TS, Pattern.quote("..\\php_xdebug\\php_xdebug.dll"))) { //$NON-NLS-1$
@@ -59,7 +58,7 @@ public class PHPINIDebuggerUtil {
 					}
 				}
 			}
-			m.close();
+			m.flush();
 		} catch (IOException e) {
 			PHPDebugEPLPlugin.logError(e);
 		}
@@ -71,7 +70,7 @@ public class PHPINIDebuggerUtil {
 			if (m.removeAllEntries(EXTENSIONS_DIR)) { 
 				m.addEntry(EXTENSIONS_DIR, '\"' + extensionsDirPath + '\"');
 			}
-			m.close();
+			m.flush();
 		} catch (IOException e) {
 			PHPDebugEPLPlugin.logError(e);
 		}

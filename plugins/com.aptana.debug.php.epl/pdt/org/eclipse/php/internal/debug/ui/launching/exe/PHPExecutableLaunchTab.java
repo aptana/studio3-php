@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.debug.ui.launching;
+package org.eclipse.php.internal.debug.ui.launching.exe;
 
 import java.io.File;
 
@@ -39,6 +39,8 @@ import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 import org.eclipse.php.internal.debug.core.resources.ExternalFileWrapper;
 import org.eclipse.php.internal.debug.core.resources.ExternalFilesRegistry;
 import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
+import org.eclipse.php.internal.debug.ui.launching.LaunchUtil;
+import org.eclipse.php.internal.debug.ui.launching.LaunchUtilities;
 import org.eclipse.php.internal.debug.ui.preferences.phps.PHPexeDescriptor;
 import org.eclipse.php.internal.debug.ui.preferences.phps.PHPsComboBlock;
 import org.eclipse.swt.SWT;

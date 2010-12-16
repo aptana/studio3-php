@@ -1,8 +1,11 @@
 package com.aptana.debug.php.core;
 
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
+
+import com.aptana.debug.php.ui.phpIni.IPhpIniFileModifier;
 
 /**
  * PHP debug launch support interface.
@@ -12,9 +15,26 @@ import org.eclipse.core.resources.IProject;
 public interface IPHPDebugLaunchSupport
 {
 	/**
+	 * Creates and returns a PHP ini configuration file that will be configured to include the required paths and
+	 * debugger settings.
 	 * 
+	 * @param phpIniFile
+	 *            The base PHP configuration file
+	 * @param phpExePath
+	 *            A path to the PHP Interpreter that should be used
 	 * @param project
-	 * @return
+	 *            The current project
+	 * @return A temporary PHP configuration file
 	 */
-	List<String> getInterpreterIncludePath(IProject project);
+	File generatePhpIni(File phpIniFile, String phpExePath, IProject project, String debuggerID);
+
+	/**
+	 * Returns an instance of an {@link IPhpIniFileModifier}.
+	 * 
+	 * @param configurationFile
+	 *            A file reference for the PHP INI to configure.
+	 * @return an {@link IPhpIniFileModifier}
+	 * @throws IOException 
+	 */
+	IPhpIniFileModifier getPhpIniFileModifier(File configurationFile) throws IOException;
 }

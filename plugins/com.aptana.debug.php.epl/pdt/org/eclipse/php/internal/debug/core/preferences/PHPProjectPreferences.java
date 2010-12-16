@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
+import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PHPProjectPreferences {
