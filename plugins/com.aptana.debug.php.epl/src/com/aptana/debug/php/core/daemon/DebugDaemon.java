@@ -117,7 +117,7 @@ public class DebugDaemon
 	{
 		if (debugDaemon == null)
 		{
-			new DebugDaemon();
+			debugDaemon = new DebugDaemon();
 		}
 		return debugDaemon;
 	}
