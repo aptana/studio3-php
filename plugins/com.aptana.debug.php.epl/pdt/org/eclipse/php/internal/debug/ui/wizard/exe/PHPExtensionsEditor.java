@@ -24,6 +24,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.php.internal.debug.core.interpreter.preferences.DependenciesManager;
+import org.eclipse.php.internal.debug.ui.wizard.TextDialogCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -42,11 +44,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.aptana.ide.core.ui.CoreUIPlugin;
-import com.aptana.ide.core.ui.SWTUtils;
-import com.aptana.ide.php.interpreters.preferences.DependenciesManager;
-import com.aptana.ide.php.interpreters.preferences.PHPExtension;
-import com.aptana.ide.php.interpreters.ui.Messages;
+import com.aptana.debug.php.ui.phpIni.Messages;
+import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.editor.php.internal.builder.preferences.PHPExtension;
+import com.aptana.ui.util.SWTUtils;
 
 /**
  * @deprecated since Aptana PHP 1.1
@@ -282,7 +283,7 @@ public class PHPExtensionsEditor
 		addEntryButton = new Button(buttonsComposite, SWT.NONE);
 		addEntryButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		addEntryButton.setToolTipText(Messages.PHPIniEditor_7);
-		addEntryButton.setImage(SWTUtils.getImage(CoreUIPlugin.getDefault(), "/icons/add.gif")); //$NON-NLS-1$
+		addEntryButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/add.gif")); //$NON-NLS-1$
 		addEntryButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)
@@ -299,7 +300,7 @@ public class PHPExtensionsEditor
 		removeButton = new Button(buttonsComposite, SWT.NONE);
 		removeButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		removeButton.setToolTipText(Messages.PHPIniEditor_8);
-		removeButton.setImage(SWTUtils.getImage(CoreUIPlugin.getDefault(), "/icons/delete.gif")); //$NON-NLS-1$
+		removeButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/delete.gif")); //$NON-NLS-1$
 		removeButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)

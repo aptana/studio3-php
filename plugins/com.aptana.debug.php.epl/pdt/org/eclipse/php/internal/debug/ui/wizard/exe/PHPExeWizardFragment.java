@@ -12,15 +12,15 @@ package org.eclipse.php.internal.debug.ui.wizard.exe;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
-import org.eclipse.php.internal.debug.ui.Logger;
-import org.eclipse.php.internal.ui.wizards.CompositeWizardFragment;
-import org.eclipse.php.internal.ui.wizards.IWizardHandle;
-import org.eclipse.php.internal.ui.wizards.WizardControlWrapper;
-import org.eclipse.php.internal.ui.wizards.WizardModel;
+import org.eclipse.php.internal.debug.ui.wizard.CompositeWizardFragment;
+import org.eclipse.php.internal.debug.ui.wizard.IWizardHandle;
+import org.eclipse.php.internal.debug.ui.wizard.WizardControlWrapper;
+import org.eclipse.php.internal.debug.ui.wizard.WizardModel;
 import org.eclipse.swt.widgets.Composite;
 
-import com.aptana.ide.php.interpreters.preferences.PHPexeItem;
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class PHPExeWizardFragment extends CompositeWizardFragment implements IPHPExeCompositeFragment {
 
@@ -47,10 +47,10 @@ public class PHPExeWizardFragment extends CompositeWizardFragment implements IPH
 				compositeFragment.setData(phpExeItem);
 				compositeFragment.setExistingItems(existingItems);
 			} catch (Exception e) {
-				Logger.logException(e);
+				PHPDebugEPLPlugin.logError(e);
 			}
 		} else {
-			Logger.log(Logger.ERROR, "Could not display the PHPExeItems wizard (component is null)."); //$NON-NLS-1$
+			PHPDebugEPLPlugin.logError("Could not display the PHPExeItems wizard (component is null)."); //$NON-NLS-1$
 		}
 	}
 

@@ -28,6 +28,8 @@ import org.eclipse.php.internal.debug.ui.wizard.IControlHandler;
 import org.eclipse.php.internal.ui.util.PixelConverter;
 import org.eclipse.php.internal.ui.wizard.field.DialogField;
 import org.eclipse.php.internal.ui.wizard.field.IDialogFieldListener;
+import org.eclipse.php.internal.ui.wizard.field.IStringButtonAdapter;
+import org.eclipse.php.internal.ui.wizard.field.StringButtonDialogField;
 import org.eclipse.php.internal.ui.wizard.field.StringDialogField;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -44,6 +46,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.debug.php.ui.phpIni.PHPIniEditor;
 
 public class PHPExeCompositeFragment extends CompositeFragment implements IPHPExeCompositeFragment
@@ -510,7 +513,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 	{
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				IdeLog.logError(PHPDebugUIPlugin.getDefault(), error, t);
+				PHPDebugEPLPlugin.logError(error, t);
 				Display display = Display.getDefault();
 				Shell activeShell = display.getActiveShell();
 				MessageDialog.openError(activeShell, title, error);
