@@ -3,4 +3,18 @@
 <plugin>
    <extension-point id="debuggerSupport" name="PHP Debugger Support" schema="schema/debuggerSupport.exsd"/>
    <extension-point id="interpreterProvider" name="interpreterProvider" schema="schema/interpreterProvider.exsd"/>
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="com.aptana.editor.php.editorAction"
+            targetID="com.aptana.editor.php">
+         <action
+               actionID="RulerDoubleClick"
+               class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+               id="com.aptana.debug.php.toggleBreakpointAction"
+               label="Toggle Breakpoint"
+               style="push">
+         </action>
+      </editorContribution>
+   </extension>
 </plugin>

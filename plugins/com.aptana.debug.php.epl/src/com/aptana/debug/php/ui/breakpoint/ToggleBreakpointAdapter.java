@@ -1,4 +1,4 @@
-package org.eclipse.php.internal.debug.ui.breakpoint.provider;
+package com.aptana.debug.php.ui.breakpoint;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -10,6 +10,7 @@ import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.php.internal.debug.ui.breakpoint.provider.PHPBreakpointProvider;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;

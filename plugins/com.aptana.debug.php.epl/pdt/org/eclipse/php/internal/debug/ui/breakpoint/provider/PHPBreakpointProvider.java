@@ -31,6 +31,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.sourcelookup.containers.LocalFileStorage;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
@@ -43,34 +45,40 @@ import org.eclipse.ui.IStorageEditorInput;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.common.AbstractThemeableEditor;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.text.rules.CompositePartitionScanner;
+import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
+import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
+import com.aptana.editor.php.internal.core.IPHPConstants;
+import com.aptana.parsing.lexer.Lexeme;
+import com.aptana.ui.util.StatusLineMessageTimerManager;
 
+@SuppressWarnings("unchecked")
 public class PHPBreakpointProvider implements IExecutableExtension
 {
 
-	public IStatus addBreakpoint(AbstractThemeableEditor unifiedEditor, IEditorInput input, int editorLineNumber, int offset)
-			throws CoreException
+	public IStatus addBreakpoint(AbstractThemeableEditor unifiedEditor, IEditorInput input, int editorLineNumber,
+			int offset) throws CoreException
 	{
 		IEditorInput editorInput = unifiedEditor.getEditorInput();
-		if (!(editorInput instanceof IFileEditorInput)){
+		if (!(editorInput instanceof IFileEditorInput))
+		{
 			final Display display = unifiedEditor.getISourceViewer().getTextWidget().getDisplay();
-			display.asyncExec(new Runnable(){
+			display.asyncExec(new Runnable()
+			{
 				public void run()
 				{
-					MessageDialog
-							.openInformation(
-									display.getActiveShell(),
-									"Aptana PHP Debugger",
-									"The file you are trying to place a breakpoint on is an external (non-workspace) file. "
-											+ "\nBreakpoints are supported for PHP files that are located inside projects.");
+					MessageDialog.openInformation(display.getActiveShell(), "Aptana PHP Debugger",
+							"The file you are trying to place a breakpoint on is an external (non-workspace) file. "
+									+ "\nBreakpoints are supported for PHP files that are located inside projects.");
 				}
-				
+
 			});
 			return Status.OK_STATUS;
 		}
 		// check if there is a valid position to set breakpoint
 		int pos = getValidPosition(unifiedEditor, editorLineNumber);
-		IDocument doc=unifiedEditor.getISourceViewer().getDocument();
+		IDocument doc = unifiedEditor.getISourceViewer().getDocument();
 		// calculate the line number here so both workspace files AND externals will get it
 		int originalLineNumber = editorLineNumber + 1;
 		try
@@ -99,21 +107,21 @@ public class PHPBreakpointProvider implements IExecutableExtension
 			{
 				Integer lineNumberInt = Integer.valueOf(editorLineNumber);
 				Integer originalLineNumberInt = Integer.valueOf(originalLineNumber);
-				IMarker[] breakpoints = res.findMarkers(IBreakpoint.LINE_BREAKPOINT_MARKER, true,
-						IResource.DEPTH_ZERO);
+				IMarker[] breakpoints = res.findMarkers(IBreakpoint.LINE_BREAKPOINT_MARKER, true, IResource.DEPTH_ZERO);
 				if (breakpoints.length > 0)
 				{
-					boolean found=false;
+					boolean found = false;
 					for (int i = 0; i < breakpoints.length; ++i)
 					{
 						Object object = breakpoints[i].getAttributes().get("lineNumber");
 						if (object.equals(lineNumberInt) || object.equals(originalLineNumberInt))
 						{
 							breakpoints[i].delete();
-							found=true;
+							found = true;
 						}
 					}
-					if (found){
+					if (found)
+					{
 						return null;
 					}
 				}
@@ -149,19 +157,19 @@ public class PHPBreakpointProvider implements IExecutableExtension
 				attributes.put(IPHPDebugConstants.SECONDARY_ID_KEY, pathName);
 
 				Integer lineNumberInt = new Integer(editorLineNumber);
-				IMarker[] breakpoints = res.findMarkers(IBreakpoint.LINE_BREAKPOINT_MARKER, true,
-						IResource.DEPTH_ZERO);
-				boolean found=false;
+				IMarker[] breakpoints = res.findMarkers(IBreakpoint.LINE_BREAKPOINT_MARKER, true, IResource.DEPTH_ZERO);
+				boolean found = false;
 				for (int i = 0; i < breakpoints.length; ++i)
 				{
-					
+
 					if (breakpoints[i].getAttributes().get("lineNumber").equals(lineNumberInt))
 					{
 						breakpoints[i].delete();
-						found=true;
+						found = true;
 					}
 				}
-				if (found){
+				if (found)
+				{
 					return null;
 				}
 				point = PHPDebugTarget.createBreakpoint(res, editorLineNumber, attributes);
@@ -244,25 +252,82 @@ public class PHPBreakpointProvider implements IExecutableExtension
 
 		try
 		{
-			IDocument document=unifiedEditor.getISourceViewer().getDocument();
-			LexemeList lexemeList = unifiedEditor.getFileContext().getLexemeList();
-			for (int line=editorLineNumber;line<document.getNumberOfLines();line++){
-				int checkLine = checkLine(line, document, lexemeList);
-				if (checkLine!=-1){
-					return checkLine;
+			IDocument document = unifiedEditor.getISourceViewer().getDocument();
+			// First, check if we have a PHP region (partition) in the selected line.
+			// If not, we should return this line position as invalid.
+			IRegion lineInformation = document.getLineInformation(editorLineNumber);
+			ITypedRegion[] typedRegions = document.getDocumentPartitioner().computePartitioning(
+					lineInformation.getOffset(), lineInformation.getLength());
+			boolean foundPHPPartition = false;
+			// Check for a special case where the user click a line that has a language switch tag.
+			// In this case, we are checking for the next line to see if we are in a PHP region, and the
+			// switch tag was actually a PHP open tag.
+			if (typedRegions.length > 0
+					&& typedRegions[0].getType().startsWith(CompositePartitionScanner.START_SWITCH_TAG))
+			{
+				// Check if the next line starts in a PHP region.
+				try
+				{
+					IRegion nextLineInformation = document.getLineInformation(editorLineNumber + 1);
+					ITypedRegion[] nextTypeRegions = document.getDocumentPartitioner().computePartitioning(
+							nextLineInformation.getOffset(), nextLineInformation.getLength());
+					if (nextTypeRegions.length > 0 && nextTypeRegions[0].getType().startsWith(IPHPConstants.PREFIX))
+					{
+						foundPHPPartition = true;
+						editorLineNumber++;
+					}
+				}
+				catch (BadLocationException e)
+				{
+					// ignore
+				}
+
+			}
+			if (!foundPHPPartition)
+			{
+				for (ITypedRegion region : typedRegions)
+				{
+					if (region.getType().startsWith(IPHPConstants.PREFIX))
+					{
+						foundPHPPartition = true;
+						break;
+					}
 				}
 			}
-			final Display display = unifiedEditor.getISourceViewer().getTextWidget().getDisplay();
-			display.asyncExec(new Runnable()
+			if (foundPHPPartition)
 			{
-
+				LexemeProvider lexemeProvider = ParsingUtils.createLexemeProvider(document);
+				for (int line = editorLineNumber; line < document.getNumberOfLines(); line++)
+				{
+					lineInformation = document.getLineInformation(line);
+					// Make sure we are still starting with a PHP region
+					typedRegions = document.getDocumentPartitioner().computePartitioning(lineInformation.getOffset(),
+							lineInformation.getOffset());
+					if (foundPHPPartition || typedRegions.length > 0
+							&& typedRegions[0].getType().startsWith(IPHPConstants.PREFIX))
+					{
+						// reset the initial find after the first line visit.
+						foundPHPPartition = false;
+						int checkLine = checkLine(line, document, lexemeProvider);
+						if (checkLine != -1)
+						{
+							return checkLine;
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			Display.getDefault().asyncExec(new Runnable()
+			{
 				public void run()
 				{
-					display.beep();		
+					StatusLineMessageTimerManager.setErrorMessage("Could not set a breakpoint at the selected line",
+							2000L, true);
 				}
-				
 			});
-			
 			return -1;
 		}
 		catch (BadLocationException e)
@@ -272,29 +337,39 @@ public class PHPBreakpointProvider implements IExecutableExtension
 
 	}
 
-	private static int checkLine(int editorLineNumber, IDocument document,
-			LexemeList lexemeList) throws BadLocationException
+	/**
+	 * Check a single line to make sure we are not in a comment, or just in a line with white-spaces.
+	 * 
+	 * @param editorLineNumber
+	 * @param document
+	 * @param lexemeProvider
+	 * @return
+	 * @throws BadLocationException
+	 */
+	private static int checkLine(int editorLineNumber, IDocument document, LexemeProvider lexemeProvider)
+			throws BadLocationException
 	{
 		IRegion lineInformation = document.getLineInformation(editorLineNumber);
-		int lexemeFloorIndex = lexemeList.getLexemeCeilingIndex(lineInformation.getOffset());
-		int lexemeCeilingIndex = lexemeList.getLexemeCeilingIndex(lineInformation.getOffset() + lineInformation.getLength() - 1);
-//		for (int a=lexemeFloorIndex;a<lexemeCeilingIndex;a++){
-//			Lexeme lexeme = lexemeList.get(a);
-//			if (lexeme.getLanguage().equals(PHPMimeType.MimeType)){
-//				if (lexeme.typeIndex==PHPTokenTypes.CLASS||lexeme.typeIndex==PHPTokenTypes.INTERFACE||lexeme.typeIndex==PHPTokenTypes.IMPLEMENTS||lexeme.typeIndex==PHPTokenTypes.EXTENDS){
-//					return -1;
-//				}
-//			}
-//		}	
-		for (int a=lexemeFloorIndex;a<lexemeCeilingIndex;a++){
-			Lexeme lexeme = lexemeList.get(a);
-			if (lexeme.getLanguage().equals(PHPMimeType.MIME_TYPE)){
-				if (lexeme.typeIndex!=PHPTokenTypes.COMMENT&&lexeme.typeIndex!=PHPTokenTypes.WHITESPACE){
-					int lineOffset = lineInformation.getOffset();			
+		int startIndex = lexemeProvider.getLexemeCeilingIndex(lineInformation.getOffset());
+		int endIndex = lexemeProvider
+				.getLexemeFloorIndex(lineInformation.getOffset() + lineInformation.getLength() - 1);
+		for (int a = startIndex; a < endIndex; a++)
+		{
+			Lexeme lexeme = lexemeProvider.getLexeme(a);
+			Object type = lexeme.getType();
+			if (type instanceof PHPTokenType)
+			{
+				PHPTokenType phpToken = (PHPTokenType) type;
+				String tokenType = phpToken.getType();
+				if (tokenType != PHPRegionTypes.PHP_COMMENT && tokenType != PHPRegionTypes.PHP_LINE_COMMENT
+						&& tokenType != PHPRegionTypes.PHPDOC_COMMENT
+						&& phpToken.getType() != PHPRegionTypes.WHITESPACE)
+				{
+					int lineOffset = lineInformation.getOffset();
 					return lineOffset;
 				}
 			}
-		}					
+		}
 		return -1;
 	}
 
@@ -310,14 +385,14 @@ public class PHPBreakpointProvider implements IExecutableExtension
 	public static int getValidPosition(IDocument document, int newLine)
 	{
 		try
-		{		
-			int checkLine = document.getLineOffset(newLine);										
+		{
+			int checkLine = document.getLineOffset(newLine);
 			return checkLine;
 		}
 		catch (BadLocationException e)
 		{
 			return -1;
-		}		
+		}
 	}
 
 }

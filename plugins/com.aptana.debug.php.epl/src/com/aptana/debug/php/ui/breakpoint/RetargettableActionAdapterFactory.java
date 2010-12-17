@@ -1,4 +1,4 @@
-package org.eclipse.php.internal.debug.ui.breakpoint.provider;
+package com.aptana.debug.php.ui.breakpoint;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;

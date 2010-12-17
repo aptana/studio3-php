@@ -422,13 +422,13 @@
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
-            class="org.eclipse.php.internal.debug.ui.breakpoint.provider.RetargettableActionAdapterFactory">
+            class="com.aptana.debug.php.ui.breakpoint.RetargettableActionAdapterFactory">
          <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
          
       </factory>
       <factory
             adaptableType="com.aptana.ide.editor.php.PHPTextHover"
-            class="org.eclipse.php.internal.debug.ui.breakpoint.provider.RetargettableActionAdapterFactory">
+            class="com.aptana.debug.php.ui.breakpoint.RetargettableActionAdapterFactory">
          	<adapter type="org.eclipse.jface.text.ITextHover"/>   
        </factory>
       <factory
