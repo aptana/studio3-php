@@ -18,7 +18,9 @@ import org.eclipse.php.internal.debug.core.preferences.stepFilters.IStepFilterTy
 import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
 import org.eclipse.swt.graphics.Image;
 
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.PHPPluginImages;
+import com.aptana.ui.util.SWTUtils;
 
 /**
  * Label provider for Debug Step Filter objects
@@ -66,7 +68,7 @@ public class FilterLabelProvider extends LabelProvider implements ITableLabelPro
 			case IStepFilterTypes.PHP_PROJECT_FOLDER:
 				return PHPPluginImages.get(PHPPluginImages.IMG_OBJS_PHP_FOLDER);
 			case IStepFilterTypes.PHP_PROJECT_FILE:
-				return PHPPluginImages.get(PHPPluginImages.IMG_OBJS_PHP_FILE);
+				return SWTUtils.getImage(PHPEditorPlugin.getDefault(), "/icons/full/obj16/php.png"); //$NON-NLS-1$
 
 			case IStepFilterTypes.PHP_INCLUDE_PATH_LIBRARY:
 			case IStepFilterTypes.PHP_INCLUDE_PATH_LIBRARY_FILE:

@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.aptana.ide.php.debug.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.aptana.debug.php.epl" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
-         <meta.schema plugin="com.aptana.ide.php.debug.core" id="phpDebugMessages" name="PHP Debug Message"/>
-      </appInfo>
+      <appinfo>
+         <meta.schema plugin="com.aptana.debug.php.epl" id="phpDebugMessages" name="PHP Debug Message"/>
+      </appinfo>
       <documentation>
          This extension point is used for contributing PHP Debugger message types. Each message has two basic methods for serialization/de-serialization, allowing to transfer structured information between IDE and PHP Debug Server. There is a predefined set of Debug Messages, which are supported by current PHP Debugger protocol; providing new message will require changes in the protocol.
       </documentation>
@@ -12,9 +12,9 @@
 
    <element name="extension">
       <annotation>
-         <appInfo>
+         <appinfo>
             <meta.element />
-         </appInfo>
+         </appinfo>
       </annotation>
       <complexType>
          <sequence>
@@ -39,9 +39,9 @@
                <documentation>
                   
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -70,9 +70,9 @@
                <documentation>
                   Class of this message that implements &lt;samp&gt;IDebugMesssage&lt;/samp&gt;.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.php.debug.core.debugger.messages.IDebugRequestMessage"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="handler" type="string">
@@ -80,9 +80,9 @@
                <documentation>
                   Handler class for this message, that implements &lt;samp&gt;IDebugMessageHandler&lt;/samp&gt;.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.php.debug.core.debugger.handlers.IDebugMessageHandler"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="overridesId" type="string">
@@ -96,18 +96,18 @@
    </element>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="since"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          0.7
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="examples"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;p&gt;
 &lt;pre&gt;
@@ -123,9 +123,9 @@
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="apiInfo"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;p&gt;
 Plugins that want to extend this extension point must implement this interface: &lt;samp&gt;org.eclipse.php.debug.core.debugger.messages.IDebugMessage&lt;/samp&gt;.
@@ -134,18 +134,18 @@ Plugins that want to extend this extension point must implement this interface: 
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="implementation"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          See &lt;code&gt;org.eclipse.php.internal.debug.core&lt;/code&gt; plug-in&apos;s plugin.xml.
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Copyright (c) 2001, 2004 IBM Corporation and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at &lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;

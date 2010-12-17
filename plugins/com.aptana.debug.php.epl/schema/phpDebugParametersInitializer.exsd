@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.aptana.ide.php.debug.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.aptana.debug.php.epl" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
-         <meta.schema plugin="com.aptana.ide.php.debug.core" id="phpDebugParametersInitializer" name="PHP Debug Parameters Initializer"/>
-      </appInfo>
+      <appinfo>
+         <meta.schema plugin="com.aptana.debug.php.epl" id="phpDebugParametersInitializer" name="PHP Debug Parameters Initializer"/>
+      </appinfo>
       <documentation>
          &lt;p&gt;In order to initiate debug session, special parameters are being sent to the PHP Debugger, either via URL or via environment variables (for debugging through PHP CGI binary). Debug session configuration can be changed also using these parameters.
 PHP Debug parameters initializer provides a method for generating request to PHP Debugger. If debug session must be different from the standard one (profile session, for example), most probably different parameters initializer must be used. In addition, PHP Debug Handler can be attached to the initializer in order to maintain mapping between debug session initialization and handling.&lt;/p&gt;
@@ -14,9 +14,9 @@ PHP Debug parameters initializer provides a method for generating request to PHP
 
    <element name="extension">
       <annotation>
-         <appInfo>
+         <appinfo>
             <meta.element />
-         </appInfo>
+         </appinfo>
       </annotation>
       <complexType>
          <sequence>
@@ -41,9 +41,9 @@ PHP Debug parameters initializer provides a method for generating request to PHP
                <documentation>
                   
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -75,9 +75,9 @@ PHP Debug parameters initializer provides a method for generating request to PHP
                <documentation>
                   Class of this debug parameters initializer, which implements &lt;samp&gt;org.eclipse.php.debug.core.debugger.parameters.IDebugParametersInitializer&lt;/samp&gt;.
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.php.debug.core.debugger.parameters.IDebugParametersInitializer"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="handler" type="string">
@@ -115,18 +115,18 @@ PHP Debug parameters initializer provides a method for generating request to PHP
    </element>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="since"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          0.7
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="examples"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;p&gt;
 &lt;pre&gt;
@@ -142,27 +142,27 @@ PHP Debug parameters initializer provides a method for generating request to PHP
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="apiInfo"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Each PHP Debug parameters initializer must implement interface &lt;code&gt;org.eclipse.php.debug.core.debugger.parameters.IDebugParametersInitializer&lt;/code&gt;.
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="implementation"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Look at &lt;code&gt;org.eclipse.php.internal.debug.core.debugger.parameters.DefaultDebugParametersInitializer&lt;/code&gt;.
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Copyright (c) 2001, 2004 IBM Corporation and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at &lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;

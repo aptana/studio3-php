@@ -25,6 +25,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.debug.php,
  com.aptana.debug.php.core,
  com.aptana.debug.php.core.includePath,
+ com.aptana.debug.php.core.interpreter,
  com.aptana.debug.php.core.launch,
  com.aptana.debug.php.core.launch.remote,
  com.aptana.debug.php.core.server,

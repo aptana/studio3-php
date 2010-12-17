@@ -1,16 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.php.debug.core">
+<schema targetNamespace="com.aptana.debug.php.epl" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
-         <meta.schema plugin="org.eclipse.php.debug.core" id="phpDebugStepFilters" name="PHP Debug Step Filters"/>
-      </appInfo>
+      <appinfo>
+         <meta.schema plugin="com.aptana.debug.php.epl" id="phpDebugStepFilters" name="PHP Debug Step Filters"/>
+      </appinfo>
       <documentation>
          This extension point allows extending the Debug Step Filters list.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
       <complexType>
          <sequence minOccurs="0" maxOccurs="unbounded">
             <element ref="stepFilter"/>
@@ -34,9 +39,9 @@
                <documentation>
                   
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -105,19 +110,11 @@
       </complexType>
    </element>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="since"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="examples"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;dl&gt;
 1. The following will filter the PHP Project &apos;aaa&apos; and its content :
@@ -143,28 +140,12 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
+
 
    <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;dl&gt;Copyright (c) 2007 Zend Corporation and IBM Corporation.&lt;/dl&gt;
 All rights reserved. This program and the accompanying materials

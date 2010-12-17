@@ -366,7 +366,7 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	}
 
 	private IDebugServerConnectionTest[] retrieveAllServerTestExtensions(final String currentDebuggerType) {
-		String debugServerTestExtensionName = "com.aptana.ide.php.debug.ui.debugServerConnectionTest"; //$NON-NLS-1$
+		String debugServerTestExtensionName = "com.aptana.debug.php.epl.debugServerConnectionTest"; //$NON-NLS-1$
 		Map<String, IDebugServerConnectionTest> filtersMap = new HashMap<String, IDebugServerConnectionTest>();
 		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(debugServerTestExtensionName);
 		for (int i = 0; i < elements.length; i++) {

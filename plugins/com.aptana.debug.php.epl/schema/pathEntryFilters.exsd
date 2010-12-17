@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.aptana.ide.php.debug.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.aptana.debug.php.epl" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
-         <meta.schema plugin="com.aptana.ide.php.debug.core" id="pathEntryFilters" name="PHP Path Entry Filters"/>
-      </appInfo>
+      <appinfo>
+         <meta.schema plugin="com.aptana.debug.php.epl" id="pathEntryFilters" name="PHP Path Entry Filters"/>
+      </appinfo>
       <documentation>
          This extension point allows to filter local files found by Debug Search Engine.
       </documentation>
@@ -12,9 +12,9 @@
 
    <element name="extension">
       <annotation>
-         <appInfo>
+         <appinfo>
             <meta.element />
-         </appInfo>
+         </appinfo>
       </annotation>
       <complexType>
          <sequence>
@@ -39,9 +39,9 @@
                <documentation>
                   
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -68,9 +68,9 @@
                <documentation>
                   Class of Path Entry Filter
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.php.internal.debug.core.pathmapper.IPathEntryFilter"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="overridesId" type="string">
@@ -84,9 +84,9 @@
    </element>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="since"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          0.7
       </documentation>

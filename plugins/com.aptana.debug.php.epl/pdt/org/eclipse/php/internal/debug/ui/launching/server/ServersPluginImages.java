@@ -20,7 +20,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 public class ServersPluginImages {
 
 	// private static final String NAME_PREFIX = "org.eclipse.php.server.ui."; //$NON-NLS-1$
-	private static final String NAME_PREFIX = "com.aptana.ide.php.debug.ui."; //$NON-NLS-1$
+	private static final String NAME_PREFIX = "com.aptana.debug.php.epl."; //$NON-NLS-1$
 	private static final int NAME_PREFIX_LENGTH = NAME_PREFIX.length();
 
 	private static URL fgIconBaseURL = null;

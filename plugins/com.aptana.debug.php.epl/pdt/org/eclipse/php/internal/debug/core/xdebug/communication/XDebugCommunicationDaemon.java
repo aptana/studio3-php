@@ -203,7 +203,7 @@ public class XDebugCommunicationDaemon extends AbstractDebuggerCommunicationDaem
 		// systems will not throw NPE on the LaunchView actions.
 		// (This was an issue with 3.2 that was fixed for 3.3)
 		ILaunchConfigurationType launchType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(
-				"com.aptana.ide.php.debug.core.XDebugJitLaunchConfigurationType"); //$NON-NLS-1$
+				"com.aptana.debug.php.epl.XDebugJitLaunchConfigurationType"); //$NON-NLS-1$
 		ILaunchConfigurationWorkingCopy wc = null;
 		if (launchType != null)
 		{

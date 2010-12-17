@@ -17,6 +17,7 @@ import org.eclipse.php.internal.debug.core.preferences.PHPDebuggersRegistry;
 import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.core.xdebug.XDebugPreferenceMgr;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpProxyHandler;
+import org.eclipse.php.internal.debug.ui.util.ImageDescriptorRegistry;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
@@ -43,6 +44,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	private static boolean fLaunchChangedAutoRemoveLaunches;
 	private static boolean fIsSupportingMultipleDebugAllPages;
 	private boolean fInitialAutoRemoveLaunches;
+	private ImageDescriptorRegistry fImageDescriptorRegistry;
 
 	/*
 	 * (non-Javadoc)
@@ -405,5 +407,16 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		if (display == null)
 			display = Display.getDefault();
 		return display;
+	}
+
+	/**
+	 * Returns the image descriptor registry used for this plugin.
+	 */
+	public static ImageDescriptorRegistry getImageDescriptorRegistry()
+	{
+		if (getDefault().fImageDescriptorRegistry == null) {
+			getDefault().fImageDescriptorRegistry = new ImageDescriptorRegistry();
+		}
+		return getDefault().fImageDescriptorRegistry;
 	}
 }

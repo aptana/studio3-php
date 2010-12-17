@@ -97,7 +97,7 @@
       </launchConfigurationType>
       <launchConfigurationType
             delegate="com.aptana.debug.php.core.launch.remote.XDebugJitLaunchConfigurationType"
-            id="com.aptana.ide.php.debug.core.XDebugJitLaunchConfigurationType"
+            id="com.aptana.debug.php.epl.XDebugJitLaunchConfigurationType"
             modes="debug"
             name="Remote Launch"
             public="false"
@@ -138,7 +138,7 @@
 			class="org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceInitializer" />
   </extension>
   
-  <extension point="com.aptana.ide.php.debug.core.phpDebugMessages">
+  <extension point="com.aptana.debug.php.epl.phpDebugMessages">
 
 	  <!-- Request Messages -->
 
@@ -378,7 +378,7 @@
 
   </extension>
   <extension
-        point="com.aptana.ide.php.debug.core.phpDebugParametersInitializers">
+        point="com.aptana.debug.php.epl.phpDebugParametersInitializers">
      <initializer
            class="org.eclipse.php.internal.debug.core.zend.debugger.parameters.DefaultDebugParametersInitializer"
            id="org.eclipse.php.debug.core.defaultInitializer"
@@ -386,7 +386,7 @@
   </extension>
   
   <extension
-        point="com.aptana.ide.php.debug.core.debugCommunicationDaemon">
+        point="com.aptana.debug.php.epl.debugCommunicationDaemon">
      <daemon
            class="org.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon"
            id="org.eclipse.php.debug.core.BasicDebugDaemon"
@@ -399,7 +399,7 @@
   </extension>
   
    <extension
-         point="com.aptana.ide.php.debug.core.phpDebuggers">
+         point="com.aptana.debug.php.epl.phpDebuggers">
       <phpDebugger
             debuggerConfiguration="org.eclipse.php.internal.debug.core.zend.debugger.ZendDebuggerConfiguration"
             id="org.eclipse.php.debug.core.zendDebugger"
@@ -421,7 +421,7 @@
     <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
-            adaptableType="com.aptana.ide.editor.php.PHPSourceEditor"
+            adaptableType="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
             class="org.eclipse.php.internal.debug.ui.breakpoint.provider.RetargettableActionAdapterFactory">
          <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
          
@@ -432,7 +432,7 @@
          	<adapter type="org.eclipse.jface.text.ITextHover"/>   
        </factory>
       <factory
-            adaptableType="com.aptana.ide.editor.php.PHPSourceEditor"
+            adaptableType="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
             class="org.eclipse.php.internal.debug.ui.breakpoint.adapter.PHPEditorAdapterFactory">
          <adapter
                type="org.eclipse.debug.ui.actions.IRunToLineTarget">
@@ -463,9 +463,9 @@
             id="org.eclipse.php.debug.ui.launchConfigurationTypeImage">
       </launchConfigurationTypeImage>
       <launchConfigurationTypeImage
-            configTypeID="com.aptana.ide.php.debug.core.XDebugJitLaunchConfigurationType"
+            configTypeID="com.aptana.debug.php.epl.XDebugJitLaunchConfigurationType"
             icon="icon/full/obj16/remote_debug.gif"
-            id="com.aptana.ide.php.debug.ui.remoteLaunchConfigurationTypeImage">
+            id="com.aptana.debug.php.epl.remoteLaunchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
    <extension
@@ -477,7 +477,7 @@
             id="org.eclipse.php.deubg.ui.launching.launchConfigurationTabGroup.phpexe">
       </launchConfigurationTabGroup>
     </extension>
-    <extension point="com.aptana.ide.php.debug.ui.launchConfigurationTabs">
+    <extension point="com.aptana.debug.php.epl.launchConfigurationTabs">
        <launchConfigurationTab
           class="org.eclipse.php.internal.debug.ui.launching.exe.PHPExecutableLaunchTab"
           id="org.eclipse.php.debug.ui.launching.exeLaunchConfigurationTab"
@@ -840,7 +840,7 @@ ntribution>
    </propertyTester>
  </extension> -->
  
-  <extension point="com.aptana.ide.php.debug.core.phpPreferencePageBlocks">
+  <extension point="com.aptana.debug.php.epl.phpPreferencePageBlocks">
     <block
           class="org.eclipse.php.internal.debug.ui.preferences.PHPDebugPreferencesWorkspaceAddon"
           id="org.eclipse.php.debug.ui.debugWorkspacePreferencesAddon"
@@ -859,7 +859,7 @@ ntribution>
           label="PHP Debug"/>
  </extension>
  <extension
-       point="com.aptana.ide.php.debug.ui.phpDebugModelPresentations">
+       point="com.aptana.debug.php.epl.phpDebugModelPresentations">
     <phpDebugModelPresentation
           class="org.eclipse.php.internal.debug.ui.presentation.PHPModelPresentation"
           id="org.eclipse.php.debug.ui.presentation.phpModelPresentation"/>
@@ -930,7 +930,7 @@ ntribution>
     </filter>
  </extension>-->
  <extension
-       point="com.aptana.ide.php.debug.core.wizardAndCompositeFragments">
+       point="com.aptana.debug.php.epl.wizardAndCompositeFragments">
     <wizardAndCompositeFragment
           class="org.eclipse.php.internal.debug.ui.wizard.exe.PHPExeCompositeFragmentFactory"
           fragmentsGroupID="org.eclipse.php.debug.ui.phpExeWizardCompositeFragment"
@@ -948,7 +948,7 @@ ntribution>
     -->
  </extension>
  <extension
-       point="com.aptana.ide.php.debug.ui.phpConsoleListeners">
+       point="com.aptana.debug.php.epl.phpConsoleListeners">
     <listener
           class="org.eclipse.php.internal.debug.ui.console.PHPConsoleListener"
           id="org.eclipse.php.internal.debug.ui.console.PHPConsoleListener">
@@ -978,14 +978,14 @@ ntribution>
   </extension>
   
   <extension
-       point="com.aptana.ide.php.debug.ui.launchConfigurationTabs">
+       point="com.aptana.debug.php.epl.launchConfigurationTabs">
     <launchConfigurationTab
           class="org.eclipse.php.internal.debug.ui.launching.server.PHPWebPageLaunchConfigurationTab"
           id="org.eclipse.php.debug.ui.launching.PHPWebPageLaunchConfigurationTab"
           launchConfigurationTabGroupId="org.eclipse.php.server.ui.launchConfigurationTabGroup"/>
     <launchConfigurationTab
           class="com.aptana.debug.php.ui.launching.HTTPLaunchConfigurationTab"
-          id="com.aptana.ide.php.debug.ui.launching.HTTP"
+          id="com.aptana.debug.php.epl.launching.HTTP"
           launchConfigurationTabGroupId="org.eclipse.php.server.ui.launchConfigurationTabGroup"
           placeAfter="org.eclipse.php.debug.ui.launching.PHPWebPageLaunchConfigurationTab">
     </launchConfigurationTab>
@@ -993,10 +993,10 @@ ntribution>
           class="org.eclipse.php.internal.debug.ui.launching.server.PHPServerAdvancedTab"
           id="org.eclipse.php.debug.ui.launching.PHPServerAdvancedTab"
           launchConfigurationTabGroupId="org.eclipse.php.server.ui.launchConfigurationTabGroup"
-          placeAfter="com.aptana.ide.php.debug.ui.launching.HTTP"/>
+          placeAfter="com.aptana.debug.php.epl.launching.HTTP"/>
     <launchConfigurationTab
           class="com.aptana.debug.php.ui.launching.PathMappingConfigurationTab"
-          id="com.aptana.ide.php.debug.ui.launching.PHPServerMappingConfigurationTab"
+          id="com.aptana.debug.php.epl.launching.PHPServerMappingConfigurationTab"
           launchConfigurationTabGroupId="org.eclipse.php.server.ui.launchConfigurationTabGroup"
           placeAfter="org.eclipse.php.debug.ui.launching.PHPServerAdvancedTab"/>
  </extension>
@@ -1063,14 +1063,14 @@ ntribution>
      </keyword>
   </extension>
   <extension
-        point="com.aptana.ide.php.debug.core.pathEntryFilters">
+        point="com.aptana.debug.php.epl.pathEntryFilters">
      <filter
            class="org.eclipse.php.internal.debug.ui.pathmapper.PathEntrySelector"
            id="org.eclipse.php.debug.ui.pathEntrySelector"
            name="Path Entry Selector Dialog">
      </filter>
   </extension> 
-  <extension point="com.aptana.ide.php.debug.ui.debugServerConnectionTest">
+  <extension point="com.aptana.debug.php.epl.debugServerConnectionTest">
 		<debugServerTest
 			class="org.eclipse.php.internal.debug.ui.launching.server.zend.DefaultDebugServerConnectionTest"
 			debuggerTypeName="Zend Debugger" id="org.eclipse.php.server.ui.defaultZendDebugServerTest">

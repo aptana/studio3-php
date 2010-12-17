@@ -9,7 +9,7 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 
 import com.aptana.webserver.core.AbstractWebServerConfiguration;
-import com.aptana.webserver.core.ServerConfigurationManager;
+import com.aptana.webserver.core.WebServerCorePlugin;
 
 /**
  * PHP servers manager.
@@ -38,8 +38,7 @@ public class PHPServersManager
 	 */
 	public static AbstractWebServerConfiguration[] getServers()
 	{
-		List<AbstractWebServerConfiguration> servers = ServerConfigurationManager.getInstance()
-				.getServerConfigurations();
+		List<AbstractWebServerConfiguration> servers = WebServerCorePlugin.getDefault().getServerConfigurationManager().getServerConfigurations();
 		ArrayList<AbstractWebServerConfiguration> rs = new ArrayList<AbstractWebServerConfiguration>();
 		for (AbstractWebServerConfiguration s : servers)
 		{

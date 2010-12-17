@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.aptana.debug.php.epl" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.aptana.ide.interpreters" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.aptana.debug.php.epl" id="phpConsoleListeners" name="PHP Console Listener"/>
+         <meta.schema plugin="com.aptana.ide.interpreters" id="interpreterProvider" name="interpreterProvider"/>
       </appinfo>
       <documentation>
-         This extension point can be used for providing new PHP console listeners
+         Extension point for interpreter providers. Each interpreter provider is able to provide interpreter instances.
       </documentation>
    </annotation>
 
@@ -17,9 +17,9 @@
          </appinfo>
       </annotation>
       <complexType>
-         <choice>
-            <element ref="listener"/>
-         </choice>
+         <sequence>
+            <element ref="provider" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -47,36 +47,41 @@
       </complexType>
    </element>
 
-   <element name="listener">
+   <element name="provider">
+      <annotation>
+         <documentation>
+            Interpreter provider element.
+         </documentation>
+      </annotation>
       <complexType>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  ID of the PHP console listener
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string">
-            <annotation>
-               <documentation>
-                  Name of the PHP console listener
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  PHP console listener class
+                  Interpreter provider java class name.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.php.internal.debug.core.IPHPConsoleEventListener"/>
+                  <meta.attribute kind="java" basedOn=":com.aptana.debug.php.core.interpreter.IInterpreterProvider"/>
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="overridesId" type="string">
+         <attribute name="lang" type="string" use="required">
             <annotation>
                <documentation>
-                  Id of the PHP console listener to override
+                  Language this interpreter provider supports.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="priority" type="string">
+            <annotation>
+               <documentation>
+                  Provider prioirity.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="OpSystem" type="string">
+            <annotation>
+               <documentation>
+                  Operating system the interpreter supports.
                </documentation>
             </annotation>
          </attribute>
@@ -88,7 +93,16 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         1.0
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         [Enter extension point usage example here.]
       </documentation>
    </annotation>
 
@@ -97,20 +111,18 @@
          <meta.section type="apiInfo"/>
       </appinfo>
       <documentation>
-         PHP Console Listener class must implement &lt;code&gt;org.eclipse.php.internal.debug.core.IPHPConsoleEventListener&lt;/code&gt;.
+         [Enter API information here.]
       </documentation>
    </annotation>
-
-
 
    <annotation>
       <appinfo>
-         <meta.section type="copyright"/>
+         <meta.section type="implementation"/>
       </appinfo>
       <documentation>
-         Copyright (c) 2001, 2004 IBM Corporation and others.&lt;br&gt;
-All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at &lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+         [Enter information about supplied implementation of this extension point.]
       </documentation>
    </annotation>
+
 
 </schema>

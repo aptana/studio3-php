@@ -42,7 +42,7 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS
 {
-	private static final String BUNDLE_NAME = "com.aptana.ide.php.interpreters.ui.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.aptana.debug.php.ui.phpIni.messages"; //$NON-NLS-1$
 	public static String NewPHPIniEntryDialog_0;
 	public static String NewPHPIniEntryDialog_1;
 	public static String NewPHPIniEntryDialog_2;

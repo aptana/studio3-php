@@ -117,7 +117,7 @@ public class ZendDebuggerConfigurationDialog extends AbstractDebuggerConfigurati
 	public void create()
 	{
 		super.create();
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(getShell(), "com.aptana.ide.php.debug.ui.zend_conf"); //$NON-NLS-1$
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getShell(), "com.aptana.debug.php.epl.zend_conf"); //$NON-NLS-1$
 	}
 
 	class DebugPortValidateListener implements ModifyListener {

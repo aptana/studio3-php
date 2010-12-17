@@ -32,6 +32,8 @@ import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicat
 import org.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
+import com.aptana.debug.php.core.interpreter.IInterpreter;
+import com.aptana.debug.php.core.interpreter.Interpreters;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**

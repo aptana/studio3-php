@@ -2,5 +2,5 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="debuggerSupport" name="PHP Debugger Support" schema="schema/debuggerSupport.exsd"/>
-
+   <extension-point id="interpreterProvider" name="interpreterProvider" schema="schema/interpreterProvider.exsd"/>
 </plugin>

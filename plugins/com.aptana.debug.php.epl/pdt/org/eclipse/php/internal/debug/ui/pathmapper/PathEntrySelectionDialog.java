@@ -60,7 +60,9 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.PHPPluginImages;
+import com.aptana.ui.util.SWTUtils;
 
 public class PathEntrySelectionDialog extends TrayDialog {
 
@@ -438,7 +440,7 @@ public class PathEntrySelectionDialog extends TrayDialog {
 			}
 
 			if (element instanceof PathEntry) {
-				return PHPPluginImages.get(PHPPluginImages.IMG_OBJS_CUNIT);
+				return SWTUtils.getImage(PHPEditorPlugin.getDefault(), "/icons/full/obj16/php.png"); //$NON-NLS-1$
 			}
 
 			return workbenchLabelProvider.getImage(element);

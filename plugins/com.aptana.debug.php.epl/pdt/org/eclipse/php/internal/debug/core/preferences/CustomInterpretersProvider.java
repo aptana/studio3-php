@@ -42,6 +42,8 @@ import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.ui.IPluginContribution;
 import org.eclipse.ui.activities.WorkbenchActivityHelper;
 
+import com.aptana.debug.php.core.interpreter.IInterpreter;
+import com.aptana.debug.php.core.interpreter.IInterpreterProvider;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**

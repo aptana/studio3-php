@@ -36,9 +36,11 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.ui.PHPPluginImages;
+import com.aptana.ui.util.SWTUtils;
 
 /**
  * A content provider to be used for Resource selection dialog
@@ -208,7 +210,7 @@ class PHPResLabelProvider extends LabelProvider {
 			if (currentFile.file.isDirectory()) {
 				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 			} else {
-				return PHPPluginImages.get(PHPPluginImages.IMG_OBJS_PHP_FILE);
+				return SWTUtils.getImage(PHPEditorPlugin.getDefault(), "/icons/full/obj16/php.png"); //$NON-NLS-1$
 			}
 		}
 		return workbenchLabelProvider.getImage(element);

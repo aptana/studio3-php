@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
 
+import com.aptana.debug.php.core.interpreter.IInterpreter;
 import com.aptana.debug.php.core.util.FileUtils;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
@@ -31,7 +32,7 @@ import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
  *
  * @author shalom, michael
  */
-public class PHPexeItem {
+public class PHPexeItem implements IInterpreter{
 
 	public static final String SAPI_CLI = "CLI"; //$NON-NLS-1$
 	public static final String SAPI_CGI = "CGI"; //$NON-NLS-1$

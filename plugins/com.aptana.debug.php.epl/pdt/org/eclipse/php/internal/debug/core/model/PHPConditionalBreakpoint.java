@@ -46,7 +46,7 @@ public class PHPConditionalBreakpoint extends PHPLineBreakpoint {
     public PHPConditionalBreakpoint(final IResource resource, final int lineNumber, final Map attributes) throws CoreException {
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
             public void run(IProgressMonitor monitor) throws CoreException {
-                IMarker marker = resource.createMarker("com.aptana.ide.php.debug.core.PHPConditionalBreakpointMarker"); //$NON-NLS-1$
+                IMarker marker = resource.createMarker("com.aptana.debug.php.epl.PHPConditionalBreakpointMarker"); //$NON-NLS-1$
                 attributes.put(IBreakpoint.ENABLED, Boolean.TRUE);
                 attributes.put(IBreakpoint.ID, getModelIdentifier());
                 attributes.put(IMarker.MESSAGE, MessageFormat.format(PHPDebugCoreMessages.LineBreakPointMessage_1, new String[] { resource.getName(), Integer.toString(lineNumber) }));
