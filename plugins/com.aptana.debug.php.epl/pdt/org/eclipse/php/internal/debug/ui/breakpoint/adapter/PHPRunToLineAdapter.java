@@ -24,9 +24,7 @@ import org.eclipse.debug.ui.actions.IRunToLineTarget;
 import org.eclipse.debug.ui.actions.RunToLineHandler;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.model.PHPDebugElement;
@@ -47,8 +45,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.common.AbstractThemeableEditor;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
-import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 import com.aptana.ui.util.StatusLineMessageTimerManager;
 
 /**
@@ -112,7 +108,7 @@ public class PHPRunToLineAdapter implements IRunToLineTarget {
 				}
 				lineNumber++;
 				if (lineNumber > 0) {
-					if (getValidPosition(commonEditor ,document, lineNumber) != -1) {
+					if (getValidPosition(commonEditor, lineNumber) != -1) {
 						if (target instanceof IAdaptable) {
 							IDebugTarget debugTarget = (IDebugTarget) ((IAdaptable) target).getAdapter(IDebugTarget.class);
 							if (debugTarget != null) {
@@ -184,68 +180,10 @@ public class PHPRunToLineAdapter implements IRunToLineTarget {
 	 * breakpoint can be set and returns that position. -1 is returned if a
 	 * position could not be found.
 	 * 
-	 * @param idoc
 	 * @param editorLineNumber
 	 * @return position to set breakpoint or -1 if no position could be found
 	 */
-	private int getValidPosition(AbstractThemeableEditor ed, IDocument idoc, int editorLineNumber) {
-		int result = -1;
-		if (idoc != null) {
-			EditorFileContext fileContext = ed.getFileContext();
-			LexemeList ls= fileContext.getLexemeList();
-			
-			int startOffset = 0;
-			int endOffset = 0;
-			try {
-				IRegion line = idoc.getLineInformation(editorLineNumber - 1);
-				
-				int lexemeFromOffsetIndex = ls.getLexemeFloorIndex(line.getOffset());
-				while (lexemeFromOffsetIndex>0&&lexemeFromOffsetIndex<ls.size()){
-					Lexeme l=ls.get(lexemeFromOffsetIndex);
-					if (l.getStartingOffset()>line.getOffset()+line.getLength()){
-						return -1;
-					}
-					if (l.getLanguage().equals(PHPMimeType.MIME_TYPE)){
-						return l.offset;
-					}
-					
-					lexemeFromOffsetIndex++;
-				}
-				
-				startOffset = line.getOffset();
-				endOffset = Math.max(line.getOffset(), line.getOffset() + line.getLength());
-
-				String lineText = idoc.get(startOffset, endOffset - startOffset).trim();
-
-				// blank lines or lines with only an open PHP
-				// tags cannot have a breakpoint
-
-				if (lineText.equals("") || lineText.equals("<%") || //$NON-NLS-1$ //$NON-NLS-2$ 
-					lineText.equals("%>") || lineText.equals("<?php") || lineText.equals("?>") || (lineText.trim()).startsWith("//")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-					result = -1;
-				} else {
-
-					// get all partitions for current line
-					ITypedRegion[] partitions = null;
-
-					partitions = idoc.computePartitioning(startOffset, endOffset - startOffset);
-
-					for (int i = 0; i < partitions.length; ++i) {
-						String type = partitions[i].getType();
-						// if found PHP
-						// return that position
-						if (true) {
-							result = partitions[i].getOffset();
-						}
-					}
-					return line.getOffset();
-					//FIXME
-				}
-			} catch (BadLocationException e) {
-				result = -1;
-			}
-		}
-
-		return result;
+	private int getValidPosition(AbstractThemeableEditor ed, int editorLineNumber) {
+		return PHPBreakpointProvider.getValidPosition(ed, editorLineNumber);
 	}
 }
