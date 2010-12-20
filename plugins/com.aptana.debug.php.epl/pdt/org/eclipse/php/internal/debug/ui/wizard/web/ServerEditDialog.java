@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.ui.util.SWTUtils;
 import com.aptana.webserver.core.AbstractWebServerConfiguration;
@@ -71,7 +72,7 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 		}
 
 		getShell().setText("Edit Server");
-		getShell().setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/server_run.gif")); //$NON-NLS-1$
+		getShell().setImage(SWTUtils.getImage(PHPDebugEPLPlugin.getDefault(), "/icons/full/obj16/server_run.gif")); //$NON-NLS-1$
 
 		tabsListener = new TabsSelectionListener();
 		tabs.addSelectionListener(tabsListener);

@@ -31,7 +31,7 @@ import com.aptana.debug.php.core.server.PHPWebServerConfiguration;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
-public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesListener, IServerManagerListener 
+public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesListener/*, IServerManagerListener*/ 
 {
 	
 	/**
@@ -62,7 +62,9 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		pathMapperToServer = new HashMap<PathMapper, AbstractWebServerConfiguration>();
 		loadFromPreferences();
 		//create the link to servers manager here in order not to create tightly coupled relationship
-		PHPServersManager.addManagerListener(this);
+		
+		// TODO - Attach this
+		//PHPServersManager.addManagerListener(this);
 	}
 
 	public synchronized static PathMapperRegistry getInstance() {

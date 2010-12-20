@@ -79,6 +79,8 @@ import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.debug.php.ui.launching.PathMappingUpdater;
 import com.aptana.debug.php.ui.pathMapper.PathMapperDialog;
+import com.aptana.ui.UIPlugin;
+import com.aptana.ui.util.SWTUtils;
 import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
 
@@ -295,7 +297,7 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			}
 		});
 
-		createNewServer = createPushButton(phpServerComp, null, ServersPluginImages.get(ServersPluginImages.IMG_ADD_SERVER)); //$NON-NLS-1$
+		createNewServer = createPushButton(phpServerComp, null, SWTUtils.getImage(UIPlugin.getDefault(), "/icons/add.gif")); //$NON-NLS-1$
 		createNewServer.setToolTipText(PHPServerUIMessages.getString("ServerTab.new"));
 		createNewServer.addSelectionListener(fListener);
 		Object gd= createNewServer.getLayoutData();

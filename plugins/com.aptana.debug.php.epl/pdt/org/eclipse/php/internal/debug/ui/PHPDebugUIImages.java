@@ -31,7 +31,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  */
 public class PHPDebugUIImages {
 
-	private static String ICONS_PATH = "$nl$/icon/full/"; //$NON-NLS-1$
+	private static String ICONS_PATH = "$nl$/icons/full/"; //$NON-NLS-1$
 	private static ImageRegistry fgImageRegistry = null;
 
 	// Set of predefined Image Descriptors.

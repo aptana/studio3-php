@@ -28,7 +28,7 @@ public class ServersPluginImages {
 	// Determine display depth. If depth > 4 then we use high color images. Otherwise low color
 	// images are used
 	static {
-		fgIconBaseURL = PHPEplPlugin.getDefault().getBundle().getEntry("/icon/full/"); //$NON-NLS-1$
+		fgIconBaseURL = PHPEplPlugin.getDefault().getBundle().getEntry("/icons/full/"); //$NON-NLS-1$
 	}
 
 	// The plug-in registry
@@ -39,7 +39,6 @@ public class ServersPluginImages {
 	private static final String T_WIZBAN = "wizban"; //$NON-NLS-1$
 
 	public static final String IMG_SERVER = NAME_PREFIX + "server.gif"; //$NON-NLS-1$
-	public static final String IMG_ADD_SERVER = NAME_PREFIX + "add.gif"; //$NON-NLS-1$
 	public static final String IMG_CONFIG_SERVER = NAME_PREFIX + "configure.gif"; //$NON-NLS-1$
 	public static final String IMG_HTTP_GET_POST = NAME_PREFIX + "launch-http.gif"; //$NON-NLS-1$
 	public static final String IMG_PATH_MAPPING = NAME_PREFIX + "path_mapping.gif"; //$NON-NLS-1$
@@ -49,7 +48,6 @@ public class ServersPluginImages {
 	public static final String IMG_SECURITY = NAME_PREFIX + "security.png"; //$NON-NLS-1$
 	
 	public static final ImageDescriptor DESC_SERVER = createManaged(T_OBJ, IMG_SERVER);
-	public static final ImageDescriptor DESC_ADD_SERVER = createManaged(T_OBJ, IMG_ADD_SERVER);
 	public static final ImageDescriptor DESC_CONFIG_SERVER = createManaged(T_OBJ, IMG_CONFIG_SERVER);
 	public static final ImageDescriptor DESC_HTTP_GET_POST = createManaged(T_OBJ, IMG_HTTP_GET_POST);
 	public static final ImageDescriptor DESC_PATH_MAPPING = createManaged(T_OBJ, IMG_PATH_MAPPING);
