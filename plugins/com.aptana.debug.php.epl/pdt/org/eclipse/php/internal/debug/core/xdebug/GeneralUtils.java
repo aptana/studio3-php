@@ -12,18 +12,23 @@ package org.eclipse.php.internal.debug.core.xdebug;
 
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpPreferences;
 
-public class GeneralUtils {
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 
-	public static DBGpPreferences createSessionPreferences() {
+public class GeneralUtils
+{
+	public static DBGpPreferences createSessionPreferences()
+	{
 		DBGpPreferences sessionPrefs = new DBGpPreferences();
-		int maxDepth = IDELayerFactory.getIDELayer().getPrefs().getInt(XDebugUIAttributeConstants.XDEBUG_PREF_ARRAYDEPTH);
-		if (1 == maxDepth) {
+		int maxDepth = PHPDebugPreferencesUtil.getInt(XDebugUIAttributeConstants.XDEBUG_PREF_ARRAYDEPTH, 3);
+		if (1 == maxDepth)
+		{
 			XDebugPreferenceInit.setDefaults();
 			maxDepth = XDebugPreferenceInit.getDepthDefault();
 		}
 		sessionPrefs.setValue(DBGpPreferences.DBGP_MAX_DEPTH_PROPERTY, maxDepth);
 
-		boolean getSuperGlobals = IDELayerFactory.getIDELayer().getPrefs().getBoolean(XDebugUIAttributeConstants.XDEBUG_PREF_SHOWSUPERGLOBALS);
+		boolean getSuperGlobals = PHPDebugPreferencesUtil.getBoolean(XDebugUIAttributeConstants.XDEBUG_PREF_SHOWSUPERGLOBALS,
+				true);
 		sessionPrefs.setValue(DBGpPreferences.DBGP_SHOW_GLOBALS_PROPERTY, getSuperGlobals);
 		return sessionPrefs;
 	}

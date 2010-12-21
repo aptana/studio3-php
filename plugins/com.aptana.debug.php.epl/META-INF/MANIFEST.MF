@@ -29,8 +29,11 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.parsing;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
-Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime,org.eclipse.ui",
+Export-Package: com.aptana.debug.php.core,
+ com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime,org.eclipse.ui",
+ com.aptana.debug.php.core.preferences,
  com.aptana.debug.php.epl;uses:="org.eclipse.core.runtime,org.eclipse.ui.plugin,org.osgi.framework",
+ com.aptana.debug.php.ui.breakpoint,
  com.aptana.debug.php.ui.hover,
  com.aptana.debug.php.ui.launching,
  com.aptana.debug.php.ui.pathMapper,
@@ -189,6 +192,7 @@ Export-Package: com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime
  org.eclipse.php.internal.debug.ui.presentation,
  org.eclipse.php.internal.debug.ui.propertyTesters,
  org.eclipse.php.internal.debug.ui.sourcelookup,
+ org.eclipse.php.internal.debug.ui.util,
  org.eclipse.php.internal.debug.ui.views,
  org.eclipse.php.internal.debug.ui.views.variables,
  org.eclipse.php.internal.debug.ui.watch,

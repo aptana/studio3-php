@@ -11,7 +11,6 @@
 package org.eclipse.php.internal.debug.ui.preferences.phps;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -19,7 +18,6 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.window.Window;
 import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
 import org.eclipse.php.internal.debug.ui.wizard.exe.PHPExeEditDialog;
@@ -40,7 +38,7 @@ import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
  */
 public class PHPsPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-	public static String ID = "org.eclipse.php.debug.ui.preferencesphps.PHPsPreferencePage";
+	public static String ID = "org.eclipse.php.debug.ui.preferencesphps.PHPsPreferencePage"; //$NON-NLS-1$
 	// PHP Block
 	private InstalledPHPsBlock fPHPBlock;
 	private Object data;
@@ -68,10 +66,6 @@ public class PHPsPreferencePage extends PreferencePage implements IWorkbenchPref
 	 */
 	public void applyData(Object data) {
 		this.data = data;
-	}
-
-	protected Preferences getModelPreferences() {
-		return PHPProjectPreferences.getModelPreferences();
 	}
 
 	/* (non-Javadoc)

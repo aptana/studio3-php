@@ -22,14 +22,12 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon;
 import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestController;
 import org.eclipse.php.internal.debug.core.zend.testConnection.DebugServerTestEvent;
@@ -38,6 +36,8 @@ import org.eclipse.php.internal.debug.ui.IDebugServerConnectionTest;
 import org.eclipse.php.internal.debug.ui.launching.server.PHPServerUIMessages;
 import org.eclipse.swt.widgets.Shell;
 
+import com.aptana.core.util.StringUtil;
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
@@ -200,8 +200,7 @@ public class DefaultDebugServerConnectionTest implements IDebugServerConnectionT
 	}
 
 	private String[] getAllLocalHostsAddresses() {
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		String hosts = prefs.getString(PHPDebugCorePreferenceNames.CLIENT_IP);
+		String hosts = PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.CLIENT_IP, StringUtil.EMPTY);
 		StringTokenizer tokenizer = new StringTokenizer(hosts, ", "); //$NON-NLS-1$
 		List<String> list = new ArrayList<String>();
 		while (tokenizer.hasMoreTokens()) {

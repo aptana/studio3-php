@@ -11,7 +11,7 @@
 /**
  * 
  */
-package org.eclipse.php.internal.debug.core.preferences;
+package org.eclipse.php.internal.debug.ui.preferences;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;

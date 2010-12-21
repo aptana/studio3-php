@@ -13,13 +13,12 @@
  */
 package org.eclipse.php.internal.debug.core.zend.debugger;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org.eclipse.php.internal.debug.core.daemon.AbstractDebuggerCommunicationDaemon;
-import org.eclipse.php.internal.debug.core.preferences.AbstractDebuggerConfigurationDialog;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
+import org.eclipse.php.internal.debug.ui.preferences.AbstractDebuggerConfigurationDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -30,7 +29,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -95,19 +96,25 @@ public class ZendDebuggerConfigurationDialog extends AbstractDebuggerConfigurati
 	}
 
 	private void internalInitializeValues() {
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		fRunWithDebugInfo.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO));
-		originalPort = prefs.getInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT);
-		fDebugTextBox.setText(Integer.toString(prefs.getInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT)));
-		fClientIP.setText(prefs.getString(PHPDebugCorePreferenceNames.CLIENT_IP));
+		fRunWithDebugInfo.setSelection(PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, true));
+		originalPort = PHPDebugPreferencesUtil.getInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, 10000);
+		fDebugTextBox.setText(Integer.toString(originalPort));
+		fClientIP.setText(PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.CLIENT_IP, "127.0.0.1")); //$NON-NLS-1$
 	}
 
 	protected void okPressed() {
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		prefs.setValue(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, fRunWithDebugInfo.getSelection());
-		prefs.setValue(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, fDebugTextBox.getText());
-		prefs.setValue(PHPDebugCorePreferenceNames.CLIENT_IP, fClientIP.getText());
-		PHPDebugEPLPlugin.getDefault().savePluginPreferences(); // save
+		IEclipsePreferences preferences = PHPDebugEPLPlugin.getInstancePreferences();
+		preferences.putBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, fRunWithDebugInfo.getSelection());
+		preferences.put(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, fDebugTextBox.getText());
+		preferences.put(PHPDebugCorePreferenceNames.CLIENT_IP, fClientIP.getText());
+		try
+		{
+			preferences.flush();
+		}
+		catch (BackingStoreException e)
+		{
+			PHPDebugEPLPlugin.logError(e);
+		}
 		super.okPressed();
 	}
 	/**

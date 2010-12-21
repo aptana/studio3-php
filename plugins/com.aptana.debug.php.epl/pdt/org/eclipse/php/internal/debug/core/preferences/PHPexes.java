@@ -7,10 +7,10 @@
  *
  * Contributors:
  *   Zend and IBM - Initial implementation
+ *   Aptana - Modifications and improvements.
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.preferences;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,17 +20,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileInfo;
-import org.eclipse.core.internal.filesystem.local.LocalFile;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Preferences;
-import org.eclipse.php.internal.debug.core.Logger;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 import org.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon;
+import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.interpreter.IInterpreter;
 import com.aptana.debug.php.core.interpreter.Interpreters;
@@ -44,17 +40,17 @@ import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 public class PHPexes
 {
 
-	public static final String SEPARATOR = ";";
+	public static final String SEPARATOR = ";"; //$NON-NLS-1$
 
 	public static final String ZEND_DEBUGGER_ID = DebuggerCommunicationDaemon.ZEND_DEBUGGER_ID;
 	public static final String XDEBUG_DEBUGGER_ID = XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID;
 
-	private static final String EXTENSIONS = "extensions";
+	private static final String EXTENSIONS = "extensions"; //$NON-NLS-1$
 
 	/**
 	 * PHP Language name.
 	 */
-	public static final String PHP_LANGUAGE_NAME = "php";
+	public static final String PHP_LANGUAGE_NAME = "php"; //$NON-NLS-1$
 
 	private static Object lock = new Object();
 	// A singleton instance
@@ -89,30 +85,6 @@ public class PHPexes
 	private PHPexes()
 	{
 		load();
-	}
-
-	/**
-	 * Change to executable permissions for non-windows machines.
-	 */
-	public static void changePermissions(File file)
-	{
-		if (!Platform.getOS().equals(Platform.OS_WIN32))
-		{
-			LocalFile localFile = new LocalFile(file);
-			IFileInfo info = localFile.fetchInfo();
-			if (!info.getAttribute(EFS.ATTRIBUTE_EXECUTABLE))
-			{
-				info.setAttribute(EFS.ATTRIBUTE_EXECUTABLE, true);
-				try
-				{
-					localFile.putInfo(info, EFS.SET_ATTRIBUTES, null);
-				}
-				catch (CoreException e)
-				{
-					Logger.logException(e);
-				}
-			}
-		}
 	}
 
 	/**
@@ -171,7 +143,8 @@ public class PHPexes
 	/**
 	 * Returns true if there are PHP Interpreters registered to the given debugger.
 	 * 
-	 * @param debuggerId The debugger id.
+	 * @param debuggerId
+	 *            The debugger id.
 	 * @return True, if there are executables for this debugger; False, otherwise.
 	 * @see #hasItems()
 	 */
@@ -242,8 +215,10 @@ public class PHPexes
 	 * item that refer to the same file. This method invokes the {@link #getItemForFile(String, String)} and returns the
 	 * first item in the array.
 	 * 
-	 * @param exeFilePath The executable file name.
-	 * @param iniFilePath The php ini file path (can be null).
+	 * @param exeFilePath
+	 *            The executable file name.
+	 * @param iniFilePath
+	 *            The php ini file path (can be null).
 	 * @return The corresponding {@link PHPexeItem}, or null if none was found.
 	 */
 	public PHPexeItem getItemForFile(String exeFilePath, String iniFilePath)
@@ -260,8 +235,10 @@ public class PHPexes
 	 * Search for the executable file name in all of the registered {@link PHPexeItem}s and return a reference to the
 	 * items that refer to the same file.
 	 * 
-	 * @param exeFilePath The executable file name.
-	 * @param iniFilePath The php ini file path (can be null).
+	 * @param exeFilePath
+	 *            The executable file name.
+	 * @param iniFilePath
+	 *            The php ini file path (can be null).
 	 * @return The corresponding {@link PHPexeItem}, or null if none was found.
 	 */
 	public PHPexeItem[] getItemsForFile(String exeFilePath, String iniFilePath)
@@ -281,7 +258,7 @@ public class PHPexes
 					boolean iniEquals = true;
 					if (iniFilePath != null)
 					{
-						iniEquals = exeItem.getINILocation() == null ? iniFilePath == null || iniFilePath.equals("")
+						iniEquals = exeItem.getINILocation() == null ? iniFilePath == null || iniFilePath.equals(StringUtil.EMPTY)
 								: iniFilePath.equals(exeItem.getINILocation().toString());
 					}
 					if (iniEquals && exeFilePath != null && exeFilePath.equals(exeItem.getExecutable().toString()))
@@ -359,11 +336,11 @@ public class PHPexes
 		// Make sure we load the right default.
 		// In case this is not the first run, we should have a default set into the INSTALLED_PHP_DEFAULTS key.
 		// Once we get it out, we can set the default.
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		String defaultDebuggerSetting = prefs.getString(PHPDebugCorePreferenceNames.INSTALLED_PHP_DEFAULTS);
+		IEclipsePreferences prefs = PHPDebugEPLPlugin.getInstancePreferences();
+		String defaultDebuggerSetting = prefs.get(PHPDebugCorePreferenceNames.INSTALLED_PHP_DEFAULTS, null);
 		if (defaultDebuggerSetting != null && defaultDebuggerSetting.length() != 0)
 		{
-			String[] debuggerDefault = defaultDebuggerSetting.split("=");
+			String[] debuggerDefault = defaultDebuggerSetting.split("="); //$NON-NLS-1$
 			if (debuggerDefault.length == 2)
 			{
 				PHPexeItem item = getItem(debuggerDefault[0], debuggerDefault[1]);
@@ -399,7 +376,7 @@ public class PHPexes
 				{
 					debuggerId = PHPexes.XDEBUG_DEBUGGER_ID;
 				}
-				else 
+				else
 				{
 					debuggerId = PHPexes.ZEND_DEBUGGER_ID;
 				}
@@ -410,8 +387,15 @@ public class PHPexes
 					return;
 				}
 				// Set the new default
-				prefs.setValue(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, debuggerId);
-				PHPDebugEPLPlugin.getDefault().savePluginPreferences();
+				prefs.put(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, debuggerId);
+				try
+				{
+					prefs.flush();
+				}
+				catch (BackingStoreException e)
+				{
+					PHPDebugEPLPlugin.logError("Error while saving the PHP executables settings.", e); //$NON-NLS-1$
+				}
 			}
 			PHPexeItem first = null;
 			PHPexeItem firstCGI = null;
@@ -539,7 +523,7 @@ public class PHPexes
 	@SuppressWarnings("unchecked")
 	public void save()
 	{
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
+		IEclipsePreferences prefs = PHPDebugEPLPlugin.getInstancePreferences();
 		final PHPexeItem[] phpItems = getEditableItems();
 		final StringBuffer locationsString = new StringBuffer();
 		final StringBuffer inisString = new StringBuffer();
@@ -568,11 +552,11 @@ public class PHPexes
 				extensionsString.append((char) 5);
 			}
 		}
-		prefs.setValue(PHPDebugCorePreferenceNames.INSTALLED_PHP_NAMES, namesString.toString());
-		prefs.setValue(PHPDebugCorePreferenceNames.INSTALLED_PHP_LOCATIONS, locationsString.toString());
-		prefs.setValue(PHPDebugCorePreferenceNames.INSTALLED_PHP_INIS, inisString.toString());
-		prefs.setValue(PHPDebugCorePreferenceNames.INSTALLED_PHP_DEBUGGERS, debuggersString.toString());
-		prefs.setValue(EXTENSIONS, extensionsString.toString());
+		prefs.put(PHPDebugCorePreferenceNames.INSTALLED_PHP_NAMES, namesString.toString());
+		prefs.put(PHPDebugCorePreferenceNames.INSTALLED_PHP_LOCATIONS, locationsString.toString());
+		prefs.put(PHPDebugCorePreferenceNames.INSTALLED_PHP_INIS, inisString.toString());
+		prefs.put(PHPDebugCorePreferenceNames.INSTALLED_PHP_DEBUGGERS, debuggersString.toString());
+		prefs.put(EXTENSIONS, extensionsString.toString());
 
 		// save the default executables per debugger id
 		final StringBuffer defaultsString = new StringBuffer();
@@ -589,12 +573,19 @@ public class PHPexes
 				defaultsString.append(SEPARATOR);
 			}
 		}
-		prefs.setValue(PHPDebugCorePreferenceNames.INSTALLED_PHP_DEFAULTS, defaultsString.toString());
+		prefs.put(PHPDebugCorePreferenceNames.INSTALLED_PHP_DEFAULTS, defaultsString.toString());
 		if (defaultItem != null)
 		{
-			prefs.setValue(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, defaultItem.getDebuggerID());
+			prefs.put(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, defaultItem.getDebuggerID());
 		}
-		PHPDebugEPLPlugin.getDefault().savePluginPreferences();
+		try
+		{
+			prefs.flush();
+		}
+		catch (BackingStoreException e)
+		{
+			PHPDebugEPLPlugin.logError("Error while saving the PHP executables settings.", e); //$NON-NLS-1$
+		}
 	}
 
 	public void addPHPExesListener(IPHPExesListener listener)
@@ -616,8 +607,10 @@ public class PHPexes
 	/**
 	 * Locate and return the first CGI interpreter for the give debugger id. May return null if non is found.
 	 * 
-	 * @param debuggerId The debugger Id string
-	 * @param sapiType Should be {@link PHPexeItem#SAPI_CGI} or {@link PHPexeItem#SAPI_CLI}
+	 * @param debuggerId
+	 *            The debugger Id string
+	 * @param sapiType
+	 *            Should be {@link PHPexeItem#SAPI_CGI} or {@link PHPexeItem#SAPI_CLI}
 	 */
 	public static PHPexeItem locateCGI(String debuggerId, String sapiType)
 	{

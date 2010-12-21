@@ -15,9 +15,10 @@ import java.util.Iterator;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -53,6 +54,7 @@ import org.eclipse.ui.internal.forms.widgets.FormUtil;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.php.util.ScrolledPageContent;
@@ -92,12 +94,11 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 	public void initializeValues(PreferencePage propertyPage)
 	{
 		this.propertyPage = propertyPage;
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
 		IScopeContext[] preferenceScopes = this.createPreferenceScopes(propertyPage);
 
-		boolean stopAtFirstLine = prefs.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE);
-		String debuggerName = PHPDebuggersRegistry.getDebuggerName(prefs
-				.getString(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID));
+		boolean stopAtFirstLine = PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, true);
+		String debuggerName = PHPDebuggersRegistry.getDebuggerName(PHPDebugPreferencesUtil
+				.getString(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID));
 		String serverName = PHPServersManager.getDefaultServer(null).getName();
 		PHPexes exes = PHPexes.getInstance();
 		String phpExeName = PHPDebugUIMessages.PhpDebugPreferencePage_noExeDefined;
@@ -105,8 +106,8 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 		{
 			phpExeName = exes.getDefaultItem(PHPDebugEPLPlugin.getCurrentDebuggerId()).getName();
 		}
-		String transferEncoding = prefs.getString(PHPDebugCorePreferenceNames.TRANSFER_ENCODING);
-		String outputEncoding = prefs.getString(PHPDebugCorePreferenceNames.OUTPUT_ENCODING);
+		String transferEncoding = PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, "UTF-8"); //$NON-NLS-1$
+		String outputEncoding = PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, "UTF-8"); //$NON-NLS-1$
 		this.loadDebuggers(this.fDefaultDebugger);
 		this.loadServers(this.fDefaultServer);
 		boolean exeLoaded = false;
@@ -154,7 +155,7 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 			loadPHPExes(this.fDefaultPHPExe, exes.getItems(PHPDebugEPLPlugin.getCurrentDebuggerId()));
 		}
 		this.fStopAtFirstLine.setSelection(stopAtFirstLine);
-		this.fClientIP.setText(prefs.getString(PHPDebugCorePreferenceNames.CLIENT_IP));
+		this.fClientIP.setText(PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.CLIENT_IP, "127.0.0.1")); //$NON-NLS-1$
 		this.fDefaultDebugger.select(this.fDefaultDebugger.indexOf(debuggerName));
 		this.fDefaultServer.select(this.fDefaultServer.indexOf(serverName));
 		this.fDefaultPHPExe.select(this.fDefaultPHPExe.indexOf(phpExeName));
@@ -186,9 +187,9 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 
 	public void performDefaults()
 	{
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		this.fStopAtFirstLine.setSelection(prefs.getDefaultBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE));
-		this.fClientIP.setText(prefs.getDefaultString(PHPDebugCorePreferenceNames.CLIENT_IP));
+		IEclipsePreferences prefs = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
+		this.fStopAtFirstLine.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, true));
+		this.fClientIP.setText(prefs.get(PHPDebugCorePreferenceNames.CLIENT_IP, "127.0.0.1")); //$NON-NLS-1$
 		this.loadDebuggers(this.fDefaultDebugger);
 		this.loadServers(this.fDefaultServer);
 		loadPHPExes(this.fDefaultPHPExe, PHPexes.getInstance().getItems(PHPDebugEPLPlugin.getCurrentDebuggerId()));
@@ -540,7 +541,7 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 			}
 		}
 		// TODO - Might do the same for the default server
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
+		IEclipsePreferences prefs = new InstanceScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
 		IScopeContext[] preferenceScopes = this.createPreferenceScopes(this.propertyPage);
 		IEclipsePreferences debugUINode = preferenceScopes[0].getNode(this.getPreferenceNodeQualifier());
 		IProject project = this.getProject(this.propertyPage);
@@ -560,11 +561,11 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 			if (project == null)
 			{
 				// Workspace settings
-				prefs.setValue(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, this.fStopAtFirstLine.getSelection());
-				prefs.setValue(PHPDebugCorePreferenceNames.CLIENT_IP, this.fClientIP.getText());
+				prefs.putBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, this.fStopAtFirstLine.getSelection());
+				prefs.put(PHPDebugCorePreferenceNames.CLIENT_IP, this.fClientIP.getText());
 				// prefs.setValue(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, fDebugEncodingSettings.getIANATag());
 				// prefs.setValue(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, fOutputEncodingSettings.getIANATag());
-				prefs.setValue(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, this.getSelectedDebuggerId());
+				prefs.put(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, this.getSelectedDebuggerId());
 				exes.setDefaultItem(this.getSelectedDebuggerId(), phpExe);
 				// ServersManager.setDefaultServer(null, fDefaultServer.getText());
 			}
@@ -587,7 +588,7 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 		{
 			debugUINode.flush();
 			exes.save();
-			PHPDebugEPLPlugin.getDefault().savePluginPreferences();
+			prefs.flush();
 		}
 		catch (BackingStoreException e)
 		{

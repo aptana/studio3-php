@@ -10,18 +10,20 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.xdebug;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpPreferences;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 public class XDebugPreferenceInit {
 
 	public static void setDefaults() {
-		IDELayer layer = IDELayerFactory.getIDELayer();
-		Preferences prefs = layer.getPrefs();
-		prefs.setDefault(XDebugUIAttributeConstants.XDEBUG_PREF_PORT, getPortDefault());
-		prefs.setDefault(XDebugUIAttributeConstants.XDEBUG_PREF_SHOWSUPERGLOBALS, showSuperGlobalsDefault());
-		prefs.setDefault(XDebugUIAttributeConstants.XDEBUG_PREF_ARRAYDEPTH, getDepthDefault());
-		prefs.setDefault(XDebugUIAttributeConstants.XDEBUG_PREF_MULTISESSION, useMultiSessionDefault());		
+		IEclipsePreferences prefs = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
+		prefs.putInt(XDebugUIAttributeConstants.XDEBUG_PREF_PORT, getPortDefault());
+		prefs.putBoolean(XDebugUIAttributeConstants.XDEBUG_PREF_SHOWSUPERGLOBALS, showSuperGlobalsDefault());
+		prefs.putInt(XDebugUIAttributeConstants.XDEBUG_PREF_ARRAYDEPTH, getDepthDefault());
+		prefs.putBoolean(XDebugUIAttributeConstants.XDEBUG_PREF_MULTISESSION, useMultiSessionDefault());	
 	}
 
 	public static int getDepthDefault() {

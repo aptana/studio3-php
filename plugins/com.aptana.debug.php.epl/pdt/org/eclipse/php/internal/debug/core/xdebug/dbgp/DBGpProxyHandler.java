@@ -23,9 +23,13 @@ import java.net.UnknownHostException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org.eclipse.php.internal.debug.core.xdebug.XDebugPreferenceMgr;
@@ -33,6 +37,10 @@ import org.eclipse.php.internal.debug.core.xdebug.XDebugPreferenceMgr.AcceptRemo
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.protocol.DBGpResponse;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.session.DBGpSessionHandler;
 import org.eclipse.swt.widgets.Display;
+
+import com.aptana.core.util.StringUtil;
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * This class handles the management of DBGp proxy interaction.
@@ -141,16 +149,14 @@ public class DBGpProxyHandler {
 	 */
 	public void configure() {
 		//TODO: move to using preference manager completely.
-		Preferences prefs = XDebugPreferenceMgr.getPreferences();
-		
 		if (useProxy() == false) {
 			unregister();
 		}
 		else {
-			int idePort = XDebugPreferenceMgr.getPort(prefs);			
-			String ideKey = prefs.getString(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY);
+			int idePort = XDebugPreferenceMgr.getPort();			
+			String ideKey = PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, StringUtil.EMPTY);
 			boolean multisession = XDebugPreferenceMgr.useMultiSession(); 
-			String proxy = prefs.getString(XDebugPreferenceMgr.XDEBUG_PREF_PROXY);
+			String proxy = PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, StringUtil.EMPTY);
 			String proxyHost = proxy;
 			int proxyPort = DEFAULT_PROXY_PORT;
 			int split = proxy.indexOf(':');

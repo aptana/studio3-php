@@ -10,12 +10,13 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.xdebug.dbgp;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org.eclipse.php.internal.debug.core.daemon.AbstractDebuggerCommunicationDaemon;
-import org.eclipse.php.internal.debug.core.preferences.AbstractDebuggerConfigurationDialog;
 import org.eclipse.php.internal.debug.core.xdebug.XDebugPreferenceMgr;
+import org.eclipse.php.internal.debug.ui.preferences.AbstractDebuggerConfigurationDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -31,7 +32,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -217,27 +220,34 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 	 */
 	protected void okPressed() {
 		//TODO: move to preference manager
-		Preferences prefs = XDebugPreferenceMgr.getPreferences();
+		IEclipsePreferences prefs = new InstanceScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
 
 		// general
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_PORT, portTextBox.getText());
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, showGlobals.getSelection());
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH, variableDepth.getSelection());
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, maxChildren.getSelection());		
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, useMultiSession.getSelection());
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION, acceptRemoteSession.getSelectionIndex());		
+		prefs.put(XDebugPreferenceMgr.XDEBUG_PREF_PORT, portTextBox.getText());
+		prefs.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, showGlobals.getSelection());
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH, variableDepth.getSelection());
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, maxChildren.getSelection());		
+		prefs.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, useMultiSession.getSelection());
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION, acceptRemoteSession.getSelectionIndex());		
 		
 		// capture output
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT, captureStdout.getSelectionIndex());		
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, captureStderr.getSelectionIndex());		
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT, captureStdout.getSelectionIndex());		
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, captureStderr.getSelectionIndex());		
 				
 		// proxy
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, useProxy.getSelection());
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, idekeyTextBox.getText());
-		prefs.setValue(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, proxyTextBox.getText());
+		prefs.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, useProxy.getSelection());
+		prefs.put(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, idekeyTextBox.getText());
+		prefs.put(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, proxyTextBox.getText());
 		DBGpProxyHandler.instance.configure();
 		
-		PHPDebugEPLPlugin.getDefault().savePluginPreferences(); // save
+		try
+		{
+			prefs.flush();
+		}
+		catch (BackingStoreException e)
+		{
+			PHPDebugEPLPlugin.logError(e);
+		}
 		super.okPressed();
 	}
 
@@ -245,33 +255,31 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 	private void internalInitializeValues() {
 		//TODO: move to preference manager
 		
-		Preferences prefs = XDebugPreferenceMgr.getPreferences();
-		
-		originalPort = prefs.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT);
-		if (0 == originalPort) {
+		originalPort = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, 0);
+		if (originalPort == 0) {
 			XDebugPreferenceMgr.setDefaults();
-			originalPort = prefs.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT);
+			originalPort = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, 0);
 		}
 		portTextBox.setText(Integer.toString(originalPort));
-		showGlobals.setSelection(prefs.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS));
-		useMultiSession.setSelection(prefs.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION));
-		variableDepth.setSelection(prefs.getInt(XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH));
-		maxChildren.setSelection(prefs.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN)); 
-		acceptRemoteSession.select(prefs.getInt(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION));
+		showGlobals.setSelection(PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, true));
+		useMultiSession.setSelection(PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, true));
+		variableDepth.setSelection(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH, 0));
+		maxChildren.setSelection(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, 0)); 
+		acceptRemoteSession.select(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION, 0));
 
 		// capture output
-		captureStdout.select(prefs.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT));
-		captureStderr.select(prefs.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR));
+		captureStdout.select(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT, 0));
+		captureStderr.select(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, 0));
 		
 		//proxy defaults
-		boolean useProxyState = prefs.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY);
+		boolean useProxyState = PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, false);
 		useProxy.setSelection(useProxyState);
-		String ideKey = prefs.getString(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY);
+		String ideKey = PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, null);
 		if (ideKey == null || ideKey.length() == 0) {
 			ideKey = DBGpProxyHandler.instance.generateIDEKey();
 		}
 		idekeyTextBox.setText(ideKey);
-		proxyTextBox.setText(prefs.getString(XDebugPreferenceMgr.XDEBUG_PREF_PROXY));
+		proxyTextBox.setText(PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, null));
 		toggleProxyFields(useProxyState);
 	}
 	

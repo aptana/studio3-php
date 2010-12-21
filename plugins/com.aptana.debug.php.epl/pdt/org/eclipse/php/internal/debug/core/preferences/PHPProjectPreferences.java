@@ -7,90 +7,94 @@
  *
  * Contributors:
  *   Zend and IBM - Initial implementation
+ *   Aptana - Use of the new IEclipsePreferences API
  *******************************************************************************/
 package org.eclipse.php.internal.debug.core.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
+import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
-public class PHPProjectPreferences {
+public class PHPProjectPreferences
+{
 
-	public static String getPreferenceNodeQualifier() {
+	public static String getPreferenceNodeQualifier()
+	{
 		return IPHPDebugConstants.DEBUG_QUALIFIER;
 	}
 
-	public static Preferences getModelPreferences() {
-		return PHPDebugEPLPlugin.getDefault().getPluginPreferences();
-	}
-
-	public static IScopeContext getProjectScope(IProject project) {
+	public static IScopeContext getProjectScope(IProject project)
+	{
 		return new ProjectScope(project);
 	}
 
-	public static boolean getElementSettingsForProject(IProject project) {
+	public static boolean getElementSettingsForProject(IProject project)
+	{
 		IScopeContext pScope = getProjectScope(project);
 		return pScope.getNode(getPreferenceNodeQualifier()).getBoolean(getProjectSettingsKey(), false);
 	}
 
-	public static String getProjectSettingsKey() {
+	public static String getProjectSettingsKey()
+	{
 		return IPHPDebugConstants.DEBUG_PER_PROJECT;
 	}
 
-	public static boolean getStopAtFirstLine(IProject project) {
-		Preferences prefs = getModelPreferences();
-		boolean stop = prefs.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE);
-		if (project != null && getElementSettingsForProject(project)) {
-			IScopeContext projectScope = getProjectScope(project);
-			stop = projectScope.getNode(getPreferenceNodeQualifier()).getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, stop);
-		}
-		return stop;
-
+	public static boolean getStopAtFirstLine(IProject project)
+	{
+		IPreferencesService service = Platform.getPreferencesService();
+		return service.getBoolean(PHPDebugEPLPlugin.PLUGIN_ID, PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, true,
+				getPreferenceContexts(project));
 	}
 
-	public static String getDefaultServerName(IProject project) {
-		Preferences prefs = getModelPreferences();
-		String serverName = prefs.getString(PHPServersManager.DEFAULT_SERVER_PREFERENCES_KEY);
-		if (project != null && getElementSettingsForProject(project)) {
-			IScopeContext projectScope = getProjectScope(project);
-			serverName = projectScope.getNode(getPreferenceNodeQualifier()).get(PHPServersManager.DEFAULT_SERVER_PREFERENCES_KEY, serverName);
-		}
-		return serverName;
-	}
-	
-	public static String getDefaultDebuggerID(IProject project) {
-		Preferences prefs = getModelPreferences();
-		String debuggerID = prefs.getString(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID);
-		if (project != null && getElementSettingsForProject(project)) {
-			IScopeContext projectScope = getProjectScope(project);
-			debuggerID = projectScope.getNode(getPreferenceNodeQualifier()).get(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, debuggerID);
-		}
-		return debuggerID;
+	public static String getDefaultServerName(IProject project)
+	{
+		IPreferencesService service = Platform.getPreferencesService();
+		return service.getString(PHPDebugEPLPlugin.PLUGIN_ID, PHPServersManager.DEFAULT_SERVER_PREFERENCES_KEY, "", //$NON-NLS-1$
+				getPreferenceContexts(project));
 	}
 
-	public static String getTransferEncoding(IProject project) {
-		Preferences prefs = getModelPreferences();
-		String encoding = prefs.getString(PHPDebugCorePreferenceNames.TRANSFER_ENCODING);
-		if (project != null && getElementSettingsForProject(project)) {
-			IScopeContext projectScope = getProjectScope(project);
-			encoding = projectScope.getNode(getPreferenceNodeQualifier()).get(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, encoding);
-		}
-		return encoding;
+	public static String getDefaultDebuggerID(IProject project)
+	{
+		IPreferencesService service = Platform.getPreferencesService();
+		return service.getString(PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID,
+				XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID, getPreferenceContexts(project));
 	}
 
-	public static String getOutputEncoding(IProject project) {
-		Preferences prefs = getModelPreferences();
-		String encoding = prefs.getString(PHPDebugCorePreferenceNames.OUTPUT_ENCODING);
-		if (project != null && getElementSettingsForProject(project)) {
-			IScopeContext projectScope = getProjectScope(project);
-			encoding = projectScope.getNode(getPreferenceNodeQualifier()).get(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, encoding);
+	public static String getTransferEncoding(IProject project)
+	{
+		IPreferencesService service = Platform.getPreferencesService();
+		return service.getString(PHPDebugEPLPlugin.PLUGIN_ID, PHPDebugCorePreferenceNames.TRANSFER_ENCODING,
+				"UTF-8", getPreferenceContexts(project)); //$NON-NLS-1$
+	}
+
+	public static String getOutputEncoding(IProject project)
+	{
+		IPreferencesService service = Platform.getPreferencesService();
+		return service.getString(PHPDebugEPLPlugin.PLUGIN_ID, PHPDebugCorePreferenceNames.OUTPUT_ENCODING,
+				"UTF-8", getPreferenceContexts(project)); //$NON-NLS-1$
+	}
+
+	private static IScopeContext[] getPreferenceContexts(IProject project)
+	{
+		IScopeContext[] contexts;
+		if (project != null)
+		{
+			contexts = new IScopeContext[] { new ProjectScope(project), new InstanceScope(), new DefaultScope() };
 		}
-		return encoding;
+		else
+		{
+			contexts = new IScopeContext[] { new InstanceScope(), new DefaultScope() };
+		}
+		return contexts;
 	}
 }

@@ -13,7 +13,6 @@ package org.eclipse.php.internal.debug.core.xdebug.breakpoints;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IBreakpointManager;
@@ -24,7 +23,6 @@ import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.model.PHPLineBreakpoint;
 import org.eclipse.php.internal.debug.core.model.PHPRunToLineBreakpoint;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.core.sourcelookup.PHPSourceNotFoundInput;
 import org.eclipse.php.internal.debug.core.sourcelookup.containers.PHPCompositeSourceContainer;
 import org.eclipse.php.internal.debug.core.xdebug.IDELayer;
@@ -34,11 +32,6 @@ import org.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpLogger;
 import org.eclipse.php.internal.debug.core.zend.debugger.Breakpoint;
 
 public class PdtLayer implements IDELayer, DBGpBreakpointFacade {
-
-	public Preferences getPrefs() {
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		return prefs;
-	}
 
 	public String getBreakpointModelID() {
 		return IPHPDebugConstants.ID_PHP_DEBUG_CORE;
@@ -127,7 +120,7 @@ public class PdtLayer implements IDELayer, DBGpBreakpointFacade {
 	}
 
 	public String getSystemDebugProperty() {
-		return "org.eclipse.php.debug.ui.activeDebugging";
+		return "org.eclipse.php.debug.ui.activeDebugging"; //$NON-NLS-1$
 	}
 
 }

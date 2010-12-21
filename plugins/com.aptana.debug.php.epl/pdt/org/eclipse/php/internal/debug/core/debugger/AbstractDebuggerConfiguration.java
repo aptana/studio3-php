@@ -15,8 +15,11 @@ package org.eclipse.php.internal.debug.core.debugger;
 
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.debug.php.core.daemon.ICommunicationDaemon;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
@@ -26,19 +29,17 @@ import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
  * @author Shalom Gibly
  * @since PDT 1.0
  */
-@SuppressWarnings("deprecation")
 public abstract class AbstractDebuggerConfiguration implements IDebuggerConfiguration {
 
-	protected Preferences preferences;
+	protected IEclipsePreferences preferences;
 	private HashMap<String, String> attributes;
 	private ICommunicationDaemon communicationDaemon;
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	/**
 	 * AbstractDebuggerConfiguration constructor.
 	 */
 	public AbstractDebuggerConfiguration() {
-		preferences = PHPDebugEPLPlugin.getDefault().getPluginPreferences();
+		preferences = PHPDebugEPLPlugin.getInstancePreferences();
 		attributes = new HashMap<String, String>();
 	}
 
@@ -50,11 +51,24 @@ public abstract class AbstractDebuggerConfiguration implements IDebuggerConfigur
 	 * @see #save()
 	 * @see #getAttribute(String)
 	 */
-	public void setAttribute(String id, String value) {
-		if (EMPTY_STRING.equals(preferences.getDefaultString(id))) {
+	public void setAttribute(String id, String value)
+	{
+		String defaultValue = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID).get(id, StringUtil.EMPTY);
+		if (StringUtil.EMPTY.equals(defaultValue))
+		{
 			attributes.put(id, value);
-		} else {
-			preferences.setValue(id, value);
+		}
+		else
+		{
+			preferences.put(id, value);
+			try
+			{
+				preferences.flush();
+			}
+			catch (BackingStoreException e)
+			{
+				PHPDebugEPLPlugin.logError(e);
+			}
 		}
 	}
 
@@ -64,7 +78,7 @@ public abstract class AbstractDebuggerConfiguration implements IDebuggerConfigur
 	public String getAttribute(String id) {
 		String attribute = attributes.get(id);
 		if (attribute == null) {
-			attribute = preferences.getString(id);
+			attribute = preferences.get(id, StringUtil.EMPTY);
 		}
 		return attribute;
 	}

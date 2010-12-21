@@ -16,9 +16,10 @@ import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
+
+import com.aptana.core.util.StringUtil;
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 
 public class HostsCollector {
 
@@ -26,8 +27,7 @@ public class HostsCollector {
 	}
 
 	public static String getHosts() {
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		String clientIP = prefs.getString(PHPDebugCorePreferenceNames.CLIENT_IP);
+		String clientIP = PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.CLIENT_IP, StringUtil.EMPTY);
 		if (clientIP.length() != 0) {
 			return clientIP;
 		}

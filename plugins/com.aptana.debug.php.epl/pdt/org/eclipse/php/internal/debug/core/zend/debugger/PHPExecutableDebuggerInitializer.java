@@ -28,6 +28,7 @@ import org.eclipse.php.internal.debug.core.launching.PHPLaunchUtilities;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 import org.eclipse.swt.widgets.Display;
 
+import com.aptana.debug.php.core.util.FileUtils;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -109,7 +110,7 @@ public class PHPExecutableDebuggerInitializer {
 			String[] phpCmdArray = PHPLaunchUtilities.getCommandLine(launch.getLaunchConfiguration(), phpExe, phpConfigDir, fileName, sapiType == PHPexeItem.SAPI_CLI ? args : null);
 
 			// Make sure that we have executable permissions on the file.
-			PHPexes.changePermissions(new File(phpCmdArray[0]));
+			FileUtils.setExecutablePermissions(new File(phpCmdArray[0]));
 			
 			if (PHPDebugEPLPlugin.DEBUG) {
 				System.out.println ("Executing: " + Arrays.toString(phpCmdArray));

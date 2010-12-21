@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.aptana.ide.interpreters" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.aptana.debug.php" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.aptana.ide.interpreters" id="interpreterProvider" name="interpreterProvider"/>
+         <meta.schema plugin="com.aptana.debug.php" id="interpreterProvider" name="interpreterProvider"/>
       </appinfo>
       <documentation>
          Extension point for interpreter providers. Each interpreter provider is able to provide interpreter instances.

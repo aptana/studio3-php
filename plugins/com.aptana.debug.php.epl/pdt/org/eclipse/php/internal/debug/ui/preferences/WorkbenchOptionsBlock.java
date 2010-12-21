@@ -10,12 +10,13 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.ui.preferences;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -23,8 +24,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -49,9 +52,8 @@ public class WorkbenchOptionsBlock extends AbstractPHPPreferencePageBlock {
 	public void initializeValues(PreferencePage propertyPage) {
 		this.propertyPage = propertyPage;
 
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		fOpenDebugViews.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS));
-		fOpenInBrowser.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER));
+		fOpenDebugViews.setSelection(PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, true));
+		fOpenInBrowser.setSelection(PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, true));
 
 		fAllowMultipleLnchField.setPreferenceStore(PHPDebugEPLPlugin.getDefault().getPreferenceStore());
 		fAllowMultipleLnchField.load();
@@ -74,9 +76,9 @@ public class WorkbenchOptionsBlock extends AbstractPHPPreferencePageBlock {
 	}
 
 	public void performDefaults() {
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		fOpenInBrowser.setSelection(prefs.getDefaultBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER));
-		fOpenDebugViews.setSelection(prefs.getDefaultBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS));
+		IEclipsePreferences prefs = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
+		fOpenInBrowser.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, true));
+		fOpenDebugViews.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, true));
 
 		fAllowMultipleLnchField.setPreferenceStore(PHPDebugEPLPlugin.getDefault().getPreferenceStore());
 		fAllowMultipleLnchField.load();
@@ -99,10 +101,17 @@ public class WorkbenchOptionsBlock extends AbstractPHPPreferencePageBlock {
 	}
 
 	private void savePreferences() {
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		prefs.setValue(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, fOpenInBrowser.getSelection());
-		prefs.setValue(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, fOpenDebugViews.getSelection());
-		PHPDebugEPLPlugin.getDefault().savePluginPreferences();
+		IEclipsePreferences prefs = new InstanceScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
+		prefs.putBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, fOpenInBrowser.getSelection());
+		prefs.putBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, fOpenDebugViews.getSelection());
+		try
+		{
+			prefs.flush();
+		}
+		catch (BackingStoreException e)
+		{
+			PHPDebugEPLPlugin.logError(e);
+		}
 
 		fAllowMultipleLnchField.store();
 		fSwitchPerspField.store();

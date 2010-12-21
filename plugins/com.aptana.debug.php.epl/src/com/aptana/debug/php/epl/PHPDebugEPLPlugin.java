@@ -2,10 +2,12 @@ package com.aptana.debug.php.epl;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.eclipse.debug.internal.ui.IInternalDebugUIConstants;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -14,8 +16,8 @@ import org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguratio
 import org.eclipse.php.internal.debug.core.launching.XDebugLaunchListener;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebuggersRegistry;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.core.xdebug.XDebugPreferenceMgr;
+import org.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpProxyHandler;
 import org.eclipse.php.internal.debug.ui.util.ImageDescriptorRegistry;
 import org.eclipse.swt.widgets.Display;
@@ -32,6 +34,7 @@ import com.aptana.debug.php.core.tunneling.SSHTunnelFactory;
 /**
  * The activator class controls the plug-in life cycle
  */
+@SuppressWarnings("restriction")
 public class PHPDebugEPLPlugin extends AbstractUIPlugin
 {
 
@@ -81,7 +84,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	{
 		XDebugLaunchListener.shutdown();
 		DBGpProxyHandler.instance.unregister();
-		savePluginPreferences();
+		new InstanceScope().getNode(PLUGIN_ID).flush();
 		// DaemonPlugin.getDefault().stopDaemons(null); // TODO: SG - Check if the daemons are shutting down
 		super.stop(context);
 		plugin = null;
@@ -107,9 +110,8 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static boolean getStopAtFirstLine()
 	{
-		Preferences prefs = getDefault().getPluginPreferences();
-		return prefs.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE);
-
+		return Platform.getPreferencesService().getBoolean(PLUGIN_ID, PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE,
+				true, getPreferenceContexts());
 	}
 
 	/**
@@ -117,9 +119,8 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static boolean getDebugInfoOption()
 	{
-		Preferences prefs = getDefault().getPluginPreferences();
-		return prefs.getBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO);
-
+		return Platform.getPreferencesService().getBoolean(PLUGIN_ID, PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO,
+				true, getPreferenceContexts());
 	}
 
 	/**
@@ -127,8 +128,8 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static boolean getOpenInBrowserOption()
 	{
-		Preferences prefs = getDefault().getPluginPreferences();
-		return prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER);
+		return Platform.getPreferencesService().getBoolean(PLUGIN_ID, PHPDebugCorePreferenceNames.OPEN_IN_BROWSER,
+				true, getPreferenceContexts());
 	}
 
 	/**
@@ -139,26 +140,8 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static String getCurrentDebuggerId()
 	{
-		Preferences prefs = getDefault().getPluginPreferences();
-		return prefs.getString(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID);
-	}
-
-	/**
-	 * Returns true if the auto-save is on for any dirty file that exists when a Run/Debug launch is triggered.
-	 * 
-	 * @return auto save dirty
-	 * @deprecated since PDT 1.0, this method simply extracts the value of
-	 *             IInternalDebugUIConstants.PREF_SAVE_DIRTY_EDITORS_BEFORE_LAUNCH from the {@link DebugUIPlugin}
-	 */
-	public static boolean getAutoSaveDirtyOption()
-	{
-		String saveDirty = DebugUIPlugin.getDefault().getPreferenceStore().getString(
-				IInternalDebugUIConstants.PREF_SAVE_DIRTY_EDITORS_BEFORE_LAUNCH);
-		if (saveDirty == null)
-		{
-			return true;
-		}
-		return Boolean.valueOf(saveDirty).booleanValue();
+		return Platform.getPreferencesService().getString(PLUGIN_ID, IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID,
+				XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID, getPreferenceContexts());
 	}
 
 	/**
@@ -166,9 +149,8 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static boolean getOpenDebugViewsOption()
 	{
-		Preferences prefs = getDefault().getPluginPreferences();
-		return prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS);
-
+		return Platform.getPreferencesService().getBoolean(PLUGIN_ID, PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS,
+				true, getPreferenceContexts());
 	}
 
 	/**
@@ -199,7 +181,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		// Preferences serverPrefs = Activator.getDefault().getPluginPreferences();
 		// return serverPrefs.getString(PHPServersManager.DEFAULT_SERVER_PREFERENCES_KEY);
 		// TODO
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/**
@@ -285,8 +267,19 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static String getDebugHosts()
 	{
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		return prefs.getString(PHPDebugCorePreferenceNames.CLIENT_IP);
+		return Platform.getPreferencesService().getString(PLUGIN_ID, PHPDebugCorePreferenceNames.CLIENT_IP,
+				"127.0.0.1", getPreferenceContexts()); //$NON-NLS-1$
+	}
+
+	/**
+	 * Returns the preferences node for this plugin-id instance scope.<br>
+	 * This one is a convenient shortcut for: <code>new InstanceScope().getNode(PLUGIN_ID)</code>
+	 * 
+	 * @return IEclipsePreferences
+	 */
+	public static IEclipsePreferences getInstancePreferences()
+	{
+		return new InstanceScope().getNode(PLUGIN_ID);
 	}
 
 	//
@@ -414,9 +407,15 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static ImageDescriptorRegistry getImageDescriptorRegistry()
 	{
-		if (getDefault().fImageDescriptorRegistry == null) {
+		if (getDefault().fImageDescriptorRegistry == null)
+		{
 			getDefault().fImageDescriptorRegistry = new ImageDescriptorRegistry();
 		}
 		return getDefault().fImageDescriptorRegistry;
+	}
+
+	private static IScopeContext[] getPreferenceContexts()
+	{
+		return new IScopeContext[] { new InstanceScope(), new DefaultScope() };
 	}
 }

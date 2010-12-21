@@ -71,7 +71,7 @@ public class Interpreters
 	/**
 	 * Extension point name.
 	 */
-	private static final String EXTENSION_POINT_NAME = "com.aptana.ide.interpreters.interpreterProvider"; //$NON-NLS-1$
+	private static final String EXTENSION_POINT_NAME = "com.aptana.debug.php.interpreterProvider"; //$NON-NLS-1$
 
 	/**
 	 * Provider element name.

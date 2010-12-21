@@ -13,11 +13,15 @@
  */
 package org.eclipse.php.internal.debug.core.zend.debugger;
 
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration;
 import org.eclipse.php.internal.debug.core.launching.PHPExecutableLaunchDelegate;
 import org.eclipse.php.internal.debug.core.launching.PHPWebPageLaunchDelegate;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 import org.eclipse.swt.widgets.Shell;
+
+import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
  * Zend's debugger configuration class.
@@ -46,7 +50,7 @@ public class ZendDebuggerConfiguration extends AbstractDebuggerConfiguration {
 	 * @see org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration#getPort()
 	 */
 	public int getPort() {
-		return preferences.getInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT);
+		return preferences.getInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, 10000);
 	}
 
 	/*
@@ -54,7 +58,7 @@ public class ZendDebuggerConfiguration extends AbstractDebuggerConfiguration {
 	 * @see org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration#setPort(int)
 	 */
 	public void setPort(int port) {
-		preferences.setValue(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, port);
+		preferences.putInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, port);
 	}
 
 	/* (non-Javadoc)
@@ -75,8 +79,10 @@ public class ZendDebuggerConfiguration extends AbstractDebuggerConfiguration {
 	 * @see org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration#applyDefaults()
 	 */
 	public void applyDefaults() {
-		setPort(preferences.getDefaultInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT));
-		preferences.setValue(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, preferences.getDefaultBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO));
+		IEclipsePreferences defaults = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
+		
+		setPort(defaults.getInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, 10000));
+		preferences.putBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, defaults.getBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, true));
 		save();
 	}
 }

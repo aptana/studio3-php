@@ -43,7 +43,7 @@ public class XDebugDebuggerConfiguration extends AbstractDebuggerConfiguration {
 	 * @see org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration#getPort()
 	 */
 	public int getPort() {
-		return XDebugPreferenceMgr.getPort(preferences);
+		return XDebugPreferenceMgr.getPort();
 	}
 
 	/*
@@ -51,7 +51,7 @@ public class XDebugDebuggerConfiguration extends AbstractDebuggerConfiguration {
 	 * @see org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration#setPort(int)
 	 */
 	public void setPort(int port) {
-		XDebugPreferenceMgr.setPort(preferences, port);
+		XDebugPreferenceMgr.setPort(port);
 	}
 
 	/* (non-Javadoc)

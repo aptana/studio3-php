@@ -15,8 +15,9 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.launching.PHPExecutableLaunchDelegate;
@@ -32,20 +33,20 @@ public class PHPDebugCorePreferenceInitializer extends AbstractPreferenceInitial
 
 	public void initializeDefaultPreferences() {
 		//		IEclipsePreferences node = new DefaultScope().getNode(Activator.getDefault().getBundle().getSymbolicName());
-		Preferences preferences = PHPDebugEPLPlugin.getDefault().getPluginPreferences();
+		IEclipsePreferences preferences = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
 		// formatting preferences
-		preferences.setDefault(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, true);
-		preferences.setDefault(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, true);
-		preferences.setDefault(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, true);
-		preferences.setDefault(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, true);
-		preferences.setDefault(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, 10000);
-		preferences.setDefault(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, "UTF-8"); //$NON-NLS-1$
-		preferences.setDefault(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, "UTF-8"); //$NON-NLS-1$
-		preferences.setDefault(PHPDebugCorePreferenceNames.CONFIGURATION_DELEGATE_CLASS, PHPExecutableLaunchDelegate.class.getName());
-		preferences.setDefault(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID); // The default is Zend's debugger
-		preferences.setDefault(IPHPDebugConstants.PHP_DEBUG_PARAMETERS_INITIALIZER, "org.eclipse.php.debug.core.defaultInitializer"); //$NON-NLS-1$
-		preferences.setDefault(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT, MessageDialogWithToggle.ALWAYS);
-		preferences.setDefault(IPHPDebugCorePreferenceKeys.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT, MessageDialogWithToggle.PROMPT);
+		preferences.putBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, true);
+		preferences.putBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO, true);
+		preferences.putBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, true);
+		preferences.putBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, true);
+		preferences.putInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, 10000);
+		preferences.put(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, "UTF-8"); //$NON-NLS-1$
+		preferences.put(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, "UTF-8"); //$NON-NLS-1$
+		preferences.put(PHPDebugCorePreferenceNames.CONFIGURATION_DELEGATE_CLASS, PHPExecutableLaunchDelegate.class.getName());
+		preferences.put(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID); // The default is Zend's debugger
+		preferences.put(IPHPDebugConstants.PHP_DEBUG_PARAMETERS_INITIALIZER, "org.eclipse.php.debug.core.defaultInitializer"); //$NON-NLS-1$
+		preferences.put(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT, MessageDialogWithToggle.ALWAYS);
+		preferences.put(IPHPDebugCorePreferenceKeys.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT, MessageDialogWithToggle.PROMPT);
 
 		try {
 			StringBuilder b = new StringBuilder();
@@ -56,12 +57,12 @@ public class PHPDebugCorePreferenceInitializer extends AbstractPreferenceInitial
 				while (aa.hasMoreElements()) {
 					InetAddress a = aa.nextElement();
 					if (a instanceof Inet4Address && !a.isLoopbackAddress()) {
-						b.append(a.getHostAddress()).append(",");
+						b.append(a.getHostAddress()).append(","); //$NON-NLS-1$
 					}
 				}
 			}
 			b.append("127.0.0.1"); //$NON-NLS-1$
-			preferences.setDefault(PHPDebugCorePreferenceNames.CLIENT_IP, b.toString());
+			preferences.put(PHPDebugCorePreferenceNames.CLIENT_IP, b.toString());
 		} catch (Exception e) {
 		}
 	}

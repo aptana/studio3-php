@@ -1076,5 +1076,13 @@ ntribution>
            name="PHP Debugger Launch Support">
      </launchSupport>
   </extension>
+  <extension
+        point="com.aptana.debug.php.interpreterProvider">
+     <provider
+           class="com.aptana.debug.php.core.preferences.CustomInterpretersProvider"
+           lang="php"
+           priority="1">
+     </provider>
+  </extension>
    
 </plugin>

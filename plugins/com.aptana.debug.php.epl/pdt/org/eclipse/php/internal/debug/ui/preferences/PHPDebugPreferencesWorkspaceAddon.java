@@ -10,14 +10,17 @@
  *******************************************************************************/
 package org.eclipse.php.internal.debug.ui.preferences;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
-import org.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -43,9 +46,8 @@ public class PHPDebugPreferencesWorkspaceAddon extends AbstractPHPPreferencePage
 	public void initializeValues(PreferencePage propertyPage)
 	{
 		this.propertyPage = propertyPage;
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		this.fOpenDebugViews.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS));
-		this.fOpenInBrowser.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER));
+		this.fOpenDebugViews.setSelection(PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, true));
+		this.fOpenInBrowser.setSelection(PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, true));
 	}
 
 	public boolean performOK(boolean isProjectSpecific)
@@ -66,10 +68,10 @@ public class PHPDebugPreferencesWorkspaceAddon extends AbstractPHPPreferencePage
 
 	public void performDefaults()
 	{
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
+		IEclipsePreferences prefs = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
 		// fRunWithDebugInfo.setSelection(prefs.getDefaultBoolean(PHPDebugCorePreferenceNames.RUN_WITH_DEBUG_INFO));
-		this.fOpenInBrowser.setSelection(prefs.getDefaultBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER));
-		this.fOpenDebugViews.setSelection(prefs.getDefaultBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS));
+		this.fOpenInBrowser.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, true));
+		this.fOpenDebugViews.setSelection(prefs.getBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, true));
 		// fDebugTextBox.setText(Integer.toString(prefs.getDefaultInt(PHPDebugCorePreferenceNames.DEBUG_PORT)));
 	}
 
@@ -83,9 +85,16 @@ public class PHPDebugPreferencesWorkspaceAddon extends AbstractPHPPreferencePage
 
 	private void savePreferences()
 	{
-		Preferences prefs = PHPProjectPreferences.getModelPreferences();
-		prefs.setValue(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, this.fOpenInBrowser.getSelection());
-		prefs.setValue(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, this.fOpenDebugViews.getSelection());
-		PHPDebugEPLPlugin.getDefault().savePluginPreferences();
+		IEclipsePreferences prefs = new InstanceScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
+		prefs.putBoolean(PHPDebugCorePreferenceNames.OPEN_IN_BROWSER, this.fOpenInBrowser.getSelection());
+		prefs.putBoolean(PHPDebugCorePreferenceNames.OPEN_DEBUG_VIEWS, this.fOpenDebugViews.getSelection());
+		try
+		{
+			prefs.flush();
+		}
+		catch (BackingStoreException e)
+		{
+			PHPDebugEPLPlugin.logError(e);
+		}
 	}
 }

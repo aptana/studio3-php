@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.aptana.debug.php.epl" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.aptana.debug.php" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.aptana.debug.php.epl" id="debuggerSupport" name="Debugger Support"/>
+         <meta.schema plugin="com.aptana.debug.php" id="debuggerSupport" name="Debugger Support"/>
       </appinfo>
       <documentation>
          A debugger support extension point that allows adding various support implementations to the debugger.
