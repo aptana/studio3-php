@@ -200,4 +200,13 @@ class EntryDocumentationResolver implements IDocumentationResolver
 
 		return ContentAssistUtils.truncateLineIfNeeded(result.toString());
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.internal.contentAssist.IDocumentationResolver#getProposalContent()
+	 */
+	public String getProposalContent()
+	{
+		return this.proposalContent;
+	}
 }

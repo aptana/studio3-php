@@ -132,7 +132,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			phpParseState = new PHPParseState();
 		}
-		return new FileService(PHPMimeType.MimeType, phpParseState);
+		return new FileService(PHPMimeType.MIME_TYPE, phpParseState);
 	}
 
 	/*
@@ -263,7 +263,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	 */
 	protected void installOpenTagCloser()
 	{
-		PHPOpenTagCloser.install(getSourceViewer());
+		new PHPOpenTagCloser(getSourceViewer()).install();
 	}
 
 	/*
@@ -291,7 +291,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	public String getLanguage()
 	{
-		return PHPMimeType.MimeType;
+		return PHPMimeType.MIME_TYPE;
 	}
 
 	public void phpVersionChanged(PHPVersion newVersion)
@@ -499,17 +499,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			module = BuildPathManager.getInstance().getModuleByResource(files[0]);
 			return module;
 		}
-	}
-
-	/**
-	 * Returns true if the PHP editor's preferences are set to mark PHP elements occurrences.
-	 * 
-	 * @return True, if mark occurrences is on; False, in case it's off.
-	 */
-	public boolean isMarkingOccurrences()
-	{
-		IPreferenceStore store = PHPEplPlugin.getDefault().getPreferenceStore();
-		return store != null && store.getBoolean(PreferenceConstants.EDITOR_MARK_OCCURRENCES);
 	}
 
 	/*

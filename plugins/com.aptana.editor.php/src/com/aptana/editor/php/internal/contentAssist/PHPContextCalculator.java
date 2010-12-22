@@ -657,7 +657,7 @@ public class PHPContextCalculator
 			public boolean acceptElementEntry(IElementEntry element)
 			{
 				Object value = element.getValue();
-				return value instanceof NamespacePHPEntryValue || value instanceof ClassPHPEntryValue ;
+				return value instanceof NamespacePHPEntryValue || value instanceof ClassPHPEntryValue;
 			}
 		};
 		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.NAMESPACE_CATEGORY });
@@ -761,6 +761,19 @@ public class PHPContextCalculator
 	{
 		int startPosition = lexemeProvider.getLexemeFloorIndex(offset - 1);
 		int level = 0;
+
+		// Check if we are in a function declaration. If we find one, return null to indicate that we should not display
+		// any context information.
+		if (startPosition > 0)
+		{
+			Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, startPosition - 1,
+					PHPRegionTypes.PHP_FUNCTION, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.PHP_TOKEN,
+							PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_VARIABLE });
+			if (nearestKeyWord != null)
+			{
+				return null;
+			}
+		}
 		for (int i = startPosition; i >= 0; i--)
 		{
 			Lexeme<PHPTokenType> currentLexeme = lexemeProvider.getLexeme(i);

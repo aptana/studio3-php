@@ -44,6 +44,8 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
+import com.aptana.core.build.UnifiedBuilder;
+import com.aptana.core.util.ResourceUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.internal.ui.preferences.IPhpPreferenceConstants;
@@ -176,6 +178,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 		IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
 		description.setLocationURI(location);
 		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
+		ResourceUtil.addBuilder(description, UnifiedBuilder.ID);
 
 		if (!doCreateProject(description, newProjectHandle))
 		{
@@ -359,6 +362,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 		IProjectDescription description = workspace.newProjectDescription(name);
 		description.setLocation(path);
 		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
+		ResourceUtil.addBuilder(description, UnifiedBuilder.ID);
 		// update the referenced project if provided
 		if (referencePage != null)
 		{

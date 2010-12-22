@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -130,6 +131,44 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 	public int getObjectType()
 	{
 		return fObjectType;
+	}
+
+	/**
+	 * Override the common validation for the PHP proposals since the display string can contain extra information, such
+	 * as '(local)' string, etc.
+	 * 
+	 * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension2#validate(org.eclipse.jface.text.IDocument,
+	 *      int, org.eclipse.jface.text.DocumentEvent)
+	 */
+	public boolean validate(IDocument document, int offset, DocumentEvent event)
+	{
+		if (offset < this._replacementOffset)
+		{
+			return false;
+		}
+		String proposalContent = null;
+		if (resolver != null)
+		{
+			proposalContent = resolver.getProposalContent();
+		}
+		if (proposalContent == null)
+		{
+			proposalContent = getDisplayString();
+		}
+		int overlapIndex = proposalContent.length() - _replacementString.length();
+		overlapIndex = Math.max(0, overlapIndex);
+		String endPortion = proposalContent.substring(overlapIndex);
+		boolean validated = isValidPrefix(getPrefix(document, offset), endPortion);
+
+		if (validated && event != null)
+		{
+			// make sure that we change the replacement length as the document content changes
+			int delta = (event.fText == null ? 0 : event.fText.length()) - event.fLength;
+			final int newLength = Math.max(_replacementLength + delta, 0);
+			_replacementLength = newLength;
+		}
+
+		return validated;
 	}
 
 	/*

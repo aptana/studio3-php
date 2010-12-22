@@ -78,36 +78,47 @@ public final class PHPBuiltins
 	private void addKeywords()
 	{
 		// additions after reviewing PHP manuals
-		this.addKeyword("cfunction", "cfunction");//$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("cfunction", "cfunction");//$NON-NLS-1$ //$NON-NLS-2$
 		// reserved class and method names
-		this.addKeyword("stdClass", "stdClass");//$NON-NLS-1$ //$NON-NLS-2$
-		this.addKeyword("__construct", "__construct");//$NON-NLS-1$ //$NON-NLS-2$
-		this.addKeyword("__sleep", "__sleep");//$NON-NLS-1$ //$NON-NLS-2$
-		this.addKeyword("__wakeup", "__wakeup");//$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("stdClass", "stdClass");//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__construct", "__construct", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__destruct", "__destruct", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__call", "__call", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__callStatic", "__callStatic", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__get", "__get", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__set", "__set", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__isset", "__isset", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__unset", "__unset", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__sleep", "__sleep", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__wakeup", "__wakeup", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__toString", "__toString", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__invoke", "__invoke", PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__set_state", "__set_state", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
+		addMagicMethod("__clone", "__clone", PHPVersion.PHP5, PHPVersion.PHP5_3);//$NON-NLS-1$ //$NON-NLS-2$
 		// magic constants (PHP 5.x < 5.3)
-		addMagicConstant("__LINE__", "__LINE__"); //$NON-NLS-1$ //$NON-NLS-2$
-		addMagicConstant("__FILE__", "__FILE__"); //$NON-NLS-1$ //$NON-NLS-2$
-		addMagicConstant("__FUNCTION__", "__FUNCTION__"); //$NON-NLS-1$ //$NON-NLS-2$
-		addMagicConstant("__CLASS__", "__CLASS__"); //$NON-NLS-1$ //$NON-NLS-2$
-		addMagicConstant("__METHOD__", "__METHOD__"); //$NON-NLS-1$ //$NON-NLS-2$
+		addMagicConstant("__LINE__", "__LINE__", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addMagicConstant("__FILE__", "__FILE__", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addMagicConstant("__FUNCTION__", "__FUNCTION__", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addMagicConstant("__CLASS__", "__CLASS__", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addMagicConstant("__METHOD__", "__METHOD__", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		// Super Globals
-		this.addSuperGlobal("$PHP_SELF", "$PHP_SELF");//$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$GLOBALS", "$GLOBALS");//$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_SERVER", "$_SERVER");//$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_GET", "$_GET"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_POST", "$_POST"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_COOKIE", "$_COOKIE"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_FILES", "$_FILES"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_ENV", "$_ENV"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_REQUEST", "$_REQUEST"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$_SESSION", "$_SESSION"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$HTTP_POST_VARS", "$HTTP_POST_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$HTTP_GET_VARS", "$HTTP_GET_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$HTTP_ENV_VARS", "$HTTP_ENV_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$HTTP_SERVER_VARS", "$HTTP_SERVER_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.addSuperGlobal("$HTTP_COOKIE_VARS", "$HTTP_COOKIE_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$PHP_SELF", "$PHP_SELF");//$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$GLOBALS", "$GLOBALS");//$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_SERVER", "$_SERVER");//$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_GET", "$_GET"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_POST", "$_POST"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_COOKIE", "$_COOKIE"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_FILES", "$_FILES"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_ENV", "$_ENV"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_REQUEST", "$_REQUEST"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$_SESSION", "$_SESSION"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$HTTP_POST_VARS", "$HTTP_POST_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$HTTP_GET_VARS", "$HTTP_GET_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$HTTP_ENV_VARS", "$HTTP_ENV_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$HTTP_SERVER_VARS", "$HTTP_SERVER_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
+		addSuperGlobal("$HTTP_COOKIE_VARS", "$HTTP_COOKIE_VARS"); //$NON-NLS-1$ //$NON-NLS-2$
 		// ///////////////////////////////////
-		addKeyword("abstract", "abstract"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("abstract", "abstract", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("array", "array"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "ARRAY_CAST", "Array Cast"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		addKeyword("as", "as"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -138,7 +149,7 @@ public final class PHPBuiltins
 		addKeyword("exit", "exit"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("die", "EXIT", "exit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		addKeyword("extends", "extends"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("final", "final"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("final", "final", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("for", "for"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("foreach", "foreach"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("function", "function"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -150,7 +161,7 @@ public final class PHPBuiltins
 		addKeyword("include_once", "include_once"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("instanceof", "instanceof"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "INT_CAST", "Integer Cast"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		addKeyword("interface", "interface"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("interface", "interface", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("isset", "isset"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("list", "list"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("and", "LOGICAL_AND", "Logical and"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -159,9 +170,9 @@ public final class PHPBuiltins
 		addKeyword("new", "new"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "OBJECT_CAST", "Object Cast"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		addKeyword("print", "print"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("private", "private"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("protected", "protected"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword("public", "public"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("private", "private", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("protected", "protected", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("public", "public", PHPVersion.PHP5, PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("require", "require"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("require_once", "require_once"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("return", "return"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -172,12 +183,11 @@ public final class PHPBuiltins
 		addKeyword("try", "try"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("unset", "unset"); //$NON-NLS-1$ //$NON-NLS-2$
 		addBuiltin("KEYWORD", "UNSET_CAST", "Unset Case"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		addKeyword("use", "use"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("var", "var"); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("while", "while"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword53("namespace", "namespace"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword53("goto", "goto"); //$NON-NLS-1$ //$NON-NLS-2$
-		addKeyword53("use", "use"); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("namespace", "namespace", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("goto", "goto", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("use", "use", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		// not in Zend's lexer grammar
 		addKeyword("false", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 		//addKeyword("from", "from"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -198,20 +208,40 @@ public final class PHPBuiltins
 	 * @param string
 	 * @param nodeName
 	 * @param description
+	 * @param phpVersions
+	 *            An optional array of supported php-versions. In case none is passed, the built-in will be added to all
+	 *            versions
 	 */
-	private void addBuiltin(String string, String nodeName, String description)
+	private void addBuiltin(String string, String nodeName, String description, PHPVersion... phpVersions)
 	{
 		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, 0, -1, -1, nodeName);
 		builtins.add(node);
 		node.setDocumentation(new PHPDocBlockImp(description, EMPTY_STRING, NO_TAGS, 0));
-	}
-
-	private void addBuiltin53(String string, String nodeName, String description)
-	{
-		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, 0, -1, -1, nodeName);
-		builtins.add(node);
-		PHPDocBlockImp docInfo = new PHPDocBlockImp(description, EMPTY_STRING, NO_TAGS, 0);
-		node.setDocumentation(docInfo);
+		if (phpVersions != null && phpVersions.length > 0)
+		{
+			for (PHPVersion version : phpVersions)
+			{
+				if (version == PHPVersion.PHP5_3)
+				{
+					php53Names.add(string);
+				}
+				else if (version == PHPVersion.PHP5)
+				{
+					php5Names.add(string);
+				}
+				else
+				{
+					php4Names.add(string);
+				}
+			}
+		}
+		else
+		{
+			// add to all versions
+			php53Names.add(string);
+			php5Names.add(string);
+			php4Names.add(string);
+		}
 	}
 
 	/**
@@ -220,20 +250,9 @@ public final class PHPBuiltins
 	 * @param string
 	 * @param nodeName
 	 */
-	private void addKeyword(String string, String nodeName)
+	private void addKeyword(String string, String nodeName, PHPVersion... phpVersions)
 	{
-		addBuiltin(string, nodeName, MessageFormat.format(Messages.KEYWORD_LABEL, nodeName));
-	}
-
-	/**
-	 * Adds keyword.
-	 * 
-	 * @param string
-	 * @param nodeName
-	 */
-	private void addKeyword53(String string, String nodeName)
-	{
-		addBuiltin53(string, nodeName, MessageFormat.format(Messages.KEYWORD_LABEL, nodeName));
+		addBuiltin(string, nodeName, MessageFormat.format(Messages.KEYWORD_LABEL, nodeName), phpVersions);
 	}
 
 	/**
@@ -242,9 +261,20 @@ public final class PHPBuiltins
 	 * @param string
 	 * @param nodeName
 	 */
-	private void addMagicConstant(String string, String nodeName)
+	private void addMagicConstant(String string, String nodeName, PHPVersion... phpVersions)
 	{
-		addBuiltin(string, nodeName, MessageFormat.format(Messages.MAGIC_CONSTANT_LABEL, nodeName));
+		addBuiltin(string, nodeName, MessageFormat.format(Messages.MAGIC_CONSTANT_LABEL, nodeName), phpVersions);
+	}
+
+	/**
+	 * Adds a magic method (see http://us.php.net/manual/en/language.oop5.magic.php).
+	 * 
+	 * @param string
+	 * @param nodeName
+	 */
+	private void addMagicMethod(String string, String nodeName, PHPVersion... phpVersions)
+	{
+		addBuiltin(string, nodeName, MessageFormat.format(Messages.MAGIC_METHOD_LABEL, nodeName), phpVersions);
 	}
 
 	/**
@@ -254,9 +284,9 @@ public final class PHPBuiltins
 	 * @param nodeName
 	 */
 	@SuppressWarnings("unused")
-	private void addPredefinedConstant(String string, String nodeName)
+	private void addPredefinedConstant(String string, String nodeName, PHPVersion phpVersion)
 	{
-		addBuiltin(string, nodeName, MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, nodeName));
+		addBuiltin(string, nodeName, MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, nodeName), phpVersion);
 	}
 
 	/**
@@ -311,7 +341,7 @@ public final class PHPBuiltins
 				return false;
 			}
 		}
-		return php4Names.contains(func.getNodeName()) || func.getClass() == PHPBaseParseNode.class;
+		return php4Names.contains(func.getNodeName());
 	}
 
 	/**
@@ -320,7 +350,7 @@ public final class PHPBuiltins
 	 */
 	public boolean existsInPHP5(IPHPParseNode func)
 	{
-		return php5Names.contains(func.getNodeName()) || func.getClass() == PHPBaseParseNode.class;
+		return php5Names.contains(func.getNodeName());
 	}
 
 	/**
@@ -329,7 +359,7 @@ public final class PHPBuiltins
 	 */
 	public boolean existsInPHP53(IPHPParseNode func)
 	{
-		return php53Names.contains(func.getNodeName()) || func.getClass() == PHPBaseParseNode.class;
+		return php53Names.contains(func.getNodeName());
 	}
 
 	public boolean isBuiltinFunction(String name)

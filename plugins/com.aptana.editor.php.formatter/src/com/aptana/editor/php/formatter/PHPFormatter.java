@@ -178,7 +178,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
+				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(), ast
 						.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
@@ -234,13 +234,13 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		// anything in the indexing.
 		try
 		{
-			PHPParser parser = (PHPParser) checkoutParser();
+			PHPParser parser = (PHPParser) checkoutParser(PHPMimeType.MIME_TYPE);
 			Program ast = parser.parseAST(new StringReader(input));
 			checkinParser(parser);
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MimeType, new ParseNode[0], ast.getStart(), ast
+				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(), ast
 						.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection);
@@ -308,8 +308,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	{
 		// first, strip out all the comments from the input and the output.
 		// save those comments for later comparison.
-		StringBuilder inputBuffer = new StringBuilder(input.length());
-		StringBuilder outputBuffer = new StringBuilder(output.length());
+		int inputLength = input.length();
+		int outputLength = output.length();
+		StringBuilder inputBuffer = new StringBuilder(inputLength);
+		StringBuilder outputBuffer = new StringBuilder(outputLength);
 		StringBuilder inputComments = new StringBuilder();
 		StringBuilder outputComments = new StringBuilder();
 		Matcher inputCommentsMatcher = PHP_COMMENTS_PATTERN.matcher(input);
@@ -322,7 +324,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			inputBuffer.append(input.subSequence(inputOffset, inputCommentsMatcher.start()));
 			inputOffset = inputCommentsMatcher.end() + 1;
 		}
-		inputBuffer.append(input.subSequence(inputOffset, input.length()));
+		if (inputOffset < inputLength)
+		{
+			inputBuffer.append(input.subSequence(inputOffset, inputLength));
+		}
 		while (outputCommentsMatcher.find())
 		{
 			outputComments.append(outputCommentsMatcher.group());
@@ -330,7 +335,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			outputOffset = outputCommentsMatcher.end() + 1;
 
 		}
-		outputBuffer.append(output.subSequence(outputOffset, output.length()));
+		if (outputOffset < outputLength)
+		{
+			outputBuffer.append(output.subSequence(outputOffset, outputLength));
+		}
 		return stripComment(inputComments.toString()).equals(stripComment(outputComments.toString()))
 				&& equalsIgnoreWhitespaces(inputBuffer.toString(), outputBuffer.toString());
 	}

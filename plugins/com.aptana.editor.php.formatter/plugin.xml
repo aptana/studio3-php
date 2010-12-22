@@ -4,11 +4,11 @@
    <extension
          point="com.aptana.formatter.epl.formatterFactory">
       <engineContribution
-            contentType="com.aptana.contenttype.html.php">
+            contentType="com.aptana.contenttype.phtml.php">
          <formatterFactory
-               class="com.aptana.editor.php.formatter.PHPFormatterFactory"
+               class="com.aptana.editor.php.formatter.PHTMLFormatterFactory"
                description="%php_code_formatter_description"
-               id="com.aptana.editor.php.formatterFactory"
+               id="com.aptana.editor.phtml.formatterFactory"
                name="%php_code_formatter"
                priority="10">
          </formatterFactory>

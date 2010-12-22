@@ -7,8 +7,25 @@ class SimpleXMLElement implements Traversable {
 	/**
 	 * Creates a new SimpleXMLElement object
 	 * @link http://www.php.net/manual/en/simplexmlelement.construct.php
+	 * @param data string <p>
+	 * A well-formed XML string or the path or URL to an XML document if 
+	 * data_is_url is true.
+	 * </p>
+	 * @param options int[optional] <p>
+	 * Optionally used to specify additional
+	 * Libxml parameters.
+	 * </p>
+	 * @param data_is_url bool[optional] <p>
+	 * By default, data_is_url is false. Use true to
+	 * specify that data is a path or URL to an XML 
+	 * document instead of string data.
+	 * </p>
+	 * @param ns string[optional] <p>
+	 * </p>
+	 * @param is_prefix bool[optional] <p>
+	 * </p>
 	 */
-	final public function __construct () {}
+	final public function __construct ($data, $options = null, $data_is_url = null, $ns = null, $is_prefix = null) {}
 
 	/**
 	 * Return a well-formed XML string based on SimpleXML element
@@ -73,10 +90,10 @@ class SimpleXMLElement implements Traversable {
 	 * An XML namespace.
 	 * </p>
 	 * @param is_prefix bool[optional] <p>
-	 * If ns_prefix is true,
+	 * If is_prefix is true,
+	 * ns will be regarded as a prefix. If false,
 	 * ns will be regarded as a namespace
-	 * URL. If false, ns will be
-	 * regarded as a prefix.
+	 * URL.
 	 * </p>
 	 * @return SimpleXMLElement a SimpleXMLElement element, whether the node 
 	 * has children or not.
@@ -150,6 +167,11 @@ class SimpleXMLElement implements Traversable {
 
 	public function __toString () {}
 
+	/**
+	 * Counts the children of an element
+	 * @link http://www.php.net/manual/en/simplexmlelement.count.php
+	 * @return integer the number of elements of an element.
+	 */
 	public function count () {}
 
 }
@@ -209,8 +231,25 @@ class SimpleXMLIterator extends SimpleXMLElement implements Traversable, Recursi
 	/**
 	 * Creates a new SimpleXMLElement object
 	 * @link http://www.php.net/manual/en/simplexmlelement.construct.php
+	 * @param data string <p>
+	 * A well-formed XML string or the path or URL to an XML document if 
+	 * data_is_url is true.
+	 * </p>
+	 * @param options int[optional] <p>
+	 * Optionally used to specify additional
+	 * Libxml parameters.
+	 * </p>
+	 * @param data_is_url bool[optional] <p>
+	 * By default, data_is_url is false. Use true to
+	 * specify that data is a path or URL to an XML 
+	 * document instead of string data.
+	 * </p>
+	 * @param ns string[optional] <p>
+	 * </p>
+	 * @param is_prefix bool[optional] <p>
+	 * </p>
 	 */
-	final public function __construct () {}
+	final public function __construct ($data, $options = null, $data_is_url = null, $ns = null, $is_prefix = null) {}
 
 	/**
 	 * Return a well-formed XML string based on SimpleXML element
@@ -275,10 +314,10 @@ class SimpleXMLIterator extends SimpleXMLElement implements Traversable, Recursi
 	 * An XML namespace.
 	 * </p>
 	 * @param is_prefix bool[optional] <p>
-	 * If ns_prefix is true,
+	 * If is_prefix is true,
+	 * ns will be regarded as a prefix. If false,
 	 * ns will be regarded as a namespace
-	 * URL. If false, ns will be
-	 * regarded as a prefix.
+	 * URL.
 	 * </p>
 	 * @return SimpleXMLElement a SimpleXMLElement element, whether the node 
 	 * has children or not.
@@ -352,6 +391,11 @@ class SimpleXMLIterator extends SimpleXMLElement implements Traversable, Recursi
 
 	public function __toString () {}
 
+	/**
+	 * Counts the children of an element
+	 * @link http://www.php.net/manual/en/simplexmlelement.count.php
+	 * @return integer the number of elements of an element.
+	 */
 	public function count () {}
 
 }
@@ -384,7 +428,7 @@ class SimpleXMLIterator extends SimpleXMLElement implements Traversable, Recursi
  * </p>
  * @param is_prefix bool[optional] <p>
  * </p>
- * @return object an object of class SimpleXMLElement with
+ * @return SimpleXMLElement an object of class SimpleXMLElement with
  * properties containing the data held within the XML document. On errors, it
  * will return false.
  */
@@ -410,7 +454,7 @@ function simplexml_load_file ($filename, $class_name = null, $options = null, $n
  * </p>
  * @param is_prefix bool[optional] <p>
  * </p>
- * @return object an object of class SimpleXMLElement with
+ * @return SimpleXMLElement an object of class SimpleXMLElement with
  * properties containing the data held within the xml document. On errors, it
  * will return false.
  */

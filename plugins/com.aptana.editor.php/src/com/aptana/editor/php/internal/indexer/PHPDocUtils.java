@@ -141,7 +141,9 @@ public final class PHPDocUtils
 		}
 		// TODO: Shalom - Get the version from the module?
 		PHPVersion version = PHPVersionProvider.getDefaultPHPVersion();
-		ASTParser parser = ASTParser.newParser(new StringReader(contents), version);
+		// TODO - Perhaps we'll need to pass a preference value for the 'short-tags' instead of passing 'true' by
+		// default.
+		ASTParser parser = ASTParser.newParser(new StringReader(contents), version, true);
 		Program program = parser.createAST(null);
 
 		CommentsVisitor commentsVisitor = new CommentsVisitor();

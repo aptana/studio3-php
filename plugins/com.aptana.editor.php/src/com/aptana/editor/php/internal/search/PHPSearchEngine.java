@@ -326,7 +326,7 @@ public final class PHPSearchEngine
 		 * IEditorPart activeEditor = PlatformUI.getWorkbench()
 		 * .getActiveWorkbenchWindow().getActivePage().getActiveEditor(); if (activeEditor instanceof PHPSourceEditor) {
 		 * PHPSourceEditor editor = (PHPSourceEditor) activeEditor; IFileLanguageService languageService =
-		 * editor.getFileContext() .getLanguageService(PHPMimeType.MimeType); PHPOffsetMapper mapper = (PHPOffsetMapper)
+		 * editor.getFileContext() .getLanguageService(PHPMimeType.MIME_TYPE); PHPOffsetMapper mapper = (PHPOffsetMapper)
 		 * languageService .getOffsetMapper(); String source = editor.getViewer().getDocument().get(); IElementsIndex
 		 * index = mapper.getIndex(source, source.length()); List<IElementEntry> entries = index.getEntries(
 		 * IElementsIndex.ANY_CETEGORY, name); for (IElementEntry e : entries) { Object value = e.getValue(); if (value
