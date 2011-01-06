@@ -59,6 +59,7 @@ public class PHPPluginImages
 	public static final ImageDescriptor DESC_OBJS_LIBRARY = createManagedFromKey(T_OBJ, IMG_OBJS_LIBRARY);
 	public static final ImageDescriptor DESC_OBJS_PHP_FOLDER = createManagedFromKey(T_OBJ, IMG_OBJS_PHP_FOLDER);
 	public static final ImageDescriptor DESC_OBJS_PHP_PROJECT = createManagedFromKey(T_OBJ, IMG_OBJS_PHP_PROJECT);
+	public static final ImageDescriptor DESC_OBJS_FIXABLE_ERROR = createManagedFromKey(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
 
 	private static final class CachedImageDescriptor extends ImageDescriptor
 	{

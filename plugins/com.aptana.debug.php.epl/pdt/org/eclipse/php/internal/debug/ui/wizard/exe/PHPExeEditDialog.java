@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 public class PHPExeEditDialog extends TitleAreaDialog implements IControlHandler
 {
 
-	protected static final String FRAGMENT_GROUP_ID = "org.eclipse.php.debug.ui.phpExeWizardCompositeFragment";
+	protected static final String FRAGMENT_GROUP_ID = "org.eclipse.php.debug.ui.phpExeWizardCompositeFragment"; //$NON-NLS-1$
 	private List<CompositeFragment> runtimeComposites;
 	private PHPexeItem phpExeItem;
 	private PHPexeItem[] existingItems;
@@ -61,7 +61,8 @@ public class PHPExeEditDialog extends TitleAreaDialog implements IControlHandler
 	 * @param shell
 	 * @param phpExeItem
 	 * @param existingItems
-	 * @param shouldValidate Indicate whether to validate the PHP ini when the dialog is displayed.
+	 * @param shouldValidate
+	 *            Indicate whether to validate the PHP ini when the dialog is displayed.
 	 */
 	public PHPExeEditDialog(Shell shell, PHPexeItem phpExeItem, PHPexeItem[] existingItems, boolean shouldValidate)
 	{
@@ -135,7 +136,10 @@ public class PHPExeEditDialog extends TitleAreaDialog implements IControlHandler
 				CTabItem item = (CTabItem) e.item;
 				CompositeFragment fragment = (CompositeFragment) item.getControl();
 				PHPExeEditDialog.this.setTitle(fragment.getTitle());
-				PHPExeEditDialog.this.setDescription(fragment.getDescription());
+				if (isComplete())
+				{
+					PHPExeEditDialog.this.setDescription(fragment.getDescription());
+				}
 			}
 		});
 		return tabs;
@@ -161,21 +165,42 @@ public class PHPExeEditDialog extends TitleAreaDialog implements IControlHandler
 		super.okPressed();
 	}
 
+	/**
+	 * Override the super implementation to update the buttons state after their creation.
+	 * 
+	 * @see org.eclipse.jface.dialogs.TrayDialog#createButtonBar(org.eclipse.swt.widgets.Composite)
+	 */
+	protected Control createButtonBar(Composite parent)
+	{
+		Control buttonBar = super.createButtonBar(parent);
+		update();
+		return buttonBar;
+	}
+
+	/**
+	 * [Aptana Mod] Check if all the runtime composites are completed.
+	 * 
+	 * @return True, if all the composites in a complete state; False, otherwise.
+	 */
+	protected boolean isComplete()
+	{
+		Iterator<CompositeFragment> composites = this.runtimeComposites.iterator();
+		while (composites.hasNext())
+		{
+			if (!composites.next().isComplete())
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void update()
 	{
 		Button button = this.getButton(IDialogConstants.OK_ID);
 		if (button != null)
 		{
-			Iterator<CompositeFragment> composites = this.runtimeComposites.iterator();
-			while (composites.hasNext())
-			{
-				if (!composites.next().isComplete())
-				{
-					button.setEnabled(false);
-					return;
-				}
-			}
-			button.setEnabled(true);
+			button.setEnabled(isComplete());
 		}
 	}
 

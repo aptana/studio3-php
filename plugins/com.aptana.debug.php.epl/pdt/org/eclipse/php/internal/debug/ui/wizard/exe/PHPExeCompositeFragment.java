@@ -420,7 +420,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		}
 		else 
 		{
-			this.fPHPIni.setLabelText(PHPDebugUIMessages.addPHPexeDialog_phpIni); // none 'optional'
+			this.fPHPIni.setLabelText(PHPDebugUIMessages.addPHPexeDialog_phpIni); // not 'optional'
 		}
 		String iniLocationName = this.fPHPIni.getText();
 		File iniFile = null;

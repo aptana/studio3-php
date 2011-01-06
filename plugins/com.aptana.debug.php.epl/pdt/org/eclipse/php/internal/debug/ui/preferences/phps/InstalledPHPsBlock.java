@@ -78,6 +78,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
+import com.aptana.editor.php.internal.ui.PHPPluginImages;
 
 /**
  * A composite that displays installed PHP's in a table. PHPs can be
@@ -118,6 +119,16 @@ public class InstalledPHPsBlock {
 		 * @see ITableLabelProvider#getColumnImage(Object, int)
 		 */
 		public Image getColumnImage(final Object element, final int columnIndex) {
+			if (columnIndex == 0 && element instanceof PHPexeItem) {
+				// Display an error icon in cases where we cannot locate the ini.
+				PHPexeItem item = (PHPexeItem)element;
+				if (item.isEditable()) {
+					File iniLocation = item.getINILocation();
+					if (iniLocation == null || !iniLocation.exists()) {
+						return PHPPluginImages.get(PHPPluginImages.IMG_OBJS_FIXABLE_ERROR);
+					}
+				}
+			}
 			return null;
 		}
 
