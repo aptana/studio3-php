@@ -52,14 +52,7 @@ public class PHPDocumentProvider extends CompositeDocumentProvider implements IP
 	public void disconnect(Object element)
 	{
 		PHPVersionDocumentManager.decreaseDocumentCount(document);
-		FileInfo fileInfo = getFileInfo(element);
-		if (fileInfo.fCount == 1)
-		{
-			// This will also disconnect the partitioner
-		    super.disconnect(element);
-		} else {
-			fileInfo.fCount -= 1;
-		}
+		super.disconnect(element);
 	}
 
 	public void phpVersionChanged(PHPVersion newVersion)
