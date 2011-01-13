@@ -20,7 +20,7 @@ import com.aptana.editor.html.HTMLSourceViewerConfiguration;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.ui.editor.formatting.PHPAutoIndentStrategy;
-import com.aptana.editor.php.internal.ui.hover.PHPDocHover;
+import com.aptana.editor.php.internal.ui.hover.PHPBestMatchHover;
 
 public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfiguration
 {
@@ -88,36 +88,12 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	{
 		if (contentType != null && contentType.startsWith(IPHPConstants.PREFIX))
 		{
-			// FIXME - Shalom: For now, we set this as the PHP default text hover, but we'll probably want to have this
-			// given as a best match hover (as in JDT)
-			PHPDocHover phpDocHover = new PHPDocHover();
-			phpDocHover.setEditor(getEditor());
-			return phpDocHover;
+			PHPBestMatchHover bestMatchHover = new PHPBestMatchHover();
+			bestMatchHover.setEditor(getEditor());
+			return bestMatchHover;
 		}
 		return super.getTextHover(sourceViewer, contentType);
 	}
-
-	// /*
-	// * @see SourceViewerConfiguration#getInformationPresenter(ISourceViewer)
-	// * @since 2.0
-	// */
-	// public IInformationPresenter getInformationPresenter(ISourceViewer sourceViewer)
-	// {
-	// InformationPresenter presenter = (InformationPresenter) super.getInformationPresenter(sourceViewer);
-	// // Set the PHP information provider
-	// IInformationProvider provider = new PHPInformationProvider(getEditor());
-	// String[] contentTypes = getConfiguredContentTypes(sourceViewer);
-	// for (int i = 0; i < contentTypes.length; i++)
-	// {
-	// // Register the PHP information provider only for the PHP content types
-	// if (contentTypes[i].startsWith(IPHPConstants.PREFIX))
-	// {
-	// presenter.setInformationProvider(provider, contentTypes[i]);
-	// }
-	// }
-	// // presenter.setSizeConstraints(100, 12, true, true);
-	// return presenter;
-	// }
 
 	@Override
 	protected IContentAssistProcessor getContentAssistProcessor(ISourceViewer sourceViewer, String contentType)

@@ -427,11 +427,6 @@
          
       </factory>
       <factory
-            adaptableType="com.aptana.ide.editor.php.PHPTextHover"
-            class="com.aptana.debug.php.ui.breakpoint.RetargettableActionAdapterFactory">
-         	<adapter type="org.eclipse.jface.text.ITextHover"/>   
-       </factory>
-      <factory
             adaptableType="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
             class="org.eclipse.php.internal.debug.ui.breakpoint.adapter.PHPEditorAdapterFactory">
          <adapter
@@ -863,7 +858,7 @@ ntribution>
        point="com.aptana.debug.php.epl.phpDebugModelPresentations">
     <phpDebugModelPresentation
           class="org.eclipse.php.internal.debug.ui.presentation.PHPModelPresentation"
-          id="org.eclipse.php.debug.ui.presentation.phpModelPresentation"/>
+          id="com.aptana.debug.php.presentation.phpModelPresentation"/>
  </extension>
  <extension
        point="org.eclipse.ui.actionSets">
@@ -1083,6 +1078,15 @@ ntribution>
            lang="php"
            priority="1">
      </provider>
+  </extension>
+  <extension
+        point="com.aptana.editor.php.phpTextHovers">
+     <textHover
+           activatePlugin="false"
+           class="com.aptana.debug.php.ui.hover.PHPDebugHover"
+           id="com.aptana.debug.php.debugHover"
+           name="PHP Debug Hover">
+     </textHover>
   </extension>
    
 </plugin>

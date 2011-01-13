@@ -43,13 +43,8 @@ import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugModelPresentation;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IInformationControl;
-import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextHover;
-import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpTarget;
 import org.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpVariable;
@@ -58,43 +53,45 @@ import org.eclipse.php.internal.debug.core.zend.debugger.Expression;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
 import org.eclipse.php.internal.debug.core.zend.model.PHPStackFrame;
 import org.eclipse.php.util.StringUtils;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
-
+import com.aptana.editor.php.internal.ui.hover.AbstractPHPTextHover;
 
 /**
  * @author Pavel Petrochenko
  */
-public class PHPDebugHover implements ITextHover, ITextHoverExtension
+public class PHPDebugHover extends AbstractPHPTextHover
 {
 	private IDebugModelPresentation modelPresentation;
-	
+
 	// Returns the php debug target that is in contex.
 	// In case that
-	protected PHPDebugTarget getDebugTarget() {
+	protected PHPDebugTarget getDebugTarget()
+	{
 		IAdaptable adaptable = DebugUITools.getDebugContext();
-		if (adaptable instanceof PHPStackFrame) {
-			PHPStackFrame stackFrame = (PHPStackFrame) adaptable;			
+		if (adaptable instanceof PHPStackFrame)
+		{
+			PHPStackFrame stackFrame = (PHPStackFrame) adaptable;
 			PHPDebugTarget debugTarget = (PHPDebugTarget) stackFrame.getDebugTarget();
-			return debugTarget;			
+			return debugTarget;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the variable value.
-	 * @param debugTarget 
-	 *
-	 * @param variable The variable name
+	 * 
+	 * @param debugTarget
+	 * @param variable
+	 *            The variable name
 	 * @return value
 	 */
-	protected String getValue(PHPDebugTarget debugTarget, String variable) {
+	protected String getValue(PHPDebugTarget debugTarget, String variable)
+	{
 		DefaultExpressionsManager expressionManager = debugTarget.getExpressionManager();
 		Expression expression = expressionManager.buildExpression(variable);
 
@@ -103,21 +100,23 @@ public class PHPDebugHover implements ITextHover, ITextHoverExtension
 		expressionManager.update(expression, 1);
 		String value = expression.getValue().getValueAsString();
 
-		if (value != null && value.length() == 0) {
+		if (value != null && value.length() == 0)
+		{
 			value = "Empty"; //$NON-NLS-1$
 			return value;
 		}
 
-		
-
 		return value;
 	}
 
-	/**
-	 * @see org.eclipse.jface.text.ITextHover#getHoverInfo(org.eclipse.jface.text.ITextViewer,
-	 *      org.eclipse.jface.text.IRegion)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.php.internal.ui.hover.AbstractPHPTextHover#getHoverInfo2(org.eclipse.jface.text.ITextViewer,
+	 * org.eclipse.jface.text.IRegion)
 	 */
-	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion)
+	@Override
+	public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion)
 	{
 		IStackFrame frame = getFrame();
 		if (frame != null)
@@ -143,10 +142,10 @@ public class PHPDebugHover implements ITextHover, ITextHoverExtension
 						// It might be a constant
 						String strippedVarName = variableName;
 						boolean shouldResolveConst = false;
-						if (strippedVarName.startsWith("'") || strippedVarName.startsWith("\""))
+						if (strippedVarName.startsWith("'") || strippedVarName.startsWith("\"")) //$NON-NLS-1$ //$NON-NLS-2$
 						{
 							strippedVarName = strippedVarName.substring(1);
-							if (strippedVarName.endsWith("'") || strippedVarName.endsWith("\""))
+							if (strippedVarName.endsWith("'") || strippedVarName.endsWith("\"")) //$NON-NLS-1$ //$NON-NLS-2$
 							{
 								strippedVarName = strippedVarName.substring(0, strippedVarName.length() - 1);
 							}
@@ -175,16 +174,19 @@ public class PHPDebugHover implements ITextHover, ITextHoverExtension
 							Node result = xdebugTarget.eval(testExp);
 							if (result != null)
 							{
-								DBGpVariable tempVar = new DBGpVariable(xdebugTarget, result, "0");
+								DBGpVariable tempVar = new DBGpVariable(xdebugTarget, result, "0"); //$NON-NLS-1$
 								if (tempVar.getName().length() == 0)
 								{
 									// Happens in constants!
-									// We want to display the tooltip in a form of <type> <name>=<value>, so we inject the name into it.
+									// We want to display the tooltip in a form of <type> <name>=<value>, so we inject
+									// the name into it.
 									tempVar.setFullName(strippedVarName);
 								}
 								// In case we should resolve it anyway, we should return the value.
-								// However, in case we did not locate any constant that fits the value that we hover on, we
-								// should return the eval value only if it's different then the one we hover on (not perfect... but will do the job) 
+								// However, in case we did not locate any constant that fits the value that we hover on,
+								// we
+								// should return the eval value only if it's different then the one we hover on (not
+								// perfect... but will do the job)
 								if (shouldResolveConst || tempVar.getValue() != null
 										&& !strippedVarName.equals(tempVar.getValue().getValueString()))
 									return getVariableText(tempVar);
@@ -206,26 +208,13 @@ public class PHPDebugHover implements ITextHover, ITextHoverExtension
 	}
 
 	/**
-	 * @see org.eclipse.jface.text.ITextHover#getHoverRegion(org.eclipse.jface.text.ITextViewer, int)
+	 * @see org.eclipse.jface.text.ITextHover#getHoverInfo(org.eclipse.jface.text.ITextViewer,
+	 *      org.eclipse.jface.text.IRegion)
 	 */
-	public IRegion getHoverRegion(ITextViewer textViewer, int offset)
+	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion)
 	{
-		return null; /* JavaWordFinder.findWord(textViewer.getDocument(), offset); */
-	}
-
-	/**
-	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
-	 */
-	public IInformationControlCreator getHoverControlCreator()
-	{
-		return new IInformationControlCreator()
-		{
-			public IInformationControl createInformationControl(Shell parent)
-			{
-				return new DefaultInformationControl(parent, SWT.NONE,
-				null, "Press F2 for focus");
-			}
-		};
+		String hoverInfo = getHoverInfo(textViewer, hoverRegion);
+		return hoverInfo != null ? hoverInfo.toString() : null;
 	}
 
 	/**
@@ -238,14 +227,14 @@ public class PHPDebugHover implements ITextHover, ITextHoverExtension
 		IAdaptable adaptable = DebugUITools.getDebugContext();
 		if (adaptable instanceof IStackFrame)
 		{
-			return (IStackFrame)adaptable;
+			return (IStackFrame) adaptable;
 		}
 		if (adaptable != null)
 		{
 			Object frame = adaptable.getAdapter(PHPStackFrame.class);
 			if (frame instanceof IStackFrame)
 			{
-				return (IStackFrame)frame;
+				return (IStackFrame) frame;
 			}
 		}
 		return null;
@@ -273,7 +262,8 @@ public class PHPDebugHover implements ITextHover, ITextHoverExtension
 	{
 		if (modelPresentation == null)
 		{
-			modelPresentation = DebugUITools.newDebugModelPresentation(IPHPDebugCorePreferenceKeys.PHP_DEBUG_MODEL_PRESENTATION_ID);
+			modelPresentation = DebugUITools
+					.newDebugModelPresentation(IPHPDebugCorePreferenceKeys.PHP_DEBUG_MODEL_PRESENTATION_ID);
 			modelPresentation.setAttribute(IDebugModelPresentation.DISPLAY_VARIABLE_TYPE_NAMES, Boolean.TRUE);
 		}
 		return modelPresentation;

@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="indexer" name="%phpIndexerParticipant.name" schema="schema/indexer.exsd"/>
+   <extension-point id="phpTextHovers" name="PHP Text Hover" schema="schema/phpTextHovers.exsd"/>
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -288,5 +289,14 @@
             class="com.aptana.editor.php.internal.ui.editor.ExternalAnnotationsFactory"
             contentTypeId="com.aptana.contenttype.phtml.php">
       </factory>
+   </extension>
+   <extension
+         point="com.aptana.editor.php.phpTextHovers">
+      <textHover
+            activatePlugin="true"
+            class="com.aptana.editor.php.internal.ui.hover.PHPDocHover"
+            id="com.aptana.editor.php.docHover"
+            name="PHP Doc Hover">
+      </textHover>
    </extension>
 </plugin>

@@ -2,9 +2,6 @@ package com.aptana.debug.php.ui.breakpoint;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
-import org.eclipse.jface.text.ITextHover;
-
-import com.aptana.debug.php.ui.hover.PHPDebugHover;
 
 /**
  * @author Max Stepanov
@@ -20,10 +17,6 @@ public class RetargettableActionAdapterFactory implements IAdapterFactory
 		{
 			return new ToggleBreakpointAdapter();
 		}
-		if (adapterType == ITextHover.class)
-		{
-			return new PHPDebugHover();
-		}
 		return null;
 	}
 
@@ -32,6 +25,6 @@ public class RetargettableActionAdapterFactory implements IAdapterFactory
 	 */
 	public Class[] getAdapterList()
 	{
-		return new Class[] { IToggleBreakpointsTarget.class, ITextHover.class };
+		return new Class[] { IToggleBreakpointsTarget.class };
 	}
 }

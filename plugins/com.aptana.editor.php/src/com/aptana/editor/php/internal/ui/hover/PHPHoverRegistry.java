@@ -32,35 +32,67 @@
  * 
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.debug.php.core;
+package com.aptana.editor.php.internal.ui.hover;
 
-import com.aptana.debug.php.PHPDebugPlugin;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+
+import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
+ * PHP text hovers registry.
+ * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public interface IPHPDebugCorePreferenceKeys
+public class PHPHoverRegistry
 {
-	public static final String DEBUGGER_ID = PHPDebugPlugin.PLUGIN_ID;
+	private static final String EXTENSION_POINT_NAME = "phpTextHovers"; //$NON-NLS-1$
+	private static final String EXTENSION_NAME = "textHover"; //$NON-NLS-1$
 
-	public static final String PHP_DEBUG_MODEL_PRESENTATION_ID = "org.eclipse.php.debug.core"; //$NON-NLS-1$
+	private static PHPHoverRegistry instance;
 
-	public static final String PHP_DEBUGGER_ID = DEBUGGER_ID + ".php_debugger_id";//$NON-NLS-1$
-	public static final String NOTIFY_NON_STANDARD_PORT = DEBUGGER_ID + ".notifyNonStandardPort"; //$NON-NLS-1$
-	public static final String BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT = DEBUGGER_ID + ".breakOnFirstLineForUnknownJIT"; //$NON-NLS-1$
-	public static final String ALLOW_MULTIPLE_LAUNCHES = DEBUGGER_ID + ".allowMultipleLaunches"; //$NON-NLS-1$
-	public static final String SWITCH_BACK_TO_PREVIOUS_PERSPECTIVE = DEBUGGER_ID + ".switchBackToPreviousPerspective"; //$NON-NLS-1$
-	public static final String CONFIGURATION_DELEGATE_CLASS = DEBUGGER_ID + ".configurationDelegateClass"; //$NON-NLS-1$
-	
-	public static final String ATTR_USE_SPECIFIC_FILE = "ATTR_USE_SPECIFIC_FILE"; //$NON-NLS-1$
-	public static final String ATTR_FILE = "ATTR_FILE"; //$NON-NLS-1$
-	public static final String ATTR_AUTO_GENERATED_URL = "ATTR_AUTO_GENERATED_URL"; //$NON-NLS-1$
+	/**
+	 * Returns an instance of the registry.
+	 */
+	public static PHPHoverRegistry getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new PHPHoverRegistry();
+		}
+		return instance;
+	}
 
-	public static final String ATTR_SERVER_NAME = "ATTR_SERVER_NAME"; //$NON-NLS-1$
-	public static final String ATTR_SERVER_FILE_NAME = "ATTR_SERVER_FILE_NAME"; //$NON-NLS-1$
-	public static final String ATTR_SERVER_BASE_URL = "ATTR_SERVER_BASE_URL"; //$NON-NLS-1$
+	private ArrayList<PHPTextHoverDescriptor> hovers;
 
-	public static final String ATTR_HTTP_POST = "ATTR_HTTP_POST"; //$NON-NLS-1$
-	public static final String ATTR_HTTP_GET = "ATTR_HTTP_GET"; //$NON-NLS-1$
+	/**
+	 * Returns the registered PHP text hovers descriptors.<br>
+	 * The descriptors can later be instantiated to create an instance of the text hover.
+	 * 
+	 * @return A list of registered PHP text hover descriptors.
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized List<PHPTextHoverDescriptor> getTextHoversDescriptors()
+	{
+		if (hovers == null)
+		{
+			IExtensionRegistry registry = Platform.getExtensionRegistry();
+			IConfigurationElement[] elements = registry.getConfigurationElementsFor(PHPEditorPlugin.PLUGIN_ID,
+					EXTENSION_POINT_NAME);
+			hovers = new ArrayList<PHPTextHoverDescriptor>(3);
+			for (IConfigurationElement element : elements)
+			{
+				if (element.getName().equals(EXTENSION_NAME))
+				{
+					hovers.add(new PHPTextHoverDescriptor(element));
+				}
+			}
+		}
+		return (List<PHPTextHoverDescriptor>) hovers.clone();
+	}
 
 }
