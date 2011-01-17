@@ -85,7 +85,7 @@ public class PHPServersManager
 	 */
 	public static AbstractWebServerConfiguration createTemporaryServer(String host, int port, boolean isSecure)
 	{
-		return new PHPWebServerConfiguration(host, port, isSecure);
+		return new PHPWebServerConfiguration(host, port, isSecure, false);
 	}
 
 	/**

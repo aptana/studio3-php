@@ -37,6 +37,7 @@ package com.aptana.debug.php.core.server;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.debug.php.PHPDebugPlugin;
 import com.aptana.webserver.core.EFSWebServerConfiguration;
 
@@ -49,16 +50,19 @@ public class PHPWebServerConfiguration extends EFSWebServerConfiguration
 	 * Server name attribute.
 	 */
 	public static final String NAME_ATTR = "serverName"; //$NON-NLS-1$
-	
+
 	private static final String HTTP = "http"; //$NON-NLS-1$
 	private static final String HTTPS = "https"; //$NON-NLS-1$
 
+	private boolean persistent;
+
 	/**
-	 * Constructs a new PHPWebServerConfiguration
+	 * Constructs a new PHPWebServerConfiguration.<br>
+	 * By default, the server is persistent.
 	 */
 	public PHPWebServerConfiguration()
 	{
-
+		this.persistent = true;
 	}
 
 	/**
@@ -67,17 +71,25 @@ public class PHPWebServerConfiguration extends EFSWebServerConfiguration
 	 * @param host
 	 * @param port
 	 * @param isSecure
+	 * @param persistent
+	 *            Mark this server as persistent or not.
 	 */
-	public PHPWebServerConfiguration(String host, int port, boolean isSecure)
+	public PHPWebServerConfiguration(String host, int port, boolean isSecure, boolean persistent)
 	{
+		this.persistent = persistent;
 		try
 		{
-			setBaseURL(new URL(isSecure ? HTTPS : HTTP, host, port, null));
+			setBaseURL(new URL(isSecure ? HTTPS : HTTP, host, port, StringUtil.EMPTY));
 		}
 		catch (MalformedURLException e)
 		{
 			PHPDebugPlugin.logError(e);
 		}
+	}
+
+	public boolean isPersistent()
+	{
+		return persistent;
 	}
 
 	/*

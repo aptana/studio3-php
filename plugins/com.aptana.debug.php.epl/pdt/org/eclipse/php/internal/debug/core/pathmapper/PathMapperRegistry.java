@@ -31,23 +31,12 @@ import com.aptana.debug.php.core.server.PHPWebServerConfiguration;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.webserver.core.AbstractWebServerConfiguration;
 
-public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesListener/*, IServerManagerListener*/ 
+public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesListener/* , IServerManagerListener */
 {
-	
-	/**
-	 * 
-	 */
-	private static final String PATH_MAPPER_ATTRIBUTE = "pathMapper";
 
-	/**
-	 * 
-	 */
-	private static final String SERVER_TYPE_ATTRIBUTE = "serverType";
-
-	/**
-	 * 
-	 */
-	private static final String PATH_MAPPER_EXTENSION_ID = "com.aptana.debug.php.pathMapper";
+	private static final String PATH_MAPPER_ATTRIBUTE = "pathMapper"; //$NON-NLS-1$
+	private static final String SERVER_TYPE_ATTRIBUTE = "serverType"; //$NON-NLS-1$
+	private static final String PATH_MAPPER_EXTENSION_ID = "com.aptana.debug.php.pathMapper"; //$NON-NLS-1$
 
 	private static final String PATH_MAPPER_PREF_KEY = PHPDebugEPLPlugin.PLUGIN_ID + ".pathMapper"; //$NON-NLS-1$
 
@@ -56,19 +45,22 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	private HashMap<PathMapper, AbstractWebServerConfiguration> pathMapperToServer;
 	private HashMap<PHPexeItem, PathMapper> phpExePathMapper;
 
-	private PathMapperRegistry() {
+	private PathMapperRegistry()
+	{
 		serverPathMapper = new HashMap<AbstractWebServerConfiguration, PathMapper>();
 		phpExePathMapper = new HashMap<PHPexeItem, PathMapper>();
 		pathMapperToServer = new HashMap<PathMapper, AbstractWebServerConfiguration>();
 		loadFromPreferences();
-		//create the link to servers manager here in order not to create tightly coupled relationship
-		
+		// create the link to servers manager here in order not to create tightly coupled relationship
+
 		// TODO - Attach this
-		//PHPServersManager.addManagerListener(this);
+		// PHPServersManager.addManagerListener(this);
 	}
 
-	public synchronized static PathMapperRegistry getInstance() {
-		if (instance == null) {
+	public synchronized static PathMapperRegistry getInstance()
+	{
+		if (instance == null)
+		{
 			instance = new PathMapperRegistry();
 		}
 		return instance;
@@ -76,12 +68,16 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 
 	/**
 	 * Return path mapper which corresponding to the given PHPexe item
-	 * @param phpExe PHPExe item
+	 * 
+	 * @param phpExe
+	 *            PHPExe item
 	 * @return path mapper, or <code>null</code> if there's no one
 	 */
-	public static PathMapper getByPHPExe(PHPexeItem phpExe) {
+	public static PathMapper getByPHPExe(PHPexeItem phpExe)
+	{
 		PathMapper result = getInstance().phpExePathMapper.get(phpExe);
-		if (result == null) {
+		if (result == null)
+		{
 			result = new PathMapper();
 			getInstance().phpExePathMapper.put(phpExe, result);
 			PHPexes.getInstance().addPHPExesListener(getInstance());
@@ -91,12 +87,16 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 
 	/**
 	 * Return path mapper which corresponding to the given Server instance
-	 * @param server Server instance
+	 * 
+	 * @param server
+	 *            Server instance
 	 * @return path mapper, or <code>null</code> if there's no one
 	 */
-	public static PathMapper getByServer(AbstractWebServerConfiguration server) {
+	public static PathMapper getByServer(AbstractWebServerConfiguration server)
+	{
 		PathMapper result = getInstance().serverPathMapper.get(server);
-		if (result == null) {
+		if (result == null)
+		{
 			result = getNewServerPathMapper(server);
 			getInstance().serverPathMapper.put(server, result);
 			getInstance().pathMapperToServer.put(result, server);
@@ -106,84 +106,106 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 
 	/**
 	 * Returns the {@link AbstractWebServerConfiguration} that is linked to the given {@link PathMapper}.
-	 *  
-	 * @param mapper A PathMapper instance
+	 * 
+	 * @param mapper
+	 *            A PathMapper instance
 	 * @return A reference to the server attached to the given mapper; Null, in case none is attached.
 	 */
-	public static AbstractWebServerConfiguration getByMapper(PathMapper mapper) {
+	public static AbstractWebServerConfiguration getByMapper(PathMapper mapper)
+	{
 		AbstractWebServerConfiguration server = getInstance().pathMapperToServer.get(mapper);
 		return server;
 	}
-	
+
 	/**
 	 * Returns path mapper associated with the given launch configuration
-	 * @param launchConfiguration Launch configuration
+	 * 
+	 * @param launchConfiguration
+	 *            Launch configuration
 	 * @return path mapper
 	 */
-	public static PathMapper getByLaunchConfiguration(ILaunchConfiguration launchConfiguration) {
+	public static PathMapper getByLaunchConfiguration(ILaunchConfiguration launchConfiguration)
+	{
 		PathMapper pathMapper = null;
-		try {
+		try
+		{
 			String serverName = launchConfiguration.getAttribute(PHPWebServerConfiguration.NAME_ATTR, (String) null);
-			if (serverName != null) {
+			if (serverName != null)
+			{
 				pathMapper = getByServer(PHPServersManager.getServer(serverName));
-			}/* else {
-				String phpExe = launchConfiguration.getAttribute(PHPCoreConstants.ATTR_EXECUTABLE_LOCATION, (String) null);
-				String phpIni = launchConfiguration.getAttribute(PHPCoreConstants.ATTR_INI_LOCATION, (String) null);
-				if (phpExe != null) {
-					pathMapper = getByPHPExe(PHPexes.getInstance().getItemForFile(phpExe, phpIni));
-				}
-			}*/
-		} catch (CoreException e) {
+			}/*
+			 * else { String phpExe = launchConfiguration.getAttribute(PHPCoreConstants.ATTR_EXECUTABLE_LOCATION,
+			 * (String) null); String phpIni = launchConfiguration.getAttribute(PHPCoreConstants.ATTR_INI_LOCATION,
+			 * (String) null); if (phpExe != null) { pathMapper =
+			 * getByPHPExe(PHPexes.getInstance().getItemForFile(phpExe, phpIni)); } }
+			 */
+		}
+		catch (CoreException e)
+		{
 			PHPDebugEPLPlugin.logError(e);
 		}
 		return pathMapper;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void loadFromPreferences() {
-		HashMap[] elements = XMLPreferencesReader.read(PHPDebugEPLPlugin.getDefault().getPluginPreferences(), PATH_MAPPER_PREF_KEY);
-		if (elements.length == 1) {
+	public void loadFromPreferences()
+	{
+		HashMap[] elements = XMLPreferencesReader.read(PHPDebugEPLPlugin.getDefault().getPluginPreferences(),
+				PATH_MAPPER_PREF_KEY);
+		if (elements.length == 1)
+		{
 			restoreFromMap(elements[0]);
 		}
 	}
 
-	public static void storeToPreferences() {
-		XMLPreferencesWriter.write(PHPDebugEPLPlugin.getDefault().getPluginPreferences(), PATH_MAPPER_PREF_KEY, getInstance());
+	public static void storeToPreferences()
+	{
+		XMLPreferencesWriter.write(PHPDebugEPLPlugin.getDefault().getPluginPreferences(), PATH_MAPPER_PREF_KEY,
+				getInstance());
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized void restoreFromMap(HashMap map) {
-		if (map == null) {
+	public synchronized void restoreFromMap(HashMap map)
+	{
+		if (map == null)
+		{
 			return;
 		}
 		serverPathMapper.clear();
 		pathMapperToServer.clear();
 		phpExePathMapper.clear();
 
-		map = (HashMap)map.get("pathMappers"); //$NON-NLS-1$
-		if (map == null) {
+		map = (HashMap) map.get("pathMappers"); //$NON-NLS-1$
+		if (map == null)
+		{
 			return;
 		}
 		Iterator i = map.keySet().iterator();
-		while (i.hasNext()) {
+		while (i.hasNext())
+		{
 			HashMap entryMap = (HashMap) map.get(i.next());
 			String serverName = (String) entryMap.get("server"); //$NON-NLS-1$
 			String phpExeFile = (String) entryMap.get("phpExe"); //$NON-NLS-1$
 			String phpIniFile = (String) entryMap.get("phpIni"); //$NON-NLS-1$
 			PathMapper pathMapper = new PathMapper();
 			pathMapper.restoreFromMap((HashMap) entryMap.get("mapper")); //$NON-NLS-1$
-			if (serverName != null) {
+			if (serverName != null)
+			{
 				AbstractWebServerConfiguration server = PHPServersManager.getServer(serverName);
 				if (server != null)
 				{
-					// SG: Revert Denis's xdebug changes for setting up a new path mapper without loading the mapper values from the preferences... grrrr!
+					// SG: Revert Denis's xdebug changes for setting up a new path mapper without loading the mapper
+					// values from the preferences... grrrr!
 					// serverPathMapper.put(server.getServer(), getNewServerPathMapper(server.getServer()));
 					serverPathMapper.put(server, pathMapper);
 					pathMapperToServer.put(pathMapper, server);
 				}
-			} else if (phpExeFile != null) {
+			}
+			else if (phpExeFile != null)
+			{
 				PHPexeItem phpExeItem = PHPexes.getInstance().getItemForFile(phpExeFile, phpIniFile);
-				if (phpExeItem != null) {
+				if (phpExeItem != null)
+				{
 					phpExePathMapper.put(phpExeItem, pathMapper);
 				}
 			}
@@ -191,28 +213,32 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized HashMap storeToMap() {
+	public synchronized HashMap storeToMap()
+	{
 		HashMap elements = new HashMap();
 		Iterator i = serverPathMapper.keySet().iterator();
 		int c = 1;
-		while (i.hasNext()) {
+		while (i.hasNext())
+		{
 			HashMap entry = new HashMap();
 			AbstractWebServerConfiguration server = (AbstractWebServerConfiguration) i.next();
-//			if (!server.isTransient())
-//			{
-				PathMapper pathMapper = serverPathMapper.get(server);
-				entry.put("server", server.getName()); //$NON-NLS-1$
-				entry.put("mapper", pathMapper.storeToMap()); //$NON-NLS-1$
-				elements.put("item" + (c++), entry); //$NON-NLS-1$
-//			}
+			// if (!server.isTransient())
+			// {
+			PathMapper pathMapper = serverPathMapper.get(server);
+			entry.put("server", server.getName()); //$NON-NLS-1$
+			entry.put("mapper", pathMapper.storeToMap()); //$NON-NLS-1$
+			elements.put("item" + (c++), entry); //$NON-NLS-1$
+			// }
 		}
 		i = phpExePathMapper.keySet().iterator();
-		while (i.hasNext()) {
+		while (i.hasNext())
+		{
 			HashMap entry = new HashMap();
 			PHPexeItem phpExeItem = (PHPexeItem) i.next();
 			PathMapper pathMapper = phpExePathMapper.get(phpExeItem);
 			entry.put("phpExe", phpExeItem.getExecutable().toString()); //$NON-NLS-1$
-			if (phpExeItem.getINILocation() != null){
+			if (phpExeItem.getINILocation() != null)
+			{
 				entry.put("phpIni", phpExeItem.getINILocation().toString()); //$NON-NLS-1$
 			}
 			entry.put("mapper", pathMapper.storeToMap()); //$NON-NLS-1$
@@ -223,13 +249,16 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		return root;
 	}
 
-	public void phpExeAdded(PHPExesEvent event) {
-		if (!phpExePathMapper.containsKey(event.getPHPExeItem())) {
+	public void phpExeAdded(PHPExesEvent event)
+	{
+		if (!phpExePathMapper.containsKey(event.getPHPExeItem()))
+		{
 			phpExePathMapper.put(event.getPHPExeItem(), new PathMapper());
 		}
 	}
 
-	public void phpExeRemoved(PHPExesEvent event) {
+	public void phpExeRemoved(PHPExesEvent event)
+	{
 		phpExePathMapper.remove(event.getPHPExeItem());
 	}
 
@@ -240,7 +269,9 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.ide.server.core.AbstractWebServerConfigurationManagerListener#serversChanged(com.aptana.ide.server.core.ServerManagerEvent)
+	 * @see
+	 * com.aptana.ide.server.core.AbstractWebServerConfigurationManagerListener#serversChanged(com.aptana.ide.server
+	 * .core.ServerManagerEvent)
 	 */
 	public void serversChanged(ServerManagerEvent event)
 	{
@@ -261,25 +292,26 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 				break;
 			case ServerManagerEvent.KIND_REMOVED:
 				PathMapper removed = serverPathMapper.remove(server);
-				if (removed != null) {
+				if (removed != null)
+				{
 					pathMapperToServer.remove(removed);
 				}
 				break;
 			// Changed is ignored, as we don't really need to do anything.
 		}
 	}
-	
+
 	private static PathMapper getNewServerPathMapper(AbstractWebServerConfiguration server)
 	{
 		PathMapper pathMapper = new PathMapper();
-		if (server.isTransient())
+		if (!server.isPersistent())
 		{
 			// This server should not be persistent, nor should it get a path mapper from an extension.
 			return pathMapper;
 		}
-		IConfigurationElement[] elements = 
-			Platform.getExtensionRegistry().getConfigurationElementsFor(PATH_MAPPER_EXTENSION_ID);
-		
+		// Check if we have a specific path mapper for the specific type of server.
+		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				PATH_MAPPER_EXTENSION_ID);
 		try
 		{
 			if (elements != null && elements.length != 0)
@@ -287,10 +319,9 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 				for (IConfigurationElement element : elements)
 				{
 					String attribute = element.getAttribute(SERVER_TYPE_ATTRIBUTE);
-					if (attribute != null && attribute.equals(server.getServerType().getId()))
+					if (attribute != null && attribute.equals(server.getId()))
 					{
-						pathMapper = (PathMapper)
-							element.createExecutableExtension(PATH_MAPPER_ATTRIBUTE);
+						pathMapper = (PathMapper) element.createExecutableExtension(PATH_MAPPER_ATTRIBUTE);
 						break;
 					}
 				}
@@ -298,10 +329,9 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		}
 		catch (Throwable th)
 		{
-			PHPDebugEPLPlugin.logError( 
-					"Unexpected exception while getting server path mappers", th);
+			PHPDebugEPLPlugin.logError("Unexpected exception while getting server path mappers", th); //$NON-NLS-1$
 		}
-		
+
 		return pathMapper;
 	}
 }
