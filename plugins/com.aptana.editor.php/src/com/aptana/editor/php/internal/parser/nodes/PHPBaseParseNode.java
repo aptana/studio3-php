@@ -52,8 +52,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 		this.name = name.length() != 0 ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;
 		// this.endOffset = endOffset >= startOffset ? endOffset : startOffset;
-		this.start = startOffset;
-		this.end = endOffset >= startOffset ? endOffset : startOffset;
+		this.setLocation(startOffset, endOffset >= startOffset ? endOffset : startOffset);
 		this.modifiers = modifiers;
 	}
 
@@ -133,7 +132,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public void setEndOffset(int endOffset)
 	{
-		this.end = endOffset;
+		this.setLocation(this.getStart(), endOffset);
 		// Reset the name node
 		this.nameNode = null;
 	}
@@ -143,7 +142,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public void setStartOffset(int startOffset)
 	{
-		this.start = startOffset;
+		this.setLocation(startOffset, this.getEnd());
 		// Reset the name node
 		this.nameNode = null;
 	}
