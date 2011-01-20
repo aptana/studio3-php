@@ -1,4 +1,4 @@
-package com.aptana.debug.php.ui.breakpoint;
+package com.aptana.debug.php.ui.actions.breakpoints;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;

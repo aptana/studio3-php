@@ -422,7 +422,7 @@
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
-            class="com.aptana.debug.php.ui.breakpoint.RetargettableActionAdapterFactory">
+            class="com.aptana.debug.php.ui.actions.breakpoints.RetargettableActionAdapterFactory">
          <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
          
       </factory>
@@ -532,6 +532,16 @@ ntribution>
          <visibility>
             <systemProperty name="org.eclipse.php.debug.ui.activeDebugging" value="true" />
          </visibility>
+      </viewerContribution>
+      <viewerContribution
+         id="php.editor.ruler.breakpointActions"            
+         targetID="com.aptana.editor.php.RulerContext">
+         <action
+	         class="com.aptana.debug.php.ui.actions.breakpoints.PHPBreakpointPropertiesRulerActionDelegate"
+	         id="com.aptana.debug.php.breakpoints.PHPBreakpointPropertiesRulerActionDelegate"
+	         label="Breakpoint P&amp;roperties..."
+	         menubarPath="group.properties">
+	     </action>
       </viewerContribution>
       <viewerContribution
             id="php.editor.menuActions"            

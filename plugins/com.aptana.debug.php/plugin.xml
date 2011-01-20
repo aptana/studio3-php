@@ -25,13 +25,8 @@
 		       <action
 		         label="Disable Breakpoint"
 		         class="org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
-		         menubarPath="additions"
+		         menubarPath="debug"
 		         id="com.aptana.debug.php.breakpoints.toggleBreakpointAction">
-            <enablement>
-               <objectClass
-                     name="org.eclipse.debug.core.model.Breakpoint">
-               </objectClass>
-            </enablement>
 		       </action>
       </viewerContribution>
    </extension>
