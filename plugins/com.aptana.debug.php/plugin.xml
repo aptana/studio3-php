@@ -17,4 +17,22 @@
          </action>
       </editorContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="com.aptana.debug.php.breakpoints"
+            targetID="com.aptana.editor.php.RulerContext">
+		       <action
+		         label="Disable Breakpoint"
+		         class="org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
+		         menubarPath="additions"
+		         id="com.aptana.debug.php.breakpoints.toggleBreakpointAction">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.debug.core.model.Breakpoint">
+               </objectClass>
+            </enablement>
+		       </action>
+      </viewerContribution>
+   </extension>
 </plugin>

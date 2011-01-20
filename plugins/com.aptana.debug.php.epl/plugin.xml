@@ -971,12 +971,6 @@ ntribution>
           id="org.eclipse.php.internal.debug.ui.console.PHPConsoleListener">
     </listener>
  </extension>
- <extension
-       point="org.eclipse.help.contexts">
-    <contexts
-          file="contexts.xml">
-    </contexts>
- </extension>
  <extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
     <launchConfigurationTabGroup
       id="org.eclipse.php.server.ui.launchConfigurationTabGroup"
