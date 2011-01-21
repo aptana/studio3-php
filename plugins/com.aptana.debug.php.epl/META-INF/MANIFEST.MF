@@ -26,14 +26,17 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.ui;bundle-version="3.0.0",
  com.aptana.editor.common;bundle-version="3.0.0",
  com.aptana.core;bundle-version="3.0.0",
- com.aptana.parsing;bundle-version="3.0.0"
+ com.aptana.parsing;bundle-version="3.0.0",
+ com.aptana.editor.html;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.debug.php.core,
  com.aptana.debug.php.core.daemon;uses:="org.eclipse.core.runtime,org.eclipse.ui",
  com.aptana.debug.php.core.preferences,
  com.aptana.debug.php.epl;uses:="org.eclipse.core.runtime,org.eclipse.ui.plugin,org.osgi.framework",
- com.aptana.debug.php.ui.breakpoint,
+ com.aptana.debug.php.ui.actions,
+ com.aptana.debug.php.ui.actions.breakpoints,
+ com.aptana.debug.php.ui.display,
  com.aptana.debug.php.ui.hover,
  com.aptana.debug.php.ui.launching,
  com.aptana.debug.php.ui.pathMapper,

@@ -222,7 +222,7 @@ public class PHPDebugHover extends AbstractPHPTextHover
 	 * 
 	 * @return {@link IStackFrame}
 	 */
-	protected IStackFrame getFrame()
+	public static IStackFrame getFrame()
 	{
 		IAdaptable adaptable = DebugUITools.getDebugContext();
 		if (adaptable instanceof IStackFrame)

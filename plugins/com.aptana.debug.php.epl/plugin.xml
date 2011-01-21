@@ -560,6 +560,19 @@ ntribution>
                label="Watch"
                menubarPath="additions">
          </action>
+         <action
+               class="com.aptana.debug.php.ui.actions.InspectAction"
+               definitionId="com.aptana.debug.php.ui.command.Inspect"
+               enablesFor="+"
+               id="com.aptana.debug.php.ui.actions.inspect"
+               label="Inspect"
+               menubarPath="debug">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.ITextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <visibility>
             <systemProperty name="org.eclipse.php.debug.ui.activeDebugging" value="true" />
          </visibility>
@@ -807,7 +820,11 @@ ntribution>
             categoryId="org.eclipse.debug.ui.category.run"
             description="Run PHP Script"
             id="org.eclipse.php.deubg.ui.phpexeShortcut.run"
-            name="Run PHP Script"/>                                       
+            name="Run PHP Script"/>
+          <command
+            category="org.eclipse.debug.ui.category.run"
+            id="com.aptana.debug.php.ui.command.Inspect"
+            name="Inspect"/>                                  
    </extension>
     <extension
          point="org.eclipse.ui.bindings">
@@ -820,7 +837,12 @@ ntribution>
             commandId="org.eclipse.php.deubg.ui.phpexeShortcut.debug"
             contextId="org.eclipse.ui.globalScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M3+M2+D H"/>             
+            sequence="M3+M2+D H"/>
+      <key
+            commandId="com.aptana.debug.php.ui.command.Inspect"
+            contextId="com.aptana.editor.php.editorContext"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+M2+I"/>         
     </extension>   
    
 <!-- Editor -->
