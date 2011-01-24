@@ -1,12 +1,10 @@
 /**
- * Copyright (c) 2005-2008 Aptana, Inc.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html. If redistributing this code,
- * this entire header must remain intact.
- */
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.parser.nodes;
 
 import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
@@ -54,8 +52,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 		this.name = name.length() != 0 ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;
 		// this.endOffset = endOffset >= startOffset ? endOffset : startOffset;
-		this.start = startOffset;
-		this.end = endOffset >= startOffset ? endOffset : startOffset;
+		this.setLocation(startOffset, endOffset >= startOffset ? endOffset : startOffset);
 		this.modifiers = modifiers;
 	}
 
@@ -135,7 +132,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public void setEndOffset(int endOffset)
 	{
-		this.end = endOffset;
+		this.setLocation(this.getStart(), endOffset);
 		// Reset the name node
 		this.nameNode = null;
 	}
@@ -145,7 +142,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public void setStartOffset(int startOffset)
 	{
-		this.start = startOffset;
+		this.setLocation(startOffset, this.getEnd());
 		// Reset the name node
 		this.nameNode = null;
 	}
