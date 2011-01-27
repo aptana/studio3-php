@@ -112,7 +112,7 @@ import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
 import com.aptana.core.util.StringUtil;
-import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParser;
 import com.aptana.editor.php.internal.parser.nodes.PHPASTWrappingNode;
@@ -465,7 +465,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public int getEditorSpecificTabWidth()
 	{
-		return FormatterUtils.getEditorTabWidth(PHPEditorPlugin.getDefault().getPreferenceStore());
+		return FormatterUtils.getEditorTabWidth(PHPEplPlugin.getDefault().getPreferenceStore());
 	}
 
 	/* (non-Javadoc)
@@ -473,7 +473,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public boolean isEditorInsertSpacesForTabs()
 	{
-		return FormatterUtils.isInsertSpacesForTabs(PHPEditorPlugin.getDefault().getPreferenceStore());
+		return FormatterUtils.isInsertSpacesForTabs(PHPEplPlugin.getDefault().getPreferenceStore());
 	}
 
 	/**
