@@ -468,6 +468,14 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		return FormatterUtils.getEditorTabWidth(PHPEditorPlugin.getDefault().getPreferenceStore());
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.formatter.IScriptFormatter#isEditorInsertSpacesForTabs()
+	 */
+	public boolean isEditorInsertSpacesForTabs()
+	{
+		return FormatterUtils.isInsertSpacesForTabs(PHPEditorPlugin.getDefault().getPreferenceStore());
+	}
+
 	/**
 	 * Do the actual formatting of the PHP.
 	 * 
