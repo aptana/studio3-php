@@ -21,19 +21,18 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 /**
  * The page for setting the editor options for occurrences marking.
  */
-public final class PHPPreferencePage extends
-		CommonEditorPreferencePage {
+public final class PHPPreferencePage extends CommonEditorPreferencePage
+{
 
 	/**
-	 * HTMLPreferencePage
+	 * PHPPreferencePage
 	 */
 	public PHPPreferencePage()
 	{
 		super();
 		setDescription("Preferences for the Aptana PHP Editor");
-		setPreferenceStore( PHPEplPlugin.getDefault().getPreferenceStore());
+		setPreferenceStore(PHPEplPlugin.getDefault().getPreferenceStore());
 	}
-	
 
 	@Override
 	protected void createMarkOccurrenceOptions(Composite parent)
@@ -67,7 +66,7 @@ public final class PHPPreferencePage extends
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_STICKY_OCCURRENCES,
 				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_stickyOccurrences"), parent));
-		
-	}	
+
+	}
 
 }
