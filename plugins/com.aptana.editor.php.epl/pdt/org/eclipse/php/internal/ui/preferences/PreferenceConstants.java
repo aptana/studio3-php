@@ -13,7 +13,6 @@ package org.eclipse.php.internal.ui.preferences;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
-import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
@@ -521,8 +520,6 @@ public class PreferenceConstants {
 		// do more complicated stuff
 		// PHPProjectLayoutPreferencePage.initDefaults(store);
 		
-		//Tab Size Setting
-		store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 4);
 	}
 
 	public static String getEnabledPreferenceKey(String preferenceKey) {

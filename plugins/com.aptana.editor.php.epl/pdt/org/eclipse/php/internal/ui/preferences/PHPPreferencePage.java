@@ -11,16 +11,23 @@
  *******************************************************************************/
 package org.eclipse.php.internal.ui.preferences;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.php.internal.ui.PHPUIMessages;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.internal.editors.text.EditorsPlugin;
+import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
+import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.preferences.CommonEditorPreferencePage;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
  * The page for setting the editor options for occurrences marking.
  */
+@SuppressWarnings("restriction")
 public final class PHPPreferencePage extends CommonEditorPreferencePage
 {
 
@@ -67,6 +74,19 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_STICKY_OCCURRENCES,
 				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_stickyOccurrences"), parent));
 
+	}
+
+	@Override
+	protected IPreferenceStore getChainedEditorPreferenceStore()
+	{
+		return new ChainedPreferenceStore(new IPreferenceStore[] { PHPEplPlugin.getDefault().getPreferenceStore(),
+				CommonEditorPlugin.getDefault().getPreferenceStore(), EditorsPlugin.getDefault().getPreferenceStore() });
+	}
+
+	@Override
+	protected IEclipsePreferences getPluginPreferenceStore()
+	{
+		return new InstanceScope().getNode(PHPEplPlugin.PLUGIN_ID);
 	}
 
 }
