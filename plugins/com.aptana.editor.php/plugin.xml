@@ -78,6 +78,15 @@
             </and>
          </enabledWhen>
       </page>
+      <page
+            class="com.aptana.editor.php.internal.ui.preferences.PHPBuildpathPropertyPage"
+            id="com.aptana.editor.php.buildPathPropertyPage"
+            name="PHP Buildpath">
+         <filter
+               name="projectNature"
+               value="com.aptana.editor.php.phpNature">
+         </filter>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -86,6 +95,12 @@
             class="org.eclipse.php.internal.ui.preferences.PHPPreferencePage"
             id="com.aptana.editor.php.preference.PHPPreferencePage"
             name="PHP">
+      </page>
+      <page
+            category="com.aptana.editor.php.preference.PHPPreferencePage"
+            class="com.aptana.editor.php.internal.ui.preferences.PHPLibrariesPreferencePage"
+            id="com.aptana.editor.php.librariesPage"
+            name="Libraries">
       </page>
    </extension>
    <extension

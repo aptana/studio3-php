@@ -11,25 +11,38 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
- * @author Pavel Petrochenko
+ * Libraries manager.
+ * 
+ * @author Pavel Petrochenko, Shalom Gibly
  */
-@SuppressWarnings("deprecation")
 public final class LibraryManager
 {
 
-	private static final String USERLIBRARIES = "com.aptana.php.interpreters.libraries"; //$NON-NLS-1$
+	private static final String USERLIBRARIES = "com.aptana.editor.php.userLibraries"; //$NON-NLS-1$
+	private static final String LIBRARIES_TURNED_OFF = "com.aptana.editor.php.turnedOffLibraries"; //$NON-NLS-1$
 
-	private static final String LIBRARIES_TURNED_OFF = "com.aptana.php.interpreters.libraries.turnedOff"; //$NON-NLS-1$
+	private HashSet<ILibraryListener> listeners = new HashSet<ILibraryListener>();
 
+	private static LibraryManager instance;
+
+	private HashSet<String> turnedOff = new HashSet<String>();
+
+	private HashSet<UserLibrary> userLibraries = new HashSet<UserLibrary>();
+
+	/**
+	 * Constructor
+	 */
 	private LibraryManager()
 	{
-		// super("com.aptana.ide.php.interpreters.libraries");
-		String string = PHPEditorPlugin.getDefault().getPluginPreferences().getString(LIBRARIES_TURNED_OFF);
+		String string = readFromPreferences(LIBRARIES_TURNED_OFF);
 		if (string != null && string.length() > 0)
 		{
 			String[] split = string.split(","); //$NON-NLS-1$
@@ -38,7 +51,7 @@ public final class LibraryManager
 				turnedOff.add(split[a].trim());
 			}
 		}
-		String str = PHPEditorPlugin.getDefault().getPluginPreferences().getString(USERLIBRARIES);
+		String str = readFromPreferences(USERLIBRARIES);
 		if (str != null && str.length() != 0)
 		{
 			String[] split = str.split("\r"); //$NON-NLS-1$
@@ -49,6 +62,25 @@ public final class LibraryManager
 		}
 	}
 
+	/**
+	 * Returns an instance of the LibraryManager
+	 * 
+	 * @return {@link LibraryManager}
+	 */
+	public static synchronized LibraryManager getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new LibraryManager();
+		}
+		return instance;
+	}
+
+	/**
+	 * Set user libraries.
+	 * 
+	 * @param libraries
+	 */
 	public void setUserLibraries(UserLibrary[] libraries)
 	{
 		StringBuilder bld = new StringBuilder();
@@ -61,23 +93,14 @@ public final class LibraryManager
 		{
 			bld.deleteCharAt(bld.length() - 1);
 		}
-		PHPEditorPlugin.getDefault().getPluginPreferences().setValue(USERLIBRARIES, bld.toString());
+		saveToPreferences(USERLIBRARIES, bld.toString());
 		this.userLibraries = new HashSet<UserLibrary>(Arrays.asList(libraries));
-		PHPEditorPlugin.getDefault().savePluginPreferences();
 		for (ILibraryListener l : listeners)
 		{
 			l.userLibrariesChanged(libraries);
 		}
 
 	}
-
-	private HashSet<ILibraryListener> listeners = new HashSet<ILibraryListener>();
-
-	private static LibraryManager instance;
-
-	private HashSet<String> turnedOff = new HashSet<String>();
-
-	private HashSet<UserLibrary> userLibraries = new HashSet<UserLibrary>();
 
 	public void addLibraryListener(ILibraryListener libraryListener)
 	{
@@ -89,56 +112,24 @@ public final class LibraryManager
 		listeners.remove(libraryListener);
 	}
 
-	public static synchronized LibraryManager getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new LibraryManager();
-		}
-		return instance;
-	}
-
 	public boolean isTurnedOn(IPHPLibrary lib)
 	{
 		return !turnedOff.contains(lib.getId().trim());
 	}
 
-	public PHPLibrary[] getAll()
-	{
-		/*
-		 * TODO - Shalom: Hook the PHP libraries RegistryLazyObject[] all = super.getAll(); PHPLibrary[] result = new
-		 * PHPLibrary[all.length]; for (int a = 0; a < all.length; a++) { result[a] = (PHPLibrary) all[a]; }
-		 */
-		return new PHPLibrary[0];
-	}
-
 	public IPHPLibrary[] getAllLibraries()
 	{
-		/*
-		 * TODO - Shalom: Hook the PHP libraries RegistryLazyObject[] all = super.getAll(); IPHPLibrary[] result = new
-		 * IPHPLibrary[all.length+userLibraries.size()]; int a; for (a = 0; a < all.length; a++) { result[a] =
-		 * (PHPLibrary) all[a]; } for (UserLibrary l:userLibraries) { result[a++]=l; }
-		 */
-		return new PHPLibrary[0];
+		// TODO - Shalom: get pre-registered libraries that were contributed through an extesion point
+		return userLibraries.toArray(new IPHPLibrary[userLibraries.size()]);
 	}
 
-	public PHPLibrary getObject(String id)
-	{
-		// TODO - Shalom: Hook the PHP libraries
-		// return (PHPLibrary) super.getObject(id);
-		return (PHPLibrary) null;
-	}
-
-	/*
-	 * TODO - Shalom: Hook the PHP libraries
-	 * @Override protected RegistryLazyObject createObject( IConfigurationElement configurationElement) { return new
-	 * PHPLibrary(configurationElement); }
-	 */
 	public void setTurnedOff(Set<IPHPLibrary> turnedOff)
 	{
 		StringBuilder bld = new StringBuilder();
+		// Collect all the libraries that are currently turned on.
 		HashSet<IPHPLibrary> currentLibraries = new HashSet<IPHPLibrary>();
-		for (IPHPLibrary l : getAllLibraries())
+		IPHPLibrary[] libraries = getAllLibraries();
+		for (IPHPLibrary l : libraries)
 		{
 			if (l.isTurnedOn())
 			{
@@ -156,11 +147,13 @@ public final class LibraryManager
 		{
 			bld = bld.deleteCharAt(bld.length() - 1);
 		}
-		Preferences pluginPreferences = PHPEditorPlugin.getDefault().getPluginPreferences();
-		pluginPreferences.setValue(LIBRARIES_TURNED_OFF, bld.toString());
 		this.turnedOff = tn;
-		HashSet<PHPLibrary> newLibraries = new HashSet<PHPLibrary>();
-		for (PHPLibrary l : getAll())
+		// Save the 'off' libraries to the preferences.
+		saveToPreferences(LIBRARIES_TURNED_OFF, bld.toString());
+
+		// Collect the changes and notify the listeners
+		HashSet<IPHPLibrary> newLibraries = new HashSet<IPHPLibrary>();
+		for (IPHPLibrary l : libraries)
 		{
 			if (l.isTurnedOn())
 			{
@@ -169,7 +162,7 @@ public final class LibraryManager
 		}
 		HashSet<IPHPLibrary> added = new HashSet<IPHPLibrary>();
 		HashSet<IPHPLibrary> removed = new HashSet<IPHPLibrary>();
-		for (PHPLibrary l : newLibraries)
+		for (IPHPLibrary l : newLibraries)
 		{
 			if (!currentLibraries.contains(l))
 			{
@@ -193,8 +186,10 @@ public final class LibraryManager
 	}
 
 	/**
+	 * Returns an {@link IPHPLibrary} with a given ID.
+	 * 
 	 * @param id
-	 * @return library with a given id
+	 * @return Library with a given id; Null, if none is found.
 	 */
 	public IPHPLibrary getLibrary(String id)
 	{
@@ -209,4 +204,31 @@ public final class LibraryManager
 		return null;
 	}
 
+	/**
+	 * Save the libraries to the preferences.
+	 * 
+	 * @param key
+	 *            the preferences key
+	 * @param value
+	 *            The string value to save
+	 */
+	protected void saveToPreferences(String key, String value)
+	{
+		IEclipsePreferences prefs = new InstanceScope().getNode(PHPEditorPlugin.PLUGIN_ID);
+		prefs.put(key, value);
+		try
+		{
+			prefs.flush();
+		}
+		catch (BackingStoreException e)
+		{
+			PHPEditorPlugin.logError(e);
+		}
+	}
+
+	protected String readFromPreferences(String key)
+	{
+		IEclipsePreferences prefs = new InstanceScope().getNode(PHPEditorPlugin.PLUGIN_ID);
+		return prefs.get(key, StringUtil.EMPTY);
+	}
 }
