@@ -21,7 +21,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
 
 /**
- * WorkspaceSelectionDialog
+ * Workspace folder selection dialog
  * 
  * @author Denis Denisenko
  */

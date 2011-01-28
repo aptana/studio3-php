@@ -50,21 +50,11 @@ public class PHPBuildpathPropertyPage extends PropertyPage implements IWorkbench
 	}
 
 	/**
-	 * @see org.eclipse.jface.preference.PreferencePage#performApply()
-	 */
-	@Override
-	protected void performApply()
-	{
-		super.performApply();
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean performOk()
 	{
-
 		ProjectDependencies bp = new ProjectDependencies();
 		bps.fillResult(bp);
 		DependenciesManager.setDependencies((IProject) project, bp);
@@ -80,7 +70,7 @@ public class PHPBuildpathPropertyPage extends PropertyPage implements IWorkbench
 		ArrayList<IResource> ps = new ArrayList<IResource>();
 		ArrayList<File> fs = new ArrayList<File>();
 		bps.init(ps, fs);
-		performApply();
+		super.performDefaults();
 	}
 
 	/**

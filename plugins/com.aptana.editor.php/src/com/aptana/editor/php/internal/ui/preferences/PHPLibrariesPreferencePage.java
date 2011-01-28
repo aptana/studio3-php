@@ -127,9 +127,7 @@ public class PHPLibrariesPreferencePage extends PreferencePage implements IWorkb
 			{
 				PHPLibraryDialog libraryDialog = new PHPLibraryDialog(Display.getCurrent().getActiveShell(), null,
 						getContent());
-				int open2 = libraryDialog.open();
-				int open = open2;
-				if (open == Dialog.OK)
+				if (libraryDialog.open() == Dialog.OK)
 				{
 					UserLibrary result = libraryDialog.getResult();
 					newCheckList.add(result);
@@ -153,9 +151,7 @@ public class PHPLibrariesPreferencePage extends PreferencePage implements IWorkb
 				UserLibrary firstElement = (UserLibrary) ss.getFirstElement();
 				PHPLibraryDialog libraryDialog = new PHPLibraryDialog(Display.getCurrent().getActiveShell(),
 						firstElement, getContent());
-				int open2 = libraryDialog.open();
-				int open = open2;
-				if (open == Dialog.OK)
+				if (libraryDialog.open() == Dialog.OK)
 				{
 					newCheckList.remove(firstElement);
 					newCheckList.add(libraryDialog.getResult());
