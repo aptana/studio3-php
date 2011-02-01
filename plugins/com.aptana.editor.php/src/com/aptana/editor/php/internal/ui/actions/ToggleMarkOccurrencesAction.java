@@ -13,7 +13,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 
@@ -45,7 +44,8 @@ public class ToggleMarkOccurrencesAction extends TextEditorAction implements IPr
 	 */
 	public void run()
 	{
-		prefStore.setValue(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, isChecked());
+		prefStore.setValue(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES,
+				isChecked());
 	}
 
 	/*
@@ -94,7 +94,8 @@ public class ToggleMarkOccurrencesAction extends TextEditorAction implements IPr
 	 */
 	public void propertyChange(PropertyChangeEvent event)
 	{
-		if (event.getProperty().equals(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES))
+		if (event.getProperty().equals(
+				com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES))
 		{
 			setChecked(Boolean.valueOf(event.getNewValue().toString()).booleanValue());
 		}

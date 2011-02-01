@@ -19,7 +19,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPartService;
