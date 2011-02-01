@@ -8,7 +8,7 @@
 package com.aptana.editor.php.internal.parser;
 
 import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
@@ -17,7 +17,7 @@ import org.eclipse.jface.text.rules.Token;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class HeredocRule implements IRule
+public class HeredocRule implements IPredicateRule
 {
 
 	private IToken token;
@@ -29,6 +29,25 @@ public class HeredocRule implements IRule
 	public HeredocRule(IToken token)
 	{
 		this.token = token;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.rules.IPredicateRule#getSuccessToken()
+	 */
+	public IToken getSuccessToken()
+	{
+		return token;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.rules.IPredicateRule#evaluate(org.eclipse.jface.text.rules.ICharacterScanner, boolean)
+	 */
+	public IToken evaluate(ICharacterScanner scanner, boolean resume)
+	{
+		if (resume) {
+			return Token.UNDEFINED;
+		}
+		return evaluate(scanner);
 	}
 
 	/*
