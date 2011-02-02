@@ -674,4 +674,29 @@ public class ProjectBuildPath extends AbstractBuildPath
 	{
 		return 'P' + project.getName();
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof ProjectBuildPath)
+		{
+			return ((ProjectBuildPath) obj).project.equals(this.project);
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		return project.hashCode();
+	}
+
 }

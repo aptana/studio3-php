@@ -290,4 +290,29 @@ public class SingleFileBuildPath extends AbstractBuildPath
 	{
 		return null;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof SingleFileBuildPath)
+		{
+			return ((SingleFileBuildPath) obj).file.equals(this.file);
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		return file.hashCode();
+	}
+
 }

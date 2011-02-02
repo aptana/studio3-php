@@ -360,4 +360,28 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 	{
 		return 'W' + folder.getFullPath().toPortableString();
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof WorkspaceFolderBuildpath)
+		{
+			return ((WorkspaceFolderBuildpath) obj).folder.equals(this.folder);
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		return folder.hashCode();
+	}
 }
