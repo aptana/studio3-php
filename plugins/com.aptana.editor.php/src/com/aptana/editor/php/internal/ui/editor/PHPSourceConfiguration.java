@@ -10,6 +10,7 @@ import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_SINGLE_LINE_
 import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_DOUBLE;
 import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_SINGLE;
 import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_HEREDOC;
+import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_NOWDOC;
 import static com.aptana.editor.php.internal.core.IPHPConstants.PREFIX;
 
 import org.eclipse.jface.text.IDocument;
@@ -41,7 +42,8 @@ import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration
 {
 	public static final String[] CONTENT_TYPES = new String[] { DEFAULT, PHP_SINGLE_LINE_COMMENT,
-		PHP_DOC_COMMENT, PHP_MULTI_LINE_COMMENT, COMMAND, PHP_STRING_SINGLE, PHP_STRING_DOUBLE, PHP_HEREDOC };/* REGULAR_EXPRESSION */
+		PHP_DOC_COMMENT, PHP_MULTI_LINE_COMMENT, COMMAND, PHP_STRING_SINGLE, PHP_STRING_DOUBLE, PHP_HEREDOC,
+		PHP_NOWDOC };/* REGULAR_EXPRESSION */
 
 	private static final String[][] TOP_CONTENT_TYPES = new String[][] { { CONTENT_TYPE_PHP } };
 
@@ -52,7 +54,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_HEREDOC)))
+			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_HEREDOC), false)),
+			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_NOWDOC), true)),
 	};
 
 	private PHPCodeScanner codeScanner;
@@ -62,6 +65,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	private RuleBasedScanner singleQuotedStringScanner;
 	private RuleBasedScanner doubleQuotedStringScanner;
 	private RuleBasedScanner heredocScanner;
+	private RuleBasedScanner nowdocScanner;
 
 	private RuleBasedScanner phpDocCommentScanner;
 
@@ -191,6 +195,10 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		dr = new ThemeingDamagerRepairer(getHeredocScanner());
 		reconciler.setDamager(dr, PHP_HEREDOC);
 		reconciler.setRepairer(dr, PHP_HEREDOC);
+		
+		dr = new ThemeingDamagerRepairer(getNowdocScanner());
+		reconciler.setDamager(dr, PHP_NOWDOC);
+		reconciler.setRepairer(dr, PHP_NOWDOC);
 
 	}
 
@@ -261,6 +269,16 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			heredocScanner.setDefaultReturnToken(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
 		}
 		return heredocScanner;
+	}
+
+	private ITokenScanner getNowdocScanner()
+	{
+		if (nowdocScanner == null)
+		{
+			nowdocScanner = new RuleBasedScanner();
+			nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
+		}
+		return nowdocScanner;
 	}
 
 	private IToken getToken(String tokenName)
