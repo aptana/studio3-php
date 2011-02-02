@@ -31,13 +31,6 @@ public abstract class AbstractPHPTextHover implements ITextHover, ITextHoverExte
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.jface.text.ITextHoverExtension2#getHoverInfo2(org.eclipse.jface.text.ITextViewer,
-	 * org.eclipse.jface.text.IRegion)
-	 */
-	public abstract Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion);
-
-	/*
 	 * @see ITextHover#getHoverRegion(ITextViewer, int)
 	 */
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset)
