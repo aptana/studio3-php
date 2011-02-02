@@ -233,9 +233,9 @@
 				<html outfile="${coverageDirectory}/coverage.html" encoding="UTF-8" />
 				<xml outfile="${coverageDirectory}/coverage.xml" depth="method" />
 			</report>
-			<!-- Remove comments as per: http://issues.hudson-ci.org/browse/HUDSON-7586 -->
-			<replaceregexp file="${coverageDirectory}/coverage.xml" match="&lt;!-.*-&gt;" replace="" byline="true" />
 		</emma>
+		<!-- Remove comments as per: http://issues.hudson-ci.org/browse/HUDSON-7586 -->
+		<replaceregexp file="${coverageDirectory}/coverage.xml" match="&lt;!-.*-&gt;" replace="" byline="true" />
 		<antcall target="clean.after" />
 	</target>
 
