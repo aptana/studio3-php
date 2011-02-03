@@ -150,8 +150,6 @@ public class PHPDocHover extends AbstractPHPTextHover
 
 			if (control instanceof IInformationControlExtension4)
 			{
-				// String tooltipAffordanceString= fAdditionalInfoAffordance ?
-				// JavaPlugin.getAdditionalInfoAffordanceString() : EditorsUI.getTooltipAffordanceString();
 				((IInformationControlExtension4) control).setStatusText(EditorsUI.getTooltipAffordanceString());
 			}
 
