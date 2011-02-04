@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.php.internal.core.ast.nodes.ASTParser;
@@ -39,6 +41,7 @@ public final class PHPDocUtils
 	private static final String CLOSE_BRACKET = "}"; //$NON-NLS-1$
 	private static final String DOLLAR = "$"; //$NON-NLS-1$
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
+	private static final Pattern INPUT_TAG_PATTERN = Pattern.compile("<input[^>]*/>|<input\\s*>"); //$NON-NLS-1$
 
 	public static PHPDocBlock findFunctionPHPDocComment(IElementEntry entry, int offset)
 	{
@@ -598,7 +601,22 @@ public final class PHPDocUtils
 				}
 			}
 		}
+		// Specifically look for HTML 'input' tags and change their open and close chars. The HTML rendering does not
+		// remove them when the hover is rendered, introducing form inputs in the hover popup.
+		// @See https://aptana.lighthouseapp.com/projects/35272/tickets/1653
+		Matcher inputMatcher = INPUT_TAG_PATTERN.matcher(bld.toString());
+		int addedOffset = 0;
+		while (inputMatcher.find())
+		{
+			int start = inputMatcher.start();
+			int end = inputMatcher.end();
+			bld.replace(start + addedOffset, start + addedOffset + 1, "&lt;"); //$NON-NLS-1$
+			addedOffset += 2;
+			bld.replace(end + addedOffset, end + addedOffset + 1, "&gt;"); //$NON-NLS-1$
+			addedOffset += 4;
+		}
 		additionalInfo = bld.toString();
+
 		return additionalInfo;
 	}
 }
