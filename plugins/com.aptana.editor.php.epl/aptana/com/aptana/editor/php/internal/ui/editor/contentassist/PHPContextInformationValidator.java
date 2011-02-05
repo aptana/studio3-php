@@ -150,6 +150,9 @@ public class PHPContextInformationValidator implements IContextInformationValida
 			{
 				start++;
 				break;
+			} else {
+				// Avoid an infinite loop
+				break;
 			}
 		}
 

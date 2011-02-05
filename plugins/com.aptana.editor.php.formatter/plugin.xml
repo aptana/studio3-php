@@ -10,7 +10,8 @@
                description="%php_code_formatter_description"
                id="com.aptana.editor.phtml.formatterFactory"
                name="%php_code_formatter"
-               priority="10">
+               priority="10"
+               requiredActiveBundle="com.aptana.editor.php">
          </formatterFactory>
       </engineContribution>
       <engineContribution
@@ -20,7 +21,8 @@
                description="%php_code_formatter_description"
                id="com.aptana.editor.php.formatterFactory"
                name="%php_code_formatter"
-               priority="10">
+               priority="10"
+               requiredActiveBundle="com.aptana.editor.php">
          </formatterFactory>
       </engineContribution>
    </extension>

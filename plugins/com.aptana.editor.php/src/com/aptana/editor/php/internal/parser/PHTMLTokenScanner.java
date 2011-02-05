@@ -1,10 +1,10 @@
 /**
- * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
- * Please see the license.html included with this distribution for details.
- * Any modifications to this file must keep this entire header intact.
- */
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.parser;
 
 import java.util.ArrayList;
@@ -48,8 +48,8 @@ public class PHTMLTokenScanner extends HTMLTokenScanner
 		rules.add(wordRule);
 		
 		// Special heredoc and nowdoc rule
-		HeredocRule heredocRule = new HeredocRule(createToken(getTokenName(PHTMLTokens.PHP_HEREDOC)));
-		rules.add(heredocRule);
+		rules.add(new HeredocRule(createToken(getTokenName(PHTMLTokens.PHP_HEREDOC)), false));
+		rules.add(new HeredocRule(createToken(getTokenName(PHTMLTokens.PHP_HEREDOC)), true));
 
 		// Add rule for double quotes
 		rules.add(new MultiLineRule("\"", "\"", createToken(HTMLTokenType.DOUBLE_QUOTED_STRING.getScope()), '\\')); //$NON-NLS-1$ //$NON-NLS-2$

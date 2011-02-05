@@ -62,7 +62,7 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 	{
 		IEclipsePreferences store = new DefaultScope().getNode(PHPCodeFormatterPlugin.PLUGIN_ID);
 
-		store.put(FORMATTER_TAB_CHAR, CodeFormatterConstants.SPACE);
+		store.put(FORMATTER_TAB_CHAR, CodeFormatterConstants.EDITOR);
 		store.put(FORMATTER_TAB_SIZE, "4"); //$NON-NLS-1$
 		store.put(FORMATTER_INDENTATION_SIZE, "4"); //$NON-NLS-1$
 		store.putBoolean(WRAP_COMMENTS, false);
