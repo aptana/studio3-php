@@ -73,7 +73,6 @@ public class PHPBestMatchHover extends AbstractPHPTextHover
 	 * com.aptana.editor.php.internal.ui.hover.AbstractPHPTextHover#getHoverInfo2(org.eclipse.jface.text.ITextViewer,
 	 * org.eclipse.jface.text.IRegion)
 	 */
-	@Override
 	public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion)
 	{
 		checkHovers();

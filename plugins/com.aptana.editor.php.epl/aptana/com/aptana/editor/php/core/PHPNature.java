@@ -8,8 +8,8 @@
 package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
 
 import com.aptana.core.build.UnifiedBuilder;
 import com.aptana.core.util.ResourceUtil;
@@ -19,7 +19,7 @@ import com.aptana.core.util.ResourceUtil;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public final class PHPNature implements IProjectNature
+public final class PHPNature implements IPHPNature
 {
 
 	/**
@@ -33,6 +33,7 @@ public final class PHPNature implements IProjectNature
 	public static final String NATURE_ID = "com.aptana.editor.php.phpNature"; //$NON-NLS-1$
 
 	private IProject fProject;
+	private PHPProjectOptions options;
 
 	/**
 	 * Constructs a new PHPNature class.
@@ -88,5 +89,29 @@ public final class PHPNature implements IProjectNature
 	{
 		this.fProject = project;
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.IPHPNature#getOptions()
+	 */
+	public PHPProjectOptions getOptions()
+	{
+		if (options == null)
+		{
+			options = new PHPProjectOptions(fProject);
+			// boolean useProjectSpecificSettings = new
+			// ProjectScope(project).getNode(PhpOptionsPreferenceKeys.PHP_OPTION_NODE).getBoolean(PhpOptionsPreferenceKeys.PHP_OPTIONS_PER_PROJECT,
+			// false);
+			// if (!useProjectSpecificSettings) {
+			// PhpVerionsProjectOptionAdapter.setVersion(options,
+			// CorePreferenceConstants.getPreferenceStore().getString(CorePreferenceConstants.Keys.PHP_VERSION));
+			// }
+			// IEclipsePreferences projectProperties = new
+			// ProjectScope(project).getNode(PhpOptionsPreferenceKeys.PHP_OPTION_NODE);
+			// projectProperties.put
+			// projectProperties
+		}
+		return options;
 	}
 }
