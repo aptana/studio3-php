@@ -78,6 +78,15 @@
             </and>
          </enabledWhen>
       </page>
+      <page
+            class="com.aptana.editor.php.internal.ui.preferences.PHPBuildpathPropertyPage"
+            id="com.aptana.editor.php.buildPathPropertyPage"
+            name="%buildPath">
+         <filter
+               name="projectNature"
+               value="com.aptana.editor.php.phpNature">
+         </filter>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -86,6 +95,12 @@
             class="org.eclipse.php.internal.ui.preferences.PHPPreferencePage"
             id="com.aptana.editor.php.preference.PHPPreferencePage"
             name="PHP">
+      </page>
+      <page
+            category="com.aptana.editor.php.preference.PHPPreferencePage"
+            class="com.aptana.editor.php.internal.ui.preferences.PHPLibrariesPreferencePage"
+            id="com.aptana.editor.php.librariesPage"
+            name="%libraries">
       </page>
    </extension>
    <extension
@@ -119,18 +134,18 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="PHP source editing context"
+            description="%phpEditingContext"
             id="com.aptana.editor.php.editorContext"
-            name="PHP Source Editing"
+            name="%phpEditing"
             parentId="com.aptana.scripting.context">
       </context>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
       <category
-            description="PHP Source Actions"
+            description="%phpActions"
             id="com.aptana.editor.php.source.category"
-            name="PHP Source">
+            name="%phpSource">
       </category>
       <command
             categoryId="org.eclipse.ui.category.navigate"
@@ -140,9 +155,9 @@
       </command>
       <command
             categoryId="com.aptana.editor.php.source.category"
-            description="Toggle mark occurrences in the PHP editor"
+            description="%toggleMarkOccurrencesDesc"
             id="com.aptana.editor.php.toggleMarkOccurrences"
-            name="Mark Occurrences">
+            name="%markOccurrences">
       </command>
    </extension>
    <extension
@@ -167,7 +182,7 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="com.aptana.editor.php.presentation"
-            label="Aptana PHP Editor Presentation"
+            label="%phpEditorPresentationLabel"
             visible="false">
          <action
                allowLabelUpdate="true"
@@ -175,11 +190,11 @@
                disabledIcon="icons/full/dtool16/mark_occurrences.gif"
                icon="icons/full/etool16/mark_occurrences.gif"
                id="com.aptana.editor.php.toggleMarkOccurrences"
-               label="Mark Occurrences"
+               label="%markOccurrences"
                retarget="true"
                style="toggle"
                toolbarPath="org.eclipse.ui.edit.text.actionSet.presentation/Presentation"
-               tooltip="Mark Occurrences">
+               tooltip="%markOccurrences">
          </action>
       </actionSet>
    </extension>
@@ -254,7 +269,7 @@
    </extension>
    <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
 		<specification annotationType="com.aptana.php.ui.occurrences"
-			label="PHP Read Occurrences" icon="icons/full/obj16/searchm_obj.gif"
+			label="%phpReadOccurrencesLabel" icon="icons/full/obj16/searchm_obj.gif"
 			textPreferenceKey="PHPReadOccurrenceIndication" textPreferenceValue="false"
 			highlightPreferenceKey="PHPReadOccurrenceHighlighting"
 			highlightPreferenceValue="true" contributesToHeader="false"
@@ -274,7 +289,7 @@
 			colorPreferenceKey="PHPWriteOccurrenceIndicationColor"
 			colorPreferenceValue="240,216,168" highlightPreferenceKey="PHPWriteOccurrenceHighlighting"
 			highlightPreferenceValue="true" icon="icons/full/obj16/searchm_obj.gif"
-			label="PHP Write Occurrences" overviewRulerPreferenceKey="PHPWriteOccurrenceIndicationInOverviewRuler"
+			label="%phpWriteOccurrencesLabel" overviewRulerPreferenceKey="PHPWriteOccurrenceIndicationInOverviewRuler"
 			overviewRulerPreferenceValue="true" textPreferenceKey="PHPWriteOccurrenceIndication"
 			textPreferenceValue="false" textStylePreferenceKey="PHPWriteOccurrenceTextStyle"
 			textStylePreferenceValue="NONE"

@@ -122,7 +122,7 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	@Override
 	protected IContentAssistProcessor getContentAssistProcessor(ISourceViewer sourceViewer, String contentType)
 	{
-		AbstractThemeableEditor editor = this.getAbstractThemeableEditor();
+		AbstractThemeableEditor editor = this.getEditor();
 		if (editor != null)
 		{
 			if (contentType.startsWith(IPHPConstants.PREFIX))

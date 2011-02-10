@@ -519,6 +519,7 @@ public class PreferenceConstants {
 
 		// do more complicated stuff
 		// PHPProjectLayoutPreferencePage.initDefaults(store);
+		
 	}
 
 	public static String getEnabledPreferenceKey(String preferenceKey) {

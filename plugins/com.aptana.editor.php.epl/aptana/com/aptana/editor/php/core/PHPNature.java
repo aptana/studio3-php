@@ -1,10 +1,10 @@
 /**
- * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
- * Please see the license.html included with this distribution for details.
- * Any modifications to this file must keep this entire header intact.
- */
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.IProject;
@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.CoreException;
 
 import com.aptana.core.build.UnifiedBuilder;
 import com.aptana.core.util.ResourceUtil;
-import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
  * Aptana PHP Nature definition.
@@ -24,10 +23,15 @@ public final class PHPNature implements IProjectNature
 {
 
 	/**
+	 * Builder ID
+	 */
+	private static final String BUILDER_ID = "com.aptana.editor.php.aptanaPhpBuilder"; //$NON-NLS-1$
+
+	/**
 	 * The PHP Nature ID.
 	 */
-	public static final String NATURE_ID = PHPEditorPlugin.PLUGIN_ID + ".phpNature"; //$NON-NLS-1$
-	
+	public static final String NATURE_ID = "com.aptana.editor.php.phpNature"; //$NON-NLS-1$
+
 	private IProject fProject;
 
 	/**
@@ -53,7 +57,7 @@ public final class PHPNature implements IProjectNature
 	 */
 	public void configure() throws CoreException
 	{
-		ResourceUtil.addBuilder(getProject(), PHPEditorPlugin.BUILDER_ID);
+		ResourceUtil.addBuilder(getProject(), BUILDER_ID);
 		ResourceUtil.addBuilder(getProject(), UnifiedBuilder.ID);
 	}
 
@@ -63,7 +67,7 @@ public final class PHPNature implements IProjectNature
 	 */
 	public void deconfigure() throws CoreException
 	{
-		ResourceUtil.removeBuilder(getProject(), PHPEditorPlugin.BUILDER_ID);
+		ResourceUtil.removeBuilder(getProject(), BUILDER_ID);
 		ResourceUtil.removeBuilderIfOrphaned(getProject(), UnifiedBuilder.ID);
 	}
 

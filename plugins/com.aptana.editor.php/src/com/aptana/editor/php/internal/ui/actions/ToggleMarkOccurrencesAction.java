@@ -1,10 +1,10 @@
 /**
- * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
- * Please see the license.html included with this distribution for details.
- * Any modifications to this file must keep this entire header intact.
- */
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.ui.actions;
 
 import java.util.ResourceBundle;
@@ -13,7 +13,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 
@@ -45,7 +44,8 @@ public class ToggleMarkOccurrencesAction extends TextEditorAction implements IPr
 	 */
 	public void run()
 	{
-		prefStore.setValue(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, isChecked());
+		prefStore.setValue(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES,
+				isChecked());
 	}
 
 	/*
@@ -94,7 +94,8 @@ public class ToggleMarkOccurrencesAction extends TextEditorAction implements IPr
 	 */
 	public void propertyChange(PropertyChangeEvent event)
 	{
-		if (event.getProperty().equals(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES))
+		if (event.getProperty().equals(
+				com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES))
 		{
 			setChecked(Boolean.valueOf(event.getNewValue().toString()).booleanValue());
 		}

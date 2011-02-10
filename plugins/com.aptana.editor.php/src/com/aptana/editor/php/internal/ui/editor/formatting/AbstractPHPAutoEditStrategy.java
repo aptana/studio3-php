@@ -259,6 +259,10 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 					// Do a detailed scan lexeme-by-lexeme until we find a match.
 					// In case we can't find any, -1 is returned and will cause this loop to end.
 					lineStartOffset = getPervPairMatchOffset(pairToFind, currentLineInfo.getOffset(), document);
+					if (lineStartOffset > 0)
+					{
+						lineStartOffset++;
+					}
 				}
 			}
 		}
