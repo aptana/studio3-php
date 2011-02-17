@@ -300,7 +300,7 @@
    <extension
          point="org.eclipse.core.filebuffers.annotationModelCreation">
       <factory
-            class="com.aptana.editor.php.internal.ui.editor.ExternalAnnotationsFactory"
+            class="com.aptana.editor.common.ExternalFileAnnotationModelFactory"
             contentTypeId="com.aptana.contenttype.phtml.php">
       </factory>
    </extension>
