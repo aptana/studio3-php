@@ -318,6 +318,7 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 		return ModelUtils.getModule(testFile);
 	}
 
+	@SuppressWarnings("unused")
 	public static void compareProposals(OccurrenceLocation[] proposals, List<Integer> starts) throws Exception
 	{
 		// String[] lines = pdttFile.getExpected().split("\n");

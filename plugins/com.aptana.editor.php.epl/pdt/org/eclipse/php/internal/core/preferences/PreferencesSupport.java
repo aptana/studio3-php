@@ -21,7 +21,7 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
-@SuppressWarnings({"unchecked", "deprecation"})
+@SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
 public class PreferencesSupport {
 
 	private HashMap projectToScope;
