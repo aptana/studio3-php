@@ -13,6 +13,7 @@ package org.eclipse.php.internal.core.documentModel.phpElementData;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class PHPDocBlockImp implements IPHPDocBlock
 {
 
@@ -68,7 +69,6 @@ public class PHPDocBlockImp implements IPHPDocBlock
 		return tags;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Iterator getTags(int id)
 	{
 		if (tags == null)
@@ -122,7 +122,6 @@ public class PHPDocBlockImp implements IPHPDocBlock
 		return position > getStartPosition() && position <= getEndPosition();
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean hasTagOf(int id)
 	{
 		final Iterator tagsOf = getTags(id);

@@ -29,6 +29,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * 
  * @see http://wiki.php.net/rfc/closures
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class LambdaFunctionDeclaration extends Expression {
 
 	private boolean isReference;
@@ -69,7 +70,6 @@ public class LambdaFunctionDeclaration extends Expression {
 		PROPERTY_DESCRIPTORS = Collections.unmodifiableList(propertyList);
 	}
 
-	@SuppressWarnings("unchecked")
 	public LambdaFunctionDeclaration(int start, int end, AST ast,
 			List formalParameters, List lexicalVars, Block body,
 			final boolean isReference) {

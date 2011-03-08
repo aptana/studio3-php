@@ -31,6 +31,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  *   private function myFunction($a) { }
  * }
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ClassDeclaration extends TypeDeclaration {
 
 	public static final int MODIFIER_NONE = 0;
@@ -94,7 +95,6 @@ public class ClassDeclaration extends TypeDeclaration {
 		super(ast);
 	}
 
-	@SuppressWarnings("unchecked")
 	public ClassDeclaration(int start, int end, AST ast, int modifier, Identifier className, Expression superClass, List interfaces, Block body) {
 		this(start, end, ast, modifier, className, superClass, interfaces == null ? null : (Identifier[]) interfaces.toArray(new Identifier[interfaces.size()]), body);
 	}
@@ -271,7 +271,6 @@ public class ClassDeclaration extends TypeDeclaration {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final Block body = ASTNode.copySubtree(target, getBody());

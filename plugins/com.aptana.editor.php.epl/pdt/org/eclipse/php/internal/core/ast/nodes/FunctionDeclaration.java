@@ -30,6 +30,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * 
  * function foo(); -abstract function in class declaration
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class FunctionDeclaration extends Statement {
 
 	private boolean isReference;
@@ -83,7 +84,6 @@ public class FunctionDeclaration extends Statement {
 		}		
 	}
 
-	@SuppressWarnings("unchecked")
 	public FunctionDeclaration(int start, int end, AST ast, Identifier functionName, List formalParameters, Block body, final boolean isReference) {
 		this(start, end, ast, functionName, (FormalParameter[]) formalParameters.toArray(new FormalParameter[formalParameters.size()]), body, isReference);
 	}
@@ -302,7 +302,6 @@ public class FunctionDeclaration extends Statement {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == FORMAL_PARAMETERS_PROPERTY) {
 			return formalParameters();
@@ -319,7 +318,6 @@ public class FunctionDeclaration extends Statement {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final Block body = ASTNode.copySubtree(target, getBody());

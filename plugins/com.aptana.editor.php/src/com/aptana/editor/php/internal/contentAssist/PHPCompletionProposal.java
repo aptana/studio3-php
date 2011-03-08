@@ -174,6 +174,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 	 * @see com.aptana.editor.common.contentassist.CommonCompletionProposal#apply(org.eclipse.jface.text.ITextViewer,
 	 * char, int, int)
 	 */
+	@SuppressWarnings("unused")
 	@Override
 	public void apply(ITextViewer viewer, char trigger, int stateMask, int offset)
 	{

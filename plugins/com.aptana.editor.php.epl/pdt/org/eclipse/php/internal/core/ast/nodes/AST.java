@@ -100,6 +100,7 @@ import com.aptana.editor.php.internal.core.builder.BuildProblemReporter;
  * @see ASTNode
  * @since 2.0
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class AST {
 
 	/**
@@ -892,7 +893,6 @@ public class AST {
 	 * 
 	 * @since 3.0
 	 */
-	@SuppressWarnings("unchecked")
 	private static final Class[] AST_CLASS = new Class[] { AST.class };
 
 	/**
@@ -924,7 +924,6 @@ public class AST {
 	 *                concrete node type class
 	 * @since 3.0
 	 */
-	@SuppressWarnings("unchecked")
 	public ASTNode createInstance(Class nodeClass) {
 		if (nodeClass == null) {
 			throw new IllegalArgumentException();
@@ -969,7 +968,6 @@ public class AST {
 	 *                if <code>nodeType</code> is not a legal AST node type
 	 * @since 3.0
 	 */
-	@SuppressWarnings("unchecked")
 	public ASTNode createInstance(int nodeType) {
 		// nodeClassForType throws IllegalArgumentException if nodeType is bogus
 		Class nodeClass = ASTNode.nodeClassForType(nodeType);
@@ -1036,7 +1034,6 @@ public class AST {
 	 * @see Program#rewrite(IDocument, Map)
 	 * @since 3.0
 	 */
-	@SuppressWarnings("unchecked")
 	TextEdit rewrite(IDocument document, Map options) {
 		if (document == null) {
 			throw new IllegalArgumentException();

@@ -30,6 +30,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * default:
  *   statement2; 
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class SwitchCase extends Statement {
 
 	private Expression value;
@@ -74,7 +75,6 @@ public class SwitchCase extends Statement {
 		setIsDefault(isDefault);
 	}
 
-	@SuppressWarnings("unchecked")
 	public SwitchCase(int start, int end, AST ast, Expression value, List actions, boolean isDefault) {
 		this(start, end, ast, value, actions == null ? null : (Statement[]) actions.toArray(new Statement[actions.size()]), isDefault);
 	}
@@ -244,7 +244,6 @@ public class SwitchCase extends Statement {
 	 * @see org.eclipse.php.internal.core.ast.nodes.ASTNode#internalGetChildListProperty(org.eclipse.php.internal.core.ast.nodes.ChildListPropertyDescriptor)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == ACTIONS_PROPERTY) {
 			return actions();
@@ -254,7 +253,6 @@ public class SwitchCase extends Statement {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	ASTNode clone0(AST target) {
 		final boolean isDefault = isDefault();
 		final List actions = ASTNode.copySubtrees(target, actions());

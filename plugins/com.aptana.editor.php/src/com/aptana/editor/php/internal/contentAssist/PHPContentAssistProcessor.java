@@ -1520,6 +1520,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - proposal context.
 	 * @return list of entries or null.
 	 */
+	@SuppressWarnings("unused")
 	private static List<IElementEntry> computeSimpleIdentifierEntries(boolean reportedStackIsGlobal,
 			Set<String> globalImports, String name, boolean variableCompletion, IElementsIndex index,
 			boolean exactMatch, IModule module, boolean filter, ProposalContext proposalContext, String namespace,

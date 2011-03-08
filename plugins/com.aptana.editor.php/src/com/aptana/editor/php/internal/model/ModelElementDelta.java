@@ -296,7 +296,7 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 	 * Creates the nested delta deltas based on the affected element its delta, and the root of this delta tree. Returns
 	 * the root of the created delta tree.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes"})
 	protected ModelElementDelta createDeltaTree(IModelElement element, ModelElementDelta delta)
 	{
 		ModelElementDelta childDelta = delta;
@@ -349,7 +349,7 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 	 * bottom-up order. If the given element is not a descendant of the root of this tree, <code>null</code> is
 	 * returned.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private ArrayList getAncestors(IModelElement element)
 	{
 		IModelElement parent = element.getParent();
@@ -559,7 +559,7 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 	/**
 	 * @see IModelElementDelta
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	protected IModelElementDelta[] getChildrenOfType(int type)
 	{
 		int length = affectedChildren.length;

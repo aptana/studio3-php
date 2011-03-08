@@ -30,6 +30,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * Note: "This is".$not." a quote node",
  *       'This is $not a quote too'
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class Quote extends Expression {
 
 	public static final int QT_QUOTE = 0;
@@ -74,7 +75,6 @@ public class Quote extends Expression {
 		super(ast);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Quote(int start, int end, AST ast, List expressions, int type) {
 		this(start, end, ast, expressions == null ? null : (Expression[]) expressions.toArray(new Expression[expressions.size()]), type);
 	}
@@ -151,7 +151,6 @@ public class Quote extends Expression {
 		return this.expressions;
 	}
 	
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == EXPRESSIONS_PROPERTY) {
 			return expressions();
@@ -217,7 +216,6 @@ public class Quote extends Expression {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final int type = getQuoteType();

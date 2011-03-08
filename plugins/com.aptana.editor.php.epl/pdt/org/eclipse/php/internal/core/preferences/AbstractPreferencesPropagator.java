@@ -20,7 +20,7 @@ import java.util.List;
  * 
  * @author shalom
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class AbstractPreferencesPropagator {
 
 	protected HashMap listenersMap;

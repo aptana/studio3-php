@@ -25,6 +25,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * <pre>e.g.<pre> declare(ticks=1) { }
  * declare(ticks=2) { for ($x = 1; $x < 50; ++$x) {  }  }
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class DeclareStatement extends Statement {
 
 	private final ASTNode.NodeList<Identifier> directiveNames = new ASTNode.NodeList<Identifier>(DIRECTIVE_NAMES_PROPERTY);
@@ -70,7 +71,6 @@ public class DeclareStatement extends Statement {
 		setBody(action);
 	}
 
-	@SuppressWarnings("unchecked")
 	public DeclareStatement(int start, int end, AST ast, List directiveNames, List directiveValues, Statement action) {
 		this(start, end, ast, directiveNames == null ? null : (Identifier[]) directiveNames.toArray(new Identifier[directiveNames.size()]), directiveValues == null ? null : (Expression[]) directiveValues.toArray(new Expression[directiveValues.size()]), action);
 	}
@@ -236,7 +236,6 @@ public class DeclareStatement extends Statement {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == DIRECTIVE_NAMES_PROPERTY) {
 			return directiveNames();
@@ -256,7 +255,6 @@ public class DeclareStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List names = ASTNode.copySubtrees(target, this.directiveNames());

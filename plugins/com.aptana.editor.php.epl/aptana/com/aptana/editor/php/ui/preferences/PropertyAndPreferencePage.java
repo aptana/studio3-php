@@ -33,7 +33,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 /**
  * Base for project property and preference pages
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public abstract class PropertyAndPreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IWorkbenchPropertyPage {
 
 	public static String PHP_NATURE = "com.aptana.editor.php.phpNature"; //$NON-NLS-1$

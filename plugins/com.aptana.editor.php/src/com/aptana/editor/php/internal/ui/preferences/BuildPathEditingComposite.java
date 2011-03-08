@@ -362,7 +362,7 @@ public class BuildPathEditingComposite extends Composite
 	 * @param tableViewer
 	 * @param item
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private void addWithValidation(TableViewer tableViewer, Object item)
 	{
 		propertyPage.setMessage(null);

@@ -30,7 +30,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * Viewers showing error ticks should register as listener to
  * this type.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ProblemMarkerManager implements IResourceChangeListener, IAnnotationModelListener {
 
 	/**

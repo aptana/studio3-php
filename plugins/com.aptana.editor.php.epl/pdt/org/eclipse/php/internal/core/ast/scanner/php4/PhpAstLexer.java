@@ -32,7 +32,7 @@ import org.eclipse.php.internal.core.PHPVersion;
  * on 12/2/10 4:56 PM from the specification file
  * <tt>ast_scanner.flex</tt>
  */
-@SuppressWarnings({"unchecked", "nls", "unused"})
+@SuppressWarnings({"unchecked", "nls", "unused", "rawtypes"})
 public class PhpAstLexer implements org.eclipse.php.internal.core.ast.scanner.AstLexer {
 
   /** This character denotes the end of file */

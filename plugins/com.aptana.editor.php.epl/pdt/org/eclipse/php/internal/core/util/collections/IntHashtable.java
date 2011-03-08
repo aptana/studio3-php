@@ -27,7 +27,7 @@ import java.util.Set;
  * Hathtable with int keys
  *
  */
-@SuppressWarnings({"unchecked", "nls"})
+@SuppressWarnings({"unchecked", "nls", "rawtypes"})
 public class IntHashtable implements IntMap, Cloneable, Serializable {
 
 	static final long serialVersionUID = -3094290553755493591L;

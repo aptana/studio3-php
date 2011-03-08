@@ -52,7 +52,7 @@ public interface IScriptAnnotation
 	 * 
 	 * @return an iterator over the overlaid annotations
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	Iterator getOverlaidIterator();
 
 	/**

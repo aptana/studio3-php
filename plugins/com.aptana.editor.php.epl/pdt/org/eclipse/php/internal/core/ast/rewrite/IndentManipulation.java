@@ -29,7 +29,7 @@ import org.eclipse.text.edits.ReplaceEdit;
  * 
  * @since 3.2
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class IndentManipulation {
 
 	private IndentManipulation() {

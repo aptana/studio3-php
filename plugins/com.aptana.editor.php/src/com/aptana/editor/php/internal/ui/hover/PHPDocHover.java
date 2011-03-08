@@ -282,6 +282,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 	 *            the previous input, or <code>null</code>
 	 * @return the HTML hover info for the given element(s) or <code>null</code> if no information is available
 	 */
+	@SuppressWarnings("unused")
 	private static PHPDocumentationBrowserInformationControlInput getHoverInfo(Object[] elements, String constantValue,
 			PHPDocumentationBrowserInformationControlInput previousInput)
 	{

@@ -344,7 +344,7 @@ public final class PHPSearchEngine
 	/**
 	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getAllKnownTypes()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Collection<ITypeNode> getAllKnownTypes()
 	{
 		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex().getEntriesStartingWith(
@@ -357,7 +357,7 @@ public final class PHPSearchEngine
 		return (Collection) nodes;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private void processValue(ArrayList nodes, final IElementEntry e)
 	{
 		Object value = e.getValue();

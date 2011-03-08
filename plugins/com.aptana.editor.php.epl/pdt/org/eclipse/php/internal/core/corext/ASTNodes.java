@@ -77,7 +77,7 @@ public class ASTNodes {
 				|| type == ASTNode.INSTANCE_OF_EXPRESSION;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static ASTNode getParent(ASTNode node, Class parentClass) {
 		do {
 			node = node.getParent();

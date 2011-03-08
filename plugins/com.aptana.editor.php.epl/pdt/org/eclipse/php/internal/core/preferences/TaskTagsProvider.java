@@ -30,7 +30,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author shalom
  */
-@SuppressWarnings( { "unchecked", "deprecation" })
+@SuppressWarnings( { "unchecked", "deprecation", "rawtypes" })
 public class TaskTagsProvider
 {
 

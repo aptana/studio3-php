@@ -14,7 +14,7 @@ import org.eclipse.dltk.ast.Modifiers;
 /** CUP v0.10k generated parser.
   * @version Tue May 04 11:31:38 PDT 2010
   */
-@SuppressWarnings({"unchecked", "nls"})
+@SuppressWarnings({"nls", "rawtypes"})
 public class PhpAstParser extends AbstractASTParser {
 
   /** Default constructor. */
@@ -2457,7 +2457,7 @@ public class PhpAstParser extends AbstractASTParser {
 }
 
 /** Cup generated class to encapsulate user supplied action code.*/
-@SuppressWarnings({"unchecked", "nls", "unused"})
+@SuppressWarnings({"unchecked", "nls", "unused", "rawtypes"})
 class CUP$PhpAstParser$actions {
   private final PhpAstParser parser;
 

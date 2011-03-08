@@ -19,7 +19,7 @@ package org.eclipse.php.internal.core.ast.nodes;
  * @see org.eclipse.jdt.core.dom.ASTNode#getStructuralProperty(StructuralPropertyDescriptor)
  * @since 3.0
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public final class ChildListPropertyDescriptor extends StructuralPropertyDescriptor {
 	
 	/**

@@ -19,7 +19,7 @@ import org.eclipse.php.internal.core.ast.nodes.ASTNode;
 /**
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ListRewriteEvent extends RewriteEvent {
 
 	public final static int NEW = 1;

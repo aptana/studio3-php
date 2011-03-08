@@ -2099,7 +2099,7 @@ public class PhpAstParser extends AbstractASTParser {
 }
 
 /** Cup generated class to encapsulate user supplied action code.*/
-@SuppressWarnings({"unchecked", "nls", "unused"})
+@SuppressWarnings({"unchecked", "nls", "unused", "rawtypes"})
 class CUP$PhpAstParser$actions {
   private final PhpAstParser parser;
 

@@ -24,6 +24,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * <pre>e.g.<pre> 
  * `.\exec.sh`
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class BackTickExpression extends Expression {
 	
 	private ASTNode.NodeList<Expression> expressions = new ASTNode.NodeList<Expression>(EXPRESSIONS_PROPERTY);
@@ -123,7 +124,6 @@ public class BackTickExpression extends Expression {
 		return this.expressions;
 	}
 	
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == EXPRESSIONS_PROPERTY) {
 			return expressions();
@@ -140,7 +140,6 @@ public class BackTickExpression extends Expression {
 		return matcher.match(this, other);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List expressions = ASTNode.copySubtrees(target, expressions());

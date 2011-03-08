@@ -64,7 +64,7 @@ public class ListVariable extends VariableBase {
 		super(ast);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public ListVariable(int start, int end, AST ast, List variables) {
 		this(start, end, ast, variables == null ? null : (VariableBase[]) variables.toArray(new VariableBase[variables.size()]));
 	}
@@ -134,7 +134,7 @@ public class ListVariable extends VariableBase {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == VARIABLES_PROPERTY) {
 			return variables();
@@ -143,7 +143,7 @@ public class ListVariable extends VariableBase {
 		return super.internalGetChildListProperty(property);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	ASTNode clone0(AST target) {
 		final List variables = ASTNode.copySubtrees(target, variables());

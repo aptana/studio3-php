@@ -23,7 +23,7 @@ import org.eclipse.text.edits.TextEditGroup;
  * Stores all rewrite events, descriptions of events and knows which nodes are
  * copy or move sources or tracked.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class RewriteEventStore {
 
 	public static final class PropertyLocation {

@@ -690,7 +690,7 @@ public final class PHPBuiltins
 	 * @return A URL array holding the resources for the children of the root library.
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private static URL[] getBuiltinsURLs(String libraryPath) throws IOException
 	{
 		List<URL> urls = new ArrayList<URL>();

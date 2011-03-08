@@ -24,6 +24,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * <pre>e.g.<pre> echo "hello",
  * echo "hello", "world"
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class EchoStatement extends Statement {
 
 	private ASTNode.NodeList<Expression> expressions = new ASTNode.NodeList<Expression>(EXPRESSIONS_PROPERTY);
@@ -57,7 +58,6 @@ public class EchoStatement extends Statement {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public EchoStatement(int start, int end, AST ast, List expressions) {
 		this(start, end, ast, (Expression[]) expressions.toArray(new Expression[expressions.size()]));
 	}
@@ -123,7 +123,6 @@ public class EchoStatement extends Statement {
 		return this.expressions;
 	}
 	
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == EXPRESSIONS_PROPERTY) {
 			return expressions();
@@ -140,7 +139,6 @@ public class EchoStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List expressions = ASTNode.copySubtrees(target, this.expressions());

@@ -134,7 +134,7 @@ public abstract class AbstractCodeData implements CodeData {
 	 * @see IAdaptable#getAdapter(Class)
 	 * @see Platform#getAdapterManager()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

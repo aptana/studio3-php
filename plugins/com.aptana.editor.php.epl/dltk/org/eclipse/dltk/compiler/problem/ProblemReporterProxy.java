@@ -15,6 +15,7 @@ package org.eclipse.dltk.compiler.problem;
  * The {@link IProblemReporter} implementation which forwards all methods call
  * to the instance passed in the constructor.
  */
+@SuppressWarnings("rawtypes")
 public class ProblemReporterProxy implements IProblemReporter {
 
 	private final IProblemReporter original;
@@ -32,7 +33,6 @@ public class ProblemReporterProxy implements IProblemReporter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		if (original != null) {
 			return original.getAdapter(adapter);

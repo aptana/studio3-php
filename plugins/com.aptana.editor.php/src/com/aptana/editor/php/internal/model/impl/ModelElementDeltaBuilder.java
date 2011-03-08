@@ -29,7 +29,7 @@ import com.aptana.editor.php.internal.model.impl.env.SourceTypeElementInfo;
  * operation by locally caching the contents of the script element when it is created. When the method createDeltas() is
  * called, it creates a delta over the cached contents and the new contents.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ModelElementDeltaBuilder
 {
 	/**

@@ -63,7 +63,7 @@ public class ArrayCreation extends Expression {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public ArrayCreation(int start, int end, AST ast, List elements) {
 		this(start, end, ast, elements == null ? null : (ArrayElement[]) elements.toArray(new ArrayElement[elements.size()]));
 	}
@@ -138,7 +138,7 @@ public class ArrayCreation extends Expression {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	ASTNode clone0(AST target) {
 		final List elements = ASTNode.copySubtrees(target, elements());
 		final ArrayCreation result = new ArrayCreation(this.getStart(), this.getEnd(), target, elements);
@@ -153,7 +153,7 @@ public class ArrayCreation extends Expression {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == ELEMENTS_PROPERTY) {
 			return elements();

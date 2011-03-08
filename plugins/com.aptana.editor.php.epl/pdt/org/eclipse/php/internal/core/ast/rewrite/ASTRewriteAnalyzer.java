@@ -139,7 +139,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * generates text edits (text manipulation API) that describe the required code
  * changes.
  */
-@SuppressWarnings({"unchecked", "nls", "unused"})
+@SuppressWarnings({"unchecked", "nls", "unused", "rawtypes"})
 public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 	TextEdit currentEdit;

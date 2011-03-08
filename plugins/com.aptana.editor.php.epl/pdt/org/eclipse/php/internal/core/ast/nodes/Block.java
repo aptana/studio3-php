@@ -31,7 +31,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  *   statement2;
  * ,
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class Block extends Statement {
 
 	private final ASTNode.NodeList<Statement> statements = new ASTNode.NodeList<Statement>(STATEMENTS_PROPERTY);

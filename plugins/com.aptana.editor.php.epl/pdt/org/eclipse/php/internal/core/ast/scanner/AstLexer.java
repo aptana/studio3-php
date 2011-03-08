@@ -22,11 +22,11 @@ import org.eclipse.php.internal.core.PHPVersion;
  * 
  * @author moshe, 2006
  */
+@SuppressWarnings("rawtypes")
 public interface AstLexer extends Scanner {
 
 	public void resetCommentList();
 
-	@SuppressWarnings("unchecked")
 	public List getCommentList();
 
 	public void setUseAspTagsAsPhp(boolean useAspTagsAsPhp);

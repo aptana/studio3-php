@@ -288,7 +288,7 @@ public class ProblemAnnotation extends Annotation implements
 	/*
 	 * @see IJavaAnnotation#getOverlaidIterator()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Iterator getOverlaidIterator() {
 		if (fOverlaids != null)
 			return fOverlaids.iterator();

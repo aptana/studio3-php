@@ -269,7 +269,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	 * 
 	 * @return function parameters.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map<String, Set<Object>> getParameters()
 	{
 		if (parameterNames != null)

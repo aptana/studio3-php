@@ -26,7 +26,7 @@ import org.eclipse.text.edits.MultiTextEdit;
  * 
  * @author shalom
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class DefaultCodeFormattingProcessor extends AbstractVisitor implements
 		ICodeFormattingProcessor {
 	private final Map options;

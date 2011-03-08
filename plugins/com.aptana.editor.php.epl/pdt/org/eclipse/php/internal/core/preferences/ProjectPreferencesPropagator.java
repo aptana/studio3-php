@@ -28,6 +28,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author shalom
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ProjectPreferencesPropagator extends AbstractPreferencesPropagator {
 
 	private IProject project;
@@ -91,7 +92,6 @@ public class ProjectPreferencesPropagator extends AbstractPreferencesPropagator 
 	 * @return The list of listeners assigned for the key, or null if non
 	 *         exists.
 	 */
-	@SuppressWarnings("unchecked")
 	public List removePropagatorListeners(String preferencesKey) {
 		return (List) listenersMap.remove(preferencesKey);
 	}
@@ -111,7 +111,6 @@ public class ProjectPreferencesPropagator extends AbstractPreferencesPropagator 
 		notifyEvent(event.getKey(), event.getOldValue(), event.getNewValue());
 	}
 
-	@SuppressWarnings("unchecked")
 	private void notifyEvent(String key, Object oldValue, Object newValue) {
 		List listeners = getPropagatorListeners(key);
 		if (listeners != null) {

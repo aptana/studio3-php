@@ -26,6 +26,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  * global ${foo()->bar()},
  * global $$a 
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class GlobalStatement extends Statement {
 
 	private final ASTNode.NodeList<Variable> variables = new ASTNode.NodeList<Variable>(VARIABLES_PROPERTY);
@@ -59,7 +60,6 @@ public class GlobalStatement extends Statement {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public GlobalStatement(int start, int end, AST ast, List variables) {
 		this(start, end, ast, variables == null ? null : (Variable[]) variables.toArray(new Variable[variables.size()]));
 	}
@@ -135,7 +135,6 @@ public class GlobalStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List variables = ASTNode.copySubtrees(target, variables());
@@ -148,7 +147,6 @@ public class GlobalStatement extends Statement {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	@SuppressWarnings("unchecked")
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */

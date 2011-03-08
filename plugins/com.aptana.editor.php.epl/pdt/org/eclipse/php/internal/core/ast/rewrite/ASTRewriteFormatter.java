@@ -33,7 +33,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
  * 
  * @author shalom (based on JDT code)
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings({"unused", "rawtypes"})
 /* package */final class ASTRewriteFormatter {
 
 	// TODO - Need a code cleanup

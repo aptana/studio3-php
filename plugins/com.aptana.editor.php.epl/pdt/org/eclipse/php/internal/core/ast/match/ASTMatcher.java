@@ -102,7 +102,7 @@ public class ASTMatcher {
 	 *         <code>ASTNode.subtreeMatch</code>
 	 * @see ASTNode#subtreeMatch(ASTMatcher matcher, Object other)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public final boolean safeSubtreeListMatch(Collection list1, Collection list2) {
 		int size1 = list1.size();
 		int size2 = list2.size();
@@ -741,7 +741,7 @@ public class ASTMatcher {
 				node.getVariable(), o.getVariable()));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean match(Program node, Object other) {
 		if (!(other instanceof Program)) {
 			return false;

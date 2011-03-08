@@ -12,7 +12,7 @@ package org.eclipse.php.internal.core.documentModel.phpElementData;
 
 import java.util.HashMap;
 
-@SuppressWarnings( { "unchecked", "nls" })
+@SuppressWarnings( { "unchecked", "nls", "rawtypes" })
 public class BasicPHPDocTag implements IPHPDocTag
 {
 

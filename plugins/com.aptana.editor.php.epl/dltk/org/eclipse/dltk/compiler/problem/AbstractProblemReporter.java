@@ -17,7 +17,7 @@ package org.eclipse.dltk.compiler.problem;
  */
 public abstract class AbstractProblemReporter implements IProblemReporter {
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

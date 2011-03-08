@@ -35,7 +35,7 @@ import com.aptana.editor.php.core.typebinding.IBinding;
  * @author Modhe S., Roy G. ,2007
  * </p>
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class ASTNode implements Visitable {
 
 	/**

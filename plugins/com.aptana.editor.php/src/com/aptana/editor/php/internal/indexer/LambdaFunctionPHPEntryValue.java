@@ -257,7 +257,7 @@ public class LambdaFunctionPHPEntryValue extends AbstractPHPEntryValue implement
 	 * 
 	 * @return function parameters.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map<String, Set<Object>> getParameters()
 	{
 		if (parameterNames != null)

@@ -28,6 +28,7 @@ import org.eclipse.php.internal.core.ast.visitor.Visitor;
  *use \MyProject\Sub\Level as MyAlias;
  *use \MyProject\Sub\Level as MyAlias, MyNamespace as OtherAlias, MyOtherNamespace;
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class UseStatement extends Statement {
 
 	private final ASTNode.NodeList<UseStatementPart> parts = new ASTNode.NodeList<UseStatementPart>(PARTS_PROPERTY);
@@ -54,7 +55,6 @@ public class UseStatement extends Statement {
 		super(ast);
 	}	
 	
-	@SuppressWarnings("unchecked")
 	public UseStatement(int start, int end, AST ast, List parts) {
 		super(start, end, ast);
 
@@ -132,7 +132,6 @@ public class UseStatement extends Statement {
 		return this.parts;
 	}
 	
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == PARTS_PROPERTY) {
 			return parts();
@@ -149,7 +148,6 @@ public class UseStatement extends Statement {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final List parts = ASTNode.copySubtrees(target, parts());
