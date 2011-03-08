@@ -4,7 +4,7 @@
       label="%featureName"
       version="3.0.0.qualifier"
       provider-name="%providerName"
-      plugin="com.aptana.branding">
+      plugin="com.aptana.editor.php">
 
    <description url="http://www.aptana.com">
       %description
