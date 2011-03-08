@@ -21,7 +21,7 @@ import java.util.Properties;
 
 import org.eclipse.osgi.util.NLS;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class Messages {
 	private static class MessagesProperties extends Properties {
 

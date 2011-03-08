@@ -14,7 +14,7 @@ import org.eclipse.dltk.ast.Modifiers;
 /** CUP v0.10k generated parser.
   * @version Wed Jul 22 14:58:37 PDT 2009
   */
-@SuppressWarnings({"unchecked", "nls"})
+@SuppressWarnings({"rawtypes", "nls"})
 public class PhpAstParser extends AbstractASTParser {
 
   /** Default constructor. */

@@ -288,7 +288,6 @@ public class LambdaFunctionDeclaration extends Expression {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
-	@SuppressWarnings("unchecked")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == FORMAL_PARAMETERS_PROPERTY) {
 			return formalParameters();
@@ -308,7 +307,6 @@ public class LambdaFunctionDeclaration extends Expression {
 		return matcher.match(this, other);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	ASTNode clone0(AST target) {
 		final Block body = ASTNode.copySubtree(target, getBody());

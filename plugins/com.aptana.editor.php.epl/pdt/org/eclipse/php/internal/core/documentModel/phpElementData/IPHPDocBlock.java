@@ -12,7 +12,7 @@ package org.eclipse.php.internal.core.documentModel.phpElementData;
 
 import java.io.Serializable;
 import java.util.Iterator;
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public interface IPHPDocBlock extends Serializable, IPHPDoc {
 
 	int FILE_DOCBLOCK = 0;

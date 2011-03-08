@@ -37,7 +37,7 @@ public class SourceModifier implements ISourceModifier {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public ReplaceEdit[] getModifications(String source) {
 		List result = new ArrayList();
 		int destIndentLevel = IndentManipulation.measureIndentUnits(

@@ -66,7 +66,7 @@ public class NamespaceDeclaration extends Statement {
 		super(ast);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public NamespaceDeclaration(int start, int end, AST ast,
 			NamespaceName name, Block body, boolean bracketed) {
 		super(start, end, ast);

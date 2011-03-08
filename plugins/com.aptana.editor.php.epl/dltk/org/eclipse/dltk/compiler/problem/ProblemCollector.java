@@ -43,7 +43,7 @@ public class ProblemCollector extends AbstractProblemReporter implements
 		return problems.isEmpty();
 	}
 
-	public Object getAdapter(@SuppressWarnings("unchecked") Class adapter) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		if (ITaskReporter.class.equals(adapter)
 				|| IProblemReporter.class.equals(adapter)) {
 			return this;

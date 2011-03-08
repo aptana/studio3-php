@@ -91,7 +91,7 @@ public class NamespaceName extends Identifier {
 		this.current = current;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes", "unused"})
 	public NamespaceName(int start, int end, AST ast, List segments,
 			boolean global, boolean current) {
 		super(start, end, ast, buildName((Identifier[]) segments
@@ -223,7 +223,7 @@ public class NamespaceName extends Identifier {
 	/*
 	 * (omit javadoc for this method) Method declared on ASTNode.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected ASTNode clone0(AST target) {
 		final List segments = ASTNode.copySubtrees(target, segments());
 		final boolean global = isGlobal();
@@ -263,7 +263,7 @@ public class NamespaceName extends Identifier {
 	/*
 	 * (omit javadoc for this method) Method declared on ASTNode.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == ELEMENTS_PROPERTY) {
 			return segments();
