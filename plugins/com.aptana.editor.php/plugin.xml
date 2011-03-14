@@ -82,10 +82,17 @@
             class="com.aptana.editor.php.internal.ui.preferences.PHPBuildpathPropertyPage"
             id="com.aptana.editor.php.buildPathPropertyPage"
             name="%buildPath">
-         <filter
-               name="projectNature"
-               value="com.aptana.editor.php.phpNature">
-         </filter>
+         <enabledWhen>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="com.aptana.editor.php.phpNature">
+               </test>
+            </and>
+         </enabledWhen>
       </page>
    </extension>
    <extension
