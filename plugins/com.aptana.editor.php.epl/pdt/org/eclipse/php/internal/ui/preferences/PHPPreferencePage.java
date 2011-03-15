@@ -37,7 +37,7 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 	public PHPPreferencePage()
 	{
 		super();
-		setDescription("Preferences for the Aptana PHP Editor");
+		setDescription(PHPUIMessages.getString("PHPPreferencePage.Title")); //$NON-NLS-1$
 		setPreferenceStore(PHPEplPlugin.getDefault().getPreferenceStore());
 	}
 
@@ -45,34 +45,34 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 	protected void createMarkOccurrenceOptions(Composite parent)
 	{
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markTypeOccurrences"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markTypeOccurrences"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_METHOD_OCCURRENCES,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markMethodOccurrences"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markMethodOccurrences"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_FUNCTION_OCCURRENCES,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markFunctionOccurrences"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markFunctionOccurrences"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_CONSTANT_OCCURRENCES,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markConstantOccurrences"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markConstantOccurrences"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_GLOBAL_VARIABLE_OCCURRENCES,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markGlobalVariableOccurrences"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markGlobalVariableOccurrences"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_LOCAL_VARIABLE_OCCURRENCES,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markLocalVariableOccurrences"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markLocalVariableOccurrences"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markMethodExitPoints"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markMethodExitPoints"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_IMPLEMENTORS,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markImplementors"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markImplementors"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_MARK_BREAK_CONTINUE_TARGETS,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markBreakContinueTargets"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_markBreakContinueTargets"), parent)); //$NON-NLS-1$
 
 		addField(new BooleanFieldEditor(PreferenceConstants.EDITOR_STICKY_OCCURRENCES,
-				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_stickyOccurrences"), parent));
+				PHPUIMessages.getString("MarkOccurrencesConfigurationBlock_stickyOccurrences"), parent)); //$NON-NLS-1$
 
 	}
 
