@@ -28,6 +28,7 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BE
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.PRESERVED_LINES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_ARITHMETIC_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_ARROW_OPERATOR;
@@ -125,7 +126,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	protected static final String[] NEW_LINES_POSITIONS = { NEW_LINES_BEFORE_CATCH_STATEMENT,
 			NEW_LINES_BEFORE_DO_WHILE_STATEMENT, NEW_LINES_BEFORE_ELSE_STATEMENT,
-			NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT };
+			NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT, NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS };
 
 	/**
 	 * Indentation constants
@@ -320,9 +321,9 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		}
 		catch (FormatterException e)
 		{
-			StatusLineMessageTimerManager.setErrorMessage(NLS.bind(
-					FormatterMessages.Formatter_formatterParsingErrorStatus, e.getMessage()), ERROR_DISPLAY_TIMEOUT,
-					true);
+			StatusLineMessageTimerManager.setErrorMessage(
+					NLS.bind(FormatterMessages.Formatter_formatterParsingErrorStatus, e.getMessage()),
+					ERROR_DISPLAY_TIMEOUT, true);
 		}
 		catch (Exception e)
 		{
@@ -441,7 +442,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		return FormatterUtils.getEditorTabWidth(PHPEplPlugin.getDefault().getPreferenceStore());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.formatter.IScriptFormatter#isEditorInsertSpacesForTabs()
 	 */
 	public boolean isEditorInsertSpacesForTabs()

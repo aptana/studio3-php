@@ -94,6 +94,11 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case AND:
 			case OR:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ARITHMETIC_OPERATOR);
+			case OR_LITERAL:
+			case AND_LITERAL:
+			case XOR_LITERAL:
+				// We need at least one space for the literal boolean operators
+				return Math.max(1, getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ARITHMETIC_OPERATOR));
 			case TILDE:
 			case NOT:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_UNARY_OPERATOR);
@@ -162,6 +167,11 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case AND:
 			case OR:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARITHMETIC_OPERATOR);
+			case OR_LITERAL:
+			case AND_LITERAL:
+			case XOR_LITERAL:
+				// We need at least one space for the literal boolean operators
+				return Math.max(1, getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ARITHMETIC_OPERATOR));
 			case TILDE:
 			case NOT:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_UNARY_OPERATOR);

@@ -44,6 +44,7 @@ public interface PHPFormatterConstants
 	String NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT = FORMATTER_ID + ".newline.before.if.in.elseif"; //$NON-NLS-1$
 	String NEW_LINES_BEFORE_CATCH_STATEMENT = FORMATTER_ID + ".newline.before.catch"; //$NON-NLS-1$
 	String NEW_LINES_BEFORE_DO_WHILE_STATEMENT = FORMATTER_ID + ".newline.before.dowhile"; //$NON-NLS-1$
+	String NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS = FORMATTER_ID + ".newline.between.array.creation.elements"; //$NON-NLS-1$
 
 	// Empty lines
 	String LINES_AFTER_FUNCTION_DECLARATION = FORMATTER_ID + ".line.after.function.declaration"; //$NON-NLS-1$

@@ -275,7 +275,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int declarationEndOffset = arrayCreation.getStart() + 5;
 		visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
 		List<ArrayElement> elements = arrayCreation.elements();
-		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements);
+		// It's possible to have an extra comma at the end of the array creation. This comma is not
+		// included in the elements given to us by the arrayCreation so we have to look for it by passing 'true'
+		// as the value of 'lookForExtraComma'.
+		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements,
+				TypePunctuation.ARRAY_COMMA, true);
 		return false;
 	}
 
@@ -437,7 +441,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// create a constructor node
 			List<Expression> ctorParams = classInstanceCreation.ctorParams();
-			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams);
+			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams,
+					TypePunctuation.COMMA, false);
 		}
 		// check and push a semicolon (if appears after the end of this instance creation)
 		// pushSemicolon(creationEnd, false, true);
@@ -471,7 +476,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the expression as if it's in a parentheses expression
 		List<ASTNode> expressionInList = new ArrayList<ASTNode>(1);
 		expressionInList.add(cloneExpression.getExpression());
-		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList);
+		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList, TypePunctuation.COMMA,
+				false);
 		return false;
 	}
 
@@ -610,8 +616,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(declareStatement, start, start + 7);
 		// push the parentheses with the names and the values that we have inside
 		int openParen = builder.locateCharForward(document, '(', start + 7);
-		int closeParen = builder.locateCharBackward(document, ')', (body != null) ? body.getStart() : declareStatement
-				.getEnd());
+		int closeParen = builder.locateCharBackward(document, ')',
+				(body != null) ? body.getStart() : declareStatement.getEnd());
 		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
@@ -640,7 +646,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(echoStatement, echoStart, echoStart + 4);
 		// push the expressions one at a time, with comma nodes between them.
 		List<Expression> expressions = echoStatement.expressions();
-		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions);
+		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions, TypePunctuation.COMMA, false);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = expressions.get(expressions.size() - 1).getEnd();
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
@@ -800,8 +806,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(WhileStatement whileStatement)
 	{
-		visitCommonLoopBlock(whileStatement, whileStatement.getStart() + 5, whileStatement.getBody(), whileStatement
-				.getCondition());
+		visitCommonLoopBlock(whileStatement, whileStatement.getStart() + 5, whileStatement.getBody(),
+				whileStatement.getCondition());
 		return false;
 	}
 
@@ -838,8 +844,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FunctionDeclaration functionDeclaration)
 	{
-		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getFunctionName(), functionDeclaration
-				.formalParameters(), functionDeclaration.getBody());
+		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getFunctionName(),
+				functionDeclaration.formalParameters(), functionDeclaration.getBody());
 		return false;
 	}
 
@@ -1046,7 +1052,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<VariableBase> variables = listVariable.variables();
 		int start = listVariable.getStart();
 		pushFunctionInvocationName(listVariable, start, start + 4);
-		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables);
+		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables, TypePunctuation.COMMA, false);
 		return false;
 	}
 
@@ -1109,8 +1115,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(StaticMethodInvocation staticMethodInvocation)
 	{
-		visitLeftRightExpression(staticMethodInvocation, staticMethodInvocation.getClassName(), staticMethodInvocation
-				.getMethod(), STATIC_INVOCATION);
+		visitLeftRightExpression(staticMethodInvocation, staticMethodInvocation.getClassName(),
+				staticMethodInvocation.getMethod(), STATIC_INVOCATION);
 		// note: we push the semicolon as part of the function-invocation that we have in this node.
 		return false;
 	}
@@ -1243,8 +1249,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int quoteType = quote.getQuoteType();
 		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC)
 		{
-			FormatterPHPHeredocNode heredocNode = new FormatterPHPHeredocNode(document, quote.getStart(), quote
-					.getEnd());
+			FormatterPHPHeredocNode heredocNode = new FormatterPHPHeredocNode(document, quote.getStart(),
+					quote.getEnd());
 			IFormatterContainerNode parentNode = builder.peek();
 			parentNode.addChild(heredocNode);
 		}
@@ -1336,8 +1342,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(StaticConstantAccess classConstantAccess)
 	{
-		visitLeftRightExpression(classConstantAccess, classConstantAccess.getClassName(), classConstantAccess
-				.getConstant(), TypeOperator.STATIC_INVOCATION.toString());
+		visitLeftRightExpression(classConstantAccess, classConstantAccess.getClassName(),
+				classConstantAccess.getConstant(), TypeOperator.STATIC_INVOCATION.toString());
 		return false;
 	}
 
@@ -1668,7 +1674,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(functionInvocation, functionName.getStart(), functionName.getEnd());
 		// push the parenthesis and the parameters (if exist)
 		List<Expression> invocationParameters = functionInvocation.parameters();
-		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters);
+		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters,
+				TypePunctuation.COMMA, false);
 	}
 
 	/**
@@ -1693,9 +1700,16 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param declarationEndOffset
 	 * @param expressionEndOffset
 	 * @param parameters
+	 * @param punctuationType
+	 *            A {@link TypePunctuation}. Usually this should be a COMMA, but it can also be something else to
+	 *            provide special formatting styles.
+	 * @param lookForExtraComma
+	 *            Indicate that the parameters list may end with an extra comma that is not included in them. This
+	 *            function will look for that comma if the value is true and will add it as a punctuation node in case
+	 *            it was found.
 	 */
 	private void pushParametersInParentheses(int declarationEndOffset, int expressionEndOffset,
-			List<? extends ASTNode> parameters)
+			List<? extends ASTNode> parameters, TypePunctuation punctuationType, boolean lookForExtraComma)
 	{
 		// in some cases, we get a ParethesisExpression inside a single parameter.
 		// for those cases, we skip the parentheses node push and go straight to the
@@ -1721,7 +1735,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 		if (parameters != null && parameters.size() > 0)
 		{
-			visitNodeLists(parameters, null, null, TypePunctuation.COMMA);
+			visitNodeLists(parameters, null, null, punctuationType);
+			if (lookForExtraComma)
+			{
+				// Look ahead to find any extra comma that we may have. If found, push it as a punctuation node.
+				int lastParamEnd = parameters.get(parameters.size() - 1).getEnd();
+				int nextNonWhitespace = getNextNonWhiteCharOffset(document, lastParamEnd);
+				if (document.charAt(nextNonWhitespace) == ',')
+				{
+					pushTypePunctuation(punctuationType, nextNonWhitespace);
+				}
+			}
 		}
 		if (pushParenthesisNode)
 		{
@@ -1986,7 +2010,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			declarationEnd = functionName.getEnd();
 		}
 		// push the function parameters
-		pushParametersInParentheses(declarationEnd, body.getStart(), parameters);
+		pushParametersInParentheses(declarationEnd, body.getStart(), parameters, TypePunctuation.COMMA, false);
 		// Then, push the body
 		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
 		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
@@ -2132,7 +2156,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 *            false, and a non-whitespace appear between the given offset and the semicolon, the method will
 	 *            <b>not</b> push a semicolon node.
 	 * @param isLineTerminating
-	 *            Indicates that this semicolon is a line terminating one.
+	 *            Indicates that this punctuation node is a line terminating one.
 	 */
 	private void findAndPushPunctuationNode(TypePunctuation type, int offsetToSearch, boolean ignoreNonWhitespace,
 			boolean isLineTerminating)

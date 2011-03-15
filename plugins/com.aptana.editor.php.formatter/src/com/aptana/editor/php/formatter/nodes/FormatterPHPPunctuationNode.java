@@ -64,6 +64,7 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 			case GOTO_COLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COLON);
 			case COMMA:
+			case ARRAY_COMMA:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_COMMAS);
 			case SEMICOLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_SEMICOLON);
@@ -91,6 +92,7 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 			case GOTO_COLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COLON);
 			case COMMA:
+			case ARRAY_COMMA:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_COMMAS);
 			case SEMICOLON:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_SEMICOLON);
@@ -110,6 +112,12 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 	@Override
 	protected boolean isAddingEndNewLine()
 	{
-		return forceLineTermination || super.isAddingEndNewLine();
+		if (forceLineTermination || super.isAddingEndNewLine())
+		{
+			return true;
+		}
+
+		return nodeType == TypePunctuation.ARRAY_COMMA
+				&& getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS);
 	}
 }

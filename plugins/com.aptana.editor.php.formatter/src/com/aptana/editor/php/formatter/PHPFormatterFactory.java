@@ -57,6 +57,7 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, NEW_LINES_BEFORE_DO_WHILE_STATEMENT),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, NEW_LINES_BEFORE_ELSE_STATEMENT),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, LINES_AFTER_FUNCTION_DECLARATION),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, LINES_AFTER_TYPE_DECLARATION),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, PRESERVED_LINES),

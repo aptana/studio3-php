@@ -29,6 +29,7 @@ public class NodeTypes
 		SEMICOLON(";"), //$NON-NLS-1$
 		FOR_SEMICOLON(";"), //$NON-NLS-1$
 		COMMA(","), //$NON-NLS-1$
+		ARRAY_COMMA(","), //$NON-NLS-1$
 		NAMESPACE_SEPARATOR("\\");//$NON-NLS-1$
 
 		String name;
@@ -75,8 +76,11 @@ public class NodeTypes
 		POSTFIX_DECREMENT("--"), //$NON-NLS-1$
 		PREFIX_DECREMENT("--"), //$NON-NLS-1$
 		OR("||"), //$NON-NLS-1$
+		OR_LITERAL("or"), //$NON-NLS-1$
 		AND("&&"), //$NON-NLS-1$
+		AND_LITERAL("and"), //$NON-NLS-1$
 		XOR("^"), //$NON-NLS-1$
+		XOR_LITERAL("xor"), //$NON-NLS-1$
 		BINARY_OR("|"), //$NON-NLS-1$
 		BINARY_AND("&"), //$NON-NLS-1$
 		OR_EQUAL("|="), //$NON-NLS-1$
@@ -127,7 +131,7 @@ public class NodeTypes
 		 */
 		public static TypeOperator getTypeOperator(String operationString)
 		{
-			return OPERATORS_MAP.get(operationString);
+			return OPERATORS_MAP.get(operationString.toLowerCase());
 		}
 	};
 }
