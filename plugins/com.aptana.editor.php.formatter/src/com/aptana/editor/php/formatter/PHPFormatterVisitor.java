@@ -1307,6 +1307,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			expression.accept(this);
 		}
+		// Check if the statement ends with a semicolon. If so, push it as a text node.
+		int end = returnStatement.getEnd();
+		if (document.charAt(end - 1) == ';')
+		{
+			visitTextNode(end - 1, end, true, 0);
+		}
 		return false;
 	}
 
