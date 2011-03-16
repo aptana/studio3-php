@@ -76,7 +76,7 @@ public class PHTMLParser extends CompositeParser
 		{
 			Symbol endTag = getCurrentSymbol();
 			ParseNode phpNode = new ParseNode(PHPMimeType.MIME_TYPE);
-			phpNode.setLocation(startTag.getStart(), endTag.getEnd());
+			phpNode.setLocation(startTag.getStart(), endTag.getEnd() - 1);
 			root.addChild(phpNode);
 		}
 	}

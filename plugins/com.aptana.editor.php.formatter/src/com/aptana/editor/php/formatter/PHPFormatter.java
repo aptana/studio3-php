@@ -242,10 +242,11 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.formatter.ui.IScriptFormatter#format(java.lang.String, int, int, int)
+	 * @see com.aptana.formatter.IScriptFormatter#format(java.lang.String, int, int, int, boolean,
+	 * org.eclipse.jface.text.formatter.IFormattingContext, java.lang.String)
 	 */
 	public TextEdit format(String source, int offset, int length, int indentationLevel, boolean isSelection,
-			IFormattingContext context) throws FormatterException
+			IFormattingContext context, String indentSufix) throws FormatterException
 	{
 		int offsetIncludedOpenTag = offset;
 		String input;
@@ -278,7 +279,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(),
 						ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
-				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection);
+				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection,
+						indentSufix);
 				if (output != null)
 				{
 					if (!input.equals(output))
@@ -464,7 +466,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * @throws Exception
 	 */
 	private String format(String input, IParseRootNode parseResult, int indentationLevel, int offset,
-			boolean isSelection) throws Exception
+			boolean isSelection, String indentSufix) throws Exception
 	{
 		final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 		final FormatterDocument document = createFormatterDocument(input, offset);
