@@ -95,7 +95,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#toExternalReference()
+		 * @see com.aptana.editor.php.search.IElementNode#toExternalReference()
 		 */
 		public ExternalReference toExternalReference()
 		{
@@ -117,7 +117,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#getModifiers()
+		 * @see com.aptana.editor.php.search.IElementNode#getModifiers()
 		 */
 		public int getModifiers()
 		{
@@ -125,7 +125,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#getName()
+		 * @see com.aptana.editor.php.search.IElementNode#getName()
 		 */
 		public String getName()
 		{
@@ -134,7 +134,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#getPath()
+		 * @see com.aptana.editor.php.search.IElementNode#getPath()
 		 */
 		public String getPath()
 		{
@@ -342,7 +342,7 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getAllKnownTypes()
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getAllKnownTypes()
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Collection<ITypeNode> getAllKnownTypes()
@@ -401,7 +401,7 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#addListener(com.aptana.ide.editor.php.indexer.IIndexChangeListener)
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#addListener(com.aptana.editor.php.indexer.IIndexChangeListener)
 	 */
 	public void addListener(IIndexChangeListener listener)
 	{
@@ -409,7 +409,7 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#removeListener(com.aptana.ide.editor.php.indexer.IIndexChangeListener)
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#removeListener(com.aptana.editor.php.indexer.IIndexChangeListener)
 	 */
 	public void removeListener(IIndexChangeListener listener)
 	{
@@ -417,7 +417,7 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getTypes(java.lang.String)
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getTypes(java.lang.String)
 	 */
 	public Collection<ITypeNode> getTypes(String name)
 	{
@@ -432,7 +432,7 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getAllKnownConstants()
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getAllKnownConstants()
 	 */
 	public Collection<IElementNode> getAllKnownConstants()
 	{
@@ -447,7 +447,7 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getAllKnownFunctions()
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getAllKnownFunctions()
 	 */
 	public Collection<IElementNode> getAllKnownFunctions()
 	{

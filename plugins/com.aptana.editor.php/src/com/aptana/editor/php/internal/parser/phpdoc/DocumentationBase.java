@@ -28,7 +28,7 @@ public abstract class DocumentationBase
 	private String userAgent = ""; //$NON-NLS-1$
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getName()
+	 * @see com.aptana.metadata.IDocumentation#getName()
 	 */
 	public String getName()
 	{
@@ -36,7 +36,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setName(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setName(java.lang.String)
 	 */
 	public void setName(String value)
 	{
@@ -44,7 +44,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getDescription()
+	 * @see com.aptana.metadata.IDocumentation#getDescription()
 	 */
 	public String getDescription()
 	{
@@ -52,7 +52,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setDescription(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setDescription(java.lang.String)
 	 */
 	public void setDescription(String value)
 	{
@@ -60,7 +60,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getRemarks()
+	 * @see com.aptana.metadata.IDocumentation#getRemarks()
 	 */
 	public String getRemarks()
 	{
@@ -68,7 +68,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setRemarks(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setRemarks(java.lang.String)
 	 */
 	public void setRemarks(String value)
 	{
@@ -76,7 +76,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getAuthor()
+	 * @see com.aptana.metadata.IDocumentation#getAuthor()
 	 */
 	public String getAuthor()
 	{
@@ -84,7 +84,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setAuthor(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setAuthor(java.lang.String)
 	 */
 	public void setAuthor(String value)
 	{
@@ -92,7 +92,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getVersion()
+	 * @see com.aptana.metadata.IDocumentation#getVersion()
 	 */
 	public String getVersion()
 	{
@@ -100,7 +100,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setVersion(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setVersion(java.lang.String)
 	 */
 	public void setVersion(String value)
 	{
@@ -108,7 +108,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getSees()
+	 * @see com.aptana.metadata.IDocumentation#getSees()
 	 */
 	public String[] getSees()
 	{
@@ -120,7 +120,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#addSee(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#addSee(java.lang.String)
 	 */
 	public void addSee(String value)
 	{
@@ -135,7 +135,7 @@ public abstract class DocumentationBase
 	}
 
 	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#getErrors()
+	// * @see com.aptana.metadata.IDocumentation#getErrors()
 	// */
 	// public ErrorMessage[] getErrors()
 	// {
@@ -148,7 +148,7 @@ public abstract class DocumentationBase
 	// }
 	//
 	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#clearErrors()
+	// * @see com.aptana.metadata.IDocumentation#clearErrors()
 	// */
 	// public void clearErrors()
 	// {
@@ -157,7 +157,7 @@ public abstract class DocumentationBase
 	// }
 	//
 	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#addError(com.aptana.ide.parsing.ErrorMessage)
+	// * @see com.aptana.metadata.IDocumentation#addError(com.aptana.parsing.ErrorMessage)
 	// */
 	// public void addError(ErrorMessage e)
 	// {
@@ -170,7 +170,7 @@ public abstract class DocumentationBase
 	// }
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getDocumentType()
+	 * @see com.aptana.metadata.IDocumentation#getDocumentType()
 	 */
 	public int getDocumentType()
 	{
@@ -178,7 +178,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setDocumentType(int)
+	 * @see com.aptana.metadata.IDocumentation#setDocumentType(int)
 	 */
 	public void setDocumentType(int type)
 	{
@@ -319,7 +319,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#addSDocLocation(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#addSDocLocation(java.lang.String)
 	 */
 	public void addSDocLocation(String value)
 	{
@@ -334,7 +334,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getSDocLocations()
+	 * @see com.aptana.metadata.IDocumentation#getSDocLocations()
 	 */
 	public String[] getSDocLocations()
 	{
@@ -346,7 +346,7 @@ public abstract class DocumentationBase
 	}
 
 	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#getExample()
+	// * @see com.aptana.metadata.IDocumentation#getExample()
 	// * @deprecated Use the array method instead
 	// */
 	// public String getExample()
@@ -355,7 +355,7 @@ public abstract class DocumentationBase
 	// }
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getExamples()
+	 * @see com.aptana.metadata.IDocumentation#getExamples()
 	 */
 	public String[] getExamples()
 	{
@@ -370,7 +370,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setExample(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setExample(java.lang.String)
 	 */
 	public void addExample(String value)
 	{

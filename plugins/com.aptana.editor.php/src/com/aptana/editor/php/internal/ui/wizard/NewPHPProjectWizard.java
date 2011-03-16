@@ -105,7 +105,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.ide.core.ui.wizards.BaseWizard#addExtensionPages()
+	 * @see com.aptana.core.ui.wizards.BaseWizard#addExtensionPages()
 	 */
 	protected void addExtensionPages()
 	{
@@ -312,7 +312,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.ide.core.ui.wizards.BaseWizard#getFileNamesToSelect()
+	 * @see com.aptana.core.ui.wizards.BaseWizard#getFileNamesToSelect()
 	 */
 	public String[] getFileNamesToSelect()
 	{
@@ -331,7 +331,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.ide.core.ui.wizards.BaseWizard#getFileToOpenOnFinish()
+	 * @see com.aptana.core.ui.wizards.BaseWizard#getFileToOpenOnFinish()
 	 */
 	public IFile getFileToOpenOnFinish()
 	{
@@ -343,9 +343,9 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 	}
 
 	/**
-	 * Returns the wizard's ID (com.aptana.ide.editor.php.wizards.PHPNewProjectWizard)
+	 * Returns the wizard's ID (com.aptana.editor.php.wizards.PHPNewProjectWizard)
 	 * 
-	 * @return com.aptana.ide.editor.php.wizards.PHPNewProjectWizard
+	 * @return com.aptana.editor.php.wizards.PHPNewProjectWizard
 	 */
 	public String getID()
 	{
@@ -353,7 +353,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 	}
 
 	/**
-	 * @see com.aptana.ide.core.ui.wizards.BaseWizard#createProjectDescription(java.lang.String,
+	 * @see com.aptana.core.ui.wizards.BaseWizard#createProjectDescription(java.lang.String,
 	 *      org.eclipse.core.runtime.IPath)
 	 */
 	protected IProjectDescription createProjectDescription(String name, IPath path)
@@ -377,7 +377,7 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.ide.core.ui.wizards.BaseWizard#performFinish()
+	 * @see com.aptana.core.ui.wizards.BaseWizard#performFinish()
 	 */
 	public boolean performFinish()
 	{

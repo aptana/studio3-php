@@ -31,7 +31,7 @@ public abstract class MemberElementInfo extends SourceRefElementInfo {
 
 	/**
 	 * @see org.eclipse.dltk.internal.compiler.env.IGenericType#getModifiers()
-	 * @see com.aptana.ide.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.IGenericMethod#getModifiers()
+	 * @see com.aptana.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.IGenericMethod#getModifiers()
 	 * @see org.eclipse.dltk.internal.compiler.env.IGenericField#getModifiers()
 	 */
 	public int getModifiers() {
@@ -39,7 +39,7 @@ public abstract class MemberElementInfo extends SourceRefElementInfo {
 	}
 	/**
 	 * @see org.eclipse.dltk.internal.compiler.env.ISourceType#getNameSourceEnd()
-	 * @see com.aptana.ide.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.ISourceMethod#getNameSourceEnd()
+	 * @see com.aptana.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.ISourceMethod#getNameSourceEnd()
 	 * @see org.eclipse.dltk.internal.compiler.env.ISourceField#getNameSourceEnd()
 	 */
 	public int getNameSourceEnd() {
@@ -47,7 +47,7 @@ public abstract class MemberElementInfo extends SourceRefElementInfo {
 	}
 	/**
 	 * @see org.eclipse.dltk.internal.compiler.env.ISourceType#getNameSourceStart()
-	 * @see com.aptana.ide.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.ISourceMethod#getNameSourceStart()
+	 * @see com.aptana.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.ISourceMethod#getNameSourceStart()
 	 * @see org.eclipse.dltk.internal.compiler.env.ISourceField#getNameSourceStart()
 	 */
 	public int getNameSourceStart() {

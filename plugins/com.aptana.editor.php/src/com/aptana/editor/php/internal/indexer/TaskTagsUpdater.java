@@ -172,7 +172,7 @@ public class TaskTagsUpdater
 				}
 				for (Task t : errors)
 				{
-					IMarker problemMarker = file.createMarker("com.aptana.ide.editor.php.task"); //$NON-NLS-1$
+					IMarker problemMarker = file.createMarker("com.aptana.editor.php.task"); //$NON-NLS-1$
 					problemMarker.setAttribute(IMarker.TRANSIENT, false);
 					problemMarker.setAttribute(IMarker.SEVERITY, t.getPriority());
 					problemMarker.setAttribute(IMarker.PRIORITY, t.getPriority());					

@@ -235,7 +235,7 @@ public class FunctionDocumentation
 
 	// /**
 	// * @throws IOException
-	// * @see com.aptana.ide.editor.php.phpdoc.parsing.DocumentationBase#read(java.io.DataInput)
+	// * @see com.aptana.editor.php.phpdoc.parsing.DocumentationBase#read(java.io.DataInput)
 	// */
 	// public void read(DataInput input) throws IOException
 	// {
@@ -280,7 +280,7 @@ public class FunctionDocumentation
 
 	// /**
 	// * @throws IOException
-	// * @see com.aptana.ide.editor.php.phpdoc.parsing.DocumentationBase#write(java.io.DataOutput)
+	// * @see com.aptana.editor.php.phpdoc.parsing.DocumentationBase#write(java.io.DataOutput)
 	// */
 	// public void write(DataOutput output) throws IOException
 	// {

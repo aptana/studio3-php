@@ -343,7 +343,7 @@ public class PropertyDocumentation extends DocumentationBase
 
 	// /**
 	// * @throws IOException
-	// * @see com.aptana.ide.editor.php.phpdoc.parsing.DocumentationBase#read(java.io.DataInput)
+	// * @see com.aptana.editor.php.phpdoc.parsing.DocumentationBase#read(java.io.DataInput)
 	// */
 	// public void read(DataInput input) throws IOException
 	// {
@@ -381,7 +381,7 @@ public class PropertyDocumentation extends DocumentationBase
 
 	// /**
 	// * @throws IOException
-	// * @see com.aptana.ide.editor.php.phpdoc.parsing.DocumentationBase#write(java.io.DataOutput)
+	// * @see com.aptana.editor.php.phpdoc.parsing.DocumentationBase#write(java.io.DataOutput)
 	// */
 	// public void write(DataOutput output) throws IOException
 	// {
@@ -437,7 +437,7 @@ public class PropertyDocumentation extends DocumentationBase
 	// }
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setExample(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setExample(java.lang.String)
 	 */
 	public void setExample(String value)
 	{
