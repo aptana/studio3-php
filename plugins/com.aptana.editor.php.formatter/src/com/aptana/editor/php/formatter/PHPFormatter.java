@@ -80,8 +80,8 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.formatter.FormattingContextProperties;
 import org.eclipse.jface.text.formatter.IFormattingContext;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org.eclipse.php.internal.core.ast.nodes.Program;
-import org.eclipse.php.internal.ui.preferences.PHPPreferencePage;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
@@ -156,8 +156,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	private static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
 	// Regex patterns
 	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
-	private static final Pattern PHP_COMMENTS_PATTERN = Pattern.compile("((?s)(/\\*.*?\\*/))|(//.*|#.*)");//$NON-NLS-1$
-	private static final Pattern COMMENTS_STRIPPING_PATTERN = Pattern.compile("\\s|\\*|#|//"); //$NON-NLS-1$
 
 	private String lineSeparator;
 
@@ -286,7 +284,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				{
 					if (!input.equals(output))
 					{
-						if (equalContent(input, output))
+						if (equalContent(ast, output))
 						{
 							// We match the output to all possible PHP open-tags and then trim it to remove it with any
 							// other white-space that appear before it.
@@ -346,57 +344,31 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	}
 
 	/**
-	 * @param input
-	 * @param output
-	 * @return
-	 */
-	private boolean equalContent(String input, String output)
-	{
-		// first, strip out all the comments from the input and the output.
-		// save those comments for later comparison.
-		int inputLength = input.length();
-		int outputLength = output.length();
-		StringBuilder inputBuffer = new StringBuilder(inputLength);
-		StringBuilder outputBuffer = new StringBuilder(outputLength);
-		StringBuilder inputComments = new StringBuilder();
-		StringBuilder outputComments = new StringBuilder();
-		Matcher inputCommentsMatcher = PHP_COMMENTS_PATTERN.matcher(input);
-		Matcher outputCommentsMatcher = PHP_COMMENTS_PATTERN.matcher(output);
-		int inputOffset = 0;
-		int outputOffset = 0;
-		while (inputCommentsMatcher.find())
-		{
-			inputComments.append(inputCommentsMatcher.group());
-			inputBuffer.append(input.subSequence(inputOffset, inputCommentsMatcher.start()));
-			inputOffset = inputCommentsMatcher.end() + 1;
-		}
-		if (inputOffset < inputLength)
-		{
-			inputBuffer.append(input.subSequence(inputOffset, inputLength));
-		}
-		while (outputCommentsMatcher.find())
-		{
-			outputComments.append(outputCommentsMatcher.group());
-			outputBuffer.append(output.subSequence(outputOffset, outputCommentsMatcher.start()));
-			outputOffset = outputCommentsMatcher.end() + 1;
-
-		}
-		if (outputOffset < outputLength)
-		{
-			outputBuffer.append(output.subSequence(outputOffset, outputLength));
-		}
-		return stripComment(inputComments.toString()).equals(stripComment(outputComments.toString()))
-				&& equalsIgnoreWhitespaces(inputBuffer.toString(), outputBuffer.toString());
-	}
-
-	/**
-	 * Remove any whitespace, '*', '//' or '#' from a comment string
+	 * Check if the formatter did not mess with the AST structure of the code.
 	 * 
-	 * @param inputComment
+	 * @param inputAST
+	 *            The pre-formatted AST (never null)
+	 * @param output
+	 *            The output string that the formatter generated.
+	 * @return true, if the new AST is equals to the original one; False, otherwise.
 	 */
-	private String stripComment(String comment)
+	private boolean equalContent(Program inputAST, String output)
 	{
-		return COMMENTS_STRIPPING_PATTERN.matcher(comment).replaceAll(StringUtil.EMPTY);
+		if (output == null)
+		{
+			return false;
+		}
+		output = output.trim();
+		PHPParser parser = (PHPParser) checkoutParser(PHPMimeType.MIME_TYPE);
+		Program outputAST = parser.parseAST(new StringReader(output));
+		checkinParser(parser);
+		if (outputAST == null)
+		{
+			// the inputAST is never null, so we can just return false here
+			return false;
+		}
+		ASTMatcher matcher = new ASTMatcher(true);
+		return matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot());
 	}
 
 	/**
