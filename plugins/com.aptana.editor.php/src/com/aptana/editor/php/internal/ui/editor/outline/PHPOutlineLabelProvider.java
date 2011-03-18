@@ -141,7 +141,7 @@ public class PHPOutlineLabelProvider extends LabelProvider
 		if (parseNode != null)
 		{
 			int modifiers = parseNode.getModifiers();
-			switch (parseNode.getType())
+			switch (parseNode.getNodeType())
 			{
 				case IPHPParseNode.BLOCK_NODE:
 				case IPHPParseNode.KEYWORD_NODE:
@@ -166,7 +166,6 @@ public class PHPOutlineLabelProvider extends LabelProvider
 				case IPHPParseNode.CLASS_NODE:
 					result = getClassNodeImage(modifiers);
 					break;
-
 				default:
 					result = getDefaultImage(element);
 					break;

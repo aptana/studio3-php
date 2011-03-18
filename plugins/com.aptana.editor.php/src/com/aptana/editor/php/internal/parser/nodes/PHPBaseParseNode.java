@@ -122,7 +122,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	/**
 	 * Returns the type of this node.
 	 */
-	public short getType()
+	public short getNodeType()
 	{
 		return nodeType;
 	}

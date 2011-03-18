@@ -146,7 +146,7 @@ public class ContentAssistCollectors
 											}
 											value = new VariablePHPEntryValue(varParseNode.getModifiers(), varParseNode
 													.isParameter(), varParseNode.isLocalVariable(), varParseNode
-													.isField(), varParseNode.getType(), varParseNode
+													.isField(), varParseNode.getNodeType(), varParseNode
 													.getStartingOffset(), namespace);
 											return value;
 										}

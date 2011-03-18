@@ -51,6 +51,11 @@ public interface IPHPParseNode extends IParseNode
 	 */
 	public static final short NAMESPACE_NODE = 4508;
 
+	/**
+	 * HTML_NODE
+	 */
+	public static final short HTML_NODE = 4509;
+
 	public void setDocumentation(IPHPDocBlock docInfo);
 
 	public IPHPDocBlock getDocumentation();
@@ -60,10 +65,10 @@ public interface IPHPParseNode extends IParseNode
 	public boolean isEmpty();
 
 	public void setEndOffset(int endOffset);
-	
+
 	public void setStartOffset(int startOffset);
 
 	public boolean containsOffset(int offset);
-	
+
 	void setNameNode(String name, int startOffset, int endOffset);
 }

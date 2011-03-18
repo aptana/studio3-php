@@ -54,8 +54,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(InLineHtml inLineHtml)
 	{
-		nodeBuilder.handlePHPEnd(inLineHtml.getStart(), -1);
-		nodeBuilder.handlePHPStart(inLineHtml.getEnd(), -1);
+		nodeBuilder.handleInlineHtml(inLineHtml.getStart(), inLineHtml.getEnd());
 		return super.visit(inLineHtml);
 	}
 
@@ -229,8 +228,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			}
 			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 			String segmentsString = stringBuilder.toString();
-			nodeBuilder.handleUse(segmentsString, alias != null ? alias.getName() : null, node.getStart(), node
-					.getEnd() - 1);
+			nodeBuilder.handleUse(segmentsString, alias != null ? alias.getName() : null, node.getStart(),
+					node.getEnd() - 1);
 		}
 		return super.visit(node);
 	}
@@ -263,8 +262,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			if (defaultValue != null && defaultValue.getType() == ASTNode.SCALAR)
 				defaultVal = ((Scalar) defaultValue).getStringValue();
 
-			nodeBuilder.handleFunctionParameter(type, vName, false, false, defaultVal, p.getStart(), p.getEnd(), p
-					.getEnd() - 1, -1);
+			nodeBuilder.handleFunctionParameter(type, vName, false, false, defaultVal, p.getStart(), p.getEnd(),
+					p.getEnd() - 1, -1);
 		}
 		Identifier functionName = functionDeclaration.getFunctionName();
 		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(

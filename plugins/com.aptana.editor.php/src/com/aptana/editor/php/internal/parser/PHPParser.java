@@ -153,8 +153,8 @@ public class PHPParser implements IParser
 		if (ast != null)
 		{
 
-			IParseRootNode root = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(), ast
-					.getEnd());
+			IParseRootNode root = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(),
+					ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
 			return root;
@@ -214,7 +214,7 @@ public class PHPParser implements IParser
 		 * @Override public boolean apply(ASTNode node) { System.out.println(node.toString()); return true; } };
 		 * ast.accept(astPrinter);
 		 */
-		NodeBuilder builderClient = new NodeBuilder();
+		NodeBuilder builderClient = new NodeBuilder(source);
 		ast.accept(new NodeBuildingVisitor(builderClient, source));
 		PHPBlockNode nodes = builderClient.populateNodes();
 		for (IParseNode child : nodes.getChildren())

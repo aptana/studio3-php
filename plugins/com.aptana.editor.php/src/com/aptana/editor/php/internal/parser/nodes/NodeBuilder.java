@@ -19,8 +19,15 @@ import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
+import com.aptana.editor.html.parsing.HTMLParseState;
+import com.aptana.editor.html.parsing.IHTMLParserConstants;
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.parsing.IParseState;
+import com.aptana.parsing.IParser;
+import com.aptana.parsing.IParserPool;
+import com.aptana.parsing.ParserPoolFactory;
 import com.aptana.parsing.ast.IParseNode;
+import com.aptana.parsing.ast.ParseNode;
 
 /**
  * @author Pavel Petrochenko
@@ -41,6 +48,7 @@ public class NodeBuilder
 	 */
 	private boolean collectVariables = false;
 	private boolean hasSyntaxErrors;
+	private String source;
 
 	public boolean hasSyntaxErrors()
 	{
@@ -50,8 +58,9 @@ public class NodeBuilder
 	/**
 	 * @param root
 	 */
-	public NodeBuilder(IPHPParseNode root)
+	public NodeBuilder(String source, IPHPParseNode root)
 	{
+		this.source = source;
 		this.current = root;
 		this.root = root;
 	}
@@ -59,8 +68,9 @@ public class NodeBuilder
 	/**
 	 * 
 	 */
-	public NodeBuilder()
+	public NodeBuilder(String source)
 	{
+		this.source = source;
 		current = new PHPBaseParseNode((short) 0, 0, 0, 0, EMPTY_STRING);
 		this.root = current;
 	}
@@ -71,9 +81,9 @@ public class NodeBuilder
 	 * @param collectVariables
 	 *            - whether to collect variables.
 	 */
-	public NodeBuilder(boolean collectVariables)
+	public NodeBuilder(String source, boolean collectVariables)
 	{
-		this();
+		this(source);
 		this.collectVariables = collectVariables;
 	}
 
@@ -172,8 +182,8 @@ public class NodeBuilder
 		current = pn;
 	}
 
-	public void handleClassVariablesDeclaration(String variables, int modifier, IPHPDocBlock docInfo, int startPosition,
-			int endPosition, int stopPosition)
+	public void handleClassVariablesDeclaration(String variables, int modifier, IPHPDocBlock docInfo,
+			int startPosition, int endPosition, int stopPosition)
 	{
 		PHPVariableParseNode pn = new PHPVariableParseNode(modifier, startPosition, endPosition, variables);
 		pn.setField(true);
@@ -252,6 +262,11 @@ public class NodeBuilder
 		phpStarts.add(new Integer(startOffset));
 	}
 
+	public void handlePHPEnd(int startOffset, int endOffset)
+	{
+		phpEnds.add(new Integer(startOffset));
+	}
+
 	public void handleStaticVar(String variableName)
 	{
 		PHPVariableParseNode pn = new PHPVariableParseNode(1, -1, -1, variableName);
@@ -266,10 +281,33 @@ public class NodeBuilder
 		PHPBlockNode bn = new PHPBlockNode(0, 0, "php"); //$NON-NLS-1$
 		for (int a = 0; a < current.getChildCount(); a++)
 		{
-			IParseNode pn = current.getChild(a);
-			bn.addChild(pn);
+			bn.addChild(current.getChild(a));
 		}
+		replaceHtmlNodes(bn);
 		return bn;
+	}
+
+	/**
+	 * Recursively go deeper into the nodes hierarchy and replace the PHP-HTML nodes with nodes that are generated using
+	 * the HTML parser
+	 * 
+	 * @param pn
+	 */
+	private void replaceHtmlNodes(IParseNode pn)
+	{
+		for (int i = 0; i < pn.getChildCount(); i++)
+		{
+			IParseNode child = pn.getChild(i);
+			if (child.getNodeType() == PHPBaseParseNode.HTML_NODE)
+			{
+				// Replace that node with nodes that we grab through an HTML parser.
+				insertHtmlNodes(pn, child, i);
+			}
+			else
+			{
+				replaceHtmlNodes(child);
+			}
+		}
 	}
 
 	/**
@@ -287,11 +325,6 @@ public class NodeBuilder
 		PHPIncludeNode node = new PHPIncludeNode(startPosition, endPosition, includeFileName, includingType);
 		node.setNameNode(includeFileName, startPosition, endPosition);
 		current.addChild(node);
-	}
-
-	public void handlePHPEnd(int startOffset, int endOffset)
-	{
-		phpEnds.add(new Integer(startOffset));
 	}
 
 	/**
@@ -372,5 +405,104 @@ public class NodeBuilder
 	public void handleNamespaceDeclarationEnd(NamespaceDeclaration namespaceDeclaration)
 	{
 		current = (IPHPParseNode) stack.pop();
+	}
+
+	/**
+	 * Handles an inline HTML content.
+	 * 
+	 * @param start
+	 * @param end
+	 */
+	public void handleInlineHtml(int start, int end)
+	{
+		handlePHPEnd(start, -1);
+		handlePHPStart(end, -1);
+		// Check if the last child of the current node is also a HTML node. If so, we should unify both to one node with
+		// a larger offset.
+		if (current.getChildCount() > 0 && current.getLastChild().getNodeType() == PHPBaseParseNode.HTML_NODE)
+		{
+			PHPBaseParseNode lastChild = (PHPBaseParseNode) current.getLastChild();
+			lastChild.setLocation(lastChild.getStart(), lastChild.getEnd() + (end - start));
+		}
+		else
+		{
+			// We temporarily insert that html node into the stack. This node will be popped and replaced with the real
+			// HTML nodes once we verify that we are no longer receiving new inline-html nodes from the PHP parser.
+			current.addChild(new PHPHTMLNode(start, end));
+		}
+	}
+
+	/**
+	 * Append the HTML nodes children into the PHP block node.
+	 * 
+	 * @param parent
+	 * @param htmlNode
+	 */
+	private void insertHtmlNodes(IParseNode parent, IParseNode htmlNode, int htmlNodeIndex)
+	{
+		IParseNode nodes = getHtmlNodes(htmlNode);
+		// Skip the root node and grab the children directly.
+		IParseNode[] htmlChildren = nodes.getChildren();
+		if (htmlChildren.length > 0)
+		{
+			IParseNode[] siblings = parent.getChildren();
+			IParseNode[] newChildren = new IParseNode[siblings.length + htmlChildren.length - 1];
+			// Copy up to the HTML node index (not including the node)
+			System.arraycopy(siblings, 0, newChildren, 0, htmlNodeIndex);
+			// Copy the new HTML children
+			System.arraycopy(htmlChildren, 0, newChildren, htmlNodeIndex, htmlChildren.length);
+			// Finally, copy the rest of the nodes that exist after the original HTML index
+			System.arraycopy(siblings, htmlNodeIndex + 1, newChildren, htmlNodeIndex + htmlChildren.length,
+					siblings.length - htmlNodeIndex - 1);
+			((ParseNode) parent).setChildren(newChildren);
+		}
+	}
+
+	/**
+	 * This method is called when the PHP nodes are populated. The method will replace any existing PHPHTMLNode that we
+	 * have in the stack with 'real' HTML nodes that we grab from the HTML parser.
+	 * 
+	 * @param htmlNode
+	 *            an {@link IParseNode} representing the HTML content.
+	 * @return The parse node for the HTML, as generated by the HTML parser.
+	 */
+	private IParseNode getHtmlNodes(IParseNode htmlNode)
+	{
+
+		try
+		{
+			IParserPool pool = ParserPoolFactory.getInstance().getParserPool(IHTMLParserConstants.LANGUAGE);
+			IParser parser = pool.checkOut();
+			IParseState parseState = new HTMLParseState();
+			String input = source.substring(htmlNode.getStartingOffset(), htmlNode.getEndingOffset());
+			parseState.setEditState(input, null, 0, 0);
+			IParseNode parseResult = parser.parse(parseState);
+			pool.checkIn(parser);
+			if (parseResult != null)
+			{
+				// We need to shift the offsets of all the returned nodes to fit out source.
+				updateOffsets(htmlNode.getStartingOffset(), ((ParseNode) parseResult));
+				return parseResult;
+			}
+		}
+		catch (Exception e)
+		{
+			PHPEditorPlugin.logError(e);
+		}
+		// If we got null from the HTML parser as parse-result, we just return the original PHP-HTML node.
+		return htmlNode;
+	}
+
+	/**
+	 * @param offsetToAdd
+	 * @param parseNode
+	 */
+	private void updateOffsets(int offsetToAdd, ParseNode parseNode)
+	{
+		parseNode.addOffset(offsetToAdd);
+		for (IParseNode node : parseNode.getChildren())
+		{
+			updateOffsets(offsetToAdd, (ParseNode) node);
+		}
 	}
 }
