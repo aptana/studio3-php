@@ -144,10 +144,11 @@ public class ContentAssistCollectors
 											{
 												return value;
 											}
-											value = new VariablePHPEntryValue(varParseNode.getModifiers(), varParseNode
-													.isParameter(), varParseNode.isLocalVariable(), varParseNode
-													.isField(), varParseNode.getNodeType(), varParseNode
-													.getStartingOffset(), namespace);
+											// @formatter:off
+											value = new VariablePHPEntryValue(varParseNode.getModifiers(), varParseNode.isParameter(), 
+													varParseNode.isLocalVariable(), varParseNode.isField(), varParseNode.getNodeType(), 
+													varParseNode.getStartingOffset(), namespace);
+											// @formatter:on
 											return value;
 										}
 
@@ -236,7 +237,8 @@ public class ContentAssistCollectors
 					result = type;
 				}
 			}
-			else if (!aliases.containsValue(typeName) && !typeName.contains(PHPContentAssistProcessor.GLOBAL_NAMESPACE) && !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
+			else if (!aliases.containsValue(typeName) && !typeName.contains(PHPContentAssistProcessor.GLOBAL_NAMESPACE)
+					&& !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
 			{
 				result = namespace + PHPContentAssistProcessor.GLOBAL_NAMESPACE + typeName;
 			}

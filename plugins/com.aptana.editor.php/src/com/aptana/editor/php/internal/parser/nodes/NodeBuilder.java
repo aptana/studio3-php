@@ -8,7 +8,9 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 
 import org.eclipse.php.core.compiler.PHPFlags;
@@ -507,10 +509,17 @@ public class NodeBuilder
 	 */
 	private void updateOffsets(int offsetToAdd, ParseNode parseNode)
 	{
-		parseNode.addOffset(offsetToAdd);
-		for (IParseNode node : parseNode.getChildren())
+		Queue<IParseNode> queue = new LinkedList<IParseNode>();
+		queue.offer(parseNode);
+		// Walk the parse nodes tree and process each child.
+		while (queue.isEmpty() == false)
 		{
-			updateOffsets(offsetToAdd, (ParseNode) node);
+			IParseNode node = queue.poll();
+			((ParseNode) node).addOffset(offsetToAdd);
+			for (IParseNode child : node)
+			{
+				queue.offer(child);
+			}
 		}
 	}
 }
