@@ -42,6 +42,7 @@ public class NodeBuilder
 	private ArrayList<Object> phpStarts = new ArrayList<Object>();
 	private ArrayList<Object> phpEnds = new ArrayList<Object>();
 	private ArrayList<Object> parameters = new ArrayList<Object>();
+	private IParser htmlParser;
 
 	/**
 	 * Whether to collect variables.
@@ -283,7 +284,17 @@ public class NodeBuilder
 		{
 			bn.addChild(current.getChild(a));
 		}
-		replaceHtmlNodes(bn);
+		IParserPool pool = ParserPoolFactory.getInstance().getParserPool(IHTMLParserConstants.LANGUAGE);
+		if (pool != null)
+		{
+			htmlParser = pool.checkOut();
+			if (htmlParser != null)
+			{
+				replaceHtmlNodes(bn);
+				pool.checkIn(htmlParser);
+				htmlParser = null;
+			}
+		}
 		return bn;
 	}
 
@@ -471,13 +482,10 @@ public class NodeBuilder
 
 		try
 		{
-			IParserPool pool = ParserPoolFactory.getInstance().getParserPool(IHTMLParserConstants.LANGUAGE);
-			IParser parser = pool.checkOut();
 			IParseState parseState = new HTMLParseState();
 			String input = source.substring(htmlNode.getStartingOffset(), htmlNode.getEndingOffset());
 			parseState.setEditState(input, null, 0, 0);
-			IParseNode parseResult = parser.parse(parseState);
-			pool.checkIn(parser);
+			IParseNode parseResult = htmlParser.parse(parseState);
 			if (parseResult != null)
 			{
 				// We need to shift the offsets of all the returned nodes to fit out source.
