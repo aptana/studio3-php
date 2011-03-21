@@ -13,10 +13,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.editors.text.EditorsUI;
 
+import com.aptana.editor.common.contentassist.CommonTextHover;
+
 /**
  * Base class for PHP information hovers
  */
-public abstract class AbstractPHPTextHover implements ITextHover, ITextHoverExtension, ITextHoverExtension2
+public abstract class AbstractPHPTextHover extends CommonTextHover implements ITextHover, ITextHoverExtension,
+		ITextHoverExtension2
 {
 	private IEditorPart fEditor;
 
