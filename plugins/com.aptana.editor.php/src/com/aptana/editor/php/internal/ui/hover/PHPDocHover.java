@@ -122,8 +122,8 @@ public class PHPDocHover extends AbstractPHPTextHover
 		{
 			if (BrowserInformationControl.isAvailable(parent))
 			{
-				BrowserInformationControl iControl = new BrowserInformationControl(parent, null, EditorsUI
-						.getTooltipAffordanceString())
+				BrowserInformationControl iControl = new BrowserInformationControl(parent, null,
+						EditorsUI.getTooltipAffordanceString())
 				{
 					public IInformationControlCreator getInformationPresenterControlCreator()
 					{
@@ -211,9 +211,10 @@ public class PHPDocHover extends AbstractPHPTextHover
 	public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion)
 	{
 		if (isHoverEnabled())
+		{
 			return internalGetHoverInfo(textViewer, hoverRegion);
-		else
-			return null;
+		}
+		return null;
 	}
 
 	private PHPDocumentationBrowserInformationControlInput internalGetHoverInfo(ITextViewer textViewer,
@@ -221,8 +222,9 @@ public class PHPDocHover extends AbstractPHPTextHover
 	{
 		Object[] elements = getPHPElementsAt(textViewer, hoverRegion);
 		if (elements == null || elements.length == 0)
+		{
 			return null;
-
+		}
 		String constantValue = null;
 		return getHoverInfo(elements, constantValue, null);
 	}
