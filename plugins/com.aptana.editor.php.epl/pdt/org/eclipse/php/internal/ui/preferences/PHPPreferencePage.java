@@ -102,7 +102,8 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 	{
 		appearanceComposite = parent;
 
-		Composite group = AptanaPreferencePage.createGroup(parent, "Mark Occurrences");
+		Composite group = AptanaPreferencePage.createGroup(parent,
+				PHPUIMessages.getString("PHPPreferencePage.Mark_Occurrences_Heading")); //$NON-NLS-1$
 
 		markOccurences = new BooleanFieldEditor(IPreferenceConstants.EDITOR_MARK_OCCURRENCES,
 				Messages.EditorsPreferencePage_MarkOccurrences, group);
