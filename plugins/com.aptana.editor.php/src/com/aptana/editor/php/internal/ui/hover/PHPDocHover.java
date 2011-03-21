@@ -210,7 +210,10 @@ public class PHPDocHover extends AbstractPHPTextHover
 	 */
 	public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion)
 	{
-		return internalGetHoverInfo(textViewer, hoverRegion);
+		if (isHoverEnabled())
+			return internalGetHoverInfo(textViewer, hoverRegion);
+		else
+			return null;
 	}
 
 	private PHPDocumentationBrowserInformationControlInput internalGetHoverInfo(ITextViewer textViewer,
