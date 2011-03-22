@@ -415,6 +415,7 @@ public class PreferenceConstants {
 	public static final String TAB = "tab"; //$NON-NLS-1$
 	public static final String FORMATTER_TAB_CHAR = PHPEplPlugin.PLUGIN_ID
 			+ ".smart_tab.char"; //$NON-NLS-1$
+	public static final String PHP_AUTO_INDENT = "PHP_AUTO_INDENT"; //$NON-NLS-1$
 
 	public static final String FORMAT_REMOVE_TRAILING_WHITESPACES = "cleanup.remove_trailing_whitespaces"; //$NON-NLS-1$
 	public static final String FORMAT_REMOVE_TRAILING_WHITESPACES_ALL = "cleanup.remove_trailing_whitespaces_all"; //$NON-NLS-1$
@@ -443,6 +444,9 @@ public class PreferenceConstants {
 		store.setDefault(APPEARANCE_METHOD_TYPEPARAMETERS, true);
 		store.setDefault(APPEARANCE_ENABLE_VISIBILITY_SORT_ORDER, false);
 
+		//Auto Indent
+		store.setDefault(PHP_AUTO_INDENT, true);
+		
 		// mark occurrences
 		store.setDefault(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_STICKY_OCCURRENCES, true);
