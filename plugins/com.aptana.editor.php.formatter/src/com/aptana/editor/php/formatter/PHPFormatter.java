@@ -477,7 +477,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		}
 		else
 		{
-			if (indentationLevel > 0 && StringUtil.EMPTY.equals(indentSufix))
+			if (indentationLevel > 1 && StringUtil.EMPTY.equals(indentSufix))
 			{
 				StringBuilder indentBuilder = new StringBuilder();
 				indentGenerator.generateIndent(Math.max(1, indentationLevel - 1), indentBuilder);
