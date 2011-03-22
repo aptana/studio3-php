@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Zend Technologies
  *******************************************************************************/
-package org.eclipse.php.internal.ui.editor;
+package org.eclipse.php.internal.ui.editor2;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.php.internal.core.ast.nodes.Program;
