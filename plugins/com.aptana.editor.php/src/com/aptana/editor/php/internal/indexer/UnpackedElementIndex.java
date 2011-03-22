@@ -7,11 +7,11 @@
  */
 package com.aptana.editor.php.internal.indexer;
 
-import gnu.trove.THashMap;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TObjectLongHashMap;
-import gnu.trove.TObjectProcedure;
-import gnu.trove.TShortObjectHashMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
+import gnu.trove.map.hash.TShortObjectHashMap;
+import gnu.trove.procedure.TObjectProcedure;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
