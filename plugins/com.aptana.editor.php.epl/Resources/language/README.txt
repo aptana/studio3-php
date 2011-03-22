@@ -2,7 +2,7 @@ This document explains how to rebuild Language Model files for PHP5.
 
 I. Installing environment:
 
-	1. Create empty PHP project, put this file into it /org.eclipse.php.core/Resources/language/generate.php
+	1. Create empty PHP project, put this file into it /org2.eclipse.php.core/Resources/language/generate.php
 	
 	2. Export latest PHPDoc into created PHP project using svn export, or using CLI:
 

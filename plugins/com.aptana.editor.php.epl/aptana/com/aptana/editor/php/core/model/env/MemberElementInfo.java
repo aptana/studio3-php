@@ -30,25 +30,25 @@ public abstract class MemberElementInfo extends SourceRefElementInfo {
 	protected int nameEnd= -1;
 
 	/**
-	 * @see org.eclipse.dltk.internal.compiler.env.IGenericType#getModifiers()
+	 * @see org2.eclipse.dltk.internal.compiler.env.IGenericType#getModifiers()
 	 * @see com.aptana.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.IGenericMethod#getModifiers()
-	 * @see org.eclipse.dltk.internal.compiler.env.IGenericField#getModifiers()
+	 * @see org2.eclipse.dltk.internal.compiler.env.IGenericField#getModifiers()
 	 */
 	public int getModifiers() {
 		return this.flags;
 	}
 	/**
-	 * @see org.eclipse.dltk.internal.compiler.env.ISourceType#getNameSourceEnd()
+	 * @see org2.eclipse.dltk.internal.compiler.env.ISourceType#getNameSourceEnd()
 	 * @see com.aptana.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.ISourceMethod#getNameSourceEnd()
-	 * @see org.eclipse.dltk.internal.compiler.env.ISourceField#getNameSourceEnd()
+	 * @see org2.eclipse.dltk.internal.compiler.env.ISourceField#getNameSourceEnd()
 	 */
 	public int getNameSourceEnd() {
 		return this.nameEnd;
 	}
 	/**
-	 * @see org.eclipse.dltk.internal.compiler.env.ISourceType#getNameSourceStart()
+	 * @see org2.eclipse.dltk.internal.compiler.env.ISourceType#getNameSourceStart()
 	 * @see com.aptana.editor.php.contentassist.model.internal.env.dltk.internal.compiler.env.ISourceMethod#getNameSourceStart()
-	 * @see org.eclipse.dltk.internal.compiler.env.ISourceField#getNameSourceStart()
+	 * @see org2.eclipse.dltk.internal.compiler.env.ISourceField#getNameSourceStart()
 	 */
 	public int getNameSourceStart() {
 		return this.nameStart;

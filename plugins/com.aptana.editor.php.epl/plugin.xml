@@ -4,10 +4,10 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.eclipse.php.internal.core.preferences.PHPCorePreferenceInitializer">
+            class="org2.eclipse.php.internal.core.preferences.PHPCorePreferenceInitializer">
       </initializer>
       <initializer
-            class="org.eclipse.php.internal.ui.preferences.PHPUIPreferenceInitializer">
+            class="org2.eclipse.php.internal.ui.preferences.PHPUIPreferenceInitializer">
       </initializer>
    </extension>
    <!-- =================================================================================== -->

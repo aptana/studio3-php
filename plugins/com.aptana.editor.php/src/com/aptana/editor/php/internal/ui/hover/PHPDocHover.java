@@ -17,12 +17,12 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension4;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.osgi.framework.Bundle;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.core.util.IOUtil;
 import com.aptana.core.util.StringUtil;

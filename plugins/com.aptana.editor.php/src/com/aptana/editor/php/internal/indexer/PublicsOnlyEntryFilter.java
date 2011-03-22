@@ -10,7 +10,7 @@ package com.aptana.editor.php.internal.indexer;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import org.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 

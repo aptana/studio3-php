@@ -2,7 +2,7 @@ package com.aptana.editor.php.internal.core.typebinding;
 
 import java.util.List;
 
-import org.eclipse.php.internal.core.ast.nodes.IBinding;
+import org2.eclipse.php.internal.core.ast.nodes.IBinding;
 
 import com.aptana.editor.php.core.model.IMethod;
 import com.aptana.editor.php.core.model.IModelElement;

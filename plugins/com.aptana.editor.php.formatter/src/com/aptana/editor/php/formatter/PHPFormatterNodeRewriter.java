@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.php.internal.core.ast.nodes.Comment;
-import org.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCommentNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPASTWrappingNode;

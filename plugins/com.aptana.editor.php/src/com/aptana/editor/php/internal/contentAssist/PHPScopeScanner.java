@@ -13,10 +13,10 @@ import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
-import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
+import org2.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;

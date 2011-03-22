@@ -26,10 +26,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;

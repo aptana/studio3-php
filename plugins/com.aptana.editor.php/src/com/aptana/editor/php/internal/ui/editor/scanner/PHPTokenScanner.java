@@ -10,8 +10,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.scanner.AstLexer;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.editor.html.parsing.HTMLTokenScanner;
 import com.aptana.editor.php.PHPEditorPlugin;

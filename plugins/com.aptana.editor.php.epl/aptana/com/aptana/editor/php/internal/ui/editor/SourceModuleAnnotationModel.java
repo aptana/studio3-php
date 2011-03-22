@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
@@ -15,6 +14,7 @@ import org.eclipse.jface.text.source.AnnotationModelEvent;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
+import org2.eclipse.dltk.compiler.problem.IProblem;
 
 import com.aptana.editor.php.core.model.ISourceModule;
 

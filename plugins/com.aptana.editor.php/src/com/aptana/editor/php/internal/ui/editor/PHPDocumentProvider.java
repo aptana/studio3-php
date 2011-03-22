@@ -4,7 +4,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.IAnnotationModel;
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.common.CompositeDocumentProvider;
 import com.aptana.editor.html.HTMLSourceConfiguration;

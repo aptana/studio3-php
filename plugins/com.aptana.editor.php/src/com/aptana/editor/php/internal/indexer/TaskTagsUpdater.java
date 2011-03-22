@@ -12,9 +12,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.php.internal.core.preferences.ITaskTagsListener;
-import org.eclipse.php.internal.core.preferences.TaskTagsEvent;
-import org.eclipse.php.internal.core.preferences.TaskTagsProvider;
+import org2.eclipse.php.internal.core.preferences.ITaskTagsListener;
+import org2.eclipse.php.internal.core.preferences.TaskTagsEvent;
+import org2.eclipse.php.internal.core.preferences.TaskTagsProvider;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;

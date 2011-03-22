@@ -1,7 +1,7 @@
 package com.aptana.editor.php.internal.ui.editor.scanner;
 
 import org.eclipse.jface.text.rules.ITokenScanner;
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 /**
  * A PHP token scanner interface.

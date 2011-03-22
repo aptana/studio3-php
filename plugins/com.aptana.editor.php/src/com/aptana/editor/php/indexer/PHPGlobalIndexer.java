@@ -42,7 +42,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants.Keys;

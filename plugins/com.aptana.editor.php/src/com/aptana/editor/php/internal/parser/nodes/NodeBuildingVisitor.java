@@ -2,31 +2,31 @@ package com.aptana.editor.php.internal.parser.nodes;
 
 import java.util.List;
 
-import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
-import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.InLineHtml;
-import org.eclipse.php.internal.core.ast.nodes.Include;
-import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
-import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
-import org.eclipse.php.internal.core.ast.nodes.Scalar;
-import org.eclipse.php.internal.core.ast.nodes.UseStatement;
-import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
-import org.eclipse.php.internal.core.ast.nodes.Variable;
-import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
-import org.eclipse.php.internal.core.documentModel.phpElementData.BasicPHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
+import org2.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.InLineHtml;
+import org2.eclipse.php.internal.core.ast.nodes.Include;
+import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Scalar;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
+import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.BasicPHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 
@@ -63,7 +63,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = interfaceDeclaration.getName();
 		String name = nameIdentifier.getName();
-		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
 				interfaceDeclaration.getProgramRoot().comments(), interfaceDeclaration.getStart(), source);
 		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
 		nodeBuilder.handleClassDeclaration(name, PHPFlags.AccInterface, docBlock, interfaceDeclaration.getStart(),
@@ -79,7 +79,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = classDeclaration.getName();
 		String name = nameIdentifier.getName();
-		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
 				classDeclaration.getProgramRoot().comments(), classDeclaration.getStart(), source);
 		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
 		nodeBuilder.handleClassDeclaration(name, classDeclaration.getModifier(), docBlock, classDeclaration.getStart(),
@@ -266,7 +266,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 					p.getEnd() - 1, -1);
 		}
 		Identifier functionName = functionDeclaration.getFunctionName();
-		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
 				functionDeclaration.getProgramRoot().comments(), functionDeclaration.getStart(), source);
 		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
 		nodeBuilder.handleFunctionDeclaration(functionName.getName(), isClassFunction, modifiers, docBlock,
@@ -277,7 +277,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ClassDeclaration)
 	 */
 	@Override
@@ -288,7 +288,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FunctionDeclaration)
 	 */
 	@Override
@@ -299,7 +299,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InterfaceDeclaration)
 	 */
 	@Override
@@ -310,7 +310,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * NamespaceDeclaration)
 	 */
 	@Override
@@ -338,12 +338,12 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Converts a {@link org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock} to a {@link PHPDocBlockImp}.
+	 * Converts a {@link org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock} to a {@link PHPDocBlockImp}.
 	 * 
 	 * @param docComment
 	 * @return A new {@link PHPDocBlockImp}, or null if the given docComment is null
 	 */
-	protected PHPDocBlockImp convertToDocBlock(org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment)
+	protected PHPDocBlockImp convertToDocBlock(org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment)
 	{
 		if (docComment == null)
 		{

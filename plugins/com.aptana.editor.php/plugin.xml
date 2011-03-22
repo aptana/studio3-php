@@ -99,7 +99,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="com.aptana.editor.common.preferences.EditorsPreferencePage"
-            class="org.eclipse.php.internal.ui.preferences.PHPPreferencePage"
+            class="org2.eclipse.php.internal.ui.preferences.PHPPreferencePage"
             id="com.aptana.editor.php.preference.PHPPreferencePage"
             name="PHP">
       </page>

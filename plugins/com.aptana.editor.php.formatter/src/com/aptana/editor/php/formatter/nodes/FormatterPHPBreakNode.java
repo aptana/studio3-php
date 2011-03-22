@@ -7,7 +7,7 @@
  */
 package com.aptana.editor.php.formatter.nodes;
 
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterContext;
