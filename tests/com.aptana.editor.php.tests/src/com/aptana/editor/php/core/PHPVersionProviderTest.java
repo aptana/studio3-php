@@ -1,9 +1,9 @@
 package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.php.internal.core.PHPVersion;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.tests.ProjectBasedTestCase;

@@ -35,7 +35,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.php.core.tests.AbstractPDTTTest;
 import org.eclipse.php.core.tests.TestUtils;
 import org.eclipse.php.core.tests.codeassist.CodeAssistPdttFile.ExpectedProposal;
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.editor.common.ExtendedFastPartitioner;

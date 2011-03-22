@@ -35,7 +35,7 @@ import com.aptana.editor.common.contentassist.CommonCompletionProposal;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>, Pavel Petrochenko
  */
-public class PHPCompletionProposal extends CommonCompletionProposal implements Comparable<PHPCompletionProposal>
+public class PHPCompletionProposal extends CommonCompletionProposal
 {
 	/** The type of the object. This is an 'enum' of JSCompletionProposalComparator sorting types. */
 	private int fObjectType;

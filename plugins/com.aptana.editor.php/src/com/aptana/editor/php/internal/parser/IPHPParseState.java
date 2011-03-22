@@ -1,6 +1,6 @@
 package com.aptana.editor.php.internal.parser;
 
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.core.IPHPVersionListener;
 import com.aptana.editor.php.core.model.ISourceModule;

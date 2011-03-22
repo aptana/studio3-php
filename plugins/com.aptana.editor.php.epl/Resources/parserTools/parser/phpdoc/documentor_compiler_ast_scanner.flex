@@ -9,16 +9,16 @@
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
 
-package org.eclipse.php.internal.core.compiler.ast.parser;
+package org2.eclipse.php.internal.core.compiler.ast.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.eclipse.php.internal.core.Logger;
-import org.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTagKinds;
+import org2.eclipse.php.internal.core.Logger;
+import org2.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTagKinds;
 
 %%
 

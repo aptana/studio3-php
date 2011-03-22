@@ -7,7 +7,7 @@
  */
 package com.aptana.editor.php.internal.parser.nodes;
 
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.parsing.ast.INameNode;

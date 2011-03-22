@@ -3,9 +3,9 @@ package com.aptana.editor.php.core.ast;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.nodes.ASTParser;
-import org.eclipse.php.internal.core.ast.scanner.AstLexer;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
+import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 /**
  * A factory for AstLexers

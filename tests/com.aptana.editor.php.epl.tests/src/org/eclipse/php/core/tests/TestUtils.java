@@ -9,10 +9,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.preferences.CorePreferenceConstants;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.preferences.CorePreferenceConstants;
 
 import com.aptana.editor.php.epl.tests.Activator;
 

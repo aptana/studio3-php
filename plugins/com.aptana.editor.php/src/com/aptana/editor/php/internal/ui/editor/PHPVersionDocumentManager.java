@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 /**
  * PHPVersion manager that keeps track of the opened documents and the PHPVersion that is used to color their content.

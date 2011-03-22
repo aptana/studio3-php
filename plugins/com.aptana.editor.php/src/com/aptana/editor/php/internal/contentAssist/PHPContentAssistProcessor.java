@@ -36,16 +36,17 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
-import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org.eclipse.swt.graphics.Image;
+import org2.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
+import org2.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
+import com.aptana.editor.common.contentassist.ICommonCompletionProposal;
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
@@ -380,9 +381,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				content, true, forceActivation);
 		if (computeCompletionProposalInternal.length > 0)
 		{
-			PHPCompletionProposal pa = (PHPCompletionProposal) computeCompletionProposalInternal[0];
-			pa.setIsDefaultSelection(true);
-			pa.setIsSuggestedSelection(true);
+			ICommonCompletionProposal pa = (ICommonCompletionProposal) computeCompletionProposalInternal[0];
+			pa.setRelevance(ICommonCompletionProposal.RELEVANCE_MEDIUM);
 			if (replaceLengthIncrease > 0)
 			{
 				computeCompletionProposalInternal = batchIncreaseReplaceLength(computeCompletionProposalInternal,
@@ -2050,8 +2050,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 				if (!completionSetted && notEmptyCompletion)
 				{
-					proposal.setIsDefaultSelection(true);
-					proposal.setIsSuggestedSelection(true);
+					proposal.setRelevance(ICommonCompletionProposal.RELEVANCE_MEDIUM);
 					completionSetted = true;
 				}
 			}
@@ -2075,7 +2074,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @param localModule
 	 *            - local module.
 	 * @param index
-	 *            - index to use.
+	 *            - index to use
 	 * @param newInstanceCompletion
 	 *            - whether the new instance completion is on.
 	 * @return proposalContent - proposal content.

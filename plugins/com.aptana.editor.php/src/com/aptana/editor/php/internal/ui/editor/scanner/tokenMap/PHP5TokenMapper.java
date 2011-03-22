@@ -3,7 +3,7 @@ package com.aptana.editor.php.internal.ui.editor.scanner.tokenMap;
 import java_cup.runtime.Symbol;
 
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.php.internal.core.ast.scanner.php5.ParserConstants;
+import org2.eclipse.php.internal.core.ast.scanner.php5.ParserConstants;
 
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;

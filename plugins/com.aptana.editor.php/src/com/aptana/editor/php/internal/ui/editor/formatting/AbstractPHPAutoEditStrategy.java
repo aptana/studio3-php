@@ -17,8 +17,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
-import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.php.internal.ui.preferences.PreferenceConstants;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.epl.PHPEplPlugin;

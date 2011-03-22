@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.eclipse.php.util.StringUtils;
+import org2.eclipse.php.util.StringUtils;
 
 /**
  * @author Robin Debreuil

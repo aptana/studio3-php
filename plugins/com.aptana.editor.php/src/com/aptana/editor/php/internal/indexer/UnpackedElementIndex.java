@@ -7,11 +7,11 @@
  */
 package com.aptana.editor.php.internal.indexer;
 
-import gnu.trove.THashMap;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TObjectLongHashMap;
-import gnu.trove.TObjectProcedure;
-import gnu.trove.TShortObjectHashMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
+import gnu.trove.map.hash.TShortObjectHashMap;
+import gnu.trove.procedure.TObjectProcedure;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.internal.core.builder.IModule;
@@ -62,7 +63,14 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 
 	public void recordTimeStamp(IModule m, long timeStamp)
 	{
-		timeStamps.put(m, timeStamp);
+		try
+		{
+			timeStamps.put(m, timeStamp);
+		}
+		catch (Exception e)
+		{
+			PHPEditorPlugin.logError("Error recording timestamp for " + m.getFullPath(), e); //$NON-NLS-1$
+		}
 	}
 
 	public long getTimeStamp(IModule m)

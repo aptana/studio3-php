@@ -1,4 +1,4 @@
-package org.eclipse.php.internal.core.compiler.ast.parser.php5;
+package org2.eclipse.php.internal.core.compiler.ast.parser.php5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8,14 +8,14 @@ package org.eclipse.php.internal.core.compiler.ast.parser.php5;
 
 
 import java.util.*;
-import org.eclipse.dltk.ast.*;
-import org.eclipse.dltk.ast.declarations.*;
-import org.eclipse.dltk.ast.expressions.*;
-import org.eclipse.dltk.ast.references.*;
-import org.eclipse.dltk.ast.statements.*;
-import org.eclipse.php.internal.core.compiler.ast.nodes.*;
-import org.eclipse.php.internal.core.compiler.ast.parser.*;
-import org.eclipse.php.internal.core.ast.scanner.php5.*;
+import org2.eclipse.dltk.ast.*;
+import org2.eclipse.dltk.ast.declarations.*;
+import org2.eclipse.dltk.ast.expressions.*;
+import org2.eclipse.dltk.ast.references.*;
+import org2.eclipse.dltk.ast.statements.*;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.*;
+import org2.eclipse.php.internal.core.compiler.ast.parser.*;
+import org2.eclipse.php.internal.core.ast.scanner.php5.*;
 
 
 parser code {:

@@ -9,7 +9,7 @@
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
 /*nlsXXX*/
-package org.eclipse.php.internal.core.documentModel.parser;
+package org2.eclipse.php.internal.core.documentModel.parser;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -18,14 +18,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PhpScriptRegion;
-import org.eclipse.php.internal.core.project.ProjectOptions;
-import org.eclipse.wst.sse.core.internal.copy.ltk.parser.BlockMarker;
-import org.eclipse.wst.sse.core.internal.copy.ltk.parser.BlockTokenizer;
-import org.eclipse.wst.sse.core.internal.copy.provisional.text.ITextRegion;
-import org.eclipse.wst.sse.core.internal.copy.provisional.text.ITextRegionList;
-import org.eclipse.wst.sse.core.internal.copy.util.Debug;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PhpScriptRegion;
+import org2.eclipse.php.internal.core.project.ProjectOptions;
+import org2.eclipse.wst.sse.core.internal.ltk.parser.BlockMarker;
+import org2.eclipse.wst.sse.core.internal.ltk.parser.BlockTokenizer;
+import org2.eclipse.wst.sse.core.internal.provisional.text.ITextRegion;
+import org2.eclipse.wst.sse.core.internal.provisional.text.ITextRegionList;
+import org2.eclipse.wst.sse.core.internal.util.Debug;
 import org.eclipse.wst.sse.core.utils.StringUtils;
 import org.eclipse.wst.xml.core.internal.Logger;
 import org.eclipse.wst.xml.core.internal.parser.ContextRegionContainer;

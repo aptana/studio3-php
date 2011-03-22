@@ -7,7 +7,7 @@
  */
 package com.aptana.editor.php.internal.parser.nodes;
 
-import org.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.parsing.ast.ParseNode;
