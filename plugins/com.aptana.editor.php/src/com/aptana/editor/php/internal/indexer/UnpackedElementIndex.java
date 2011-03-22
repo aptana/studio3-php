@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.internal.core.builder.IModule;
@@ -62,7 +63,14 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 
 	public void recordTimeStamp(IModule m, long timeStamp)
 	{
-		timeStamps.put(m, timeStamp);
+		try
+		{
+			timeStamps.put(m, timeStamp);
+		}
+		catch (Exception e)
+		{
+			PHPEditorPlugin.logError("Error recording timestamp for " + m.getFullPath(), e); //$NON-NLS-1$
+		}
 	}
 
 	public long getTimeStamp(IModule m)
