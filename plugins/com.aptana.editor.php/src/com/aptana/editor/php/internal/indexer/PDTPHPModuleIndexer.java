@@ -888,7 +888,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		// * Backuped variable scopes.
 		// */
 		// private Stack<Scope> backupedScopes = new Stack<Scope>();
-		//		
+		//
 		// /**
 		// * Scopes of the previous node.
 		// */
@@ -1114,8 +1114,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				return true;
 			}
 
-			VariableInfo info = new VariableInfo(defineName, defineTypes, getGlobalScope(), functionInvocation
-					.getStart(), PHPFlags.NAMED_CONSTANT); // TODO - Shalom - Test if Acc_constant is not enough here
+			VariableInfo info = new VariableInfo(defineName, defineTypes, getGlobalScope(),
+					functionInvocation.getStart(), PHPFlags.NAMED_CONSTANT); // TODO - Shalom - Test if Acc_constant is
+																				// not enough here
 			// (we added the user-defined NAMED_CONSTANT into the
 			// PHPFlags)
 			getGlobalScope().addVariable(info);
@@ -1241,7 +1242,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 		/*
 		 * (non-Javadoc)
-		 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+		 * @see
+		 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 		 * LambdaFunctionDeclaration)
 		 */
 		@Override
@@ -1516,8 +1518,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				}
 				InfixExpression expr = (InfixExpression) parent;
 				Set<Object> types = countInfixExpressionTypes(expr);
-				VariableInfo variableInfo = new VariableInfo(variableName, types, getCurrentScope(), variable
-						.getStart());
+				VariableInfo variableInfo = new VariableInfo(variableName, types, getCurrentScope(),
+						variable.getStart());
 				getCurrentScope().addVariable(variableInfo);
 			}
 
@@ -2013,8 +2015,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							break;
 					}
 
-					IncludePHPEntryValue value = new IncludePHPEntryValue(includePath, include.getStart(), include
-							.getEnd(), pathStartOffset, includeType);
+					IncludePHPEntryValue value = new IncludePHPEntryValue(includePath, include.getStart(),
+							include.getEnd(), pathStartOffset, includeType);
 					reporter.reportEntry(IPHPIndexConstants.IMPORT_CATEGORY, EMPTY_STRING, value, module);
 				}
 			}
@@ -2123,8 +2125,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			Set<Object> rightSideTypes = countExpressionTypes(value);
 
-			VariableInfo variableInfo = new VariableInfo(variableName, rightSideTypes, getCurrentScope(), variable
-					.getStart(), staticDeclaration ? PHPFlags.AccStatic : 0);
+			VariableInfo variableInfo = new VariableInfo(variableName, rightSideTypes, getCurrentScope(),
+					variable.getStart(), staticDeclaration ? PHPFlags.AccStatic : 0);
 			getCurrentScope().addVariable(variableInfo);
 
 			return true;
@@ -2277,8 +2279,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				{
 					for (VariableInfo info : scope.getVariables())
 					{
-						VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, false, false, info
-								.getVariableTypes(), info.getNodeStart(), currentNamespace);
+						VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, false, false,
+								info.getVariableTypes(), info.getNodeStart(), currentNamespace);
 
 						String entryPath = info.getName();
 						int category = PHPFlags.isNamedConstant(info.getModifier()) ? IPHPIndexConstants.CONST_CATEGORY
@@ -2791,7 +2793,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			if (SELF.equals(clName))
 			{
-				if (currentClass != null)
+				if (currentClass != null && currentClass.getClassEntry() != null)
 				{
 					result.add(currentClass.getClassEntry().getEntryPath());
 					return result;
@@ -2909,7 +2911,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			// handling "self::"
 			else if (dispatchEntry instanceof CallPath.ClassEntry && SELF.equals(dispatchEntry.getName()))
 			{
-				if (currentClass != null)
+				if (currentClass != null && currentClass.getClassEntry() != null)
 				{
 					Set<Object> dispatcherTypes = new HashSet<Object>(1);
 					dispatcherTypes.add(ElementsIndexingUtils.getFirstNameInPath(currentClass.getClassEntry()
@@ -3094,10 +3096,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							for (Map.Entry<String, Set<Object>> parEntry : parameters.entrySet())
 							{
 								String entryPath = parEntry.getKey();
-								VariablePHPEntryValue value = new VariablePHPEntryValue(0, true, false, false, parEntry
-										.getValue(), parameterStartPositions == null
-										|| parameterStartPositions.length == 0 ? val.getStartOffset()
-										: parameterStartPositions[parCount], currentNamespace);
+								VariablePHPEntryValue value = new VariablePHPEntryValue(0, true, false, false,
+										parEntry.getValue(), parameterStartPositions == null
+												|| parameterStartPositions.length == 0 ? val.getStartOffset()
+												: parameterStartPositions[parCount], currentNamespace);
 								reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY, entryPath, value, module);
 								parCount++;
 							}
@@ -3809,8 +3811,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 	private void setContents(IModule module) throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(), EncodingUtils
-				.getModuleEncoding(module)));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(),
+				EncodingUtils.getModuleEncoding(module)));
 
 		StringBuffer moduleData = new StringBuffer();
 		char[] buf = new char[1024];
@@ -3982,7 +3984,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			IProject project = null;
 			if (module.getBuildPath() instanceof ProjectBuildPath)
 			{
-				project = ((ProjectBuildPath)module.getBuildPath()).getProject();
+				project = ((ProjectBuildPath) module.getBuildPath()).getProject();
 			}
 			PHPVersion phpVersion = PHPVersionProvider.getPHPVersion(project);
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
