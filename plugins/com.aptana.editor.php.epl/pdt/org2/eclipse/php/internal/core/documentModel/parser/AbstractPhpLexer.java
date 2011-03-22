@@ -22,12 +22,12 @@ import java.util.regex.Pattern;
 import javax.swing.text.Segment;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.wst.sse.core.internal.copy.parser.ContextRegion;
-import org.eclipse.wst.sse.core.internal.copy.provisional.text.ITextRegion;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org2.eclipse.php.internal.core.documentModel.partitioner.PHPPartitionTypes;
 import org2.eclipse.php.internal.core.preferences.TaskPatternsProvider;
 import org2.eclipse.php.internal.core.util.collections.IntHashtable;
+import org2.eclipse.wst.sse.core.internal.parser.ContextRegion;
+import org2.eclipse.wst.sse.core.internal.provisional.text.ITextRegion;
 
 public abstract class AbstractPhpLexer implements Scanner, PHPRegionTypes {
 

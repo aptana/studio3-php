@@ -14,9 +14,9 @@ package org2.eclipse.php.internal.core.documentModel.partitioner;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.TypedRegion;
-import org.eclipse.wst.sse.core.internal.copy.provisional.text.ITextRegion;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.IPhpScriptRegion;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.wst.sse.core.internal.provisional.text.ITextRegion;
 
 public abstract class PHPPartitionTypes {
 

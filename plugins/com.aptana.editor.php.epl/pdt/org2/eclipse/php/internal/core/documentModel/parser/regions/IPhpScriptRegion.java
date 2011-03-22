@@ -13,8 +13,8 @@ package org2.eclipse.php.internal.core.documentModel.parser.regions;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.wst.sse.core.internal.copy.provisional.text.ITextRegion;
 import org2.eclipse.php.internal.core.documentModel.partitioner.PHPPartitionTypes;
+import org2.eclipse.wst.sse.core.internal.provisional.text.ITextRegion;
 
 /**
  * This is a base class for a PHP script region The default implementation is

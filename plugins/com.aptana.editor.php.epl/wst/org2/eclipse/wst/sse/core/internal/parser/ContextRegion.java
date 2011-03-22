@@ -10,11 +10,11 @@
  *     Jens Lukowski/Innoopract - initial renaming/restructuring
  *     
  *******************************************************************************/
-package org.eclipse.wst.sse.core.internal.copy.parser;
+package org2.eclipse.wst.sse.core.internal.parser;
 
 
 
-import org.eclipse.wst.sse.core.internal.copy.provisional.text.ITextRegion;
+import org2.eclipse.wst.sse.core.internal.provisional.text.ITextRegion;
 
 
 /**
