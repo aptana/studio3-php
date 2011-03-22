@@ -3,9 +3,9 @@ package com.aptana.editor.php.internal.ui.editor.outline;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IDecoration;
-import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;

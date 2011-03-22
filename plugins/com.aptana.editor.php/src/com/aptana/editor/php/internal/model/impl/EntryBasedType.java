@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.core.model.IField;
 import com.aptana.editor.php.core.model.IMethod;

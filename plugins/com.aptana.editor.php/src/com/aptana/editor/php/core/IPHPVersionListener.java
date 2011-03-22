@@ -1,6 +1,6 @@
 package com.aptana.editor.php.core;
 
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 /**
  * A listener interface for any implementation that wish to be notified when the project's PHP version changes.

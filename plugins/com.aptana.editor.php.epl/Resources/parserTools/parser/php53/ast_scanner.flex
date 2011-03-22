@@ -9,19 +9,19 @@
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
 
-package org.eclipse.php.internal.core.ast.scanner.php53;
+package org2.eclipse.php.internal.core.ast.scanner.php53;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
-import org.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import java_cup.sym;
-import org.eclipse.php.internal.core.ast.nodes.AST;
+import org2.eclipse.php.internal.core.ast.nodes.AST;
 import java_cup.runtime.Symbol;
-import org.eclipse.php.internal.core.ast.scanner.StateStack;
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.scanner.StateStack;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 %%
 
@@ -31,7 +31,7 @@ import org.eclipse.php.internal.core.PHPVersion;
 %line
 
 /* %cup */
-%implements org.eclipse.php.internal.core.ast.scanner.AstLexer
+%implements org2.eclipse.php.internal.core.ast.scanner.AstLexer
 %function next_token
 %type java_cup.runtime.Symbol
 %eofval{

@@ -14,10 +14,10 @@ package com.aptana.editor.php.internal.core.builder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.dltk.compiler.problem.CategorizedProblem;
-import org.eclipse.dltk.compiler.problem.DefaultProblem;
-import org.eclipse.dltk.compiler.problem.IProblem;
-import org.eclipse.dltk.compiler.problem.ProblemCollector;
+import org2.eclipse.dltk.compiler.problem.CategorizedProblem;
+import org2.eclipse.dltk.compiler.problem.DefaultProblem;
+import org2.eclipse.dltk.compiler.problem.IProblem;
+import org2.eclipse.dltk.compiler.problem.ProblemCollector;
 
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.core.resources.MarkerUtils;

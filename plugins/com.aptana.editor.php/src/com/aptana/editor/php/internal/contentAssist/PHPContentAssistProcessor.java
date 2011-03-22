@@ -36,12 +36,12 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
-import org.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org.eclipse.swt.graphics.Image;
+import org2.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
+import org2.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;

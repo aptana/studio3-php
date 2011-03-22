@@ -80,11 +80,11 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.formatter.FormattingContextProperties;
 import org.eclipse.jface.text.formatter.IFormattingContext;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.php.internal.core.ast.match.ASTMatcher;
-import org.eclipse.php.internal.core.ast.nodes.Program;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
+import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;

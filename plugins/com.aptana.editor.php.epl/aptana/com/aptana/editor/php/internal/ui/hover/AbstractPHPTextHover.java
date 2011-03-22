@@ -8,10 +8,10 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextHoverExtension2;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.php.internal.ui.text.PHPWordFinder;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org2.eclipse.php.internal.ui.text.PHPWordFinder;
 
 import com.aptana.editor.common.contentassist.CommonTextHover;
 

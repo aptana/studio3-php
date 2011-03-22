@@ -13,80 +13,80 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.php.internal.core.ast.nodes.ASTError;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.ArrayAccess;
-import org.eclipse.php.internal.core.ast.nodes.ArrayCreation;
-import org.eclipse.php.internal.core.ast.nodes.ArrayElement;
-import org.eclipse.php.internal.core.ast.nodes.Assignment;
-import org.eclipse.php.internal.core.ast.nodes.BackTickExpression;
-import org.eclipse.php.internal.core.ast.nodes.Block;
-import org.eclipse.php.internal.core.ast.nodes.BreakStatement;
-import org.eclipse.php.internal.core.ast.nodes.CastExpression;
-import org.eclipse.php.internal.core.ast.nodes.CatchClause;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
-import org.eclipse.php.internal.core.ast.nodes.ClassName;
-import org.eclipse.php.internal.core.ast.nodes.CloneExpression;
-import org.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
-import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ContinueStatement;
-import org.eclipse.php.internal.core.ast.nodes.DeclareStatement;
-import org.eclipse.php.internal.core.ast.nodes.DoStatement;
-import org.eclipse.php.internal.core.ast.nodes.EchoStatement;
-import org.eclipse.php.internal.core.ast.nodes.EmptyStatement;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
-import org.eclipse.php.internal.core.ast.nodes.FieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ForEachStatement;
-import org.eclipse.php.internal.core.ast.nodes.ForStatement;
-import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
-import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
-import org.eclipse.php.internal.core.ast.nodes.FunctionName;
-import org.eclipse.php.internal.core.ast.nodes.GlobalStatement;
-import org.eclipse.php.internal.core.ast.nodes.GotoLabel;
-import org.eclipse.php.internal.core.ast.nodes.GotoStatement;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.IfStatement;
-import org.eclipse.php.internal.core.ast.nodes.IgnoreError;
-import org.eclipse.php.internal.core.ast.nodes.InLineHtml;
-import org.eclipse.php.internal.core.ast.nodes.Include;
-import org.eclipse.php.internal.core.ast.nodes.InfixExpression;
-import org.eclipse.php.internal.core.ast.nodes.InstanceOfExpression;
-import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.LambdaFunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ListVariable;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.MethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
-import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
-import org.eclipse.php.internal.core.ast.nodes.PostfixExpression;
-import org.eclipse.php.internal.core.ast.nodes.PrefixExpression;
-import org.eclipse.php.internal.core.ast.nodes.Quote;
-import org.eclipse.php.internal.core.ast.nodes.Reference;
-import org.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
-import org.eclipse.php.internal.core.ast.nodes.ReturnStatement;
-import org.eclipse.php.internal.core.ast.nodes.Scalar;
-import org.eclipse.php.internal.core.ast.nodes.Statement;
-import org.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.StaticStatement;
-import org.eclipse.php.internal.core.ast.nodes.SwitchCase;
-import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
-import org.eclipse.php.internal.core.ast.nodes.ThrowStatement;
-import org.eclipse.php.internal.core.ast.nodes.TryStatement;
-import org.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
-import org.eclipse.php.internal.core.ast.nodes.UseStatement;
-import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
-import org.eclipse.php.internal.core.ast.nodes.Variable;
-import org.eclipse.php.internal.core.ast.nodes.VariableBase;
-import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
-import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org2.eclipse.php.internal.core.ast.nodes.ASTError;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayCreation;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayElement;
+import org2.eclipse.php.internal.core.ast.nodes.Assignment;
+import org2.eclipse.php.internal.core.ast.nodes.BackTickExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Block;
+import org2.eclipse.php.internal.core.ast.nodes.BreakStatement;
+import org2.eclipse.php.internal.core.ast.nodes.CastExpression;
+import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
+import org2.eclipse.php.internal.core.ast.nodes.ClassName;
+import org2.eclipse.php.internal.core.ast.nodes.CloneExpression;
+import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
+import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.EchoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.EmptyStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
+import org2.eclipse.php.internal.core.ast.nodes.GlobalStatement;
+import org2.eclipse.php.internal.core.ast.nodes.GotoLabel;
+import org2.eclipse.php.internal.core.ast.nodes.GotoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.IfStatement;
+import org2.eclipse.php.internal.core.ast.nodes.IgnoreError;
+import org2.eclipse.php.internal.core.ast.nodes.InLineHtml;
+import org2.eclipse.php.internal.core.ast.nodes.Include;
+import org2.eclipse.php.internal.core.ast.nodes.InfixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.InstanceOfExpression;
+import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.LambdaFunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ListVariable;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
+import org2.eclipse.php.internal.core.ast.nodes.PostfixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.PrefixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Quote;
+import org2.eclipse.php.internal.core.ast.nodes.Reference;
+import org2.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
+import org2.eclipse.php.internal.core.ast.nodes.ReturnStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Scalar;
+import org2.eclipse.php.internal.core.ast.nodes.Statement;
+import org2.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
+import org2.eclipse.php.internal.core.ast.nodes.VariableBase;
+import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
+import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
@@ -148,7 +148,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.IfStatement
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.IfStatement
 	 * )
 	 */
 	@Override
@@ -238,7 +238,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ArrayAccess
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.ArrayAccess
 	 * )
 	 */
 	@Override
@@ -262,9 +262,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ArrayCreation
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ArrayCreation )
 	 */
 	@Override
 	public boolean visit(ArrayCreation arrayCreation)
@@ -285,9 +284,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ArrayElement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ArrayElement )
 	 */
 	@Override
 	public boolean visit(ArrayElement arrayElement)
@@ -313,7 +311,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Assignment
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Assignment
 	 * )
 	 */
 	@Override
@@ -329,7 +327,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ASTError)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.ASTError
+	 * )
 	 */
 	@Override
 	public boolean visit(ASTError astError)
@@ -340,7 +339,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * BackTickExpression)
 	 */
 	@Override
@@ -353,7 +352,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Block)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Block)
 	 */
 	@Override
 	public boolean visit(Block block)
@@ -381,7 +380,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * BreakStatement)
 	 */
 	@Override
@@ -411,7 +410,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ClassDeclaration)
 	 */
 	@Override
@@ -423,7 +422,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ClassInstanceCreation)
 	 */
 	@Override
@@ -452,7 +451,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ClassName
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.ClassName
 	 * )
 	 */
 	@Override
@@ -464,7 +463,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * CloneExpression)
 	 */
 	@Override
@@ -483,7 +482,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ConditionalExpression)
 	 */
 	@Override
@@ -508,7 +507,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ConstantDeclaration)
 	 */
 	@Override
@@ -578,7 +577,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ContinueStatement)
 	 */
 	@Override
@@ -602,7 +601,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * DeclareStatement)
 	 */
 	@Override
@@ -634,9 +633,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.EchoStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * EchoStatement )
 	 */
 	@Override
 	public boolean visit(EchoStatement echoStatement)
@@ -655,7 +653,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * EmptyStatement)
 	 */
 	@Override
@@ -667,7 +665,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ExpressionStatement)
 	 */
 	@Override
@@ -698,7 +696,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.FieldAccess
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.FieldAccess
 	 * )
 	 */
 	@Override
@@ -712,9 +710,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ForStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ForStatement )
 	 */
 	@Override
 	public boolean visit(ForStatement forStatement)
@@ -752,7 +749,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ForEachStatement)
 	 */
 	@Override
@@ -800,7 +797,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * WhileStatement)
 	 */
 	@Override
@@ -814,7 +811,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.DoStatement
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.DoStatement
 	 * )
 	 */
 	@Override
@@ -838,7 +835,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FunctionDeclaration)
 	 */
 	@Override
@@ -851,7 +848,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FunctionInvocation)
 	 */
 	@Override
@@ -863,7 +860,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * GlobalStatement)
 	 */
 	@Override
@@ -880,7 +877,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.GotoLabel
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.GotoLabel
 	 * )
 	 */
 	@Override
@@ -902,9 +899,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.GotoStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * GotoStatement )
 	 */
 	@Override
 	public boolean visit(GotoStatement gotoStatement)
@@ -919,7 +915,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Identifier
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Identifier
 	 * )
 	 */
 	@Override
@@ -932,7 +928,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.IgnoreError
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.IgnoreError
 	 * )
 	 */
 	@Override
@@ -950,7 +946,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Include)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Include
+	 * )
 	 */
 	@Override
 	public boolean visit(Include include)
@@ -967,7 +964,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InfixExpression)
 	 */
 	@Override
@@ -983,7 +980,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.InLineHtml
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.InLineHtml
 	 * )
 	 */
 	@Override
@@ -995,7 +992,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InstanceOfExpression)
 	 */
 	@Override
@@ -1017,7 +1014,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InterfaceDeclaration)
 	 */
 	@Override
@@ -1029,7 +1026,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * LambdaFunctionDeclaration)
 	 */
 	@Override
@@ -1042,9 +1039,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ListVariable
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ListVariable )
 	 */
 	@Override
 	public boolean visit(ListVariable listVariable)
@@ -1058,7 +1054,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * MethodDeclaration)
 	 */
 	@Override
@@ -1072,7 +1068,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FieldsDeclaration)
 	 */
 	@Override
@@ -1095,7 +1091,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * MethodInvocation)
 	 */
 	@Override
@@ -1109,7 +1105,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticMethodInvocation)
 	 */
 	@Override
@@ -1123,7 +1119,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * NamespaceDeclaration)
 	 */
 	@Override
@@ -1149,9 +1145,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.NamespaceName
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * NamespaceName )
 	 */
 	@Override
 	public boolean visit(NamespaceName namespaceName)
@@ -1171,7 +1166,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ParenthesisExpression)
 	 */
 	@Override
@@ -1190,7 +1185,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * PostfixExpression)
 	 */
 	@Override
@@ -1215,7 +1210,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * PrefixExpression)
 	 */
 	@Override
@@ -1241,7 +1236,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Quote)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Quote)
 	 */
 	@Override
 	public boolean visit(Quote quote)
@@ -1264,7 +1259,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Reference
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Reference
 	 * )
 	 */
 	@Override
@@ -1281,7 +1276,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ReflectionVariable)
 	 */
 	@Override
@@ -1298,7 +1293,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ReturnStatement)
 	 */
 	@Override
@@ -1325,7 +1320,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Scalar)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Scalar)
 	 */
 	@Override
 	public boolean visit(Scalar scalar)
@@ -1336,7 +1331,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticConstantAccess)
 	 */
 	@Override
@@ -1349,7 +1344,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticFieldAccess)
 	 */
 	@Override
@@ -1362,7 +1357,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticStatement)
 	 */
 	@Override
@@ -1378,7 +1373,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * SwitchStatement)
 	 */
 	@Override
@@ -1419,7 +1414,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.SwitchCase
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.SwitchCase
 	 * )
 	 */
 	@Override
@@ -1486,7 +1481,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * CastExpression)
 	 */
 	@Override
@@ -1504,7 +1499,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.CatchClause
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.CatchClause
 	 * )
 	 */
 	@Override
@@ -1519,7 +1514,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ThrowStatement)
 	 */
 	@Override
@@ -1534,9 +1529,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.TryStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TryStatement )
 	 */
 	@Override
 	public boolean visit(TryStatement tryStatement)
@@ -1553,7 +1547,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * UnaryOperation)
 	 */
 	@Override
@@ -1569,9 +1563,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.UseStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * UseStatement )
 	 */
 	@Override
 	public boolean visit(UseStatement useStatement)
@@ -1585,7 +1578,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * UseStatementPart)
 	 */
 	@Override
@@ -1610,7 +1603,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Variable)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Variable
+	 * )
 	 */
 	@Override
 	public boolean visit(Variable variable)

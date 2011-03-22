@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.ui.util.StatusInfo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -18,6 +16,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.ui.util.StatusInfo;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants.Keys;

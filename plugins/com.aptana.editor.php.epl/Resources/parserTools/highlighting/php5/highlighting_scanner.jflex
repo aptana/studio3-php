@@ -9,15 +9,15 @@
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
 
-package org.eclipse.php.internal.core.documentModel.parser.php5;
+package org2.eclipse.php.internal.core.documentModel.parser.php5;
 
-import org.eclipse.php.internal.core.util.collections.IntHashtable;
+import org2.eclipse.php.internal.core.util.collections.IntHashtable;
 
 %%
 
 %public
 %class PhpLexer
-%extends org.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer
+%extends org2.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer
 %type String
 %unicode
 %caseless

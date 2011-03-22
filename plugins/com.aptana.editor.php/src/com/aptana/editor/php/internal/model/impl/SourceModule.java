@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.dltk.internal.core.util.Util;
+import org2.eclipse.dltk.internal.core.util.Util;
 
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.core.util.IOUtil;
