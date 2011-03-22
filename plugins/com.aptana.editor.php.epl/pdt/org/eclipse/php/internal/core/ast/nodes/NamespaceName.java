@@ -263,7 +263,7 @@ public class NamespaceName extends Identifier {
 	/*
 	 * (omit javadoc for this method) Method declared on ASTNode.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == ELEMENTS_PROPERTY) {
 			return segments();
