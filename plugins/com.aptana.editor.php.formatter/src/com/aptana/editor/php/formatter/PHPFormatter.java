@@ -97,6 +97,7 @@ import com.aptana.formatter.FormatterIndentDetector;
 import com.aptana.formatter.FormatterUtils;
 import com.aptana.formatter.FormatterWriter;
 import com.aptana.formatter.IFormatterContext;
+import com.aptana.formatter.IFormatterIndentGenerator;
 import com.aptana.formatter.IScriptFormatter;
 import com.aptana.formatter.epl.FormatterPlugin;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
@@ -252,9 +253,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		int spacesCount = -1;
 		if (isSelection)
 		{
-			IRegion region = (IRegion) context.getProperty(FormattingContextProperties.CONTEXT_REGION);
-			offset = region.getOffset();
-			length = region.getLength();
 			// we need to prepend a <?php prefix to the input. Otherwise, the AST will not get generated.
 			input = source.substring(offset, offset + length);
 			spacesCount = countLeftWhitespaceChars(input);
@@ -449,12 +447,18 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	private String format(String input, IParseRootNode parseResult, int indentationLevel, int offset,
 			boolean isSelection, String indentSufix) throws Exception
 	{
+		int spacesCount = -1;
+		if (isSelection)
+		{
+			spacesCount = countLeftWhitespaceChars(input.substring(PHP_PREFIX.length()));
+		}
 		final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 		final FormatterDocument document = createFormatterDocument(input, offset);
 		IFormatterContainerNode root = builder.build(parseResult, document);
 		new PHPFormatterNodeRewriter(parseResult, document).rewrite(root);
 		IFormatterContext context = new PHPFormatterContext(indentationLevel);
-		FormatterWriter writer = new FormatterWriter(document, lineSeparator, createIndentGenerator());
+		IFormatterIndentGenerator indentGenerator = createIndentGenerator();
+		FormatterWriter writer = new FormatterWriter(document, lineSeparator, indentGenerator);
 		writer.setWrapLength(getInt(WRAP_COMMENTS_LENGTH));
 		writer.setLinesPreserve(getInt(PRESERVED_LINES));
 		root.accept(context, writer);
@@ -466,7 +470,22 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			StatusLineMessageTimerManager.setErrorMessage(
 					FormatterMessages.Formatter_formatterErrorCompletedWithErrors, ERROR_DISPLAY_TIMEOUT, true);
 		}
-		return writer.getOutput();
+		String output = writer.getOutput();
+		if (isSelection)
+		{
+			output = leftTrim(output, spacesCount);
+		}
+		else
+		{
+			if (indentationLevel > 0 && StringUtil.EMPTY.equals(indentSufix))
+			{
+				StringBuilder indentBuilder = new StringBuilder();
+				indentGenerator.generateIndent(Math.max(1, indentationLevel - 1), indentBuilder);
+				indentSufix = indentBuilder.toString();
+			}
+			output = processNestedOutput(output.trim(), lineSeparator, indentSufix, false, true);
+		}
+		return output;
 	}
 
 	private FormatterDocument createFormatterDocument(String input, int offset)
