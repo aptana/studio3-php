@@ -842,7 +842,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(FunctionDeclaration functionDeclaration)
 	{
 		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getFunctionName(),
-				functionDeclaration.formalParameters(), functionDeclaration.getBody());
+				functionDeclaration.formalParameters(), null, functionDeclaration.getBody());
 		return false;
 	}
 
@@ -1033,7 +1033,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
 		visitFunctionDeclaration(lambdaFunctionDeclaration, null, lambdaFunctionDeclaration.formalParameters(),
-				lambdaFunctionDeclaration.getBody());
+				lambdaFunctionDeclaration.lexicalVariables(), lambdaFunctionDeclaration.getBody());
 		return false;
 	}
 
@@ -1988,11 +1988,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * 
 	 * @param functionDeclaration
 	 * @param functionName
-	 * @param parameters
+	 * @param formalParameters
+	 * @param lexicalParameters
 	 * @param body
 	 */
 	private void visitFunctionDeclaration(ASTNode functionDeclaration, Identifier functionName,
-			List<FormalParameter> parameters, Block body)
+			List<FormalParameter> formalParameters, List<Expression> lexicalParameters, Block body)
 	{
 		// First, push the function declaration node
 		int declarationEnd = functionDeclaration.getStart() + 8;
@@ -2003,8 +2004,28 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			visitTextNode(functionName, true, 1);
 			declarationEnd = functionName.getEnd();
 		}
+		boolean hasLexicalParams = (lexicalParameters != null && !lexicalParameters.isEmpty());
+		int parametersEnd = body.getStart();
+		if (hasLexicalParams)
+		{
+			int firstLexicalOffset = lexicalParameters.get(0).getStart();
+			// Search backward for the letter 'u' from the word 'use'
+			parametersEnd = builder.locateCharBackward(document, 'u', firstLexicalOffset) - 1;
+		}
 		// push the function parameters
-		pushParametersInParentheses(declarationEnd, body.getStart(), parameters, TypePunctuation.COMMA, false);
+		pushParametersInParentheses(declarationEnd, parametersEnd, formalParameters, TypePunctuation.COMMA, false);
+		// In case we have 'lexical' parameters, like we get with a lambda-function, we push them after pushing the
+		// 'use' keyword (for example: function($aaa) use ($bbb, $ccc)...)
+		if (hasLexicalParams)
+		{
+			// Locate and push the 'use'
+			int useKeywordStart = getNextNonWhiteCharOffset(document, builder.peek().getEndOffset());
+			pushKeyword(useKeywordStart, 3, false);
+			// Push the lexical parameters
+			pushParametersInParentheses(useKeywordStart + 3, body.getStart(), lexicalParameters, TypePunctuation.COMMA,
+					false);
+		}
+
 		// Then, push the body
 		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
 		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
