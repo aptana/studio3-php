@@ -22,6 +22,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.ModelManager;
@@ -74,7 +75,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				return Status.OK_STATUS;
 			}
 		};
-		loadBuiltins.setSystem(true);
+		loadBuiltins.setSystem(!EclipseUtil.showSystemJobs());
 		loadBuiltins.setPriority(Job.BUILD);
 		loadBuiltins.schedule(2000L);
 	}
