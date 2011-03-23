@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
@@ -17,10 +14,11 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
+
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
-import org2.eclipse.php.internal.ui.preferences.PreferenceConstants;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.preferences.IPreferenceConstants;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
@@ -89,8 +87,6 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	protected String contentType;
 	protected PHPSourceViewerConfiguration configuration;
 	protected ISourceViewer sourceViewer;
-	protected static IPreferenceChangeListener prefChangeListner;
-	private static boolean autoIndentEnabled;
 
 	/**
 	 * Construct a new PHPAutoEditStrategy
@@ -105,18 +101,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		this.contentType = contentType;
 		this.configuration = configuration;
 		this.sourceViewer = sourceViewer;
-		updateAutoIndentPreference();
-		AbstractPHPAutoEditStrategy.prefChangeListner = new IPreferenceChangeListener()
-		{
-			public void preferenceChange(PreferenceChangeEvent event)
-			{
-				if (PreferenceConstants.PHP_AUTO_INDENT.equals(event.getKey()))
-				{
-					updateAutoIndentPreference();
-				}
-			}
-		};
-		new InstanceScope().getNode(PHPEplPlugin.PLUGIN_ID).addPreferenceChangeListener(prefChangeListner);
+
 	}
 
 	/**
@@ -567,13 +552,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 
 	protected boolean isAutoIndentEnabled()
 	{
-		return autoIndentEnabled;
-	}
-
-	private static void updateAutoIndentPreference()
-	{
-		autoIndentEnabled = PHPEplPlugin.getDefault().getPreferenceStore()
-				.getBoolean(PreferenceConstants.PHP_AUTO_INDENT);
+		return PHPEplPlugin.getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.EDITOR_AUTO_INDENT);
 	}
 
 	/**

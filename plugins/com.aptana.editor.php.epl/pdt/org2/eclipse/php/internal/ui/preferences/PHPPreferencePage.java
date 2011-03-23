@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -169,18 +168,6 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 	protected IEclipsePreferences getPluginPreferenceStore()
 	{
 		return new InstanceScope().getNode(PHPEplPlugin.PLUGIN_ID);
-	}
-	
-	@Override
-	protected void createAutoIndentOptions(Composite parent)
-	{
-		Composite autoIndentGroup = new Composite(parent, SWT.NONE);
-		autoIndentGroup.setLayoutData(GridDataFactory.fillDefaults().span(3, 1).create());
-
-		FieldEditor autoIndentTag = new BooleanFieldEditor(PreferenceConstants.PHP_AUTO_INDENT,
-				com.aptana.editor.common.preferences.Messages.CommonEditorPreferencePage_auto_indent_label,
-				autoIndentGroup);
-		addField(autoIndentTag);
 	}
 
 }
