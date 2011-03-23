@@ -44,6 +44,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants.Keys;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
@@ -1133,7 +1134,7 @@ public final class PHPGlobalIndexer
 					return Status.OK_STATUS;
 				}
 			};
-			savingJob.setSystem(true);
+			savingJob.setSystem(!EclipseUtil.showSystemJobs());
 			savingJob.setPriority(Job.BUILD);
 		}
 	}
