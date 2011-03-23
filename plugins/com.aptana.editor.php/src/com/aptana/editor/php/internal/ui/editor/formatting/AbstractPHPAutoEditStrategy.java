@@ -14,9 +14,12 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
+
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.preferences.IPreferenceConstants;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
@@ -98,6 +101,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		this.contentType = contentType;
 		this.configuration = configuration;
 		this.sourceViewer = sourceViewer;
+
 	}
 
 	/**
@@ -119,8 +123,8 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		{
 			if (includeOtherPartitions)
 			{
-				lexemeProvider = ParsingUtils.createLexemeProvider(document, Math
-						.max(0, offset - MAX_CHARS_TO_LEX_BACK), offset);
+				lexemeProvider = ParsingUtils.createLexemeProvider(document,
+						Math.max(0, offset - MAX_CHARS_TO_LEX_BACK), offset);
 			}
 			else
 			{
@@ -149,7 +153,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 */
 	public void customizeDocumentCommand(IDocument document, DocumentCommand command)
 	{
-		if (command.text == null || command.length > 0)
+		if (command.text == null || command.length > 0 || !isAutoIndentEnabled())
 		{
 			return;
 		}
@@ -540,6 +544,15 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	{
 		// TODO: Shalom Attach this to the php/studio preferences.
 		return true;
+	}
+
+	/**
+	 * Returns the preference value of auto insert indents
+	 */
+
+	protected boolean isAutoIndentEnabled()
+	{
+		return PHPEplPlugin.getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.EDITOR_AUTO_INDENT);
 	}
 
 	/**

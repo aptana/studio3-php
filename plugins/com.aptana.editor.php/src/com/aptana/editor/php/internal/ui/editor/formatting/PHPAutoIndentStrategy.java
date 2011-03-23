@@ -50,6 +50,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	 */
 	public void customizeDocumentCommand(IDocument document, DocumentCommand command)
 	{
+		if(!isAutoIndentEnabled())
+		{
+			return;
+		}
 		innerCustomizeDocumentCommand(document, command);
 		// we have to reset if for the next run
 		this.lexemeProvider = null;
