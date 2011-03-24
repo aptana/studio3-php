@@ -14,6 +14,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
@@ -233,6 +235,11 @@ public abstract class AbstractBuildPath implements IBuildPath
 	 */
 	protected void notifyChangedBefore(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories)
 	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		if (!workspace.isAutoBuilding())
+		{
+			return;
+		}
 		Set<IBuildPathChangeListener> buildPathListeners = null;
 		synchronized (listeners)
 		{
@@ -268,6 +275,11 @@ public abstract class AbstractBuildPath implements IBuildPath
 	protected void notifyChangedAfter(List<IModule> added, List<IModule> changed, List<IModule> removed,
 			List<IDirectory> addedDirectories, List<IDirectory> removedDirectories)
 	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		if (!workspace.isAutoBuilding())
+		{
+			return;
+		}
 		Set<IBuildPathChangeListener> buildPathListeners = null;
 		synchronized (listeners)
 		{
