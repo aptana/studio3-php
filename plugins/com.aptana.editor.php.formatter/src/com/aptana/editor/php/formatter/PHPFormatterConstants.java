@@ -30,7 +30,8 @@ public interface PHPFormatterConstants
 	String WRAP_COMMENTS_LENGTH = FORMATTER_ID + ".wrap.comments.length"; //$NON-NLS-1$
 
 	// Indentation
-	String INDENT_BLOCKS = FORMATTER_ID + ".indent.blocks"; //$NON-NLS-1$
+	String INDENT_PHP_BODY = FORMATTER_ID + ".indent.php.body"; //$NON-NLS-1$
+	String INDENT_CURLY_BLOCKS = FORMATTER_ID + ".indent.blocks"; //$NON-NLS-1$
 	String INDENT_NAMESPACE_BLOCKS = FORMATTER_ID + ".indent.namespace.blocks"; //$NON-NLS-1$
 	String INDENT_FUNCTION_BODY = FORMATTER_ID + ".indent.function.body"; //$NON-NLS-1$
 	String INDENT_TYPE_BODY = FORMATTER_ID + ".indent.class.body"; //$NON-NLS-1$

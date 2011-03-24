@@ -7,7 +7,69 @@
  */
 package com.aptana.editor.php.formatter;
 
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.*;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_BLOCK;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ID;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CASE_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_FUNCTION_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_NAMESPACE_BLOCKS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_PHP_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_SWITCH_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_TYPE_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.LINES_AFTER_TYPE_DECLARATION;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BEFORE_CATCH_STATEMENT;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BEFORE_DO_WHILE_STATEMENT;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.PRESERVED_LINES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_ARITHMETIC_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_ARROW_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_CASE_COLON_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_COLON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_COMMAS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_CONCATENATION_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_CONDITIONAL_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_FOR_SEMICOLON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_KEY_VALUE_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_NAMESPACE_SEPARATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_POSTFIX_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PREFIX_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_RELATIONAL_OPERATORS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_SEMICOLON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_STATIC_INVOCATION_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_UNARY_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ARITHMETIC_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ARROW_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CASE_COLON_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COLON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COMMAS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CONCATENATION_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CONDITIONAL_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_FOR_SEMICOLON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_KEY_VALUE_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_NAMESPACE_SEPARATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_POSTFIX_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PREFIX_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_RELATIONAL_OPERATORS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_SEMICOLON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_STATIC_INVOCATION_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_UNARY_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENTS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENTS_LENGTH;
 
 import java.net.URL;
 import java.util.Map;
@@ -46,7 +108,8 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, FORMATTER_TAB_SIZE),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, WRAP_COMMENTS),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, WRAP_COMMENTS_LENGTH),
-			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, INDENT_BLOCKS),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, INDENT_PHP_BODY),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, INDENT_CURLY_BLOCKS),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, INDENT_NAMESPACE_BLOCKS),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, INDENT_CASE_BODY),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, INDENT_SWITCH_BODY),

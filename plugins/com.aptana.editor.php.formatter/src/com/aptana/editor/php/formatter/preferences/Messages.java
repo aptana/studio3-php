@@ -48,7 +48,8 @@ public class Messages extends NLS
 	public static String PHPFormatterModifyDialog_whiteSpacesTabName;
 	public static String PHPFormatterNewLinesPage_newLineBeforeWhileInDo;
 
-	public static String PHPFormatterIndentationTabPage_statementsWithinBlocks;
+	public static String PHPFormatterIndentationTabPage_statementsWithinPHPBlocks;
+	public static String PHPFormatterIndentationTabPage_statementsWithinCurlyBracketBlocks;
 	public static String PHPFormatterIndentationTabPage_statementsWithinNamespaceBlocks;
 	public static String PHPFormatterIndentationTabPage_statementsWithinSwitch;
 	public static String PHPFormatterIndentationTabPage_statementsWithinCase;

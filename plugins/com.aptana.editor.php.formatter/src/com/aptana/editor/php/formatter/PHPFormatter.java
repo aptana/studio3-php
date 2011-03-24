@@ -15,11 +15,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITI
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CASE_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_FUNCTION_BODY;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_NAMESPACE_BLOCKS;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_PHP_BODY;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_SWITCH_BODY;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_TYPE_BODY;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.LINES_AFTER_FUNCTION_DECLARATION;
@@ -133,8 +134,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	/**
 	 * Indentation constants
 	 */
-	protected static final String[] INDENTATIONS = { INDENT_BLOCKS, INDENT_NAMESPACE_BLOCKS, INDENT_CASE_BODY,
-			INDENT_SWITCH_BODY, INDENT_FUNCTION_BODY, INDENT_TYPE_BODY, INDENT_BREAK_IN_CASE };
+	protected static final String[] INDENTATIONS = { INDENT_PHP_BODY, INDENT_CURLY_BLOCKS, INDENT_NAMESPACE_BLOCKS,
+			INDENT_CASE_BODY, INDENT_SWITCH_BODY, INDENT_FUNCTION_BODY, INDENT_TYPE_BODY, INDENT_BREAK_IN_CASE };
 
 	/**
 	 * Spaces constants
@@ -185,25 +186,27 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		try
 		{
 			// detect the indentation offset with the parser, only if the given offset is not the first one in the
-			// current
-			// partition.
+			// current partition.
 			ITypedRegion partition = document.getPartition(offset);
 			if (partition != null && partition.getOffset() == offset)
 			{
 				int indentationLevel = super.detectIndentationLevel(document, offset);
-				// Do some checks to see if we need to return a reduced indentation level.
-				// In php, we don't want the indent addition at the beginning.
-				char onOffset = document.getChar(offset);
-				if (onOffset == '\r')
+				if (!getBoolean(INDENT_PHP_BODY))
 				{
-					if (document.getChar(offset + 1) != '\n')
+					// Do some checks to see if we need to return a reduced indentation level.
+					// In php, we don't want the indent addition at the beginning.
+					char onOffset = document.getChar(offset);
+					if (onOffset == '\r')
+					{
+						if (document.getChar(offset - 1) != '\n')
+						{
+							return indentationLevel - 1;
+						}
+					}
+					else if (onOffset == '\n')
 					{
 						return indentationLevel - 1;
 					}
-				}
-				else if (onOffset == '\n')
-				{
-					return indentationLevel - 1;
 				}
 				return indentationLevel;
 			}

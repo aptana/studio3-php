@@ -91,8 +91,10 @@ public class PHPFormatterIndentationTabPage extends FormatterModifyTabPage
 
 		group = SWTFactory.createGroup(parent, Messages.PHPFormatterTabPage_indentGroupLabel, 1, 1,
 				GridData.FILL_HORIZONTAL);
-		manager.createCheckbox(group, PHPFormatterConstants.INDENT_BLOCKS,
-				Messages.PHPFormatterIndentationTabPage_statementsWithinBlocks);
+		manager.createCheckbox(group, PHPFormatterConstants.INDENT_PHP_BODY,
+				Messages.PHPFormatterIndentationTabPage_statementsWithinPHPBlocks);
+		manager.createCheckbox(group, PHPFormatterConstants.INDENT_CURLY_BLOCKS,
+				Messages.PHPFormatterIndentationTabPage_statementsWithinCurlyBracketBlocks);
 		manager.createCheckbox(group, PHPFormatterConstants.INDENT_NAMESPACE_BLOCKS,
 				Messages.PHPFormatterIndentationTabPage_statementsWithinNamespaceBlocks);
 		manager.createCheckbox(group, PHPFormatterConstants.INDENT_TYPE_BODY,

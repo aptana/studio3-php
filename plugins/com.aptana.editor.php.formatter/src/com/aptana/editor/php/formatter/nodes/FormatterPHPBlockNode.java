@@ -79,6 +79,6 @@ public class FormatterPHPBlockNode extends FormatterBlockWithBeginEndNode
 	@Override
 	protected boolean isIndenting()
 	{
-		return getDocument().getBoolean(PHPFormatterConstants.INDENT_BLOCKS);
+		return getDocument().getBoolean(PHPFormatterConstants.INDENT_CURLY_BLOCKS);
 	}
 }
