@@ -59,6 +59,8 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 			case ASTNode.ARRAY_ELEMENT:
 			case ASTNode.CLASS_INSTANCE_CREATION:
 			case ASTNode.FUNCTION_INVOCATION:
+			case ASTNode.IF_STATEMENT:
+			case ASTNode.UNARY_OPERATION:
 				return true;
 			default:
 				return false;
