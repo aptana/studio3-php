@@ -9,7 +9,9 @@ package com.aptana.editor.php.formatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org2.eclipse.php.internal.core.ast.nodes.ClassName;
 import org2.eclipse.php.internal.core.ast.nodes.CloneExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
 import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
@@ -134,15 +137,56 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	private FormatterDocument document;
 	private PHPFormatterNodeBuilder builder;
+	private Set<Integer> commentEndOffsets;
 
 	/**
 	 * @param builder
 	 * @param document
+	 * @param comments
 	 */
-	public PHPFormatterVisitor(FormatterDocument document, PHPFormatterNodeBuilder builder)
+	public PHPFormatterVisitor(FormatterDocument document, PHPFormatterNodeBuilder builder, List<Comment> comments)
 	{
 		this.document = document;
 		this.builder = builder;
+		collectCommentEndOffsets(comments);
+	}
+
+	/**
+	 * Collect the comments ending offsets (including the white-spaces that appear after them).
+	 * 
+	 * @param comments
+	 */
+	private void collectCommentEndOffsets(List<Comment> comments)
+	{
+		commentEndOffsets = new HashSet<Integer>();
+		if (comments == null)
+		{
+			return;
+		}
+		for (Comment comment : comments)
+		{
+			int commentType = comment.getCommentType();
+			if (commentType == Comment.TYPE_SINGLE_LINE)
+			{
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, comment.getEnd()));
+			}
+			else if (commentType == Comment.TYPE_MULTILINE || commentType == Comment.TYPE_PHPDOC)
+			{
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, comment.getEnd() + 1));
+			}
+		}
+	}
+
+	/**
+	 * Returns true if there is a comment right before the given element.<br>
+	 * There should be only whitespaces between the given offset and the comment.
+	 * 
+	 * @param offset
+	 * @return True, if the given offset is right after a comment.
+	 */
+	private boolean hasCommentBefore(int offset)
+	{
+		return commentEndOffsets.contains(offset);
 	}
 
 	/*
@@ -198,7 +242,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			{
 				int elseBlockStart = elsePos + trueBlockEnd + 1;
 				int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
-				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock);
+				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock,
+						hasCommentBefore(elseBlockStart));
 				elseNode.setBegin(builder.createTextNode(document, elseBlockStart, elseBlockDeclarationEnd));
 				builder.push(elseNode);
 			}
@@ -212,7 +257,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				{
 					// Wrap the incoming 'if' with an Else-If node that will allow us later to break it and indent
 					// it.
-					FormatterPHPElseIfNode elseIfNode = new FormatterPHPElseIfNode(document);
+					FormatterPHPElseIfNode elseIfNode = new FormatterPHPElseIfNode(document,
+							hasCommentBefore(falseBlockStart));
 					elseIfNode.setBegin(builder.createTextNode(document, falseBlockStart, falseBlockStart));
 					builder.push(elseIfNode);
 					falseStatement.accept(this);
@@ -1447,7 +1493,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(caseColonNode, -1);
 		builder.checkedPop(caseNode, -1);
 		// push the case/default content
-		FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document, hasBlockedChild);
+		FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document, hasBlockedChild, hasBlockedChild
+				&& hasCommentBefore(actions.get(0).getStart()));
 		if (hasBlockedChild)
 		{
 			Block body = (Block) actions.get(0);
@@ -1645,7 +1692,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(typeNode, -1);
 
 		// add the class body
-		FormatterPHPTypeBodyNode typeBodyNode = new FormatterPHPTypeBodyNode(document);
+		FormatterPHPTypeBodyNode typeBodyNode = new FormatterPHPTypeBodyNode(document,
+				hasCommentBefore(body.getStart()));
 		typeBodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
 		builder.push(typeBodyNode);
 		body.childrenAccept(this);
@@ -1713,7 +1761,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		FormatterPHPParenthesesNode parenthesesNode = null;
 		if (pushParenthesisNode)
 		{
-			int openParen = getNextNonWhiteCharOffset(document, declarationEndOffset);
+			int openParen = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
 			if (document.charAt(openParen) == '(')
 			{
 				parenthesesNode = new FormatterPHPParenthesesNode(document);
@@ -1734,7 +1782,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			{
 				// Look ahead to find any extra comma that we may have. If found, push it as a punctuation node.
 				int lastParamEnd = parameters.get(parameters.size() - 1).getEnd();
-				int nextNonWhitespace = getNextNonWhiteCharOffset(document, lastParamEnd);
+				int nextNonWhitespace = builder.getNextNonWhiteCharOffset(document, lastParamEnd);
 				if (document.charAt(nextNonWhitespace) == ',')
 				{
 					pushTypePunctuation(punctuationType, nextNonWhitespace);
@@ -1753,29 +1801,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			builder.checkedPop(parenthesesNode, -1);
 			parenthesesNode.setEnd(builder.createTextNode(document, closeParenStart, closeParenEnd));
 		}
-	}
-
-	/**
-	 * Returns the next non-white char offset. In case all the chars after the given start offset are white-spaces,
-	 * return the given start offset.
-	 * 
-	 * @param document
-	 * @param startOffset
-	 * @return The next non-white char; Or the given start-offset if all the chars right to the start offset were
-	 *         whitespaces.
-	 */
-	private int getNextNonWhiteCharOffset(FormatterDocument document, int startOffset)
-	{
-		int length = document.getLength();
-		for (int offset = startOffset; offset < length; offset++)
-		{
-			char charAt = document.charAt(offset);
-			if (!Character.isWhitespace(charAt))
-			{
-				return offset;
-			}
-		}
-		return startOffset;
 	}
 
 	/**
@@ -1955,7 +1980,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private void visitBlockNode(Block block, ASTNode parent, boolean consumeEndingSemicolon)
 	{
 		boolean isAlternativeSyntaxBlock = !block.isCurly();
-		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, false);
+		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, hasCommentBefore(block.getStart()));
 		blockNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
 		builder.push(blockNode);
 		// visit the children
@@ -2019,7 +2044,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (hasLexicalParams)
 		{
 			// Locate and push the 'use'
-			int useKeywordStart = getNextNonWhiteCharOffset(document, builder.peek().getEndOffset());
+			int useKeywordStart = builder.getNextNonWhiteCharOffset(document, builder.peek().getEndOffset());
 			pushKeyword(useKeywordStart, 3, false);
 			// Push the lexical parameters
 			pushParametersInParentheses(useKeywordStart + 3, body.getStart(), lexicalParameters, TypePunctuation.COMMA,
@@ -2027,7 +2052,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 
 		// Then, push the body
-		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
+		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document,
+				hasCommentBefore(body.getStart()));
 		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
 		builder.push(bodyNode);
 		body.childrenAccept(this);

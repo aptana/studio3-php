@@ -46,7 +46,7 @@ public class PHPFormatterNodeBuilder extends AbstractFormatterNodeBuilder
 			if (child instanceof PHPASTWrappingNode)
 			{
 				Program ast = ((PHPASTWrappingNode) child).getAST();
-				ast.accept(new PHPFormatterVisitor(document, this));
+				ast.accept(new PHPFormatterVisitor(document, this, ast.comments()));
 			}
 		}
 		checkedPop(rootNode, document.getLength());
