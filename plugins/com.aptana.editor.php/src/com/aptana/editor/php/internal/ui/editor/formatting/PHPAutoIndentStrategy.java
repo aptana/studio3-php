@@ -50,7 +50,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	 */
 	public void customizeDocumentCommand(IDocument document, DocumentCommand command)
 	{
-		if(!isAutoIndentEnabled())
+		if (!isAutoIndentEnabled())
 		{
 			return;
 		}
@@ -125,15 +125,31 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					// The colon char can appear in a switch-case blocks and when using an old-style php if-else, loops
 					// or switch-case blocks.
 					// To decide what is the case here, we look at the first word in the current line.
-					Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, floorLexeme
-							.getStartingOffset());
+					Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider,
+							floorLexeme.getStartingOffset());
 					if (firstLexemeInLine == null)
 					{
 						return;
 					}
 
+					if (lexemeText.equals(")")) //$NON-NLS-1$
+					{
+						indentAfterNewLine(document, command);
+						command.text += configuration.getIndent();
+						return;
+					}
+					if (lexemeText.equals(";")) { //$NON-NLS-1$
+						Lexeme<PHPTokenType> previousNonWhitespaceLexeme = getPreviousNonWhitespaceLexeme(firstLexemeInLine
+								.getStartingOffset() - 1);
+						String indent = indentAfterOneLineBlock(previousNonWhitespaceLexeme.getStartingOffset(),
+								document);
+						if (indent != null)
+						{
+							command.text += indent;
+							return;
+						}
+					}
 					indentAfterNewLine(document, command);
-
 					// This will cause a line after a 'block-type' to be indented, even when the
 					// type has no open bracket. For now, it's disabled. If we would like to have it enabled, we should
 					// consider de-denting the line back if the user start typing a curly-open on that line.
@@ -225,18 +241,26 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		if (lineInfo.getOffset() > 0)
 		{
 			Lexeme<PHPTokenType> firstLexemeInLine = null;
+			int count = 10; // place it here to avoid any unexpected infinite loops..
 			do
 			{
+				if (count-- == 0)
+				{
+					PHPEditorPlugin.logWarning("Stopped a possible infinite loop in the PHPAutoIndentStrategy"); //$NON-NLS-1$
+					break;
+				}
 				firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, lineInfo.getOffset());
 				// Check if the line of lexeme ends with with a curly bracket or a colon.
 				// If so, we have a block that span more then one line.
 				lineInfo = document.getLineInformationOfOffset(firstLexemeInLine.getStartingOffset());
-				Lexeme<PHPTokenType> lastLexemeInLine = getLastLexemeInLine(document, lexemeProvider, lineInfo
-						.getOffset());
-				if (lastLexemeInLine != null && firstLexemeInLine != null
-						&& BLOCK_TYPES.contains(firstLexemeInLine.getType().getType()))
+				Lexeme<PHPTokenType> lastLexemeInLine = getLastLexemeInLine(document, lexemeProvider,
+						lineInfo.getOffset());
+				if (lastLexemeInLine != null
+						&& firstLexemeInLine != null
+						&& (BLOCK_TYPES.contains(firstLexemeInLine.getType().getType()) || BLOCK_TYPES
+								.contains(lastLexemeInLine.getType().getType()) || ")".equals(lastLexemeInLine.getText()))) //$NON-NLS-1$
 				{
-					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$ //$NON-NLS-2$
+					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$//$NON-NLS-2$
 					{
 						// it's a block, so return what we have
 						if (indent == null)
@@ -245,6 +269,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 									+ getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 						}
 						return indent;
+					}
+					if (")".equals(lastLexemeInLine.getText()) || "else".equals(lastLexemeInLine.getText())) //$NON-NLS-1$ //$NON-NLS-2$
+					{
+						return getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 					}
 					indent = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 				}
