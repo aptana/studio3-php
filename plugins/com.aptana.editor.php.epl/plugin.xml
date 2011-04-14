@@ -51,8 +51,9 @@
 	<!-- Task Markers                                                                    -->
 	<!-- =================================================================================== -->
 	<extension id="task" point="org.eclipse.core.resources.markers" name="%phpTaskName">
-		<super type="org.eclipse.core.resources.taskmarker"/>
-		<super type="org.eclipse.core.resources.textmarker"/>
+    <super
+          type="com.aptana.core.task">
+    </super>
 		<persistent value="true"/>
     </extension>
     
