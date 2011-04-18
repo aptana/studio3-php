@@ -1019,6 +1019,16 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		String operatorString = InfixExpression.getOperator(infixExpression.getOperator());
 		ASTNode left = infixExpression.getLeft();
 		ASTNode right = infixExpression.getRight();
+		if (infixExpression.getOperator() == InfixExpression.OP_IS_NOT_EQUAL && left != null && right != null)
+		{
+			// There can be two types of not-equal: != or <>
+			// We have to check for the actual one.
+			String expression = document.get(left.getEnd(), right.getStart()).trim();
+			if (!operatorString.equals(expression))
+			{
+				operatorString = TypeOperator.NOT_EQUAL_ALTERNATE.toString();
+			}
+		}
 		visitLeftRightExpression(infixExpression, left, right, operatorString);
 		return false;
 	}

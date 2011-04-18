@@ -86,11 +86,12 @@ public class NodeTypes
 		OR_EQUAL("|="), //$NON-NLS-1$
 		AND_EQUAL("&="), //$NON-NLS-1$
 		EQUAL("=="), //$NON-NLS-1$
-		TYPE_EQUAL("==="), //$NON-NLS-1$
+		IDENTICAL("==="), //$NON-NLS-1$
 		TILDE("~"), //$NON-NLS-1$
 		NOT("!"), //$NON-NLS-1$
 		NOT_EQUAL("!="), //$NON-NLS-1$
-		NOT_TYPE_EQUAL("!=="), //$NON-NLS-1$
+		NOT_EQUAL_ALTERNATE("<>"), //$NON-NLS-1$
+		NOT_IDENTICAL("!=="), //$NON-NLS-1$
 		ARROW("->"), //$NON-NLS-1$
 		STATIC_INVOCATION("::"), //$NON-NLS-1$
 		KEY_VALUE("=>"), //$NON-NLS-1$
