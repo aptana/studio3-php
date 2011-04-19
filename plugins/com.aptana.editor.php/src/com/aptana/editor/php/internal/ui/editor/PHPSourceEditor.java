@@ -46,6 +46,7 @@ import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.SingleFileBuildPath;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.core.model.ISourceModuleProviderEditor;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
@@ -131,7 +132,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			phpParseState = new PHPParseState();
 		}
-		return new FileService(PHPMimeType.MIME_TYPE, phpParseState);
+		return new FileService(IPHPConstants.CONTENT_TYPE_PHP, phpParseState);
 	}
 
 	/*
