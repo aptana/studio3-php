@@ -50,7 +50,6 @@ import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.core.model.ISourceModuleProviderEditor;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
 import com.aptana.editor.php.internal.ui.actions.IPHPActionKeys;
@@ -291,7 +290,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	public String getLanguage()
 	{
-		return PHPMimeType.MIME_TYPE;
+		return IPHPConstants.CONTENT_TYPE_PHP;
 	}
 
 	public void phpVersionChanged(PHPVersion newVersion)

@@ -89,7 +89,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.PHPParser;
 import com.aptana.editor.php.internal.parser.nodes.PHPASTWrappingNode;
 import com.aptana.formatter.AbstractScriptFormatter;
@@ -216,7 +216,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(),
+				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
 						ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
@@ -270,13 +270,13 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		// anything in the indexing.
 		try
 		{
-			PHPParser parser = (PHPParser) checkoutParser(PHPMimeType.MIME_TYPE);
+			PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 			Program ast = parser.parseAST(new StringReader(input));
 			checkinParser(parser);
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(),
+				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
 						ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection,
@@ -360,7 +360,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			return false;
 		}
 		output = output.trim();
-		PHPParser parser = (PHPParser) checkoutParser(PHPMimeType.MIME_TYPE);
+		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 		Program outputAST = parser.parseAST(new StringReader(output));
 		checkinParser(parser);
 		if (outputAST == null)

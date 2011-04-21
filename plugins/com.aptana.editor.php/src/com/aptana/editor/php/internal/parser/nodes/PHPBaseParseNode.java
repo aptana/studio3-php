@@ -9,7 +9,7 @@ package com.aptana.editor.php.internal.parser.nodes;
 
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
-import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.ast.INameNode;
 import com.aptana.parsing.ast.ParseNode;
 
@@ -32,7 +32,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode()
 	{
-		super(PHPMimeType.MIME_TYPE);
+		super(IPHPConstants.CONTENT_TYPE_PHP);
 		name = EMPTY;
 	}
 
@@ -47,7 +47,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String name)
 	{
-		super(PHPMimeType.MIME_TYPE);
+		super(IPHPConstants.CONTENT_TYPE_PHP);
 		this.nodeType = nodeType;
 		this.name = name.length() != 0 ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;

@@ -17,6 +17,7 @@ import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
@@ -68,7 +69,7 @@ public class PHPParser implements IParser
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		IParseRootNode root = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], startingOffset, startingOffset
+		IParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset, startingOffset
 				+ source.length());
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
@@ -153,13 +154,13 @@ public class PHPParser implements IParser
 		if (ast != null)
 		{
 
-			IParseRootNode root = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(),
+			IParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
 					ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
 			return root;
 		}
-		return new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], 0, 0);
+		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], 0, 0);
 	}
 
 	/**

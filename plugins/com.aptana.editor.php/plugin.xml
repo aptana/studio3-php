@@ -232,14 +232,12 @@
          point="com.aptana.parsing.parser">
       <parser
             class="com.aptana.editor.php.internal.parser.PHTMLParser"
-            content-type="com.aptana.contenttype.phtml.php"
-            language="text/php">
+            content-type="com.aptana.contenttype.phtml.php">
       </parser>
       <!-- Register the PHP parser to work on partitions as well. This is needed for the code-formatting process. -->
       <parser
             class="com.aptana.editor.php.internal.parser.PHPParser"
-            content-type="com.aptana.contenttype.php"
-            language="text/php">
+            content-type="com.aptana.contenttype.php">
       </parser>
    </extension>
    <extension

@@ -21,8 +21,8 @@ import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
+import com.aptana.editor.html.IHTMLConstants;
 import com.aptana.editor.html.parsing.HTMLParseState;
-import com.aptana.editor.html.parsing.IHTMLParserConstants;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.IParser;
@@ -286,7 +286,7 @@ public class NodeBuilder
 		{
 			bn.addChild(current.getChild(a));
 		}
-		IParserPool pool = ParserPoolFactory.getInstance().getParserPool(IHTMLParserConstants.LANGUAGE);
+		IParserPool pool = ParserPoolFactory.getInstance().getParserPool(IHTMLConstants.CONTENT_TYPE_HTML);
 		if (pool != null)
 		{
 			htmlParser = pool.checkOut();

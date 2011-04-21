@@ -9,7 +9,7 @@ package com.aptana.editor.php.internal.parser.nodes;
 
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
-import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.ast.ParseNode;
 
 /**
@@ -31,7 +31,7 @@ public class PHPASTWrappingNode extends ParseNode
 	 */
 	public PHPASTWrappingNode(Program ast)
 	{
-		super(PHPMimeType.MIME_TYPE);
+		super(IPHPConstants.CONTENT_TYPE_PHP);
 		this.ast = ast;
 	}
 
