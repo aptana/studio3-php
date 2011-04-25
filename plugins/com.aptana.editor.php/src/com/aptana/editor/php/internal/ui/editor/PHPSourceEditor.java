@@ -258,15 +258,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.editor.html.HTMLEditor#installOpenTagCloser()
-	 */
-	protected void installOpenTagCloser()
-	{
-		new PHPOpenTagCloser(getSourceViewer()).install();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.AbstractThemeableEditor#getOutlineElementAt(int)
 	 */
 	@Override
