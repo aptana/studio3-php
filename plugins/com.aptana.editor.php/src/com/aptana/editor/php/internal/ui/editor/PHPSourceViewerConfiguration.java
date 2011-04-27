@@ -15,6 +15,8 @@ import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CompositeSourceViewerConfiguration;
 import com.aptana.editor.common.IPartitionerSwitchStrategy;
 import com.aptana.editor.common.contentassist.ContentAssistant;
+import com.aptana.editor.common.text.RubyRegexpAutoIndentStrategy;
+import com.aptana.editor.html.HTMLPlugin;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.html.HTMLSourceViewerConfiguration;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
@@ -74,7 +76,8 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 		{
 			return new IAutoEditStrategy[] { new PHPAutoIndentStrategy(contentType, this, sourceViewer) };
 		}
-		return super.getAutoEditStrategies(sourceViewer, contentType);
+		return new IAutoEditStrategy[] { new RubyRegexpAutoIndentStrategy(contentType, this, sourceViewer, HTMLPlugin
+				.getDefault().getPreferenceStore()) };
 	}
 
 	/*
@@ -151,7 +154,7 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Map getHyperlinkDetectorTargets(ISourceViewer sourceViewer)
 	{
 		Map targets = super.getHyperlinkDetectorTargets(sourceViewer);
