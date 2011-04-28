@@ -480,6 +480,7 @@ public class PreferenceConstants
 		// do more complicated stuff
 		// PHPProjectLayoutPreferencePage.initDefaults(store);
 
+		store.setDefault(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_ENABLE_FOLDING, true);
 	}
 
 	public static String getEnabledPreferenceKey(String preferenceKey)
