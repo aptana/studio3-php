@@ -56,6 +56,11 @@ public interface IPHPParseNode extends IParseNode
 	 */
 	public static final short HTML_NODE = 4509;
 
+	/**
+	 * COMMENT_NODE
+	 */
+	public static final short COMMENT_NODE = 4510;
+
 	public void setDocumentation(IPHPDocBlock docInfo);
 
 	public IPHPDocBlock getDocumentation();

@@ -24,6 +24,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
@@ -47,6 +48,11 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 	private Composite advancedOptions;
 	private BooleanFieldEditor markOccurences;
 	private Composite appearanceComposite;
+	private Composite foldingGroup;
+	private BooleanFieldEditor foldTypes;
+	private BooleanFieldEditor foldFunctions;
+	private BooleanFieldEditor foldPHPDoc;
+	private BooleanFieldEditor foldComments;
 
 	/**
 	 * PHPPreferencePage
@@ -74,6 +80,20 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 				toggleAdvancedOccurrenceSection(true);
 			}
 		}
+		else if (event.getSource() == enableFolding)
+		{
+			Object newValue = event.getNewValue();
+			boolean enableFoldingOptions = false;
+			if (Boolean.TRUE.equals(newValue))
+			{
+				enableFoldingOptions = true;
+			}
+			foldTypes.setEnabled(enableFoldingOptions, foldingGroup);
+			foldFunctions.setEnabled(enableFoldingOptions, foldingGroup);
+			foldComments.setEnabled(enableFoldingOptions, foldingGroup);
+			foldPHPDoc.setEnabled(enableFoldingOptions, foldingGroup);
+		}
+		super.propertyChange(event);
 	}
 
 	protected void initialize()
@@ -168,6 +188,38 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 	protected IEclipsePreferences getPluginPreferenceStore()
 	{
 		return new InstanceScope().getNode(PHPEplPlugin.PLUGIN_ID);
+	}
+
+	@Override
+	protected Composite createFoldingOptions(Composite parent)
+	{
+		this.foldingGroup = super.createFoldingOptions(parent);
+
+		// Initially fold these elements:
+		Label initialFoldLabel = new Label(foldingGroup, SWT.WRAP);
+		initialFoldLabel.setText(PHPUIMessages.getString("PHPPreferencePage_initial_fold_options_label")); //$NON-NLS-1$
+
+		// Types
+		foldTypes = new BooleanFieldEditor(PreferenceConstants.EDITOR_FOLDING_CLASSES,
+				PHPUIMessages.getString("PHPPreferencePage_fold_types_label"), foldingGroup); //$NON-NLS-1$
+		addField(foldTypes);
+
+		// Functions
+		foldFunctions = new BooleanFieldEditor(PreferenceConstants.EDITOR_FOLDING_FUNCTIONS,
+				PHPUIMessages.getString("PHPPreferencePage_fold_functions_label"), foldingGroup); //$NON-NLS-1$
+		addField(foldFunctions);
+
+		// PHPDoc
+		foldPHPDoc = new BooleanFieldEditor(PreferenceConstants.EDITOR_FOLDING_PHPDOC,
+				PHPUIMessages.getString("PHPPreferencePage_fold_phpdoc_label"), foldingGroup); //$NON-NLS-1$
+		addField(foldPHPDoc);
+
+		// Comments
+		foldComments = new BooleanFieldEditor(PreferenceConstants.EDITOR_FOLDING_COMMENTS,
+				PHPUIMessages.getString("PHPPreferencePage_fold_comments_label"), foldingGroup); //$NON-NLS-1$
+		addField(foldComments);
+
+		return foldingGroup;
 	}
 
 }

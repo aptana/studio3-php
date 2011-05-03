@@ -3,12 +3,15 @@ package com.aptana.editor.php.internal.parser;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.nodes.AST;
 import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.core.util.IOUtil;
@@ -23,6 +26,7 @@ import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPCommentNode;
 import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.IParser;
@@ -69,7 +73,8 @@ public class PHPParser implements IParser
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		IParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset, startingOffset
+		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset,
+				startingOffset
 				+ source.length());
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
@@ -154,7 +159,7 @@ public class PHPParser implements IParser
 		if (ast != null)
 		{
 
-			IParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
+			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
 					ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
@@ -208,13 +213,19 @@ public class PHPParser implements IParser
 	/*
 	 * Process the AST and update the given IParseNode
 	 */
-	private void processChildren(Program ast, IParseNode root, String source)
+	private void processChildren(Program ast, ParseRootNode root, String source)
 	{
 		/*
 		 * kept here for Debug purposes ApplyAll astPrinter = new ApplyAll() {
 		 * @Override public boolean apply(ASTNode node) { System.out.println(node.toString()); return true; } };
 		 * ast.accept(astPrinter);
 		 */
+		List<IParseNode> commentNodes = new ArrayList<IParseNode>();
+		for (Comment c : ast.comments())
+		{
+			commentNodes.add(new PHPCommentNode(c));
+		}
+		root.setCommentNodes(commentNodes.toArray(new IParseNode[commentNodes.size()]));
 		NodeBuilder builderClient = new NodeBuilder(source);
 		ast.accept(new NodeBuildingVisitor(builderClient, source));
 		PHPBlockNode nodes = builderClient.populateNodes();

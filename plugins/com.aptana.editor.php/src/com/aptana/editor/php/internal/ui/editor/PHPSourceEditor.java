@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPartService;
@@ -34,6 +35,7 @@ import org2.eclipse.php.internal.core.PHPVersion;
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.common.parsing.FileService;
+import com.aptana.editor.common.text.reconciler.IFoldingComputer;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -132,6 +134,12 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			phpParseState = new PHPParseState();
 		}
 		return new FileService(IPHPConstants.CONTENT_TYPE_PHP, phpParseState);
+	}
+
+	@Override
+	public IFoldingComputer createFoldingComputer(IDocument document)
+	{
+		return new PHPFoldingComputer(this, document);
 	}
 
 	/*

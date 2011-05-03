@@ -289,12 +289,21 @@ public class NodeBuilder
 		IParserPool pool = ParserPoolFactory.getInstance().getParserPool(IHTMLConstants.CONTENT_TYPE_HTML);
 		if (pool != null)
 		{
-			htmlParser = pool.checkOut();
-			if (htmlParser != null)
+			try
 			{
-				replaceHtmlNodes(bn);
-				pool.checkIn(htmlParser);
-				htmlParser = null;
+				htmlParser = pool.checkOut();
+				if (htmlParser != null)
+				{
+					replaceHtmlNodes(bn);
+				}
+			}
+			finally
+			{
+				if (htmlParser != null)
+				{
+					pool.checkIn(htmlParser);
+					htmlParser = null;
+				}
 			}
 		}
 		return bn;
