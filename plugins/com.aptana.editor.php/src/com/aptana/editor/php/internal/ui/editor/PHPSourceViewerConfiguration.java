@@ -18,8 +18,6 @@ import com.aptana.editor.common.contentassist.ContentAssistant;
 import com.aptana.editor.common.text.RubyRegexpAutoIndentStrategy;
 import com.aptana.editor.html.HTMLPlugin;
 import com.aptana.editor.html.HTMLSourceConfiguration;
-import com.aptana.editor.html.HTMLSourceViewerConfiguration;
-import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.ui.editor.formatting.PHPAutoIndentStrategy;
 import com.aptana.editor.php.internal.ui.hover.PHPDocHover;
@@ -125,16 +123,7 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	@Override
 	protected IContentAssistProcessor getContentAssistProcessor(ISourceViewer sourceViewer, String contentType)
 	{
-		AbstractThemeableEditor editor = this.getEditor();
-		if (editor != null)
-		{
-			if (contentType.startsWith(IPHPConstants.PREFIX))
-			{
-				return new PHPContentAssistProcessor(editor);
-			}
-		}
-		// In any other case, call the HTMLSourceViewerConfiguration to compute the assist processor.
-		return HTMLSourceViewerConfiguration.getContentAssistProcessor(contentType, editor);
+		return PHPSourceConfiguration.getDefault().getContentAssistProcessor(getEditor(), contentType);
 	}
 
 	@Override

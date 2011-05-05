@@ -14,6 +14,7 @@ import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_SINGL
 import static com.aptana.editor.php.internal.core.IPHPConstants.PREFIX;
 
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.EndOfLineRule;
@@ -25,6 +26,7 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 
+import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.IPartitioningConfiguration;
 import com.aptana.editor.common.ISourceViewerConfiguration;
@@ -35,7 +37,10 @@ import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
+import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
@@ -200,6 +205,20 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		reconciler.setDamager(dr, PHP_NOWDOC);
 		reconciler.setRepairer(dr, PHP_NOWDOC);
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.ISourceViewerConfiguration#getContentAssistProcessor(com.aptana.editor.common.AbstractThemeableEditor, java.lang.String)
+	 */
+	public IContentAssistProcessor getContentAssistProcessor(AbstractThemeableEditor editor, String contentType)
+	{
+		if (contentType.startsWith(IPHPConstants.PREFIX))
+		{
+			return new PHPContentAssistProcessor(editor);
+		}
+		// In any other case, call the HTMLSourceViewerConfiguration to compute the assist processor.
+		return HTMLSourceConfiguration.getDefault().getContentAssistProcessor(editor, contentType);
 	}
 
 	private ITokenScanner getCodeScanner()
