@@ -2040,7 +2040,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			declarationEnd = functionName.getEnd();
 		}
 		boolean hasLexicalParams = (lexicalParameters != null && !lexicalParameters.isEmpty());
-		int parametersEnd = body.getStart();
+		int parametersEnd = (body != null) ? body.getStart() : functionDeclaration.getEnd();
 		if (hasLexicalParams)
 		{
 			int firstLexicalOffset = lexicalParameters.get(0).getStart();
@@ -2062,14 +2062,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 
 		// Then, push the body
-		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document,
-				hasCommentBefore(body.getStart()));
-		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
-		builder.push(bodyNode);
-		body.childrenAccept(this);
-		int bodyEnd = body.getEnd();
-		builder.checkedPop(bodyNode, bodyEnd - 1);
-		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, bodyEnd));
+		if (body != null)
+		{
+			FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document,
+					hasCommentBefore(body.getStart()));
+			bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
+			builder.push(bodyNode);
+			body.childrenAccept(this);
+			int bodyEnd = body.getEnd();
+			builder.checkedPop(bodyNode, bodyEnd - 1);
+			bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, bodyEnd));
+		}
 	}
 
 	/**
