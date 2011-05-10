@@ -1709,8 +1709,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		body.childrenAccept(this);
 		int end = body.getEnd();
 		builder.checkedPop(typeBodyNode, end - 1);
-		int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document, false);
-		typeBodyNode.setEnd(builder.createTextNode(document, end - 1, endWithSemicolon));
+		typeBodyNode.setEnd(builder.createTextNode(document, end - 1, end));
 	}
 
 	/**
