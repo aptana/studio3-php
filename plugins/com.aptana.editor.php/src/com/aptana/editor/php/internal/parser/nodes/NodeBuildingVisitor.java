@@ -10,6 +10,8 @@ import org2.eclipse.php.internal.core.ast.nodes.Expression;
 import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
 import org2.eclipse.php.internal.core.ast.nodes.Identifier;
 import org2.eclipse.php.internal.core.ast.nodes.InLineHtml;
 import org2.eclipse.php.internal.core.ast.nodes.Include;
@@ -37,6 +39,7 @@ import com.aptana.editor.php.internal.indexer.PHPDocUtils;
  */
 public final class NodeBuildingVisitor extends AbstractVisitor
 {
+	private static final String DEFINE = "define"; //$NON-NLS-1$
 	private NodeBuilder nodeBuilder;
 	private String source;
 
@@ -184,6 +187,69 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		return super.visit(include);
 	}
 
+	public boolean visit(FunctionInvocation functionInvocation)
+	{
+		FunctionName funcName = functionInvocation.getFunctionName();
+		if (funcName == null)
+		{
+			return super.visit(functionInvocation);
+		}
+		Expression name = funcName.getName();
+		if (name instanceof Identifier)
+		{
+			if (!DEFINE.equals(((Identifier) name).getName().toLowerCase()))
+			{
+				return super.visit(functionInvocation);
+			}
+		}
+		if (name instanceof Variable)
+		{
+			Variable nameVar = (Variable) name;
+			name = nameVar.getName();
+			if (name instanceof Identifier)
+			{
+				if (!DEFINE.equals(((Identifier) name).getName()))
+				{
+					return super.visit(functionInvocation);
+				}
+			}
+		}
+
+		List<Expression> parameters = functionInvocation.parameters();
+
+		if (parameters.size() >= 2)
+		{
+			Expression param = parameters.get(0);
+			if (param.getType() == ASTNode.SCALAR && Scalar.TYPE_STRING == ((Scalar) param).getScalarType())
+			{
+				// Get the 'define' name
+				String define = ((Scalar) param).getStringValue();
+				if (define.startsWith("\"")) //$NON-NLS-1$
+				{
+					define = define.substring(1);
+				}
+				if (define.endsWith("\"")) //$NON-NLS-1$
+				{
+					define = define.substring(0, define.length() - 1);
+				}
+				if (define.startsWith("\'")) //$NON-NLS-1$;
+				{
+					define = define.substring(1);
+				}
+				if (define.endsWith("\'")) //$NON-NLS-1$
+				{
+					define = define.substring(0, define.length() - 1);
+				}
+				org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils
+						.findPHPDocComment(functionInvocation.getProgramRoot().comments(),
+								functionInvocation.getStart(), source);
+				PHPDocBlockImp docBlock = convertToDocBlock(docComment);
+				nodeBuilder.handleDefine(define, null, docBlock, param.getStart(), param.getEnd() - 1, -1);
+			}
+		}
+		return super.visit(functionInvocation);
+	}
+
 	@Override
 	public boolean visit(ConstantDeclaration node)
 	{
@@ -277,7 +343,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ClassDeclaration)
 	 */
 	@Override
@@ -288,7 +355,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FunctionDeclaration)
 	 */
 	@Override
@@ -299,7 +367,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InterfaceDeclaration)
 	 */
 	@Override
@@ -310,7 +379,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * NamespaceDeclaration)
 	 */
 	@Override
