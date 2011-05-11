@@ -123,6 +123,10 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	@Override
 	protected IContentAssistProcessor getContentAssistProcessor(ISourceViewer sourceViewer, String contentType)
 	{
+		if (getEditor() == null)
+		{
+			return null;
+		}
 		return PHPSourceConfiguration.getDefault().getContentAssistProcessor(getEditor(), contentType);
 	}
 
