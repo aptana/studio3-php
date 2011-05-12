@@ -99,6 +99,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseColonNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPExcludedTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
@@ -130,6 +131,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	// Match words in a string
 	private static final Pattern WORD_PATTERN = Pattern.compile("\\w+"); //$NON-NLS-1$
+	private static final Pattern LINE_SPLIT_PATTERN = Pattern.compile("\r?\n|\r"); //$NON-NLS-1$
 	public static final String INVOCATION_ARROW = "->"; //$NON-NLS-1$
 	public static final String STATIC_INVOCATION = "::"; //$NON-NLS-1$
 	private static final char[] SEMICOLON_AND_COLON = new char[] { ';', ',' };
@@ -1381,6 +1383,22 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(Scalar scalar)
 	{
+		// In case the Scalar is a string, we need to check if the string spans across multiple lines. If this is the
+		// case, we have to exclude part of this scalar from the formatting. Otherwise, we'll change the content of that
+		// string.
+		if (scalar.getScalarType() == Scalar.TYPE_STRING)
+		{
+			String[] split = LINE_SPLIT_PATTERN.split(scalar.getStringValue(), 2);
+			if (split.length > 1)
+			{
+				// We have a multi-line string.
+				FormatterPHPExcludedTextNode heredocNode = new FormatterPHPExcludedTextNode(document, 0, 0);
+				heredocNode.setBegin(builder.createTextNode(document, scalar.getStart(), scalar.getEnd()));
+				IFormatterContainerNode parentNode = builder.peek();
+				parentNode.addChild(heredocNode);
+				return false;
+			}
+		}
 		visitTextNode(scalar, true, 0);
 		return false;
 	}
