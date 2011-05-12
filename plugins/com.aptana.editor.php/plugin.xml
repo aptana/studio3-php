@@ -309,4 +309,11 @@
             contentTypeId="com.aptana.contenttype.phtml.php">
       </factory>
    </extension>
+   <extension
+         point="com.aptana.preview.previewHandlers">
+      <handler
+            class="com.aptana.preview.internal.impl.WebServerPreviewHandler"
+            contentType="com.aptana.contenttype.phtml.php">
+      </handler>
+   </extension>
 </plugin>
