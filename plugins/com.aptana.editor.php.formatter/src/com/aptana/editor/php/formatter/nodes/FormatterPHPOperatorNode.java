@@ -64,9 +64,10 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case TILDE_EQUAL:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT_OPERATOR);
 			case EQUAL:
-			case TYPE_EQUAL:
+			case IDENTICAL:
 			case NOT_EQUAL:
-			case NOT_TYPE_EQUAL:
+			case NOT_EQUAL_ALTERNATE:
+			case NOT_IDENTICAL:
 			case GREATER_THAN:
 			case LESS_THAN:
 			case GREATER_THAN_OR_EQUAL:
@@ -137,9 +138,10 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case TILDE_EQUAL:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_ASSIGNMENT_OPERATOR);
 			case EQUAL:
-			case TYPE_EQUAL:
+			case IDENTICAL:
 			case NOT_EQUAL:
-			case NOT_TYPE_EQUAL:
+			case NOT_EQUAL_ALTERNATE:
+			case NOT_IDENTICAL:
 			case GREATER_THAN:
 			case LESS_THAN:
 			case GREATER_THAN_OR_EQUAL:

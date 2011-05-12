@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPartService;
@@ -34,6 +35,7 @@ import org2.eclipse.php.internal.core.PHPVersion;
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.common.parsing.FileService;
+import com.aptana.editor.common.text.reconciler.IFoldingComputer;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -46,10 +48,10 @@ import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.SingleFileBuildPath;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.core.model.ISourceModuleProviderEditor;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
 import com.aptana.editor.php.internal.ui.actions.IPHPActionKeys;
@@ -131,7 +133,13 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			phpParseState = new PHPParseState();
 		}
-		return new FileService(PHPMimeType.MIME_TYPE, phpParseState);
+		return new FileService(IPHPConstants.CONTENT_TYPE_PHP, phpParseState);
+	}
+
+	@Override
+	public IFoldingComputer createFoldingComputer(IDocument document)
+	{
+		return new PHPFoldingComputer(this, document);
 	}
 
 	/*
@@ -258,15 +266,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.editor.html.HTMLEditor#installOpenTagCloser()
-	 */
-	protected void installOpenTagCloser()
-	{
-		new PHPOpenTagCloser(getSourceViewer()).install();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.AbstractThemeableEditor#getOutlineElementAt(int)
 	 */
 	@Override
@@ -290,7 +289,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	public String getLanguage()
 	{
-		return PHPMimeType.MIME_TYPE;
+		return IPHPConstants.CONTENT_TYPE_PHP;
 	}
 
 	public void phpVersionChanged(PHPVersion newVersion)

@@ -27,6 +27,7 @@ import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import com.aptana.core.util.IOUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.hover.ThemedInformationControl;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
@@ -134,7 +135,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 			}
 			else
 			{
-				return new DefaultInformationControl(parent, EditorsUI.getTooltipAffordanceString());
+				return new ThemedInformationControl(parent, null, EditorsUI.getTooltipAffordanceString());
 			}
 		}
 

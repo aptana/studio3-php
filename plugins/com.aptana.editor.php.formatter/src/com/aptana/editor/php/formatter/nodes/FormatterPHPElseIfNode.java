@@ -19,14 +19,16 @@ import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
 public class FormatterPHPElseIfNode extends FormatterBlockWithBeginEndNode
 {
 
+	private final boolean hasCommentBefore;
+
 	/**
 	 * @param document
-	 * @param hasBlockedChild
-	 * @param isInAssignment
+	 * @param hasCommentBefore
 	 */
-	public FormatterPHPElseIfNode(IFormatterDocument document)
+	public FormatterPHPElseIfNode(IFormatterDocument document, boolean hasCommentBefore)
 	{
 		super(document);
+		this.hasCommentBefore = hasCommentBefore;
 	}
 
 	/*
@@ -37,7 +39,8 @@ public class FormatterPHPElseIfNode extends FormatterBlockWithBeginEndNode
 	protected boolean isAddingBeginNewLine()
 	{
 		// breaking else-if expressions?
-		return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT);
+		return hasCommentBefore
+				|| getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT);
 	}
 
 	/*

@@ -10,6 +10,7 @@ package com.aptana.editor.php.formatter.nodes;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 
+import com.aptana.formatter.ExcludeRegionList.EXCLUDE_STRATEGY;
 import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.IFormatterWriter;
@@ -50,6 +51,6 @@ public class FormatterPHPHeredocNode extends FormatterTextNode
 		IFormatterContext heredocContext = context.copy();
 		heredocContext.setIndenting(false);
 		visitor.write(heredocContext, getStartOffset(), getEndOffset());
-		visitor.excludeRegion(heredocRegion);
+		visitor.excludeRegion(heredocRegion, EXCLUDE_STRATEGY.WRITE_AS_IS);
 	}
 }

@@ -24,6 +24,7 @@ public class FormatterPHPElseNode extends FormatterBlockWithBeginNode
 	private boolean hasBlock;
 	private final boolean isElseIf;
 	private final boolean previousIfHasBlock;
+	private final boolean hasCommentBefore;
 
 	/**
 	 * @param document
@@ -31,14 +32,16 @@ public class FormatterPHPElseNode extends FormatterBlockWithBeginNode
 	 * @param hasBlock
 	 * @param previousIfHasBlock
 	 *            Indicate that the previous 'if' block (the 'true' part) has a blocked body in curly-braces.
+	 * @param hasCommentBefore
 	 */
 	public FormatterPHPElseNode(IFormatterDocument document, boolean hasBlock, boolean isElseIf,
-			boolean previousIfHasBlock)
+			boolean previousIfHasBlock, boolean hasCommentBefore)
 	{
 		super(document);
 		this.hasBlock = hasBlock;
 		this.isElseIf = isElseIf;
 		this.previousIfHasBlock = previousIfHasBlock;
+		this.hasCommentBefore = hasCommentBefore;
 	}
 
 	/*
@@ -68,7 +71,8 @@ public class FormatterPHPElseNode extends FormatterBlockWithBeginNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		return !previousIfHasBlock || getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT);
+		return hasCommentBefore || !previousIfHasBlock
+				|| getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT);
 	}
 
 	/**
@@ -140,7 +144,7 @@ public class FormatterPHPElseNode extends FormatterBlockWithBeginNode
 		// the non-blocked child is not an else-if. In case it is, we check if this else-if should be
 		// broken into two lines. If so, we indent anyway.
 		return !hasBlock
-				&& (!isElseIf || !getDocument()
-						.getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT));
+				&& (!isElseIf || !getDocument().getBoolean(
+						PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT));
 	}
 }

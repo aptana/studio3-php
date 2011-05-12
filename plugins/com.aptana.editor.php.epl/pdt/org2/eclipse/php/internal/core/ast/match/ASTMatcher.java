@@ -441,6 +441,14 @@ public class ASTMatcher {
 				node.getBody(), o.getBody()));
 	}
 
+	public boolean match(ThrowStatement node, Object other) {
+		if (!(other instanceof ThrowStatement)) {
+			return false;
+		}
+		ThrowStatement o = (ThrowStatement) other;
+		return (safeSubtreeMatch(node.getExpression(), o.getExpression()));
+	}
+	
 	public boolean match(ConstantDeclaration node, Object other) {
 		if (!(other instanceof ConstantDeclaration)) {
 			return false;
@@ -941,16 +949,6 @@ public class ASTMatcher {
 
 		return (safeSubtreeMatch(node.getExpr(), o.getExpr()) && safeSubtreeMatch(
 				node.getStatement(), o.getStatement()));
-	}
-
-	public boolean match(ThrowStatement node, Object other) {
-		if (!(other instanceof ThrowStatement)) {
-			return false;
-		}
-		@SuppressWarnings("unused")
-		ThrowStatement o = (ThrowStatement) other;
-
-		return false;
 	}
 
 	public boolean match(TryStatement node, Object other) {

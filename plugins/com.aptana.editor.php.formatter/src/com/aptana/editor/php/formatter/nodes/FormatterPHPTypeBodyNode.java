@@ -24,10 +24,11 @@ public class FormatterPHPTypeBodyNode extends FormatterPHPBlockNode
 	/**
 	 * @param document
 	 * @param functionPartOfExpression
+	 * @param hasCommentBefore
 	 */
-	public FormatterPHPTypeBodyNode(IFormatterDocument document)
+	public FormatterPHPTypeBodyNode(IFormatterDocument document, boolean hasCommentBefore)
 	{
-		super(document, false);
+		super(document, hasCommentBefore);
 	}
 
 	/*
@@ -38,8 +39,9 @@ public class FormatterPHPTypeBodyNode extends FormatterPHPBlockNode
 	protected boolean isAddingBeginNewLine()
 	{
 		// adds a new line before the start curly bracket
-		return CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
-				PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION));
+		return isStandAloneBlock
+				|| CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
+						PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION));
 	}
 
 	/*

@@ -24,10 +24,11 @@ public class FormatterPHPCaseBodyNode extends FormatterPHPBlockNode
 	/**
 	 * @param document
 	 * @param hasBlockedChild
+	 * @param hasCommentBefore
 	 */
-	public FormatterPHPCaseBodyNode(IFormatterDocument document, boolean hasBlockedChild)
+	public FormatterPHPCaseBodyNode(IFormatterDocument document, boolean hasBlockedChild, boolean hasCommentBefore)
 	{
-		super(document, false);
+		super(document, hasCommentBefore);
 		this.hasBlockedChild = hasBlockedChild;
 	}
 
@@ -44,7 +45,8 @@ public class FormatterPHPCaseBodyNode extends FormatterPHPBlockNode
 	@Override
 	protected boolean isAddingBeginNewLine()
 	{
-		return !hasBlockedChild
+		return isStandAloneBlock
+				|| !hasBlockedChild
 				|| CodeFormatterConstants.NEW_LINE.equals(getDocument().getString(
 						PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_CASE));
 	}

@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -34,6 +35,8 @@ import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
  */
 public final class TypeHierarchyUtils
 {
+
+	private static final int MAX_ANCESTORS_LIMIT = 20;
 
 	/**
 	 * Finds all class ancestors.
@@ -152,8 +155,8 @@ public final class TypeHierarchyUtils
 	 */
 	public static Set<String> addAllAncestors(Set<String> types, IElementsIndex index, String namespaces)
 	{
-		// FIXME: Shalom - This should probably get a set of namespaces to accept. 
-		// Or better, the getClassAncestors() should be the one that deals with it. 
+		// FIXME: Shalom - This should probably get a set of namespaces to accept.
+		// Or better, the getClassAncestors() should be the one that deals with it.
 		LinkedHashSet<String> result = new LinkedHashSet<String>();
 		for (String type : types)
 		{
@@ -292,6 +295,15 @@ public final class TypeHierarchyUtils
 	private static void findClassAncestorsRecursivelly(IElementEntry classEntry, List<IElementEntry> toFill,
 			IElementsIndex index)
 	{
+		// Limit the ancestors list. At some point this would just be an indication that we got into an
+		// infinite recursion. See https://aptana.lighthouseapp.com/projects/35272/tickets/2158
+		// A simple cause for this issue may be two classes that extend each other.
+		if (toFill.size() > MAX_ANCESTORS_LIMIT)
+		{
+			PHPEditorPlugin
+					.logWarning("Max ancestors reached. Hierarchy lookup stopped. Please check your class hierarchy"); //$NON-NLS-1$
+			return;
+		}
 		// FIXME - Shalom: This lookup should take into consideration the namespaces that are involved in the hierarchy
 		Object value = classEntry.getValue();
 		if (!(value instanceof ClassPHPEntryValue))

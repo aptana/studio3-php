@@ -101,6 +101,11 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 				return scanner.getToken("constant.language.php"); //$NON-NLS-1$
 			case T_CONST:
 				return scanner.getToken("constant.php"); //$NON-NLS-1$
+			case T_LNUMBER:
+			case T_DNUMBER:
+				return scanner.getToken("constant.numeric.php"); //$NON-NLS-1$
+			case T_CONSTANT_ENCAPSED_STRING:
+				return scanner.getToken("string.quoted.php"); //$NON-NLS-1$
 			case T_STRING:
 				String tokenContent = scanner.getSymbolValue(sym);
 				if (SELF.equals(tokenContent) || PARENT.equals(tokenContent))
