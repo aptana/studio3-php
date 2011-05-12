@@ -77,7 +77,16 @@ public class PHTMLParser extends CompositeParser
 		{
 			Symbol endTag = getCurrentSymbol();
 			ParseNode phpNode = new ParseNode(IPHPConstants.CONTENT_TYPE_PHP);
-			phpNode.setLocation(startTag.getStart(), endTag.getEnd() - 1);
+			int endOffset;
+			if ("?>".equals(endTag.value)) //$NON-NLS-1$
+			{
+				endOffset = endTag.getEnd() + 1;
+			}
+			else
+			{
+				endOffset = endTag.getEnd();
+			}
+			phpNode.setLocation(startTag.getStart(), endOffset);
 			root.addChild(phpNode);
 		}
 	}
