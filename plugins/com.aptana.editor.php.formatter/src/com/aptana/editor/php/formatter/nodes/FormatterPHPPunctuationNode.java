@@ -112,12 +112,6 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 	@Override
 	protected boolean isAddingEndNewLine()
 	{
-		if (forceLineTermination || super.isAddingEndNewLine())
-		{
-			return true;
-		}
-
-		return nodeType == TypePunctuation.ARRAY_COMMA
-				&& getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS);
+		return (forceLineTermination || super.isAddingEndNewLine());
 	}
 }
