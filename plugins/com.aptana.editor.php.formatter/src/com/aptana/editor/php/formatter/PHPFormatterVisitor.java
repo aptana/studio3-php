@@ -92,6 +92,7 @@ import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.core.util.StringUtil;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPArrayElementNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBreakNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseBodyNode;
@@ -352,7 +353,16 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			rightNodes = new ArrayList<ASTNode>(1);
 			rightNodes.add(value);
 		}
+		ArrayCreation parent = (ArrayCreation) arrayElement.getParent();
+		int elementIndex = parent.elements().indexOf(arrayElement);
+		boolean isFirstElement = (elementIndex == 0);
+		FormatterPHPArrayElementNode arrayElementNode = new FormatterPHPArrayElementNode(document, isFirstElement,
+				hasCommentBefore(arrayElement.getStart()));
+		arrayElementNode.setBegin(builder.createTextNode(document, arrayElement.getStart(), arrayElement.getStart()));
+		arrayElementNode.setEnd(builder.createTextNode(document, arrayElement.getEnd(), arrayElement.getEnd()));
+		builder.push(arrayElementNode);
 		visitNodeLists(leftNodes, rightNodes, TypeOperator.KEY_VALUE, null);
+		builder.checkedPop(arrayElementNode, -1);
 		return false;
 	}
 
@@ -1825,7 +1835,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				closeParenStart = builder.locateCharBackward(document, ')', expressionEndOffset);
 				closeParenEnd = closeParenStart + 1;
 			}
-			builder.checkedPop(parenthesesNode, -1);
+			if (hasCommentBefore(closeParenStart))
+			{
+				// Make sure that the closing pair will not get pushed up when there is a comment line right before it.
+				parenthesesNode.setNewLineBeforeClosing(true);
+				builder.checkedPop(parenthesesNode, closeParenStart);
+			}
+			else
+			{
+				builder.checkedPop(parenthesesNode, -1);
+			}
+
 			parenthesesNode.setEnd(builder.createTextNode(document, closeParenStart, closeParenEnd));
 		}
 	}

@@ -21,6 +21,7 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 {
 
 	private boolean asWrapper;
+	private boolean newLineBeforeClosing;
 
 	/**
 	 * Constructs a new FormatterPHPParenthesesNode
@@ -47,6 +48,17 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 		super(document);
 	}
 
+	/**
+	 * Force a new line before the closing parentheses.<br>
+	 * The new line will only be inserted when this node is <b>not</b> a wrapper node.
+	 * 
+	 * @param newLineBeforeClosing
+	 */
+	public void setNewLineBeforeClosing(boolean newLineBeforeClosing)
+	{
+		this.newLineBeforeClosing = newLineBeforeClosing;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountBefore()
@@ -61,7 +73,8 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 		return getInt(PHPFormatterConstants.SPACES_BEFORE_PARENTHESES);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
 	 */
 	@Override
@@ -90,5 +103,15 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	public boolean isAsWrapper()
 	{
 		return asWrapper;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
+	 */
+	@Override
+	protected boolean isAddingEndNewLine()
+	{
+		return !asWrapper && newLineBeforeClosing;
 	}
 }
