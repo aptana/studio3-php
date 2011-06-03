@@ -117,10 +117,10 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
+import com.aptana.formatter.nodes.NodeTypes.TypeOperator;
+import com.aptana.formatter.nodes.NodeTypes.TypePunctuation;
 
 /**
  * A PHP formatter node builder.
