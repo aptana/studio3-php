@@ -2208,6 +2208,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 		cp.setResolver(resolver);
+		cp.setTriggerCharacters(getProposalTriggerCharacters());
 		return cp;
 	}
 
@@ -3241,4 +3242,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.CommonContentAssistProcessor#getPreferenceNodeQualifier()
+	 */
+	protected String getPreferenceNodeQualifier()
+	{
+		return PHPEditorPlugin.PLUGIN_ID;
+	}
 }
