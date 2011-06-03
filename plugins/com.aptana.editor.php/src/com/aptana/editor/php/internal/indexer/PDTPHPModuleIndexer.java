@@ -3741,6 +3741,19 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			CommentsVisitor commentsVisitor = new CommentsVisitor();
 			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
+			try
+			{
+				if (isUpdateTaskTags())
+				{
+					updater.updateTaskTags(_contents, program, _comments, module);
+				}
+			}
+			catch (Throwable th)
+			{
+				String message = th.getMessage();
+				PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
+						"Error while updating the task tags", th)); //$NON-NLS-1$
+			}
 
 			// indexing
 			PHPASTVisitor visitor = new PHPASTVisitor(reporter, module);
@@ -3791,6 +3804,19 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			CommentsVisitor commentsVisitor = new CommentsVisitor();
 			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
+			try
+			{
+				if (isUpdateTaskTags())
+				{
+					updater.updateTaskTags(_contents, program, _comments, module);
+				}
+			}
+			catch (Throwable th)
+			{
+				String message = th.getMessage();
+				PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
+						"Error while updating the task tags", th)); //$NON-NLS-1$
+			}
 
 			// indexing
 			PHPASTVisitor visitor = new PHPASTVisitor(reporter, module);
@@ -3959,25 +3985,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	 */
 	private Program parse(String contents, IModule module) throws Exception
 	{
-		try
-		{
-			if (isUpdateTaskTags())
-			{
-				Reader reader = new StringReader(contents);
-				// FIXME- Shalom: Tasks updating
-				updater.update(reader, module);
-			}
-		}
-		catch (Throwable th)
-		{
-			String message = th.getMessage();
-			if (message != null && message.contains("Can't recover from previous error(s)")) //$NON-NLS-1$
-			{
-				return null;
-			}
-			PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
-					"Error while updating the task tags", th)); //$NON-NLS-1$
-		}
 		try
 		{
 			Reader reader = new StringReader(contents);
