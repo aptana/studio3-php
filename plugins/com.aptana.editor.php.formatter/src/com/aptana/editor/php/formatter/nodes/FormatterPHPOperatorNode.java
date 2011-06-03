@@ -8,8 +8,8 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.formatter.IFormatterDocument;
+import com.aptana.formatter.nodes.NodeTypes.TypeOperator;
 
 /**
  * A PHP formatter node for operator elements, such as assignments, arrows etc.<br>
