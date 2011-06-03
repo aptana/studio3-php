@@ -32,6 +32,7 @@ import com.aptana.editor.common.IPartitioningConfiguration;
 import com.aptana.editor.common.ISourceViewerConfiguration;
 import com.aptana.editor.common.scripting.IContentTypeTranslator;
 import com.aptana.editor.common.scripting.QualifiedContentType;
+import com.aptana.editor.common.text.rules.CommentScanner;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
@@ -234,8 +235,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	{
 		if (phpDocCommentScanner == null)
 		{
-			phpDocCommentScanner = new RuleBasedScanner();
-			phpDocCommentScanner.setDefaultReturnToken(getToken("comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
+			phpDocCommentScanner = new CommentScanner(getToken("comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
 		}
 		return phpDocCommentScanner;
 	}
@@ -244,8 +244,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	{
 		if (multiLineCommentScanner == null)
 		{
-			multiLineCommentScanner = new RuleBasedScanner();
-			multiLineCommentScanner.setDefaultReturnToken(getToken("comment.php")); //$NON-NLS-1$
+			multiLineCommentScanner = new CommentScanner(getToken("comment.php")); //$NON-NLS-1$
 		}
 		return multiLineCommentScanner;
 	}
@@ -254,8 +253,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	{
 		if (singleLineCommentScanner == null)
 		{
-			singleLineCommentScanner = new RuleBasedScanner();
-			singleLineCommentScanner.setDefaultReturnToken(getToken("comment.line.number-sign.php")); //$NON-NLS-1$
+			singleLineCommentScanner = new CommentScanner(getToken("comment.line.number-sign.php")); //$NON-NLS-1$
 		}
 		return singleLineCommentScanner;
 	}
