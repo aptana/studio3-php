@@ -26,6 +26,7 @@ import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.ModelManager;
+import com.aptana.editor.php.internal.ui.editor.PHPDocumentProvider;
 import com.aptana.theme.IThemeManager;
 import com.aptana.theme.Theme;
 import com.aptana.theme.ThemePlugin;
@@ -48,6 +49,8 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	private static PHPEditorPlugin plugin;
 
 	private IPreferenceChangeListener fThemeChangeListener;
+	
+	private PHPDocumentProvider phpDocumentProvider;
 
 	/**
 	 * The constructor
@@ -249,6 +252,17 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns PHP document provider
+	 * @return
+	 */
+	public synchronized PHPDocumentProvider getPHPDocumentProvider() {
+		if (phpDocumentProvider == null) {
+			phpDocumentProvider = new PHPDocumentProvider();
+		}
+		return phpDocumentProvider;
 	}
 
 	/**

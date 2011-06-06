@@ -121,8 +121,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		setPreferenceStore(store);
 
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
-		documentProvider = new PHPDocumentProvider();
-		setDocumentProvider(documentProvider);
+		setDocumentProvider(documentProvider = PHPEditorPlugin.getDefault().getPHPDocumentProvider());
 		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor?
 	}
 
