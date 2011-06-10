@@ -1,18 +1,5 @@
 package com.aptana.editor.php.internal.ui.editor;
 
-import static com.aptana.editor.php.internal.core.IPHPConstants.COMMAND;
-import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_HTML_PHP;
-import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_PHP;
-import static com.aptana.editor.php.internal.core.IPHPConstants.DEFAULT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_DOC_COMMENT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_HEREDOC;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_MULTI_LINE_COMMENT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_NOWDOC;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_SINGLE_LINE_COMMENT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_DOUBLE;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_SINGLE;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PREFIX;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -45,7 +32,7 @@ import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
-public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration
+public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration, IPHPConstants
 {
 	public static final String[] CONTENT_TYPES = new String[] { DEFAULT, PHP_SINGLE_LINE_COMMENT,
 		PHP_DOC_COMMENT, PHP_MULTI_LINE_COMMENT, COMMAND, PHP_STRING_SINGLE, PHP_STRING_DOUBLE, PHP_HEREDOC,
