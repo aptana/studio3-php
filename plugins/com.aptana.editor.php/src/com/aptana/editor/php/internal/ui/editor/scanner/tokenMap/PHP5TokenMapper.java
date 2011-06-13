@@ -64,17 +64,17 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_PRIVATE:
 			case T_PUBLIC:
 			case T_PROTECTED:
+			case T_ABSTRACT:
 				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
 			case T_FUNCTION:
 			case T_CLASS:
+			case T_INTERFACE:
 			case T_GLOBAL:
 			case T_VAR:
 				return scanner.getToken("storage.type.php"); //$NON-NLS-1$
 			case T_INSTANCEOF:
 			case T_EXTENDS:
-			case T_ABSTRACT:
 			case T_IMPLEMENTS:
-			case T_INTERFACE:
 				return scanner.getToken("keyword.other.class.php"); //$NON-NLS-1$
 			case T_INCLUDE:
 			case T_INCLUDE_ONCE:
