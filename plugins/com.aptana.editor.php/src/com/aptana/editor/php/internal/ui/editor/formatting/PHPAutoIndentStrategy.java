@@ -131,13 +131,6 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					{
 						return;
 					}
-
-					if (lexemeText.equals(")")) //$NON-NLS-1$
-					{
-						indentAfterNewLine(document, command);
-						command.text += configuration.getIndent();
-						return;
-					}
 					if (lexemeText.equals(";")) { //$NON-NLS-1$
 						Lexeme<PHPTokenType> previousNonWhitespaceLexeme = getPreviousNonWhitespaceLexeme(firstLexemeInLine
 								.getStartingOffset() - 1);
@@ -148,6 +141,12 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 							command.text += indent;
 							return;
 						}
+					}
+					if (lexemeText.equals(")")) //$NON-NLS-1$
+					{
+						indentAfterNewLine(document, command);
+						// command.text += configuration.getIndent();
+						return;
 					}
 					indentAfterNewLine(document, command);
 					// This will cause a line after a 'block-type' to be indented, even when the
@@ -258,7 +257,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				if (lastLexemeInLine != null
 						&& firstLexemeInLine != null
 						&& (BLOCK_TYPES.contains(firstLexemeInLine.getType().getType()) || BLOCK_TYPES
-								.contains(lastLexemeInLine.getType().getType()) || ")".equals(lastLexemeInLine.getText()))) //$NON-NLS-1$
+								.contains(lastLexemeInLine.getType().getType())))
 				{
 					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$//$NON-NLS-2$
 					{
@@ -270,7 +269,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						}
 						return indent;
 					}
-					if (")".equals(lastLexemeInLine.getText()) || "else".equals(lastLexemeInLine.getText())) //$NON-NLS-1$ //$NON-NLS-2$
+					if ("else".equals(lastLexemeInLine.getText())) //$NON-NLS-1$
 					{
 						return getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 					}
