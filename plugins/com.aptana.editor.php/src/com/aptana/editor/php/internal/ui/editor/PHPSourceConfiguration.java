@@ -38,8 +38,10 @@ import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
+import com.aptana.editor.css.ICSSConstants;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.js.IJSConstants;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
@@ -47,22 +49,22 @@ import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
 public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration
 {
-	public static final String[] CONTENT_TYPES = new String[] { DEFAULT, PHP_SINGLE_LINE_COMMENT,
-		PHP_DOC_COMMENT, PHP_MULTI_LINE_COMMENT, COMMAND, PHP_STRING_SINGLE, PHP_STRING_DOUBLE, PHP_HEREDOC,
-		PHP_NOWDOC };/* REGULAR_EXPRESSION */
+	public static final String[] CONTENT_TYPES = new String[] { DEFAULT, PHP_SINGLE_LINE_COMMENT, PHP_DOC_COMMENT,
+			PHP_MULTI_LINE_COMMENT, COMMAND, PHP_STRING_SINGLE, PHP_STRING_DOUBLE, PHP_HEREDOC, PHP_NOWDOC };/* REGULAR_EXPRESSION */
 
 	private static final String[][] TOP_CONTENT_TYPES = new String[][] { { CONTENT_TYPE_PHP } };
 
 	private IPredicateRule[] partitioningRules = new IPredicateRule[] {
 			new EndOfLineRule("//", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
 			new EndOfLineRule("#", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
+					"/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
+					"/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_HEREDOC), false)),
-			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_NOWDOC), true)),
-	};
+			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_NOWDOC), true)), };
 
 	private PHPCodeScanner codeScanner;
 	private RuleBasedScanner singleLineCommentScanner;
@@ -85,13 +87,16 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CONTENT_TYPE_PHP), new QualifiedContentType(
 				"source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IHTMLConstants.CONTENT_TYPE_HTML),
-				new QualifiedContentType("text.html.basic")); //$NON-NLS-1$
+				new QualifiedContentType("text.html.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, ICSSConstants.CONTENT_TYPE_CSS),
+				new QualifiedContentType("text.html.php", "source.css.embedded.html")); //$NON-NLS-1$ //$NON-NLS-2$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IJSConstants.CONTENT_TYPE_JS),
+				new QualifiedContentType("text.html.php", "source.js.embedded.html")); //$NON-NLS-1$ //$NON-NLS-2$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_SINGLE), new QualifiedContentType(
 				"string.quoted.single.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_STRING_DOUBLE), new QualifiedContentType(
 				"string.quoted.double.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(PHP_HEREDOC), new QualifiedContentType(
-				"string.unquoted.heredoc.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(PHP_HEREDOC), new QualifiedContentType("string.unquoted.heredoc.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_SINGLE_LINE_COMMENT), new QualifiedContentType(
 				"comment.line.double-slash.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(PHP_DOC_COMMENT), new QualifiedContentType(
@@ -99,11 +104,12 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType("comment.php")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.START_SWITCH_TAG),
 				new QualifiedContentType("punctuation.section.embedded.begin.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType(
-				"punctuation.section.embedded.end.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.END_SWITCH_TAG),
+				new QualifiedContentType("punctuation.section.embedded.end.php")); //$NON-NLS-1$
 	}
-	
-	private PHPSourceConfiguration() {
+
+	private PHPSourceConfiguration()
+	{
 	}
 
 	public static PHPSourceConfiguration getDefault()
@@ -181,7 +187,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		dr = new ThemeingDamagerRepairer(getPhpDocCommentScanner());
 		reconciler.setDamager(dr, PHP_DOC_COMMENT);
 		reconciler.setRepairer(dr, PHP_DOC_COMMENT);
-		
+
 		dr = new ThemeingDamagerRepairer(getMultiLineCommentScanner());
 		reconciler.setDamager(dr, PHP_MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, PHP_MULTI_LINE_COMMENT);
@@ -201,7 +207,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		dr = new ThemeingDamagerRepairer(getHeredocScanner());
 		reconciler.setDamager(dr, PHP_HEREDOC);
 		reconciler.setRepairer(dr, PHP_HEREDOC);
-		
+
 		dr = new ThemeingDamagerRepairer(getNowdocScanner());
 		reconciler.setDamager(dr, PHP_NOWDOC);
 		reconciler.setRepairer(dr, PHP_NOWDOC);
@@ -210,7 +216,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.editor.common.ISourceViewerConfiguration#getContentAssistProcessor(com.aptana.editor.common.AbstractThemeableEditor, java.lang.String)
+	 * @see com.aptana.editor.common.ISourceViewerConfiguration#getContentAssistProcessor(com.aptana.editor.common.
+	 * AbstractThemeableEditor, java.lang.String)
 	 */
 	public IContentAssistProcessor getContentAssistProcessor(AbstractThemeableEditor editor, String contentType)
 	{
@@ -239,7 +246,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		}
 		return phpDocCommentScanner;
 	}
-	
+
 	private ITokenScanner getMultiLineCommentScanner()
 	{
 		if (multiLineCommentScanner == null)
