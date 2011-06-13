@@ -13,6 +13,7 @@ public class AllTests
 		TestSuite suite = new TestSuite(AllTests.class.getName());
 		// $JUnit-BEGIN$
 		suite.addTestSuite(PHTMLSourcePartitionScannerTest.class);
+		suite.addTestSuite(PHTMLTagScannerTest.class);
 		suite.addTest(CoreTests.suite());
 		// $JUnit-END$
 		return suite;
