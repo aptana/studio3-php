@@ -19,6 +19,7 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.editor.common,
  com.aptana.parsing,
  com.aptana.editor.html,
+ com.aptana.editor.js,
  com.aptana.editor.php.epl,
  com.aptana.php.libraries,
  com.aptana.core,
@@ -26,7 +27,7 @@ Require-Bundle: org.eclipse.ui,
  beaver,
  com.aptana.ui.epl,
  com.aptana.projects,
- com.aptana.editor.xml
+ com.aptana.editor.css
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.editor.php,
