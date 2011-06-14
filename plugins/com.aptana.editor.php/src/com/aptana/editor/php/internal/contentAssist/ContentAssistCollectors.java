@@ -19,6 +19,7 @@ import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPConstantNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPVariableParseNode;
 import com.aptana.editor.php.internal.parser.nodes.Parameter;
@@ -82,7 +83,7 @@ public class ContentAssistCollectors
 						{
 							for (IParseNode child : children)
 							{
-								if (child instanceof PHPVariableParseNode)
+								if (child instanceof PHPVariableParseNode && !(child instanceof PHPConstantNode))
 								{
 									final PHPVariableParseNode varParseNode = (PHPVariableParseNode) child;
 									if (!varParseNode.isField())
@@ -172,7 +173,7 @@ public class ContentAssistCollectors
 	 * 
 	 * @param index
 	 *            - index to use.
-	 * @param varName
+	 * @param constName
 	 *            - variable name (including $ sign).
 	 * @param types
 	 *            - types to collect variables from.
@@ -185,16 +186,16 @@ public class ContentAssistCollectors
 	 *            - namespace lookup (can be null)
 	 * @return types
 	 */
-	public static Set<IElementEntry> collectConstEntries(IElementsIndex index, String varName, Set<String> types,
-			boolean exactMatch, Map<String, String> aliases, String namespace)
+	public static Set<IElementEntry> collectConstEntries(IElementsIndex index, String constName, Set<String> types,
+			boolean exactMatch, Map<String, String> aliases, final String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// searching for variables
-		String rightVarName = varName;
+		String rightConstName = constName;
 		for (String leftType : types)
 		{
 			String typeName = processTypeName(aliases, namespace, leftType);
-			String entryPath = typeName + rightVarName;
+			String entryPath = typeName + rightConstName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)
 			{
@@ -205,6 +206,87 @@ public class ContentAssistCollectors
 				currentEntries = index.getEntriesStartingWith(IPHPIndexConstants.CONST_CATEGORY, entryPath);
 			}
 
+			if (currentEntries == null || currentEntries.isEmpty())
+			{
+				ArrayList<?> items = ContentAssistUtils.selectModelElements(leftType, true);
+				if (items != null && !items.isEmpty())
+				{
+					String lowCaseConstName = constName != null ? constName.toLowerCase() : EMPTY_STRING;
+					for (Object obj : items)
+					{
+						if (obj instanceof PHPClassParseNode)
+						{
+							final PHPClassParseNode classParseNode = (PHPClassParseNode) obj;
+							IParseNode[] children = classParseNode.getChildren();
+							if (children != null)
+							{
+								for (IParseNode child : children)
+								{
+									if (child instanceof PHPConstantNode)
+									{
+										final PHPConstantNode constantNode = (PHPConstantNode) child;
+										String constNodeName = constantNode.getNodeName();
+										if (constNodeName != null)
+										{
+											String lowCaseFuncNodeName = constNodeName.toLowerCase();
+											if (exactMatch)
+											{
+												if (!lowCaseConstName.equals(lowCaseFuncNodeName))
+													continue;
+											}
+											else
+											{
+												if (!lowCaseFuncNodeName.startsWith(lowCaseConstName))
+													continue;
+											}
+										}
+										result.add(new IElementEntry()
+										{
+											private VariablePHPEntryValue value;
+
+											public int getCategory()
+											{
+												return IPHPIndexConstants.CONST_CATEGORY;
+											}
+
+											public String getEntryPath()
+											{
+												return classParseNode.getNodeName() + IElementsIndex.DELIMITER
+														+ constantNode.getNodeName();
+											}
+
+											public String getLowerCaseEntryPath()
+											{
+												String path = getEntryPath();
+												return path != null ? path.toLowerCase() : EMPTY_STRING;
+											}
+
+											public IModule getModule()
+											{
+												return null;
+											}
+
+											public Object getValue()
+											{
+												if (value != null)
+												{
+													return value;
+												}
+												// @formatter:off
+												value = new VariablePHPEntryValue(constantNode.getModifiers(), constantNode.isParameter(), 
+														constantNode.isLocalVariable(), constantNode.isField(), constantNode.getNodeType(), 
+														constantNode.getStartingOffset(), namespace);
+												// @formatter:on
+												return value;
+											}
+										});
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			if (currentEntries != null)
 			{
 				result.addAll(currentEntries);
