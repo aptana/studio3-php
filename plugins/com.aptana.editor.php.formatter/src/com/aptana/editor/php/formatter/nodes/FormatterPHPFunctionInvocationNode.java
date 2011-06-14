@@ -61,6 +61,7 @@ public class FormatterPHPFunctionInvocationNode extends FormatterBlockWithBeginN
 			case ASTNode.FUNCTION_INVOCATION:
 			case ASTNode.IF_STATEMENT:
 			case ASTNode.UNARY_OPERATION:
+			case ASTNode.RETURN_STATEMENT:
 				return true;
 			default:
 				return false;
