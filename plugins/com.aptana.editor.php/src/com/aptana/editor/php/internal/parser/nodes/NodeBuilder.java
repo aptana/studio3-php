@@ -444,7 +444,7 @@ public class NodeBuilder
 		if (current.getChildCount() > 0 && current.getLastChild().getNodeType() == PHPBaseParseNode.HTML_NODE)
 		{
 			PHPBaseParseNode lastChild = (PHPBaseParseNode) current.getLastChild();
-			lastChild.setLocation(lastChild.getStart(), lastChild.getEnd() + (end - start));
+			lastChild.setLocation(lastChild.getStart(), end);
 		}
 		else
 		{
