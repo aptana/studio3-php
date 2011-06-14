@@ -73,7 +73,7 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case GREATER_THAN_OR_EQUAL:
 			case LESS_THAN_OR_EQUAL:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_RELATIONAL_OPERATORS);
-			case DOT:
+			case DOT_CONCATENATION:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CONCATENATION_OPERATOR);
 			case CONDITIONAL:
 			case CONDITIONAL_COLON:
@@ -147,7 +147,7 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case GREATER_THAN_OR_EQUAL:
 			case LESS_THAN_OR_EQUAL:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_RELATIONAL_OPERATORS);
-			case DOT:
+			case DOT_CONCATENATION:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CONCATENATION_OPERATOR);
 			case CONDITIONAL:
 			case CONDITIONAL_COLON:
