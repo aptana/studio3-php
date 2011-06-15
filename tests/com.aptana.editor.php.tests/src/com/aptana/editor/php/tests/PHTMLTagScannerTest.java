@@ -13,21 +13,25 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 
-import com.aptana.editor.common.tests.AbstractTokenScannerTestCase;
 import com.aptana.editor.html.HTMLTagScanner;
 
-public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase {
+public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase
+{
 
 	@Override
-	protected ITokenScanner createTokenScanner() {
-		return new HTMLTagScanner() {
-			protected IToken createToken(String string) {
+	protected ITokenScanner createTokenScanner()
+	{
+		return new HTMLTagScanner()
+		{
+			protected IToken createToken(String string)
+			{
 				return PHTMLTagScannerTest.this.getToken(string);
 			};
 		};
 	}
 
-	public void testSplitTag1() {
+	public void testSplitTag1()
+	{
 		String src = "<html <? ?> attribute='chris'>";
 		IDocument document = new Document(src);
 
@@ -36,7 +40,7 @@ public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase {
 		assertToken(getToken("entity.name.tag.structure.any.html"), 1, 4);
 		assertToken(Token.WHITESPACE, 5, 1);
 
-		scanner.setRange(document, 11, src.length()-11);
+		scanner.setRange(document, 11, src.length() - 11);
 		assertToken(Token.WHITESPACE, 11, 1);
 		assertToken(getToken("entity.other.attribute-name.html"), 12, 9);
 		assertToken(getToken("punctuation.separator.key-value.html"), 21, 1);
@@ -44,22 +48,24 @@ public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase {
 		assertToken(getToken("punctuation.definition.tag.end.html"), 29, 1);
 	}
 
-	public void testSplitTag2() {
+	public void testSplitTag2()
+	{
 		String src = "<html <? ?>attribute='chris'>";
 		IDocument document = new Document(src);
 		scanner.setRange(document, 0, 6);
 		assertToken(getToken("punctuation.definition.tag.begin.html"), 0, 1);
 		assertToken(getToken("entity.name.tag.structure.any.html"), 1, 4);
 		assertToken(Token.WHITESPACE, 5, 1);
-		
-		scanner.setRange(document, 11, src.length()-11);
+
+		scanner.setRange(document, 11, src.length() - 11);
 		assertToken(getToken("entity.other.attribute-name.html"), 11, 9);
 		assertToken(getToken("punctuation.separator.key-value.html"), 20, 1);
 		assertToken(getToken("string.quoted.single.html"), 21, 7);
 		assertToken(getToken("punctuation.definition.tag.end.html"), 28, 1);
 	}
 
-	public void testSplitAttribueValue1() {
+	public void testSplitAttribueValue1()
+	{
 		String src = "<html attribute='<?= Time.now  ?>'>";
 		IDocument document = new Document(src);
 		scanner.setRange(document, 0, 17);
@@ -70,12 +76,13 @@ public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase {
 		assertToken(getToken("punctuation.separator.key-value.html"), 15, 1);
 		assertToken(getToken("string.quoted.single.html"), 16, 1);
 
-		scanner.setRange(document, 33, src.length()-33);
+		scanner.setRange(document, 33, src.length() - 33);
 		assertToken(getToken("string.quoted.single.html"), 33, 1);
 		assertToken(getToken("punctuation.definition.tag.end.html"), 34, 1);
 	}
 
-	public void testSplitAttribueValue2() {
+	public void testSplitAttribueValue2()
+	{
 		String src = "<html attribute='<?= Time.now  ?>' id='id'>";
 		IDocument document = new Document(src);
 		scanner.setRange(document, 0, 17);
@@ -86,7 +93,7 @@ public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase {
 		assertToken(getToken("punctuation.separator.key-value.html"), 15, 1);
 		assertToken(getToken("string.quoted.single.html"), 16, 1);
 
-		scanner.setRange(document, 33, src.length()-33);
+		scanner.setRange(document, 33, src.length() - 33);
 		assertToken(getToken("string.quoted.single.html"), 33, 1);
 		assertToken(Token.WHITESPACE, 34, 1);
 		assertToken(getToken("entity.other.attribute-name.id.html"), 35, 2);
@@ -95,7 +102,8 @@ public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase {
 		assertToken(getToken("punctuation.definition.tag.end.html"), 42, 1);
 	}
 
-	public void testSplitAttribueValue3() {
+	public void testSplitAttribueValue3()
+	{
 		String src = "<html attribute=' <?= Time.now  ?> '>";
 		IDocument document = new Document(src);
 		scanner.setRange(document, 0, 18);
@@ -106,7 +114,7 @@ public class PHTMLTagScannerTest extends AbstractTokenScannerTestCase {
 		assertToken(getToken("punctuation.separator.key-value.html"), 15, 1);
 		assertToken(getToken("string.quoted.single.html"), 16, 2);
 
-		scanner.setRange(document, 34, src.length()-34);
+		scanner.setRange(document, 34, src.length() - 34);
 		assertToken(getToken("string.quoted.single.html"), 34, 2);
 		assertToken(getToken("punctuation.definition.tag.end.html"), 36, 1);
 	}
