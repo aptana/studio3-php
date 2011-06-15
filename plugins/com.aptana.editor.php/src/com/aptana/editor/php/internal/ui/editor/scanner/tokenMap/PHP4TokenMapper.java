@@ -57,7 +57,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				// TODO - Shalom: Missing DIE, TRUE, FALSE
 				return scanner.getToken("keyword.control.php"); //$NON-NLS-1$
 			case T_STATIC:
-				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
+				return scanner.getToken("storage.modifier.static.php"); //$NON-NLS-1$
 			case T_FUNCTION:
 				return scanner.getToken("storage.type.function.php"); //$NON-NLS-1$
 			case T_CLASS:

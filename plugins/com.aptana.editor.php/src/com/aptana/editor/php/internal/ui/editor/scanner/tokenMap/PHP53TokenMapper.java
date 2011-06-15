@@ -62,12 +62,17 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 				// TODO - Shalom: Missing DIE, TRUE, FALSE
 				return scanner.getToken("keyword.control.php"); //$NON-NLS-1$
 			case T_FINAL:
+				return scanner.getToken("storage.modifier.final.php"); //$NON-NLS-1$
 			case T_STATIC:
+				return scanner.getToken("storage.modifier.static.php"); //$NON-NLS-1$
 			case T_PRIVATE:
+				return scanner.getToken("storage.modifier.private.php"); //$NON-NLS-1$
 			case T_PUBLIC:
+				return scanner.getToken("storage.modifier.public.php"); //$NON-NLS-1$
 			case T_PROTECTED:
+				return scanner.getToken("storage.modifier.protected.php"); //$NON-NLS-1$
 			case T_ABSTRACT:
-				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
+				return scanner.getToken("storage.modifier.abstract.php"); //$NON-NLS-1$
 			case T_FUNCTION:
 				return scanner.getToken("storage.type.function.php"); //$NON-NLS-1$
 			case T_CLASS:
