@@ -384,6 +384,43 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * FormalParameter)
+	 */
+	@Override
+	public boolean visit(FormalParameter formalParameter)
+	{
+		Expression parameterName = formalParameter.getParameterName();
+		Expression parameterType = formalParameter.getParameterType();
+		if (parameterType != null)
+		{
+			if (parameterType.getType() == ASTNode.IDENTIFIER)
+			{
+				visit((Identifier) parameterType);
+			}
+			else if (parameterType.getType() == ASTNode.NAMESPACE_NAME)
+			{
+				visit((NamespaceName) parameterType);
+			}
+			visitTextNode(parameterName, true, 1);
+		}
+		else
+		{
+			parameterName.accept(this);
+		}
+		Expression defaultValue = formalParameter.getDefaultValue();
+		if (defaultValue != null)
+		{
+			// locate the '=' operator and push it before visiting the defaultValue
+			int assignmentOffset = builder.getNextNonWhiteCharOffset(document, parameterName.getEnd());
+			pushTypeOperator(TypeOperator.ASSIGNMENT, assignmentOffset, false);
+			visitTextNode(defaultValue, true, 0);
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
 	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.ASTError
 	 * )
