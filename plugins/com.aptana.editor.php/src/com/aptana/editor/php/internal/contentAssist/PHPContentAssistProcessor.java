@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -56,6 +58,7 @@ import com.aptana.editor.php.indexer.IIndexReporter;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IReportable;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
@@ -977,9 +980,19 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static Set<IElementEntry> computeStaticDereferenceLeftEntries(IElementsIndex index, String left,
 			int offset, IModule module, Map<String, String> aliases, String namespace)
 	{
+
 		if (left.startsWith("$")) //$NON-NLS-1$
 		{
-			return null;
+			// static dereferencing is allowed on PHP 5.3 variables
+			IProject project = getProject(module);
+			if (project != null && !PHPVersionProvider.isPHP53(project))
+			{
+				return null;
+			}
+			else
+			{
+				return computeDereferenceLeftEntries(index, left, offset, module, aliases, namespace);
+			}
 		}
 
 		if (SELF_ACTIVATION_SEQUENCE.equals(left))
@@ -1019,6 +1032,27 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			return getClassEntries(index, left, module, aliases, namespace, true);
 		}
+	}
+
+	/**
+	 * Resolve the {@link IProject} from the {@link IModule}
+	 * 
+	 * @param module
+	 * @return
+	 */
+	private static IProject getProject(IModule module)
+	{
+		if (module == null || !(module instanceof LocalModule))
+		{
+			return null;
+		}
+		LocalModule lm = (LocalModule) module;
+		IFile file = lm.getFile();
+		if (file != null)
+		{
+			return file.getProject();
+		}
+		return null;
 	}
 
 	/**
@@ -1075,7 +1109,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		List<IElementEntry> leftEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, clazz);
 		if (leftEntries == null)
 		{
-			return null;
+			leftEntries = new ArrayList<IElementEntry>();
+		}
+		if (leftEntries.isEmpty())
+		{
+			Set<String> classMap = new HashSet<String>(1);
+			classMap.add(clazz);
+			Set<IElementEntry> entries = ContentAssistCollectors.collectBuiltinTypeEntries(classMap, true);
+			leftEntries.addAll(entries);
 		}
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		for (IElementEntry entry : leftEntries)
