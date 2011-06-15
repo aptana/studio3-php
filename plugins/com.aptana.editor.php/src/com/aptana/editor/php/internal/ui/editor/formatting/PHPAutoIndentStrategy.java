@@ -81,7 +81,8 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				return;
 			}
 
-			if (IPHPConstants.PHP_COMMENT.equals(regionType))
+			if (IPHPConstants.PHP_SLASH_LINE_COMMENT.equals(regionType)
+					|| IPHPConstants.PHP_HASH_LINE_COMMENT.equals(regionType))
 			{
 				// TODO
 				// commentStrategy.customizeDocumentCommand(document, command);

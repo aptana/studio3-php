@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.ui.editor.scanner;
 
 import java.util.LinkedList;
@@ -10,6 +17,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.IPHPTokenMapper;
@@ -29,6 +37,7 @@ public class PHPCodeScanner implements ITokenScanner
 	private int fOffset;
 	private IDocument document;
 	private int originalDocumentOffset;
+	private IToken lastToken;
 
 	/**
 	 * Constructs a new PHPCodeScanner
@@ -68,7 +77,30 @@ public class PHPCodeScanner implements ITokenScanner
 		Symbol sym = (Symbol) token.getData();
 
 		IPHPTokenMapper tokenMapper = PHPTokenMapperFactory.getMapper(fScanner.getPHPVersion());
-		return tokenMapper.mapToken(sym, this);
+		token = tokenMapper.mapToken(sym, this);
+		// token scope is "default.php" and last was "storage.type.function.php", make this one
+		// "entity.name.function.php"
+		if (scopeEquals(lastToken, "storage.type.function.php") && scopeEquals(token, StringUtil.EMPTY)) //$NON-NLS-1$
+		{
+			token = getToken("entity.name.function.php"); //$NON-NLS-1$
+		}
+		// token scope is "default.php" and last was "storage.type.class.php", make this one
+		// "entity.name.type.class.php"
+		else if (scopeEquals(lastToken, "storage.type.class.php") && scopeEquals(token, StringUtil.EMPTY)) //$NON-NLS-1$
+		{
+			token = getToken("entity.name.type.class.php"); //$NON-NLS-1$
+		}
+
+		if (token.isOther())
+		{
+			lastToken = token;
+		}
+		return token;
+	}
+
+	private boolean scopeEquals(IToken token, String scope)
+	{
+		return token != null && token.getData() != null && scope.equals(token.getData());
 	}
 
 	/*
@@ -159,5 +191,6 @@ public class PHPCodeScanner implements ITokenScanner
 	private void reset()
 	{
 		queue = null;
+		lastToken = null;
 	}
 }

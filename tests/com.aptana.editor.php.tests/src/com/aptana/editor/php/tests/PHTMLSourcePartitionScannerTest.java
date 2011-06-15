@@ -19,17 +19,21 @@ import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.php.internal.ui.editor.PHPPartitionerSwitchStrategy;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
 
-public class PHTMLSourcePartitionScannerTest extends TestCase {
+@SuppressWarnings("nls")
+public class PHTMLSourcePartitionScannerTest extends TestCase
+{
 
 	private ExtendedFastPartitioner partitioner;
 
 	@Override
-	protected void tearDown() throws Exception {
+	protected void tearDown() throws Exception
+	{
 		partitioner = null;
 		super.tearDown();
 	}
 
-	public void testPartition() {
+	public void testPartition()
+	{
 		String source = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" //$NON-NLS-1$
 				+ "<html>\n" //$NON-NLS-1$
 				+ "<head><script><? echo  \"Hello, world!\" ?></script></head>\n" //$NON-NLS-1$
@@ -66,7 +70,8 @@ public class PHTMLSourcePartitionScannerTest extends TestCase {
 		assertContentType(HTMLSourceConfiguration.DEFAULT, source, 221); // '\n'
 	}
 
-	public void testSplitTag() {
+	public void testSplitTag()
+	{
 		String source = "<body onload='alert()' <?= Time.now ?> id='body'>"; //$NON-NLS-1$
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'body
 		// PHP start switch
@@ -83,7 +88,8 @@ public class PHTMLSourcePartitionScannerTest extends TestCase {
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 39); // 'i'd=
 	}
 
-	public void testSplitAttribute() {
+	public void testSplitAttribute()
+	{
 		String source = "<body class=' <?= Time.now ?> ' id='body'>"; //$NON-NLS-1$
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'body
 		// PHP start switch
@@ -100,7 +106,8 @@ public class PHTMLSourcePartitionScannerTest extends TestCase {
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 32); // 'i'd=
 	}
 
-	public void testBetweenTags() {
+	public void testBetweenTags()
+	{
 		String source = "<body class=''><?= Time.now ?></div>"; //$NON-NLS-1$
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'body
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 14); // '>'
@@ -117,7 +124,8 @@ public class PHTMLSourcePartitionScannerTest extends TestCase {
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 30); // ?>'<'
 	}
 
-	public void testAfterTagBeforeSpace() {
+	public void testAfterTagBeforeSpace()
+	{
 		String source = "<body class=''><?= Time.now ?> </div>"; //$NON-NLS-1$
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'body
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 14); // '>'
@@ -136,7 +144,8 @@ public class PHTMLSourcePartitionScannerTest extends TestCase {
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 31); // ?>'<'
 	}
 
-	public void testAfterSpaceBeforeTag() {
+	public void testAfterSpaceBeforeTag()
+	{
 		String source = "<body class=''> <?= Time.now ?></div>"; //$NON-NLS-1$
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'body
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 14); // '>'
@@ -155,18 +164,122 @@ public class PHTMLSourcePartitionScannerTest extends TestCase {
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 31); // ?>'<'
 	}
 
-	private void assertContentType(String contentType, String code, int offset) {
-		assertEquals("Content type doesn't match expectations for: " + code.charAt(offset), contentType, //$NON-NLS-1$
+	public void testPHPDoc()
+	{
+		String source = "<?php\n" + "/**\n" + " * This is a PHPDoc partition.\n" + " **/\n" + "?>";
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 1); // '?'
+		// PHPDoc comment
+		assertContentType(PHPSourceConfiguration.PHP_DOC_COMMENT, source, 6); // /**
+		assertContentType(PHPSourceConfiguration.PHP_DOC_COMMENT, source, 17); //
+		assertContentType(PHPSourceConfiguration.PHP_DOC_COMMENT, source, 44); // **/
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 46); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 47); // '>'
+	}
+
+	public void testMultilinePHPComment()
+	{
+		String source = "<?php\n" + "/*\n" + " * This is not a PHPDoc partition.\n" + " */\n" + "?>";
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 1); // '?'
+		// Multiline comment
+		assertContentType(PHPSourceConfiguration.PHP_MULTI_LINE_COMMENT, source, 6); // /*
+		assertContentType(PHPSourceConfiguration.PHP_MULTI_LINE_COMMENT, source, 17); //
+		assertContentType(PHPSourceConfiguration.PHP_MULTI_LINE_COMMENT, source, 46); // */
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 48); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 49); // '>'
+	}
+
+	public void testHashSingleLinePHPComment()
+	{
+		String source = "<?php\n" + "# This is a singleline comment.\n" + "?>";
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 1); // '?'
+		// Single line comment
+		assertContentType(PHPSourceConfiguration.PHP_HASH_LINE_COMMENT, source, 6); // #
+		assertContentType(PHPSourceConfiguration.PHP_HASH_LINE_COMMENT, source, 21); //
+		assertContentType(PHPSourceConfiguration.PHP_HASH_LINE_COMMENT, source, 36); // .
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 38); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 39); // '>'
+	}
+
+	public void testSlashSingleLinePHPComment()
+	{
+		String source = "<?php\n" + "// This is a singleline comment.\n" + "?>";
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 1); // '?'
+		// Single line comment
+		assertContentType(PHPSourceConfiguration.PHP_SLASH_LINE_COMMENT, source, 6); // /
+		assertContentType(PHPSourceConfiguration.PHP_SLASH_LINE_COMMENT, source, 7); // /
+		assertContentType(PHPSourceConfiguration.PHP_SLASH_LINE_COMMENT, source, 21); //
+		assertContentType(PHPSourceConfiguration.PHP_SLASH_LINE_COMMENT, source, 37); // .
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 39); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 40); // '>'
+	}
+
+	public void testSingleQuotedString()
+	{
+		String source = "<?php\n" + "'This is a single quoted string.'\n" + "?>";
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 1); // '?'
+		// Single quoted string
+		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, source, 6); // '
+		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, source, 7); // T
+		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, source, 20); //
+		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, source, 37); // .
+		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, source, 38); // '
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 40); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 41); // '>'
+	}
+
+	public void testDoubleQuotedString()
+	{
+		String source = "<?php\n" + "\"This is a double quoted string.\"\n" + "?>";
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 1); // '?'
+		// Double quoted string
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6); // "
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 7); // T
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 20); //
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 37); // .
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 38); // "
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 40); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 41); // '>'
+	}
+
+	// TODO Add a test for a heredoc partition
+	// TODO Add a test for a nowdoc partition
+
+	private void assertContentType(String contentType, String code, int offset)
+	{
+		assertEquals("Content type doesn't match expectations for: " + code.charAt(offset), contentType,
 				getContentType(code, offset));
 	}
 
-	private String getContentType(String content, int offset) {
-		if (partitioner == null) {
+	private String getContentType(String content, int offset)
+	{
+		if (partitioner == null)
+		{
 			IDocument document = new Document(content);
-			CompositePartitionScanner partitionScanner = new CompositePartitionScanner(HTMLSourceConfiguration.getDefault().createSubPartitionScanner(), PHPSourceConfiguration
-					.getDefault().createSubPartitionScanner(), PHPPartitionerSwitchStrategy.getDefault());
-			partitioner = new ExtendedFastPartitioner(partitionScanner, TextUtils.combine(new String[][] { CompositePartitionScanner.SWITCHING_CONTENT_TYPES,
-					HTMLSourceConfiguration.getDefault().getContentTypes(), PHPSourceConfiguration.getDefault().getContentTypes() }));
+			CompositePartitionScanner partitionScanner = new CompositePartitionScanner(HTMLSourceConfiguration
+					.getDefault().createSubPartitionScanner(), PHPSourceConfiguration.getDefault()
+					.createSubPartitionScanner(), PHPPartitionerSwitchStrategy.getDefault());
+			partitioner = new ExtendedFastPartitioner(partitionScanner, TextUtils.combine(new String[][] {
+					CompositePartitionScanner.SWITCHING_CONTENT_TYPES,
+					HTMLSourceConfiguration.getDefault().getContentTypes(),
+					PHPSourceConfiguration.getDefault().getContentTypes() }));
 			partitionScanner.setPartitioner(partitioner);
 			partitioner.connect(document);
 			document.setDocumentPartitioner(partitioner);

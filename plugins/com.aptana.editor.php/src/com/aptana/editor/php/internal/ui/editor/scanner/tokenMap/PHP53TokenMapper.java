@@ -15,18 +15,20 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 	{
 		switch (sym.sym)
 		{
+			case T_ECHO:
+			case T_EVAL:
+				return scanner.getToken("support.function.construct.php"); //$NON-NLS-1$
+			case T_DEFINE:
+				return scanner.getToken("support.function.builtin_functions.php"); //$NON-NLS-1$
 			case T_USE:
 			case T_CLONE:
 			case T_DECLARE:
-			case T_DEFINE:
 			case T_ENDDECLARE:
 			case T_ARRAY:
 			case T_THROW:
 			case T_TRY:
 			case T_CATCH:
-			case T_ECHO:
 			case T_EMPTY:
-			case T_EVAL:
 			case T_HALT_COMPILER:
 			case T_LIST:
 			case T_NEW:
@@ -67,7 +69,9 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_ABSTRACT:
 				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
 			case T_FUNCTION:
+				return scanner.getToken("storage.type.function.php"); //$NON-NLS-1$
 			case T_CLASS:
+				return scanner.getToken("storage.type.class.php"); //$NON-NLS-1$
 			case T_VAR:
 			case T_GLOBAL:
 			case T_INTERFACE:
@@ -137,7 +141,7 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 					}
 				}
 			default:
-				return scanner.getToken("default.php"); //$NON-NLS-1$
+				return PHPTokenMapperFactory.mapDefaultToken(scanner, sym);
 		}
 	}
 }
