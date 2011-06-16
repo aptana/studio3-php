@@ -33,12 +33,24 @@ public class PHPTokenMapperFactory
 
 	private static final Pattern CONSTANT_PATTERN = Pattern.compile("[A-Z_][\\dA-Z_]*");
 
+	private static Set<String> ASSIGNMENTS = new HashSet<String>();
+	static
+	{
+		ASSIGNMENTS.add("=");
+		ASSIGNMENTS.add("|=");
+		ASSIGNMENTS.add("&=");
+		ASSIGNMENTS.add("^=");
+		ASSIGNMENTS.add("%=");
+		ASSIGNMENTS.add("/=");
+		ASSIGNMENTS.add("*=");
+	}
 	private static Set<String> LOGICAL_OPERATORS = new HashSet<String>();
 	static
 	{
 		LOGICAL_OPERATORS.add("!");
 		LOGICAL_OPERATORS.add("&&");
 		LOGICAL_OPERATORS.add("||");
+		LOGICAL_OPERATORS.add("^");
 		LOGICAL_OPERATORS.add("and");
 		LOGICAL_OPERATORS.add("or");
 		LOGICAL_OPERATORS.add("xor");
@@ -256,7 +268,7 @@ public class PHPTokenMapperFactory
 			return scanner.getToken("punctuation.terminator.expression.php");
 		}
 		// Operators
-		if ("=".equals(tokenContent))
+		if (ASSIGNMENTS.contains(tokenContent))
 		{
 			return scanner.getToken("keyword.operator.assignment.php");
 		}
