@@ -77,7 +77,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_LOGICAL_AND:
 			case T_LOGICAL_OR:
 			case T_LOGICAL_XOR:
-				return scanner.getToken("keyword.operator.php"); //$NON-NLS-1$
+				return scanner.getToken("keyword.operator.logical.php"); //$NON-NLS-1$
 			case T_LINE:
 			case T_FILE:
 			case T_FUNC_C:
@@ -115,15 +115,15 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				{
 					if (builtins.isBuiltinFunction(tokenContent))
 					{
-						return scanner.getToken("support.function"); //$NON-NLS-1$
+						return scanner.getToken("support.function.php"); //$NON-NLS-1$
 					}
 					else if (builtins.isBuiltinClass(tokenContent))
 					{
-						return scanner.getToken("support.class"); //$NON-NLS-1$
+						return scanner.getToken("support.class.php"); //$NON-NLS-1$
 					}
 					else if (builtins.isBuiltinConstant(tokenContent))
 					{
-						return scanner.getToken("support.constant"); //$NON-NLS-1$
+						return scanner.getToken("support.constant.php"); //$NON-NLS-1$
 					}
 				}
 			default:

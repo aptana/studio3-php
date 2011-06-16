@@ -95,7 +95,7 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_LOGICAL_AND:
 			case T_LOGICAL_OR:
 			case T_LOGICAL_XOR:
-				return scanner.getToken("keyword.operator.php"); //$NON-NLS-1$
+				return scanner.getToken("keyword.operator.logical.php"); //$NON-NLS-1$
 			case T_VARIABLE:
 				if (THIS.equals(scanner.getSymbolValue(sym)))
 				{
