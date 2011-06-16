@@ -31,6 +31,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -650,7 +651,8 @@ public final class PHPBuiltins
 			IParseNode[] children = child.getChildren();
 			for (IParseNode node : children)
 			{
-				if (node instanceof PHPFunctionParseNode || node instanceof PHPVariableParseNode)
+				if (node instanceof PHPFunctionParseNode || node instanceof PHPVariableParseNode
+						|| node instanceof PHPConstantNode)
 				{
 					builtInClasses.put(child.getNameNode().getName() + IElementsIndex.DELIMITER
 							+ node.getNameNode().getName(), url.toString().intern());
@@ -660,28 +662,32 @@ public final class PHPBuiltins
 		else if (child instanceof PHPConstantNode || child.getNodeType() == IPHPParseNode.KEYWORD_NODE
 				|| child.getNodeType() == IPHPParseNode.CONST_NODE)
 		{
-			// Convert this PHP constant to a PHP parse node with a Keyword
-			// type.
-			// Also, make sure that the documentation is providing some basics.
-			PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
-			IPHPDocBlock documentation = phpChild.getDocumentation();
-			@SuppressWarnings("unused")
-			boolean docsFromBuiltinSource = true;
-			if (documentation == null || EMPTY_STRING.equals(documentation.getShortDescription()))
-			{
-				docsFromBuiltinSource = false;
-				documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
-						.getNameNode().getName()), EMPTY_STRING, NO_TAGS, 0);
-			}
-			PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, phpChild.getModifiers(), child
-					.getStartingOffset(), child.getEndingOffset(), phpChild.getNameNode().getName());
-			node.setDocumentation(documentation);
-			builtins.add(node);
-			// if (docsFromBuiltinSource)
-			// {
-			builtInConstants.put(child.getNameNode().getName(), url.toString().intern());
-			// }
+			addAsKeyword(child, url);
 		}
+	}
+
+	private void addAsKeyword(IParseNode child, URL url)
+	{
+		// Convert this PHP constant to a PHP parse node with a Keyword
+		// type.
+		// Also, make sure that the documentation is providing some basics.
+		PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
+		IPHPDocBlock documentation = phpChild.getDocumentation();
+		@SuppressWarnings("unused")
+		boolean docsFromBuiltinSource = true;
+		if (documentation == null || EMPTY_STRING.equals(documentation.getShortDescription()))
+		{
+			docsFromBuiltinSource = false;
+			documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
+					.getNameNode().getName()), EMPTY_STRING, NO_TAGS, 0);
+		}
+		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, phpChild.getModifiers(),
+				child.getStartingOffset(), child.getEndingOffset(), phpChild.getNameNode().getName());
+		node.setDocumentation(documentation);
+		builtins.add(node);
+		String parentName = (child.getParent() != null) ? child.getParent().getNameNode().getName()
+				+ IElementsIndex.DELIMITER : StringUtil.EMPTY;
+		builtInConstants.put(parentName + child.getNameNode().getName(), url.toString().intern());
 	}
 
 	/*

@@ -19,6 +19,7 @@ import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CompositeSourceViewerConfiguration;
 import com.aptana.editor.common.IPartitionerSwitchStrategy;
@@ -73,7 +74,8 @@ public class PHPSourceViewerConfiguration extends CompositeSourceViewerConfigura
 	@Override
 	protected String getStartEndTokenType()
 	{
-		return "punctuation.section.embedded.php"; //$NON-NLS-1$
+		// We already handle the full scope in PHPSourceConfiguration
+		return StringUtil.EMPTY;
 	}
 
 	@Override

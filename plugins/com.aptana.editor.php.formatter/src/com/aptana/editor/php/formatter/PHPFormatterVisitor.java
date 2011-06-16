@@ -406,7 +406,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 		else
 		{
-			visit(parameterName);
+			parameterName.accept(this);
 		}
 		Expression defaultValue = formalParameter.getDefaultValue();
 		if (defaultValue != null)

@@ -15,14 +15,16 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 	{
 		switch (sym.sym)
 		{
+			case T_ECHO:
+			case T_EVAL:
+				return scanner.getToken("support.function.construct.php"); //$NON-NLS-1$
+			case T_DEFINE:
+				return scanner.getToken("support.function.builtin_functions.php"); //$NON-NLS-1$
 			case T_USE:
 			case T_DECLARE:
-			case T_DEFINE:
 			case T_ENDDECLARE:
 			case T_ARRAY:
-			case T_ECHO:
 			case T_EMPTY:
-			case T_EVAL:
 			case T_LIST:
 			case T_NEW:
 			case T_PRINT:
@@ -55,9 +57,11 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				// TODO - Shalom: Missing DIE, TRUE, FALSE
 				return scanner.getToken("keyword.control.php"); //$NON-NLS-1$
 			case T_STATIC:
-				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
+				return scanner.getToken("storage.modifier.static.php"); //$NON-NLS-1$
 			case T_FUNCTION:
+				return scanner.getToken("storage.type.function.php"); //$NON-NLS-1$
 			case T_CLASS:
+				return scanner.getToken("storage.type.class.php"); //$NON-NLS-1$
 			case T_VAR:
 			case T_GLOBAL:
 				return scanner.getToken("storage.type.php"); //$NON-NLS-1$
@@ -104,7 +108,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
-					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+					return scanner.getToken("constant.language.other.php"); //$NON-NLS-1$
 				}
 				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)
@@ -123,7 +127,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 					}
 				}
 			default:
-				return scanner.getToken("default.php"); //$NON-NLS-1$
+				return PHPTokenMapperFactory.mapDefaultToken(scanner, sym);
 		}
 	}
 }

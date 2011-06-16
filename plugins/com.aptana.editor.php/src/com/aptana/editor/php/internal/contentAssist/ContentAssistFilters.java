@@ -66,8 +66,11 @@ public class ContentAssistFilters
 
 		for (IElementEntry entry : entries)
 		{
-			if ((entry.getCategory() == IPHPIndexConstants.VAR_CATEGORY
-					|| entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY || entry.getCategory() == IPHPIndexConstants.CONST_CATEGORY)
+			if (entry.getCategory() == IPHPIndexConstants.CONST_CATEGORY)
+			{
+				result.add(entry);
+			}
+			else if ((entry.getCategory() == IPHPIndexConstants.VAR_CATEGORY || entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY)
 					&& entry.getValue() instanceof AbstractPHPEntryValue)
 			{
 
