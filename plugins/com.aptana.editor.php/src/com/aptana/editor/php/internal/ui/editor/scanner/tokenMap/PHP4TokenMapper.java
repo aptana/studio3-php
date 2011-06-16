@@ -108,7 +108,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
-					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+					return scanner.getToken("constant.language.other.php"); //$NON-NLS-1$
 				}
 				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)

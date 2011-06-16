@@ -80,13 +80,15 @@ public class PHPCodeScanner implements ITokenScanner
 		token = tokenMapper.mapToken(sym, this);
 		// token scope is "default.php" and last was "storage.type.function.php", make this one
 		// "entity.name.function.php"
-		if (scopeEquals(lastToken, "storage.type.function.php") && scopeEquals(token, StringUtil.EMPTY)) //$NON-NLS-1$
+		if (scopeEquals(lastToken, "storage.type.function.php") //$NON-NLS-1$
+				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, "constant.other.php"))) //$NON-NLS-1$
 		{
 			token = getToken("entity.name.function.php"); //$NON-NLS-1$
 		}
 		// token scope is "default.php" and last was "storage.type.class.php", make this one
 		// "entity.name.type.class.php"
-		else if (scopeEquals(lastToken, "storage.type.class.php") && scopeEquals(token, StringUtil.EMPTY)) //$NON-NLS-1$
+		else if (scopeEquals(lastToken, "storage.type.class.php") //$NON-NLS-1$
+				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, "constant.other.php"))) //$NON-NLS-1$
 		{
 			token = getToken("entity.name.type.class.php"); //$NON-NLS-1$
 		}

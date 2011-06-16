@@ -38,8 +38,9 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 				// TODO - Shalom: Maybe move these to their own style
 			case T_START_HEREDOC:
 			case T_END_HEREDOC:
-			case T_NAMESPACE:
 				return scanner.getToken("keyword.php"); //$NON-NLS-1$
+			case T_NAMESPACE:
+				return scanner.getToken("keyword.namespace.php"); //$NON-NLS-1$
 			case T_WHILE:
 			case T_ENDWHILE:
 			case T_DO:
@@ -127,7 +128,7 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
-					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+					return scanner.getToken("constant.language.other.php"); //$NON-NLS-1$
 				}
 				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)
