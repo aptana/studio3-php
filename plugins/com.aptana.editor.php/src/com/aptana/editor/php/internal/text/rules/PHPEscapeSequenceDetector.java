@@ -5,7 +5,7 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.internal.ui.editor;
+package com.aptana.editor.php.internal.text.rules;
 
 import java.util.HashSet;
 import java.util.Set;
