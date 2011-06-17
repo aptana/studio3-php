@@ -95,7 +95,7 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_LOGICAL_AND:
 			case T_LOGICAL_OR:
 			case T_LOGICAL_XOR:
-				return scanner.getToken("keyword.operator.php"); //$NON-NLS-1$
+				return scanner.getToken("keyword.operator.logical.php"); //$NON-NLS-1$
 			case T_VARIABLE:
 				if (THIS.equals(scanner.getSymbolValue(sym)))
 				{
@@ -127,7 +127,7 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
-					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+					return scanner.getToken("constant.language.other.php"); //$NON-NLS-1$
 				}
 				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)

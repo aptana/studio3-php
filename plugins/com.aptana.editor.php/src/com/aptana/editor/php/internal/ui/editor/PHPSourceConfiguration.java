@@ -32,6 +32,7 @@ import com.aptana.editor.js.IJSConstants;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
+import com.aptana.editor.php.internal.text.rules.PHPStringScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPDocScanner;
 
@@ -43,16 +44,16 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	private static final String[][] TOP_CONTENT_TYPES = new String[][] { { CONTENT_TYPE_PHP } };
 
 	private IPredicateRule[] partitioningRules = new IPredicateRule[] {
-			new EndOfLineRule("//", new Token(PHP_SLASH_LINE_COMMENT)), //$NON-NLS-1$
-			new EndOfLineRule("#", new Token(PHP_HASH_LINE_COMMENT)), //$NON-NLS-1$
+			new EndOfLineRule("//", getToken(PHP_SLASH_LINE_COMMENT)), //$NON-NLS-1$
+			new EndOfLineRule("#", getToken(PHP_HASH_LINE_COMMENT)), //$NON-NLS-1$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
-					"/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+					"/**", "*/", getToken(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
-					"/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_HEREDOC), false)),
-			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_NOWDOC), true)), };
+					"/*", "*/", getToken(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", getToken(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", getToken(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_HEREDOC), false)),
+			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_NOWDOC), true)), };
 
 	private PHPCodeScanner codeScanner;
 	private RuleBasedScanner singleLineCommentScanner;
@@ -297,7 +298,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	{
 		if (doubleQuotedStringScanner == null)
 		{
-			doubleQuotedStringScanner = new PHPEscapeSequenceScanner("string.quoted.double.php"); //$NON-NLS-1$
+			doubleQuotedStringScanner = new PHPStringScanner("string.quoted.double.php"); //$NON-NLS-1$
 		}
 		return doubleQuotedStringScanner;
 	}
@@ -306,7 +307,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	{
 		if (heredocScanner == null)
 		{
-			heredocScanner = new PHPEscapeSequenceScanner("string.unquoted.heredoc.php"); //$NON-NLS-1$
+			heredocScanner = new PHPStringScanner("string.unquoted.heredoc.php"); //$NON-NLS-1$
 		}
 		return heredocScanner;
 	}

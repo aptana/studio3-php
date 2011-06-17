@@ -38,8 +38,9 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 				// TODO - Shalom: Maybe move these to their own style
 			case T_START_HEREDOC:
 			case T_END_HEREDOC:
-			case T_NAMESPACE:
 				return scanner.getToken("keyword.php"); //$NON-NLS-1$
+			case T_NAMESPACE:
+				return scanner.getToken("keyword.namespace.php"); //$NON-NLS-1$
 			case T_WHILE:
 			case T_ENDWHILE:
 			case T_DO:
@@ -95,7 +96,7 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_LOGICAL_AND:
 			case T_LOGICAL_OR:
 			case T_LOGICAL_XOR:
-				return scanner.getToken("keyword.operator.php"); //$NON-NLS-1$
+				return scanner.getToken("keyword.operator.logical.php"); //$NON-NLS-1$
 			case T_VARIABLE:
 				if (THIS.equals(scanner.getSymbolValue(sym)))
 				{
@@ -127,22 +128,22 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
-					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+					return scanner.getToken("constant.language.other.php"); //$NON-NLS-1$
 				}
 				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)
 				{
 					if (builtins.isBuiltinFunction(tokenContent))
 					{
-						return scanner.getToken("support.function"); //$NON-NLS-1$
+						return scanner.getToken("support.function.php"); //$NON-NLS-1$
 					}
 					else if (builtins.isBuiltinClass(tokenContent))
 					{
-						return scanner.getToken("support.class"); //$NON-NLS-1$
+						return scanner.getToken("support.class.php"); //$NON-NLS-1$
 					}
 					else if (builtins.isBuiltinConstant(tokenContent))
 					{
-						return scanner.getToken("support.constant"); //$NON-NLS-1$
+						return scanner.getToken("support.constant.php"); //$NON-NLS-1$
 					}
 				}
 			default:

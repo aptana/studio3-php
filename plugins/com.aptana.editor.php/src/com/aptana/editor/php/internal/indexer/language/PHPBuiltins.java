@@ -50,7 +50,6 @@ import com.aptana.parsing.ast.IParseNode;
 public final class PHPBuiltins
 {
 
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	public static final String LANGUAGE_LIBRARY_PATH_BASE = "Resources/language/php"; //$NON-NLS-1$
 	public static final String PHP4_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "4"; //$NON-NLS-1$
 	public static final String PHP5_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "5"; //$NON-NLS-1$
@@ -215,7 +214,7 @@ public final class PHPBuiltins
 	{
 		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, 0, -1, -1, nodeName);
 		builtins.add(node);
-		node.setDocumentation(new PHPDocBlockImp(description, EMPTY_STRING, NO_TAGS, 0));
+		node.setDocumentation(new PHPDocBlockImp(description, StringUtil.EMPTY, NO_TAGS, 0));
 		if (phpVersions != null && phpVersions.length > 0)
 		{
 			for (PHPVersion version : phpVersions)
@@ -675,18 +674,25 @@ public final class PHPBuiltins
 		IPHPDocBlock documentation = phpChild.getDocumentation();
 		@SuppressWarnings("unused")
 		boolean docsFromBuiltinSource = true;
-		if (documentation == null || EMPTY_STRING.equals(documentation.getShortDescription()))
+		if (documentation == null || StringUtil.EMPTY.equals(documentation.getShortDescription()))
 		{
 			docsFromBuiltinSource = false;
 			documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
-					.getNameNode().getName()), EMPTY_STRING, NO_TAGS, 0);
+					.getNameNode().getName()), StringUtil.EMPTY, NO_TAGS, 0);
 		}
 		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, phpChild.getModifiers(),
 				child.getStartingOffset(), child.getEndingOffset(), phpChild.getNameNode().getName());
 		node.setDocumentation(documentation);
 		builtins.add(node);
-		String parentName = (child.getParent() != null) ? child.getParent().getNameNode().getName()
-				+ IElementsIndex.DELIMITER : StringUtil.EMPTY;
+		String parentName = (child.getParent() != null) ? child.getParent().getNameNode().getName() : StringUtil.EMPTY;
+		if (parentName == null)
+		{
+			parentName = StringUtil.EMPTY;
+		}
+		else if (parentName.length() > 0)
+		{
+			parentName += IElementsIndex.DELIMITER;
+		}
 		builtInConstants.put(parentName + child.getNameNode().getName(), url.toString().intern());
 	}
 

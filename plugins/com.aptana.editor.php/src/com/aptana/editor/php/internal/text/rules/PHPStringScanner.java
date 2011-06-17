@@ -5,24 +5,28 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.editor.php.internal.ui.editor;
+package com.aptana.editor.php.internal.text.rules;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.text.rules.BufferedRuleBasedScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
-public class PHPEscapeSequenceScanner extends BufferedRuleBasedScanner
+
+public class PHPStringScanner extends BufferedRuleBasedScanner
 {
 	/**
 	 * PHPEscapeSequenceScanner
 	 */
-	public PHPEscapeSequenceScanner(String defaultScope)
+	public PHPStringScanner(String defaultScope)
 	{
-		IRule[] rules = new IRule[] { new PHPEscapeSequenceRule(getToken("constant.character.escape.php")) }; //$NON-NLS-1$
+		List<IRule> rules = new ArrayList<IRule>();
+		rules.add(new PHPEscapeSequenceRule(getToken("constant.character.escape.php"))); //$NON-NLS-1$
 
-		setRules(rules);
-
+		setRules(rules.toArray(new IRule[rules.size()]));
 		setDefaultReturnToken(getToken(defaultScope));
 	}
 
