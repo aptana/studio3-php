@@ -91,6 +91,7 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 			case ASTNode.CONDITIONAL_EXPRESSION:
 			case ASTNode.SINGLE_FIELD_DECLARATION:
 			case ASTNode.ARRAY_CREATION:
+			case ASTNode.FUNCTION_INVOCATION:
 				return true;
 			case ASTNode.METHOD_DECLARATION:
 				return node.getStart() != this.node.getStart();
@@ -105,6 +106,10 @@ public class FormatterPHPDeclarationNode extends FormatterBlockWithBeginNode
 	@Override
 	public int getSpacesCountBefore()
 	{
+		if (isPartOfExpression(node.getParent()))
+		{
+			return 0;
+		}
 		return 1;
 	}
 
