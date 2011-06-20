@@ -46,8 +46,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	private IPredicateRule[] partitioningRules = new IPredicateRule[] {
 			new EndOfLineRule("//", getToken(PHP_SLASH_LINE_COMMENT)), //$NON-NLS-1$
 			new EndOfLineRule("#", getToken(PHP_HASH_LINE_COMMENT)), //$NON-NLS-1$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
-					"/**", "*/", getToken(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(
+					new MultiLineRule("/**", "*/", getToken(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
 					"/*", "*/", getToken(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", getToken(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
@@ -76,7 +76,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 		// Inside PHP tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CONTENT_TYPE_PHP), new QualifiedContentType(
-				"text.html.basic", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
+				"source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// Outside PHP tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IHTMLConstants.CONTENT_TYPE_HTML),
