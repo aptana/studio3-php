@@ -22,6 +22,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
@@ -276,28 +277,83 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	public static void logInfo(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
-	}
-
-	public static void logError(Throwable e)
-	{
-		logError(e.getLocalizedMessage(), e);
-	}
-
-	public static void logError(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, string, e));
-	}
-
-	public static void logWarning(String message)
-	{
-		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
-	}
-
+	/**
+	 * Log a particular status
+	 * 
+	 * @deprecated Use IdeLog instead
+	 */
 	public static void log(IStatus status)
 	{
-		getDefault().getLog().log(status);
+		IdeLog.log(getDefault(), status);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @param e
+	 * @deprecated Use IdeLog instead
+	 */
+	public static void log(Throwable e)
+	{
+		IdeLog.logError(getDefault(), e.getLocalizedMessage(), e);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logError(Throwable e)
+	{
+		IdeLog.logError(getDefault(), e.getLocalizedMessage(), e);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logError(String message, Throwable e)
+	{
+		IdeLog.logError(getDefault(), message, e);
+	}
+
+	/**
+	 * logWarning
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logWarning(String message)
+	{
+		IdeLog.logWarning(getDefault(), message, null, null);
+	}
+
+	/**
+	 * logWarning
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logWarning(String message, Throwable e)
+	{
+		IdeLog.logWarning(getDefault(), message, e, null);
+	}
+
+	/**
+	 * logInfo
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 */
+	public static void logInfo(String message)
+	{
+		IdeLog.logInfo(getDefault(), message, null);
 	}
 }
