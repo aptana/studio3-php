@@ -216,8 +216,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
-						ast.getEnd());
+				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0],
+						ast.getStart(), ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 				final FormatterDocument formatterDocument = createFormatterDocument(source, offset);
@@ -276,8 +276,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
-						ast.getEnd());
+				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0],
+						ast.getStart(), ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection,
 						indentSufix);
@@ -359,7 +359,9 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		{
 			return false;
 		}
-		output = output.trim();
+		// Add a new-line to the end of the output to deal with cases where we have a HEREDOC at the end, which requires
+		// a new-line terminator to avoid a parsing error.
+		output = output.trim() + '\n';
 		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 		Program outputAST = parser.parseAST(new StringReader(output));
 		checkinParser(parser);
