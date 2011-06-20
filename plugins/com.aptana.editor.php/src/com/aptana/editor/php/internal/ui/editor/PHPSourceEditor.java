@@ -96,7 +96,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	// Mark Occurrences management
 	private OccurrencesUpdater occurrencesUpdater;
-	
+
 	/**
 	 * Constructs a new PHP source editor.
 	 */
@@ -242,7 +242,10 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		PHPVersionProvider.getInstance().removePHPVersionListener(this);
 		PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
 		PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
-		occurrencesUpdater.dispose();
+		if (occurrencesUpdater != null)
+		{
+			occurrencesUpdater.dispose();
+		}
 		super.dispose();
 	}
 
