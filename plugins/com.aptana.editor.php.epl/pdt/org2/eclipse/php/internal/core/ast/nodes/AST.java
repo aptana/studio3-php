@@ -213,11 +213,9 @@ public class AST {
 	}
 	
 	/**
-	 * Constructs a scanner from a given reader
-	 * 
-	 * @param hasErrors
+	 * Clear the errors in the AST
 	 */
-	public void clearErrors(boolean hasErrors)
+	public void clearErrors()
 	{
 		if (!reportedErrors.isEmpty()){
 			// Create a new list, just in case there is some other 
@@ -245,6 +243,7 @@ public class AST {
 		{
 			problemReporter.flush();
 			problemReporter = null;
+			clearErrors();
 		}
 	}
 	

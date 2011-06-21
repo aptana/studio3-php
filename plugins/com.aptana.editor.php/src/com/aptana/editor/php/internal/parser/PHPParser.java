@@ -74,8 +74,7 @@ public class PHPParser implements IParser
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
 		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset,
-				startingOffset
-				+ source.length());
+				startingOffset + source.length());
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
 		{
@@ -106,15 +105,20 @@ public class PHPParser implements IParser
 		{
 			processChildren(program, root, source);
 		}
-		parseState.setParseResult(root);
 		if (program != null)
 		{
+			parseState.setParseResult(root);
 			try
 			{
 				program.setSourceModule(ModelUtils.convertModule(module));
 				// TODO: Shalom - check for Program errors?
 				// if (!ast.hasSyntaxErrors() && module != null) {
-				program.getAST().flushErrors();
+				AST ast = program.getAST();
+				if (ast.hasErrors())
+				{
+					parseState.setParseResult(null);
+				}
+				ast.flushErrors();
 				if (module != null)
 				{
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
