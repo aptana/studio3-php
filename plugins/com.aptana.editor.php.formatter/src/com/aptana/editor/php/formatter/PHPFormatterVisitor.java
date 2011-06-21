@@ -1347,7 +1347,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(Quote quote)
 	{
 		int quoteType = quote.getQuoteType();
-		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC)
+		String quoteStr = document.get(quote.getStart(), quote.getEnd());
+		// Check for HEREDOC, NOWDOC and multi-lines strings.
+		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC
+				|| LINE_SPLIT_PATTERN.split(quoteStr, 2).length == 2)
 		{
 			FormatterPHPHeredocNode heredocNode = new FormatterPHPHeredocNode(document, quote.getStart(),
 					quote.getEnd());

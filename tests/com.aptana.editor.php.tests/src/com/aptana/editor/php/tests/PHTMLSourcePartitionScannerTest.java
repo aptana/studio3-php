@@ -124,6 +124,51 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 30); // ?>'<'
 	}
 
+	public void testAPSTUD2755()
+	{
+		String source = "<li<?php ?>><a onclick=\"'<?php ?>'\"><?php ?></a></li>"; //$NON-NLS-1$
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'li
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 2); // l'i'
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 3); // '<'?
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 7); // ph'p'
+
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 9); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 10); // '>'
+
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 11); // ?>'>'
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 12); // '<'a
+
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 25); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 29); // ph'p'
+		// inline PHP inside the script
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 30); // ' '
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 31); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 32); // '>'
+
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 33); // ?>'''
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 35); // '>'
+
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 36); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 40); // ph'p'
+		// inline PHP inside the script
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 41); // ' '
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 42); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 43); // '>'
+
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 44); // '<'/a
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 47); // a'>'
+
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 48); // '<'/li
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 52); // li'>'
+
+	}
+
 	public void testAfterTagBeforeSpace()
 	{
 		String source = "<body class=''><?= Time.now ?> </div>"; //$NON-NLS-1$

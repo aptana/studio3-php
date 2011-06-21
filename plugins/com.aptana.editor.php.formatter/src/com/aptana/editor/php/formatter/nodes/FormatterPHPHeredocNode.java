@@ -50,7 +50,7 @@ public class FormatterPHPHeredocNode extends FormatterTextNode
 	{
 		IFormatterContext heredocContext = context.copy();
 		heredocContext.setIndenting(false);
-		visitor.write(heredocContext, getStartOffset(), getEndOffset());
 		visitor.excludeRegion(heredocRegion, EXCLUDE_STRATEGY.WRITE_AS_IS);
+		visitor.write(heredocContext, getStartOffset(), getEndOffset());
 	}
 }
