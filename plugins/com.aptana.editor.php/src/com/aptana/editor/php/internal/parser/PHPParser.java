@@ -14,6 +14,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.IOUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
@@ -99,7 +100,7 @@ public class PHPParser implements IParser
 		catch (Exception e)
 		{
 			// TODO: handle exception
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP parser error", e); //$NON-NLS-1$
 		}
 		if (program != null)
 		{
@@ -128,7 +129,7 @@ public class PHPParser implements IParser
 			}
 			catch (Throwable t)
 			{
-				PHPEditorPlugin.logError(t);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP parser error", t); //$NON-NLS-1$
 			}
 			reconciled(program, false, new NullProgressMonitor());
 		}
@@ -192,7 +193,7 @@ public class PHPParser implements IParser
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP parser error", e); //$NON-NLS-1$
 		}
 		return ast;
 	}
