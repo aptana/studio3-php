@@ -13,11 +13,9 @@ package org2.eclipse.php.internal.ui.editor;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -32,6 +30,7 @@ import org2.eclipse.php.internal.core.corext.ASTNodes;
 import org2.eclipse.php.ui.editor.SharedASTProvider;
 import org2.eclipse.php.ui.editor.SharedASTProvider.WAIT_FLAG;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.core.model.ISourceModuleProviderEditor;
@@ -611,15 +610,13 @@ public final class ASTProvider {
 				} catch (OperationCanceledException ex) {
 					return;
 				} catch (Exception e) {
-					PHPEplPlugin.logError(e);
+					IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating PHP AST", e); //$NON-NLS-1$
 					return;
 				}
 			}
 
 			public void handleException(Throwable ex) {
-				IStatus status = new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID,
-						IStatus.OK, "Error in PDT UI during AST creation", ex); //$NON-NLS-1$
-				PHPEplPlugin.log(status);
+				IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating PHP AST", ex); //$NON-NLS-1$
 			}
 		});
 		return root[0];

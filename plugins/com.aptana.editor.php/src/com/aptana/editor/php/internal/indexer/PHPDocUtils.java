@@ -20,6 +20,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -66,7 +67,7 @@ public final class PHPDocUtils
 		}
 		catch (Exception ex)
 		{
-			PHPEditorPlugin.logError("Failed locating the PHP function doc", ex); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Failed locating the PHP function doc", ex); //$NON-NLS-1$
 			return null;
 		}
 		return null;
@@ -85,8 +86,8 @@ public final class PHPDocUtils
 	{
 		try
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(), EncodingUtils
-					.getModuleEncoding(module)));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(),
+					EncodingUtils.getModuleEncoding(module)));
 			return innerParsePHPDoc(offset, reader);
 		}
 		catch (Exception ex)

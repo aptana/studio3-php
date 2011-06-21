@@ -45,6 +45,7 @@ import org2.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
 import org2.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
@@ -236,7 +237,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		catch (BadLocationException e1)
 		{
-			PHPEditorPlugin.logError(e1);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error computing PHP completion proposals", e1); //$NON-NLS-1$
 			return null;
 		}
 		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
@@ -262,7 +263,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error grabbing a field from the PHP lexer", e); //$NON-NLS-1$
 			return null;
 		}
 		lexer.initialize(state);
@@ -343,7 +344,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error computing PHP completion proposals", e); //$NON-NLS-1$
 		}
 
 		int startOffset = offset < content.length() ? offset : offset - 1;

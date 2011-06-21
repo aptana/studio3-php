@@ -15,6 +15,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
@@ -125,7 +126,7 @@ public class BlockEndingSyntaxAutoEditStrategy extends AbstractPHPAutoEditStrate
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error customizing a PHP block-ending command", e); //$NON-NLS-1$
 		}
 	}
 

@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 
@@ -222,7 +223,7 @@ public final class LibraryManager
 		}
 		catch (BackingStoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving to the preferences", e); //$NON-NLS-1$
 		}
 	}
 

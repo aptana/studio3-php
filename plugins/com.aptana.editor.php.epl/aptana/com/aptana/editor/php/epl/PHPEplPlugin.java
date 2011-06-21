@@ -13,9 +13,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
 import org2.eclipse.php.internal.ui.editor.ASTProvider;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.internal.ui.viewsupport.ProblemMarkerManager;
 
 public class PHPEplPlugin extends AbstractUIPlugin
@@ -23,8 +23,8 @@ public class PHPEplPlugin extends AbstractUIPlugin
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.editor.php.epl"; //$NON-NLS-1$
-
-	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(PLUGIN_ID + "/debug")).booleanValue(); //$NON-NLS-1$
+	public static final String DEBUG_SCOPE = PLUGIN_ID + "/debug"; //$NON-NLS-1$
+	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(DEBUG_SCOPE)).booleanValue();
 
 	// The shared instance
 	private static PHPEplPlugin plugin;
@@ -86,14 +86,16 @@ public class PHPEplPlugin extends AbstractUIPlugin
 
 	/**
 	 * Returns a {@link ProblemMarkerManager}
+	 * 
 	 * @return {@link ProblemMarkerManager}
 	 */
-	public synchronized ProblemMarkerManager getProblemMarkerManager() {
+	public synchronized ProblemMarkerManager getProblemMarkerManager()
+	{
 		if (fProblemMarkerManager == null)
-			fProblemMarkerManager= new ProblemMarkerManager();
+			fProblemMarkerManager = new ProblemMarkerManager();
 		return fProblemMarkerManager;
 	}
-	
+
 	/**
 	 * Returns the standard display to be used. The method first checks, if the thread calling this method has an
 	 * associated display. If so, this display is returned. Otherwise the method returns the default display.
@@ -166,26 +168,41 @@ public class PHPEplPlugin extends AbstractUIPlugin
 		return getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
 	public static void logInfo(String string, Throwable e)
 	{
 		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
 	}
 
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
 	public static void logError(Throwable e)
 	{
 		logError(e.getLocalizedMessage(), e);
 	}
 
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
 	public static void logError(String string, Throwable e)
 	{
 		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, string, e));
 	}
 
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
 	public static void logWarning(String message)
 	{
 		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
 	}
 
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
 	public static void log(IStatus status)
 	{
 		getDefault().getLog().log(status);

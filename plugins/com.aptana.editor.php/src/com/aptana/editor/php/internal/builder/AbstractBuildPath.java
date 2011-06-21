@@ -19,6 +19,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.core.builder.IBuildPath;
 import com.aptana.editor.php.internal.core.builder.IBuildPathChangeListener;
@@ -253,7 +254,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 			}
 			catch (Throwable th)
 			{
-				PHPEditorPlugin.logError("Unable notifying build path change listener", th); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Unable notifying build path change listener", th); //$NON-NLS-1$
 			}
 		}
 	}
@@ -293,7 +294,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 			}
 			catch (Throwable th)
 			{
-				PHPEditorPlugin.logError("Unable notifying build path change listener", th); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Unable notifying build path change listener", th); //$NON-NLS-1$
 			}
 		}
 	}

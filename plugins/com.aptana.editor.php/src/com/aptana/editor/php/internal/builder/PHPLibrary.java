@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
@@ -48,7 +49,7 @@ public class PHPLibrary implements IPHPLibrary
 			}
 			catch (IOException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error locating the bundle file for a PHP library", e); //$NON-NLS-1$
 				return null;
 			}
 			return new File(bundleFile, attribute);

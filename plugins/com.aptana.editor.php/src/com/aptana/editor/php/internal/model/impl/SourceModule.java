@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org2.eclipse.dltk.internal.core.util.Util;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.core.util.IOUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -311,7 +312,8 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Error getting a source content as char-array", e, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 		}
 		return EMPTY_CONTENT;
 	}

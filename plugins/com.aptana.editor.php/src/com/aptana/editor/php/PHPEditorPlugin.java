@@ -40,17 +40,17 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.editor.php"; //$NON-NLS-1$
-
+	public static final String DEBUG_SCOPE = PLUGIN_ID + "/debug"; //$NON-NLS-1$
+	public static final String INDEXER_SCOPE = PLUGIN_ID + "/debug/indexer"; //$NON-NLS-1$
 	public static final String BUILDER_ID = PLUGIN_ID + ".aptanaPhpBuilder"; //$NON-NLS-1$
-	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(PLUGIN_ID + "/debug")).booleanValue(); //$NON-NLS-1$
-	public static final boolean INDEXER_DEBUG = Boolean
-			.valueOf(Platform.getDebugOption(PLUGIN_ID + "/indexer_debug")).booleanValue(); //$NON-NLS-1$
+	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(DEBUG_SCOPE)).booleanValue();
+	public static final boolean INDEXER_DEBUG = Boolean.valueOf(Platform.getDebugOption(INDEXER_SCOPE)).booleanValue();
 
 	// The shared instance
 	private static PHPEditorPlugin plugin;
 
 	private IPreferenceChangeListener fThemeChangeListener;
-	
+
 	private PHPDocumentProvider phpDocumentProvider;
 
 	/**
@@ -257,10 +257,13 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	/**
 	 * Returns PHP document provider
+	 * 
 	 * @return
 	 */
-	public synchronized PHPDocumentProvider getPHPDocumentProvider() {
-		if (phpDocumentProvider == null) {
+	public synchronized PHPDocumentProvider getPHPDocumentProvider()
+	{
+		if (phpDocumentProvider == null)
+		{
 			phpDocumentProvider = new PHPDocumentProvider();
 		}
 		return phpDocumentProvider;

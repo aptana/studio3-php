@@ -18,6 +18,7 @@ import org2.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
 import org2.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.internal.core.IPHPConstants;
@@ -89,7 +90,7 @@ public class PHPScopeScanner implements ITokenScanner
 					}
 					catch (BadLocationException e)
 					{
-						PHPEditorPlugin.logError(e);
+						IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP scope-scanner error", e); //$NON-NLS-1$
 					}
 				}
 				// Check if we have more regions of PHP after this close tag.
@@ -107,7 +108,7 @@ public class PHPScopeScanner implements ITokenScanner
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP scope-scanner error", e); //$NON-NLS-1$
 		}
 		dispose();
 		return Token.EOF;
@@ -174,7 +175,7 @@ public class PHPScopeScanner implements ITokenScanner
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP scope-scanner error (setRange)", e); //$NON-NLS-1$
 		}
 	}
 

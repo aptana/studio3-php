@@ -19,6 +19,7 @@ import org2.eclipse.dltk.compiler.problem.DefaultProblem;
 import org2.eclipse.dltk.compiler.problem.IProblem;
 import org2.eclipse.dltk.compiler.problem.ProblemCollector;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.core.resources.MarkerUtils;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -154,7 +155,7 @@ public class BuildProblemReporter extends ProblemCollector
 		}
 		catch (CoreException e)
 		{
-			PHPEplPlugin.logError("Error updating markers", e); //$NON-NLS-1$
+			IdeLog.logError(PHPEplPlugin.getDefault(), "Error updating PHP error markers", e); //$NON-NLS-1$
 		}
 	}
 }
