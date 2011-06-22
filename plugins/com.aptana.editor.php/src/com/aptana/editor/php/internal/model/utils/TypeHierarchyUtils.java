@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -300,8 +301,9 @@ public final class TypeHierarchyUtils
 		// A simple cause for this issue may be two classes that extend each other.
 		if (toFill.size() > MAX_ANCESTORS_LIMIT)
 		{
-			PHPEditorPlugin
-					.logWarning("Max ancestors reached. Hierarchy lookup stopped. Please check your class hierarchy"); //$NON-NLS-1$
+			IdeLog.logWarning(
+					PHPEditorPlugin.getDefault(),
+					"Max ancestors reached. Hierarchy lookup stopped. Please check your class hierarchy", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			return;
 		}
 		// FIXME - Shalom: This lookup should take into consideration the namespaces that are involved in the hierarchy

@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IEntryValueFactory;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
@@ -49,7 +50,7 @@ public final class IndexPersistence
 			}
 			catch (CoreException e1)
 			{
-				PHPEditorPlugin.logError(e1);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading indexer entry value", e1); //$NON-NLS-1$
 			}
 		}
 	}

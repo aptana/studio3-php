@@ -20,6 +20,7 @@ import org.eclipse.jface.text.rules.Token;
 import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.html.parsing.HTMLTokenScanner;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
@@ -90,7 +91,7 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP token-scanner - Error getting the next token", e); //$NON-NLS-1$
 			nextNextSymbol = null;
 		}
 		IToken token = createToken(nextSymbol);
@@ -141,11 +142,11 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP code-scanner - Error setting the range", e); //$NON-NLS-1$
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP code-scanner - I/O error", e); //$NON-NLS-1$
 		}
 		origOffset = offset;
 	}

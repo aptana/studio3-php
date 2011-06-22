@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
@@ -76,7 +77,7 @@ public final class DependenciesManager
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading project dependencies", e); //$NON-NLS-1$
 		}
 		return dependencies;
 	}
@@ -99,7 +100,7 @@ public final class DependenciesManager
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error setting project dependencies", e); //$NON-NLS-1$
 		}
 	}
 

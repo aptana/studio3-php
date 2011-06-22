@@ -21,6 +21,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.aptana.core.build.UnifiedBuilder;
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.projects.templates.IProjectTemplate;
 import com.aptana.core.projects.templates.TemplateType;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -165,7 +166,7 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 				}
 				catch (BackingStoreException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
 				}
 				return Status.OK_STATUS;
 			}

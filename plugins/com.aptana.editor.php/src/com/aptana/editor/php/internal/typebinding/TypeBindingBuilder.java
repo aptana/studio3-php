@@ -67,6 +67,7 @@ import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPTypeConstants;
 import com.aptana.editor.php.core.model.ISourceModule;
@@ -143,7 +144,8 @@ public class TypeBindingBuilder
 		}
 		else
 		{
-			PHPEditorPlugin.logError(new IllegalArgumentException("Cannot build the PHP bindings with a null AST")); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error building the PHP bindings for the AST", //$NON-NLS-1$
+					new IllegalArgumentException("Cannot build the PHP bindings with a null AST")); //$NON-NLS-1$
 		}
 	}
 
@@ -861,7 +863,7 @@ public class TypeBindingBuilder
 		// * Backuped variable scopes.
 		// */
 		// private Stack<Scope> backupedScopes = new Stack<Scope>();
-		//		
+		//
 		// /**
 		// * Scopes of the previous node.
 		// */
@@ -906,7 +908,8 @@ public class TypeBindingBuilder
 
 			Expression superClassIdentifier = classDeclaration.getSuperClass();
 			String superClassName = null;
-			if (superClassIdentifier != null && (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
+			if (superClassIdentifier != null
+					&& (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
 			{
 				superClassName = ((Identifier) superClassIdentifier).getName();
 				superClassIdentifier.setBinding(resolveTypeBinding(superClassName));
@@ -974,7 +977,8 @@ public class TypeBindingBuilder
 		private void visitStaticDispatch(StaticDispatch classConstantAccess)
 		{
 			Expression className = classConstantAccess.getClassName();
-			if (className != null && (className.getType() == ASTNode.NAMESPACE_NAME || className.getType() == ASTNode.IDENTIFIER))
+			if (className != null
+					&& (className.getType() == ASTNode.NAMESPACE_NAME || className.getType() == ASTNode.IDENTIFIER))
 			{
 				IBinding resolveTypeBinding = resolveTypeBinding(((Identifier) className).getName());
 				reporter.report(classConstantAccess, resolveTypeBinding);
@@ -1067,8 +1071,8 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			VariableInfo info = new VariableInfo(defineName, defineTypes, getCurrentScope(), functionInvocation
-					.getStart(), PHPFlags.AccStatic);
+			VariableInfo info = new VariableInfo(defineName, defineTypes, getCurrentScope(),
+					functionInvocation.getStart(), PHPFlags.AccStatic);
 			getCurrentScope().addVariable(info);
 			// VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0,
 			// false, false, true, defineTypes,
@@ -1339,8 +1343,8 @@ public class TypeBindingBuilder
 				}
 				InfixExpression expr = (InfixExpression) parent;
 				Set<Object> types = countInfixExpressionTypes(expr);
-				VariableInfo variableInfo = new VariableInfo(variableName, types, getCurrentScope(), variable
-						.getStart());
+				VariableInfo variableInfo = new VariableInfo(variableName, types, getCurrentScope(),
+						variable.getStart());
 				getCurrentScope().addVariable(variableInfo);
 			}
 
@@ -1957,8 +1961,8 @@ public class TypeBindingBuilder
 
 			Set<Object> rightSideTypes = countExpressionTypes(value);
 
-			VariableInfo variableInfo = new VariableInfo(variableName, rightSideTypes, getCurrentScope(), variable
-					.getStart(), staticDeclaration ? PHPFlags.AccStatic : 0);
+			VariableInfo variableInfo = new VariableInfo(variableName, rightSideTypes, getCurrentScope(),
+					variable.getStart(), staticDeclaration ? PHPFlags.AccStatic : 0);
 			getCurrentScope().addVariable(variableInfo);
 
 			return true;
@@ -2263,7 +2267,8 @@ public class TypeBindingBuilder
 			if (classNameIdentifier == null
 					|| (classNameIdentifier.getType() != ASTNode.IDENTIFIER && classNameIdentifier.getType() != ASTNode.NAMESPACE_NAME))
 			{
-				PHPEditorPlugin.logError(new IllegalArgumentException("Expected an identifier or namespace-name")); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Expected an identifier or namespace-name", new Exception()); //$NON-NLS-1$
 				return null;
 			}
 			else if (classNameIdentifier.getType() == ASTNode.IDENTIFIER)
@@ -3212,7 +3217,8 @@ public class TypeBindingBuilder
 		}
 		catch (Throwable th)
 		{
-			PHPEditorPlugin.logError("Unexpected exception while indexing module " + program.toString(), th); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Unexpected exception while indexing module " + program.toString(), th); //$NON-NLS-1$
 		}
 	}
 

@@ -11,6 +11,7 @@ import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
@@ -216,7 +217,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 			return;
 		}
 	}
@@ -246,7 +247,9 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			{
 				if (count-- == 0)
 				{
-					PHPEditorPlugin.logWarning("Stopped a possible infinite loop in the PHPAutoIndentStrategy"); //$NON-NLS-1$
+					IdeLog.logWarning(
+							PHPEditorPlugin.getDefault(),
+							"Stopped a possible infinite loop in the PHPAutoIndentStrategy", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 					break;
 				}
 				firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, lineInfo.getOffset());
@@ -375,7 +378,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			}
 			catch (BadLocationException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 			}
 		}
 		if (result)
@@ -453,7 +456,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 		}
 
 	}

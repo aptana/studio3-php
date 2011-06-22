@@ -28,6 +28,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.core.builder.IBuildPathResource;
 import com.aptana.editor.php.internal.core.builder.IDirectory;
@@ -442,7 +443,8 @@ public class ProjectBuildPath extends AbstractBuildPath
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+					"Error getting modules by path", e, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			return null;
 		}
 		List<IFile> innerFiles = new ArrayList<IFile>();
@@ -494,7 +496,9 @@ public class ProjectBuildPath extends AbstractBuildPath
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+					"Error getting sub-directories by path", e, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+
 			return null;
 		}
 		List<IFolder> innerFolders = new ArrayList<IFolder>();
@@ -564,7 +568,8 @@ public class ProjectBuildPath extends AbstractBuildPath
 					}
 					catch (CoreException e)
 					{
-						PHPEditorPlugin.logError(e);
+						IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+								"Error binding listeners", e, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 					}
 				}
 
@@ -666,7 +671,9 @@ public class ProjectBuildPath extends AbstractBuildPath
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Error indexing local resources", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+
 		}
 	}
 

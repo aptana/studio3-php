@@ -32,6 +32,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org2.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.common.parsing.FileService;
@@ -430,11 +431,9 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			if (sourceURI == null)
 			{
-				if (PHPEditorPlugin.DEBUG)
-				{
-					PHPEditorPlugin.log(new Status(IStatus.WARNING, PHPEditorPlugin.PLUGIN_ID,
-							"sourceUri was null. Returning null")); //$NON-NLS-1$
-				}
+				IdeLog.logWarning(
+						PHPEditorPlugin.getDefault(),
+						"PHPSourceEditor::computeModule() - sourceUri was null. Returning null", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 				return null;
 			}
 			String struri = sourceURI;
@@ -464,7 +463,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 				}
 				if (uri == null)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "PHPSourceEditor::computeModule() - malformed URI", e); //$NON-NLS-1$
 					return null;
 				}
 			}

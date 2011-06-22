@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org2.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.preferences.Messages;
 import com.aptana.editor.php.internal.ui.preferences.PHPVersionConfigurationBlock;
@@ -98,7 +99,8 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 		int index = PHPVersionConfigurationBlock.PHP_ALIASES.indexOf(phpAlias);
 		if (index < 0)
 		{
-			PHPEditorPlugin.logWarning("Unresolved PHP version: " + phpAlias); //$NON-NLS-1$
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+					"Unresolved PHP version: " + phpAlias, new Exception(), PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			index = 0;
 		}
 		fPHPVersions.select(index);

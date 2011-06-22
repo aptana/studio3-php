@@ -25,6 +25,7 @@ import org2.eclipse.php.internal.core.preferences.ITaskTagsListener;
 import org2.eclipse.php.internal.core.preferences.TaskTagsEvent;
 import org2.eclipse.php.internal.core.preferences.TaskTagsProvider;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.resources.TaskTag;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -101,7 +102,9 @@ public class TaskTagsUpdater
 		{
 			if (ResourcesPlugin.getWorkspace().isTreeLocked())
 			{
-				PHPEditorPlugin.logWarning("Error updating the document errors. The workspace tree is locked."); //$NON-NLS-1$
+				IdeLog.logWarning(
+						PHPEditorPlugin.getDefault(),
+						"Error updating the document errors. The workspace tree is locked.", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			}
 
 			if (file == null || file.exists() == false)
@@ -134,7 +137,8 @@ public class TaskTagsUpdater
 			}
 			catch (Exception e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"Error updating the PHP task-tags.", e, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			}
 		}
 	}
@@ -185,7 +189,8 @@ public class TaskTagsUpdater
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+					"Error updating the PHP task-tags.", e, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 		}
 	}
 
@@ -230,8 +235,7 @@ public class TaskTagsUpdater
 				}
 				int start = commentNode.getStart() + offset + index;
 				tasks.add(new Task(entry.getName(), new String(message), entry.getPriority(), start, start
-						+ line.length() - index,
-						program.getLineNumber(start)));
+						+ line.length() - index, program.getLineNumber(start)));
 			}
 			// FIXME If newline is \r\n, this means we're one off per line in our offsets...
 			offset += line.length() + 1;

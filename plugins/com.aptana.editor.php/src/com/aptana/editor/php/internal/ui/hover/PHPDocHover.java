@@ -24,6 +24,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.osgi.framework.Bundle;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.IOUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.LexemeProvider;
@@ -266,7 +267,8 @@ public class PHPDocHover extends AbstractPHPTextHover
 			}
 			catch (BadLocationException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"PHP documentation hover - error getting an element at offset - " + hoverRegion.getOffset(), e); //$NON-NLS-1$
 			}
 
 		}
@@ -403,7 +405,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 			}
 			catch (IOException ex)
 			{
-				PHPEditorPlugin.logError(ex);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP document hover - Error loading the style-sheet", ex); //$NON-NLS-1$
 				return StringUtil.EMPTY;
 			}
 		}

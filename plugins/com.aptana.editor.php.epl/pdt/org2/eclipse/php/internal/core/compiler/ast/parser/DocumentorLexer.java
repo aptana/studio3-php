@@ -23,6 +23,7 @@ import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTagKinds;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 
@@ -468,7 +469,7 @@ public class DocumentorLexer implements IDocumentorLexer {
         try {
             next_token();
         } catch (IOException e) {
-            PHPEplPlugin.logError(e);
+        	IdeLog.logError(PHPEplPlugin.getDefault(), "Error parsing a PHP doc-block", e); //$NON-NLS-1$
         }
 
         IPHPDocTag[] tags = new IPHPDocTag[tagList.size()];
@@ -481,7 +482,7 @@ public class DocumentorLexer implements IDocumentorLexer {
 		}
 		catch (IOException e)
 		{
-			PHPEplPlugin.logError(e);
+			IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating a PHP doc-block", e); //$NON-NLS-1$
 		}
 
         return rv;

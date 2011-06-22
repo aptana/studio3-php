@@ -36,7 +36,6 @@ import org.eclipse.text.edits.RangeMarker;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.TextEditGroup;
-
 import org2.eclipse.dltk.ast.Modifiers;
 import org2.eclipse.dltk.compiler.util.ScannerHelper;
 import org2.eclipse.php.core.compiler.PHPFlags;
@@ -130,6 +129,7 @@ import org2.eclipse.php.internal.core.ast.rewrite.TargetSourceRangeComputer.Sour
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -216,7 +216,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			try {
 				this.tokenScanner = new TokenScanner(scanner, content);
 			} catch (IOException e) {
-				PHPEplPlugin.logError(e);
+				IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating a PHP token scanner", e); //$NON-NLS-1$
 			}
 		}
 		return this.tokenScanner;

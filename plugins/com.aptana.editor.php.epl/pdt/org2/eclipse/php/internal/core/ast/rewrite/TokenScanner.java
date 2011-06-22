@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org2.eclipse.php.internal.core.ast.util.RandomAccessCharArrayReader;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -90,7 +91,7 @@ public class TokenScanner {
 			scanner.setInScriptingState();
 			scanner.resetCommentList();
 		} catch (IOException e) {
-			PHPEplPlugin.logError(e);
+			IdeLog.logError(PHPEplPlugin.getDefault(), "Error setting a PHP token-scanner offset", e); //$NON-NLS-1$
 		}
 	}
 

@@ -31,6 +31,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -414,7 +415,8 @@ public final class PHPBuiltins
 			}
 			catch (MalformedURLException e)
 			{
-				PHPEditorPlugin.logError("Error retrieving the built-in resource.", e); //$NON-NLS-1$
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"Error retrieving the built-in resource", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 
 		}
@@ -492,7 +494,7 @@ public final class PHPBuiltins
 		}
 		catch (Throwable t)
 		{
-			PHPEditorPlugin.logError(t);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the PHP Built-in API", t); //$NON-NLS-1$
 		}
 	}
 
@@ -531,13 +533,14 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " + url.getFile(), e); //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error loading the built-in PHP API for " + url.getFile(), e); //$NON-NLS-1$
 				}
 			}
 		}
 		catch (IOException ioe)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API.", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API.", ioe); //$NON-NLS-1$
 		}
 	}
 
@@ -576,14 +579,15 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " + url.getFile(), //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error loading the built-in PHP API for " + url.getFile(), //$NON-NLS-1$
 							e);
 				}
 			}
 		}
 		catch (IOException ioe)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API", ioe); //$NON-NLS-1$
 		}
 	}
 
@@ -622,14 +626,14 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
 							+ url.getFile(), e);
 				}
 			}
 		}
 		catch (IOException ioe)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API for " //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
 					, ioe);
 		}
 	}

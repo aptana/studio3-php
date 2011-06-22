@@ -16,16 +16,37 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.text.*;
-import org.eclipse.text.edits.*;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
+import org.eclipse.jface.text.DefaultPositionUpdater;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.Region;
+import org.eclipse.text.edits.DeleteEdit;
+import org.eclipse.text.edits.InsertEdit;
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.text.edits.TextEdit;
 import org2.eclipse.php.internal.core.PHPVersion;
-import org2.eclipse.php.internal.core.ast.nodes.*;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.Block;
+import org2.eclipse.php.internal.core.ast.nodes.BodyDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Statement;
 import org2.eclipse.php.internal.core.format.DefaultCodeFormattingProcessor;
 import org2.eclipse.php.internal.core.format.ICodeFormattingProcessor;
 import org2.eclipse.php.internal.core.format.IFormatterProcessorFactory;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -228,7 +249,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 					createDocument("", null)).createIndentationString( //$NON-NLS-1$
 					indentationUnits);
 		} catch (Exception e) {
-			PHPEplPlugin.logError(e);
+			IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating indentation string", e); //$NON-NLS-1$
 		}
 		return ""; //$NON-NLS-1$
 	}
@@ -292,7 +313,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 					createDocument(string, null));
 			return codeFormatter.getTextEdits();
 		} catch (Exception e) {
-			PHPEplPlugin.logError(e);
+			IdeLog.logError(PHPEplPlugin.getDefault(), "Error formatting a PHP string", e); //$NON-NLS-1$
 		}
 		return new MultiTextEdit();
 	}
@@ -329,7 +350,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 					}
 
 					public void handleException(Throwable exception) {
-						PHPEplPlugin.logError(exception);
+						IdeLog.logError(PHPEplPlugin.getDefault(), "Error getting a PHP formatter processor", exception); //$NON-NLS-1$
 					}
 				});
 				if (elementObject[0] instanceof IFormatterProcessorFactory) {
