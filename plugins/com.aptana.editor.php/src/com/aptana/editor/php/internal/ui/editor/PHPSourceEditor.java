@@ -19,6 +19,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPartService;
@@ -34,7 +36,6 @@ import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.common.parsing.FileService;
 import com.aptana.editor.common.text.reconciler.IFoldingComputer;
 import com.aptana.editor.html.HTMLEditor;
@@ -251,14 +252,15 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	}
 
 	@Override
-	protected CommonOutlinePage createOutlinePage()
+	public ITreeContentProvider getOutlineContentProvider()
 	{
-		CommonOutlinePage outline = super.createOutlinePage();
-		// Add the PHP-HTML (PHTML) outline provider
-		outline.setContentProvider(new PHTMLOutlineContentProvider());
-		outline.setLabelProvider(new PHPDecoratingLabelProvider(getFileService().getParseState()));
+		return new PHTMLOutlineContentProvider();
+	}
 
-		return outline;
+	@Override
+	public ILabelProvider getOutlineLabelProvider()
+	{
+		return new PHPDecoratingLabelProvider(getFileService().getParseState());
 	}
 
 	@Override
