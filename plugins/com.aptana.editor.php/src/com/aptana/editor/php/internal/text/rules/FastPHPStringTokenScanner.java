@@ -32,6 +32,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	private static final IToken TOKEN_ARRAY_END = getToken(PHPTokenType.ARRAY_END);
 	private static final IToken TOKEN_VARIABLE_PUNCTUATION = getToken(PHPTokenType.VARIABLE_PUNCTUATION);
 	private static final IToken TOKEN_FUNCTION_PUNCTUATION = getToken(PHPTokenType.FUNCTION_PUNCTUATION);
+	private static final IToken TOKEN_STATIC_PUNCTUATION = getToken(PHPTokenType.STATIC_PUNCTUATION);
 	private static final IToken TOKEN_SINGLE_QUOTED = new Token("string.quoted.single.php"); //$NON-NLS-1$
 
 	private final IToken fDefaultToken;
@@ -159,12 +160,8 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		} else if (ch == '{') { // we have ${
 			queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);
 			readLiteral(fScanner.getOffset());
-			offset = fScanner.getOffset();
-			ch = fScanner.read();
-			if (ch == '}') {
-				queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);
-				unread = 0;
-			}
+			readDefaultUntil('}', TOKEN_VARIABLE_PUNCTUATION, fScanner.getOffset());
+			unread = 0;
 		}
 		while (ch != ICharacterScanner.EOF && unread-- > 0) {
 			fScanner.unread();
@@ -189,21 +186,9 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		} else if (ch == '{') { // we have ${
 			queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);
 			readLiteral(fScanner.getOffset());
-			offset = fScanner.getOffset();
-			ch = fScanner.read();
-			if (ch == '}') {
-				queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);
-			} else if (ch != ICharacterScanner.EOF) {
-				fScanner.unread();
-			}
+			readDefaultUntil('}', TOKEN_VARIABLE_PUNCTUATION, fScanner.getOffset());
 		}
-		offset = fScanner.getOffset();
-		ch = fScanner.read();
-		if (ch == '}') {
-			queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);			
-		} else if (ch != ICharacterScanner.EOF){
-			fScanner.unread();
-		}
+		readDefaultUntil('}', TOKEN_VARIABLE_PUNCTUATION, fScanner.getOffset());
 	}
 
 	private void readVariableOperator(int offset) {
@@ -241,13 +226,47 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		} else if (ch == '(' || ch == ')') {
 			queueToken(TOKEN_FUNCTION_PUNCTUATION, offset, fScanner.getOffset() - offset);
 			readVariableOperator(fScanner.getOffset());
+			readDefaultUntil(')', TOKEN_FUNCTION_PUNCTUATION, fScanner.getOffset());
 			unread = 0;
+		} else if (ch == ':') {
+			ch = fScanner.read();
+			++unread;
+			if (ch == ':') {
+				queueToken(TOKEN_STATIC_PUNCTUATION, offset, fScanner.getOffset() - offset);
+				readSimpleVariable(fScanner.getOffset());
+				unread = 0;
+			}
+			;
 		}
 		if (unread == 0) {
 			readVariableOperator(fScanner.getOffset());
 		}
 		while (ch != ICharacterScanner.EOF && unread-- > 0) {
 			fScanner.unread();
+		}
+	}
+
+	private void readDefaultUntil(char target, IToken token, int offset) {
+		int ch = fScanner.read();
+		int unread = 1;
+		while (ch != target && ch != ICharacterScanner.EOF) {
+			ch = fScanner.read();
+			++unread;
+		}
+		if (ch == target) {
+			int length = fScanner.getOffset() - offset - 1;
+			if (length > 0) {
+				queueToken(fDefaultToken, offset, length);
+			}
+			offset = fScanner.getOffset() - 1;
+			queueToken(token, offset, fScanner.getOffset() - offset);
+		} else {
+			if (ch == ICharacterScanner.EOF) {
+				--unread;
+			}
+			while (unread-- > 0) {
+				fScanner.unread();
+			}
 		}
 	}
 
