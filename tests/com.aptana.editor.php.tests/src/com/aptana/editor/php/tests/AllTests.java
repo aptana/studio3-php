@@ -15,6 +15,7 @@ public class AllTests
 		suite.addTestSuite(PHPScopesTest.class);
 		suite.addTestSuite(PHTMLSourcePartitionScannerTest.class);
 		suite.addTestSuite(PHTMLTagScannerTest.class);
+		suite.addTestSuite(FastPHPStringTokenScannerTestCase.class);
 		suite.addTest(CoreTests.suite());
 		// $JUnit-END$
 		return suite;

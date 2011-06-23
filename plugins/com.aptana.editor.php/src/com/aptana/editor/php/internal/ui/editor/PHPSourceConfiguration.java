@@ -32,7 +32,7 @@ import com.aptana.editor.js.IJSConstants;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
-import com.aptana.editor.php.internal.text.rules.PHPStringScanner;
+import com.aptana.editor.php.internal.text.rules.FastPHPStringTokenScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPDocScanner;
 
@@ -59,8 +59,8 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	private RuleBasedScanner singleLineCommentScanner;
 	private RuleBasedScanner multiLineCommentScanner;
 	private RuleBasedScanner singleQuotedStringScanner;
-	private RuleBasedScanner doubleQuotedStringScanner;
-	private RuleBasedScanner heredocScanner;
+	private ITokenScanner doubleQuotedStringScanner;
+	private ITokenScanner heredocScanner;
 	private RuleBasedScanner nowdocScanner;
 	private RuleBasedScanner phpDocCommentScanner;
 
@@ -298,7 +298,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	{
 		if (doubleQuotedStringScanner == null)
 		{
-			doubleQuotedStringScanner = new PHPStringScanner("string.quoted.double.php"); //$NON-NLS-1$
+			doubleQuotedStringScanner = new FastPHPStringTokenScanner(getToken("string.quoted.double.php")); //$NON-NLS-1$
 		}
 		return doubleQuotedStringScanner;
 	}
@@ -307,7 +307,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	{
 		if (heredocScanner == null)
 		{
-			heredocScanner = new PHPStringScanner("string.unquoted.heredoc.php"); //$NON-NLS-1$
+			heredocScanner = new FastPHPStringTokenScanner(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
 		}
 		return heredocScanner;
 	}
