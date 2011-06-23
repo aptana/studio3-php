@@ -92,6 +92,8 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 				return scanner.getToken("keyword.control.import.php"); //$NON-NLS-1$
 			case T_OBJECT_OPERATOR:
 				return scanner.getToken("keyword.operator.class.php"); //$NON-NLS-1$
+			case T_PAAMAYIM_NEKUDOTAYIM:
+				return scanner.getToken("meta.function-call.static.php"); //$NON-NLS-1$
 			case T_AT:
 			case T_AS:
 			case T_LOGICAL_AND:
