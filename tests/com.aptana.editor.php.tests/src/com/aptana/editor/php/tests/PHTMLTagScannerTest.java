@@ -13,7 +13,6 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 
-import com.aptana.editor.common.tests.AbstractTokenScannerTestCase;
 import com.aptana.editor.html.HTMLTagScanner;
 
 @SuppressWarnings("nls")
