@@ -320,4 +320,45 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 0, 11);
 	}
 
+	public void testComplexVariableStatic() {
+		String src = "{${beers::softdrink}}";
+		IDocument document = new Document(src);
+
+		scanner.setRange(document, 0, document.getLength());
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // {
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 1, 2); // ${
+		assertToken(getToken(PHPTokenType.VARIABLE), 3, 5); // beers
+		assertToken(getToken(PHPTokenType.STATIC_PUNCTUATION), 8, 2); // ::
+		assertToken(getToken(PHPTokenType.VARIABLE), 10, 9); // softdrink
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 19, 1); // }
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 20, 1); // }
+	}
+
+	public void testComplexVariableStatic2() {
+		String src = "{${beers::$ale}}";
+		IDocument document = new Document(src);
+
+		scanner.setRange(document, 0, document.getLength());
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // {
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 1, 2); // ${
+		assertToken(getToken(PHPTokenType.VARIABLE), 3, 5); // beers
+		assertToken(getToken(PHPTokenType.STATIC_PUNCTUATION), 8, 2); // ::
+		assertToken(getToken(PHPTokenType.VARIABLE), 10, 4); // $ale
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 14, 1); // }
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 15, 1); // }
+	}
+
+	public void testComplexVariableStaticIncomplete() {
+		String src = "{${beers:softdrink}}";
+		IDocument document = new Document(src);
+
+		scanner.setRange(document, 0, document.getLength());
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // {
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 1, 2); // ${
+		assertToken(getToken(PHPTokenType.VARIABLE), 3, 5); // beers
+		assertToken(defaultToken, 8, 10);
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 18, 1); // }
+		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 19, 1); // }
+	}
+
 }

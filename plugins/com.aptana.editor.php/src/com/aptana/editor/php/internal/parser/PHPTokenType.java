@@ -21,6 +21,7 @@ public enum PHPTokenType {
 	ARRAY_END("punctuation.section.array.end.php"),
 	VARIABLE_PUNCTUATION("punctuation.definition.variable.php"),
 	FUNCTION_PUNCTUATION("punctuation.definition.function.php"),
+	STATIC_PUNCTUATION("meta.function-call.static.php"),
 	VARIABLE("variable.other.php"),
 	NUMERIC("constant.numeric.php");
 	
