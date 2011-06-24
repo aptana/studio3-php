@@ -276,7 +276,7 @@ public class Program extends ASTNode {
 	 */
 	public boolean subtreeMatch(ASTMatcher matcher, Object other) {
 		// dispatch to correct overloaded match method
-		return matcher.match(this, other);
+		return matcher.match(this, other, true);
 	}
 
 	/**
