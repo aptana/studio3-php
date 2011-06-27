@@ -153,6 +153,15 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		super.createPartControl(parent);
 		IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 		contextService.activateContext(PHP_EDITOR_CONTEXT);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.AbstractThemeableEditor#installOccurrencesUpdater()
+	 */
+	@Override
+	protected void installOccurrencesUpdater()
+	{
 		// Initialize the occurrences annotations marker
 		occurrencesUpdater = new OccurrencesUpdater(this);
 		occurrencesUpdater.initialize(getPreferenceStore());
