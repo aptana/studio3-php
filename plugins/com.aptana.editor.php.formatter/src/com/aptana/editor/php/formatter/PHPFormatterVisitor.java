@@ -683,14 +683,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushKeyword(continueStart, 8, true);
 		// visit the continue expression, if exists
 		Expression expression = continueStatement.getExpression();
+		int end = continueStatement.getEnd() - 1;
 		if (expression != null)
 		{
 			expression.accept(this);
 		}
-		else
-		{
-			pushSpaceConsumingNode(continueStatement.getEnd() - 1);
-		}
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
 		return false;
 	}
 

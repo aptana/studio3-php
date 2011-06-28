@@ -53,6 +53,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	 * .text.IDocument, int, int)
 	 */
 	public void setRange(IDocument document, int offset, int length) {
+		super.setRange(document, offset, length);
 		fScanner.setRange(document, offset, length);
 	}
 
