@@ -16,6 +16,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 
@@ -33,7 +34,8 @@ public class EditorUtils
 	{
 		if (file == null)
 		{
-			PHPEditorPlugin.logError(new IllegalArgumentException("The file cannot be null")); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Error open a file in the editor", new IllegalArgumentException("file is null")); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
 		try
@@ -52,7 +54,7 @@ public class EditorUtils
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error open a file in the editor", e); //$NON-NLS-1$
 		}
 		return null;
 	}
@@ -112,7 +114,7 @@ public class EditorUtils
 				}
 			}
 		});
-		
+
 		return editorResult[0];
 	}
 
@@ -122,6 +124,7 @@ public class EditorUtils
 	private static boolean isSameDocument(final ITextViewer viewer, IEditorPart editor)
 	{
 		return editor instanceof PHPSourceEditor
-				&& ((PHPSourceEditor) editor).getDocumentProvider().getDocument(editor.getEditorInput()) == viewer.getDocument();
+				&& ((PHPSourceEditor) editor).getDocumentProvider().getDocument(editor.getEditorInput()) == viewer
+						.getDocument();
 	}
 }

@@ -11,6 +11,7 @@ import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
@@ -81,7 +82,8 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				return;
 			}
 
-			if (IPHPConstants.PHP_COMMENT.equals(regionType))
+			if (IPHPConstants.PHP_SLASH_LINE_COMMENT.equals(regionType)
+					|| IPHPConstants.PHP_HASH_LINE_COMMENT.equals(regionType))
 			{
 				// TODO
 				// commentStrategy.customizeDocumentCommand(document, command);
@@ -131,13 +133,6 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					{
 						return;
 					}
-
-					if (lexemeText.equals(")")) //$NON-NLS-1$
-					{
-						indentAfterNewLine(document, command);
-						command.text += configuration.getIndent();
-						return;
-					}
 					if (lexemeText.equals(";")) { //$NON-NLS-1$
 						Lexeme<PHPTokenType> previousNonWhitespaceLexeme = getPreviousNonWhitespaceLexeme(firstLexemeInLine
 								.getStartingOffset() - 1);
@@ -148,6 +143,12 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 							command.text += indent;
 							return;
 						}
+					}
+					if (lexemeText.equals(")")) //$NON-NLS-1$
+					{
+						indentAfterNewLine(document, command);
+						// command.text += configuration.getIndent();
+						return;
 					}
 					indentAfterNewLine(document, command);
 					// This will cause a line after a 'block-type' to be indented, even when the
@@ -216,7 +217,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 			return;
 		}
 	}
@@ -246,7 +247,9 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			{
 				if (count-- == 0)
 				{
-					PHPEditorPlugin.logWarning("Stopped a possible infinite loop in the PHPAutoIndentStrategy"); //$NON-NLS-1$
+					IdeLog.logWarning(
+							PHPEditorPlugin.getDefault(),
+							"Stopped a possible infinite loop in the PHPAutoIndentStrategy", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 					break;
 				}
 				firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, lineInfo.getOffset());
@@ -258,7 +261,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				if (lastLexemeInLine != null
 						&& firstLexemeInLine != null
 						&& (BLOCK_TYPES.contains(firstLexemeInLine.getType().getType()) || BLOCK_TYPES
-								.contains(lastLexemeInLine.getType().getType()) || ")".equals(lastLexemeInLine.getText()))) //$NON-NLS-1$
+								.contains(lastLexemeInLine.getType().getType())))
 				{
 					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$//$NON-NLS-2$
 					{
@@ -270,7 +273,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						}
 						return indent;
 					}
-					if (")".equals(lastLexemeInLine.getText()) || "else".equals(lastLexemeInLine.getText())) //$NON-NLS-1$ //$NON-NLS-2$
+					if ("else".equals(lastLexemeInLine.getText())) //$NON-NLS-1$
 					{
 						return getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 					}
@@ -375,7 +378,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			}
 			catch (BadLocationException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 			}
 		}
 		if (result)
@@ -453,7 +456,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 		}
 
 	}

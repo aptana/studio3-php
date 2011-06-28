@@ -25,7 +25,7 @@ public final class PHPNature implements IProjectNature
 	/**
 	 * Builder ID
 	 */
-	private static final String BUILDER_ID = "com.aptana.editor.php.aptanaPhpBuilder"; //$NON-NLS-1$
+	public static final String BUILDER_ID = "com.aptana.editor.php.aptanaPhpBuilder"; //$NON-NLS-1$
 
 	/**
 	 * The PHP Nature ID.

@@ -25,6 +25,7 @@ import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org2.eclipse.php.internal.core.ast.visitor.Visitor;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.core.model.ISourceReference;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -275,7 +276,7 @@ public class Program extends ASTNode {
 	 */
 	public boolean subtreeMatch(ASTMatcher matcher, Object other) {
 		// dispatch to correct overloaded match method
-		return matcher.match(this, other);
+		return matcher.match(this, other, true);
 	}
 
 	/**
@@ -690,7 +691,7 @@ public class Program extends ASTNode {
 		try {
 			return getElementAt(phpElement.getSourceRange().getOffset());
 		} catch (Exception e) {
-			PHPEplPlugin.logError(e);
+			IdeLog.logError(PHPEplPlugin.getDefault(), "findDeclaringNode error", e); //$NON-NLS-1$
 		}
 		return null;
 	}

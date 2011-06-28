@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.ui.editor.scanner;
 
 import java.io.IOException;
@@ -13,6 +20,7 @@ import org.eclipse.jface.text.rules.Token;
 import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.html.parsing.HTMLTokenScanner;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
@@ -83,7 +91,7 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP token-scanner - Error getting the next token", e); //$NON-NLS-1$
 			nextNextSymbol = null;
 		}
 		IToken token = createToken(nextSymbol);
@@ -134,11 +142,11 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP code-scanner - Error setting the range", e); //$NON-NLS-1$
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP code-scanner - I/O error", e); //$NON-NLS-1$
 		}
 		origOffset = offset;
 	}

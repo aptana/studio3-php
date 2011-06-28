@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -43,6 +45,7 @@ import org2.eclipse.php.internal.core.documentModel.parser.AbstractPhpLexer;
 import org2.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
@@ -56,6 +59,7 @@ import com.aptana.editor.php.indexer.IIndexReporter;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.IReportable;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
@@ -142,7 +146,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static Image fIcon5off = PHPEditorPlugin.getImage("icons/full/obj16/v5_off.png"); //$NON-NLS-1$
 	private static Image fIcon4off = PHPEditorPlugin.getImage("icons/full/obj16/v4_off.png"); //$NON-NLS-1$
 
-	private static char[] autoactivationCharacters = new char[] { '>', '@', '$', ':', '\\' };
+	private static char[] autoactivationCharacters = new char[] { '>', '@', '$', ':', '\\', ' ' };
 	private static final char[] contextInformationActivationChars = { '(', ',' };
 	private static PHPDecoratingLabelProvider labelProvider = new PHPDecoratingLabelProvider();
 	private ITextViewer viewer;
@@ -233,7 +237,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		catch (BadLocationException e1)
 		{
-			PHPEditorPlugin.logError(e1);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error computing PHP completion proposals", e1); //$NON-NLS-1$
 			return null;
 		}
 		PHPVersion phpVersion = PHPVersionDocumentManager.getPHPVersion(document);
@@ -259,7 +263,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error grabbing a field from the PHP lexer", e); //$NON-NLS-1$
 			return null;
 		}
 		lexer.initialize(state);
@@ -340,7 +344,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error computing PHP completion proposals", e); //$NON-NLS-1$
 		}
 
 		int startOffset = offset < content.length() ? offset : offset - 1;
@@ -717,8 +721,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	public static Set<IElementEntry> computeStaticDereferenceEntries(IElementsIndex index, List<String> callPath,
 			int offset, IModule module, boolean exactMatch, Map<String, String> aliases, String namespace)
 	{
-		Set<IElementEntry> leftDereferenceEntries = computeStaticDereferenceLeftEntries(index, pathEntryName(callPath
-				.get(0)), offset, module, aliases, namespace);
+		Set<IElementEntry> leftDereferenceEntries = computeStaticDereferenceLeftEntries(index,
+				pathEntryName(callPath.get(0)), offset, module, aliases, namespace);
 		if (leftDereferenceEntries == null || leftDereferenceEntries.isEmpty())
 		{
 			return null;
@@ -977,9 +981,19 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static Set<IElementEntry> computeStaticDereferenceLeftEntries(IElementsIndex index, String left,
 			int offset, IModule module, Map<String, String> aliases, String namespace)
 	{
+
 		if (left.startsWith("$")) //$NON-NLS-1$
 		{
-			return null;
+			// static dereferencing is allowed on PHP 5.3 variables
+			IProject project = getProject(module);
+			if (project != null && !PHPVersionProvider.isPHP53(project))
+			{
+				return null;
+			}
+			else
+			{
+				return computeDereferenceLeftEntries(index, left, offset, module, aliases, namespace);
+			}
 		}
 
 		if (SELF_ACTIVATION_SEQUENCE.equals(left))
@@ -1019,6 +1033,27 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			return getClassEntries(index, left, module, aliases, namespace, true);
 		}
+	}
+
+	/**
+	 * Resolve the {@link IProject} from the {@link IModule}
+	 * 
+	 * @param module
+	 * @return
+	 */
+	private static IProject getProject(IModule module)
+	{
+		if (module == null || !(module instanceof LocalModule))
+		{
+			return null;
+		}
+		LocalModule lm = (LocalModule) module;
+		IFile file = lm.getFile();
+		if (file != null)
+		{
+			return file.getProject();
+		}
+		return null;
 	}
 
 	/**
@@ -1075,7 +1110,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		List<IElementEntry> leftEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, clazz);
 		if (leftEntries == null)
 		{
-			return null;
+			leftEntries = new ArrayList<IElementEntry>();
+		}
+		if (leftEntries.isEmpty())
+		{
+			Set<String> classMap = new HashSet<String>(1);
+			classMap.add(clazz);
+			Set<IElementEntry> entries = ContentAssistCollectors.collectBuiltinTypeEntries(classMap, true);
+			leftEntries.addAll(entries);
 		}
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		for (IElementEntry entry : leftEntries)
@@ -2022,8 +2064,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				}
 				String lowerCaseFirstName = firstName.toLowerCase();
 				if (firstName != null
-						&& (lowerCaseFirstName.startsWith(lowerCase) || entry.getEntryPath().toLowerCase().startsWith(
-								lowerCase)))
+						&& (lowerCaseFirstName.startsWith(lowerCase) || entry.getEntryPath().toLowerCase()
+								.startsWith(lowerCase)))
 				{
 					if (!usedNames.contains(firstName))
 					{
@@ -2208,6 +2250,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 		cp.setResolver(resolver);
+		cp.setTriggerCharacters(getProposalTriggerCharacters());
 		return cp;
 	}
 
@@ -2966,6 +3009,17 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		return entry.getValue() instanceof ClassPHPEntryValue;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.CommonContentAssistProcessor#sortProposals(org.eclipse.jface.text.contentassist.
+	 * ICompletionProposal[])
+	 */
+	@Override
+	protected void sortProposals(ICompletionProposal[] proposals)
+	{
+		// Do nothing, since we already return a sorted list of proposals.
+	}
+
 	/**
 	 * Performs the items sorting.
 	 * 
@@ -3126,8 +3180,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			IElementsIndex index = getIndex(content, offset);
 			ITypedRegion partition = viewer.getDocument().getDocumentPartitioner().getPartition(offset);
 			// trying to get dereference entries
-			List<String> callPath = ParsingUtils
-					.parseCallPath(partition, content, info.getNameEndPos() , OPS, false);
+			List<String> callPath = ParsingUtils.parseCallPath(partition, content, info.getNameEndPos(), OPS, false);
 			if (callPath == null || callPath.isEmpty())
 			{
 				return new IContextInformation[0];
@@ -3190,8 +3243,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else if (pn instanceof PHPClassParseNode)
 			{
-				ci = PHPContextCalculator.computeConstructorContextInformation((PHPClassParseNode) pn, info
-						.getNameEndPos());
+				ci = PHPContextCalculator.computeConstructorContextInformation((PHPClassParseNode) pn,
+						info.getNameEndPos());
 			}
 
 			if (ci != null)
@@ -3231,4 +3284,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.CommonContentAssistProcessor#getPreferenceNodeQualifier()
+	 */
+	protected String getPreferenceNodeQualifier()
+	{
+		return PHPEditorPlugin.PLUGIN_ID;
+	}
 }

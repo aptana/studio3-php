@@ -1,74 +1,53 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.ui.wizard;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
+import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.internal.resources.ResourceStatus;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IProjectNature;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceStatus;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.osgi.util.NLS;
-import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
-import org.eclipse.ui.ide.undo.CreateProjectOperation;
-import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
-import org.eclipse.ui.statushandlers.IStatusAdapterConstants;
-import org.eclipse.ui.statushandlers.StatusAdapter;
-import org.eclipse.ui.statushandlers.StatusManager;
-import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
-import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import com.aptana.core.build.UnifiedBuilder;
-import com.aptana.core.util.ResourceUtil;
+import com.aptana.core.logging.IdeLog;
+import com.aptana.core.projects.templates.IProjectTemplate;
+import com.aptana.core.projects.templates.TemplateType;
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.core.CorePreferenceConstants;
 import com.aptana.editor.php.core.PHPNature;
-import com.aptana.editor.php.internal.ui.preferences.IPhpPreferenceConstants;
+import com.aptana.projects.WebProjectNature;
+import com.aptana.projects.internal.wizards.NewProjectWizard;
+import com.aptana.projects.internal.wizards.ProjectTemplateSelectionPage;
 
 /**
- * @author Shalom Gibly <sgibly@aptana.com>
+ * A new PHP Project Wizard class.
+ * 
+ * @author Shalom Gibly <sgibly@appcelerator.com>
  */
-@SuppressWarnings("restriction")
-public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExecutableExtension
+public class NewPHPProjectWizard extends NewProjectWizard implements IExecutableExtension
 {
 
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	public static final String ID = "com.aptana.editor.php.NewPHPProjectWizard"; //$NON-NLS-1$
 	private static final String PHP_PROJ_IMAGE_PATH = "/icons/full/wizban/new_project.png"; //$NON-NLS-1$
 
-	private IFile file;
-	private IFile initialPhpFile;
-	private WizardNewProjectReferencePage referencePage;
-	private PHPWizardNewProjectCreationPage projectPage;
-	private IProject newProject;
-	private IConfigurationElement configElement;
-
-	public NewPHPProjectWizard()
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.projects.internal.wizards.NewProjectWizard#initWizard()
+	 */
+	@Override
+	protected void initDialogSettings()
 	{
 		IDialogSettings workbenchSettings = PHPEditorPlugin.getDefault().getDialogSettings();
 		IDialogSettings section = workbenchSettings.getSection("BasicNewProjectResourceWizard");//$NON-NLS-1$
@@ -79,267 +58,46 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 		setDialogSettings(section);
 	}
 
-	/**
-	 * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#addPages()
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.projects.internal.wizards.NewProjectWizard#addPages()
 	 */
 	public void addPages()
 	{
-		projectPage = new PHPWizardNewProjectCreationPage("phpProjectPage"); //$NON-NLS-1$
-		projectPage.setTitle(Messages.NewPHPProjectWizard_projectWizardTitle);
-		projectPage.setDescription(Messages.NewPHPProjectWizard_projectWizardDescription);
-		projectPage.setWizard(this);
-		projectPage.setPageComplete(false);
-		this.addPage(projectPage);
-		addExtensionPages();
+		mainPage = new PHPWizardNewProjectCreationPage("phpProjectPage"); //$NON-NLS-1$
+		mainPage.setTitle(Messages.NewPHPProjectWizard_projectWizardTitle);
+		mainPage.setDescription(Messages.NewPHPProjectWizard_projectWizardDescription);
+		mainPage.setWizard(this);
+		mainPage.setPageComplete(false);
+		addPage(mainPage);
+
+		List<IProjectTemplate> templates = getProjectTemplates(new TemplateType[] { TemplateType.PHP });
+		if (templates.size() > 0)
+		{
+			addPage(templatesPage = new ProjectTemplateSelectionPage("templateSelectionPage", templates)); //$NON-NLS-1$
+		}
+
+		// TODO - Hook the project reference page to the builder and enable it
+		// referencePage = new WizardNewProjectReferencePage("phpReferencePage"); //$NON-NLS-1$
+		// addPage(referencePage);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.wizards.newresource.BasicNewResourceWizard#initializeDefaultPageImageDescriptor()
+	 * @see com.aptana.projects.internal.wizards.NewProjectWizard#initializeDefaultPageImageDescriptor()
 	 */
 	protected void initializeDefaultPageImageDescriptor()
 	{
-		ImageDescriptor desc = PHPEditorPlugin.getImageDescriptor(PHP_PROJ_IMAGE_PATH);
-		setDefaultPageImageDescriptor(desc);
+		setDefaultPageImageDescriptor(PHPEditorPlugin.getImageDescriptor(PHP_PROJ_IMAGE_PATH));
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.core.ui.wizards.BaseWizard#addExtensionPages()
+	 * @see com.aptana.projects.internal.wizards.NewProjectWizard#getProjectCreationDescription()
 	 */
-	protected void addExtensionPages()
+	protected String getProjectCreationDescription()
 	{
-		// only add page if there are already projects in the workspace
-		/*
-		 * TODO: Shalom - Uncomment this block once we have the PHP builder in place. if
-		 * (ResourcesPlugin.getWorkspace().getRoot().getProjects().length > 0) { referencePage = new
-		 * WizardNewProjectReferencePage("basicReferenceProjectPage");//$NON-NLS-1$ referencePage.setTitle("");
-		 * //$NON-NLS-1$ referencePage.setDescription(""); //$NON-NLS-1$ this.addPage(referencePage); }
-		 */
-	}
-
-	/**
-	 * We will initialize file contents with a sample text.
-	 */
-	private InputStream openContentStream()
-	{
-		String contents = getInitialFileContents();
-		if (contents == null)
-		{
-			contents = EMPTY_STRING;
-		}
-		return new ByteArrayInputStream(contents.getBytes());
-	}
-
-	/**
-	 * @return String
-	 */
-	protected String getInitialFileContents()
-	{
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		IPreferenceStore store = PHPEditorPlugin.getDefault().getPreferenceStore();
-		String contents = store.getString(IPhpPreferenceConstants.PHPEDITOR_INITIAL_CONTENTS);
-		pw.println(contents);
-		pw.close();
-		return sw.toString();
-	}
-
-	/**
-	 * Creates a new project resource with the selected name.
-	 * <p>
-	 * In normal usage, this method is invoked after the user has pressed Finish on the wizard; the enablement of the
-	 * Finish button implies that all controls on the pages currently contain valid values.
-	 * </p>
-	 * <p>
-	 * Note that this wizard caches the new project once it has been successfully created; subsequent invocations of
-	 * this method will answer the same project resource without attempting to create it again.
-	 * </p>
-	 * 
-	 * @return the created project resource, or <code>null</code> if the project was not created
-	 */
-	private IProject createNewProject()
-	{
-		if (newProject != null)
-		{
-			return newProject;
-		}
-
-		// get a project handle
-		final IProject newProjectHandle = projectPage.getProjectHandle();
-		// get a project descriptor
-		URI location = null;
-		if (!projectPage.isLocationDefault())
-		{
-			location = projectPage.getLocationURI();
-		}
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
-		description.setLocationURI(location);
-		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
-		ResourceUtil.addBuilder(description, UnifiedBuilder.ID);
-
-		if (!doCreateProject(description, newProjectHandle))
-		{
-			return null;
-		}
-		newProject = newProjectHandle;
-
-		return newProject;
-	}
-
-	private boolean doCreateProject(final IProjectDescription description, final IProject newProjectHandle)
-	{
-		// create the new project operation
-		IRunnableWithProgress op = new IRunnableWithProgress()
-		{
-			public void run(IProgressMonitor monitor) throws InvocationTargetException
-			{
-				CreateProjectOperation op = new CreateProjectOperation(description,
-						Messages.NewPHPProjectWizard_projectWizardTitle);
-				try
-				{
-					// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=219901
-					// directly execute the operation so that the undo state is
-					// not preserved. Making this undoable resulted in too many
-					// accidental file deletions.
-					op.execute(monitor, WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
-				}
-				catch (ExecutionException e)
-				{
-					throw new InvocationTargetException(e);
-				}
-			}
-		};
-
-		// run the new project creation operation
-		try
-		{
-			getContainer().run(true, true, op);
-		}
-		catch (InterruptedException e)
-		{
-			return false;
-		}
-		catch (InvocationTargetException e)
-		{
-			Throwable t = e.getTargetException();
-			if (t instanceof ExecutionException && t.getCause() instanceof CoreException)
-			{
-				CoreException cause = (CoreException) t.getCause();
-				StatusAdapter status;
-				if (cause.getStatus().getCode() == IResourceStatus.CASE_VARIANT_EXISTS)
-				{
-					status = new StatusAdapter(new Status(IStatus.WARNING, PHPEditorPlugin.PLUGIN_ID, NLS.bind(
-							Messages.NewPHPProjectWizard_conflictDirectory, newProjectHandle.getName()), cause));
-				}
-				else
-				{
-					status = new StatusAdapter(new Status(cause.getStatus().getSeverity(), PHPEditorPlugin.PLUGIN_ID,
-							Messages.NewPHPProjectWizard_creationProblem, cause));
-				}
-				status
-						.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
-								Messages.NewPHPProjectWizard_creationProblem);
-				StatusManager.getManager().handle(status, StatusManager.BLOCK);
-			}
-			else
-			{
-				StatusAdapter status = new StatusAdapter(new Status(IStatus.WARNING, PHPEditorPlugin.PLUGIN_ID, 0, NLS
-						.bind(Messages.NewPHPProjectWizard_internalError, t.getMessage()), t));
-				status
-						.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
-								Messages.NewPHPProjectWizard_creationProblem);
-				StatusManager.getManager().handle(status, StatusManager.LOG | StatusManager.BLOCK);
-			}
-			return false;
-		}
-		return true;
-
-	}
-
-	public void finishProjectCreation()
-	{
-		final IProject project = createNewProject();
-		IPreferenceStore store = PHPEditorPlugin.getDefault().getPreferenceStore();
-		boolean shouldCreateFile = store.getBoolean(IPhpPreferenceConstants.PHPEDITOR_INITIAL_PROJECT_FILE_CREATE);
-		String fileName = null;
-		if (shouldCreateFile)
-		{
-			fileName = store.getString(IPhpPreferenceConstants.PHPEDITOR_INITIAL_PROJECT_FILE_NAME);
-			if (fileName != null)
-			{
-				if (fileName.indexOf('.') == -1)
-				{
-					fileName = new StringBuffer().append(fileName).append(".php").toString(); //$NON-NLS-1$
-				}
-				initialPhpFile = project.getFile(fileName);
-			}
-		}
-		else
-		{
-			initialPhpFile = null;
-		}
-		if (initialPhpFile != null && !initialPhpFile.exists())
-		{
-			final InputStream stream = openContentStream();
-			try
-			{
-				IContainer container = (IContainer) project;
-				file = container.getFile(new Path(fileName));
-				file.refreshLocal(IResource.DEPTH_INFINITE, null);
-				if (!file.exists())
-				{
-					file.create(stream, true, null);
-				}
-			}
-			catch (CoreException ce)
-			{
-				if (stream != null)
-				{
-					try
-					{
-						stream.close();
-					}
-					catch (IOException e)
-					{
-					}
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.core.ui.wizards.BaseWizard#getFileNamesToSelect()
-	 */
-	public String[] getFileNamesToSelect()
-	{
-		IPreferenceStore store = PHPEditorPlugin.getDefault().getPreferenceStore();
-		String fileName = store.getString(IPhpPreferenceConstants.PHPEDITOR_INITIAL_PROJECT_FILE_NAME);
-		if (fileName != null)
-		{
-			if (fileName.indexOf('.') == -1)
-			{
-				fileName = new StringBuffer().append(fileName).append(".php").toString(); //$NON-NLS-1$
-			}
-			return new String[] { fileName, "index.php", "index.html", "index.htm" }; //$NON-NLS-1$ //$NON-NLS-2$; //$NON-NLS-3$
-		}
-		return new String[] { "index.php", "index.html", "index.htm" }; //$NON-NLS-1$ //$NON-NLS-2$; //$NON-NLS-3$
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.core.ui.wizards.BaseWizard#getFileToOpenOnFinish()
-	 */
-	public IFile getFileToOpenOnFinish()
-	{
-		if (initialPhpFile != null && initialPhpFile.exists())
-		{
-			return initialPhpFile;
-		}
-		return null;
+		return Messages.NewPHPProjectWizard_projectWizardTitle;
 	}
 
 	/**
@@ -353,117 +111,68 @@ public class NewPHPProjectWizard extends BasicNewResourceWizard implements IExec
 	}
 
 	/**
-	 * @see com.aptana.core.ui.wizards.BaseWizard#createProjectDescription(java.lang.String,
-	 *      org.eclipse.core.runtime.IPath)
+	 * Returns the project nature-id's.
+	 * 
+	 * @return The natures to be set to the project.
 	 */
-	protected IProjectDescription createProjectDescription(String name, IPath path)
+	protected String[] getProjectNatures()
 	{
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IProjectDescription description = workspace.newProjectDescription(name);
-		description.setLocation(path);
-		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
-		ResourceUtil.addBuilder(description, UnifiedBuilder.ID);
-		// update the referenced project if provided
-		if (referencePage != null)
-		{
-			IProject[] refProjects = referencePage.getReferencedProjects();
-			if (refProjects.length > 0)
-			{
-				description.setReferencedProjects(refProjects);
-			}
-		}
-		return description;
+		return new String[] { PHPNature.NATURE_ID, WebProjectNature.ID };
+	}
+
+	/**
+	 * Returns the project builder-id's.
+	 * 
+	 * @return The builders to be set to the project.
+	 */
+	protected String[] getProjectBuilders()
+	{
+		return new String[] { PHPNature.BUILDER_ID, UnifiedBuilder.ID };
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.core.ui.wizards.BaseWizard#performFinish()
+	 * @see com.aptana.projects.internal.wizards.NewProjectWizard#performFinish()
 	 */
 	public boolean performFinish()
 	{
-		createNewProject();
-		if (newProject == null)
+		boolean finish = super.performFinish();
+		if (finish)
 		{
-			return false;
+			setPhpLangOptions(newProject);
 		}
-		MultiStatus status = new MultiStatus(PHPEditorPlugin.PLUGIN_ID, 0,
-				com.aptana.editor.php.internal.ui.wizard.Messages.NewPHPProjectWizard_natureConfigurationError, null);
-		if (newProject != null && newProject.isAccessible())
-		{
-
-			configureProject(status);
-			PHPWizardNewProjectCreationPage p = (PHPWizardNewProjectCreationPage) getPages()[0];
-			p.setPhpLangOptions(newProject);
-		}
-		if (status.getChildren().length > 0)
-		{
-			for (IStatus error : status.getChildren())
-			{
-				PHPEditorPlugin.logError(error.getMessage(), error.getException());
-				if (PHPEditorPlugin.DEBUG)
-				{
-					System.err.println("Error configuring the nature/builder"); //$NON-NLS-1$
-					if (error.getMessage() != null)
-					{
-						System.err.println(error.getMessage());
-					}
-					if (error.getException() != null)
-					{
-						error.getException().printStackTrace();
-					}
-				}
-			}
-		}
-		updatePerspective();
-		selectAndReveal(newProject);
-		return true;
+		return finish;
 	}
 
 	/**
-	 * Configure the project to include the nature and the builder. The Nature suppose to be set already, so the actual
-	 * change would usually be a builder configuration.
+	 * Apply the selected PHP version into the project's preferences.<br>
+	 * This operation is done in the Job to avoid any delays when a user click the 'finish' button.
 	 * 
-	 * @param errors
-	 *            A multi-status instance that will hold any errors that occur while configuring the project.
+	 * @param project
 	 */
-	protected void configureProject(final MultiStatus errors)
+	protected void setPhpLangOptions(final IProject project)
 	{
-		ISafeRunnable code = new ISafeRunnable()
+		Job job = new Job("Setting the PHP Version...") //$NON-NLS-1$
 		{
-			public void run() throws Exception
+			@Override
+			protected IStatus run(IProgressMonitor monitor)
 			{
-				IProjectNature nature = newProject.getNature(PHPNature.NATURE_ID);
-				if (nature != null)
+				PHPWizardNewProjectCreationPage pcp = (PHPWizardNewProjectCreationPage) getPages()[0];
+				Preferences preferences = new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
+				preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, pcp.getSelectedVersion());
+				try
 				{
-					nature.configure();
+					preferences.flush();
 				}
-
-			}
-
-			public void handleException(Throwable exception)
-			{
-				if (exception instanceof CoreException)
-					errors.add(((CoreException) exception).getStatus());
-				else
-					errors.add(new ResourceStatus(IResourceStatus.INTERNAL_ERROR, newProject.getFullPath(), NLS.bind(
-							"Error configuring nature ''{0}''", PHPNature.NATURE_ID), exception)); //$NON-NLS-1$
+				catch (BackingStoreException e)
+				{
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
+				}
+				return Status.OK_STATUS;
 			}
 		};
-		if (PHPEditorPlugin.DEBUG)
-		{
-			System.out.println("Configuring nature: " + PHPNature.NATURE_ID + " on project: " + newProject.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		SafeRunner.run(code);
-	}
-
-	protected void updatePerspective()
-	{
-		BasicNewProjectResourceWizard.updatePerspective(configElement);
-	}
-
-	public void setInitializationData(IConfigurationElement config, String propertyName, Object data)
-			throws CoreException
-	{
-		configElement = config;
+		job.setSystem(true);
+		job.setPriority(Job.SHORT);
+		job.schedule();
 	}
 }

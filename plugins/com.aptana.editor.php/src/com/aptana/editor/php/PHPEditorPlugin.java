@@ -22,10 +22,12 @@ import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.ModelManager;
+import com.aptana.editor.php.internal.ui.editor.PHPDocumentProvider;
 import com.aptana.theme.IThemeManager;
 import com.aptana.theme.Theme;
 import com.aptana.theme.ThemePlugin;
@@ -38,16 +40,18 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.editor.php"; //$NON-NLS-1$
-
+	public static final String DEBUG_SCOPE = PLUGIN_ID + "/debug"; //$NON-NLS-1$
+	public static final String INDEXER_SCOPE = PLUGIN_ID + "/debug/indexer"; //$NON-NLS-1$
 	public static final String BUILDER_ID = PLUGIN_ID + ".aptanaPhpBuilder"; //$NON-NLS-1$
-	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(PLUGIN_ID + "/debug")).booleanValue(); //$NON-NLS-1$
-	public static final boolean INDEXER_DEBUG = Boolean
-			.valueOf(Platform.getDebugOption(PLUGIN_ID + "/indexer_debug")).booleanValue(); //$NON-NLS-1$
+	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(DEBUG_SCOPE)).booleanValue();
+	public static final boolean INDEXER_DEBUG = Boolean.valueOf(Platform.getDebugOption(INDEXER_SCOPE)).booleanValue();
 
 	// The shared instance
 	private static PHPEditorPlugin plugin;
 
 	private IPreferenceChangeListener fThemeChangeListener;
+
+	private PHPDocumentProvider phpDocumentProvider;
 
 	/**
 	 * The constructor
@@ -252,6 +256,20 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	}
 
 	/**
+	 * Returns PHP document provider
+	 * 
+	 * @return
+	 */
+	public synchronized PHPDocumentProvider getPHPDocumentProvider()
+	{
+		if (phpDocumentProvider == null)
+		{
+			phpDocumentProvider = new PHPDocumentProvider();
+		}
+		return phpDocumentProvider;
+	}
+
+	/**
 	 * getImageDescriptor
 	 * 
 	 * @param path
@@ -262,28 +280,83 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	public static void logInfo(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
-	}
-
-	public static void logError(Throwable e)
-	{
-		logError(e.getLocalizedMessage(), e);
-	}
-
-	public static void logError(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, string, e));
-	}
-
-	public static void logWarning(String message)
-	{
-		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
-	}
-
+	/**
+	 * Log a particular status
+	 * 
+	 * @deprecated Use IdeLog instead
+	 */
 	public static void log(IStatus status)
 	{
-		getDefault().getLog().log(status);
+		IdeLog.log(getDefault(), status);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @param e
+	 * @deprecated Use IdeLog instead
+	 */
+	public static void log(Throwable e)
+	{
+		IdeLog.logError(getDefault(), e.getLocalizedMessage(), e);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logError(Throwable e)
+	{
+		IdeLog.logError(getDefault(), e.getLocalizedMessage(), e);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logError(String message, Throwable e)
+	{
+		IdeLog.logError(getDefault(), message, e);
+	}
+
+	/**
+	 * logWarning
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logWarning(String message)
+	{
+		IdeLog.logWarning(getDefault(), message, null, null);
+	}
+
+	/**
+	 * logWarning
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logWarning(String message, Throwable e)
+	{
+		IdeLog.logWarning(getDefault(), message, e, null);
+	}
+
+	/**
+	 * logInfo
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 */
+	public static void logInfo(String message)
+	{
+		IdeLog.logInfo(getDefault(), message, null);
 	}
 }

@@ -160,12 +160,6 @@
             id="com.aptana.editor.php.openDeclaration"
             name="%openDeclaration.name">
       </command>
-      <command
-            categoryId="com.aptana.editor.php.source.category"
-            description="%toggleMarkOccurrencesDesc"
-            id="com.aptana.editor.php.toggleMarkOccurrences"
-            name="%markOccurrences">
-      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -176,34 +170,6 @@
             sequence="F3">
       </key>
       <!-- Mark occurrences -->
-	  <key sequence="M2+M3+O" contextId="com.aptana.editor.php.editorContext"
-		    commandId="com.aptana.editor.php.toggleMarkOccurrences"
-		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-	  </key>
-	  <key platform="carbon" sequence="COMMAND+ALT+O"
-		    contextId="com.aptana.editor.php.editorContext" commandId="com.aptana.editor.php.toggleMarkOccurrences"
-		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-	  </key>
-   </extension>
-   <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            id="com.aptana.editor.php.presentation"
-            label="%phpEditorPresentationLabel"
-            visible="false">
-         <action
-               allowLabelUpdate="true"
-               definitionId="com.aptana.editor.php.toggleMarkOccurrences"
-               disabledIcon="icons/full/dtool16/mark_occurrences.gif"
-               icon="icons/full/etool16/mark_occurrences.gif"
-               id="com.aptana.editor.php.toggleMarkOccurrences"
-               label="%markOccurrences"
-               retarget="true"
-               style="toggle"
-               toolbarPath="org.eclipse.ui.edit.text.actionSet.presentation/Presentation"
-               tooltip="%markOccurrences">
-         </action>
-      </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -212,9 +178,6 @@
          <actionSet
                id="com.aptana.editor.php.presentation">
          </actionSet>
-         <newWizardShortcut
-               id="com.aptana.editor.php.NewPHPProjectWizard">
-         </newWizardShortcut>
       </perspectiveExtension>
    </extension>
    <extension

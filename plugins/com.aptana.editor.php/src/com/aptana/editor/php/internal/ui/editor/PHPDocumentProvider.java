@@ -22,7 +22,7 @@ public class PHPDocumentProvider extends CompositeDocumentProvider implements IP
 	private PHPVersion phpVersion;
 	private IDocument document;
 
-	protected PHPDocumentProvider()
+	public PHPDocumentProvider()
 	{
 		super(IPHPConstants.CONTENT_TYPE_HTML_PHP, HTMLSourceConfiguration.getDefault(),
 				PHPSourceConfiguration.getDefault(), PHPPartitionerSwitchStrategy.getDefault());

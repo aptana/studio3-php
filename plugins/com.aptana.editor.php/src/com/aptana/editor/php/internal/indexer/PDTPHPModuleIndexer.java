@@ -19,8 +19,6 @@ import java.util.Stack;
 import java_cup.runtime.Symbol;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org2.eclipse.php.core.compiler.PHPFlags;
 import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
@@ -76,6 +74,7 @@ import org2.eclipse.php.internal.core.ast.scanner.php53.ParserConstants;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.ast.ASTFactory;
@@ -3741,6 +3740,19 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			CommentsVisitor commentsVisitor = new CommentsVisitor();
 			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
+			try
+			{
+				if (isUpdateTaskTags())
+				{
+					updater.updateTaskTags(_contents, program, _comments, module);
+				}
+			}
+			catch (Throwable th)
+			{
+				String message = th.getMessage();
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"Error while updating the task tags", th, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+			}
 
 			// indexing
 			PHPASTVisitor visitor = new PHPASTVisitor(reporter, module);
@@ -3752,8 +3764,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 		catch (Throwable th)
 		{
-			PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
-					"Error while indexing module - " + module.toString(), th)); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error while indexing module - " + module.toString(), th); //$NON-NLS-1$
 		}
 	}
 
@@ -3791,6 +3802,19 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			CommentsVisitor commentsVisitor = new CommentsVisitor();
 			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
+			try
+			{
+				if (isUpdateTaskTags())
+				{
+					updater.updateTaskTags(_contents, program, _comments, module);
+				}
+			}
+			catch (Throwable th)
+			{
+				String message = th.getMessage();
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"Error while updating the task tags", th, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+			}
 
 			// indexing
 			PHPASTVisitor visitor = new PHPASTVisitor(reporter, module);
@@ -3804,8 +3828,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 		catch (Throwable th)
 		{
-			PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
-					"Error while indexing module - " + module.toString(), th)); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error while indexing module - " + module.toString(), th); //$NON-NLS-1$
 		}
 	}
 
@@ -3961,25 +3984,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	{
 		try
 		{
-			if (isUpdateTaskTags())
-			{
-				Reader reader = new StringReader(contents);
-				// FIXME- Shalom: Tasks updating
-				updater.update(reader, module);
-			}
-		}
-		catch (Throwable th)
-		{
-			String message = th.getMessage();
-			if (message != null && message.contains("Can't recover from previous error(s)")) //$NON-NLS-1$
-			{
-				return null;
-			}
-			PHPEditorPlugin.log(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID,
-					"Error while updating the task tags", th)); //$NON-NLS-1$
-		}
-		try
-		{
 			Reader reader = new StringReader(contents);
 			IProject project = null;
 			if (module.getBuildPath() instanceof ProjectBuildPath)
@@ -4039,7 +4043,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError("Error while getting module contents", e); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error while getting module contents", e); //$NON-NLS-1$
 		}
 		// collecting comments
 		CommentsVisitor commentsVisitor = new CommentsVisitor();

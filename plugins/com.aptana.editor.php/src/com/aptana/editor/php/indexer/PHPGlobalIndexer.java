@@ -44,6 +44,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants.Keys;
@@ -92,7 +93,8 @@ public final class PHPGlobalIndexer
 			}
 			catch (CoreException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error indexing a PHP module", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 
 		}
@@ -118,7 +120,8 @@ public final class PHPGlobalIndexer
 			}
 			catch (CoreException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error indexing a PHP module", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 		}
 	}
@@ -140,13 +143,14 @@ public final class PHPGlobalIndexer
 					}
 					catch (Exception e)
 					{
-						PHPEditorPlugin.logError(e);
-						e.printStackTrace();
+						IdeLog.logError(PHPEditorPlugin.getDefault(),
+								"Error saving the PHP index", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 					}
 				}
 				catch (InterruptedException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"Saving the PHP index was interrupted", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 					return;
 				}
 			}
@@ -557,8 +561,9 @@ public final class PHPGlobalIndexer
 						}
 						catch (Throwable th)
 						{
-							PHPEditorPlugin.logError(Messages.PHPGlobalIndexer_UnableLoad + elementName
-									+ Messages.PHPGlobalIndexer_ProviderDecl, th);
+							IdeLog.logError(PHPEditorPlugin.getDefault(), Messages.PHPGlobalIndexer_UnableLoad
+									+ elementName + Messages.PHPGlobalIndexer_ProviderDecl, th,
+									PHPEditorPlugin.INDEXER_SCOPE);
 						}
 					}
 				}
@@ -602,12 +607,11 @@ public final class PHPGlobalIndexer
 				}
 				catch (IOException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error saving the PHP index", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				}
 				finally
 				{
-					// long l1 = System.currentTimeMillis();
-					// System.out.println("Saving:" + (l1 - l0));
 					if (stream != null)
 					{
 						try
@@ -616,7 +620,8 @@ public final class PHPGlobalIndexer
 						}
 						catch (IOException e)
 						{
-							PHPEditorPlugin.logError(e);
+							IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+									"Error closing a stream", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 						}
 					}
 				}
@@ -685,7 +690,8 @@ public final class PHPGlobalIndexer
 			}
 			catch (IOException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error loading PHP index-mapping", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 		}
 	}
@@ -709,7 +715,8 @@ public final class PHPGlobalIndexer
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Error saving PHP index-mapping", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 		}
 	}
 
@@ -763,8 +770,8 @@ public final class PHPGlobalIndexer
 						}
 						catch (Exception e1)
 						{
-							PHPEditorPlugin.logError(e1);
-							e1.printStackTrace();
+							IdeLog.logError(PHPEditorPlugin.getDefault(),
+									"Error indexing local PHP modules", e1, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 						}
 					}
 					if (monitor.isCanceled())
@@ -1078,7 +1085,8 @@ public final class PHPGlobalIndexer
 			}
 			catch (CoreException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error cleaning the PHP index", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 			BuildPathManager buildPathManager = BuildPathManager.getInstance();
 			IBuildPath buildPath = buildPathManager.getBuildPathByResource(project);

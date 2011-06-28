@@ -21,6 +21,7 @@ import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.html.IHTMLConstants;
 import com.aptana.editor.html.parsing.HTMLParseState;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -382,10 +383,12 @@ public class NodeBuilder
 		else
 		{
 			if (nameIdentifier == null)
-				PHPEditorPlugin.logWarning("PHP NodeBuilder.setNodeName got a null identifier."); //$NON-NLS-1$
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"PHP NodeBuilder.setNodeName got a null identifier.", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			else
-				PHPEditorPlugin
-						.logWarning("PHP NodeBuilder.setNodeName didn't hold any current node to set a name on."); //$NON-NLS-1$
+				IdeLog.logWarning(
+						PHPEditorPlugin.getDefault(),
+						"PHP NodeBuilder.setNodeName didn't hold any current node to set a name on.", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 		}
 	}
 
@@ -444,7 +447,7 @@ public class NodeBuilder
 		if (current.getChildCount() > 0 && current.getLastChild().getNodeType() == PHPBaseParseNode.HTML_NODE)
 		{
 			PHPBaseParseNode lastChild = (PHPBaseParseNode) current.getLastChild();
-			lastChild.setLocation(lastChild.getStart(), lastChild.getEnd() + (end - start));
+			lastChild.setLocation(lastChild.getStart(), end);
 		}
 		else
 		{
@@ -506,7 +509,8 @@ public class NodeBuilder
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Error getting the HTML nodes for the HTML part in the PHP source", e); //$NON-NLS-1$
 		}
 		// If we got null from the HTML parser as parse-result, we just return the original PHP-HTML node.
 		return htmlNode;

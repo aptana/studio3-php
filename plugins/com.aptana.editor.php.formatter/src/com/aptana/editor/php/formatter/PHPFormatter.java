@@ -71,6 +71,9 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENT
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENTS_LENGTH;
 
 import java.io.StringReader;
+import java.util.AbstractQueue;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,6 +88,7 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.core.util.StringUtil;
@@ -158,6 +162,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	private static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
 	// Regex patterns
 	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
+	// multi-line comment flattening pattern
+	private static final Pattern MULTI_LINE_FLATTEN_PATTERN = Pattern.compile("\\s|/|\\*"); //$NON-NLS-1$
+	// single-line comment flattening pattern
+	private static final Pattern SINGLE_LINE_FLATTEN_PATTERN = Pattern.compile("\\s|/|#"); //$NON-NLS-1$
 
 	private String lineSeparator;
 
@@ -216,8 +224,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
-						ast.getEnd());
+				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0],
+						ast.getStart(), ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 				final FormatterDocument formatterDocument = createFormatterDocument(source, offset);
@@ -276,8 +284,8 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
-						ast.getEnd());
+				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0],
+						ast.getStart(), ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection,
 						indentSufix);
@@ -285,7 +293,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				{
 					if (!input.equals(output))
 					{
-						if (equalContent(ast, output))
+						if (equalContent(ast, input, output))
 						{
 							// We match the output to all possible PHP open-tags and then trim it to remove it with any
 							// other white-space that appear before it.
@@ -349,19 +357,23 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * 
 	 * @param inputAST
 	 *            The pre-formatted AST (never null)
-	 * @param output
+	 * @param inputString
+	 *            The original input string
+	 * @param outputString
 	 *            The output string that the formatter generated.
 	 * @return true, if the new AST is equals to the original one; False, otherwise.
 	 */
-	private boolean equalContent(Program inputAST, String output)
+	private boolean equalContent(Program inputAST, String inputString, String outputString)
 	{
-		if (output == null)
+		if (outputString == null)
 		{
 			return false;
 		}
-		output = output.trim();
+		// Add a new-line to the end of the output to deal with cases where we have a HEREDOC at the end, which requires
+		// a new-line terminator to avoid a parsing error.
+		outputString = outputString.trim() + '\n';
 		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
-		Program outputAST = parser.parseAST(new StringReader(output));
+		Program outputAST = parser.parseAST(new StringReader(outputString));
 		checkinParser(parser);
 		if (outputAST == null)
 		{
@@ -369,7 +381,18 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			return false;
 		}
 		ASTMatcher matcher = new ASTMatcher(true);
-		return matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot());
+		// We need to check if the formatter is set to split log comments.
+		// If so, we'll have to check the comments in a different way. Otherwise, the matcher will throw a false
+		if (getBoolean(WRAP_COMMENTS))
+		{
+			boolean matchWithoutComments = matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), false);
+			return matchWithoutComments
+					&& matchComments(inputAST.comments(), outputAST.comments(), inputString, outputString);
+		}
+		else
+		{
+			return matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), true);
+		}
 	}
 
 	/**
@@ -521,5 +544,164 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			document.setInt(key, getInt(key));
 		}
 		return document;
+	}
+
+	/**
+	 * This method will strip the comments content from any whitespace characters, and will do a string comparison for
+	 * their content.
+	 * 
+	 * @param inputComments
+	 * @param outputComments
+	 * @param outputString
+	 * @param inputString
+	 * @return True, in case the comments have the same total content.
+	 */
+	private boolean matchComments(List<Comment> inputComments, List<Comment> outputComments, String inputString,
+			String outputString)
+	{
+		// Loop through the comments. Multi-line comments will be compared one-to-one, while single-line comments will
+		// be grouped before being compared.
+		IteratorQueue<Comment> inputIterator = new IteratorQueue<Comment>(inputComments.iterator());
+		IteratorQueue<Comment> outputIterator = new IteratorQueue<Comment>(outputComments.iterator());
+		while (inputIterator.hasNext() && outputIterator.hasNext())
+		{
+			String nextInputComment = getNextFlattenedComment(inputIterator, inputString);
+			String nextOutputComment = getNextFlattenedComment(outputIterator, outputString);
+			if (!nextInputComment.equals(nextOutputComment))
+			{
+				return false;
+			}
+		}
+		// check for any remaining comments in the iterators
+		if (inputIterator.hasNext() || outputIterator.hasNext())
+		{
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the next comment from a comments iterator in a flattened form (no whitespace)
+	 * 
+	 * @param comments
+	 * @param source
+	 * @return The next comment, flattened.
+	 */
+	private String getNextFlattenedComment(IteratorQueue<Comment> comments, String source)
+	{
+		StringBuilder builder = new StringBuilder(256);
+		boolean isSingleLine = false;
+		if (comments.hasNext())
+		{
+			isSingleLine = comments.peek().getCommentType() == Comment.TYPE_SINGLE_LINE;
+		}
+		while (comments.hasNext())
+		{
+			Comment comment = comments.peek();
+			String commentContent = source.substring(comment.getStart(), comment.getEnd());
+			if (comment.getCommentType() == Comment.TYPE_SINGLE_LINE)
+			{
+				if (!isSingleLine)
+				{
+					break;
+				}
+				builder.append(SINGLE_LINE_FLATTEN_PATTERN.matcher(commentContent).replaceAll(StringUtil.EMPTY));
+				if (comments.hasNext())
+				{
+					comments.poll();
+				}
+			}
+			else
+			{
+				if (isSingleLine)
+				{
+					break;
+				}
+				builder.append(MULTI_LINE_FLATTEN_PATTERN.matcher(commentContent).replaceAll(StringUtil.EMPTY));
+				if (comments.hasNext())
+				{
+					comments.poll();
+				}
+				break;
+			}
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * A queue wrapper for an iterator.
+	 */
+	class IteratorQueue<E> extends AbstractQueue<E>
+	{
+		private Iterator<E> iterator;
+		private E nextItem;
+
+		public IteratorQueue(Iterator<E> iterator)
+		{
+			this.iterator = iterator;
+		}
+
+		/**
+		 * Returns true if there is another item in the queue.
+		 * 
+		 * @return true if there is another item in the queue; false, otherwise.
+		 */
+		public boolean hasNext()
+		{
+			return nextItem != null || iterator.hasNext();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.Queue#offer(java.lang.Object)
+		 */
+		public boolean offer(E o)
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.Queue#poll()
+		 */
+		public E poll()
+		{
+			E next = (nextItem != null) ? nextItem : iterator.next();
+			nextItem = null;
+			return next;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.Queue#peek()
+		 */
+		public E peek()
+		{
+			if (nextItem == null)
+			{
+				nextItem = iterator.next();
+			}
+			return nextItem;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.AbstractCollection#iterator()
+		 */
+		@Override
+		public Iterator<E> iterator()
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.AbstractCollection#size()
+		 */
+		@Override
+		public int size()
+		{
+			throw new UnsupportedOperationException();
+		}
 	}
 }

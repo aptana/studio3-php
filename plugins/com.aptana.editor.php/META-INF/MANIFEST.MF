@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: com.aptana.editor.php;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.0.3.qualifier
 Bundle-Activator: com.aptana.editor.php.PHPEditorPlugin
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.ui,
@@ -16,9 +16,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.filesystem,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.navigator,
- com.aptana.editor.common,
+ com.aptana.editor.common;bundle-version="3.0.3",
  com.aptana.parsing,
  com.aptana.editor.html,
+ com.aptana.editor.js,
  com.aptana.editor.php.epl,
  com.aptana.php.libraries,
  com.aptana.core,
@@ -26,7 +27,8 @@ Require-Bundle: org.eclipse.ui,
  beaver,
  com.aptana.ui.epl,
  com.aptana.projects,
- com.aptana.editor.xml
+ com.aptana.editor.css,
+ com.aptana.editor.epl
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.editor.php,

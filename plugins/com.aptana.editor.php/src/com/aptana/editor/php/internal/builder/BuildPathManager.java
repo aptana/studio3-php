@@ -29,6 +29,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -275,7 +276,7 @@ public final class BuildPathManager
 				}
 				catch (CoreException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error handling a libraries change", e); //$NON-NLS-1$
 				}
 			}
 
@@ -389,7 +390,8 @@ public final class BuildPathManager
 							}
 							catch (CoreException e)
 							{
-								PHPEditorPlugin.logError(e);
+								IdeLog.logError(PHPEditorPlugin.getDefault(),
+										"Error handling a resource-change event", e); //$NON-NLS-1$
 							}
 						}
 					}
@@ -524,7 +526,7 @@ public final class BuildPathManager
 			}
 			catch (Throwable th)
 			{
-				PHPEditorPlugin.logError("Unable notifying build path change listener", th); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Unable notifying build path change listener", th); //$NON-NLS-1$
 			}
 		}
 	}
@@ -565,7 +567,7 @@ public final class BuildPathManager
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error indexing local projects", e); //$NON-NLS-1$
 		}
 
 		updateProjectsDependencies(root);
@@ -610,7 +612,7 @@ public final class BuildPathManager
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error updating the project dependencies", e); //$NON-NLS-1$
 		}
 	}
 
@@ -643,7 +645,7 @@ public final class BuildPathManager
 				}
 				catch (CoreException e)
 				{
-					PHPEditorPlugin.logError("Error in the PHP build", e); //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error creating a build-path", e); //$NON-NLS-1$
 				}
 			}
 		}

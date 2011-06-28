@@ -19,6 +19,7 @@ import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPConstantNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPVariableParseNode;
 import com.aptana.editor.php.internal.parser.nodes.Parameter;
@@ -78,39 +79,45 @@ public class ContentAssistCollectors
 					{
 						final PHPClassParseNode classParseNode = (PHPClassParseNode) obj;
 						IParseNode[] children = classParseNode.getChildren();
-						if (children != null)
+						for (IParseNode child : children)
 						{
-							for (IParseNode child : children)
+							if (child instanceof PHPVariableParseNode && !(child instanceof PHPConstantNode))
 							{
-								if (child instanceof PHPVariableParseNode)
+								final PHPVariableParseNode varParseNode = (PHPVariableParseNode) child;
+								if (!varParseNode.isField())
 								{
-									final PHPVariableParseNode varParseNode = (PHPVariableParseNode) child;
-									if (!varParseNode.isField())
-										continue;
-									String funcNodeName = varParseNode.getNodeName();
-									if (funcNodeName != null)
+									continue;
+								}
+								String funcNodeName = varParseNode.getNodeName();
+								if (funcNodeName != null)
+								{
+									if (!funcNodeName.startsWith(DOLLAR_SIGN))
 									{
-										if (!funcNodeName.startsWith(DOLLAR_SIGN))
-										{
-											funcNodeName = DOLLAR_SIGN + funcNodeName;
-										}
-										String lowCaseFuncNodeName = funcNodeName.toLowerCase();
-										if (exactMatch)
-										{
-											if (!lowCaseFuncName.equals(lowCaseFuncNodeName))
-												continue;
-										}
-										else
-										{
-											if (!lowCaseFuncNodeName.startsWith(lowCaseFuncName))
-												continue;
-										}
+										funcNodeName = DOLLAR_SIGN + funcNodeName;
 									}
-									// Add an element entry
-									result.add(new IElementEntry()
+									String lowCaseFuncNodeName = funcNodeName.toLowerCase();
+									if (exactMatch)
 									{
+										if (!lowCaseFuncName.equals(lowCaseFuncNodeName))
+											continue;
+									}
+									else
+									{
+										if (!lowCaseFuncNodeName.startsWith(lowCaseFuncName))
+											continue;
+									}
+								}
+								// Add an element entry
+								result.add(new IElementEntry()
+								{
 
-										private VariablePHPEntryValue value;
+									private VariablePHPEntryValue value;
+
+
+
+
+
+
 
 										public int getCategory()
 										{
@@ -149,11 +156,10 @@ public class ContentAssistCollectors
 													varParseNode.isLocalVariable(), varParseNode.isField(), varParseNode.getNodeType(), 
 													varParseNode.getStartingOffset(), namespace);
 											// @formatter:on
-											return value;
-										}
+										return value;
+									}
 
-									});
-								}
+								});
 							}
 						}
 					}
@@ -172,7 +178,7 @@ public class ContentAssistCollectors
 	 * 
 	 * @param index
 	 *            - index to use.
-	 * @param varName
+	 * @param constName
 	 *            - variable name (including $ sign).
 	 * @param types
 	 *            - types to collect variables from.
@@ -185,16 +191,16 @@ public class ContentAssistCollectors
 	 *            - namespace lookup (can be null)
 	 * @return types
 	 */
-	public static Set<IElementEntry> collectConstEntries(IElementsIndex index, String varName, Set<String> types,
-			boolean exactMatch, Map<String, String> aliases, String namespace)
+	public static Set<IElementEntry> collectConstEntries(IElementsIndex index, String constName, Set<String> types,
+			boolean exactMatch, Map<String, String> aliases, final String namespace)
 	{
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// searching for variables
-		String rightVarName = varName;
+		String rightConstName = constName;
 		for (String leftType : types)
 		{
 			String typeName = processTypeName(aliases, namespace, leftType);
-			String entryPath = typeName + rightVarName;
+			String entryPath = typeName + rightConstName;
 			List<IElementEntry> currentEntries = null;
 			if (exactMatch)
 			{
@@ -205,6 +211,84 @@ public class ContentAssistCollectors
 				currentEntries = index.getEntriesStartingWith(IPHPIndexConstants.CONST_CATEGORY, entryPath);
 			}
 
+			if (currentEntries == null || currentEntries.isEmpty())
+			{
+				ArrayList<?> items = ContentAssistUtils.selectModelElements(leftType, true);
+				if (items != null && !items.isEmpty())
+				{
+					String lowCaseConstName = constName != null ? constName.toLowerCase() : EMPTY_STRING;
+					for (Object obj : items)
+					{
+						if (obj instanceof PHPClassParseNode)
+						{
+							final PHPClassParseNode classParseNode = (PHPClassParseNode) obj;
+							IParseNode[] children = classParseNode.getChildren();
+							for (IParseNode child : children)
+							{
+								if (child instanceof PHPConstantNode)
+								{
+									final PHPConstantNode constantNode = (PHPConstantNode) child;
+									String constNodeName = constantNode.getNodeName();
+									if (constNodeName != null)
+									{
+										String lowCaseFuncNodeName = constNodeName.toLowerCase();
+										if (exactMatch)
+										{
+											if (!lowCaseConstName.equals(lowCaseFuncNodeName))
+												continue;
+										}
+										else
+										{
+											if (!lowCaseFuncNodeName.startsWith(lowCaseConstName))
+												continue;
+										}
+									}
+									result.add(new IElementEntry()
+									{
+										private VariablePHPEntryValue value;
+
+										public int getCategory()
+										{
+											return IPHPIndexConstants.CONST_CATEGORY;
+										}
+
+										public String getEntryPath()
+										{
+											return classParseNode.getNodeName() + IElementsIndex.DELIMITER
+													+ constantNode.getNodeName();
+										}
+
+										public String getLowerCaseEntryPath()
+										{
+											String path = getEntryPath();
+											return path != null ? path.toLowerCase() : EMPTY_STRING;
+										}
+
+										public IModule getModule()
+										{
+											return null;
+										}
+
+										public Object getValue()
+										{
+											if (value != null)
+											{
+												return value;
+											}
+											// @formatter:off
+												value = new VariablePHPEntryValue(constantNode.getModifiers(), constantNode.isParameter(), 
+														constantNode.isLocalVariable(), constantNode.isField(), constantNode.getNodeType(), 
+														constantNode.getStartingOffset(), namespace);
+												// @formatter:on
+											return value;
+										}
+									});
+								}
+							}
+						}
+					}
+				}
+			}
 			if (currentEntries != null)
 			{
 				result.addAll(currentEntries);
@@ -295,119 +379,114 @@ public class ContentAssistCollectors
 						{
 							final PHPClassParseNode classParseNode = (PHPClassParseNode) obj;
 							IParseNode[] children = classParseNode.getChildren();
-							if (children != null)
+							for (IParseNode child : children)
 							{
-								for (IParseNode child : children)
+								if (child instanceof PHPFunctionParseNode)
 								{
-									if (child instanceof PHPFunctionParseNode)
+									final PHPFunctionParseNode functionParseNode = (PHPFunctionParseNode) child;
+									String funcNodeName = functionParseNode.getNodeName();
+									if (funcNodeName != null)
 									{
-										final PHPFunctionParseNode functionParseNode = (PHPFunctionParseNode) child;
-										String funcNodeName = functionParseNode.getNodeName();
-										if (funcNodeName != null)
+										String lowCaseFuncNodeName = funcNodeName.toLowerCase();
+										if (exactMatch)
 										{
-											String lowCaseFuncNodeName = funcNodeName.toLowerCase();
-											if (exactMatch)
-											{
-												if (!lowCaseFuncName.equals(lowCaseFuncNodeName))
-													continue;
-											}
-											else
-											{
-												if (!lowCaseFuncNodeName.startsWith(lowCaseFuncName))
-													continue;
-											}
+											if (!lowCaseFuncName.equals(lowCaseFuncNodeName))
+												continue;
 										}
-										// Add an element entry for an element
-										// that is probably located in the
-										// phpfunctions5
-										// or outside the workspace.
-										result.add(new IElementEntry()
+										else
 										{
+											if (!lowCaseFuncNodeName.startsWith(lowCaseFuncName))
+												continue;
+										}
+									}
+									// Add an element entry for an element
+									// that is probably located in the
+									// phpfunctions5
+									// or outside the workspace.
+									result.add(new IElementEntry()
+									{
 
-											private FunctionPHPEntryValue value;
+										private FunctionPHPEntryValue value;
 
-											public int getCategory()
+										public int getCategory()
+										{
+											return IPHPIndexConstants.FUNCTION_CATEGORY;
+										}
+
+										public String getEntryPath()
+										{
+											// Returns the function name.
+											// This is useful when we have a
+											// built-in class function
+											// completion.
+											return classParseNode.getNodeName() + IElementsIndex.DELIMITER
+													+ functionParseNode.getNodeName();
+										}
+
+										public String getLowerCaseEntryPath()
+										{
+											String path = getEntryPath();
+											return path != null ? path.toLowerCase() : EMPTY_STRING;
+										}
+
+										public IModule getModule()
+										{
+											return null;
+										}
+
+										public Object getValue()
+										{
+											if (value != null)
 											{
-												return IPHPIndexConstants.FUNCTION_CATEGORY;
-											}
-
-											public String getEntryPath()
-											{
-												// Returns the function name.
-												// This is useful when we have a
-												// built-in class function
-												// completion.
-												return classParseNode.getNodeName() + IElementsIndex.DELIMITER
-														+ functionParseNode.getNodeName();
-											}
-
-											public String getLowerCaseEntryPath()
-											{
-												String path = getEntryPath();
-												return path != null ? path.toLowerCase() : EMPTY_STRING;
-											}
-
-											public IModule getModule()
-											{
-												return null;
-											}
-
-											public Object getValue()
-											{
-												if (value != null)
-												{
-													return value;
-												}
-												Parameter[] parameters = functionParseNode.getParameters();
-												LinkedHashMap<String, Set<Object>> parametersMap = null;
-												boolean[] mandatories = null;
-												ArrayList<Integer> startPositions = null;
-												parametersMap = new LinkedHashMap<String, Set<Object>>(
-														parameters.length);
-												if (parameters != null)
-												{
-													mandatories = new boolean[parameters.length];
-													startPositions = new ArrayList<Integer>(parameters.length);
-													for (int i = 0; i < parameters.length; i++)
-													{
-														Parameter parameter = parameters[i];
-														String nameIdentifier = parameter.getVariableName();
-														if (nameIdentifier == null)
-														{
-
-															continue;
-														}
-														if (nameIdentifier.startsWith(DOLLAR_SIGN))
-														{
-															nameIdentifier = nameIdentifier.substring(1);
-														}
-														String parameterType = parameter.getClassType();
-														Set<Object> types = null;
-														if (parameterType != null)
-														{
-															types = new HashSet<Object>(1);
-															types.add(parameterType);
-														}
-														parametersMap.put(nameIdentifier, types);
-														mandatories[i] = EMPTY_STRING.equals(parameter
-																.getDefaultValue());
-														// Always set to that, since we have no other information here
-														startPositions.add(functionParseNode.getStartingOffset());
-													}
-												}
-												int[] startPositionsArray = new int[startPositions.size()];
-												for (int p = 0; p < startPositions.size(); p++)
-												{
-													startPositionsArray[p] = startPositions.get(p);
-												}
-												value = new FunctionPHPEntryValue(functionParseNode.getModifiers(),
-														true, parametersMap, startPositionsArray, mandatories,
-														functionParseNode.getStartingOffset(), EMPTY_STRING);
 												return value;
 											}
+											Parameter[] parameters = functionParseNode.getParameters();
+											LinkedHashMap<String, Set<Object>> parametersMap = null;
+											boolean[] mandatories = null;
+											ArrayList<Integer> startPositions = null;
+											parametersMap = new LinkedHashMap<String, Set<Object>>(parameters.length);
+											if (parameters != null)
+											{
+												mandatories = new boolean[parameters.length];
+												startPositions = new ArrayList<Integer>(parameters.length);
+												for (int i = 0; i < parameters.length; i++)
+												{
+													Parameter parameter = parameters[i];
+													String nameIdentifier = parameter.getVariableName();
+													if (nameIdentifier == null)
+													{
 
-										});
-									}
+														continue;
+													}
+													if (nameIdentifier.startsWith(DOLLAR_SIGN))
+													{
+														nameIdentifier = nameIdentifier.substring(1);
+													}
+													String parameterType = parameter.getClassType();
+													Set<Object> types = null;
+													if (parameterType != null)
+													{
+														types = new HashSet<Object>(1);
+														types.add(parameterType);
+													}
+													parametersMap.put(nameIdentifier, types);
+													mandatories[i] = EMPTY_STRING.equals(parameter.getDefaultValue());
+													// Always set to that, since we have no other information here
+													startPositions.add(functionParseNode.getStartingOffset());
+												}
+											}
+											int[] startPositionsArray = new int[startPositions.size()];
+											for (int p = 0; p < startPositions.size(); p++)
+											{
+												startPositionsArray[p] = startPositions.get(p);
+											}
+											value = new FunctionPHPEntryValue(functionParseNode.getModifiers(), true,
+													parametersMap, startPositionsArray, mandatories, functionParseNode
+															.getStartingOffset(), EMPTY_STRING);
+											return value;
+										}
+
+									});
 								}
 							}
 						}

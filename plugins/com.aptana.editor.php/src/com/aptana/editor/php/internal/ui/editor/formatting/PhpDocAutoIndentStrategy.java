@@ -8,7 +8,8 @@ import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
-import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.core.logging.IdeLog;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
 import com.aptana.parsing.lexer.Lexeme;
@@ -88,7 +89,8 @@ public class PhpDocAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				}
 				catch (BadLocationException e)
 				{
-					PHPEplPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error customizing the auto-indent for a PHP documentation block", e); //$NON-NLS-1$
 				}
 				indentDocAfterNewLine(document, command);
 			}

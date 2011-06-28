@@ -117,10 +117,10 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
+import com.aptana.formatter.nodes.NodeTypes.TypeOperator;
+import com.aptana.formatter.nodes.NodeTypes.TypePunctuation;
 
 /**
  * A PHP formatter node builder.
@@ -683,14 +683,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushKeyword(continueStart, 8, true);
 		// visit the continue expression, if exists
 		Expression expression = continueStatement.getExpression();
+		int end = continueStatement.getEnd() - 1;
 		if (expression != null)
 		{
 			expression.accept(this);
 		}
-		else
-		{
-			pushSpaceConsumingNode(continueStatement.getEnd() - 1);
-		}
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
 		return false;
 	}
 
@@ -1347,7 +1345,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(Quote quote)
 	{
 		int quoteType = quote.getQuoteType();
-		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC)
+		String quoteStr = document.get(quote.getStart(), quote.getEnd());
+		// Check for HEREDOC, NOWDOC and multi-lines strings.
+		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC
+				|| LINE_SPLIT_PATTERN.split(quoteStr, 2).length == 2)
 		{
 			FormatterPHPHeredocNode heredocNode = new FormatterPHPHeredocNode(document, quote.getStart(),
 					quote.getEnd());

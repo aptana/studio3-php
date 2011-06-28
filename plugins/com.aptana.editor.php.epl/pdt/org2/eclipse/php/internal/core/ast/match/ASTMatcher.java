@@ -822,14 +822,16 @@ public class ASTMatcher {
 				node.getVariable(), o.getVariable()));
 	}
 
-	public boolean match(Program node, Object other) {
+	public boolean match(Program node, Object other, boolean matchComments)	{
 		if (!(other instanceof Program)) {
 			return false;
 		}
 		Program o = (Program) other;
-
-		return (safeSubtreeListMatch(node.statements(), o.statements()) && safeSubtreeListMatch(node.comments(),
-				(o.comments())));
+		boolean statementsMatch = safeSubtreeListMatch(node.statements(), o.statements());
+		if (!matchComments)	{
+			return statementsMatch;
+		}
+		return statementsMatch && safeSubtreeListMatch(node.comments(), (o.comments()));
 	}
 
 	public boolean match(Quote node, Object other) {

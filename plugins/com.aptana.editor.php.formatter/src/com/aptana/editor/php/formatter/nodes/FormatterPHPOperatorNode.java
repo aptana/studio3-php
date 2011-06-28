@@ -8,8 +8,8 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.formatter.IFormatterDocument;
+import com.aptana.formatter.nodes.NodeTypes.TypeOperator;
 
 /**
  * A PHP formatter node for operator elements, such as assignments, arrows etc.<br>
@@ -73,7 +73,7 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case GREATER_THAN_OR_EQUAL:
 			case LESS_THAN_OR_EQUAL:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_RELATIONAL_OPERATORS);
-			case DOT:
+			case DOT_CONCATENATION:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_BEFORE_CONCATENATION_OPERATOR);
 			case CONDITIONAL:
 			case CONDITIONAL_COLON:
@@ -147,7 +147,7 @@ public class FormatterPHPOperatorNode extends FormatterPHPTextNode
 			case GREATER_THAN_OR_EQUAL:
 			case LESS_THAN_OR_EQUAL:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_RELATIONAL_OPERATORS);
-			case DOT:
+			case DOT_CONCATENATION:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_CONCATENATION_OPERATOR);
 			case CONDITIONAL:
 			case CONDITIONAL_COLON:

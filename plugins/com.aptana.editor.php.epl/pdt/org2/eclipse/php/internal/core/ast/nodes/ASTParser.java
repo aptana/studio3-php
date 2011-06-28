@@ -27,6 +27,7 @@ import org2.eclipse.php.internal.core.CoreMessages;
 import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
@@ -126,7 +127,7 @@ public class ASTParser {
 			parser.setSource(sourceModule.getSourceAsCharArray());
 			return parser;
 		} catch (Exception e) {
-		    PHPEplPlugin.logError(e);
+			IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating a new PHP AST Parser", e); //$NON-NLS-1$
 		}
 		return null;
 	}

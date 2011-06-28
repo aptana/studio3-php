@@ -39,6 +39,9 @@ public class CorePreferenceConstants
 			store.setValue(IPHPCoreConstants.WORKSPACE_DEFAULT_LOCALE, Locale.getDefault().toString());
 			store.setDefault(IPHPCoreConstants.WORKSPACE_LOCALE, Locale.getDefault().toString());
 		}
+		store.setDefault(
+				com.aptana.editor.common.contentassist.IPreferenceConstants.CONTEXT_INFORMATION_ACTIVATION_CHARACTERS,
+				"(,"); //$NON-NLS-1$
 	}
 
 	// Don't instantiate

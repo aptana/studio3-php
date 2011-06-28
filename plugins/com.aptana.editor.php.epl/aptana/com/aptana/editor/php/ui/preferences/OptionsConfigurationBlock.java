@@ -19,8 +19,6 @@ import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -52,6 +50,7 @@ import org.eclipse.ui.preferences.IWorkingCopyManager;
 import org.eclipse.ui.preferences.WorkingCopyManager;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.util.CoreUtility;
 import com.aptana.editor.php.util.Key;
@@ -199,8 +198,8 @@ public abstract class OptionsConfigurationBlock
 		{
 			if (allKeys[i].getStoredValue(fLookupOrder, false, fManager) == null)
 			{
-				PHPEplPlugin.log(new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID,
-						"preference option missing: " + allKeys[i] + " (" + this.getClass().getName() + ')')); //$NON-NLS-1$ //$NON-NLS-2$
+				IdeLog.logError(PHPEplPlugin.getDefault(), "preference option missing: " + allKeys[i] + " (" //$NON-NLS-1$ //$NON-NLS-2$
+						+ this.getClass().getName() + ')', new IllegalArgumentException());
 			}
 		}
 	}
@@ -753,7 +752,7 @@ public abstract class OptionsConfigurationBlock
 			}
 			catch (BackingStoreException e)
 			{
-				PHPEplPlugin.logError("Error applying changes", e); //$NON-NLS-1$
+				IdeLog.logError(PHPEplPlugin.getDefault(), "Error applying changes", e); //$NON-NLS-1$
 				return false;
 			}
 			if (doBuild)

@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 public final class ASTVisitorRegistry
@@ -37,7 +38,7 @@ public final class ASTVisitorRegistry
 			}
 			catch (CoreException e1)
 			{
-				PHPEditorPlugin.logError(e1);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading a PHP indexing AST visitor extension", e1); //$NON-NLS-1$
 			}
 		}
 	}

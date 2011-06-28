@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.ui.viewsupport.IProblemChangedListener;
 
@@ -186,7 +187,8 @@ public class ProblemsLabelDecorator implements ILightweightLabelDecorator
 			{
 				return -1;
 			}
-			PHPEplPlugin.logError(e);
+			IdeLog.logWarning(PHPEplPlugin.getDefault(),
+					"Error computing PHP label-decoration adornment flags", e, PHPEplPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 		}
 		return -1;
 	}

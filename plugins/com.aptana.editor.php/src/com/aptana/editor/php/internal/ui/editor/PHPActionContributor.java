@@ -3,22 +3,18 @@ package com.aptana.editor.php.internal.ui.editor;
 import java.util.ResourceBundle;
 
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 
 import com.aptana.editor.common.CommonTextEditorActionContributor;
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.internal.ui.actions.IPHPActionKeys;
-import com.aptana.editor.php.internal.ui.actions.ToggleMarkOccurrencesAction;
 
 public class PHPActionContributor extends CommonTextEditorActionContributor
 {
 	private RetargetTextEditorAction fOpenDeclaration;
-	private ToggleMarkOccurrencesAction fMarkOccurrencesAction;
 
 	public PHPActionContributor()
 	{
@@ -28,20 +24,6 @@ public class PHPActionContributor extends CommonTextEditorActionContributor
 
 		fOpenDeclaration = new RetargetTextEditorAction(resourceBundle, "openDeclaration."); //$NON-NLS-1$
 		fOpenDeclaration.setActionDefinitionId(IPHPActionKeys.OPEN_DECLARATION);
-
-		fMarkOccurrencesAction = new ToggleMarkOccurrencesAction(resourceBundle);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.part.EditorActionBarContributor#init(org.eclipse.ui.IActionBars,
-	 * org.eclipse.ui.IWorkbenchPage)
-	 */
-	@Override
-	public void init(IActionBars bars, IWorkbenchPage page)
-	{
-		super.init(bars, page);
-		bars.setGlobalActionHandler(IPHPActionKeys.TOGGLE_MARK_OCCURRENCES, fMarkOccurrencesAction);
 	}
 
 	/*
@@ -74,7 +56,6 @@ public class PHPActionContributor extends CommonTextEditorActionContributor
 		{
 			editor = (ITextEditor) part;
 			fOpenDeclaration.setAction(getAction(editor, IPHPActionKeys.OPEN_DECLARATION));
-			fMarkOccurrencesAction.setEditor(editor);
 		}
 	}
 }

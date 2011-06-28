@@ -31,6 +31,8 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -49,7 +51,6 @@ import com.aptana.parsing.ast.IParseNode;
 public final class PHPBuiltins
 {
 
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	public static final String LANGUAGE_LIBRARY_PATH_BASE = "Resources/language/php"; //$NON-NLS-1$
 	public static final String PHP4_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "4"; //$NON-NLS-1$
 	public static final String PHP5_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "5"; //$NON-NLS-1$
@@ -214,7 +215,7 @@ public final class PHPBuiltins
 	{
 		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, 0, -1, -1, nodeName);
 		builtins.add(node);
-		node.setDocumentation(new PHPDocBlockImp(description, EMPTY_STRING, NO_TAGS, 0));
+		node.setDocumentation(new PHPDocBlockImp(description, StringUtil.EMPTY, NO_TAGS, 0));
 		if (phpVersions != null && phpVersions.length > 0)
 		{
 			for (PHPVersion version : phpVersions)
@@ -414,7 +415,8 @@ public final class PHPBuiltins
 			}
 			catch (MalformedURLException e)
 			{
-				PHPEditorPlugin.logError("Error retrieving the built-in resource.", e); //$NON-NLS-1$
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"Error retrieving the built-in resource", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 
 		}
@@ -492,7 +494,7 @@ public final class PHPBuiltins
 		}
 		catch (Throwable t)
 		{
-			PHPEditorPlugin.logError(t);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the PHP Built-in API", t); //$NON-NLS-1$
 		}
 	}
 
@@ -531,13 +533,14 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " + url.getFile(), e); //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error loading the built-in PHP API for " + url.getFile(), e); //$NON-NLS-1$
 				}
 			}
 		}
 		catch (IOException ioe)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API.", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API.", ioe); //$NON-NLS-1$
 		}
 	}
 
@@ -576,14 +579,15 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " + url.getFile(), //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error loading the built-in PHP API for " + url.getFile(), //$NON-NLS-1$
 							e);
 				}
 			}
 		}
 		catch (IOException ioe)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API", ioe); //$NON-NLS-1$
 		}
 	}
 
@@ -622,14 +626,14 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
 							+ url.getFile(), e);
 				}
 			}
 		}
 		catch (IOException ioe)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API for " //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
 					, ioe);
 		}
 	}
@@ -650,7 +654,8 @@ public final class PHPBuiltins
 			IParseNode[] children = child.getChildren();
 			for (IParseNode node : children)
 			{
-				if (node instanceof PHPFunctionParseNode || node instanceof PHPVariableParseNode)
+				if (node instanceof PHPFunctionParseNode || node instanceof PHPVariableParseNode
+						|| node instanceof PHPConstantNode)
 				{
 					builtInClasses.put(child.getNameNode().getName() + IElementsIndex.DELIMITER
 							+ node.getNameNode().getName(), url.toString().intern());
@@ -660,28 +665,39 @@ public final class PHPBuiltins
 		else if (child instanceof PHPConstantNode || child.getNodeType() == IPHPParseNode.KEYWORD_NODE
 				|| child.getNodeType() == IPHPParseNode.CONST_NODE)
 		{
-			// Convert this PHP constant to a PHP parse node with a Keyword
-			// type.
-			// Also, make sure that the documentation is providing some basics.
-			PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
-			IPHPDocBlock documentation = phpChild.getDocumentation();
-			@SuppressWarnings("unused")
-			boolean docsFromBuiltinSource = true;
-			if (documentation == null || EMPTY_STRING.equals(documentation.getShortDescription()))
-			{
-				docsFromBuiltinSource = false;
-				documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
-						.getNameNode().getName()), EMPTY_STRING, NO_TAGS, 0);
-			}
-			PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, phpChild.getModifiers(), child
-					.getStartingOffset(), child.getEndingOffset(), phpChild.getNameNode().getName());
-			node.setDocumentation(documentation);
-			builtins.add(node);
-			// if (docsFromBuiltinSource)
-			// {
-			builtInConstants.put(child.getNameNode().getName(), url.toString().intern());
-			// }
+			addAsKeyword(child, url);
 		}
+	}
+
+	private void addAsKeyword(IParseNode child, URL url)
+	{
+		// Convert this PHP constant to a PHP parse node with a Keyword
+		// type.
+		// Also, make sure that the documentation is providing some basics.
+		PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
+		IPHPDocBlock documentation = phpChild.getDocumentation();
+		@SuppressWarnings("unused")
+		boolean docsFromBuiltinSource = true;
+		if (documentation == null || StringUtil.EMPTY.equals(documentation.getShortDescription()))
+		{
+			docsFromBuiltinSource = false;
+			documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
+					.getNameNode().getName()), StringUtil.EMPTY, NO_TAGS, 0);
+		}
+		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, phpChild.getModifiers(),
+				child.getStartingOffset(), child.getEndingOffset(), phpChild.getNameNode().getName());
+		node.setDocumentation(documentation);
+		builtins.add(node);
+		String parentName = (child.getParent() != null) ? child.getParent().getNameNode().getName() : StringUtil.EMPTY;
+		if (parentName == null)
+		{
+			parentName = StringUtil.EMPTY;
+		}
+		else if (parentName.length() > 0)
+		{
+			parentName += IElementsIndex.DELIMITER;
+		}
+		builtInConstants.put(parentName + child.getNameNode().getName(), url.toString().intern());
 	}
 
 	/*

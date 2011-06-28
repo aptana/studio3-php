@@ -8,8 +8,8 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.IFormatterDocument;
+import com.aptana.formatter.nodes.NodeTypes.TypePunctuation;
 
 /**
  * A PHP formatter node for punctuation elements, such as commas, colons etc.<br>

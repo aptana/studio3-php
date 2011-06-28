@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.builder.IPHPLibrary;
@@ -62,7 +63,8 @@ public final class LibraryLabelProvider extends LabelProvider
 				}
 				catch (IOException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"PHP library label provider - error getting a library image", e); //$NON-NLS-1$
 					return null;
 				}
 			}
