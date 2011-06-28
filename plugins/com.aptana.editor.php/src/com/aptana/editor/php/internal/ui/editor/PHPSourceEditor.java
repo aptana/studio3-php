@@ -530,4 +530,14 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		sourceModule = null;
 		return fileSystemModule;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.html.HTMLEditor#getPluginPreferenceStore()
+	 */
+	@Override
+	protected IPreferenceStore getPluginPreferenceStore()
+	{
+		return PHPEplPlugin.getDefault().getPreferenceStore();
+	}
 }
