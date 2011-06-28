@@ -75,7 +75,7 @@ public class PHPParser implements IParser
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
 		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset,
-				startingOffset + source.length());
+				startingOffset + source.length() - 1);
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
 		{

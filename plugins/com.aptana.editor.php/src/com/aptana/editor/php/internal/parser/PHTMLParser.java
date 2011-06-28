@@ -45,7 +45,7 @@ public class PHTMLParser extends CompositeParser
 					if (root == null)
 					{
 						root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset,
-								startingOffset + source.length());
+								startingOffset + source.length() - 1);
 					}
 					processPHPBlock(root);
 					break;
