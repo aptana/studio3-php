@@ -209,6 +209,35 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 31); // ?>'<'
 	}
 
+	public void testAPSTUD2806()
+	{
+		String source = "<meta http-equiv=\"Refresh\" content=\"<?php echo $pause?>;url=<?php echo $url?>\"/>"; //$NON-NLS-1$
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'meta
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 35); // content='"'
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 36); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 37); // '?'
+		// inline PHP inside the script
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 41); // ' 'echo
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 53); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 54); // '>'
+		// back to body
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 55); // ?>';'
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 56); // ;'u'rl=
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 60); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 61); // '?'
+		// inline PHP inside the script
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 65); // ' 'echo
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 75); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 76); // '>'
+		// back to body
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 77); // ?>'"'
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 79); // /'>'
+	}
+
 	public void testPHPDoc()
 	{
 		String source = "<?php\n" + "/**\n" + " * This is a PHPDoc partition.\n" + " **/\n" + "?>";
