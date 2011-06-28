@@ -170,14 +170,6 @@
             sequence="F3">
       </key>
       <!-- Mark occurrences -->
-	  <key sequence="M2+M3+O" contextId="com.aptana.editor.php.editorContext"
-		    commandId="com.aptana.editor.php.toggleMarkOccurrences"
-		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-	  </key>
-	  <key platform="carbon" sequence="COMMAND+ALT+O"
-		    contextId="com.aptana.editor.php.editorContext" commandId="com.aptana.editor.php.toggleMarkOccurrences"
-		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-	  </key>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
