@@ -1228,21 +1228,34 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(NamespaceDeclaration namespaceDeclaration)
 	{
-		pushKeyword(namespaceDeclaration.getStart(), 9, true);
+		int start = namespaceDeclaration.getStart();
+		pushKeyword(start, 9, true);
+		int end = start + 9;
 		NamespaceName namespaceName = namespaceDeclaration.getName();
-		namespaceName.accept(this);
-		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, namespaceName.getEnd(), false, true);
-		// visit the namespace body block. This block is invisible one, but we wrap it in a special
+		if (namespaceName != null)
+		{
+			namespaceName.accept(this);
+			end = namespaceName.getEnd();
+		}
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
+		// visit the namespace body block. If this block is invisible one, wrap it in a special
 		// namespace block to allow indentation customization.
 		FormatterPHPNamespaceBlockNode bodyNode = new FormatterPHPNamespaceBlockNode(document);
 		Block body = namespaceDeclaration.getBody();
-		int start = body.getStart();
-		int end = body.getEnd();
-		bodyNode.setBegin(builder.createTextNode(document, start, start));
-		builder.push(bodyNode);
-		body.childrenAccept(this);
-		bodyNode.setEnd(builder.createTextNode(document, end, end));
-		builder.checkedPop(bodyNode, namespaceDeclaration.getEnd());
+		if (body.isCurly())
+		{
+			body.accept(this);
+		}
+		else
+		{
+			int bodyStart = body.getStart();
+			int bodyEnd = body.getEnd();
+			bodyNode.setBegin(builder.createTextNode(document, bodyStart, bodyStart));
+			builder.push(bodyNode);
+			body.childrenAccept(this);
+			bodyNode.setEnd(builder.createTextNode(document, bodyEnd, bodyEnd));
+			builder.checkedPop(bodyNode, namespaceDeclaration.getEnd());
+		}
 		return false;
 	}
 
