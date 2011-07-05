@@ -136,12 +136,15 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					if (lexemeText.equals(";")) { //$NON-NLS-1$
 						Lexeme<PHPTokenType> previousNonWhitespaceLexeme = getPreviousNonWhitespaceLexeme(firstLexemeInLine
 								.getStartingOffset() - 1);
-						String indent = indentAfterOneLineBlock(previousNonWhitespaceLexeme.getStartingOffset(),
-								document);
-						if (indent != null)
+						if (previousNonWhitespaceLexeme != null)
 						{
-							command.text += indent;
-							return;
+							String indent = indentAfterOneLineBlock(previousNonWhitespaceLexeme.getStartingOffset(),
+									document);
+							if (indent != null)
+							{
+								command.text += indent;
+								return;
+							}
 						}
 					}
 					if (lexemeText.equals(")")) //$NON-NLS-1$
