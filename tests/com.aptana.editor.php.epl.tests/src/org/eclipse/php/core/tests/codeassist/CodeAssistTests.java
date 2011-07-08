@@ -69,6 +69,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 	protected static IProject project;
 	protected static IFile testFile;
+	protected static int testNumber;
 
 	public static void setUpSuite() throws Exception
 	{
@@ -83,7 +84,6 @@ public class CodeAssistTests extends AbstractPDTTTest
 		projectDescription.setNatureIds(new String[] { PHPNature.NATURE_ID });
 		project.create(projectDescription, null);
 		project.open(null);
-		
 
 		PHPBuiltins.getInstance();
 		PHPGlobalIndexer.getInstance();
@@ -154,18 +154,13 @@ public class CodeAssistTests extends AbstractPDTTTest
 					catch (final Exception e)
 					{
 						phpVerSuite.addTest(new TestCase(fileName)
-						{ // dummy
-									// test
-									// indicating
-									// PDTT
-									// file
-									// parsing
-									// failure
-									protected void runTest() throws Throwable
-									{
-										throw e;
-									}
-								});
+						{
+							// dummy test indicating PDTT file parsing failure
+							protected void runTest() throws Throwable
+							{
+								throw e;
+							}
+						});
 					}
 				}
 			}
@@ -208,7 +203,8 @@ public class CodeAssistTests extends AbstractPDTTTest
 		// replace the offset character
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
-		testFile = project.getFile("test.php");
+		testNumber++;
+		testFile = project.getFile("test-" + testNumber + ".php");
 		if (testFile.exists())
 		{
 			testFile.refreshLocal(IResource.DEPTH_ZERO, null);
@@ -218,9 +214,9 @@ public class CodeAssistTests extends AbstractPDTTTest
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
+		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
 		// PHPCoreTests.waitForAutoBuild();
-
 		return offset;
 	}
 
@@ -253,7 +249,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 			editor.computeModule(((IUniformResource) resource).getURI().toString());
 		}
 		PHPContentAssistProcessor processor = new PHPContentAssistProcessor(editor);
-		// 
+		//
 		IDocument document = new Document(new String(sourceModule.getSourceAsCharArray()));
 		CompositePartitionScanner partitionScanner = new CompositePartitionScanner(PHPSourceConfiguration.getDefault()
 				.createSubPartitionScanner(), new NullSubPartitionScanner(), new NullPartitionerSwitchStrategy());
@@ -276,8 +272,8 @@ public class CodeAssistTests extends AbstractPDTTTest
 			Set<String> actualProposals = new HashSet<String>();
 			for (ICompletionProposal proposal : proposals)
 			{
-				String string = new String(((PHPCompletionProposal) proposal).getReplacementString().replaceAll(
-						"\\(\\)", "").toLowerCase());
+				String string = new String(((PHPCompletionProposal) proposal).getReplacementString()
+						.replaceAll("\\(\\)", "").toLowerCase());
 				if (string.startsWith("$"))
 				{
 					actualProposals.add(string.substring(1).trim());
