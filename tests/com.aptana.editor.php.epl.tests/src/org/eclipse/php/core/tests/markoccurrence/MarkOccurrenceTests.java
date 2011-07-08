@@ -228,8 +228,9 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
+		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
-		// PHPCoreTests.waitForAutoBuild();
+
 		Program astRoot = createProgramFromSource(testFile);
 		ASTNode selectedNode = NodeFinder.perform(astRoot, offset, 0);
 		OccurrenceLocation[] locations = null;
@@ -249,7 +250,6 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 			}
 		}
 		compareProposals(locations, newStarts);
-		// return locations;
 	}
 
 	/**

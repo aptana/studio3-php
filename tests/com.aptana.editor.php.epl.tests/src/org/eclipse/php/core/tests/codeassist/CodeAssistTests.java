@@ -216,7 +216,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
-		// PHPCoreTests.waitForAutoBuild();
+
 		return offset;
 	}
 
