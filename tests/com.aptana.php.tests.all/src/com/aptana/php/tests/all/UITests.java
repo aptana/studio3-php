@@ -11,7 +11,7 @@ public class UITests
 		TestSuite suite = new TestSuite(UITests.class.getName());
 		// $JUnit-BEGIN$
 		suite.addTest(com.aptana.editor.php.tests.AllTests.suite());
-		// suite.addTest(org.eclipse.php.core.tests.AllUITests.suite());
+		suite.addTest(org.eclipse.php.core.tests.AllUITests.suite());
 		// $JUnit-END$
 		return suite;
 	}
