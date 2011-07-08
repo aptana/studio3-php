@@ -214,7 +214,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
-		// TestUtils.waitForAutoBuild();
+		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
 
 		return offset;
