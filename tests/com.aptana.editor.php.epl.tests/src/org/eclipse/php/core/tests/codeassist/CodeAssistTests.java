@@ -204,6 +204,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
 		testNumber++;
+		System.out.print("Creating test-" + testNumber+ "... ");
 		testFile = project.getFile("test-" + testNumber + ".php");
 		if (testFile.exists())
 		{
@@ -211,12 +212,16 @@ public class CodeAssistTests extends AbstractPDTTTest
 			testFile.delete(true, null);
 		}
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
+		System.out.print("Refreshing... ");
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
+		System.out.println("Building... ");
+		long start = System.currentTimeMillis();
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
-
+		System.out.println("Waiting for auto-build to complete...");
 		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
-
+		System.out.println("Auto-build completed (" + (System.currentTimeMillis() - start) + "ms test-" + testNumber
+				+ ')');
 		return offset;
 	}
 
