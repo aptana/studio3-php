@@ -133,7 +133,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 							{
 								System.out.println("Setting the project's PHP version to " + phpVersion.getAlias());
 								TestUtils.setProjectPhpVersion(project, phpVersion);
-								System.out.println("Applying preferences on " + testFile.getName());
+								System.out.println("Applying the preferences for the pdtt file '" + fileName + '\'');
 								pdttFile.applyPreferences();
 							}
 
@@ -149,7 +149,9 @@ public class CodeAssistTests extends AbstractPDTTTest
 							protected void runTest() throws Throwable
 							{
 								ICompletionProposal[] proposals = getProposals(pdttFile.getFile());
+								System.out.println("Resolved proposals for " + testFile.getName());
 								compareProposals(proposals, pdttFile);
+								System.out.println("Test completed on " + testFile.getName() + '\n');
 							}
 						});
 					}
@@ -168,7 +170,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 			}
 			suite.addTest(phpVerSuite);
 		}
-
+		System.out.println(suite.countTestCases() + " tests were added.");
 		// Create a setup wrapper
 		TestSetup setup = new TestSetup(suite)
 		{
