@@ -1,5 +1,7 @@
 package org.eclipse.php.core.tests;
 
+import java.util.logging.Logger;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -92,8 +94,10 @@ public class TestUtils
 	 * 
 	 * @throws CoreException
 	 */
+	@SuppressWarnings("nls")
 	public static void waitForAutoBuild() throws CoreException
 	{
+		Logger.global.entering("TestUtils", "waitForAutoBuild");
 		boolean wasInterrupted = false;
 		do
 		{
@@ -116,6 +120,7 @@ public class TestUtils
 			}
 		}
 		while (wasInterrupted);
+		Logger.global.exiting("TestUtils", "waitForAutoBuild");
 	}
 
 	/**
