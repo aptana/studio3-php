@@ -97,6 +97,10 @@ public class TestUtils
 		{
 			try
 			{
+				if (wasInterrupted)
+				{
+					throw new RuntimeException("Before joining the auto-build");
+				}
 				Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, null);
 				wasInterrupted = false;
 			}
@@ -107,9 +111,6 @@ public class TestUtils
 			catch (InterruptedException e)
 			{
 				wasInterrupted = true;
-				if (wasInterrupted) {
-					throw new RuntimeException("Interrupted auto build");
-				}
 			}
 		}
 		while (wasInterrupted);
