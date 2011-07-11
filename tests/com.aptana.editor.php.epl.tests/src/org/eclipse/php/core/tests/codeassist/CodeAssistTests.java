@@ -147,11 +147,11 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 							protected void runTest() throws Throwable
 							{
+								if (getName().length() > -1) {
+									throw new RuntimeException("before resolve proposals.);
+								}
 								ICompletionProposal[] proposals = getProposals(pdttFile.getFile());
 								System.out.println("Resolved proposals for " + testFile.getName());
-								if (proposals.length > -1) {
-									throw new RuntimeException("after resolve proposals. proposals = " + proposals.length);
-								}
 								compareProposals(proposals, pdttFile);
 								System.out.println("Test completed on " + testFile.getName() + '\n');
 							}
