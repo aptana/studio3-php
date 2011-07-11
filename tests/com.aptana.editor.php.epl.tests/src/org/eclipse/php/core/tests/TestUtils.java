@@ -107,6 +107,9 @@ public class TestUtils
 			catch (InterruptedException e)
 			{
 				wasInterrupted = true;
+				if (wasInterrupted) {
+					throw new RuntimeException("Interrupted auto build");
+				}
 			}
 		}
 		while (wasInterrupted);
