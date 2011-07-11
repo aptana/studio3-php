@@ -111,7 +111,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 	public static Test suite()
 	{
-
+		System.out.println("Starting PHP Code Assist Tests...");
 		TestSuite suite = new TestSuite("Auto Code Assist Tests");
 
 		for (final PHPVersion phpVersion : TESTS.keySet())
@@ -131,7 +131,9 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 							protected void setUp() throws Exception
 							{
+								System.out.println("Setting the project's PHP version to " + phpVersion.getAlias());
 								TestUtils.setProjectPhpVersion(project, phpVersion);
+								System.out.println("Applying preferences on " + testFile.getName());
 								pdttFile.applyPreferences();
 							}
 
@@ -204,7 +206,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
 		testNumber++;
-		System.out.print("Creating test-" + testNumber+ "... ");
+		System.out.print("Creating test-" + testNumber + "... ");
 		testFile = project.getFile("test-" + testNumber + ".php");
 		if (testFile.exists())
 		{
