@@ -152,6 +152,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 								System.out.println("Resolved proposals for " + testFile.getName());
 								compareProposals(proposals, pdttFile);
 								System.out.println("Test completed on " + testFile.getName() + '\n');
+								throw new Exception("Test completed on " + testFile.getName());
 							}
 						});
 					}
