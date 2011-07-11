@@ -89,15 +89,17 @@ public class TestUtils
 
 	/**
 	 * Wait for autobuild notification to occur, that is for the autbuild to finish.
+	 * 
+	 * @throws CoreException
 	 */
-	public static void waitForAutoBuild()
+	public static void waitForAutoBuild() throws CoreException
 	{
 		boolean wasInterrupted = false;
 		do
 		{
 			try
 			{
-				if (wasInterrupted)
+				if (!wasInterrupted)
 				{
 					throw new RuntimeException("Before joining the auto-build");
 				}
