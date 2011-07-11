@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
@@ -111,6 +112,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 	public static Test suite()
 	{
+		Logger.global.entering("Test", "suite");
 		System.out.println("Starting PHP Code Assist Tests...");
 		TestSuite suite = new TestSuite("Auto Code Assist Tests");
 		for (final PHPVersion phpVersion : TESTS.keySet())
@@ -183,6 +185,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 				tearDownSuite();
 			}
 		};
+		Logger.global.exiting("Test", "suite");
 		return setup;
 	}
 

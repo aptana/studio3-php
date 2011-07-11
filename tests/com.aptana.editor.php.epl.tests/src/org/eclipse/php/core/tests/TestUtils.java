@@ -95,7 +95,7 @@ public class TestUtils
 	 * @throws CoreException
 	 */
 	@SuppressWarnings("nls")
-	public static void waitForAutoBuild() throws CoreException
+	public synchronized static void waitForAutoBuild() throws CoreException
 	{
 		Logger.global.entering("TestUtils", "waitForAutoBuild");
 		boolean wasInterrupted = false;
@@ -103,10 +103,6 @@ public class TestUtils
 		{
 			try
 			{
-				if (!wasInterrupted)
-				{
-					throw new RuntimeException("Before joining the auto-build");
-				}
 				Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, null);
 				wasInterrupted = false;
 			}
