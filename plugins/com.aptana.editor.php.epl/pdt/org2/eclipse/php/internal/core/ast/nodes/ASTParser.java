@@ -265,16 +265,24 @@ public class ASTParser {
 	/**
 	 * Constructs a scanner from a given reader
 	 * 
-	 * @param ast2
+	 * @param ast
 	 * @param reader
 	 * @param phpVersion
-	 * @param aspTagsAsPhp
+	 * @param aspTagsAsPhp\
+	 * @param createAST In case the given AST was null, create an AST and return the AstLexer that holds it.
 	 * @return
 	 * @throws IOException
 	 */
 	public static AstLexer getLexer(AST ast, Reader reader,
-			PHPVersion phpVersion, boolean aspTagsAsPhp, boolean useShortTags)
+			PHPVersion phpVersion, boolean aspTagsAsPhp, boolean useShortTags, boolean createAST)
 			throws IOException {
+		// Appcelerator mod
+		if (ast == null) {
+			ast = new AST(reader, phpVersion, aspTagsAsPhp, useShortTags);
+			ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+			return ast.lexer();
+		}
+		// end Appcelerator mod
 		if (PHPVersion.PHP4 == phpVersion) {
 			final org2.eclipse.php.internal.core.ast.scanner.php4.PhpAstLexer lexer4 = getLexer4(reader);
 			lexer4.setUseAspTagsAsPhp(aspTagsAsPhp);

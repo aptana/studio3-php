@@ -26,6 +26,23 @@ public class ASTFactory
 	 */
 	public static AstLexer getAstLexer(PHPVersion phpVersion, Reader reader) throws IOException
 	{
-		return ASTParser.getLexer(null, reader, phpVersion, true, true);
+		return ASTParser.getLexer(null, reader, phpVersion, true, true, false);
+	}
+
+	/**
+	 * Returns an {@link AstLexer} according to the given php version.<br>
+	 * The lexer will be initialized with the given reader.
+	 * 
+	 * @param phpVersion
+	 * @param reader
+	 * @param createAST
+	 *            Create an AST that the lexer will hold.
+	 * @return An {@link AstLexer} instance.
+	 * @throws IOException
+	 * @throws IllegalArgumentException
+	 */
+	public static AstLexer getAstLexer(PHPVersion phpVersion, Reader reader, boolean createAST) throws IOException
+	{
+		return ASTParser.getLexer(null, reader, phpVersion, true, true, createAST);
 	}
 }
