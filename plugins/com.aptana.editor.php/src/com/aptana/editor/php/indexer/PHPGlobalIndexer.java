@@ -628,6 +628,10 @@ public final class PHPGlobalIndexer
 
 	private void doSave()
 	{
+		if (EclipseUtil.isTesting())
+		{
+			return;
+		}
 		HashSet<IBuildPath> bp = new HashSet<IBuildPath>();
 		synchronized (needSaving)
 		{
