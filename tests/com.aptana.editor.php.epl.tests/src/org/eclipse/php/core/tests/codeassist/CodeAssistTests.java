@@ -113,7 +113,6 @@ public class CodeAssistTests extends AbstractPDTTTest
 	public static Test suite()
 	{
 		Logger.global.entering("Test", "suite");
-		System.out.println("Starting PHP Code Assist Tests...");
 		TestSuite suite = new TestSuite("Auto Code Assist Tests");
 		for (final PHPVersion phpVersion : TESTS.keySet())
 		{
@@ -132,9 +131,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 							protected void setUp() throws Exception
 							{
-								System.out.println("Setting the project's PHP version to " + phpVersion.getAlias());
 								TestUtils.setProjectPhpVersion(project, phpVersion);
-								System.out.println("Applying the preferences for the pdtt file '" + fileName + '\'');
 								pdttFile.applyPreferences();
 							}
 
@@ -150,9 +147,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 							protected void runTest() throws Throwable
 							{
 								ICompletionProposal[] proposals = getProposals(pdttFile.getFile());
-								System.out.println("Resolved proposals for " + testFile.getName());
 								compareProposals(proposals, pdttFile);
-								System.out.println("Test completed on " + testFile.getName() + '\n');
 							}
 						});
 					}
@@ -171,7 +166,6 @@ public class CodeAssistTests extends AbstractPDTTTest
 			}
 			suite.addTest(phpVerSuite);
 		}
-		System.out.println(suite.countTestCases() + " tests were added.");
 		// Create a setup wrapper
 		TestSetup setup = new TestSetup(suite)
 		{
@@ -210,7 +204,6 @@ public class CodeAssistTests extends AbstractPDTTTest
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
 		testNumber++;
-		System.out.print("Creating test-" + testNumber + "... ");
 		testFile = project.getFile("test-" + testNumber + ".php");
 		if (testFile.exists())
 		{
@@ -218,16 +211,10 @@ public class CodeAssistTests extends AbstractPDTTTest
 			testFile.delete(true, null);
 		}
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
-		System.out.print("Refreshing... ");
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
-		System.out.println("Building... ");
-		long start = System.currentTimeMillis();
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		System.out.println("Waiting for auto-build to complete...");
 		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
-		System.out.println("Auto-build completed (" + (System.currentTimeMillis() - start) + "ms test-" + testNumber
-				+ ')');
 		return offset;
 	}
 
