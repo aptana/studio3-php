@@ -11,6 +11,17 @@ import com.aptana.editor.php.tests.ProjectBasedTestCase;
 public class PHPVersionProviderTest extends ProjectBasedTestCase
 {
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.tests.ProjectBasedTestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception
+	{
+		super.setUp();
+		PHPVersionProvider.getInstance().setPreferencesQualifier(PHPEditorPlugin.PLUGIN_ID);
+	}
+
 	@Override
 	protected String getProjectName()
 	{
@@ -54,7 +65,7 @@ public class PHPVersionProviderTest extends ProjectBasedTestCase
 		Preferences preferences = getPreferences(project);
 		preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, PHPVersion.PHP5.getAlias());
 		preferences.flush();
-		
+
 		assertTrue(PHPVersionProvider.isPHP5(project));
 		assertFalse(PHPVersionProvider.isPHP53(project));
 		assertFalse(PHPVersionProvider.isPHP4(project));

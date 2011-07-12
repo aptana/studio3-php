@@ -13,9 +13,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org2.eclipse.php.internal.core.PHPVersion;
-import org2.eclipse.php.internal.core.preferences.CorePreferenceConstants;
 
-import com.aptana.editor.php.epl.tests.Activator;
+import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.core.CorePreferenceConstants;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 
 public class TestUtils
@@ -140,7 +140,7 @@ public class TestUtils
 				}
 				catch (BackingStoreException e)
 				{
-					throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+					throw new CoreException(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID, e.getMessage(), e));
 				}
 				waitForAutoBuild();
 				waitForIndexer();
@@ -150,6 +150,7 @@ public class TestUtils
 
 	protected static Preferences getPreferences(IProject project)
 	{
-		return new ProjectScope(project).getNode(Activator.PLUGIN_ID);
+
+		return new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
 	}
 }

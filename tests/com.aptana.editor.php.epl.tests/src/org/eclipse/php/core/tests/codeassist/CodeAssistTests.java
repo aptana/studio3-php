@@ -43,7 +43,9 @@ import com.aptana.editor.common.ExtendedFastPartitioner;
 import com.aptana.editor.common.NullPartitionerSwitchStrategy;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.NullSubPartitionScanner;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
+import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -131,6 +133,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 							protected void setUp() throws Exception
 							{
+								PHPVersionProvider.getInstance().setPreferencesQualifier(PHPEditorPlugin.PLUGIN_ID);
 								TestUtils.setProjectPhpVersion(project, phpVersion);
 								pdttFile.applyPreferences();
 							}
