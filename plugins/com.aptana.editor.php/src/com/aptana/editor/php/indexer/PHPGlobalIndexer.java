@@ -67,6 +67,7 @@ import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
  */
 public final class PHPGlobalIndexer
 {
+	public static final Object FAMILY_PHP_BUILD = new Object();
 
 	private static class Mutex
 	{
@@ -386,7 +387,8 @@ public final class PHPGlobalIndexer
 			@Override
 			public boolean belongsTo(Object family)
 			{
-				if (family == ResourcesPlugin.FAMILY_AUTO_BUILD || family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
 				{
 					return true;
 				}
@@ -478,7 +480,8 @@ public final class PHPGlobalIndexer
 			@Override
 			public boolean belongsTo(Object family)
 			{
-				if (family == ResourcesPlugin.FAMILY_AUTO_BUILD || family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
 				{
 					return true;
 				}
@@ -558,7 +561,8 @@ public final class PHPGlobalIndexer
 			@Override
 			public boolean belongsTo(Object family)
 			{
-				if (family == ResourcesPlugin.FAMILY_AUTO_BUILD || family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
 				{
 					return true;
 				}

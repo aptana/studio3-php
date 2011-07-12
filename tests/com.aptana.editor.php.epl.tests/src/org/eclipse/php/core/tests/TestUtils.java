@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -17,6 +16,7 @@ import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.preferences.CorePreferenceConstants;
 
 import com.aptana.editor.php.epl.tests.Activator;
+import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 
 public class TestUtils
 {
@@ -103,7 +103,7 @@ public class TestUtils
 		{
 			try
 			{
-				Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, null);
+				Job.getJobManager().join(PHPGlobalIndexer.FAMILY_PHP_BUILD, null);
 				wasInterrupted = false;
 			}
 			catch (OperationCanceledException e)
