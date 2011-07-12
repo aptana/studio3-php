@@ -523,6 +523,19 @@ public final class PHPGlobalIndexer
 				return Status.OK_STATUS;
 			}
 
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+			 */
+			@Override
+			public boolean belongsTo(Object family)
+			{
+				if (family == ResourcesPlugin.FAMILY_AUTO_BUILD || family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				{
+					return true;
+				}
+				return super.belongsTo(family);
+			}
 		};
 
 		return job;
