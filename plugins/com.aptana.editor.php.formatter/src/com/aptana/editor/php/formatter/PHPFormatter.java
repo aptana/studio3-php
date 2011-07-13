@@ -506,7 +506,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			// We re-parse the output to extract its On-Off regions, so we will be able to compute the offsets and
 			// adjust it.
 			List<IRegion> outputOnOffRegions = getOutputOnOffRegions(output);
-			output = FormatterUtils.applyOnOffRegions(input, output, builder.getOnOffRegions(), outputOnOffRegions);
+			output = FormatterUtils.applyOffOnRegions(input, output, builder.getOnOffRegions(), outputOnOffRegions);
 		}
 		if (isSelection)
 		{
