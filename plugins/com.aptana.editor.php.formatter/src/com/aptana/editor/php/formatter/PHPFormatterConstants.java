@@ -96,4 +96,12 @@ public interface PHPFormatterConstants
 	String SPACES_AFTER_PARENTHESES = FORMATTER_ID + ".spaces.after.parentheses"; //$NON-NLS-1$
 	String SPACES_BEFORE_FOR_SEMICOLON = FORMATTER_ID + ".spaces.before.forSemicolon"; //$NON-NLS-1$
 	String SPACES_AFTER_FOR_SEMICOLON = FORMATTER_ID + ".spaces.after.forSemicolon"; //$NON-NLS-1$
+
+	// On/Off
+	String FORMATTER_OFF_ON_ENABLED = FORMATTER_ID + ".formatter.on.off.enabled"; //$NON-NLS-1$
+	String FORMATTER_ON = FORMATTER_ID + ".formatter.on"; //$NON-NLS-1$
+	String FORMATTER_OFF = FORMATTER_ID + ".formatter.off"; //$NON-NLS-1$
+	String DEFAULT_FORMATTER_OFF = "@formatter:off"; //$NON-NLS-1$
+	String DEFAULT_FORMATTER_ON = "@formatter:on"; //$NON-NLS-1$
+
 }

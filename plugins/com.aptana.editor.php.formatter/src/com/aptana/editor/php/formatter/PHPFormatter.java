@@ -13,6 +13,9 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITI
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
@@ -73,6 +76,7 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENT
 import java.io.StringReader;
 import java.util.AbstractQueue;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -497,6 +501,13 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 					FormatterMessages.Formatter_formatterErrorCompletedWithErrors, ERROR_DISPLAY_TIMEOUT, true);
 		}
 		String output = writer.getOutput();
+		if (builder.getOnOffRegions() != null)
+		{
+			// We re-parse the output to extract its On-Off regions, so we will be able to compute the offsets and
+			// adjust it.
+			List<IRegion> outputOnOffRegions = getOutputOnOffRegions(output);
+			output = FormatterUtils.applyOnOffRegions(input, output, builder.getOnOffRegions(), outputOnOffRegions);
+		}
 		if (isSelection)
 		{
 			output = leftTrim(output, spacesCount);
@@ -514,6 +525,44 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		return output;
 	}
 
+	/**
+	 * Parse the output and look for the formatter On-Off regions.<br>
+	 * We do that to compare it later to the original input, and then adjust the formatting result to have the original
+	 * content in those regions.<br>
+	 * We can assume at this point that the formatter On-Off is enabled and valid in the preferences.
+	 * 
+	 * @param output
+	 *            The formatter output
+	 * @return The formatter On-Off regions that we have in the output source.
+	 */
+	private List<IRegion> getOutputOnOffRegions(String output)
+	{
+		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
+		Program ast = parser.parseAST(new StringReader(output));
+		checkinParser(parser);
+		List<IRegion> onOffRegions = null;
+		if (ast != null)
+		{
+			LinkedHashMap<Integer, String> commentsMap = new LinkedHashMap<Integer, String>(ast.comments().size());
+			for (Comment comment : ast.comments())
+			{
+				int start = comment.getStart();
+				int end = comment.getEnd();
+				String commentStr = output.substring(start, end);
+				commentsMap.put(start, commentStr);
+			}
+			// Generate the On-Off regions
+			if (!commentsMap.isEmpty())
+			{
+				Pattern onPattern = Pattern.compile(Pattern.quote(getString(PHPFormatterConstants.FORMATTER_ON)));
+				Pattern offPattern = Pattern.compile(Pattern.quote(getString(PHPFormatterConstants.FORMATTER_OFF)));
+				onOffRegions = FormatterUtils.resolveOnOffRegions(commentsMap, onPattern, offPattern,
+						output.length() - 1);
+			}
+		}
+		return onOffRegions;
+	}
+
 	private FormatterDocument createFormatterDocument(String input, int offset)
 	{
 		FormatterDocument document = new FormatterDocument(input);
@@ -522,7 +571,9 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		document.setInt(LINES_AFTER_TYPE_DECLARATION, getInt(LINES_AFTER_TYPE_DECLARATION));
 		document.setInt(LINES_AFTER_FUNCTION_DECLARATION, getInt(LINES_AFTER_FUNCTION_DECLARATION));
 		document.setInt(ScriptFormattingContextProperties.CONTEXT_ORIGINAL_OFFSET, offset);
-
+		document.setBoolean(FORMATTER_OFF_ON_ENABLED, getBoolean(FORMATTER_OFF_ON_ENABLED));
+		document.setString(FORMATTER_ON, getString(FORMATTER_ON));
+		document.setString(FORMATTER_OFF, getString(FORMATTER_OFF));
 		// Set the indentation values
 		for (String key : INDENTATIONS)
 		{

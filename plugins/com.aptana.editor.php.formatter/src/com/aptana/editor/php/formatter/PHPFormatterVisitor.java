@@ -10,11 +10,13 @@ package com.aptana.editor.php.formatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jface.text.IRegion;
 import org2.eclipse.php.internal.core.ast.nodes.ASTError;
 import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
@@ -118,6 +120,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.formatter.FormatterDocument;
+import com.aptana.formatter.FormatterUtils;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
 import com.aptana.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.formatter.nodes.NodeTypes.TypePunctuation;
@@ -141,6 +144,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private FormatterDocument document;
 	private PHPFormatterNodeBuilder builder;
 	private Set<Integer> commentEndOffsets;
+	private List<IRegion> onOffRegions;
 
 	/**
 	 * @param builder
@@ -151,33 +155,67 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		this.document = document;
 		this.builder = builder;
-		collectCommentEndOffsets(comments);
+		processComments(comments);
 	}
 
 	/**
-	 * Collect the comments ending offsets (including the white-spaces that appear after them).
+	 * Collect the comments ending offsets (including the white-spaces that appear after them). Also, in case a
+	 * formatter on/off tag was set, process the comments content to exclude some of the source from formatting.
 	 * 
 	 * @param comments
 	 */
-	private void collectCommentEndOffsets(List<Comment> comments)
+	private void processComments(List<Comment> comments)
 	{
 		commentEndOffsets = new HashSet<Integer>();
 		if (comments == null)
 		{
 			return;
 		}
+		boolean onOffEnabled = document.getBoolean(PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED);
+		LinkedHashMap<Integer, String> commentsMap = onOffEnabled ? new LinkedHashMap<Integer, String>(comments.size())
+				: null;
 		for (Comment comment : comments)
 		{
 			int commentType = comment.getCommentType();
+			int end = comment.getEnd();
 			if (commentType == Comment.TYPE_SINGLE_LINE)
 			{
-				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, comment.getEnd()));
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end));
 			}
 			else if (commentType == Comment.TYPE_MULTILINE || commentType == Comment.TYPE_PHPDOC)
 			{
-				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, comment.getEnd() + 1));
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end + 1));
+			}
+			// Add to the map of comments when the On-Off is enabled.
+			if (onOffEnabled)
+			{
+				int start = comment.getStart();
+				String commentStr = document.get(start, end);
+				commentsMap.put(start, commentStr);
 			}
 		}
+		// Generate the On-Off regions
+		if (onOffEnabled && !commentsMap.isEmpty())
+		{
+			Pattern onPattern = Pattern.compile(Pattern.quote(document.getString(PHPFormatterConstants.FORMATTER_ON)));
+			Pattern offPattern = Pattern
+					.compile(Pattern.quote(document.getString(PHPFormatterConstants.FORMATTER_OFF)));
+			onOffRegions = FormatterUtils.resolveOnOffRegions(commentsMap, onPattern, offPattern,
+					document.getLength() - 1);
+		}
+	}
+
+	/**
+	 * Returns the On-Off formatting regions, as detected from the comments.<br>
+	 * In case the formatter preferences have this option disabled, or in case there are no On-Off regions, the returned
+	 * list is <code>null</code>.
+	 * 
+	 * @return A {@link List} that hold the regions that should be skipped when formatting the source; Null, in case
+	 *         there are no on-off regions.
+	 */
+	public List<IRegion> getOnOffRegions()
+	{
+		return onOffRegions;
 	}
 
 	/**
