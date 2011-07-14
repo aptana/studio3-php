@@ -12,12 +12,17 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITI
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_BLOCK_IN_SWITCH;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.DEFAULT_FORMATTER_OFF;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.DEFAULT_FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CASE_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_FUNCTION_BODY;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_NAMESPACE_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_PHP_BODY;
@@ -86,7 +91,6 @@ import com.aptana.formatter.ui.CodeFormatterConstants;
  */
 public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitializer
 {
-
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
@@ -154,6 +158,9 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		store.putInt(SPACES_AFTER_PARENTHESES, 0);
 		store.putInt(SPACES_BEFORE_FOR_SEMICOLON, 0);
 		store.putInt(SPACES_AFTER_FOR_SEMICOLON, 1);
+		store.put(FORMATTER_ON, DEFAULT_FORMATTER_ON);
+		store.put(FORMATTER_OFF, DEFAULT_FORMATTER_OFF);
+		store.putBoolean(FORMATTER_OFF_ON_ENABLED, false);
 		// Not for UI customization
 		store.putInt(SPACES_BEFORE_NAMESPACE_SEPARATOR, 0);
 		store.putInt(SPACES_AFTER_NAMESPACE_SEPARATOR, 0);

@@ -34,6 +34,7 @@ public class Messages extends NLS
 	public static String PHPFormatterIndentationTabPage_indentationGeneralGroupLabel;
 	public static String PHPFormatterModifyDialog_blankLinesTabName;
 	public static String PHPFormatterModifyDialog_commentsTabName;
+	public static String PHPFormatterModifyDialog_onOffTags;
 	public static String PHPFormatterModifyDialog_jsFormatterTitle;
 	public static String PHPFormatterModifyDialog_intentationTabName;
 	public static String PHPFormatterModifyDialog_bracesTabName;
@@ -75,6 +76,10 @@ public class Messages extends NLS
 	public static String PHPFormatterWhiteSpacesPage_relationalOperators;
 	public static String PHPFormatterWhiteSpacesPage_staticInvocationOperator;
 	public static String PHPFormatterWhiteSpacesPage_unaryOperators;
+	public static String PHPFormatterOnOffPage_formatterOffOnInfo;
+	public static String PHPFormatterOnOffPage_formatterEnableOffOn;
+	public static String PHPFormatterOnOffPage_formatterOnTag;
+	public static String PHPFormatterOnOffPage_formatterOffTag;
 	static
 	{
 		// initialize resource bundle

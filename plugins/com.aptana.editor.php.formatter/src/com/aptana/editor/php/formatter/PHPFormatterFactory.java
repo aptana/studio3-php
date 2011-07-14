@@ -14,11 +14,14 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITI
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ID;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CASE_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_FUNCTION_BODY;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_NAMESPACE_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_PHP_BODY;
@@ -164,7 +167,10 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_PARENTHESES),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_PARENTHESES),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_FOR_SEMICOLON),
-			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_FOR_SEMICOLON) };
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_FOR_SEMICOLON),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, FORMATTER_OFF_ON_ENABLED),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, FORMATTER_ON),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, FORMATTER_OFF) };
 
 	public PreferenceKey[] getPreferenceKeys()
 	{
