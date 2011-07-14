@@ -7,9 +7,6 @@
  */
 package com.aptana.editor.php.formatter;
 
-import java.util.List;
-
-import org.eclipse.jface.text.IRegion;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
 import com.aptana.editor.php.formatter.nodes.FormatterPHPRootNode;
@@ -31,7 +28,6 @@ public class PHPFormatterNodeBuilder extends AbstractFormatterNodeBuilder
 {
 
 	private boolean hasErrors;
-	private List<IRegion> onOffRegions;
 
 	/**
 	 * @param parseResult
@@ -52,7 +48,7 @@ public class PHPFormatterNodeBuilder extends AbstractFormatterNodeBuilder
 				Program ast = ((PHPASTWrappingNode) child).getAST();
 				PHPFormatterVisitor visitor = new PHPFormatterVisitor(document, this, ast.comments());
 				ast.accept(visitor);
-				onOffRegions = visitor.getOnOffRegions();
+				setOffOnRegions(visitor.getOnOffRegions());
 			}
 		}
 		checkedPop(rootNode, document.getLength());
@@ -77,15 +73,5 @@ public class PHPFormatterNodeBuilder extends AbstractFormatterNodeBuilder
 	public void setHasErrors(boolean hasErrors)
 	{
 		this.hasErrors = hasErrors;
-	}
-
-	/**
-	 * Returns a list of {@link IRegion}s. Each holds an area that is between a formatter-on and formatter-off tags.
-	 * 
-	 * @return The regions to exclude from the formatter.
-	 */
-	public List<IRegion> getOnOffRegions()
-	{
-		return onOffRegions;
 	}
 }

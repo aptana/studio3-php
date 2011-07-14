@@ -14,8 +14,8 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITI
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
@@ -501,12 +501,14 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 					FormatterMessages.Formatter_formatterErrorCompletedWithErrors, ERROR_DISPLAY_TIMEOUT, true);
 		}
 		String output = writer.getOutput();
-		if (builder.getOnOffRegions() != null)
+		List<IRegion> offOnRegions = builder.getOffOnRegions();
+		if (offOnRegions != null && !offOnRegions.isEmpty())
 		{
 			// We re-parse the output to extract its On-Off regions, so we will be able to compute the offsets and
 			// adjust it.
-			List<IRegion> outputOnOffRegions = getOutputOnOffRegions(output);
-			output = FormatterUtils.applyOffOnRegions(input, output, builder.getOnOffRegions(), outputOnOffRegions);
+			List<IRegion> outputOnOffRegions = getOutputOnOffRegions(output,
+					getString(PHPFormatterConstants.FORMATTER_OFF), getString(PHPFormatterConstants.FORMATTER_ON));
+			output = FormatterUtils.applyOffOnRegions(input, output, offOnRegions, outputOnOffRegions);
 		}
 		if (isSelection)
 		{
@@ -525,17 +527,12 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		return output;
 	}
 
-	/**
-	 * Parse the output and look for the formatter On-Off regions.<br>
-	 * We do that to compare it later to the original input, and then adjust the formatting result to have the original
-	 * content in those regions.<br>
-	 * We can assume at this point that the formatter On-Off is enabled and valid in the preferences.
-	 * 
-	 * @param output
-	 *            The formatter output
-	 * @return The formatter On-Off regions that we have in the output source.
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatter#getOutputOnOffRegions(java.lang.String, java.lang.String,
+	 * java.lang.String)
 	 */
-	private List<IRegion> getOutputOnOffRegions(String output)
+	protected List<IRegion> getOutputOnOffRegions(String output, String formatterOffPattern, String formatterOnPattern)
 	{
 		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 		Program ast = parser.parseAST(new StringReader(output));
@@ -551,11 +548,11 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				String commentStr = output.substring(start, end);
 				commentsMap.put(start, commentStr);
 			}
-			// Generate the On-Off regions
+			// Generate the OFF/ON regions
 			if (!commentsMap.isEmpty())
 			{
-				Pattern onPattern = Pattern.compile(Pattern.quote(getString(PHPFormatterConstants.FORMATTER_ON)));
-				Pattern offPattern = Pattern.compile(Pattern.quote(getString(PHPFormatterConstants.FORMATTER_OFF)));
+				Pattern onPattern = Pattern.compile(Pattern.quote(formatterOnPattern));
+				Pattern offPattern = Pattern.compile(Pattern.quote(formatterOffPattern));
 				onOffRegions = FormatterUtils.resolveOnOffRegions(commentsMap, onPattern, offPattern,
 						output.length() - 1);
 			}
