@@ -16,8 +16,8 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.DEFAULT_FORM
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.DEFAULT_FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
@@ -76,10 +76,10 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENT
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENTS_LENGTH;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.formatter.PHPCodeFormatterPlugin;
 import com.aptana.formatter.epl.FormatterPlugin;
 import com.aptana.formatter.ui.CodeFormatterConstants;
@@ -98,7 +98,7 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 	@Override
 	public void initializeDefaultPreferences()
 	{
-		IEclipsePreferences store = new DefaultScope().getNode(PHPCodeFormatterPlugin.PLUGIN_ID);
+		IEclipsePreferences store = EclipseUtil.defaultScope().getNode(PHPCodeFormatterPlugin.PLUGIN_ID);
 
 		store.put(FORMATTER_TAB_CHAR, CodeFormatterConstants.EDITOR);
 		store.put(FORMATTER_TAB_SIZE, "4"); //$NON-NLS-1$

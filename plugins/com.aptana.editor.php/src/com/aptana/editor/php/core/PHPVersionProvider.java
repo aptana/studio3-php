@@ -11,9 +11,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org2.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
@@ -169,11 +169,11 @@ public class PHPVersionProvider
 		IScopeContext[] contexts;
 		if (project != null)
 		{
-			contexts = new IScopeContext[] { new ProjectScope(project), new InstanceScope(), new DefaultScope() };
+			contexts = new IScopeContext[] { new ProjectScope(project), EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
 		}
 		else
 		{
-			contexts = new IScopeContext[] { new InstanceScope(), new DefaultScope() };
+			contexts = new IScopeContext[] { EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
 		}
 		String versionAlias = service.getString(preferencesQualifier, prefKey, PHPVersion.PHP5_3.getAlias(), contexts);
 		return PHPVersion.byAlias(versionAlias);

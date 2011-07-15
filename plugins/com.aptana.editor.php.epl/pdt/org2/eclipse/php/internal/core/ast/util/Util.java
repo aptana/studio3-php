@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -29,6 +28,8 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 import org2.eclipse.dltk.compiler.CharOperation;
 import org2.eclipse.dltk.compiler.util.ScannerHelper;
+
+import com.aptana.core.util.EclipseUtil;
 
 /**
  * Provides convenient utility methods to other types in this package.<br>
@@ -748,7 +749,7 @@ public class Util {
 		}
 
 		// line delimiter in workspace preference
-		scopeContext = new IScopeContext[] { new InstanceScope() };
+		scopeContext = new IScopeContext[] { EclipseUtil.instanceScope() };
 		lineSeparator = Platform.getPreferencesService().getString(
 				Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR, null,
 				scopeContext);

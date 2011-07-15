@@ -12,7 +12,6 @@
 package org2.eclipse.php.internal.ui.preferences;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -31,6 +30,7 @@ import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org2.eclipse.php.internal.ui.PHPUIMessages;
 
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.preferences.CommonEditorPreferencePage;
 import com.aptana.editor.common.preferences.IPreferenceConstants;
@@ -187,7 +187,7 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 	@Override
 	protected IEclipsePreferences getPluginPreferenceStore()
 	{
-		return new InstanceScope().getNode(PHPEplPlugin.PLUGIN_ID);
+		return EclipseUtil.instanceScope().getNode(PHPEplPlugin.PLUGIN_ID);
 	}
 
 	@Override
