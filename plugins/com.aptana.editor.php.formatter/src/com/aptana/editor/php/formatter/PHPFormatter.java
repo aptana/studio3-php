@@ -171,8 +171,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	// single-line comment flattening pattern
 	private static final Pattern SINGLE_LINE_FLATTEN_PATTERN = Pattern.compile("\\s|/|#"); //$NON-NLS-1$
 
-	private String lineSeparator;
-
 	/**
 	 * Constructor.
 	 * 
@@ -180,8 +178,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	protected PHPFormatter(String lineSeparator, Map<String, String> preferences, String mainContentType)
 	{
-		super(preferences, mainContentType);
-		this.lineSeparator = lineSeparator;
+		super(preferences, mainContentType, lineSeparator);
 	}
 
 	/**
@@ -225,6 +222,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			String source = document.get();
 			PHPParser parser = (PHPParser) checkoutParser();
 			Program ast = parser.parseAST(new StringReader(source));
+			checkinParser(parser);
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
