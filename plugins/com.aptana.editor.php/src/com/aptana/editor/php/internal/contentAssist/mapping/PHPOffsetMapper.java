@@ -123,7 +123,7 @@ public class PHPOffsetMapper
 				Lexeme<PHPTokenType> importLexeme = PHPContextCalculator.findLexemeBackward(newLexemeProvider,
 						lexemePosition, new String[] { PHPRegionTypes.PHP_INCLUDE, PHPRegionTypes.PHP_INCLUDE_ONCE,
 								PHPRegionTypes.PHP_REQUIRE, PHPRegionTypes.PHP_REQUIRE_ONCE },
-						new String[] { PHPRegionTypes.WHITESPACE });
+						new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_TOKEN});
 				if (importLexeme != null)
 				{
 					return getIncludeLocation(lexeme, source);
