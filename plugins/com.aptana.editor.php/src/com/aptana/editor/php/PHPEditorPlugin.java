@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.StringConverter;
@@ -121,7 +120,8 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 					}
 				};
 				setOccurrenceColors();
-				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID).addPreferenceChangeListener(fThemeChangeListener);
+				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
+						.addPreferenceChangeListener(fThemeChangeListener);
 				return Status.OK_STATUS;
 			}
 		};
@@ -177,7 +177,8 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 			PHPGlobalIndexer.getInstance().save();
 			if (fThemeChangeListener != null)
 			{
-				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID).removePreferenceChangeListener(fThemeChangeListener);
+				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
+						.removePreferenceChangeListener(fThemeChangeListener);
 				fThemeChangeListener = null;
 			}
 		}
