@@ -247,9 +247,6 @@
 	</target>
 
 	<target name="create-artifact-symlink" depends="unlink-symlink">
-		<exec executable="unlink">
-			<arg value="${env.WORKSPACE}/build-artifacts" />
-		</exec>
 		<symlink link="${env.WORKSPACE}/build-artifacts" resource="${deploy.dir}" failonerror="false" />
 	</target>
 	<target name="unlink-symlink" depends="link.check" if="link.exists">
