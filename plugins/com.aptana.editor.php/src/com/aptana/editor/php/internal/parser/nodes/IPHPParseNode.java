@@ -61,6 +61,46 @@ public interface IPHPParseNode extends IParseNode
 	 */
 	public static final short COMMENT_NODE = 4510;
 
+	/**
+	 * TRY_NODE
+	 */
+	public static final short TRY_NODE = 4511;
+
+	/**
+	 * CATCH_NODE
+	 */
+	public static final short CATCH_NODE = 4512;
+
+	/**
+	 * DO_NODE
+	 */
+	public static final short DO_NODE = 4513;
+
+	/**
+	 * FOR_NODE
+	 */
+	public static final short FOR_NODE = 4514;
+
+	/**
+	 * SWITCH_NODE
+	 */
+	public static final short SWITCH_NODE = 4515;
+
+	/**
+	 * SWITCH_CASE_NODE
+	 */
+	public static final short SWITCH_CASE_NODE = 4516;
+
+	/**
+	 * WHILE_NODE
+	 */
+	public static final short WHILE_NODE = 4517;
+
+	/**
+	 * IF_ELSE_NODE
+	 */
+	public static final short IF_ELSE_NODE = 4518;
+
 	public void setDocumentation(IPHPDocBlock docInfo);
 
 	public IPHPDocBlock getDocumentation();

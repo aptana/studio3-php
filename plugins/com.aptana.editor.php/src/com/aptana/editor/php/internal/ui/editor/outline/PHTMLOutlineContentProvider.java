@@ -43,9 +43,8 @@ public class PHTMLOutlineContentProvider extends HTMLOutlineContentProvider
 			if (node instanceof IPHPParseNode)
 			{
 				element = (IPHPParseNode) node;
-				// filters out block elements and empty HTML elements
-				if (element.getNodeType() != IPHPParseNode.BLOCK_NODE
-						&& element.getNodeType() != IPHPParseNode.HTML_NODE)
+				// filters out any item that should not be in the outline
+				if (!element.isFilteredFromOutline())
 				{
 					list.add(getOutlineItem(element));
 				}

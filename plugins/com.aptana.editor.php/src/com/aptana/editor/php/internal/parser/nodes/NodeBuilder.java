@@ -14,11 +14,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 import org2.eclipse.php.core.compiler.PHPFlags;
-import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.Identifier;
-import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
-import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.core.logging.IdeLog;
@@ -393,41 +389,21 @@ public class NodeBuilder
 	}
 
 	/**
-	 * Handle a class declaration end
+	 * Add a common node to the
 	 * 
-	 * @param classDeclaration
+	 * @param start
+	 * @param end
+	 * @param shouldDisplayInOutline
 	 */
-	public void handleClassDeclarationEnd(ClassDeclaration classDeclaration)
+	public void handleCommonBlock(String name, int start, int end, boolean shouldDisplayInOutline)
 	{
-		current = (IPHPParseNode) stack.pop();
+
 	}
 
 	/**
-	 * Handle an interface declaration end. We treat the interface as a class (pure abstract class).
-	 * 
-	 * @param interfaceDeclaration
+	 * Handle a common declaration end.
 	 */
-	public void handleClassDeclarationEnd(InterfaceDeclaration interfaceDeclaration)
-	{
-		current = (IPHPParseNode) stack.pop();
-	}
-
-	/**
-	 * Handle a function declaration end
-	 * 
-	 * @param functionDeclaration
-	 */
-	public void handleFunctionDeclarationEnd(FunctionDeclaration functionDeclaration)
-	{
-		current = (IPHPParseNode) stack.pop();
-	}
-
-	/**
-	 * Handle a namespace declaration end
-	 * 
-	 * @param functionDeclaration
-	 */
-	public void handleNamespaceDeclarationEnd(NamespaceDeclaration namespaceDeclaration)
+	public void handleCommonDeclarationEnd()
 	{
 		current = (IPHPParseNode) stack.pop();
 	}
@@ -534,5 +510,87 @@ public class NodeBuilder
 				queue.offer(child);
 			}
 		}
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleTryStatement(int start, int end)
+	{
+		pushNode(new PHPTryNode(start, end));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleCatchStatement(int start, int end)
+	{
+		pushNode(new PHPCatchNode(start, end));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleDoStatement(int start, int end)
+	{
+		pushNode(new PHPDoNode(start, end));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleForStatement(int start, int end)
+	{
+		pushNode(new PHPForNode(start, end, PHPForNode.FOR_TYPE.FOR));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleForEachStatement(int start, int end)
+	{
+		pushNode(new PHPForNode(start, end, PHPForNode.FOR_TYPE.FOREACH));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleSwitchCaseStatement(int start, int end)
+	{
+		pushNode(new PHPSwitchCaseNode(start, end));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleSwitchStatement(int start, int end)
+	{
+		pushNode(new PHPSwitchNode(start, end));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 */
+	public void handleWhileStatement(int start, int end)
+	{
+		pushNode(new PHPWhileNode(start, end));
+	}
+
+	/**
+	 * @param start
+	 * @param end
+	 * @param type
+	 */
+	public void handleIfElseStatement(int start, int end, String type)
+	{
+		pushNode(new PHPIfElseNode(start, end, type));
 	}
 }

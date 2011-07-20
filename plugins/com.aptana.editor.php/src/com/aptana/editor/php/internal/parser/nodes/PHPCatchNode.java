@@ -8,19 +8,20 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
 /**
- * PHP parse node for HTML content within PHP source files.
+ * PHP 'catch' parse node.
  * 
  * @author Shalom Gibly <sgibly@appcelerator.com>
  */
-public class PHPHTMLNode extends PHPNonOutlineParseNode
+public class PHPCatchNode extends PHPNonOutlineParseNode
 {
 	/**
-	 * @param startOffset
-	 * @param endOffset
+	 * Constructs a new PHPTryNode.
+	 * 
+	 * @param start
+	 * @param end
 	 */
-	public PHPHTMLNode(int startOffset, int endOffset)
+	public PHPCatchNode(int start, int end)
 	{
-		super(PHPBaseParseNode.HTML_NODE, 0, startOffset, endOffset, "html"); //$NON-NLS-1$
+		super(IPHPParseNode.CATCH_NODE, 0, start, end, "catch"); //$NON-NLS-1$
 	}
-
 }

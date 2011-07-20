@@ -16,10 +16,10 @@ import com.aptana.editor.common.text.AbstractFoldingComputer;
 import com.aptana.editor.html.HTMLFoldingComputer;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
+import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPCommentNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
-import com.aptana.editor.php.internal.parser.nodes.PHPHTMLNode;
 import com.aptana.parsing.ast.IParseNode;
 
 public class PHPFoldingComputer extends AbstractFoldingComputer
@@ -44,8 +44,22 @@ public class PHPFoldingComputer extends AbstractFoldingComputer
 				PHPCommentNode commentNode = (PHPCommentNode) child;
 				return commentNode.isMultiline() || commentNode.isPHPDoc();
 			}
-			return (child instanceof PHPHTMLNode) || (child instanceof PHPFunctionParseNode)
-					|| (child instanceof PHPClassParseNode);
+			switch (child.getNodeType())
+			{
+				case PHPBaseParseNode.HTML_NODE:
+				case PHPBaseParseNode.FUNCTION_NODE:
+				case PHPBaseParseNode.CLASS_NODE:
+				case PHPBaseParseNode.FOR_NODE:
+				case PHPBaseParseNode.WHILE_NODE:
+				case PHPBaseParseNode.DO_NODE:
+				case PHPBaseParseNode.SWITCH_NODE:
+				case PHPBaseParseNode.SWITCH_CASE_NODE:
+				case PHPBaseParseNode.TRY_NODE:
+				case PHPBaseParseNode.CATCH_NODE:
+				case PHPBaseParseNode.IF_ELSE_NODE:
+					return true;
+			}
+			return false;
 		}
 		return htmlFoldingComputer().isFoldable(child);
 	}
