@@ -55,15 +55,6 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_HEREDOC), false)),
 			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_NOWDOC), true)), };
 
-	private PHPCodeScanner codeScanner;
-	private RuleBasedScanner singleLineCommentScanner;
-	private RuleBasedScanner multiLineCommentScanner;
-	private RuleBasedScanner singleQuotedStringScanner;
-	private ITokenScanner doubleQuotedStringScanner;
-	private ITokenScanner heredocScanner;
-	private RuleBasedScanner nowdocScanner;
-	private RuleBasedScanner phpDocCommentScanner;
-
 	private static PHPSourceConfiguration instance;
 
 	static
@@ -250,75 +241,45 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	private ITokenScanner getCodeScanner()
 	{
-		if (codeScanner == null)
-		{
-			codeScanner = new PHPCodeScanner();
-		}
-		return codeScanner;
+		return new PHPCodeScanner();
 	}
 
 	private ITokenScanner getPhpDocCommentScanner()
 	{
-		if (phpDocCommentScanner == null)
-		{
-			phpDocCommentScanner = new PHPDocScanner();
-		}
-		return phpDocCommentScanner;
+		return new PHPDocScanner();
 	}
 
 	private ITokenScanner getMultiLineCommentScanner()
 	{
-		if (multiLineCommentScanner == null)
-		{
-			multiLineCommentScanner = new CommentScanner(getToken("comment.block.php")); //$NON-NLS-1$
-		}
-		return multiLineCommentScanner;
+		return new CommentScanner(getToken("comment.block.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getSingleLineCommentScanner()
 	{
-		if (singleLineCommentScanner == null)
-		{
-			singleLineCommentScanner = new CommentScanner(getToken("")); //$NON-NLS-1$
-		}
-		return singleLineCommentScanner;
+		return new CommentScanner(getToken("")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getSingleQuotedStringScanner()
 	{
-		if (singleQuotedStringScanner == null)
-		{
-			singleQuotedStringScanner = new RuleBasedScanner();
-			singleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.single.php")); //$NON-NLS-1$
-		}
+		RuleBasedScanner singleQuotedStringScanner = new RuleBasedScanner();
+		singleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.single.php")); //$NON-NLS-1$
 		return singleQuotedStringScanner;
 	}
 
 	private ITokenScanner getDoubleQuotedStringScanner()
 	{
-		if (doubleQuotedStringScanner == null)
-		{
-			doubleQuotedStringScanner = new FastPHPStringTokenScanner(getToken("string.quoted.double.php")); //$NON-NLS-1$
-		}
-		return doubleQuotedStringScanner;
+		return new FastPHPStringTokenScanner(getToken("string.quoted.double.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getHeredocScanner()
 	{
-		if (heredocScanner == null)
-		{
-			heredocScanner = new FastPHPStringTokenScanner(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
-		}
-		return heredocScanner;
+		return new FastPHPStringTokenScanner(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getNowdocScanner()
 	{
-		if (nowdocScanner == null)
-		{
-			nowdocScanner = new RuleBasedScanner();
-			nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
-		}
+		RuleBasedScanner nowdocScanner = new RuleBasedScanner();
+		nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
 		return nowdocScanner;
 	}
 
