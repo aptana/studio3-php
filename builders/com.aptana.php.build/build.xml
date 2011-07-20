@@ -133,12 +133,6 @@
           target: generate.base                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="generate.base" depends="copy.base.windows,copy.base">
-		<!-- Workaround for https://bugs.eclipse.org/241430 shouldn't be necessary when we move to 3.5 -->
-		<delete failonerror="false">
-			<fileset dir="${baseLocation}/configuration/.settings">
-				<include name="org.eclipse.equinox.p2.*.repository.prefs" />
-			</fileset>
-		</delete>
 		<!-- Copy the features and plugins over into a dropins folder. Installing makes it so that non-linux plugins/features won't be there! -->
 		<mkdir dir="${baseLocation}/dropins/eclipse" />
 		<copy todir="${baseLocation}/dropins/eclipse">
@@ -252,10 +246,15 @@
 		</for>
 	</target>
 
-	<target name="create-artifact-symlink">
+	<target name="create-artifact-symlink" depends="unlink-symlink">
+		<symlink link="${env.WORKSPACE}/build-artifacts" resource="${deploy.dir}" failonerror="false" />
+	</target>
+	<target name="unlink-symlink" depends="link.check" if="link.exists">
 		<exec executable="unlink">
 			<arg value="${env.WORKSPACE}/build-artifacts" />
 		</exec>
-		<symlink link="${env.WORKSPACE}/build-artifacts" resource="${deploy.dir}" failonerror="false" />
+	</target>
+	<target name="link.check">
+		<available file="${env.WORKSPACE}/build-artifacts"  property="link.exists"/>
 	</target>
 </project>
