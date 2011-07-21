@@ -8,19 +8,22 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
 /**
- * PHP parse node for HTML content within PHP source files.
+ * PHP 'if'/'else' parse node.
  * 
  * @author Shalom Gibly <sgibly@appcelerator.com>
  */
-public class PHPHTMLNode extends PHPNonOutlineParseNode
+public class PHPIfElseNode extends PHPNonOutlineParseNode
 {
 	/**
-	 * @param startOffset
-	 * @param endOffset
+	 * Constructs an 'if' / 'else' parse node.
+	 * 
+	 * @param start
+	 * @param end
+	 * @param type
 	 */
-	public PHPHTMLNode(int startOffset, int endOffset)
+	public PHPIfElseNode(int start, int end, String type)
 	{
-		super(PHPBaseParseNode.HTML_NODE, 0, startOffset, endOffset, "html"); //$NON-NLS-1$
+		super(PHPBaseParseNode.IF_ELSE_NODE, 0, start, end, type);
 	}
 
 }

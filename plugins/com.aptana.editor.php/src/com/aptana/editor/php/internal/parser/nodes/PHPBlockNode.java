@@ -12,7 +12,7 @@ package com.aptana.editor.php.internal.parser.nodes;
  * 
  * @author Pavel Petrochenko
  */
-public class PHPBlockNode extends PHPBaseParseNode
+public class PHPBlockNode extends PHPNonOutlineParseNode
 {
 
 	/**
