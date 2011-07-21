@@ -10,6 +10,7 @@ package com.aptana.editor.php.formatter.nodes;
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
 import com.aptana.formatter.IFormatterDocument;
 import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
+import com.aptana.formatter.nodes.NodeTypes.TypeBracket;
 
 /**
  * A PHP node formatter for parentheses, which can be used for any other single char open and close pair, such as
@@ -22,6 +23,7 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 
 	private boolean asWrapper;
 	private boolean newLineBeforeClosing;
+	private TypeBracket parenthesesType;
 
 	/**
 	 * Constructs a new FormatterPHPParenthesesNode
@@ -31,11 +33,14 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	 *            Indicate that these parentheses do not have an open and close brackets, but is acting as a wrapper
 	 *            node for an expression that appears inside it. For example, an 'echo' statement without the
 	 *            parentheses.
+	 * @param type
+	 *            The bracket (parentheses) type - a {@link TypeBracket} value.
 	 */
-	public FormatterPHPParenthesesNode(IFormatterDocument document, boolean asWrapper)
+	public FormatterPHPParenthesesNode(IFormatterDocument document, boolean asWrapper, TypeBracket type)
 	{
-		this(document);
+		super(document);
 		this.asWrapper = asWrapper;
+		this.parenthesesType = type;
 	}
 
 	/**
@@ -43,9 +48,9 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	 * 
 	 * @param document
 	 */
-	public FormatterPHPParenthesesNode(IFormatterDocument document)
+	public FormatterPHPParenthesesNode(IFormatterDocument document, TypeBracket type)
 	{
-		super(document);
+		this(document, false, type);
 	}
 
 	/**
@@ -107,11 +112,31 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isIndenting()
+	 */
+	@Override
+	protected boolean isIndenting()
+	{
+		switch (parenthesesType)
+		{
+			case ARRAY_PARENTHESIS:
+				return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS);
+		}
+		return super.isIndenting();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
 	 */
 	@Override
 	protected boolean isAddingEndNewLine()
 	{
-		return !asWrapper && newLineBeforeClosing;
+		if (!asWrapper && newLineBeforeClosing)
+		{
+			return true;
+		}
+
+		return isIndenting();
 	}
 }
