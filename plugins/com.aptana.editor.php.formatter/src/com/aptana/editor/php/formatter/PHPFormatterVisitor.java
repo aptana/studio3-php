@@ -1899,12 +1899,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int openParen = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
 			if (document.charAt(openParen) == '(')
 			{
-				parenthesesNode = new FormatterPHPParenthesesNode(document, bracketsType);
+				parenthesesNode = new FormatterPHPParenthesesNode(document, false, parameters.size(), bracketsType);
 				parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 			}
 			else
 			{
-				parenthesesNode = new FormatterPHPParenthesesNode(document, true, bracketsType);
+				parenthesesNode = new FormatterPHPParenthesesNode(document, true, parameters.size(), bracketsType);
 				parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen));
 			}
 			builder.push(parenthesesNode);

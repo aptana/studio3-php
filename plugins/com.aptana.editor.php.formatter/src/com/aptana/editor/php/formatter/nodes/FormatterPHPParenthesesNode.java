@@ -24,6 +24,7 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	private boolean asWrapper;
 	private boolean newLineBeforeClosing;
 	private TypeBracket parenthesesType;
+	private int containedElementsCount;
 
 	/**
 	 * Constructs a new FormatterPHPParenthesesNode
@@ -32,14 +33,17 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	 * @param asWrapper
 	 *            Indicate that these parentheses do not have an open and close brackets, but is acting as a wrapper
 	 *            node for an expression that appears inside it. For example, an 'echo' statement without the
-	 *            parentheses.
+	 * @param forceSameLine
+	 *            Force the open and close parentheses.
 	 * @param type
 	 *            The bracket (parentheses) type - a {@link TypeBracket} value.
 	 */
-	public FormatterPHPParenthesesNode(IFormatterDocument document, boolean asWrapper, TypeBracket type)
+	public FormatterPHPParenthesesNode(IFormatterDocument document, boolean asWrapper, int containedElementsCount,
+			TypeBracket type)
 	{
 		super(document);
 		this.asWrapper = asWrapper;
+		this.containedElementsCount = containedElementsCount;
 		this.parenthesesType = type;
 	}
 
@@ -50,7 +54,7 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	 */
 	public FormatterPHPParenthesesNode(IFormatterDocument document, TypeBracket type)
 	{
-		this(document, false, type);
+		this(document, false, 0, type);
 	}
 
 	/**
@@ -136,7 +140,15 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 		{
 			return true;
 		}
+		switch (parenthesesType)
+		{
+			case ARRAY_PARENTHESIS:
+				if (containedElementsCount > 1)
+				{
+					return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS);
+				}
+		}
+		return false;
 
-		return isIndenting();
 	}
 }
