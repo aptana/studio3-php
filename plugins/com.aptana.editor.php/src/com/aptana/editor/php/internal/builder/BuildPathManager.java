@@ -120,12 +120,20 @@ public final class BuildPathManager
 	 */
 	public synchronized IModule getModuleByResource(Object resource)
 	{
+		if (resource == null)
+		{
+			return null;
+		}
 		for (IBuildPath path : buildPaths.values())
 		{
-			IModule module = path.getModule(resource);
-			if (module != null)
+			// double check the path - See http://jira.appcelerator.org/browse/APSTUD-3048
+			if (path != null)
 			{
-				return module;
+				IModule module = path.getModule(resource);
+				if (module != null)
+				{
+					return module;
+				}
 			}
 		}
 		return null;
