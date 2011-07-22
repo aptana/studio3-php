@@ -65,6 +65,7 @@ import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
 import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org2.eclipse.php.internal.core.ast.nodes.Variable;
 import org2.eclipse.php.internal.core.ast.nodes.VariableBase;
@@ -2624,6 +2625,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				type.append(')');
 				result.add(type.toString());
 				return result;
+			}
+			if (expression instanceof UnaryOperation) {
+				UnaryOperation unaryOperation = (UnaryOperation)expression;
+				expression = unaryOperation.getExpression();
 			}
 			if (expression instanceof Scalar)
 			{
