@@ -162,10 +162,11 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			SPACES_AFTER_NAMESPACE_SEPARATOR, SPACES_BEFORE_PARENTHESES, SPACES_AFTER_PARENTHESES,
 			SPACES_BEFORE_FOR_SEMICOLON, SPACES_AFTER_FOR_SEMICOLON };
 
-	// PHP basic prefix
-	private static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
+	// PHP basic prefixes
+	private static final String PHP_SHORT_TAG_OPEN = "<?"; //$NON-NLS-1$
+	private static final String PHP_PREFIX = "<?php "; //$NON-NLS-1$
 	// Regex patterns
-	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
+	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<\\?"); //$NON-NLS-1$
 	// multi-line comment flattening pattern
 	private static final Pattern MULTI_LINE_FLATTEN_PATTERN = Pattern.compile("\\s|/|\\*"); //$NON-NLS-1$
 	// single-line comment flattening pattern
@@ -188,10 +189,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			IFormattingContext formattingContext)
 	{
 		int indent = 0;
-		if (isSelection)
-		{
-			offset = ((IRegion) formattingContext.getProperty(FormattingContextProperties.CONTEXT_REGION)).getOffset();
-		}
 		try
 		{
 			// detect the indentation offset with the parser, only if the given offset is not the first one in the
@@ -262,24 +259,25 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			IFormattingContext context, String indentSufix) throws FormatterException
 	{
 		int offsetIncludedOpenTag = offset;
-		String input;
-		int spacesCount = -1;
+		int offsetBySelection = 0;
+		int lengthBySelection = 0;
 		if (isSelection)
 		{
-			// we need to prepend a <?php prefix to the input. Otherwise, the AST will not get generated.
-			input = source.substring(offset, offset + length);
-			spacesCount = countLeftWhitespaceChars(input);
-			input = PHP_PREFIX + input;
+			IRegion selectedRegion = (IRegion) context.getProperty(FormattingContextProperties.CONTEXT_REGION);
+			offsetBySelection = selectedRegion.getOffset();
+			lengthBySelection = selectedRegion.getLength();
 		}
-		else
-		{
-			offsetIncludedOpenTag = Math.max(0, findOpenTagOffset(source, offset));
-			input = source.substring(offsetIncludedOpenTag, offset + length);
-		}
+		offsetIncludedOpenTag = Math.max(0,
+				findOpenTagOffset(source, offset, offsetBySelection, offsetBySelection + lengthBySelection));
+		String input = source.substring(offsetIncludedOpenTag, offset + length);
 		// We do not use a parse-state for the PHP, since we are just interested in the AST and do not want to update
 		// anything in the indexing.
 		try
 		{
+			if (!input.startsWith(PHP_SHORT_TAG_OPEN))
+			{
+				input = PHP_PREFIX + input;
+			}
 			PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 			Program ast = parser.parseAST(new StringReader(input));
 			checkinParser(parser);
@@ -305,25 +303,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 							// Will be trimmed to:
 							// <-- new-line
 							// function foo() {}
-							if (isSelection)
+							Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
+							if (matcher.find())
 							{
-								String trimmedOutput = output.trim();
-								if (trimmedOutput.length() >= PHP_PREFIX.length())
-								{
-									output = leftTrim(trimmedOutput.substring(PHP_PREFIX.length()), spacesCount);
-								}
-								else
-								{
-									output = StringUtil.EMPTY;
-								}
-							}
-							else
-							{
-								Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
-								if (matcher.find())
-								{
-									output = output.substring(matcher.end());
-								}
+								output = output.substring(matcher.end());
 							}
 							return new ReplaceEdit(offset, length, output);
 						}
@@ -398,18 +381,29 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	}
 
 	/**
-	 * Returns the offset of the PHP open tag that that precedes the given offset location.
+	 * Returns the offset of the PHP open tag that that precedes the given offset location. We look for any legal PHP
+	 * open tag
 	 * 
 	 * @param source
 	 * @param offset
+	 * @param leftBound
+	 * @param rightBound
 	 * @return
 	 */
-	private int findOpenTagOffset(String source, int offset)
+	private int findOpenTagOffset(String source, int offset, int leftBound, int rightBound)
 	{
-		// We just look for the '<' char and that should cover all cases.
-		int openOffset = source.lastIndexOf('<', offset);
+		// We just look for the "<?" and that should cover all cases.
+		if (leftBound > 0 && rightBound > leftBound)
+		{
+			source = source.substring(leftBound, rightBound);
+		}
+		int openOffset = source.lastIndexOf(PHP_SHORT_TAG_OPEN, offset);
 		if (openOffset > -1)
 		{
+			if (leftBound > 0)
+			{
+				return leftBound - openOffset;
+			}
 			return openOffset;
 		}
 		return offset;
@@ -475,11 +469,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	private String format(String input, IParseRootNode parseResult, int indentationLevel, int offset,
 			boolean isSelection, String indentSufix) throws Exception
 	{
-		int spacesCount = -1;
-		if (isSelection)
-		{
-			spacesCount = countLeftWhitespaceChars(input.substring(PHP_PREFIX.length()));
-		}
 		final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 		final FormatterDocument document = createFormatterDocument(input, offset);
 		IFormatterContainerNode root = builder.build(parseResult, document);
@@ -508,20 +497,13 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 					getString(PHPFormatterConstants.FORMATTER_OFF), getString(PHPFormatterConstants.FORMATTER_ON));
 			output = FormatterUtils.applyOffOnRegions(input, output, offOnRegions, outputOnOffRegions);
 		}
-		if (isSelection)
+		if (indentationLevel > 1 && StringUtil.EMPTY.equals(indentSufix))
 		{
-			output = leftTrim(output, spacesCount);
+			StringBuilder indentBuilder = new StringBuilder();
+			indentGenerator.generateIndent(Math.max(1, indentationLevel - 1), indentBuilder);
+			indentSufix = indentBuilder.toString();
 		}
-		else
-		{
-			if (indentationLevel > 1 && StringUtil.EMPTY.equals(indentSufix))
-			{
-				StringBuilder indentBuilder = new StringBuilder();
-				indentGenerator.generateIndent(Math.max(1, indentationLevel - 1), indentBuilder);
-				indentSufix = indentBuilder.toString();
-			}
-			output = processNestedOutput(output.trim(), lineSeparator, indentSufix, false, true);
-		}
+		output = processNestedOutput(output.trim(), lineSeparator, indentSufix, false, true);
 		return output;
 	}
 
