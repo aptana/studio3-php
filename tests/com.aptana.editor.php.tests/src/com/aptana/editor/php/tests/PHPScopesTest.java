@@ -100,8 +100,7 @@ public class PHPScopesTest extends TestCase
 			assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php",
 					source, 1); // '?'
 			// PHPDoc comment
-			assertScope("source.php source.php.embedded.block.html comment.block.documentation.phpdoc.php",
-					source, 6); // /**
+			assertScope("source.php source.php.embedded.block.html comment.block.documentation.phpdoc.php", source, 6); // /**
 			// tags
 			assertScope(
 					"source.php source.php.embedded.block.html comment.block.documentation.phpdoc.php keyword.other.phpdoc.php",
@@ -110,8 +109,8 @@ public class PHPScopesTest extends TestCase
 					"source.php source.php.embedded.block.html comment.block.documentation.phpdoc.php keyword.other.phpdoc.php",
 					source, 12 + tag.length()); // end of tag
 			// comments
-			assertScope("source.php source.php.embedded.block.html comment.block.documentation.phpdoc.php",
-					source, 38 + tag.length()); // **/
+			assertScope("source.php source.php.embedded.block.html comment.block.documentation.phpdoc.php", source,
+					38 + tag.length()); // **/
 			// PHP end switch
 			assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source,
 					40 + tag.length()); // '?'
@@ -260,17 +259,13 @@ public class PHPScopesTest extends TestCase
 		assertScope("source.php source.php.embedded.block.html string.quoted.double.php", source, 7); // T
 		assertScope("source.php source.php.embedded.block.html string.quoted.double.php", source, 22); // e
 		// Escaped octal
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 23); // \
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 24); // 0
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 25); // 1
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 26); // 2
 		// String
 		assertScope("source.php source.php.embedded.block.html string.quoted.double.php", source, 27); // q
@@ -292,17 +287,13 @@ public class PHPScopesTest extends TestCase
 		assertScope("source.php source.php.embedded.block.html string.quoted.double.php", source, 7); // T
 		assertScope("source.php source.php.embedded.block.html string.quoted.double.php", source, 22); // e
 		// Escaped hex
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 23); // \
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 24); // x
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 25); // a
-		assertScope(
-				"source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
+		assertScope("source.php source.php.embedded.block.html string.quoted.double.php constant.character.escape.php",
 				source, 26); // 9
 		// String
 		assertScope("source.php source.php.embedded.block.html string.quoted.double.php", source, 27); // q
@@ -357,18 +348,18 @@ public class PHPScopesTest extends TestCase
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0); // '<'
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 1); // '?'
 		// function keyword
-		assertScope("source.php source.php.embedded.block.html storage.type.function.php", source, 6); // f
-		assertScope("source.php source.php.embedded.block.html storage.type.function.php", source, 13); // n
+		assertScope("source.php source.php.embedded.block.html meta.function.php storage.type.function.php", source, 6); // f
+		assertScope("source.php source.php.embedded.block.html meta.function.php storage.type.function.php", source, 13); // n
 
 		// space
-		// assertScope("source.php source.php.embedded.block.html", source, 14);
+		// assertScope("source.php source.php.embedded.block.html meta.function.php", source, 14);
 
 		// function name
-		assertScope("source.php source.php.embedded.block.html entity.name.function.php", source, 15); // e
-		assertScope("source.php source.php.embedded.block.html entity.name.function.php", source, 21); // e
+		assertScope("source.php source.php.embedded.block.html meta.function.php entity.name.function.php", source, 15); // e
+		assertScope("source.php source.php.embedded.block.html meta.function.php entity.name.function.php", source, 21); // e
 
 		// parens
-		// assertScope("source.php source.php.embedded.block.html punctuation.definition.parameters.begin.php",
+		// assertScope("source.php source.php.embedded.block.html meta.function.php punctuation.definition.parameters.begin.php",
 		// source, 22); // (
 
 		// space
@@ -407,6 +398,100 @@ public class PHPScopesTest extends TestCase
 		// PHP end switch
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 27); // '?'
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 28); // '>'
+	}
+
+	public void testAPSTUD2790()
+	{
+		String source = "<?php\n" + //
+				"function check_login() {\n" + //
+				"	$info = $this->input->post();\n" + //
+				"	$this->form_validation->set_rules();\n" + //
+				"	if($user[0]->activated == 0) {\n" + //
+				"	}\n" + //
+				"}\n" + //
+				"?>";
+		// PHP start switch
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0); // '<'
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 1); // '?'
+		// function keyword
+		assertScope("source.php source.php.embedded.block.html meta.function.php storage.type.function.php", source, 6); // f
+		assertScope("source.php source.php.embedded.block.html meta.function.php storage.type.function.php", source, 13); // n
+		// space
+		// assertScope("source.php source.php.embedded.block.html meta.function.php", source, 14);
+		// function name
+		assertScope("source.php source.php.embedded.block.html meta.function.php entity.name.function.php", source, 15); // c
+		assertScope("source.php source.php.embedded.block.html meta.function.php entity.name.function.php", source, 25); // n
+		// parens
+		assertScope(
+				"source.php source.php.embedded.block.html meta.function.php punctuation.definition.parameters.begin.php",
+				source, 26); // (
+		assertScope(
+				"source.php source.php.embedded.block.html meta.function.php punctuation.definition.parameters.end.php",
+				source, 27); // )
+		// space
+		// assertScope("source.php source.php.embedded.block.html", source, 28);
+		// curly
+		assertScope("source.php source.php.embedded.block.html", source, 29); // {
+		// newline
+		// $info
+		// FIXME We don't separate out the dollar sign as a unique scope yet! Probably can do this in PHPCodeScanner if
+		// we break the token up and push the pieces into queue!
+		// assertScope("source.php source.php.embedded.block.html variable.other.php punctuation.definition.variable.php",
+		// source, 32); // $
+		assertScope("source.php source.php.embedded.block.html variable.other.php", source, 33); // i
+		assertScope("source.php source.php.embedded.block.html variable.other.php", source, 36); // o
+		// space
+		// assertScope("source.php source.php.embedded.block.html", source, 37);
+		// =
+		assertScope("source.php source.php.embedded.block.html keyword.operator.assignment.php", source, 38); // =
+		// space
+		// assertScope("source.php source.php.embedded.block.html", source, 39);
+		// $this
+		// NOTE: We use variable.language.php while Textmate uses variable.other.php here.
+		// assertScope("source.php source.php.embedded.block.html variable.language.php punctuation.definition.variable.php",
+		// source, 40); // $
+		assertScope("source.php source.php.embedded.block.html variable.language.php", source, 41); // t
+		assertScope("source.php source.php.embedded.block.html variable.language.php", source, 44); // s
+		// ->
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 45);
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 46);
+		// input
+		assertScope("source.php source.php.embedded.block.html variable.other.property.php", source, 47); // i
+		assertScope("source.php source.php.embedded.block.html variable.other.property.php", source, 51); // t
+		// ->
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 52);
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 53);
+		// post
+		assertScope("source.php source.php.embedded.block.html meta.function-call.object.php", source, 54); // p
+		assertScope("source.php source.php.embedded.block.html meta.function-call.object.php", source, 57); // t
+		// ()
+		// ;
+		assertScope("source.php source.php.embedded.block.html punctuation.terminator.expression.php", source, 60); // ;
+
+		// ...
+
+		// $user
+		// assertScope(
+		// "source.php source.php.embedded.block.html variable.language.php punctuation.definition.variable.php",
+		// source, 104); // $
+		assertScope("source.php source.php.embedded.block.html variable.other.php", source, 105); // u
+		assertScope("source.php source.php.embedded.block.html variable.other.php", source, 108); // r
+		// [
+		assertScope("source.php source.php.embedded.block.html variable.other.php keyword.operator.index-start.php",
+				source, 109); // [
+		// 0
+		assertScope("source.php source.php.embedded.block.html variable.other.php constant.numeric.php", source, 110); // 0
+		// ]
+		assertScope("source.php source.php.embedded.block.html variable.other.php keyword.operator.index-end.php",
+				source, 111); // ]
+
+		// ...
+
+		// PHP end switch
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source,
+				source.length() - 2); // '?'
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source,
+				source.length() - 1); // '>'
 	}
 
 	// TODO Add test for all the new tokens added in PHPTokenMapperFactory
