@@ -92,11 +92,27 @@ public interface PHPFormatterConstants
 	String SPACES_AFTER_UNARY_OPERATOR = FORMATTER_ID + ".spaces.after.unary"; //$NON-NLS-1$
 	String SPACES_BEFORE_NAMESPACE_SEPARATOR = FORMATTER_ID + ".spaces.before.namespaceSeparator"; //$NON-NLS-1$
 	String SPACES_AFTER_NAMESPACE_SEPARATOR = FORMATTER_ID + ".spaces.after.namespaceSeparator"; //$NON-NLS-1$
-	String SPACES_BEFORE_PARENTHESES = FORMATTER_ID + ".spaces.before.parentheses"; //$NON-NLS-1$
-	String SPACES_AFTER_PARENTHESES = FORMATTER_ID + ".spaces.after.parentheses"; //$NON-NLS-1$
 	String SPACES_BEFORE_FOR_SEMICOLON = FORMATTER_ID + ".spaces.before.forSemicolon"; //$NON-NLS-1$
 	String SPACES_AFTER_FOR_SEMICOLON = FORMATTER_ID + ".spaces.after.forSemicolon"; //$NON-NLS-1$
-
+	// Parentheses keys (note that we need to keep the first two keys as they are for backward compatibility)
+	String SPACES_BEFORE_OPENING_PARENTHESES = FORMATTER_ID + ".spaces.before.parentheses"; //$NON-NLS-1$
+	String SPACES_AFTER_OPENING_PARENTHESES = FORMATTER_ID + ".spaces.after.parentheses"; //$NON-NLS-1$
+	String SPACES_BEFORE_CLOSING_PARENTHESES = FORMATTER_ID + ".spaces.before.parentheses.closing"; //$NON-NLS-1$
+	String SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES = FORMATTER_ID + ".spaces.before.declaration.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_AFTER_OPENING_DECLARATION_PARENTHESES = FORMATTER_ID + ".spaces.after.declaration.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES = FORMATTER_ID + ".spaces.before.declaration.parentheses.closing"; //$NON-NLS-1$
+	String SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES = FORMATTER_ID + ".spaces.before.invocation.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_AFTER_OPENING_INVOCATION_PARENTHESES = FORMATTER_ID + ".spaces.after.invocation.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES = FORMATTER_ID + ".spaces.before.invocation.parentheses.closing"; //$NON-NLS-1$
+	String SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES = FORMATTER_ID + ".spaces.before.array.access.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES = FORMATTER_ID + ".spaces.after.array.access.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES = FORMATTER_ID + ".spaces.before.array.access.parentheses.closing"; //$NON-NLS-1$
+	String SPACES_BEFORE_OPENING_LOOP_PARENTHESES = FORMATTER_ID + ".spaces.before.loop.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_AFTER_OPENING_LOOP_PARENTHESES = FORMATTER_ID + ".spaces.after.loop.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_BEFORE_CLOSING_LOOP_PARENTHESES = FORMATTER_ID + ".spaces.before.loop.parentheses.closing"; //$NON-NLS-1$
+	String SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES = FORMATTER_ID + ".spaces.before.conditional.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES = FORMATTER_ID + ".spaces.after.conditional.parentheses.opening"; //$NON-NLS-1$
+	String SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES = FORMATTER_ID + ".spaces.before.conditional.parentheses.closing"; //$NON-NLS-1$
 	// On/Off
 	String FORMATTER_OFF_ON_ENABLED = FORMATTER_ID + ".formatter.on.off.enabled"; //$NON-NLS-1$
 	String FORMATTER_ON = FORMATTER_ID + ".formatter.on"; //$NON-NLS-1$

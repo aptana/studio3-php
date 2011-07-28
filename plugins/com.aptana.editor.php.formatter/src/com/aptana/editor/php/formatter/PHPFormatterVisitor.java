@@ -575,7 +575,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// create a constructor node
 			List<Expression> ctorParams = classInstanceCreation.ctorParams();
 			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams,
-					TypePunctuation.COMMA, false, TypeBracket.INVOCATION_PARENTHESIS);
+					TypePunctuation.COMMA, false, TypeBracket.DECLARATION_PARENTHESIS);
 		}
 		// check and push a semicolon (if appears after the end of this instance creation)
 		// pushSemicolon(creationEnd, false, true);

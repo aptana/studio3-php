@@ -45,7 +45,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_FOR_SEMICOLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_KEY_VALUE_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_NAMESPACE_SEPARATOR;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_POSTFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PREFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_RELATIONAL_OPERATORS;
@@ -56,6 +61,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFOR
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ARROW_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CASE_COLON_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COMMAS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CONCATENATION_OPERATOR;
@@ -63,7 +74,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFOR
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_FOR_SEMICOLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_KEY_VALUE_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_NAMESPACE_SEPARATOR;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_POSTFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PREFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_RELATIONAL_OPERATORS;
@@ -159,8 +175,16 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			SPACES_BEFORE_POSTFIX_OPERATOR, SPACES_AFTER_POSTFIX_OPERATOR, SPACES_BEFORE_PREFIX_OPERATOR,
 			SPACES_AFTER_PREFIX_OPERATOR, SPACES_BEFORE_ARITHMETIC_OPERATOR, SPACES_AFTER_ARITHMETIC_OPERATOR,
 			SPACES_BEFORE_UNARY_OPERATOR, SPACES_AFTER_UNARY_OPERATOR, SPACES_BEFORE_NAMESPACE_SEPARATOR,
-			SPACES_AFTER_NAMESPACE_SEPARATOR, SPACES_BEFORE_PARENTHESES, SPACES_AFTER_PARENTHESES,
-			SPACES_BEFORE_FOR_SEMICOLON, SPACES_AFTER_FOR_SEMICOLON };
+			SPACES_AFTER_NAMESPACE_SEPARATOR, SPACES_BEFORE_FOR_SEMICOLON, SPACES_AFTER_FOR_SEMICOLON,
+			SPACES_BEFORE_OPENING_PARENTHESES, SPACES_AFTER_OPENING_PARENTHESES, SPACES_BEFORE_CLOSING_PARENTHESES,
+			SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES, SPACES_AFTER_OPENING_DECLARATION_PARENTHESES,
+			SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES, SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES,
+			SPACES_AFTER_OPENING_INVOCATION_PARENTHESES, SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES,
+			SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES, SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES,
+			SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES, SPACES_BEFORE_OPENING_LOOP_PARENTHESES,
+			SPACES_AFTER_OPENING_LOOP_PARENTHESES, SPACES_BEFORE_CLOSING_LOOP_PARENTHESES,
+			SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES, SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES,
+			SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES };
 
 	// PHP basic prefixes
 	private static final String PHP_SHORT_TAG_OPEN = "<?"; //$NON-NLS-1$

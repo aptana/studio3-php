@@ -8,7 +8,9 @@
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
+import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
+import com.aptana.formatter.IFormatterWriter;
 import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
 import com.aptana.formatter.nodes.NodeTypes.TypeBracket;
 
@@ -79,21 +81,44 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 		{
 			return 1;
 		}
-		return getInt(PHPFormatterConstants.SPACES_BEFORE_PARENTHESES);
+
+		switch (parenthesesType)
+		{
+			case DECLARATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES);
+			case INVOCATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES);
+			case ARRAY_SQUARE:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES);
+			case CONDITIONAL_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES);
+			case LOOP_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_LOOP_PARENTHESES);
+			default:
+				return 0;
+		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	/**
+	 * We override the acceptBody to control any spaces that should be added before or after the body.
+	 * 
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#acceptBody(com.aptana.formatter.IFormatterContext,
+	 *      com.aptana.formatter.IFormatterWriter)
 	 */
 	@Override
-	public int getSpacesCountAfter()
+	protected void acceptBody(IFormatterContext context, IFormatterWriter visitor) throws Exception
 	{
-		if (isAsWrapper())
+		int spacesBeforeBody = getSpacesBeforeBody();
+		if (spacesBeforeBody > 0)
 		{
-			return 0;
+			writeSpaces(visitor, context, spacesBeforeBody);
 		}
-		return getInt(PHPFormatterConstants.SPACES_AFTER_PARENTHESES);
+		super.acceptBody(context, visitor);
+		int spacesAfterBody = getSpacesAfterBody();
+		if (spacesAfterBody > 0)
+		{
+			writeSpaces(visitor, context, spacesAfterBody);
+		}
 	}
 
 	/*
@@ -149,6 +174,58 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 				}
 		}
 		return false;
-
 	}
+
+	/**
+	 * @return The amount of spaces that we should insert before the body.
+	 */
+	private int getSpacesBeforeBody()
+	{
+		if (isAsWrapper())
+		{
+			return 0;
+		}
+		switch (parenthesesType)
+		{
+			case DECLARATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_DECLARATION_PARENTHESES);
+			case INVOCATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_INVOCATION_PARENTHESES);
+			case ARRAY_SQUARE:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES);
+			case CONDITIONAL_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES);
+			case LOOP_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_LOOP_PARENTHESES);
+			default:
+				return 0;
+		}
+	}
+
+	/**
+	 * @return The amount of spaces that we should insert after the body.
+	 */
+	private int getSpacesAfterBody()
+	{
+		if (isAsWrapper())
+		{
+			return 0;
+		}
+		switch (parenthesesType)
+		{
+			case DECLARATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES);
+			case INVOCATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES);
+			case ARRAY_SQUARE:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES);
+			case CONDITIONAL_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES);
+			case LOOP_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_LOOP_PARENTHESES);
+			default:
+				return 0;
+		}
+	}
+
 }
