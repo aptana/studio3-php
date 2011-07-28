@@ -87,6 +87,7 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 			case DECLARATION_PARENTHESIS:
 				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES);
 			case INVOCATION_PARENTHESIS:
+			case ARRAY_PARENTHESIS:
 				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES);
 			case ARRAY_SQUARE:
 				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES);
@@ -190,6 +191,7 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 			case DECLARATION_PARENTHESIS:
 				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_DECLARATION_PARENTHESES);
 			case INVOCATION_PARENTHESIS:
+			case ARRAY_PARENTHESIS:
 				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_INVOCATION_PARENTHESES);
 			case ARRAY_SQUARE:
 				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES);
@@ -216,6 +218,7 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 			case DECLARATION_PARENTHESIS:
 				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES);
 			case INVOCATION_PARENTHESIS:
+			case ARRAY_PARENTHESIS:
 				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES);
 			case ARRAY_SQUARE:
 				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES);
