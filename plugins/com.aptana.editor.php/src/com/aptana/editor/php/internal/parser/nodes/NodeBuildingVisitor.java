@@ -1,5 +1,6 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
+import java.util.Collections;
 import java.util.List;
 
 import org2.eclipse.php.core.compiler.PHPFlags;
@@ -275,16 +276,28 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	public boolean visit(NamespaceDeclaration node)
 	{
 		NamespaceName name = node.getName();
-		List<Identifier> segments = name.segments();
+		List<Identifier> segments;
+		if (name == null)
+		{
+			segments = Collections.emptyList();
+		}
+		else
+		{
+			segments = name.segments();
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		for (Identifier i : segments)
 		{
 			stringBuilder.append(i.getName());
 			stringBuilder.append('\\');
 		}
-		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+		if (stringBuilder.length() > 0)
+		{
+			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+		}
 		String segmentsString = stringBuilder.toString();
-		nodeBuilder.handleNamespaceDeclaration(segmentsString, node.getStart(), node.getEnd() - 1, name.getEnd() - 1);
+		int nameEndOffset = (name != null)? name.getEnd() - 1 : node.getStart() + 8;
+		nodeBuilder.handleNamespaceDeclaration(segmentsString, node.getStart(), node.getEnd() - 1, nameEndOffset);
 		return super.visit(node);
 	}
 
