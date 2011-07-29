@@ -207,6 +207,6 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	@Override
 	public int hashCode()
 	{
-		return 31 * super.hashCode() + this.getNameNode().getName().hashCode();
+		return 31 * super.hashCode() + this.getNameNode().getName().hashCode() + getNodeName().hashCode();
 	}
 }
