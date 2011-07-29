@@ -100,6 +100,11 @@ import com.aptana.parsing.lexer.Range;
  */
 public class PHPContentAssistProcessor extends CommonContentAssistProcessor implements IContentAssistProcessor
 {
+	private static final int EXTERNAL_CLASS_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 10;
+	private static final int EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 15;
+	private static final int EXTERNAL_CONSTANT_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 20;
+	private static final int EXTERNAL_DEFAULT_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 25;
+
 	private static final ICompletionProposal[] EMPTY_PROPOSAL = new ICompletionProposal[0];
 	protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	protected static final String DOLLAR_SIGN = "$"; //$NON-NLS-1$
@@ -3083,10 +3088,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		// Prioritize the external items.
 		// We set the priority to classes, functions, constants and then all the rest.
-		int externalClassPriority = ICommonCompletionProposal.RELEVANCE_MEDIUM - 10;
-		int externalFunctionPriority = ICommonCompletionProposal.RELEVANCE_MEDIUM - 15;
-		int externalConstPriority = ICommonCompletionProposal.RELEVANCE_MEDIUM - 20;
-		int externalDefaultPriority = ICommonCompletionProposal.RELEVANCE_MEDIUM - 25;
 		for (Object item : externals)
 		{
 			if (item instanceof IElementEntry)
@@ -3095,16 +3096,16 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				switch (entry.getCategory())
 				{
 					case IPHPIndexConstants.CLASS_CATEGORY:
-						itemsToProposals.get(item).setRelevance(externalClassPriority);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CLASS_PROPOSAL_RELEVANCE);
 						break;
 					case IPHPIndexConstants.FUNCTION_CATEGORY:
-						itemsToProposals.get(item).setRelevance(externalFunctionPriority);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE);
 						break;
 					case IPHPIndexConstants.CONST_CATEGORY:
-						itemsToProposals.get(item).setRelevance(externalConstPriority);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CONSTANT_PROPOSAL_RELEVANCE);
 						break;
 					default:
-						itemsToProposals.get(item).setRelevance(externalDefaultPriority);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_DEFAULT_PROPOSAL_RELEVANCE);
 				}
 			}
 			else if (item instanceof PHPBaseParseNode)
@@ -3117,16 +3118,16 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_HIGH - 2);
 						break;
 					case IPHPParseNode.CLASS_NODE:
-						itemsToProposals.get(item).setRelevance(externalClassPriority - 2);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CLASS_PROPOSAL_RELEVANCE - 2);
 						break;
 					case IPHPParseNode.FUNCTION_NODE:
-						itemsToProposals.get(item).setRelevance(externalFunctionPriority - 2);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE - 2);
 						break;
 					case IPHPParseNode.CONST_NODE:
-						itemsToProposals.get(item).setRelevance(externalConstPriority - 2);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CONSTANT_PROPOSAL_RELEVANCE - 2);
 						break;
 					default:
-						itemsToProposals.get(item).setRelevance(externalDefaultPriority - 2);
+						itemsToProposals.get(item).setRelevance(EXTERNAL_DEFAULT_PROPOSAL_RELEVANCE - 2);
 				}
 			}
 			else
