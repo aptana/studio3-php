@@ -2626,8 +2626,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				result.add(type.toString());
 				return result;
 			}
-			if (expression instanceof UnaryOperation) {
-				UnaryOperation unaryOperation = (UnaryOperation)expression;
+			if (expression instanceof UnaryOperation)
+			{
+				UnaryOperation unaryOperation = (UnaryOperation) expression;
 				expression = unaryOperation.getExpression();
 			}
 			if (expression instanceof Scalar)
@@ -3055,7 +3056,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			isReportedStackGlobal = currentScope.isGlobalScope();
 
-			isReportedScopeUnderClassOrFunction = checkIfScopeIsUnderClassOrFunction(stack, currentScopeDepth);
+			isReportedScopeUnderClass = checkIfScopeIsUnderClass(stack, currentScopeDepth);
 
 			// String scopePath = getScopePath(stack, i);
 
@@ -3114,7 +3115,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 
 		/**
-		 * Checks if the scope specified is under class or function/method scope.
+		 * Checks if the scope specified is under a class/interface scope.
 		 * 
 		 * @param stack
 		 *            - scopes stack.
@@ -3122,14 +3123,13 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 *            - scope depth.
 		 * @return true if the scope specified is under class or function/method scope, false otherwise.
 		 */
-		private boolean checkIfScopeIsUnderClassOrFunction(Stack<Scope> stack, int currentScopeDepth)
+		private boolean checkIfScopeIsUnderClass(Stack<Scope> stack, int currentScopeDepth)
 		{
 			for (int i = currentScopeDepth; i >= 0; i--)
 			{
 				Scope scope = scopes.get(i);
 				IElementEntry entry = scope.getEntry();
-				if (entry == null || entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY
-						|| entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY)
+				if (entry != null && entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY)
 				{
 					return true;
 				}
@@ -3530,9 +3530,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	private boolean isReportedStackGlobal = true;
 
 	/**
-	 * Whether reported stack is under class or function/method.
+	 * Whether reported stack is under class/interface
 	 */
-	private boolean isReportedScopeUnderClassOrFunction = false;
+	private boolean isReportedScopeUnderClass = false;
 
 	private boolean updateTaskTags = true;
 
@@ -3924,13 +3924,13 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	}
 
 	/**
-	 * Gets whether reported scope is under class or function/method.
+	 * Gets whether reported scope is under a class
 	 * 
-	 * @return true if whether reported scope is under class or function/method, false otherwise.
+	 * @return true if whether reported scope is under a class
 	 */
-	public boolean isReportedScopeUnderClassOrFunction()
+	public boolean isReportedScopeUnderClass()
 	{
-		return isReportedStackGlobal;
+		return isReportedScopeUnderClass;
 	}
 
 	/**

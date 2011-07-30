@@ -415,6 +415,8 @@ public class PHPCompletionProposal extends CommonCompletionProposal
 		builder.append(getReplacementString());
 		builder.append(", Display: "); //$NON-NLS-1$
 		builder.append(getDisplayString());
+		builder.append(", Relevance: "); //$NON-NLS-1$
+		builder.append(getRelevance());
 		builder.append("}"); //$NON-NLS-1$
 		return builder.toString();
 	}

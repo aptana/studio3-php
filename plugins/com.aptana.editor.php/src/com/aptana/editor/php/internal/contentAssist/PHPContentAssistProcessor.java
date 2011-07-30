@@ -143,6 +143,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	private static final String PARENT_ACTIVATION_SEQUENCE = "parent"; //$NON-NLS-1$
 
+	/**
+	 * Content assist suggestions that we should only allow under classes
+	 */
+	@SuppressWarnings("nls")
+	private static final Set<String> ALLOW_ONLY_UNDER_CLASS = new HashSet<String>(Arrays.asList("$this", "self",
+			"parent", "public", "private", "protected")); //$NON-NLS-4$
+
 	private static final IRange EMPTY_RANGE = new Range(0, 0);
 
 	private static Image fIcon53 = PHPEditorPlugin.getImage("icons/full/obj16/v53.png"); //$NON-NLS-1$
@@ -159,9 +166,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private int offset;
 	private String content;
 	/**
-	 * Whether reported stack is global.
+	 * Whether reported scope is global.
 	 */
-	private boolean reportedScopeUnderClassOrFunction = true;
+	private boolean reportedScopeIsGlobal = true;
+	/**
+	 * Whether reported scope is under a class definition.
+	 */
+	private boolean reportedScopeIsUnderClass = false;
 
 	/**
 	 * Reported imports.
@@ -438,8 +449,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				content, true, forceActivation);
 		if (computeCompletionProposalInternal.length > 0)
 		{
-			ICommonCompletionProposal pa = (ICommonCompletionProposal) computeCompletionProposalInternal[0];
-			pa.setRelevance(ICommonCompletionProposal.RELEVANCE_MEDIUM);
 			if (replaceLengthIncrease > 0)
 			{
 				computeCompletionProposalInternal = batchIncreaseReplaceLength(computeCompletionProposalInternal,
@@ -532,25 +541,24 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// Check if we are dealing with a namespace completion
 			if (identifier.startsWith(GLOBAL_NAMESPACE))
 			{
-				return computeNamespaceCompletion(start, content, identifier, reportedScopeUnderClassOrFunction,
-						globalImports, getModule(), proposeBuiltins, true);
+				return computeNamespaceCompletion(start, content, identifier, globalImports, getModule(),
+						proposeBuiltins, true);
 			}
 
-			return simpleIdentifierCompletion(start, content, identifier, reportedScopeUnderClassOrFunction,
-					globalImports, getModule(), proposeBuiltins, true, false);
+			return simpleIdentifierCompletion(start, content, identifier, globalImports, getModule(), proposeBuiltins,
+					true, false);
 		}
 
 		return EMPTY_PROPOSAL;
 	}
 
 	private ICompletionProposal[] computeNamespaceCompletion(int offset, String content, String identifier,
-			boolean reportedScopeUnderClassOrFunction, Set<String> globalImports, IModule module,
-			boolean proposeBuiltins, boolean filter)
+			Set<String> globalImports, IModule module, boolean proposeBuiltins, boolean filter)
 	{
 		// We need to trim out our namespace separator at the beginning of the identifier.
 		identifier = identifier.substring(1);
-		return simpleIdentifierCompletion(offset, content, identifier, reportedScopeUnderClassOrFunction,
-				globalImports, module, proposeBuiltins, filter, true);
+		return simpleIdentifierCompletion(offset, content, identifier, globalImports, module, proposeBuiltins, filter,
+				true);
 	}
 
 	// /**
@@ -1448,8 +1456,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return completion proposals
 	 */
 	private ICompletionProposal[] simpleIdentifierCompletion(final int offset, String content, String identifier,
-			boolean reportedStackIsGlobal, Set<String> globalImports, IModule module, boolean proposeBuiltins,
-			boolean filter, boolean ignorIndexNamespace)
+			Set<String> globalImports, IModule module, boolean proposeBuiltins, boolean filter,
+			boolean ignorIndexNamespace)
 	{
 		String name = identifier;
 
@@ -1496,7 +1504,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			index = getIndexOptimized(content, offset);
 		}
 		String namespaceToUse = ignorIndexNamespace ? EMPTY_STRING : namespace;
-		List<IElementEntry> entries = computeSimpleIdentifierEntries(reportedStackIsGlobal, globalImports, name,
+		List<IElementEntry> entries = computeSimpleIdentifierEntries(reportedScopeIsGlobal, globalImports, name,
 				variableCompletion, index, false, module, filter, currentContext, namespaceToUse, aliases);
 
 		items.addAll(entries);
@@ -1523,11 +1531,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						else if (modelItem instanceof IPHPParseNode && !(modelItem instanceof PHPFunctionParseNode))
 						{
 							IPHPParseNode pn = (IPHPParseNode) modelItem;
-							if (pn.getNodeName().startsWith(DOLLAR_SIGN))
+							String nodeName = pn.getNodeName();
+							if (nodeName.startsWith(DOLLAR_SIGN))
 							{
+								if (!reportedScopeIsUnderClass && ALLOW_ONLY_UNDER_CLASS.contains(nodeName))
 								{
-									items.add(pn);
+									continue;
 								}
+								items.add(pn);
 							}
 						}
 					}
@@ -1535,6 +1546,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					{
 						if (!(modelItem instanceof PHPVariableParseNode))
 						{
+							String nodeName = ((PHPBaseParseNode) modelItem).getNodeName();
+							// make sure we don't offer items that should only appear under a class/interface.
+							if (!reportedScopeIsUnderClass && ALLOW_ONLY_UNDER_CLASS.contains(nodeName))
+							{
+								continue;
+							}
 							items.add(modelItem);
 						}
 					}
@@ -1956,7 +1973,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		});
 
-		reportedScopeUnderClassOrFunction = indexer.isReportedScopeUnderClassOrFunction();
+		reportedScopeIsGlobal = indexer.isReportedScopeGlobal();
+		reportedScopeIsUnderClass = indexer.isReportedScopeUnderClass();
 		globalImports = indexer.getGlobalImports();
 		aliases = indexer.getAliases();
 		namespace = indexer.getNamespace();
@@ -3229,8 +3247,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else
 			{
-				List<IElementEntry> res = computeSimpleIdentifierEntries(reportedScopeUnderClassOrFunction,
-						globalImports, info.getName(), false, index, true, getModule(), false, namespace, aliases);
+				List<IElementEntry> res = computeSimpleIdentifierEntries(reportedScopeIsGlobal, globalImports,
+						info.getName(), false, index, true, getModule(), false, namespace, aliases);
 				if (res != null)
 				{
 					entries = new LinkedHashSet<IElementEntry>();
