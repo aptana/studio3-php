@@ -1,9 +1,10 @@
 package org.eclipse.php.core.tests;
 
+import java.util.logging.Logger;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -12,9 +13,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org2.eclipse.php.internal.core.PHPVersion;
-import org2.eclipse.php.internal.core.preferences.CorePreferenceConstants;
 
-import com.aptana.editor.php.epl.tests.Activator;
+import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.core.CorePreferenceConstants;
+import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 
 public class TestUtils
 {
@@ -89,15 +91,19 @@ public class TestUtils
 
 	/**
 	 * Wait for autobuild notification to occur, that is for the autbuild to finish.
+	 * 
+	 * @throws CoreException
 	 */
-	public static void waitForAutoBuild()
+	@SuppressWarnings("nls")
+	public synchronized static void waitForAutoBuild() throws CoreException
 	{
+		Logger.global.entering("TestUtils", "waitForAutoBuild");
 		boolean wasInterrupted = false;
 		do
 		{
 			try
 			{
-				Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, null);
+				Job.getJobManager().join(PHPGlobalIndexer.FAMILY_PHP_BUILD, null);
 				wasInterrupted = false;
 			}
 			catch (OperationCanceledException e)
@@ -110,6 +116,7 @@ public class TestUtils
 			}
 		}
 		while (wasInterrupted);
+		Logger.global.exiting("TestUtils", "waitForAutoBuild");
 	}
 
 	/**
@@ -133,7 +140,7 @@ public class TestUtils
 				}
 				catch (BackingStoreException e)
 				{
-					throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+					throw new CoreException(new Status(IStatus.ERROR, PHPEditorPlugin.PLUGIN_ID, e.getMessage(), e));
 				}
 				waitForAutoBuild();
 				waitForIndexer();
@@ -143,6 +150,7 @@ public class TestUtils
 
 	protected static Preferences getPreferences(IProject project)
 	{
-		return new ProjectScope(project).getNode(Activator.PLUGIN_ID);
+
+		return new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
 	}
 }

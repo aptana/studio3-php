@@ -10,11 +10,13 @@ package com.aptana.editor.php.formatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jface.text.IRegion;
 import org2.eclipse.php.internal.core.ast.nodes.ASTError;
 import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
@@ -118,7 +120,9 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.formatter.FormatterDocument;
+import com.aptana.formatter.FormatterUtils;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
+import com.aptana.formatter.nodes.NodeTypes.TypeBracket;
 import com.aptana.formatter.nodes.NodeTypes.TypeOperator;
 import com.aptana.formatter.nodes.NodeTypes.TypePunctuation;
 
@@ -141,6 +145,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private FormatterDocument document;
 	private PHPFormatterNodeBuilder builder;
 	private Set<Integer> commentEndOffsets;
+	private List<IRegion> onOffRegions;
 
 	/**
 	 * @param builder
@@ -151,33 +156,67 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		this.document = document;
 		this.builder = builder;
-		collectCommentEndOffsets(comments);
+		processComments(comments);
 	}
 
 	/**
-	 * Collect the comments ending offsets (including the white-spaces that appear after them).
+	 * Collect the comments ending offsets (including the white-spaces that appear after them). Also, in case a
+	 * formatter on/off tag was set, process the comments content to exclude some of the source from formatting.
 	 * 
 	 * @param comments
 	 */
-	private void collectCommentEndOffsets(List<Comment> comments)
+	private void processComments(List<Comment> comments)
 	{
 		commentEndOffsets = new HashSet<Integer>();
 		if (comments == null)
 		{
 			return;
 		}
+		boolean onOffEnabled = document.getBoolean(PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED);
+		LinkedHashMap<Integer, String> commentsMap = onOffEnabled ? new LinkedHashMap<Integer, String>(comments.size())
+				: null;
 		for (Comment comment : comments)
 		{
 			int commentType = comment.getCommentType();
+			int end = comment.getEnd();
 			if (commentType == Comment.TYPE_SINGLE_LINE)
 			{
-				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, comment.getEnd()));
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end));
 			}
 			else if (commentType == Comment.TYPE_MULTILINE || commentType == Comment.TYPE_PHPDOC)
 			{
-				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, comment.getEnd() + 1));
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end + 1));
+			}
+			// Add to the map of comments when the On-Off is enabled.
+			if (onOffEnabled)
+			{
+				int start = comment.getStart();
+				String commentStr = document.get(start, end);
+				commentsMap.put(start, commentStr);
 			}
 		}
+		// Generate the On-Off regions
+		if (onOffEnabled && !commentsMap.isEmpty())
+		{
+			Pattern onPattern = Pattern.compile(Pattern.quote(document.getString(PHPFormatterConstants.FORMATTER_ON)));
+			Pattern offPattern = Pattern
+					.compile(Pattern.quote(document.getString(PHPFormatterConstants.FORMATTER_OFF)));
+			onOffRegions = FormatterUtils.resolveOnOffRegions(commentsMap, onPattern, offPattern,
+					document.getLength() - 1);
+		}
+	}
+
+	/**
+	 * Returns the On-Off formatting regions, as detected from the comments.<br>
+	 * In case the formatter preferences have this option disabled, or in case there are no On-Off regions, the returned
+	 * list is <code>null</code>.
+	 * 
+	 * @return A {@link List} that hold the regions that should be skipped when formatting the source; Null, in case
+	 *         there are no on-off regions.
+	 */
+	public List<IRegion> getOnOffRegions()
+	{
+		return onOffRegions;
 	}
 
 	/**
@@ -213,7 +252,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		conditionNode.setBegin(builder.createTextNode(document, start, start + 2));
 		builder.push(conditionNode);
 		// push the condition elements that appear in parentheses
-		pushNodeInParentheses('(', ')', start + 2, trueStatement.getStart(), ifStatement.getCondition());
+		pushNodeInParentheses('(', ')', start + 2, trueStatement.getStart(), ifStatement.getCondition(),
+				TypeBracket.CONDITIONAL_PARENTHESIS);
 		// Construct the 'true' part of the 'if' and visit its children
 		if (hasTrueBlock)
 		{
@@ -299,12 +339,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (arrayAccess.getArrayType() == ArrayAccess.VARIABLE_HASHTABLE)
 		{
 			// push a curly brackets and visit the index
-			pushNodeInParentheses('{', '}', name.getEnd(), arrayAccess.getEnd(), index);
+			pushNodeInParentheses('{', '}', name.getEnd(), arrayAccess.getEnd(), index, TypeBracket.ARRAY_CURLY);
 		}
 		else
 		{
 			// push a square brackets and visit the index
-			pushNodeInParentheses('[', ']', name.getEnd(), arrayAccess.getEnd(), index);
+			pushNodeInParentheses('[', ']', name.getEnd(), arrayAccess.getEnd(), index, TypeBracket.ARRAY_SQUARE);
 		}
 		return false;
 	}
@@ -327,7 +367,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// included in the elements given to us by the arrayCreation so we have to look for it by passing 'true'
 		// as the value of 'lookForExtraComma'.
 		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements,
-				TypePunctuation.ARRAY_COMMA, true);
+				TypePunctuation.ARRAY_COMMA, true, TypeBracket.ARRAY_PARENTHESIS);
 		return false;
 	}
 
@@ -354,9 +394,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			rightNodes.add(value);
 		}
 		ArrayCreation parent = (ArrayCreation) arrayElement.getParent();
-		int elementIndex = parent.elements().indexOf(arrayElement);
-		boolean isFirstElement = (elementIndex == 0);
-		FormatterPHPArrayElementNode arrayElementNode = new FormatterPHPArrayElementNode(document, isFirstElement,
+		boolean hasSingleElement = parent.elements().size() == 1;
+		FormatterPHPArrayElementNode arrayElementNode = new FormatterPHPArrayElementNode(document, hasSingleElement,
 				hasCommentBefore(arrayElement.getStart()));
 		arrayElementNode.setBegin(builder.createTextNode(document, arrayElement.getStart(), arrayElement.getStart()));
 		arrayElementNode.setEnd(builder.createTextNode(document, arrayElement.getEnd(), arrayElement.getEnd()));
@@ -536,7 +575,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// create a constructor node
 			List<Expression> ctorParams = classInstanceCreation.ctorParams();
 			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams,
-					TypePunctuation.COMMA, false);
+					TypePunctuation.COMMA, false, TypeBracket.DECLARATION_PARENTHESIS);
 		}
 		// check and push a semicolon (if appears after the end of this instance creation)
 		// pushSemicolon(creationEnd, false, true);
@@ -571,7 +610,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<ASTNode> expressionInList = new ArrayList<ASTNode>(1);
 		expressionInList.add(cloneExpression.getExpression());
 		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList, TypePunctuation.COMMA,
-				false);
+				false, TypeBracket.INVOCATION_PARENTHESIS);
 		return false;
 	}
 
@@ -710,7 +749,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int openParen = builder.locateCharForward(document, '(', start + 7);
 		int closeParen = builder.locateCharBackward(document, ')',
 				(body != null) ? body.getStart() : declareStatement.getEnd());
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document,
+				TypeBracket.DECLARATION_PARENTHESIS);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		// push the list of names and values
@@ -737,7 +777,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(echoStatement, echoStart, echoStart + 4);
 		// push the expressions one at a time, with comma nodes between them.
 		List<Expression> expressions = echoStatement.expressions();
-		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions, TypePunctuation.COMMA, false);
+		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions, TypePunctuation.COMMA, false,
+				TypeBracket.INVOCATION_PARENTHESIS);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = expressions.get(expressions.size() - 1).getEnd();
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
@@ -820,7 +861,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int expressionEndOffset = (body != null) ? body.getStart() : forStatement.getEnd();
 		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
 		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document,
+				TypeBracket.LOOP_PARENTHESIS);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		// visit the initializers, the conditions and the updaters.
@@ -859,7 +901,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int expressionEndOffset = (body != null) ? body.getStart() : forEachStatement.getEnd();
 		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
 		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document,
+				TypeBracket.LOOP_PARENTHESIS);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		// push the expression
@@ -1151,7 +1194,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<VariableBase> variables = listVariable.variables();
 		int start = listVariable.getStart();
 		pushFunctionInvocationName(listVariable, start, start + 4);
-		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables, TypePunctuation.COMMA, false);
+		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables, TypePunctuation.COMMA, false,
+				TypeBracket.DECLARATION_PARENTHESIS);
 		return false;
 	}
 
@@ -1228,21 +1272,34 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(NamespaceDeclaration namespaceDeclaration)
 	{
-		pushKeyword(namespaceDeclaration.getStart(), 9, true);
+		int start = namespaceDeclaration.getStart();
+		pushKeyword(start, 9, true);
+		int end = start + 9;
 		NamespaceName namespaceName = namespaceDeclaration.getName();
-		namespaceName.accept(this);
-		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, namespaceName.getEnd(), false, true);
-		// visit the namespace body block. This block is invisible one, but we wrap it in a special
+		if (namespaceName != null)
+		{
+			namespaceName.accept(this);
+			end = namespaceName.getEnd();
+		}
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
+		// visit the namespace body block. If this block is invisible one, wrap it in a special
 		// namespace block to allow indentation customization.
 		FormatterPHPNamespaceBlockNode bodyNode = new FormatterPHPNamespaceBlockNode(document);
 		Block body = namespaceDeclaration.getBody();
-		int start = body.getStart();
-		int end = body.getEnd();
-		bodyNode.setBegin(builder.createTextNode(document, start, start));
-		builder.push(bodyNode);
-		body.childrenAccept(this);
-		bodyNode.setEnd(builder.createTextNode(document, end, end));
-		builder.checkedPop(bodyNode, namespaceDeclaration.getEnd());
+		if (body.isCurly())
+		{
+			body.accept(this);
+		}
+		else
+		{
+			int bodyStart = body.getStart();
+			int bodyEnd = body.getEnd();
+			bodyNode.setBegin(builder.createTextNode(document, bodyStart, bodyStart));
+			builder.push(bodyNode);
+			body.childrenAccept(this);
+			bodyNode.setEnd(builder.createTextNode(document, bodyEnd, bodyEnd));
+			builder.checkedPop(bodyNode, namespaceDeclaration.getEnd());
+		}
 		return false;
 	}
 
@@ -1275,7 +1332,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ParenthesisExpression parenthesisExpression)
 	{
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document, TypeBracket.PARENTHESIS);
 		int start = parenthesisExpression.getStart();
 		parenthesesNode.setBegin(builder.createTextNode(document, start, start + 1));
 		builder.push(parenthesesNode);
@@ -1792,7 +1849,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the parenthesis and the parameters (if exist)
 		List<Expression> invocationParameters = functionInvocation.parameters();
 		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters,
-				TypePunctuation.COMMA, false);
+				TypePunctuation.COMMA, false, TypeBracket.INVOCATION_PARENTHESIS);
 	}
 
 	/**
@@ -1824,9 +1881,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 *            Indicate that the parameters list may end with an extra comma that is not included in them. This
 	 *            function will look for that comma if the value is true and will add it as a punctuation node in case
 	 *            it was found.
+	 * @param bracketsType
+	 *            The type of parentheses to push.
 	 */
 	private void pushParametersInParentheses(int declarationEndOffset, int expressionEndOffset,
-			List<? extends ASTNode> parameters, TypePunctuation punctuationType, boolean lookForExtraComma)
+			List<? extends ASTNode> parameters, TypePunctuation punctuationType, boolean lookForExtraComma,
+			TypeBracket bracketsType)
 	{
 		// in some cases, we get a ParethesisExpression inside a single parameter.
 		// for those cases, we skip the parentheses node push and go straight to the
@@ -1839,12 +1899,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int openParen = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
 			if (document.charAt(openParen) == '(')
 			{
-				parenthesesNode = new FormatterPHPParenthesesNode(document);
+				parenthesesNode = new FormatterPHPParenthesesNode(document, false, parameters.size(), bracketsType);
 				parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 			}
 			else
 			{
-				parenthesesNode = new FormatterPHPParenthesesNode(document, true);
+				parenthesesNode = new FormatterPHPParenthesesNode(document, true, parameters.size(), bracketsType);
 				parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen));
 			}
 			builder.push(parenthesesNode);
@@ -1900,11 +1960,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param node
 	 */
 	private void pushNodeInParentheses(char openChar, char closeChar, int declarationEndOffset,
-			int expressionEndOffset, ASTNode node)
+			int expressionEndOffset, ASTNode node, TypeBracket type)
 	{
 		int openParen = builder.locateCharForward(document, openChar, declarationEndOffset);
 		int closeParen = builder.locateCharBackward(document, closeChar, expressionEndOffset);
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document, type);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		if (node != null)
@@ -1964,7 +2024,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (condition != null)
 		{
 			int conditionEnd = (body != null) ? body.getStart() : node.getEnd();
-			pushNodeInParentheses('(', ')', declarationEndOffset, conditionEnd, condition);
+			pushNodeInParentheses('(', ')', declarationEndOffset, conditionEnd, condition, TypeBracket.LOOP_PARENTHESIS);
 		}
 		// visit the body
 		commonVisitBlockBody(node, body);
@@ -2123,7 +2183,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			parametersEnd = builder.locateCharBackward(document, 'u', firstLexicalOffset) - 1;
 		}
 		// push the function parameters
-		pushParametersInParentheses(declarationEnd, parametersEnd, formalParameters, TypePunctuation.COMMA, false);
+		pushParametersInParentheses(declarationEnd, parametersEnd, formalParameters, TypePunctuation.COMMA, false,
+				TypeBracket.DECLARATION_PARENTHESIS);
 		// In case we have 'lexical' parameters, like we get with a lambda-function, we push them after pushing the
 		// 'use' keyword (for example: function($aaa) use ($bbb, $ccc)...)
 		if (hasLexicalParams)
@@ -2133,7 +2194,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			pushKeyword(useKeywordStart, 3, false);
 			// Push the lexical parameters
 			pushParametersInParentheses(useKeywordStart + 3, body.getStart(), lexicalParameters, TypePunctuation.COMMA,
-					false);
+					false, TypeBracket.DECLARATION_PARENTHESIS);
 		}
 
 		// Then, push the body

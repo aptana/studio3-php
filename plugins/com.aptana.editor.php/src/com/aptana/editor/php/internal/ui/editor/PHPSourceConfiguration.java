@@ -10,11 +10,11 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonEditorPlugin;
+import com.aptana.editor.common.CommonUtil;
 import com.aptana.editor.common.IPartitioningConfiguration;
 import com.aptana.editor.common.ISourceViewerConfiguration;
 import com.aptana.editor.common.scripting.IContentTypeTranslator;
@@ -54,15 +54,6 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", getToken(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_HEREDOC), false)),
 			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_NOWDOC), true)), };
-
-	private PHPCodeScanner codeScanner;
-	private RuleBasedScanner singleLineCommentScanner;
-	private RuleBasedScanner multiLineCommentScanner;
-	private RuleBasedScanner singleQuotedStringScanner;
-	private ITokenScanner doubleQuotedStringScanner;
-	private ITokenScanner heredocScanner;
-	private RuleBasedScanner nowdocScanner;
-	private RuleBasedScanner phpDocCommentScanner;
 
 	private static PHPSourceConfiguration instance;
 
@@ -170,7 +161,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	 */
 	public ISubPartitionScanner createSubPartitionScanner()
 	{
-		return new SubPartitionScanner(partitioningRules, CONTENT_TYPES, new Token(DEFAULT));
+		return new SubPartitionScanner(partitioningRules, CONTENT_TYPES, getToken(DEFAULT));
 	}
 
 	/*
@@ -250,80 +241,51 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	private ITokenScanner getCodeScanner()
 	{
-		if (codeScanner == null)
-		{
-			codeScanner = new PHPCodeScanner();
-		}
-		return codeScanner;
+		return new PHPCodeScanner();
 	}
 
 	private ITokenScanner getPhpDocCommentScanner()
 	{
-		if (phpDocCommentScanner == null)
-		{
-			phpDocCommentScanner = new PHPDocScanner();
-		}
-		return phpDocCommentScanner;
+		return new PHPDocScanner();
 	}
 
 	private ITokenScanner getMultiLineCommentScanner()
 	{
-		if (multiLineCommentScanner == null)
-		{
-			multiLineCommentScanner = new CommentScanner(getToken("comment.block.php")); //$NON-NLS-1$
-		}
-		return multiLineCommentScanner;
+		return new CommentScanner(getToken("comment.block.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getSingleLineCommentScanner()
 	{
-		if (singleLineCommentScanner == null)
-		{
-			singleLineCommentScanner = new CommentScanner(getToken("")); //$NON-NLS-1$
-		}
-		return singleLineCommentScanner;
+		return new CommentScanner(getToken("")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getSingleQuotedStringScanner()
 	{
-		if (singleQuotedStringScanner == null)
-		{
-			singleQuotedStringScanner = new RuleBasedScanner();
-			singleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.single.php")); //$NON-NLS-1$
-		}
+		RuleBasedScanner singleQuotedStringScanner = new RuleBasedScanner();
+		singleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.single.php")); //$NON-NLS-1$
 		return singleQuotedStringScanner;
 	}
 
 	private ITokenScanner getDoubleQuotedStringScanner()
 	{
-		if (doubleQuotedStringScanner == null)
-		{
-			doubleQuotedStringScanner = new FastPHPStringTokenScanner(getToken("string.quoted.double.php")); //$NON-NLS-1$
-		}
-		return doubleQuotedStringScanner;
+		return new FastPHPStringTokenScanner(getToken("string.quoted.double.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getHeredocScanner()
 	{
-		if (heredocScanner == null)
-		{
-			heredocScanner = new FastPHPStringTokenScanner(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
-		}
-		return heredocScanner;
+		return new FastPHPStringTokenScanner(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getNowdocScanner()
 	{
-		if (nowdocScanner == null)
-		{
-			nowdocScanner = new RuleBasedScanner();
-			nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
-		}
+		RuleBasedScanner nowdocScanner = new RuleBasedScanner();
+		nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
 		return nowdocScanner;
 	}
 
-	private IToken getToken(String tokenName)
+	private static IToken getToken(String tokenName)
 	{
-		return new Token(tokenName);
+		return CommonUtil.getToken(tokenName);
 	}
+
 }

@@ -50,7 +50,7 @@ public class CorePreferenceConstants
 						IPHPEplCoreConstants.DEFAULT_INDENTATION_SIZE);
 		store.setDefault(IPHPEplCoreConstants.FORMATTER_USE_TABS, true);
 		/*
-		 * IEclipsePreferences node = new DefaultScope().getNode(PHPCorePlugin.ID); node.put(Keys.PHP_VERSION,
+		 * IEclipsePreferences node = EclipseUtil.defaultScope().getNode(PHPCorePlugin.ID); node.put(Keys.PHP_VERSION,
 		 * PHPVersion.PHP5.getAlias()); node .put(PHPCoreConstants.TASK_TAGS, PHPCoreConstants.DEFAULT_TASK_TAGS);
 		 * node.put(PHPCoreConstants.TASK_PRIORITIES, PHPCoreConstants.DEFAULT_TASK_PRIORITIES); node
 		 * .put(PHPCoreConstants.TASK_CASE_SENSITIVE, PHPCoreConstants.ENABLED);

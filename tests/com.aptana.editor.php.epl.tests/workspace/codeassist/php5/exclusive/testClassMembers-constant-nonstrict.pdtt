@@ -4,7 +4,6 @@ Show own class members under namespace
 org.eclipse.php.core/contentAssistShowStrictOptions=false
 --FILE--
 <?
-namespace NS;
 class A {
 
 	//static fields

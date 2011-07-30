@@ -16,6 +16,7 @@ import com.aptana.editor.common.ExtendedFastPartitioner;
 import com.aptana.editor.common.TextUtils;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.html.HTMLSourceConfiguration;
+import com.aptana.editor.js.JSSourceConfiguration;
 import com.aptana.editor.php.internal.ui.editor.PHPPartitionerSwitchStrategy;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
 
@@ -209,7 +210,7 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 31); // ?>'<'
 	}
 
-	public void testAPSTUD2806()
+	public void testHTMLAttributeDoubleSplit()
 	{
 		String source = "<meta http-equiv=\"Refresh\" content=\"<?php echo $pause?>;url=<?php echo $url?>\"/>"; //$NON-NLS-1$
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 0); // '<'meta
@@ -236,6 +237,34 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		// back to body
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 77); // ?>'"'
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, source, 79); // /'>'
+	}
+
+	public void testJSStringSplit()
+	{
+		String source = "<script>var i=\"x<?= Time.now ?>y\";</script>"; //$NON-NLS-1$
+		assertContentType(HTMLSourceConfiguration.HTML_SCRIPT, source, 0); // '<'script
+		assertContentType(HTMLSourceConfiguration.HTML_SCRIPT, source, 7); // '>'
+		// js
+		assertContentType(JSSourceConfiguration.DEFAULT, source, 8); // 'v'
+		assertContentType(JSSourceConfiguration.DEFAULT, source, 13); // '='
+		// js string
+		assertContentType(JSSourceConfiguration.STRING_DOUBLE, source, 14); // '"'
+		assertContentType(JSSourceConfiguration.STRING_DOUBLE, source, 15); // 'x'
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 16); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 17); // '?'
+		// inline PHP inside the script
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 19); // ' 'Time
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 28); // now' '
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 29); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 30); // '>'
+		// js string
+		assertContentType(JSSourceConfiguration.STRING_DOUBLE, source, 31); // ?>'y'
+		assertContentType(JSSourceConfiguration.STRING_DOUBLE, source, 32); // ?>y'"'
+		assertContentType(JSSourceConfiguration.DEFAULT, source, 33); // ';'
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 34); // '<'/script
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 42); // '>'
 	}
 
 	public void testPHPDoc()

@@ -8,19 +8,20 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
 /**
- * PHP parse node for HTML content within PHP source files.
+ * PHP 'Try' parse node.
  * 
  * @author Shalom Gibly <sgibly@appcelerator.com>
  */
-public class PHPHTMLNode extends PHPNonOutlineParseNode
+public class PHPTryNode extends PHPNonOutlineParseNode
 {
 	/**
-	 * @param startOffset
-	 * @param endOffset
+	 * Constructs a new PHPTryNode.
+	 * 
+	 * @param start
+	 * @param end
 	 */
-	public PHPHTMLNode(int startOffset, int endOffset)
+	public PHPTryNode(int start, int end)
 	{
-		super(PHPBaseParseNode.HTML_NODE, 0, startOffset, endOffset, "html"); //$NON-NLS-1$
+		super(IPHPParseNode.TRY_NODE, 0, start, end, "try"); //$NON-NLS-1$
 	}
-
 }

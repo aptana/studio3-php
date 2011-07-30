@@ -19,9 +19,7 @@ import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -51,6 +49,7 @@ import org.eclipse.ui.preferences.WorkingCopyManager;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.util.CoreUtility;
 import com.aptana.editor.php.util.Key;
@@ -151,11 +150,11 @@ public abstract class OptionsConfigurationBlock
 
 		if (fProject != null)
 		{
-			fLookupOrder = new IScopeContext[] { new ProjectScope(fProject), new InstanceScope(), new DefaultScope() };
+			fLookupOrder = new IScopeContext[] { new ProjectScope(fProject), EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
 		}
 		else
 		{
-			fLookupOrder = new IScopeContext[] { new InstanceScope(), new DefaultScope() };
+			fLookupOrder = new IScopeContext[] { EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
 		}
 
 		testIfOptionsComplete(allKeys);

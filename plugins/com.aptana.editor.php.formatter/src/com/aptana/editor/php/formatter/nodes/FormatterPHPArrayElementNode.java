@@ -19,20 +19,20 @@ import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
 public class FormatterPHPArrayElementNode extends FormatterBlockWithBeginEndNode
 {
 	private boolean hasCommentBefore;
-	private boolean isFirstElement;
+	private boolean isSingleElement;
 
 	/**
 	 * Constructs a new FormatterPHPArrayElementNode.
 	 * 
 	 * @param document
-	 * @param isFirstElement
-	 *            Indicate that this element is the first one in the list of the array's declaration elements.
+	 * @param isSingleElement
+	 *            Indicate that this element is the only element in the list of the array's declaration elements.
 	 * @param hasCommentBefore
 	 */
-	public FormatterPHPArrayElementNode(IFormatterDocument document, boolean isFirstElement, boolean hasCommentBefore)
+	public FormatterPHPArrayElementNode(IFormatterDocument document, boolean isSingleElement, boolean hasCommentBefore)
 	{
 		super(document);
-		this.isFirstElement = isFirstElement;
+		this.isSingleElement = isSingleElement;
 		this.hasCommentBefore = hasCommentBefore;
 	}
 
@@ -43,7 +43,7 @@ public class FormatterPHPArrayElementNode extends FormatterBlockWithBeginEndNode
 	@Override
 	protected boolean isIndenting()
 	{
-		return !isFirstElement && isAddingBeginNewLine();
+		return !isSingleElement && isAddingBeginNewLine();
 	}
 
 	/*
@@ -54,7 +54,7 @@ public class FormatterPHPArrayElementNode extends FormatterBlockWithBeginEndNode
 	protected boolean isAddingBeginNewLine()
 	{
 		return hasCommentBefore
-				|| (getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS) && !isFirstElement);
+				|| (getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS) && !isSingleElement);
 	}
 
 	protected boolean isAddingEndNewLine()

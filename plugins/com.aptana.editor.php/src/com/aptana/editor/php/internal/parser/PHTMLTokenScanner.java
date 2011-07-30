@@ -24,9 +24,9 @@ public class PHTMLTokenScanner extends HTMLTokenScanner
 {
 
 	@SuppressWarnings("nls")
-	private static final String[] PHP_START = { "<?php", "<?=", "<%=", "<?", "<%" };
+	private static final String[] PHP_START = { "<?php", "<?=", "<?" };
 	@SuppressWarnings("nls")
-	private static final String[] PHP_END = new String[] { "?>", "%>" };
+	private static final String[] PHP_END = new String[] { "?>" };
 
 	public PHTMLTokenScanner()
 	{
@@ -46,7 +46,7 @@ public class PHTMLTokenScanner extends HTMLTokenScanner
 			wordRule.addWord(word, token);
 		}
 		rules.add(wordRule);
-		
+
 		// Special heredoc and nowdoc rule
 		rules.add(new HeredocRule(createToken(getTokenName(PHTMLTokens.PHP_HEREDOC)), false));
 		rules.add(new HeredocRule(createToken(getTokenName(PHTMLTokens.PHP_HEREDOC)), true));

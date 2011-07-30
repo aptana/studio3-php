@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -80,6 +80,7 @@ import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.utils.TypeHierarchyUtils;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPVariableParseNode;
@@ -99,6 +100,11 @@ import com.aptana.parsing.lexer.Range;
  */
 public class PHPContentAssistProcessor extends CommonContentAssistProcessor implements IContentAssistProcessor
 {
+	private static final int EXTERNAL_CLASS_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 10;
+	private static final int EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 15;
+	private static final int EXTERNAL_CONSTANT_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 20;
+	private static final int EXTERNAL_DEFAULT_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 25;
+
 	private static final ICompletionProposal[] EMPTY_PROPOSAL = new ICompletionProposal[0];
 	protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	protected static final String DOLLAR_SIGN = "$"; //$NON-NLS-1$
@@ -137,6 +143,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	private static final String PARENT_ACTIVATION_SEQUENCE = "parent"; //$NON-NLS-1$
 
+	/**
+	 * Content assist suggestions that we should only allow under classes
+	 */
+	@SuppressWarnings("nls")
+	private static final Set<String> ALLOW_ONLY_UNDER_CLASS = new HashSet<String>(Arrays.asList("$this", "self",
+			"parent", "public", "private", "protected")); //$NON-NLS-4$
+
 	private static final IRange EMPTY_RANGE = new Range(0, 0);
 
 	private static Image fIcon53 = PHPEditorPlugin.getImage("icons/full/obj16/v53.png"); //$NON-NLS-1$
@@ -153,9 +166,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private int offset;
 	private String content;
 	/**
-	 * Whether reported stack is global.
+	 * Whether reported scope is global.
 	 */
-	private boolean reportedScopeUnderClassOrFunction = true;
+	private boolean reportedScopeIsGlobal = true;
+	/**
+	 * Whether reported scope is under a class definition.
+	 */
+	private boolean reportedScopeIsUnderClass = false;
 
 	/**
 	 * Reported imports.
@@ -191,6 +208,53 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		preferenceStore = PHPEditorPlugin.getDefault().getPreferenceStore();
 		currentContext = new ProposalContext(new AcceptAllContextFilter(), true, true, null);
 		contextCalculator = new PHPContextCalculator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.CommonContentAssistProcessor#isValidAutoActivationLocation(char, int,
+	 * org.eclipse.jface.text.IDocument, int)
+	 */
+	@Override
+	public boolean isValidAutoActivationLocation(char c, int keyCode, IDocument document, int offset)
+	{
+		// make sure we don't popup a proposal when typing the <?php
+		try
+		{
+			String openTag = null;
+			if (c == 'h')
+			{
+				openTag = document.get(offset - 3, 3);
+			}
+			if (c == 'p')
+			{
+				openTag = document.get(offset - 4, 4);
+			}
+			if (openTag != null && openTag.startsWith("<?p")) //$NON-NLS-1$
+			{
+				return false;
+			}
+		}
+		catch (Exception e)
+		{
+			// ignore it
+		}
+		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
+		if (!currentContext.acceptModelsElements() && !currentContext.isAutoActivateCAAfterApply())
+		{
+			return false;
+		}
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.CommonContentAssistProcessor#isValidIdentifier(char, int)
+	 */
+	public boolean isValidIdentifier(char c, int keyCode)
+	{
+		return (Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c) || c == '$');
 	}
 
 	@Override
@@ -385,8 +449,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				content, true, forceActivation);
 		if (computeCompletionProposalInternal.length > 0)
 		{
-			ICommonCompletionProposal pa = (ICommonCompletionProposal) computeCompletionProposalInternal[0];
-			pa.setRelevance(ICommonCompletionProposal.RELEVANCE_MEDIUM);
 			if (replaceLengthIncrease > 0)
 			{
 				computeCompletionProposalInternal = batchIncreaseReplaceLength(computeCompletionProposalInternal,
@@ -479,25 +541,24 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// Check if we are dealing with a namespace completion
 			if (identifier.startsWith(GLOBAL_NAMESPACE))
 			{
-				return computeNamespaceCompletion(start, content, identifier, reportedScopeUnderClassOrFunction,
-						globalImports, getModule(), proposeBuiltins, true);
+				return computeNamespaceCompletion(start, content, identifier, globalImports, getModule(),
+						proposeBuiltins, true);
 			}
 
-			return simpleIdentifierCompletion(start, content, identifier, reportedScopeUnderClassOrFunction,
-					globalImports, getModule(), proposeBuiltins, true, false);
+			return simpleIdentifierCompletion(start, content, identifier, globalImports, getModule(), proposeBuiltins,
+					true, false);
 		}
 
 		return EMPTY_PROPOSAL;
 	}
 
 	private ICompletionProposal[] computeNamespaceCompletion(int offset, String content, String identifier,
-			boolean reportedScopeUnderClassOrFunction, Set<String> globalImports, IModule module,
-			boolean proposeBuiltins, boolean filter)
+			Set<String> globalImports, IModule module, boolean proposeBuiltins, boolean filter)
 	{
 		// We need to trim out our namespace separator at the beginning of the identifier.
 		identifier = identifier.substring(1);
-		return simpleIdentifierCompletion(offset, content, identifier, reportedScopeUnderClassOrFunction,
-				globalImports, module, proposeBuiltins, filter, true);
+		return simpleIdentifierCompletion(offset, content, identifier, globalImports, module, proposeBuiltins, filter,
+				true);
 	}
 
 	// /**
@@ -1395,8 +1456,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return completion proposals
 	 */
 	private ICompletionProposal[] simpleIdentifierCompletion(final int offset, String content, String identifier,
-			boolean reportedStackIsGlobal, Set<String> globalImports, IModule module, boolean proposeBuiltins,
-			boolean filter, boolean ignorIndexNamespace)
+			Set<String> globalImports, IModule module, boolean proposeBuiltins, boolean filter,
+			boolean ignorIndexNamespace)
 	{
 		String name = identifier;
 
@@ -1443,7 +1504,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			index = getIndexOptimized(content, offset);
 		}
 		String namespaceToUse = ignorIndexNamespace ? EMPTY_STRING : namespace;
-		List<IElementEntry> entries = computeSimpleIdentifierEntries(reportedStackIsGlobal, globalImports, name,
+		List<IElementEntry> entries = computeSimpleIdentifierEntries(reportedScopeIsGlobal, globalImports, name,
 				variableCompletion, index, false, module, filter, currentContext, namespaceToUse, aliases);
 
 		items.addAll(entries);
@@ -1470,11 +1531,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						else if (modelItem instanceof IPHPParseNode && !(modelItem instanceof PHPFunctionParseNode))
 						{
 							IPHPParseNode pn = (IPHPParseNode) modelItem;
-							if (pn.getNodeName().startsWith(DOLLAR_SIGN))
+							String nodeName = pn.getNodeName();
+							if (nodeName.startsWith(DOLLAR_SIGN))
 							{
+								if (!reportedScopeIsUnderClass && ALLOW_ONLY_UNDER_CLASS.contains(nodeName))
 								{
-									items.add(pn);
+									continue;
 								}
+								items.add(pn);
 							}
 						}
 					}
@@ -1482,6 +1546,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					{
 						if (!(modelItem instanceof PHPVariableParseNode))
 						{
+							String nodeName = ((PHPBaseParseNode) modelItem).getNodeName();
+							// make sure we don't offer items that should only appear under a class/interface.
+							if (!reportedScopeIsUnderClass && ALLOW_ONLY_UNDER_CLASS.contains(nodeName))
+							{
+								continue;
+							}
 							items.add(modelItem);
 						}
 					}
@@ -1903,7 +1973,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		});
 
-		reportedScopeUnderClassOrFunction = indexer.isReportedScopeUnderClassOrFunction();
+		reportedScopeIsGlobal = indexer.isReportedScopeGlobal();
+		reportedScopeIsUnderClass = indexer.isReportedScopeUnderClass();
 		globalImports = indexer.getGlobalImports();
 		aliases = indexer.getAliases();
 		namespace = indexer.getNamespace();
@@ -1934,27 +2005,19 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private List<ICompletionProposal> createProposals(final int offset, String name, ArrayList<Object> items,
 			IModule module, boolean applyDollarSymbol, IElementsIndex index, boolean newInstanceCompletion)
 	{
-		List<Object> sortedItems = sortItems(items, module);
 		String origName = name;
 		int lastIndexOf = name.lastIndexOf('\\');
 		if (lastIndexOf != -1)
 		{
 			name = name.substring(lastIndexOf + 1);
 		}
-		boolean notEmptyCompletion = name.length() > 0;
-		boolean completionSetted = false;
 		String lowerCase = name.toLowerCase();
-
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-
 		Set<String> usedNames = new LinkedHashSet<String>();
-
-		for (int i = 0; i < sortedItems.size(); i++)
+		Map<Object, PHPCompletionProposal> itemsToProposals = new HashMap<Object, PHPCompletionProposal>();
+		for (Object item : items)
 		{
-			Object item = sortedItems.get(i);
-
 			PHPCompletionProposal proposal = null;
-
 			if (item instanceof IPHPParseNode)
 			{
 				IPHPParseNode node = (IPHPParseNode) item;
@@ -2023,6 +2086,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 									{
 										usedNames.add(firstName);
 										result.add(proposal);
+										itemsToProposals.put(item, proposal);
 									}
 
 								}
@@ -2057,6 +2121,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 							{
 								usedNames.add(firstName);
 								result.add(proposal);
+								itemsToProposals.put(item, proposal);
 							}
 							continue;
 						}
@@ -2089,14 +2154,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (proposal != null)
 			{
 				result.add(proposal);
-
-				if (!completionSetted && notEmptyCompletion)
-				{
-					proposal.setRelevance(ICommonCompletionProposal.RELEVANCE_MEDIUM);
-					completionSetted = true;
-				}
+				itemsToProposals.put(item, proposal);
 			}
 		}
+		prioritizeItems(itemsToProposals, module);
 		return result;
 	}
 
@@ -3009,39 +3070,28 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		return entry.getValue() instanceof ClassPHPEntryValue;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.editor.common.CommonContentAssistProcessor#sortProposals(org.eclipse.jface.text.contentassist.
-	 * ICompletionProposal[])
-	 */
-	@Override
-	protected void sortProposals(ICompletionProposal[] proposals)
-	{
-		// Do nothing, since we already return a sorted list of proposals.
-	}
-
 	/**
-	 * Performs the items sorting.
+	 * Prioritize the items that will be displayed in the CA.
 	 * 
-	 * @param items
-	 *            - items to sort.
+	 * @param itemsToProposals
+	 *            A map of elements (php items) to their proposals.
 	 * @param localModule
 	 *            - local module.
 	 * @return sorted items.
 	 */
-	private List<Object> sortItems(List<Object> items, IModule localModule)
+	private void prioritizeItems(Map<Object, PHPCompletionProposal> itemsToProposals, IModule localModule)
 	{
-		// first dividing items for local and external ones
-		List<Object> locals = new ArrayList<Object>();
+		// extract the external items into this list.
 		List<Object> externals = new ArrayList<Object>();
 
-		for (Object item : items)
+		for (Object item : itemsToProposals.keySet())
 		{
 			if (item instanceof IElementEntry)
 			{
 				if (localModule == null || localModule.equals(((IElementEntry) item).getModule()))
 				{
-					locals.add(item);
+					// local items should have the original order and come first
+					itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_HIGH);
 				}
 				else
 				{
@@ -3054,60 +3104,56 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 
-		List<Object> result = new ArrayList<Object>();
-		// local items should have the original order and come first
-		result.addAll(locals);
-		// Sort the externals in a way that the classes will appear first, the
-		// functions follow and the variables at the end.
-		Collections.sort(externals, new Comparator<Object>()
+		// Prioritize the external items.
+		// We set the priority to classes, functions, constants and then all the rest.
+		for (Object item : externals)
 		{
-
-			public int compare(Object o1, Object o2)
+			if (item instanceof IElementEntry)
 			{
-				int o1IsBuiltIn = 0;
-				int o2IsBuiltIn = 0;
-
-				String name1 = null;
-				if (o1 instanceof IElementEntry)
+				IElementEntry entry = (IElementEntry) item;
+				switch (entry.getCategory())
 				{
-					name1 = ElementsIndexingUtils.getLastNameInPath(((IElementEntry) o1).getEntryPath());
+					case IPHPIndexConstants.CLASS_CATEGORY:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CLASS_PROPOSAL_RELEVANCE);
+						break;
+					case IPHPIndexConstants.FUNCTION_CATEGORY:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE);
+						break;
+					case IPHPIndexConstants.CONST_CATEGORY:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CONSTANT_PROPOSAL_RELEVANCE);
+						break;
+					default:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_DEFAULT_PROPOSAL_RELEVANCE);
 				}
-				else if (o1 instanceof IPHPParseNode)
-				{
-					name1 = ((IPHPParseNode) o1).getNodeName().toLowerCase();
-					o1IsBuiltIn = 1;
-				}
-				else
-				{
-					return 0;
-				}
-
-				String name2 = null;
-				if (o2 instanceof IElementEntry)
-				{
-					name2 = ElementsIndexingUtils.getLastNameInPath(((IElementEntry) o2).getEntryPath());
-				}
-				else if (o2 instanceof IPHPParseNode)
-				{
-					name2 = ((IPHPParseNode) o2).getNodeName().toLowerCase();
-					o2IsBuiltIn = 1;
-				}
-				else
-				{
-					return 0;
-				}
-				int builtInCompare = o2IsBuiltIn - o1IsBuiltIn;
-				if (builtInCompare == 0)
-				{
-					return name1.compareTo(name2);
-				}
-				return builtInCompare;
 			}
-
-		});
-		result.addAll(externals);
-
-		return result;
+			else if (item instanceof PHPBaseParseNode)
+			{
+				PHPBaseParseNode parseNode = (PHPBaseParseNode) item;
+				switch (parseNode.getNodeType())
+				{
+					case IPHPParseNode.KEYWORD_NODE:
+						// Set high priority for PHP keywords.
+						itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_HIGH - 2);
+						break;
+					case IPHPParseNode.CLASS_NODE:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CLASS_PROPOSAL_RELEVANCE - 2);
+						break;
+					case IPHPParseNode.FUNCTION_NODE:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE - 2);
+						break;
+					case IPHPParseNode.CONST_NODE:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_CONSTANT_PROPOSAL_RELEVANCE - 2);
+						break;
+					default:
+						itemsToProposals.get(item).setRelevance(EXTERNAL_DEFAULT_PROPOSAL_RELEVANCE - 2);
+				}
+			}
+			else
+			{
+				// All the rest of the PHP built-in API item can
+				itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_LOW + 10);
+			}
+		}
 	}
 
 	/**
@@ -3201,8 +3247,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else
 			{
-				List<IElementEntry> res = computeSimpleIdentifierEntries(reportedScopeUnderClassOrFunction,
-						globalImports, info.getName(), false, index, true, getModule(), false, namespace, aliases);
+				List<IElementEntry> res = computeSimpleIdentifierEntries(reportedScopeIsGlobal, globalImports,
+						info.getName(), false, index, true, getModule(), false, namespace, aliases);
 				if (res != null)
 				{
 					entries = new LinkedHashSet<IElementEntry>();

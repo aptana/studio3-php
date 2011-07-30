@@ -67,6 +67,7 @@ import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
  */
 public final class PHPGlobalIndexer
 {
+	public static final Object FAMILY_PHP_BUILD = new Object();
 
 	private static class Mutex
 	{
@@ -378,6 +379,21 @@ public final class PHPGlobalIndexer
 				}
 				return Status.OK_STATUS;
 			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+			 */
+			@Override
+			public boolean belongsTo(Object family)
+			{
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				{
+					return true;
+				}
+				return super.belongsTo(family);
+			}
 		};
 
 		return job;
@@ -456,6 +472,21 @@ public final class PHPGlobalIndexer
 				}
 				return Status.OK_STATUS;
 			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+			 */
+			@Override
+			public boolean belongsTo(Object family)
+			{
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				{
+					return true;
+				}
+				return super.belongsTo(family);
+			}
 		};
 
 		return job;
@@ -523,6 +554,20 @@ public final class PHPGlobalIndexer
 				return Status.OK_STATUS;
 			}
 
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+			 */
+			@Override
+			public boolean belongsTo(Object family)
+			{
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				{
+					return true;
+				}
+				return super.belongsTo(family);
+			}
 		};
 
 		return job;
@@ -583,6 +628,10 @@ public final class PHPGlobalIndexer
 
 	private void doSave()
 	{
+		if (EclipseUtil.isTesting())
+		{
+			return;
+		}
 		HashSet<IBuildPath> bp = new HashSet<IBuildPath>();
 		synchronized (needSaving)
 		{

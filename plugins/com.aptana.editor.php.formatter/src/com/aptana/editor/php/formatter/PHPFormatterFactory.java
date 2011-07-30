@@ -14,11 +14,14 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITI
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ID;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CASE_BODY;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_CURLY_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_FUNCTION_BODY;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_NAMESPACE_BLOCKS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_PHP_BODY;
@@ -43,7 +46,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_FOR_SEMICOLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_KEY_VALUE_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_NAMESPACE_SEPARATOR;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_POSTFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PREFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_RELATIONAL_OPERATORS;
@@ -54,6 +62,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFOR
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ARROW_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CASE_COLON_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COMMAS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CONCATENATION_OPERATOR;
@@ -61,7 +75,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFOR
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_FOR_SEMICOLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_KEY_VALUE_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_NAMESPACE_SEPARATOR;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_POSTFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PREFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_RELATIONAL_OPERATORS;
@@ -161,10 +180,29 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_UNARY_OPERATOR),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_NAMESPACE_SEPARATOR),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_NAMESPACE_SEPARATOR),
-			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_PARENTHESES),
-			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_PARENTHESES),
 			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_FOR_SEMICOLON),
-			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_FOR_SEMICOLON) };
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_FOR_SEMICOLON),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, FORMATTER_OFF_ON_ENABLED),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, FORMATTER_ON),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, FORMATTER_OFF),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_OPENING_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_OPENING_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_CLOSING_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_OPENING_DECLARATION_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_OPENING_INVOCATION_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_OPENING_LOOP_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_OPENING_LOOP_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_CLOSING_LOOP_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES),
+			new PreferenceKey(PHPCodeFormatterPlugin.PLUGIN_ID, SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES) };
 
 	public PreferenceKey[] getPreferenceKeys()
 	{

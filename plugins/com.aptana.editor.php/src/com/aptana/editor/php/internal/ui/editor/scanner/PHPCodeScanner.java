@@ -7,7 +7,9 @@
  */
 package com.aptana.editor.php.internal.ui.editor.scanner;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 import java_cup.runtime.Symbol;
@@ -39,6 +41,7 @@ public class PHPCodeScanner implements ITokenScanner
 	private IDocument document;
 	private int originalDocumentOffset;
 	private IToken lastToken;
+	private boolean inFunctionDeclaration;
 
 	/**
 	 * Constructs a new PHPCodeScanner
@@ -74,14 +77,20 @@ public class PHPCodeScanner implements ITokenScanner
 	{
 		IToken token = pop();
 		if (token.isEOF())
+		{
 			return Token.EOF;
+		}
 		Symbol sym = (Symbol) token.getData();
 
 		IPHPTokenMapper tokenMapper = PHPTokenMapperFactory.getMapper(fScanner.getPHPVersion());
 		token = tokenMapper.mapToken(sym, this);
+		if (scopeEquals(token, "storage.type.function.php")) //$NON-NLS-1$
+		{
+			inFunctionDeclaration = true;
+		}
 		// token scope is "default.php" and last was "storage.type.function.php", make this one
 		// "entity.name.function.php"
-		if (scopeEquals(lastToken, "storage.type.function.php") //$NON-NLS-1$
+		else if (scopeEquals(lastToken, "storage.type.function.php") //$NON-NLS-1$
 				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, "constant.other.php"))) //$NON-NLS-1$
 		{
 			token = getToken("entity.name.function.php"); //$NON-NLS-1$
@@ -93,11 +102,67 @@ public class PHPCodeScanner implements ITokenScanner
 		{
 			token = getToken("entity.name.type.class.php"); //$NON-NLS-1$
 		}
+		// When we hit right paren, jump out of function declaration
+		else if (inFunctionDeclaration && scopeEquals(lastToken, "punctuation.definition.parameters.end.php")) //$NON-NLS-1$
+		{
+			inFunctionDeclaration = false;
+		}
+		// Only use these special scopes for parens in function definitions
+		else if (!inFunctionDeclaration && (scopeEquals(token, "punctuation.definition.parameters.begin.php") //$NON-NLS-1$
+				|| scopeEquals(token, "punctuation.definition.parameters.end.php"))) //$NON-NLS-1$
+		{
+			token = getToken(StringUtil.EMPTY);
+		}
+		// number inside array access
+		else if (scopeEquals(lastToken, "variable.other.php keyword.operator.index-start.php") && //$NON-NLS-1$
+				scopeEquals(token, "constant.numeric.php")) //$NON-NLS-1$
+		{
+			token = getToken("variable.other.php constant.numeric.php"); //$NON-NLS-1$
+		}
+		// ->identifier
+		else if (scopeEquals(lastToken, "keyword.operator.class.php") //$NON-NLS-1$
+				&& (scopeEquals(token, StringUtil.EMPTY)))
+		{
+			// Lookahead to see if there's a trailing paren! If so, make it a function-call, otherwise it's a property
+			int lastOffset = getTokenOffset();
+			int lastLength = getTokenLength();
+			List<QueuedToken> popped = new ArrayList<QueuedToken>();
+			IToken next = pop();
+			while (next.isWhitespace())
+			{
+				popped.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
+				next = pop();
+			}
+			popped.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
+
+			IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
+			if (scopeEquals(nextMapped, "punctuation.definition.parameters.begin.php")) //$NON-NLS-1$
+			{
+				token = getToken("meta.function-call.object.php"); //$NON-NLS-1$
+			}
+			else
+			{
+				token = getToken("variable.other.property.php"); //$NON-NLS-1$
+			}
+			// Push the tokens we looked ahead back onto our queue
+			for (QueuedToken addBack : popped)
+			{
+				push(addBack.getToken(), addBack.getOffset(), addBack.getLength());
+			}
+			fLength = lastLength;
+			fOffset = lastOffset;
+		}
 
 		if (token.isOther())
 		{
 			lastToken = token;
 		}
+
+		if (inFunctionDeclaration)
+		{
+			return getToken("meta.function.php " + token.getData()); //$NON-NLS-1$
+		}
+
 		return token;
 	}
 
@@ -178,22 +243,30 @@ public class PHPCodeScanner implements ITokenScanner
 			token = queued.getToken();
 		}
 		if (token == null || token.isEOF())
+		{
 			return Token.EOF;
+		}
 		return token;
 	}
 
 	private void push(IToken next)
 	{
+		push(next, getTokenOffset(), getTokenLength());
+	}
+
+	private void push(IToken next, int offset, int length)
+	{
 		if (queue == null)
 		{
 			queue = new LinkedList<QueuedToken>();
 		}
-		queue.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
+		queue.add(new QueuedToken(next, offset, length));
 	}
 
 	private void reset()
 	{
 		queue = null;
+		inFunctionDeclaration = false;
 		lastToken = null;
 	}
 }

@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.StringConverter;
@@ -93,7 +92,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		{
 			private void setOccurrenceColors()
 			{
-				IEclipsePreferences prefs = new InstanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
+				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
 				prefs.put("PHPReadOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
 				prefs.put("PHPWriteOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
@@ -121,7 +120,8 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 					}
 				};
 				setOccurrenceColors();
-				new InstanceScope().getNode(ThemePlugin.PLUGIN_ID).addPreferenceChangeListener(fThemeChangeListener);
+				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
+						.addPreferenceChangeListener(fThemeChangeListener);
 				return Status.OK_STATUS;
 			}
 		};
@@ -177,7 +177,8 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 			PHPGlobalIndexer.getInstance().save();
 			if (fThemeChangeListener != null)
 			{
-				new InstanceScope().getNode(ThemePlugin.PLUGIN_ID).removePreferenceChangeListener(fThemeChangeListener);
+				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
+						.removePreferenceChangeListener(fThemeChangeListener);
 				fThemeChangeListener = null;
 			}
 		}

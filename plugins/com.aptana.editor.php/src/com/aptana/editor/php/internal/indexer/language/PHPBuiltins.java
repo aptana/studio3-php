@@ -202,7 +202,7 @@ public final class PHPBuiltins
 	}
 
 	/**
-	 * Adds built-in.
+	 * Adds built-in. By default, the type of node that will be added is IPHPParseNode.KEYWORD_NODE.
 	 * 
 	 * @param string
 	 * @param nodeName
@@ -210,10 +210,28 @@ public final class PHPBuiltins
 	 * @param phpVersions
 	 *            An optional array of supported php-versions. In case none is passed, the built-in will be added to all
 	 *            versions
+	 * @see PHPBuiltins#addBuiltin(String, String, String, short, PHPVersion...)
 	 */
 	private void addBuiltin(String string, String nodeName, String description, PHPVersion... phpVersions)
 	{
-		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, 0, -1, -1, nodeName);
+		addBuiltin(string, nodeName, description, IPHPParseNode.KEYWORD_NODE, phpVersions);
+	}
+
+	/**
+	 * Adds built-in.
+	 * 
+	 * @param string
+	 * @param nodeName
+	 * @param description
+	 * @param nodeType
+	 * @param phpVersions
+	 *            An optional array of supported php-versions. In case none is passed, the built-in will be added to all
+	 *            versions
+	 */
+	private void addBuiltin(String string, String nodeName, String description, short nodeType,
+			PHPVersion... phpVersions)
+	{
+		PHPBaseParseNode node = new PHPBaseParseNode(nodeType, 0, -1, -1, nodeName);
 		builtins.add(node);
 		node.setDocumentation(new PHPDocBlockImp(description, StringUtil.EMPTY, NO_TAGS, 0));
 		if (phpVersions != null && phpVersions.length > 0)
@@ -296,7 +314,9 @@ public final class PHPBuiltins
 	 */
 	private void addSuperGlobal(String string, String nodeName)
 	{
-		addBuiltin(string, nodeName, MessageFormat.format(Messages.SUPERGLOBAL_LABEL, nodeName));
+		// add the super-globals as constants.
+		addBuiltin(string, nodeName, MessageFormat.format(Messages.SUPERGLOBAL_LABEL, nodeName),
+				IPHPParseNode.CONST_NODE);
 	}
 
 	/**
@@ -684,8 +704,10 @@ public final class PHPBuiltins
 			documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
 					.getNameNode().getName()), StringUtil.EMPTY, NO_TAGS, 0);
 		}
-		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, phpChild.getModifiers(),
-				child.getStartingOffset(), child.getEndingOffset(), phpChild.getNameNode().getName());
+		short type = child.getNodeType() == IPHPParseNode.KEYWORD_NODE ? IPHPParseNode.KEYWORD_NODE
+				: IPHPParseNode.CONST_NODE;
+		PHPBaseParseNode node = new PHPBaseParseNode(type, phpChild.getModifiers(), child.getStartingOffset(),
+				child.getEndingOffset(), phpChild.getNameNode().getName());
 		node.setDocumentation(documentation);
 		builtins.add(node);
 		String parentName = (child.getParent() != null) ? child.getParent().getNameNode().getName() : StringUtil.EMPTY;

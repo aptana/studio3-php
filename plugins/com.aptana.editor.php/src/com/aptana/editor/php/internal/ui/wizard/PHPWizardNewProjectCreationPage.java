@@ -13,20 +13,20 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.preferences.Messages;
 import com.aptana.editor.php.internal.ui.preferences.PHPVersionConfigurationBlock;
+import com.aptana.projects.internal.wizards.CommonWizardNewProjectCreationPage;
 
 /**
  * New PHP project main creation page.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPage
+public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreationPage
 {
 
 	private Combo fPHPVersions;
@@ -76,6 +76,24 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 		});
 		Dialog.applyDialogFont(control);
 		setControl(control);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.projects.internal.wizards.IWizardProjectCreationPage#isCloneFromGit()
+	 */
+	public boolean isCloneFromGit()
+	{
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.projects.internal.wizards.IWizardProjectCreationPage#getCloneURI()
+	 */
+	public String getCloneURI()
+	{
+		return null;
 	}
 
 	/**

@@ -149,6 +149,22 @@ public class PHPTokenMapperFactory
 		{
 			return scanner.getToken("punctuation.terminator.expression.php");
 		}
+		if ("(".equals(tokenContent))
+		{
+			return scanner.getToken("punctuation.definition.parameters.begin.php"); //$NON-NLS-1$
+		}
+		if (")".equals(tokenContent))
+		{
+			return scanner.getToken("punctuation.definition.parameters.end.php"); //$NON-NLS-1$
+		}
+		if ("[".equals(tokenContent))
+		{
+			return scanner.getToken("variable.other.php keyword.operator.index-start.php"); //$NON-NLS-1$
+		}
+		if ("]".equals(tokenContent))
+		{
+			return scanner.getToken("variable.other.php keyword.operator.index-end.php"); //$NON-NLS-1$
+		}
 		// Operators
 		if (ASSIGNMENTS.contains(tokenContent))
 		{
@@ -179,6 +195,7 @@ public class PHPTokenMapperFactory
 		{
 			return scanner.getToken("constant.other.php");
 		}
+
 		return scanner.getToken(StringUtil.EMPTY);
 	}
 }

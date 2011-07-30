@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
@@ -42,7 +43,9 @@ import com.aptana.editor.common.ExtendedFastPartitioner;
 import com.aptana.editor.common.NullPartitionerSwitchStrategy;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.NullSubPartitionScanner;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
+import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -69,6 +72,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 	protected static IProject project;
 	protected static IFile testFile;
+	protected static int testNumber;
 
 	public static void setUpSuite() throws Exception
 	{
@@ -83,7 +87,6 @@ public class CodeAssistTests extends AbstractPDTTTest
 		projectDescription.setNatureIds(new String[] { PHPNature.NATURE_ID });
 		project.create(projectDescription, null);
 		project.open(null);
-		
 
 		PHPBuiltins.getInstance();
 		PHPGlobalIndexer.getInstance();
@@ -111,9 +114,8 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 	public static Test suite()
 	{
-
+		Logger.global.entering("Test", "suite");
 		TestSuite suite = new TestSuite("Auto Code Assist Tests");
-
 		for (final PHPVersion phpVersion : TESTS.keySet())
 		{
 			TestSuite phpVerSuite = new TestSuite(phpVersion.getAlias());
@@ -131,6 +133,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 
 							protected void setUp() throws Exception
 							{
+								PHPVersionProvider.getInstance().setPreferencesQualifier(PHPEditorPlugin.PLUGIN_ID);
 								TestUtils.setProjectPhpVersion(project, phpVersion);
 								pdttFile.applyPreferences();
 							}
@@ -154,24 +157,18 @@ public class CodeAssistTests extends AbstractPDTTTest
 					catch (final Exception e)
 					{
 						phpVerSuite.addTest(new TestCase(fileName)
-						{ // dummy
-									// test
-									// indicating
-									// PDTT
-									// file
-									// parsing
-									// failure
-									protected void runTest() throws Throwable
-									{
-										throw e;
-									}
-								});
+						{
+							// dummy test indicating PDTT file parsing failure
+							protected void runTest() throws Throwable
+							{
+								throw e;
+							}
+						});
 					}
 				}
 			}
 			suite.addTest(phpVerSuite);
 		}
-
 		// Create a setup wrapper
 		TestSetup setup = new TestSetup(suite)
 		{
@@ -185,6 +182,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 				tearDownSuite();
 			}
 		};
+		Logger.global.exiting("Test", "suite");
 		return setup;
 	}
 
@@ -208,7 +206,8 @@ public class CodeAssistTests extends AbstractPDTTTest
 		// replace the offset character
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
-		testFile = project.getFile("test.php");
+		testNumber++;
+		testFile = project.getFile("test-" + testNumber + ".php");
 		if (testFile.exists())
 		{
 			testFile.refreshLocal(IResource.DEPTH_ZERO, null);
@@ -217,10 +216,8 @@ public class CodeAssistTests extends AbstractPDTTTest
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
-
+		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
-		// PHPCoreTests.waitForAutoBuild();
-
 		return offset;
 	}
 
@@ -253,7 +250,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 			editor.computeModule(((IUniformResource) resource).getURI().toString());
 		}
 		PHPContentAssistProcessor processor = new PHPContentAssistProcessor(editor);
-		// 
+		//
 		IDocument document = new Document(new String(sourceModule.getSourceAsCharArray()));
 		CompositePartitionScanner partitionScanner = new CompositePartitionScanner(PHPSourceConfiguration.getDefault()
 				.createSubPartitionScanner(), new NullSubPartitionScanner(), new NullPartitionerSwitchStrategy());
@@ -276,8 +273,8 @@ public class CodeAssistTests extends AbstractPDTTTest
 			Set<String> actualProposals = new HashSet<String>();
 			for (ICompletionProposal proposal : proposals)
 			{
-				String string = new String(((PHPCompletionProposal) proposal).getReplacementString().replaceAll(
-						"\\(\\)", "").toLowerCase());
+				String string = new String(((PHPCompletionProposal) proposal).getReplacementString()
+						.replaceAll("\\(\\)", "").toLowerCase());
 				if (string.startsWith("$"))
 				{
 					actualProposals.add(string.substring(1).trim());

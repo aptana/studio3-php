@@ -13,6 +13,9 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITI
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_FUNCTION_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.BRACE_POSITION_TYPE_DECLARATION;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_INDENTATION_SIZE;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_ON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_CHAR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.FORMATTER_TAB_SIZE;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.INDENT_BREAK_IN_CASE;
@@ -42,7 +45,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_FOR_SEMICOLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_KEY_VALUE_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_NAMESPACE_SEPARATOR;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_OPENING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_POSTFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_PREFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_AFTER_RELATIONAL_OPERATORS;
@@ -53,6 +61,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFOR
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ARROW_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_ASSIGNMENT_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CASE_COLON_OPERATOR;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CLOSING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_COMMAS;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_CONCATENATION_OPERATOR;
@@ -60,7 +74,12 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFOR
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_FOR_SEMICOLON;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_KEY_VALUE_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_NAMESPACE_SEPARATOR;
-import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_LOOP_PARENTHESES;
+import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_OPENING_PARENTHESES;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_POSTFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_PREFIX_OPERATOR;
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.SPACES_BEFORE_RELATIONAL_OPERATORS;
@@ -73,6 +92,7 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENT
 import java.io.StringReader;
 import java.util.AbstractQueue;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -155,19 +175,26 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			SPACES_BEFORE_POSTFIX_OPERATOR, SPACES_AFTER_POSTFIX_OPERATOR, SPACES_BEFORE_PREFIX_OPERATOR,
 			SPACES_AFTER_PREFIX_OPERATOR, SPACES_BEFORE_ARITHMETIC_OPERATOR, SPACES_AFTER_ARITHMETIC_OPERATOR,
 			SPACES_BEFORE_UNARY_OPERATOR, SPACES_AFTER_UNARY_OPERATOR, SPACES_BEFORE_NAMESPACE_SEPARATOR,
-			SPACES_AFTER_NAMESPACE_SEPARATOR, SPACES_BEFORE_PARENTHESES, SPACES_AFTER_PARENTHESES,
-			SPACES_BEFORE_FOR_SEMICOLON, SPACES_AFTER_FOR_SEMICOLON };
+			SPACES_AFTER_NAMESPACE_SEPARATOR, SPACES_BEFORE_FOR_SEMICOLON, SPACES_AFTER_FOR_SEMICOLON,
+			SPACES_BEFORE_OPENING_PARENTHESES, SPACES_AFTER_OPENING_PARENTHESES, SPACES_BEFORE_CLOSING_PARENTHESES,
+			SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES, SPACES_AFTER_OPENING_DECLARATION_PARENTHESES,
+			SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES, SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES,
+			SPACES_AFTER_OPENING_INVOCATION_PARENTHESES, SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES,
+			SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES, SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES,
+			SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES, SPACES_BEFORE_OPENING_LOOP_PARENTHESES,
+			SPACES_AFTER_OPENING_LOOP_PARENTHESES, SPACES_BEFORE_CLOSING_LOOP_PARENTHESES,
+			SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES, SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES,
+			SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES };
 
-	// PHP basic prefix
-	private static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$
+	// PHP basic prefixes
+	private static final String PHP_SHORT_TAG_OPEN = "<?"; //$NON-NLS-1$
+	private static final String PHP_PREFIX = "<?php "; //$NON-NLS-1$
 	// Regex patterns
-	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<%=|<\\?|<\\%"); //$NON-NLS-1$
+	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<\\?"); //$NON-NLS-1$
 	// multi-line comment flattening pattern
 	private static final Pattern MULTI_LINE_FLATTEN_PATTERN = Pattern.compile("\\s|/|\\*"); //$NON-NLS-1$
 	// single-line comment flattening pattern
 	private static final Pattern SINGLE_LINE_FLATTEN_PATTERN = Pattern.compile("\\s|/|#"); //$NON-NLS-1$
-
-	private String lineSeparator;
 
 	/**
 	 * Constructor.
@@ -176,8 +203,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	protected PHPFormatter(String lineSeparator, Map<String, String> preferences, String mainContentType)
 	{
-		super(preferences, mainContentType);
-		this.lineSeparator = lineSeparator;
+		super(preferences, mainContentType, lineSeparator);
 	}
 
 	/**
@@ -187,10 +213,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			IFormattingContext formattingContext)
 	{
 		int indent = 0;
-		if (isSelection)
-		{
-			offset = ((IRegion) formattingContext.getProperty(FormattingContextProperties.CONTEXT_REGION)).getOffset();
-		}
 		try
 		{
 			// detect the indentation offset with the parser, only if the given offset is not the first one in the
@@ -221,6 +243,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			String source = document.get();
 			PHPParser parser = (PHPParser) checkoutParser();
 			Program ast = parser.parseAST(new StringReader(source));
+			checkinParser(parser);
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
@@ -260,24 +283,25 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			IFormattingContext context, String indentSufix) throws FormatterException
 	{
 		int offsetIncludedOpenTag = offset;
-		String input;
-		int spacesCount = -1;
+		int offsetBySelection = 0;
+		int lengthBySelection = 0;
 		if (isSelection)
 		{
-			// we need to prepend a <?php prefix to the input. Otherwise, the AST will not get generated.
-			input = source.substring(offset, offset + length);
-			spacesCount = countLeftWhitespaceChars(input);
-			input = PHP_PREFIX + input;
+			IRegion selectedRegion = (IRegion) context.getProperty(FormattingContextProperties.CONTEXT_REGION);
+			offsetBySelection = selectedRegion.getOffset();
+			lengthBySelection = selectedRegion.getLength();
 		}
-		else
-		{
-			offsetIncludedOpenTag = Math.max(0, findOpenTagOffset(source, offset));
-			input = source.substring(offsetIncludedOpenTag, offset + length);
-		}
+		offsetIncludedOpenTag = Math.max(0,
+				findOpenTagOffset(source, offset, offsetBySelection, offsetBySelection + lengthBySelection));
+		String input = source.substring(offsetIncludedOpenTag, offset + length);
 		// We do not use a parse-state for the PHP, since we are just interested in the AST and do not want to update
 		// anything in the indexing.
 		try
 		{
+			if (!input.startsWith(PHP_SHORT_TAG_OPEN))
+			{
+				input = PHP_PREFIX + input;
+			}
 			PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 			Program ast = parser.parseAST(new StringReader(input));
 			checkinParser(parser);
@@ -303,25 +327,10 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 							// Will be trimmed to:
 							// <-- new-line
 							// function foo() {}
-							if (isSelection)
+							Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
+							if (matcher.find())
 							{
-								String trimmedOutput = output.trim();
-								if (trimmedOutput.length() >= PHP_PREFIX.length())
-								{
-									output = leftTrim(trimmedOutput.substring(PHP_PREFIX.length()), spacesCount);
-								}
-								else
-								{
-									output = StringUtil.EMPTY;
-								}
-							}
-							else
-							{
-								Matcher matcher = PHP_OPEN_TAG_PATTERNS.matcher(output);
-								if (matcher.find())
-								{
-									output = output.substring(matcher.end());
-								}
+								output = output.substring(matcher.end());
 							}
 							return new ReplaceEdit(offset, length, output);
 						}
@@ -396,18 +405,29 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	}
 
 	/**
-	 * Returns the offset of the PHP open tag that that precedes the given offset location.
+	 * Returns the offset of the PHP open tag that that precedes the given offset location. We look for any legal PHP
+	 * open tag
 	 * 
 	 * @param source
 	 * @param offset
+	 * @param leftBound
+	 * @param rightBound
 	 * @return
 	 */
-	private int findOpenTagOffset(String source, int offset)
+	private int findOpenTagOffset(String source, int offset, int leftBound, int rightBound)
 	{
-		// We just look for the '<' char and that should cover all cases.
-		int openOffset = source.lastIndexOf('<', offset);
+		// We just look for the "<?" and that should cover all cases.
+		if (leftBound > 0 && rightBound > leftBound)
+		{
+			source = source.substring(leftBound, rightBound);
+		}
+		int openOffset = source.lastIndexOf(PHP_SHORT_TAG_OPEN, offset);
 		if (openOffset > -1)
 		{
+			if (leftBound > 0)
+			{
+				return leftBound - openOffset;
+			}
 			return openOffset;
 		}
 		return offset;
@@ -473,11 +493,6 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	private String format(String input, IParseRootNode parseResult, int indentationLevel, int offset,
 			boolean isSelection, String indentSufix) throws Exception
 	{
-		int spacesCount = -1;
-		if (isSelection)
-		{
-			spacesCount = countLeftWhitespaceChars(input.substring(PHP_PREFIX.length()));
-		}
 		final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 		final FormatterDocument document = createFormatterDocument(input, offset);
 		IFormatterContainerNode root = builder.build(parseResult, document);
@@ -497,21 +512,56 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 					FormatterMessages.Formatter_formatterErrorCompletedWithErrors, ERROR_DISPLAY_TIMEOUT, true);
 		}
 		String output = writer.getOutput();
-		if (isSelection)
+		List<IRegion> offOnRegions = builder.getOffOnRegions();
+		if (offOnRegions != null && !offOnRegions.isEmpty())
 		{
-			output = leftTrim(output, spacesCount);
+			// We re-parse the output to extract its On-Off regions, so we will be able to compute the offsets and
+			// adjust it.
+			List<IRegion> outputOnOffRegions = getOutputOnOffRegions(output,
+					getString(PHPFormatterConstants.FORMATTER_OFF), getString(PHPFormatterConstants.FORMATTER_ON));
+			output = FormatterUtils.applyOffOnRegions(input, output, offOnRegions, outputOnOffRegions);
 		}
-		else
+		if (indentationLevel > 1 && StringUtil.EMPTY.equals(indentSufix))
 		{
-			if (indentationLevel > 1 && StringUtil.EMPTY.equals(indentSufix))
-			{
-				StringBuilder indentBuilder = new StringBuilder();
-				indentGenerator.generateIndent(Math.max(1, indentationLevel - 1), indentBuilder);
-				indentSufix = indentBuilder.toString();
-			}
-			output = processNestedOutput(output.trim(), lineSeparator, indentSufix, false, true);
+			StringBuilder indentBuilder = new StringBuilder();
+			indentGenerator.generateIndent(Math.max(1, indentationLevel - 1), indentBuilder);
+			indentSufix = indentBuilder.toString();
 		}
+		output = processNestedOutput(output.trim(), lineSeparator, indentSufix, false, true);
 		return output;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatter#getOutputOnOffRegions(java.lang.String, java.lang.String,
+	 * java.lang.String)
+	 */
+	protected List<IRegion> getOutputOnOffRegions(String output, String formatterOffPattern, String formatterOnPattern)
+	{
+		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
+		Program ast = parser.parseAST(new StringReader(output));
+		checkinParser(parser);
+		List<IRegion> onOffRegions = null;
+		if (ast != null)
+		{
+			LinkedHashMap<Integer, String> commentsMap = new LinkedHashMap<Integer, String>(ast.comments().size());
+			for (Comment comment : ast.comments())
+			{
+				int start = comment.getStart();
+				int end = comment.getEnd();
+				String commentStr = output.substring(start, end);
+				commentsMap.put(start, commentStr);
+			}
+			// Generate the OFF/ON regions
+			if (!commentsMap.isEmpty())
+			{
+				Pattern onPattern = Pattern.compile(Pattern.quote(formatterOnPattern));
+				Pattern offPattern = Pattern.compile(Pattern.quote(formatterOffPattern));
+				onOffRegions = FormatterUtils.resolveOnOffRegions(commentsMap, onPattern, offPattern,
+						output.length() - 1);
+			}
+		}
+		return onOffRegions;
 	}
 
 	private FormatterDocument createFormatterDocument(String input, int offset)
@@ -522,7 +572,9 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		document.setInt(LINES_AFTER_TYPE_DECLARATION, getInt(LINES_AFTER_TYPE_DECLARATION));
 		document.setInt(LINES_AFTER_FUNCTION_DECLARATION, getInt(LINES_AFTER_FUNCTION_DECLARATION));
 		document.setInt(ScriptFormattingContextProperties.CONTEXT_ORIGINAL_OFFSET, offset);
-
+		document.setBoolean(FORMATTER_OFF_ON_ENABLED, getBoolean(FORMATTER_OFF_ON_ENABLED));
+		document.setString(FORMATTER_ON, getString(FORMATTER_ON));
+		document.setString(FORMATTER_OFF, getString(FORMATTER_OFF));
 		// Set the indentation values
 		for (String key : INDENTATIONS)
 		{

@@ -8,19 +8,20 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
 /**
- * PHP parse node for HTML content within PHP source files.
+ * PHP 'case' parse node.
  * 
  * @author Shalom Gibly <sgibly@appcelerator.com>
  */
-public class PHPHTMLNode extends PHPNonOutlineParseNode
+public class PHPSwitchCaseNode extends PHPNonOutlineParseNode
 {
 	/**
-	 * @param startOffset
-	 * @param endOffset
+	 * Constructs a new PHPSwitchCaseNode.
+	 * 
+	 * @param start
+	 * @param end
 	 */
-	public PHPHTMLNode(int startOffset, int endOffset)
+	public PHPSwitchCaseNode(int start, int end)
 	{
-		super(PHPBaseParseNode.HTML_NODE, 0, startOffset, endOffset, "html"); //$NON-NLS-1$
+		super(IPHPParseNode.SWITCH_CASE_NODE, 0, start, end, "case"); //$NON-NLS-1$
 	}
-
 }

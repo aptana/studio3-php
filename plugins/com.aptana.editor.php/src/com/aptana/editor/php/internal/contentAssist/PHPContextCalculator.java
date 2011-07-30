@@ -230,8 +230,7 @@ public class PHPContextCalculator
 			{
 				if (builtinElement instanceof IPHPParseNode)
 				{
-					if (!alreadyHaveExtends
-							&& "extends".equals(((IPHPParseNode) builtinElement).getNodeName()) //$NON-NLS-1$
+					if (!alreadyHaveExtends && "extends".equals(((IPHPParseNode) builtinElement).getNodeName()) //$NON-NLS-1$
 							|| (!alreadyHaveImplements && declaredClass && "implements".equals(((IPHPParseNode) builtinElement).getNodeName()))) //$NON-NLS-1$
 					{
 						return true;
@@ -308,6 +307,15 @@ public class PHPContextCalculator
 			return true;
 		}
 
+		// We need to verify that in case we are not right after an 'implement' keyword, we have a comma before we can
+		// allow another interface to be inserted.
+		Lexeme<PHPTokenType> previousNameOrToken = findLexemeBackward(lexemeProvider, lexemePosition, new String[] {
+				PHPRegionTypes.PHP_IMPLEMENTS, PHPRegionTypes.PHP_TOKEN }, new String[] { PHPRegionTypes.WHITESPACE, });
+		if (previousNameOrToken == null || (previousNameOrToken.getType().getType() == PHPRegionTypes.PHP_TOKEN && !"," //$NON-NLS-1$
+				.equals(previousNameOrToken.getText())))
+		{
+			return false;
+		}
 		IContextFilter filter = new IContextFilter()
 		{
 

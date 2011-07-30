@@ -34,6 +34,7 @@ public class Messages extends NLS
 	public static String PHPFormatterIndentationTabPage_indentationGeneralGroupLabel;
 	public static String PHPFormatterModifyDialog_blankLinesTabName;
 	public static String PHPFormatterModifyDialog_commentsTabName;
+	public static String PHPFormatterModifyDialog_onOffTags;
 	public static String PHPFormatterModifyDialog_jsFormatterTitle;
 	public static String PHPFormatterModifyDialog_intentationTabName;
 	public static String PHPFormatterModifyDialog_bracesTabName;
@@ -58,23 +59,33 @@ public class Messages extends NLS
 	public static String PHPFormatterIndentationTabPage_breakWithinCase;
 	public static String PHPFormatterWhiteSpacesPage_after;
 	public static String PHPFormatterWhiteSpacesPage_arithmeticOperators;
+	public static String PHPFormatterWhiteSpacesPage_arrayAccessExpressions;
 	public static String PHPFormatterWhiteSpacesPage_assignments;
 	public static String PHPFormatterWhiteSpacesPage_before;
 	public static String PHPFormatterWhiteSpacesPage_caseColon;
 	public static String PHPFormatterWhiteSpacesPage_semicolonsInFor;
-	public static String PHPFormatterWhiteSpacesPage_parentheses;
+	public static String PHPFormatterWhiteSpacesPage_spacingSettingsGroup;
 	public static String PHPFormatterWhiteSpacesPage_commas;
 	public static String PHPFormatterWhiteSpacesPage_concatenationOperator;
+	public static String PHPFormatterWhiteSpacesPage_conditionalExpressions;
 	public static String PHPFormatterWhiteSpacesPage_conditionalOperators;
+	public static String PHPFormatterWhiteSpacesPage_declarationExpressions;
+	public static String PHPFormatterWhiteSpacesPage_invocationExpressions;
 	public static String PHPFormatterWhiteSpacesPage_invocationOperators;
 	public static String PHPFormatterWhiteSpacesPage_keyValueOperator;
+	public static String PHPFormatterWhiteSpacesPage_loopExpressions;
 	public static String PHPFormatterWhiteSpacesPage_operatorsGroupTitle;
+	public static String PHPFormatterWhiteSpacesPage_otherParenthesesExpressions;
+	public static String PHPFormatterWhiteSpacesPage_parenthesesGroupTitle;
 	public static String PHPFormatterWhiteSpacesPage_postfixOperators;
 	public static String PHPFormatterWhiteSpacesPage_prefixOperators;
 	public static String PHPFormatterWhiteSpacesPage_puctuationElementsGroupTitle;
 	public static String PHPFormatterWhiteSpacesPage_relationalOperators;
 	public static String PHPFormatterWhiteSpacesPage_staticInvocationOperator;
 	public static String PHPFormatterWhiteSpacesPage_unaryOperators;
+	public static String PHPFormatterWhiteSpacesPage_parentheses_beforeOpening;
+	public static String PHPFormatterWhiteSpacesPage_parentheses_afterOpening;
+	public static String PHPFormatterWhiteSpacesPage_parentheses_beforeClosing;
 	static
 	{
 		// initialize resource bundle

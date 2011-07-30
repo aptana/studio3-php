@@ -128,7 +128,7 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 				// This will happen when an external file is opened in the editor.
 				phpVersion = PHPVersionProvider.getDefaultPHPVersion();
 			}
-			lexer = ASTFactory.getAstLexer(phpVersion, new StringReader(fContents));
+			lexer = ASTFactory.getAstLexer(phpVersion, new StringReader(fContents), true);
 			// read the next token already, so we can always calculate the spaces between the
 			// tokens and return the right offset and length.
 			try
