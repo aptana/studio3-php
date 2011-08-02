@@ -296,7 +296,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		}
 		String segmentsString = stringBuilder.toString();
-		int nameEndOffset = (name != null)? name.getEnd() - 1 : node.getStart() + 8;
+		int nameEndOffset = (name != null) ? name.getEnd() - 1 : node.getStart() + 8;
 		nodeBuilder.handleNamespaceDeclaration(segmentsString, node.getStart(), node.getEnd() - 1, nameEndOffset);
 		return super.visit(node);
 	}
@@ -447,7 +447,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		{
 			nodeBuilder.handleIfElseStatement(trueStatement.getStart(), trueStatement.getEnd(), "if"); //$NON-NLS-1$
 		}
-		if (falseStatement != null && falseStatement.getType() != ASTNode.IF_STATEMENT)
+		if (falseStatement != null)
 		{
 			nodeBuilder.handleIfElseStatement(falseStatement.getStart(), falseStatement.getEnd(), "else"); //$NON-NLS-1$
 		}
