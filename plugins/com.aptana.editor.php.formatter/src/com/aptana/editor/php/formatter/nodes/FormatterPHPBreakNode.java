@@ -75,15 +75,4 @@ public class FormatterPHPBreakNode extends FormatterBlockWithBeginNode
 	{
 		return true;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
-	 */
-	@Override
-	protected boolean isAddingEndNewLine()
-	{
-		return true;
-	}
-
 }
