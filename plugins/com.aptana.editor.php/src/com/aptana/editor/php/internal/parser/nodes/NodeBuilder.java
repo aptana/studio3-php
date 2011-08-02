@@ -405,7 +405,14 @@ public class NodeBuilder
 	 */
 	public void handleCommonDeclarationEnd()
 	{
-		current = (IPHPParseNode) stack.pop();
+		try
+		{
+			current = (IPHPParseNode) stack.pop();
+		}
+		catch (Exception e)
+		{
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error building the PHP nodes.", e); //$NON-NLS-1$
+		}
 	}
 
 	/**
