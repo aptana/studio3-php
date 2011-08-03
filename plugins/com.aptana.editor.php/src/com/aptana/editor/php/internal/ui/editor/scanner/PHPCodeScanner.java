@@ -135,14 +135,17 @@ public class PHPCodeScanner implements ITokenScanner
 			}
 			popped.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
 
-			IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
-			if (scopeEquals(nextMapped, "punctuation.definition.parameters.begin.php")) //$NON-NLS-1$
+			if (!next.isEOF())
 			{
-				token = getToken("meta.function-call.object.php"); //$NON-NLS-1$
-			}
-			else
-			{
-				token = getToken("variable.other.property.php"); //$NON-NLS-1$
+				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
+				if (scopeEquals(nextMapped, "punctuation.definition.parameters.begin.php")) //$NON-NLS-1$
+				{
+					token = getToken("meta.function-call.object.php"); //$NON-NLS-1$
+				}
+				else
+				{
+					token = getToken("variable.other.property.php"); //$NON-NLS-1$
+				}
 			}
 			// Push the tokens we looked ahead back onto our queue
 			for (QueuedToken addBack : popped)

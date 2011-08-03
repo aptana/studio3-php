@@ -221,16 +221,9 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// make sure we don't popup a proposal when typing the <?php
 		try
 		{
-			String openTag = null;
-			if (c == 'h')
-			{
-				openTag = document.get(offset - 3, 3);
-			}
-			if (c == 'p')
-			{
-				openTag = document.get(offset - 4, 4);
-			}
-			if (openTag != null && openTag.startsWith("<?p")) //$NON-NLS-1$
+			String openPhp = document.get(Math.max(0, offset - 4),
+					Math.min(Math.min(offset, 4), document.getLength() - 1));
+			if (openPhp.endsWith("<?p") || openPhp.endsWith("<?ph")) //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				return false;
 			}
@@ -254,7 +247,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	public boolean isValidIdentifier(char c, int keyCode)
 	{
-		return (Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c) || c == '$');
+		return (Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c));
 	}
 
 	@Override
@@ -437,7 +430,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		boolean forceActivation = false;
 		// The only reason why we test for a null viewer here is to allow testing without any ITextViewer attachment.
-		Boolean fa = (viewer != null) ? (Boolean) viewer.getTextWidget().getData("ASSIST_FORCE_ACTIVATION") : null; //$NON-NLS-1$
+		Boolean fa = (viewer != null && viewer.getTextWidget() != null) ? (Boolean) viewer.getTextWidget().getData(
+				"ASSIST_FORCE_ACTIVATION") : null; //$NON-NLS-1$
 		if (fa != null)
 		{
 			forceActivation = fa;
@@ -457,7 +451,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 
 		// resetting the force activation flag.
-		if (viewer != null)
+		if (viewer != null && viewer.getTextWidget() != null)
 		{
 			viewer.getTextWidget().setData("ASSIST_FORCE_ACTIVATION", false);//$NON-NLS-1$
 		}
@@ -3321,13 +3315,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	public IContextInformationValidator getContextInformationValidator()
 	{
 		return new PHPContextInformationValidator();
-	}
-
-	@Override
-	public String getErrorMessage()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/*

@@ -81,8 +81,13 @@ public class BuildProblemReporter extends ProblemCollector
 				}
 				else
 				{
-					workspaceResource.deleteMarkers(DefaultProblem.MARKER_TYPE_PROBLEM, true, IResource.DEPTH_INFINITE);
-					workspaceResource.deleteMarkers(DefaultProblem.MARKER_TYPE_TASK, true, IResource.DEPTH_INFINITE);
+					if (workspaceResource.isAccessible())
+					{
+						workspaceResource.deleteMarkers(DefaultProblem.MARKER_TYPE_PROBLEM, true,
+								IResource.DEPTH_INFINITE);
+						workspaceResource
+								.deleteMarkers(DefaultProblem.MARKER_TYPE_TASK, true, IResource.DEPTH_INFINITE);
+					}
 				}
 			}
 			for (final IProblem problem : problems)
@@ -151,11 +156,15 @@ public class BuildProblemReporter extends ProblemCollector
 				// .getProblemArgumentsForMarker(arguments));
 				// }
 			}
-			problems.clear();
 		}
 		catch (CoreException e)
 		{
 			IdeLog.logError(PHPEplPlugin.getDefault(), "Error updating PHP error markers", e); //$NON-NLS-1$
+		}
+		finally
+		{
+			// in any case, clear the problems
+			problems.clear();
 		}
 	}
 }

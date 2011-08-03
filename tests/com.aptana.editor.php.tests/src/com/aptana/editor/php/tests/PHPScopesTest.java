@@ -400,6 +400,27 @@ public class PHPScopesTest extends TestCase
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 28); // '>'
 	}
 
+	public void testAPSTUD3187()
+	{
+		String source = "<?= $this->layout()->sidenav ?>";
+		// PHP start switch
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0); // '<'
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 1); // '?'
+
+		// $this variable
+		assertScope("source.php source.php.embedded.block.html variable.language.php", source, 7); // 'i'
+
+		// '->'
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 9); // '-'
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 10); // '>'
+
+		// 'layout ()'
+		assertScope("source.php source.php.embedded.block.html meta.function-call.object.php", source, 14); // 'o'
+
+		// 'sidenav' - note that the source is not ending with a semicolon, so the expected scope is a generic one
+		assertScope("source.php source.php.embedded.block.html", source, 24); // 'e'
+	}
+
 	public void testAPSTUD2790()
 	{
 		String source = "<?php\n" + //
