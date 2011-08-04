@@ -98,12 +98,6 @@
           target: generate.base                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="generate.base" depends="copy.base.windows,copy.base">
-		<!-- Workaround for https://bugs.eclipse.org/241430 shouldn't be necessary when we move to 3.5 -->
-		<delete failonerror="false">
-			<fileset dir="${baseLocation}/configuration/.settings">
-				<include name="org.eclipse.equinox.p2.*.repository.prefs" />
-			</fileset>
-		</delete>
 		<!-- Wipe the non-test plugins-->
 		<antcall target="wipe.plugins" />
 		<!-- Copy test plugins into plugins dir -->
@@ -113,27 +107,19 @@
 			</fileset>
 		</copy>
 		<antcall target="run.director">
-      		<param name="p2.installIU" value="com.aptana.ide.feature.libraries.subscription.feature.group" />
-      		<param name="p2.repo" value="${libraries-com.p2.repo}" />
-    	</antcall>
-		<antcall target="run.director">
 			<param name="p2.installIU" value="com.aptana.feature.feature.group" />
 			<param name="p2.repo" value="file:${studio3.p2.repo}" />
 		</antcall>
-			<!-- Install Red Core feature -->
-			<antcall target="install.red.core" />
-			<!-- FIXME For some reason even though we install RED Core, it doesn't pick it up for building the test plugins/fragments! -->
-	</target>
-
-	<!-- - - - - - - - - - - - - - - - - - 
-          target: install.red.core  (Actually, install the PHP in this case)                
-         - - - - - - - - - - - - - - - - - -->
-	<target name="install.red.core" unless="dont.install.red.core">
+		<antcall target="run.director">
+			<param name="p2.installIU" value="com.aptana.studio.tests.feature.group" />
+			<param name="p2.repo" value="file:${studio3.test.p2.repo}" />
+		</antcall>
 		<antcall target="run.director">
 			<param name="p2.installIU" value="com.aptana.php.feature.feature.group" />
 			<param name="p2.repo" value="file:${php.p2.repo}" />
 		</antcall>
 	</target>
+
 	<!-- - - - - - - - - - - - - - - - - - 
           target: wipe.plugins                      
          - - - - - - - - - - - - - - - - - -->
@@ -234,8 +220,6 @@
 				<xml outfile="${coverageDirectory}/coverage.xml" depth="method" />
 			</report>
 		</emma>
-		<!-- Remove comments as per: http://issues.hudson-ci.org/browse/HUDSON-7586 -->
-		<replaceregexp file="${coverageDirectory}/coverage.xml" match="&lt;!-.*-&gt;" replace="" byline="true" />
 		<antcall target="clean.after" />
 	</target>
 
