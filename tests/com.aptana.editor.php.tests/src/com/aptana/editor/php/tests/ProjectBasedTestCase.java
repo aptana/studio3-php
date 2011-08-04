@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -47,14 +48,17 @@ public abstract class ProjectBasedTestCase extends TestCase
 	{
 		try
 		{
+			// Refresh before deleting
+			project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 			// Need to force the editor shut!
 			if (editor != null)
 				editor.close(false);
-			// Delete the generated file
-			if (file != null)
-				file.delete(true, new NullProgressMonitor());
-			// Delete the generated project
+			// Delete the generated project (with any files we have in it)
 			project.delete(true, new NullProgressMonitor());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 		finally
 		{
@@ -106,9 +110,9 @@ public abstract class ProjectBasedTestCase extends TestCase
 	protected abstract String getProjectName();
 
 	protected abstract PHPVersion getInitialPHPVersion();
-	
+
 	protected abstract String getPluginPreferenceQualifier();
-	
+
 	protected abstract void setProjectOptions(IProject project) throws BackingStoreException;
 
 	protected void setCaretOffset(int offset) throws PartInitException

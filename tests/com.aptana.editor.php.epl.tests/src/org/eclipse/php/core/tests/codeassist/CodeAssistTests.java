@@ -142,7 +142,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 							{
 								if (testFile != null)
 								{
-									testFile.delete(true, null);
+									safeDelete(testFile);
 									testFile = null;
 								}
 							}
@@ -210,8 +210,8 @@ public class CodeAssistTests extends AbstractPDTTTest
 		testFile = project.getFile("test-" + testNumber + ".php");
 		if (testFile.exists())
 		{
-			testFile.refreshLocal(IResource.DEPTH_ZERO, null);
-			testFile.delete(true, null);
+			safeDelete(testFile);
+			testFile = project.getFile("test-" + testNumber + ".php");
 		}
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
