@@ -22,6 +22,7 @@ import org2.eclipse.dltk.compiler.problem.ProblemCollector;
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.core.resources.MarkerUtils;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -61,6 +62,10 @@ public class BuildProblemReporter extends ProblemCollector
 	{
 		try
 		{
+			if (EclipseUtil.isTesting())
+			{
+				return;
+			}
 			IResource workspaceResource = null;
 			IUniformResource externalResource = null;
 			if (isExternal)
@@ -70,6 +75,12 @@ public class BuildProblemReporter extends ProblemCollector
 			else
 			{
 				workspaceResource = (IResource) resource;
+				if (workspaceResource == null || !workspaceResource.isAccessible())
+				{
+					IdeLog.logWarning(PHPEplPlugin.getDefault(),
+							"BuildProblemReporter::flush -> Unexpected null or non-accessible resource"); //$NON-NLS-1$
+					return;
+				}
 			}
 			if (!oldMarkersDeleted)
 			{
@@ -81,13 +92,8 @@ public class BuildProblemReporter extends ProblemCollector
 				}
 				else
 				{
-					if (workspaceResource.isAccessible())
-					{
-						workspaceResource.deleteMarkers(DefaultProblem.MARKER_TYPE_PROBLEM, true,
-								IResource.DEPTH_INFINITE);
-						workspaceResource
-								.deleteMarkers(DefaultProblem.MARKER_TYPE_TASK, true, IResource.DEPTH_INFINITE);
-					}
+					workspaceResource.deleteMarkers(DefaultProblem.MARKER_TYPE_PROBLEM, true, IResource.DEPTH_INFINITE);
+					workspaceResource.deleteMarkers(DefaultProblem.MARKER_TYPE_TASK, true, IResource.DEPTH_INFINITE);
 				}
 			}
 			for (final IProblem problem : problems)
