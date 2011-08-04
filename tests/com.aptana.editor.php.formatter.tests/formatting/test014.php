@@ -91,6 +91,7 @@ $a = <<<HELLO
 asdasd
 adasd
 HELLO;
+
 ==FORMATTED==
 
 $gDB -> query("SELECT field 

@@ -81,28 +81,15 @@ php.formatter.spaces.before.arithmetic=1
 php.formatter.spaces.before.invocation.parentheses.opening=0
 php.formatter.spaces.after.array.access.parentheses.opening=0
 ==CONTENT==
-<html>
-	<body>
-		<?php
-		function functionName($value = '')
-		{
-			E_ALL;
-			$a = 2;
-		}
-		?>
-	</body>
-
-</html>
-==FORMATTED==
- <html>
-<body>
 <?php
-function functionName($value = '')
-{
-E_ALL;
-$a = 2;
-}
-?>
-</body>
+		function functionName($value = array(1, 2, "s"))
+		{
+	E_ALL; $a = 2; echo("$value is array");
+		}
+==FORMATTED==
 
-</html>
+function functionName($value = array(1, 2, "s")) {
+	E_ALL;
+	$a = 2;
+	echo("$value is array");
+}
