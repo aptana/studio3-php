@@ -3085,7 +3085,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				if (localModule == null || localModule.equals(((IElementEntry) item).getModule()))
 				{
 					// local items should have the original order and come first
-					itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_HIGH);
+					itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_HIGH + 5);
 				}
 				else
 				{
