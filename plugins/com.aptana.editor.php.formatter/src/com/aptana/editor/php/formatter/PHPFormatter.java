@@ -111,6 +111,7 @@ import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
@@ -121,10 +122,10 @@ import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.FormatterIndentDetector;
 import com.aptana.formatter.FormatterUtils;
 import com.aptana.formatter.FormatterWriter;
+import com.aptana.formatter.IDebugScopes;
 import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterIndentGenerator;
 import com.aptana.formatter.IScriptFormatter;
-import com.aptana.formatter.epl.FormatterPlugin;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
 import com.aptana.formatter.ui.FormatterException;
 import com.aptana.formatter.ui.FormatterMessages;
@@ -356,7 +357,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		{
 			StatusLineMessageTimerManager.setErrorMessage(FormatterMessages.Formatter_formatterErrorStatus,
 					ERROR_DISPLAY_TIMEOUT, true);
-			FormatterPlugin.logError(e);
+			IdeLog.logError(PHPCodeFormatterPlugin.getDefault(), e, IDebugScopes.DEBUG);
 		}
 		return null;
 	}

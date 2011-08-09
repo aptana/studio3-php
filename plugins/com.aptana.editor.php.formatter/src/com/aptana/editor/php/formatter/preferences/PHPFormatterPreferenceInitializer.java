@@ -95,9 +95,10 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.formatter.PHPCodeFormatterPlugin;
-import com.aptana.formatter.epl.FormatterPlugin;
+import com.aptana.formatter.IDebugScopes;
 import com.aptana.formatter.ui.CodeFormatterConstants;
 
 /**
@@ -205,7 +206,7 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		}
 		catch (BackingStoreException e)
 		{
-			FormatterPlugin.logError(e);
+			IdeLog.logError(PHPCodeFormatterPlugin.getDefault(), e, IDebugScopes.DEBUG);
 		}
 	}
 }
