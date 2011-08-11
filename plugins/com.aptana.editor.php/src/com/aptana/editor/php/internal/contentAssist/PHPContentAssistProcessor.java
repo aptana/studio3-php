@@ -251,7 +251,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	public boolean isValidIdentifier(char c, int keyCode)
 	{
-		return (Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c));
+		return Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c);
 	}
 
 	@Override

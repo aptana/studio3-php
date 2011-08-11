@@ -661,7 +661,7 @@ public class PHPContextCalculator
 
 			public boolean acceptBuiltin(Object builtinElement)
 			{
-				return (builtinElement instanceof PHPNamespaceNode);
+				return builtinElement instanceof PHPNamespaceNode;
 			}
 
 			public boolean acceptElementEntry(IElementEntry element)
