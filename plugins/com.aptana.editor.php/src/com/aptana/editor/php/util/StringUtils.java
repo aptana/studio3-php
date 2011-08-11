@@ -1,3 +1,4 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.util;
 
 public class StringUtils
@@ -99,7 +100,7 @@ public class StringUtils
 		int e = 0;
 		StringBuffer result = new StringBuffer();
 
-		while ((e = str.indexOf(pattern, s)) >= 0)
+		while ((e = str.indexOf(pattern, s)) >= 0) // $codepro.audit.disable assignmentInCondition
 		{
 			result.append(str.substring(s, e));
 			result.append(replace);

@@ -12,6 +12,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -76,7 +79,7 @@ public class BuildPathEditingComposite extends Composite
 
 	private boolean usesCustomLibs;
 
-	private HashSet<String> notusedLibraries = new HashSet<String>();
+	private Set<String> notusedLibraries = new HashSet<String>();
 	private Button customLibsButton;
 	private Button select;
 	private Button deselect;
@@ -125,7 +128,7 @@ public class BuildPathEditingComposite extends Composite
 		IPHPLibrary[] allLibraries = LibraryManager.getInstance().getAllLibraries();
 		libraryViewer.setInput(allLibraries);
 		libraryViewer.setComparator(new ViewerComparator());
-		final HashMap<URL, Image> images = new HashMap<URL, Image>();
+		final Map<URL,Image> images = new HashMap<URL, Image>();
 		libraryViewer.setLabelProvider(new LibraryLabelProvider(images));
 		final Composite buttons = new Composite(projectPart, SWT.NONE);
 		projectPart.addDisposeListener(new DisposeListener()
@@ -345,7 +348,7 @@ public class BuildPathEditingComposite extends Composite
 	 * @param directories
 	 *            - external directories.
 	 */
-	public void init(ArrayList<IResource> workspaceResources, ArrayList<File> directories)
+	public void init(List<IResource> workspaceResources, List<File> directories)
 	{
 		if (project != null && !workspaceResources.contains(project))
 		{
@@ -388,7 +391,7 @@ public class BuildPathEditingComposite extends Composite
 				}
 			}
 		}
-		ArrayList toAdd = new ArrayList();
+		List toAdd = new ArrayList();
 		boolean hasAlreadyIncludedPaths = false;
 		if (item instanceof File)
 		{
@@ -469,7 +472,7 @@ public class BuildPathEditingComposite extends Composite
 	 * @param fileList
 	 *            - external folders to fill.
 	 */
-	public void fillResult(ArrayList<IResource> workspaceResources, ArrayList<File> fileList)
+	public void fillResult(List<IResource> workspaceResources, List<File> fileList)
 	{
 		TableItem[] items = workspaceViewer.getTable().getItems();
 		for (TableItem i : items)
@@ -491,7 +494,7 @@ public class BuildPathEditingComposite extends Composite
 	{
 		init(buildPath.getWorkspaceResources(), buildPath.getDirectories());
 		usesCustomLibs = buildPath.isUsesCustomLibs();
-		ArrayList<String> notUsedLibrariesIds = buildPath.getNotUsedLibrariesIds();
+		List<String> notUsedLibrariesIds = buildPath.getNotUsedLibrariesIds();
 		notusedLibraries = new HashSet<String>(notUsedLibrariesIds);
 		customLibsButton.setSelection(usesCustomLibs);
 		for (IPHPLibrary l : LibraryManager.getInstance().getAllLibraries())
@@ -508,12 +511,12 @@ public class BuildPathEditingComposite extends Composite
 
 	public void fillResult(ProjectDependencies bp)
 	{
-		ArrayList<IResource> ps = new ArrayList<IResource>();
-		ArrayList<File> fs = new ArrayList<File>();
+		List<IResource> ps = new ArrayList<IResource>();
+		List<File> fs = new ArrayList<File>();
 		fillResult(ps, fs);
 		bp.set(ps, fs);
 		bp.setUsesCustomLibs(customLibsButton.getSelection());
-		ArrayList<String> notUsed = new ArrayList<String>();
+		List<String> notUsed = new ArrayList<String>();
 		for (IPHPLibrary l : LibraryManager.getInstance().getAllLibraries())
 		{
 			if (!libraryViewer.getChecked(l))
@@ -529,7 +532,7 @@ public class BuildPathEditingComposite extends Composite
 
 		boolean select;
 
-		public SelectAction(boolean doSelect)
+		private SelectAction(boolean doSelect)
 		{
 			this.select = doSelect;
 		}

@@ -113,7 +113,7 @@ public class ContentAssistUtils
 	 * @param eq
 	 * @return list of model element that matches to given name
 	 */
-	public synchronized static ArrayList<Object> selectModelElements(String name, boolean eq)
+	public synchronized static List<Object> selectModelElements(String name, boolean eq)
 	{
 		if (index == null || index.isEmpty())
 		{
@@ -131,7 +131,7 @@ public class ContentAssistUtils
 			return null;
 		}
 
-		ArrayList<Object> toReturn = new ArrayList<Object>();
+		List<Object> toReturn = new ArrayList<Object>();
 
 		if (name.length() == 0)
 		{

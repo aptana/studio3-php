@@ -20,6 +20,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -62,16 +65,16 @@ public final class PHPBuiltins
 
 	private Object mutex = new Object();
 
-	private HashSet<Object> php4Names = new HashSet<Object>();
-	private HashSet<Object> php5Names = new HashSet<Object>();
-	private HashSet<Object> php53Names = new HashSet<Object>();
+	private Set<Object> php4Names = new HashSet<Object>();
+	private Set<Object> php5Names = new HashSet<Object>();
+	private Set<Object> php53Names = new HashSet<Object>();
 	// Holds a function name map to the resource name that contains it
-	private HashMap<String, String> builtInFunctions = new HashMap<String, String>();
+	private Map<String, String> builtInFunctions = new HashMap<String, String>();
 	// Holds a Class/Constant name map to the resource name that contains it
-	private HashMap<String, String> builtInClasses = new HashMap<String, String>();
-	private HashMap<String, String> builtInConstants = new HashMap<String, String>();
+	private Map<String, String> builtInClasses = new HashMap<String, String>();
+	private Map<String, String> builtInConstants = new HashMap<String, String>();
 
-	private TreeSet<Object> builtins;
+	private SortedSet<Object> builtins;
 	private boolean initializing;
 
 	private void addKeywords()
@@ -447,10 +450,8 @@ public final class PHPBuiltins
 	{
 		try
 		{
-			if (PHPEditorPlugin.DEBUG || PHPEditorPlugin.INDEXER_DEBUG)
-			{
-				System.out.println("Indexing the PHP API libraries..."); //$NON-NLS-1$
-			}
+			IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+					"Indexing the PHP API libraries...", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			this.builtins = new TreeSet<Object>(new Comparator<Object>()
 			{
 				public int compare(Object arg0, Object arg1)
@@ -469,30 +470,33 @@ public final class PHPBuiltins
 					return res;
 				}
 			});
-			HashMap<Object, Object> builtins = new HashMap<Object, Object>(INITIAL_CAPACITY);
+			Map<Object, Object> builtins = new HashMap<Object, Object>(INITIAL_CAPACITY);
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp4);
 			PHPParser parser = new PHPParser(PHPVersion.PHP4);
 			long timeMillis = System.currentTimeMillis();
 			initPHP4Builtins(parser, builtins);
-			if (PHPEditorPlugin.DEBUG)
+			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{
-				System.out.println("Parsed PHP4 built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP4 built-ins (" //$NON-NLS-1$
+						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				timeMillis = System.currentTimeMillis();
 			}
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp5);
 			parser = new PHPParser(PHPVersion.PHP5);
 			initPHP5Builtins(parser, builtins);
-			if (PHPEditorPlugin.DEBUG)
+			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{
-				System.out.println("Parsed PHP5 built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP5 built-ins (" //$NON-NLS-1$
+						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				timeMillis = System.currentTimeMillis();
 			}
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp53);
 			parser = new PHPParser(PHPVersion.PHP5_3);
 			initPHP53Builtins(parser, builtins);
-			if (PHPEditorPlugin.DEBUG)
+			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{
-				System.out.println("Parsed PHP53 built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP5.3 built-ins (" //$NON-NLS-1$
+						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				timeMillis = System.currentTimeMillis();
 			}
 			this.builtins.addAll(builtins.values());
@@ -507,10 +511,8 @@ public final class PHPBuiltins
 			 * +nodeName+"</string>"); count++; } } }
 			 */
 			addKeywords();
-			if (PHPEditorPlugin.DEBUG)
-			{
-				System.out.println("Loaded all built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+			IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Loaded all built-ins (" //$NON-NLS-1$
+					+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 		}
 		catch (Throwable t)
 		{
@@ -518,7 +520,7 @@ public final class PHPBuiltins
 		}
 	}
 
-	private void initPHP4Builtins(PHPParser parser, HashMap<Object, Object> builtins)
+	private void initPHP4Builtins(PHPParser parser, Map<Object, Object> builtins)
 	{
 		try
 		{
@@ -558,13 +560,13 @@ public final class PHPBuiltins
 				}
 			}
 		}
-		catch (IOException ioe)
+		catch (Exception e)
 		{
-			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API.", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API.", e); //$NON-NLS-1$
 		}
 	}
 
-	private void initPHP5Builtins(PHPParser parser, HashMap<Object, Object> builtins)
+	private void initPHP5Builtins(PHPParser parser, Map<Object, Object> builtins)
 	{
 		try
 		{
@@ -605,13 +607,13 @@ public final class PHPBuiltins
 				}
 			}
 		}
-		catch (IOException ioe)
+		catch (Exception e)
 		{
-			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API", e); //$NON-NLS-1$
 		}
 	}
 
-	private void initPHP53Builtins(PHPParser parser, HashMap<Object, Object> builtins)
+	private void initPHP53Builtins(PHPParser parser, Map<Object, Object> builtins)
 	{
 		try
 		{
@@ -651,10 +653,10 @@ public final class PHPBuiltins
 				}
 			}
 		}
-		catch (IOException ioe)
+		catch (Exception e)
 		{
 			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
-					, ioe);
+					, e);
 		}
 	}
 
@@ -696,15 +698,12 @@ public final class PHPBuiltins
 		// Also, make sure that the documentation is providing some basics.
 		PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
 		IPHPDocBlock documentation = phpChild.getDocumentation();
-		@SuppressWarnings("unused")
-		boolean docsFromBuiltinSource = true;
 		if (documentation == null || StringUtil.EMPTY.equals(documentation.getShortDescription()))
 		{
-			docsFromBuiltinSource = false;
 			documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
 					.getNameNode().getName()), StringUtil.EMPTY, NO_TAGS, 0);
 		}
-		short type = child.getNodeType() == IPHPParseNode.KEYWORD_NODE ? IPHPParseNode.KEYWORD_NODE
+		short type = (child.getNodeType() == IPHPParseNode.KEYWORD_NODE) ? IPHPParseNode.KEYWORD_NODE
 				: IPHPParseNode.CONST_NODE;
 		PHPBaseParseNode node = new PHPBaseParseNode(type, phpChild.getModifiers(), child.getStartingOffset(),
 				child.getEndingOffset(), phpChild.getNameNode().getName());
@@ -729,7 +728,7 @@ public final class PHPBuiltins
 	 * @throws IOException
 	 */
 	@SuppressWarnings("rawtypes")
-	private static URL[] getBuiltinsURLs(String libraryPath) throws IOException
+	private static URL[] getBuiltinsURLs(String libraryPath)
 	{
 		List<URL> urls = new ArrayList<URL>();
 		Enumeration entries = PHPEplPlugin.getDefault().getBundle().findEntries(libraryPath, "*.php", true); //$NON-NLS-1$
@@ -801,10 +800,8 @@ public final class PHPBuiltins
 			initBuiltins(monitor);
 		}
 		initializing = false;
-		if (PHPEditorPlugin.INDEXER_DEBUG)
-		{
-			System.out.println("Built-ins clean: " + (System.currentTimeMillis() - start) + "ms"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Built-ins clean: " //$NON-NLS-1$
+				+ (System.currentTimeMillis() - start) + "ms", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 	}
 
 }

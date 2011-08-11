@@ -55,7 +55,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	/**
 	 * The constructor
 	 */
-	public PHPEditorPlugin()
+	public PHPEditorPlugin() // $codepro.audit.disable
 	{
 	}
 
@@ -63,7 +63,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception
+	public void start(BundleContext context) throws Exception // $codepro.audit.disable declaredExceptions
 	{
 		super.start(context);
 		plugin = this;
@@ -100,7 +100,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				{
 					prefs.flush();
 				}
-				catch (BackingStoreException e)
+				catch (BackingStoreException e) // $codepro.audit.disable emptyCatchClause
 				{
 					// ignore
 				}
@@ -141,23 +141,26 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				long mark = 0L;
 				if (DEBUG)
 				{
-					System.out.println("PHPPlugin call to PHPGlobalIndexer starts"); //$NON-NLS-1$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(), "PHPPlugin call to PHPGlobalIndexer starts", null, //$NON-NLS-1$
+							PHPEditorPlugin.DEBUG_SCOPE);
 					mark = System.currentTimeMillis();
 				}
 				PHPGlobalIndexer.getInstance();
 				if (DEBUG)
 				{
-					System.out
-							.println("PHPPlugin call to PHPGlobalIndexer ended (done after " + (System.currentTimeMillis() - mark) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
-					System.out.println("PHPPlugin call to ModelManager starts"); //$NON-NLS-1$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+							"PHPPlugin call to PHPGlobalIndexer ended (done after " //$NON-NLS-1$
+									+ (System.currentTimeMillis() - mark) + "ms)", null, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(), "PHPPlugin call to ModelManager starts", null, //$NON-NLS-1$
+							PHPEditorPlugin.DEBUG_SCOPE);
 					mark = System.currentTimeMillis();
 				}
 				// initializing model
 				ModelManager.getInstance(); // FIXME - SG - This is where the hang starts
 				if (DEBUG)
 				{
-					System.out
-							.println("PHPPlugin call to ModelManager ended (done after " + (System.currentTimeMillis() - mark) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(), "PHPPlugin call to ModelManager ended (done after " //$NON-NLS-1$
+							+ (System.currentTimeMillis() - mark) + "ms)", null, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 				}
 				return Status.OK_STATUS;
 			}
@@ -170,7 +173,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception
+	public void stop(BundleContext context) throws Exception // $codepro.audit.disable declaredExceptions
 	{
 		try
 		{

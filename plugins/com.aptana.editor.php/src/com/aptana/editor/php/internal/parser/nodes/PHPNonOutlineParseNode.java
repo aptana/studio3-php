@@ -23,7 +23,7 @@ public abstract class PHPNonOutlineParseNode extends PHPBaseParseNode
 	 * @param endOffset
 	 * @param name
 	 */
-	public PHPNonOutlineParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String name)
+	protected PHPNonOutlineParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String name)
 	{
 		super(nodeType, modifiers, startOffset, endOffset, name);
 	}

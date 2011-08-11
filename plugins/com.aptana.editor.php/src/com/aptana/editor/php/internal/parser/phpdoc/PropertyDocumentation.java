@@ -9,6 +9,10 @@ import com.aptana.editor.common.contentassist.UserAgentManager.UserAgent;
  */
 public class PropertyDocumentation extends DocumentationBase
 {
+	/**
+	 * 
+	 */
+	private static final UserAgent[] EMPTY_USER_AGENTS = new UserAgent[0];
 	private TypedDescription fReturns = new TypedDescription();
 	private TypedDescription fMember = new TypedDescription();
 	private TypedDescription fAlias = new TypedDescription();
@@ -52,10 +56,10 @@ public class PropertyDocumentation extends DocumentationBase
 	{
 		if (fUserAgents == null)
 		{
-			return new UserAgent[0];
+			return EMPTY_USER_AGENTS;
 		}
 
-		return fUserAgents.toArray(new UserAgent[0]);
+		return fUserAgents.toArray(new UserAgent[fUserAgents.size()]);
 	}
 
 	/**
@@ -348,21 +352,21 @@ public class PropertyDocumentation extends DocumentationBase
 	// public void read(DataInput input) throws IOException
 	// {
 	// super.read(input);
-	//		
+	//
 	// int size = input.readInt();
 	// if (size > 0)
 	// {
 	// this.fUserAgents = new ArrayList<UserAgent>();
-	//			
+	//
 	// for (int i = 0; i < size; i++)
 	// {
 	// UserAgent param = new UserAgent();
-	//				
+	//
 	// param.read(input);
 	// this.fUserAgents.add(param);
 	// }
 	// }
-	//		
+	//
 	// this.fReturns = new TypedDescription();
 	// this.fReturns.read(input);
 	// this.fMember = new TypedDescription();
@@ -386,15 +390,15 @@ public class PropertyDocumentation extends DocumentationBase
 	// public void write(DataOutput output) throws IOException
 	// {
 	// super.write(output);
-	//		
+	//
 	// if (this.fUserAgents != null)
 	// {
 	// output.writeInt(this.fUserAgents.size());
-	//			
+	//
 	// for (int i = 0; i < this.fUserAgents.size(); i++)
 	// {
 	// UserAgent param = (UserAgent) this.fUserAgents.get(i);
-	//				
+	//
 	// param.write(output);
 	// }
 	// }
@@ -402,7 +406,7 @@ public class PropertyDocumentation extends DocumentationBase
 	// {
 	// output.writeInt(0);
 	// }
-	//		
+	//
 	// this.fReturns.write(output);
 	// this.fMember.write(output);
 	// output.writeUTF(this.fDeprecatedDescription);
@@ -416,7 +420,7 @@ public class PropertyDocumentation extends DocumentationBase
 	// output.writeBoolean(this.fIsInvocationOnly);
 	// output.writeBoolean(this.fIsIgnored);
 	// }
-	//	
+	//
 	// /**
 	// * Returns a list of all the platforms this item is supported by
 	// * @return Returns a list of all the platforms this item is supported by
@@ -529,7 +533,7 @@ public class PropertyDocumentation extends DocumentationBase
 	// {
 	// fIsIgnore = value;
 	// }
-	//	
+	//
 	// public String getRequires()
 	// {
 	// return fRequires;

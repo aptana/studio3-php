@@ -294,7 +294,7 @@ public class SourceModule extends AbstractResourceElement implements ISourceModu
 			}
 			try
 			{
-				return IOUtil.read(new FileInputStream(f)).toCharArray();
+				return IOUtil.read(new FileInputStream(f)).toCharArray(); // $codepro.audit.disable closeWhereCreated
 			}
 			catch (FileNotFoundException e)
 			{

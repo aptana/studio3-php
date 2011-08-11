@@ -69,10 +69,10 @@ public class ContentAssistCollectors
 			{
 				currentEntries = index.getEntriesStartingWith(IPHPIndexConstants.VAR_CATEGORY, entryPath);
 			}
-			ArrayList<?> items = ContentAssistUtils.selectModelElements(leftType, true);
+			List<?> items = ContentAssistUtils.selectModelElements(leftType, true);
 			if (items != null && !items.isEmpty())
 			{
-				String lowCaseFuncName = varName != null ? varName.toLowerCase() : EMPTY_STRING;
+				String lowCaseFuncName = (varName != null) ? varName.toLowerCase() : EMPTY_STRING;
 				for (Object obj : items)
 				{
 					if (obj instanceof PHPClassParseNode)
@@ -93,7 +93,7 @@ public class ContentAssistCollectors
 								{
 									if (!funcNodeName.startsWith(DOLLAR_SIGN))
 									{
-										funcNodeName = DOLLAR_SIGN + funcNodeName;
+										funcNodeName = DOLLAR_SIGN + funcNodeName; // $codepro.audit.disable
 									}
 									String lowCaseFuncNodeName = funcNodeName.toLowerCase();
 									if (exactMatch)
@@ -119,6 +119,7 @@ public class ContentAssistCollectors
 
 
 
+
 										public int getCategory()
 										{
 											return IPHPIndexConstants.VAR_CATEGORY;
@@ -137,7 +138,7 @@ public class ContentAssistCollectors
 										public String getLowerCaseEntryPath()
 										{
 											String path = getEntryPath();
-											return path != null ? path.toLowerCase() : EMPTY_STRING;
+											return (path != null) ? path.toLowerCase() : EMPTY_STRING;
 										}
 
 										public IModule getModule()
@@ -213,10 +214,10 @@ public class ContentAssistCollectors
 
 			if (currentEntries == null || currentEntries.isEmpty())
 			{
-				ArrayList<?> items = ContentAssistUtils.selectModelElements(leftType, true);
+				List<?> items = ContentAssistUtils.selectModelElements(leftType, true);
 				if (items != null && !items.isEmpty())
 				{
-					String lowCaseConstName = constName != null ? constName.toLowerCase() : EMPTY_STRING;
+					String lowCaseConstName = (constName != null) ? constName.toLowerCase() : EMPTY_STRING;
 					for (Object obj : items)
 					{
 						if (obj instanceof PHPClassParseNode)
@@ -261,7 +262,7 @@ public class ContentAssistCollectors
 										public String getLowerCaseEntryPath()
 										{
 											String path = getEntryPath();
-											return path != null ? path.toLowerCase() : EMPTY_STRING;
+											return (path != null) ? path.toLowerCase() : EMPTY_STRING;
 										}
 
 										public IModule getModule()
@@ -369,10 +370,10 @@ public class ContentAssistCollectors
 			{
 				// PHPGlobalIndexer.getInstance().getIndex().getEntries(-1,
 				// leftType.toLowerCase())
-				ArrayList<?> items = ContentAssistUtils.selectModelElements(leftType, true);
+				List<?> items = ContentAssistUtils.selectModelElements(leftType, true);
 				if (items != null && !items.isEmpty())
 				{
-					String lowCaseFuncName = funcName != null ? funcName.toLowerCase() : EMPTY_STRING;
+					String lowCaseFuncName = (funcName != null) ? funcName.toLowerCase() : EMPTY_STRING;
 					for (Object obj : items)
 					{
 						if (obj instanceof PHPClassParseNode)
@@ -426,7 +427,7 @@ public class ContentAssistCollectors
 										public String getLowerCaseEntryPath()
 										{
 											String path = getEntryPath();
-											return path != null ? path.toLowerCase() : EMPTY_STRING;
+											return (path != null) ? path.toLowerCase() : EMPTY_STRING;
 										}
 
 										public IModule getModule()
@@ -441,7 +442,7 @@ public class ContentAssistCollectors
 												return value;
 											}
 											Parameter[] parameters = functionParseNode.getParameters();
-											LinkedHashMap<String, Set<Object>> parametersMap = null;
+											Map<String, Set<Object>> parametersMap = null;
 											boolean[] mandatories = null;
 											ArrayList<Integer> startPositions = null;
 											parametersMap = new LinkedHashMap<String, Set<Object>>(parameters.length);
@@ -516,10 +517,10 @@ public class ContentAssistCollectors
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		for (String typeName : types)
 		{
-			ArrayList<?> items = ContentAssistUtils.selectModelElements(typeName, true);
+			List<?> items = ContentAssistUtils.selectModelElements(typeName, true);
 			if (items != null && !items.isEmpty())
 			{
-				String lowCaseClassName = typeName != null ? typeName.toLowerCase() : EMPTY_STRING;
+				String lowCaseClassName = (typeName != null) ? typeName.toLowerCase() : EMPTY_STRING;
 				for (Object obj : items)
 				{
 					if (obj instanceof PHPClassParseNode)
@@ -559,7 +560,7 @@ public class ContentAssistCollectors
 								public String getLowerCaseEntryPath()
 								{
 									String path = getEntryPath();
-									return path != null ? path.toLowerCase() : EMPTY_STRING;
+									return (path != null) ? path.toLowerCase() : EMPTY_STRING;
 								}
 
 								public IModule getModule()

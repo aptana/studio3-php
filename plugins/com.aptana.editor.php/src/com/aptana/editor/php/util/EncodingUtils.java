@@ -10,6 +10,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.WorkbenchEncoding;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.core.builder.IModule;
 
@@ -55,7 +57,9 @@ public class EncodingUtils
 		catch (Throwable e)
 		{
 			// If there is any error, return the default
-			// IdeLog.logError(PHPPlugin.getDefault(), "Error setting the PHP tooltip charset", e); //$NON-NLS-1$
+			IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+					"PHP encoding utils - Returning the default encoding due to an error (getModuleEncoding)", //$NON-NLS-1$
+					e, PHPEditorPlugin.DEBUG_SCOPE);
 		}
 		if (charset == null)
 		{

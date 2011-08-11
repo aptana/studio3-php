@@ -183,8 +183,9 @@ public class PHPVersionConfigurationBlock extends PHPCoreOptionsConfigurationBlo
 		int index = PHP_ALIASES.indexOf(phpAlias);
 		if (index < 0)
 		{
-			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
-					"Unresolved PHP version: " + phpAlias, new Exception(), PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+			IdeLog.logWarning(
+					PHPEditorPlugin.getDefault(),
+					"Unresolved PHP version: " + phpAlias, new Exception("Unresolved PHP version"), PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$ //$NON-NLS-2$
 			index = 0;
 		}
 		fPHPVersions.select(index);

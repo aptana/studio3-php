@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.core.builder.IBuildPathResource;
 import com.aptana.editor.php.internal.core.builder.IDirectory;
@@ -273,11 +274,8 @@ public class FileSystemBuildPath extends AbstractBuildPath
 		}
 		long timeMillis = System.currentTimeMillis();
 		addResourcesRecursively(file);
-		if (PHPEditorPlugin.DEBUG)
-		{
-			System.out.println("FileSystemBuildPath.collectInitialResources(" + file.getName() + ") -> " //$NON-NLS-1$ //$NON-NLS-2$
-					+ (System.currentTimeMillis() - timeMillis) + "ms"); //$NON-NLS-1$
-		}
+		IdeLog.logInfo(PHPEditorPlugin.getDefault(), "FileSystemBuildPath.collectInitialResources(" + file.getName() //$NON-NLS-1$
+				+ ") -> " + (System.currentTimeMillis() - timeMillis) + "ms", null, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**

@@ -8,7 +8,7 @@
 package com.aptana.editor.php.internal.indexer;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 
@@ -26,5 +26,5 @@ public interface IEntryFilter
 	 *            - entries to filter.
 	 * @return filtered entries.
 	 */
-	LinkedHashSet<IElementEntry> filter(Collection<IElementEntry> toFilter);
+	Set<IElementEntry> filter(Collection<IElementEntry> toFilter);
 }

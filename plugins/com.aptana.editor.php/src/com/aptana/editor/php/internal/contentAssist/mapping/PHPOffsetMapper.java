@@ -109,7 +109,7 @@ public class PHPOffsetMapper
 			// Check if we are in an 'include' or 'require'
 			IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
 			ITypedRegion partition = document.getPartition(lexeme.getStartingOffset());
-			int previousPartitionEnd = partition != null ? partition.getOffset() - 1 : -1;
+			int previousPartitionEnd = (partition != null) ? partition.getOffset() - 1 : -1;
 			if (previousPartitionEnd > 0
 					&& (IPHPConstants.PHP_STRING_SINGLE.equals(partition.getType()) || IPHPConstants.PHP_STRING_DOUBLE
 							.equals(partition.getType())))
@@ -213,7 +213,7 @@ public class PHPOffsetMapper
 		{
 			String toFind = callPath.get(callPath.size() - 1);
 			boolean variableCompletion = false;
-			if (toFind.startsWith("$")) //$NON-NLS-1$
+			if (toFind.length() > 0 && toFind.charAt(0) == '$')
 			{
 				variableCompletion = true;
 				toFind = toFind.substring(1);
@@ -301,7 +301,7 @@ public class PHPOffsetMapper
 					0, 0, ""); //$NON-NLS-1$
 			return new CodeLocation(includedModule.getFullPath(), startLexeme);
 		}
-		catch (Throwable th)
+		catch (Throwable th) // $codepro.audit.disable emptyCatchClause
 		{
 			// skip
 		}

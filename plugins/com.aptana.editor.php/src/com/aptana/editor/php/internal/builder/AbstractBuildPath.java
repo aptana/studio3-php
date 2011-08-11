@@ -133,7 +133,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 		}
 
 		IModule module = getModuleByPath(resolvedPath);
-		if (module == null && relativePath.segments()[0].startsWith(".")) //$NON-NLS-1$
+		if (module == null && (relativePath.segments()[0].length() > 0 && relativePath.segments()[0].charAt(0) == '.'))
 		{
 			return null;
 		}
@@ -197,7 +197,8 @@ public abstract class AbstractBuildPath implements IBuildPath
 
 		// if no module found in this class, checking the build paths, current build path depends from.
 		// but first getting rid of the "./" and "../" paths
-		if (relativePath.segmentCount() >= 1 && relativePath.segment(0).startsWith(".")) //$NON-NLS-1$
+		if (relativePath.segmentCount() >= 1
+				&& (relativePath.segment(0).length() > 0 && relativePath.segment(0).charAt(0) == '.'))
 		{
 			return result;
 		}

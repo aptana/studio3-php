@@ -158,7 +158,7 @@ public final class TypeHierarchyUtils
 	{
 		// FIXME: Shalom - This should probably get a set of namespaces to accept.
 		// Or better, the getClassAncestors() should be the one that deals with it.
-		LinkedHashSet<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<String>();
 		for (String type : types)
 		{
 			result.add(type);

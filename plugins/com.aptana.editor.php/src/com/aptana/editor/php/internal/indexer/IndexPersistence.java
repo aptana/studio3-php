@@ -205,7 +205,7 @@ public final class IndexPersistence
 		{
 			return Collections.singleton(readType(di));
 		}
-		HashSet<Object> t = new HashSet<Object>(readInt);
+		Set<Object> t = new HashSet<Object>(readInt);
 		for (int a = 0; a < readInt; a++)
 		{
 			t.add(readType(di));

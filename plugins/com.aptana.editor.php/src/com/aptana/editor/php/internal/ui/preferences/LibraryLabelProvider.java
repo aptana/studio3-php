@@ -9,7 +9,7 @@ package com.aptana.editor.php.internal.ui.preferences;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -31,9 +31,9 @@ public final class LibraryLabelProvider extends LabelProvider
 	static Image uLibraryImage = AbstractUIPlugin.imageDescriptorFromPlugin(PHPEplPlugin.PLUGIN_ID,
 			"/icons/full/obj16/library_obj.gif").createImage(); //$NON-NLS-1$
 
-	private final HashMap<URL, Image> images;
+	private final Map<URL,Image> images;
 
-	public LibraryLabelProvider(HashMap<URL, Image> images)
+	public LibraryLabelProvider(Map<URL,Image> images)
 	{
 		this.images = images;
 	}

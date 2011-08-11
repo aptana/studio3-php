@@ -40,13 +40,13 @@ public abstract class AbstractPHPEntryValue implements IReportable, ILanguageNod
 	 * @param modifiers
 	 *            - modifiers.
 	 */
-	public AbstractPHPEntryValue(int modifiers, String namespace)
+	protected AbstractPHPEntryValue(int modifiers, String namespace)
 	{
 		this.modifiers = modifiers;
 		this.nameSpace = namespace;
 	}
 
-	public AbstractPHPEntryValue(DataInputStream di) throws IOException
+	protected AbstractPHPEntryValue(DataInputStream di) throws IOException
 	{
 		this.modifiers = di.readInt();
 		this.startOffset = di.readInt();

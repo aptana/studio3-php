@@ -117,7 +117,7 @@ public class PHPLibraryDialog extends TitleAreaDialog
 		}
 		else
 		{
-			viewer.setInput(new String[0]);
+			viewer.setInput(new String[0]); // $codepro.audit.disable reusableImmutables
 		}
 		buttons.setLayout(layout);
 		Button add = new Button(buttons, SWT.NONE);

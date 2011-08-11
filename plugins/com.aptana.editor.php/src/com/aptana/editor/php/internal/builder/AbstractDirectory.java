@@ -28,7 +28,7 @@ public abstract class AbstractDirectory extends AbstractBuildPathResource implem
 	 * @param fullPath
 	 *            - full path.
 	 */
-	public AbstractDirectory(IBuildPath buildPath, String fullPath)
+	protected AbstractDirectory(IBuildPath buildPath, String fullPath)
 	{
 		super(buildPath, fullPath);
 	}

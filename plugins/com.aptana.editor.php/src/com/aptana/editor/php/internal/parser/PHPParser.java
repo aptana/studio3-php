@@ -46,6 +46,10 @@ import com.aptana.parsing.ast.ParseRootNode;
 public class PHPParser implements IParser
 {
 
+	/**
+	 * 
+	 */
+	private static final ParseNode[] EMPTY_PARSE_NODES = new ParseNode[0];
 	private PHPVersion phpVersion;
 	private IModule module;
 	private ISourceModule sourceModule;
@@ -70,11 +74,11 @@ public class PHPParser implements IParser
 	/**
 	 * Override the default implementation to provide support for PHP nodes inside JavaScript.
 	 */
-	public IParseRootNode parse(IParseState parseState) throws java.lang.Exception
+	public IParseRootNode parse(IParseState parseState) // $codepro.audit.disable declaredExceptions
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset,
+		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, EMPTY_PARSE_NODES, startingOffset,
 				startingOffset + source.length() - 1);
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
@@ -94,7 +98,8 @@ public class PHPParser implements IParser
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule);
+			parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule); // $codepro.audit.disable
+																									// closeWhereCreated
 			program = parser.createAST(null);
 		}
 		catch (Exception e)
@@ -157,20 +162,20 @@ public class PHPParser implements IParser
 	 * @throws java.lang.Exception
 	 * @see {@link #parse(IParseState)}
 	 */
-	public IParseRootNode parse(InputStream source) throws java.lang.Exception
+	public IParseRootNode parse(InputStream source)
 	{
 		String input = IOUtil.read(source);
-		Program ast = parseAST(new StringReader(input));
+		Program ast = parseAST(new StringReader(input)); // $codepro.audit.disable closeWhereCreated
 		if (ast != null)
 		{
 
-			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
+			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, EMPTY_PARSE_NODES, ast.getStart(),
 					ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
 			return root;
 		}
-		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], 0, 0);
+		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, EMPTY_PARSE_NODES, 0, 0);
 	}
 
 	/**

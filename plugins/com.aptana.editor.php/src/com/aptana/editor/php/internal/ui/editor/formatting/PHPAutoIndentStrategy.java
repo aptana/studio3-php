@@ -82,12 +82,12 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				return;
 			}
 
-			if (IPHPConstants.PHP_SLASH_LINE_COMMENT.equals(regionType)
-					|| IPHPConstants.PHP_HASH_LINE_COMMENT.equals(regionType))
-			{
-				// TODO
-				// commentStrategy.customizeDocumentCommand(document, command);
-			}
+			// if (IPHPConstants.PHP_SLASH_LINE_COMMENT.equals(regionType)
+			// || IPHPConstants.PHP_HASH_LINE_COMMENT.equals(regionType))
+			// {
+			// TODO
+			// commentStrategy.customizeDocumentCommand(document, command);
+			// }
 			if (TextUtilities.endsWith(document.getLegalLineDelimiters(), command.text) != -1)
 			{
 
@@ -194,7 +194,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						customizeCloseCurly(document, command, floorLexeme);
 					}
 				}
-				else if (indentAfterOpenBrace(document, command) == false)
+				else if (!indentAfterOpenBrace(document, command))
 				{
 					command.text += copyIntentationFromPreviousLine(document, command);
 					// command.text += getIndentationAtOffset(document, floorLexeme.getStartingOffset());
@@ -348,7 +348,8 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 									hasClosing = true;
 									break;
 								}
-								if (next == '\n' || next == '\r' || !Character.isWhitespace(next))
+								if (next == '\n' || next == '\r' || !Character.isWhitespace(next)) // $codepro.audit.disable
+																									// platformSpecificLineSeparator
 								{
 									// we could not find any closing bracket
 									break;
@@ -507,6 +508,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException excp)
 		{
+			IdeLog.logWarning(
+					PHPEditorPlugin.getDefault(),
+					"PHP Auto Edit Strategy - Bad location while computing an indentation (copyIntentationFromPreviousLine)", //$NON-NLS-1$
+					excp, PHPEditorPlugin.DEBUG_SCOPE);
 		}
 
 		return StringUtils.EMPTY;

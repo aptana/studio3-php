@@ -10,9 +10,9 @@ import org2.eclipse.php.util.StringUtils;
 /**
  * @author Robin Debreuil
  */
-public abstract class DocumentationBase
+public abstract class DocumentationBase // $codepro.audit.disable noAbstractMethods
 {
-
+	private static final String[] EMPTY_STR_ARR = new String[0];
 	private String fAuthor = ""; //$NON-NLS-1$
 	private String fName = ""; //$NON-NLS-1$
 	private String fDescription = ""; //$NON-NLS-1$
@@ -114,9 +114,9 @@ public abstract class DocumentationBase
 	{
 		if (fSees == null)
 		{
-			return new String[0];
+			return EMPTY_STR_ARR;
 		}
-		return fSees.toArray(new String[0]);
+		return fSees.toArray(EMPTY_STR_ARR);
 	}
 
 	/**
@@ -212,13 +212,13 @@ public abstract class DocumentationBase
 	// {
 	// return null;
 	// }
-	//		
+	//
 	// if(fID.containsKey(id))
 	// {
 	// ArrayList<CodeLocation> al = fID.get(id);
 	// return al.toArray(new CodeLocation[0]);
 	// }
-	//		
+	//
 	// return null;
 	// }
 	//
@@ -232,7 +232,7 @@ public abstract class DocumentationBase
 	// {
 	// fID = new HashMap<String, ArrayList<CodeLocation>>();
 	// }
-	//		
+	//
 	// if(fID.containsKey(id))
 	// {
 	// ArrayList<CodeLocation> al = fID.get(id);
@@ -244,7 +244,7 @@ public abstract class DocumentationBase
 	// list.add(location);
 	// fID.put(id, list);
 	// }
-	//		
+	//
 	// }
 	// /**
 	// * Gets the String IDs for all the @id tags in this doc object.
@@ -256,7 +256,7 @@ public abstract class DocumentationBase
 	// {
 	// return new String[0];
 	// }
-	//		
+	//
 	// return fID.keySet().toArray(new String[0]);
 	// }
 
@@ -299,7 +299,7 @@ public abstract class DocumentationBase
 		output.writeUTF(this.fAuthor);
 		output.writeUTF(this.fName);
 		output.writeUTF(this.fDescription);
-		output.writeUTF(StringUtils.join("\n\n", getExamples())); //$NON-NLS-1$
+		output.writeUTF(StringUtils.join("\n\n", getExamples())); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 		output.writeUTF(this.fRemarks);
 		output.writeUTF(this.fVersion);
 
@@ -340,9 +340,9 @@ public abstract class DocumentationBase
 	{
 		if (fSDocLocations == null)
 		{
-			return new String[0];
+			return EMPTY_STR_ARR;
 		}
-		return fSDocLocations.toArray(new String[0]);
+		return fSDocLocations.toArray(EMPTY_STR_ARR);
 	}
 
 	// /**
@@ -361,11 +361,11 @@ public abstract class DocumentationBase
 	{
 		if (fExamples != null)
 		{
-			return fExamples.toArray(new String[0]);
+			return fExamples.toArray(EMPTY_STR_ARR);
 		}
 		else
 		{
-			return new String[0];
+			return EMPTY_STR_ARR;
 		}
 	}
 

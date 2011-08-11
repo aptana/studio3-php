@@ -23,7 +23,7 @@ public class PhpUIPreferencesInitializer extends AbstractPreferenceInitializer
 		IPreferenceStore store = getPreferenceStore();
 		store.setDefault(IPhpPreferenceConstants.PHPEDITOR_INITIAL_PROJECT_FILE_NAME, "index.php"); //$NON-NLS-1$
 		store.setDefault(IPhpPreferenceConstants.PHPEDITOR_INITIAL_PROJECT_FILE_CREATE, true);
-		store.setDefault(IPhpPreferenceConstants.PHPEDITOR_INITIAL_CONTENTS, "<?php\n    phpinfo();\n?>"); //$NON-NLS-1$
+		store.setDefault(IPhpPreferenceConstants.PHPEDITOR_INITIAL_CONTENTS, "<?php\n    phpinfo();\n?>"); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 	}
 
 	public static IPreferenceStore getPreferenceStore()

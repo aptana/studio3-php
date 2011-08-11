@@ -130,7 +130,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 						return scanner.getToken("support.constant.php"); //$NON-NLS-1$
 					}
 				}
-			default:
+			default: // $codepro.audit.disable nonTerminatedCaseClause
 				return PHPTokenMapperFactory.mapDefaultToken(scanner, sym);
 		}
 	}

@@ -64,7 +64,7 @@ public class PHTMLTokenScanner extends HTMLTokenScanner
 		setRules(rules.toArray(new IRule[rules.size()]));
 	}
 
-	private static String getTokenName(short token)
+	private static String getTokenName(short token) // $codepro.audit.disable
 	{
 		return PHTMLTokens.getTokenName(token);
 	}

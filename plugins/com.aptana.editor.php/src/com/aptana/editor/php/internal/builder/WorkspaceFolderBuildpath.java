@@ -312,7 +312,7 @@ public class WorkspaceFolderBuildpath extends AbstractBuildPath
 		{
 			folder.accept(new IResourceVisitor()
 			{
-				public boolean visit(IResource resource) throws CoreException
+				public boolean visit(IResource resource)
 				{
 					// ignoring inaccessible resources
 					if (!resource.isAccessible())

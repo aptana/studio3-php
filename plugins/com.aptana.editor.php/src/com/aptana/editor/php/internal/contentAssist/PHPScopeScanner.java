@@ -164,7 +164,8 @@ public class PHPScopeScanner implements ITokenScanner
 		try
 		{
 			content = document.get(offset, length).toCharArray();
-			lexer = PhpLexerFactory.createLexer(new CharArrayReader(content), phpVersion);
+			lexer = PhpLexerFactory.createLexer(new CharArrayReader(content), phpVersion); // $codepro.audit.disable
+																							// closeWhereCreated
 			// set initial lexer state - we use reflection here since we don't
 			// know the constant value of
 			// of this state in specific PHP version lexer

@@ -16,7 +16,9 @@ import org2.eclipse.php.core.compiler.PHPFlags;
 import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
@@ -53,14 +55,14 @@ public class PHPContextCalculator
 	 */
 	protected static final String NAMESPACE_PROPOSAL_CONTEXT_TYPE = "NAMESPACE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
 
-	private static final String NEW_LINE = System.getProperty("line.separator", "\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String NEW_LINE = System.getProperty("line.separator", "\r\n"); //$NON-NLS-1$ //$NON-NLS-2$ // $codepro.audit.disable platformSpecificLineSeparator
 
 	/**
 	 * DEFAULT_DELIMITER
 	 */
 	public static final String DEFAULT_DELIMITER = NEW_LINE + "\u2022\t"; //$NON-NLS-1$
 
-	// private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	private static final int[] EMPTY_TYPES = new int[0];
 	private ProposalContext currentContext;
 
 	/**
@@ -246,7 +248,7 @@ public class PHPContextCalculator
 			}
 		};
 
-		currentContext = new ProposalContext(filter, true, false, new int[0]);
+		currentContext = new ProposalContext(filter, true, false, EMPTY_TYPES);
 		currentContext.setAutoActivateCAAfterApply(true);
 		return true;
 	}
@@ -347,7 +349,7 @@ public class PHPContextCalculator
 			}
 		};
 
-		currentContext = new ProposalContext(filter, true, true, new int[0]);
+		currentContext = new ProposalContext(filter, true, true, EMPTY_TYPES);
 		currentContext.setType(IMPLEMENTS_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
@@ -467,7 +469,7 @@ public class PHPContextCalculator
 			}
 		};
 
-		currentContext = new ProposalContext(filter, true, true, new int[0]);
+		currentContext = new ProposalContext(filter, true, true, EMPTY_TYPES);
 		currentContext.setType(EXTENDS_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
@@ -583,7 +585,7 @@ public class PHPContextCalculator
 			}
 		};
 
-		currentContext = new ProposalContext(filter, true, true, new int[0]);
+		currentContext = new ProposalContext(filter, true, true, EMPTY_TYPES);
 		currentContext.setType(NEW_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
@@ -691,7 +693,7 @@ public class PHPContextCalculator
 	public static Lexeme<PHPTokenType> findLexemeBackward(LexemeProvider<PHPTokenType> lexemeProvider,
 			int startPosition, Object typesToFind, String[] allowedTypesToSkip)
 	{
-		HashSet<String> typesSet = new HashSet<String>();
+		Set<String> typesSet = new HashSet<String>();
 		if (typesToFind instanceof String)
 		{
 			typesSet.add(typesToFind.toString());
@@ -755,7 +757,7 @@ public class PHPContextCalculator
 			}
 		};
 
-		return new ProposalContext(filter, false, false, new int[0]);
+		return new ProposalContext(filter, false, false, EMPTY_TYPES);
 	}
 
 	/**
@@ -922,7 +924,7 @@ public class PHPContextCalculator
 		}
 		StringReader sr = new StringReader(s);
 		GC gc = new GC(Display.getCurrent());
-		String result = ""; //$NON-NLS-1$
+		StringBuilder result = new StringBuilder();
 		LineBreakingReader r = new LineBreakingReader(sr, gc, maxWidth);
 
 		try
@@ -930,21 +932,26 @@ public class PHPContextCalculator
 			String line = r.readLine();
 			while (line != null)
 			{
-				result += line;
+				result.append(line);
 				line = r.readLine();
 				if (line != null)
 				{
-					result += delimiter;
+					result.append(delimiter);
 				}
 			}
 		}
 		catch (IOException e)
 		{
+			// Will probably never happen since we are reading from a StringReader
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(), "Error reading from a stream", e, null); //$NON-NLS-1$
 		}
-
+		finally
+		{
+			sr.close();
+		}
 		gc.dispose();
 
-		return result;
+		return result.toString();
 	}
 
 	/**
@@ -960,7 +967,7 @@ public class PHPContextCalculator
 		private ContextInformation contextInformation;
 		private final int contextPosition;
 
-		public PHPContextInformationWrapper(ContextInformation information, int contextPosition)
+		protected PHPContextInformationWrapper(ContextInformation information, int contextPosition)
 		{
 			this.contextInformation = information;
 			this.contextPosition = contextPosition;

@@ -1,8 +1,9 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.internal.ui.hover;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ToolBarManager;
@@ -202,7 +203,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 	{
 		PHPDocumentationBrowserInformationControlInput info = (PHPDocumentationBrowserInformationControlInput) getHoverInfo2(
 				textViewer, hoverRegion);
-		return info != null ? info.getHtml() : null;
+		return (info != null) ? info.getHtml() : null;
 	}
 
 	/*
@@ -257,7 +258,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 				String name = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
 				if (!StringUtil.EMPTY.equals(name))
 				{
-					ArrayList<Object> elements = ContentAssistUtils.selectModelElements(name, true);
+					List<Object> elements = ContentAssistUtils.selectModelElements(name, true);
 					if (elements != null && !elements.isEmpty())
 					{
 						// return the first element only

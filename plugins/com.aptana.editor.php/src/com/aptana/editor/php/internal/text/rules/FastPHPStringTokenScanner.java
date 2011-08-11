@@ -127,7 +127,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 			ch = fScanner.read();
 			count = 1;
 			radix = 16;
-		default:
+		default: // $codepro.audit.disable nonTerminatedCaseClause
 			while (Character.digit(ch, radix) >= 0 && count > 0) {
 				ch = fScanner.read();
 				--count;
@@ -237,7 +237,6 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 				readSimpleVariable(fScanner.getOffset());
 				unread = 0;
 			}
-			;
 		}
 		if (unread == 0) {
 			readVariableOperator(fScanner.getOffset());

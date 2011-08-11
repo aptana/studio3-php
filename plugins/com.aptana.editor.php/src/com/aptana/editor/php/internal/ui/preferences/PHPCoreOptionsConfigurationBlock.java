@@ -13,7 +13,7 @@ import com.aptana.editor.php.util.Key;
 public abstract class PHPCoreOptionsConfigurationBlock extends OptionsConfigurationBlock
 {
 
-	public PHPCoreOptionsConfigurationBlock(IStatusChangeListener context, IProject project, Key[] allKeys,
+	protected PHPCoreOptionsConfigurationBlock(IStatusChangeListener context, IProject project, Key[] allKeys,
 			IWorkbenchPreferenceContainer container)
 	{
 		super(context, project, allKeys, container);

@@ -39,7 +39,7 @@ public abstract class AbstractResourceElement extends AbstractModelElement imple
 	 * @param resource
 	 *            - resource.
 	 */
-	public AbstractResourceElement(IBuildPathResource resource)
+	protected AbstractResourceElement(IBuildPathResource resource)
 	{
 		this.resource = resource;
 	}

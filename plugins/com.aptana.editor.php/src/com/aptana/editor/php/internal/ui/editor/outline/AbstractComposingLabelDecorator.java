@@ -38,7 +38,7 @@ public abstract class AbstractComposingLabelDecorator implements ILabelDecorator
 	 * @param height
 	 *            - result height.
 	 */
-	public AbstractComposingLabelDecorator(int width, int height)
+	protected AbstractComposingLabelDecorator(int width, int height)
 	{
 		this.width = width;
 		this.height = height;

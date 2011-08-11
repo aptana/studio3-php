@@ -317,7 +317,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			}
 			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 			String segmentsString = stringBuilder.toString();
-			nodeBuilder.handleUse(segmentsString, alias != null ? alias.getName() : null, node.getStart(),
+			nodeBuilder.handleUse(segmentsString, (alias != null) ? alias.getName() : null, node.getStart(),
 					node.getEnd() - 1);
 		}
 		return super.visit(node);
@@ -657,7 +657,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	/**
 	 * @param interfaces
 	 */
-	protected void handleInterfaces(List<Identifier> interfaces)
+	private void handleInterfaces(List<Identifier> interfaces)
 	{
 		String[] extendedInterfacesNames = new String[interfaces.size()];
 		int[][] extendedInterfacesStartEnd = new int[extendedInterfacesNames.length][2];
@@ -677,7 +677,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	 * @param docComment
 	 * @return A new {@link PHPDocBlockImp}, or null if the given docComment is null
 	 */
-	protected PHPDocBlockImp convertToDocBlock(org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment)
+	private PHPDocBlockImp convertToDocBlock(org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment)
 	{
 		if (docComment == null)
 		{

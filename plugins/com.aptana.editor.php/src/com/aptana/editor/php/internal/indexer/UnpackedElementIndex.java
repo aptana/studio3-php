@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.aptana.core.logging.IdeLog;
@@ -282,7 +283,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 		}
 		if (namespace != null)
 		{
-			ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
+			List<IElementEntry> filter = new ArrayList<IElementEntry>();
 			for (IElementEntry e : toReturn)
 			{
 				Object value = e.getValue();
@@ -300,7 +301,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 		}
 		else
 		{
-			ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
+			List<IElementEntry> filter = new ArrayList<IElementEntry>();
 			for (IElementEntry e : toReturn)
 			{
 				Object value = e.getValue();
@@ -424,7 +425,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 			});
 			if (namespace != null)
 			{
-				ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
+				List<IElementEntry> filter = new ArrayList<IElementEntry>();
 				for (IElementEntry e : result)
 				{
 					Object value = e.getValue();
@@ -444,7 +445,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 		}
 		else
 		{
-			THashMap<String, Object> map = pathToEntries.get(category);
+			Map<String, Object> map = pathToEntries.get(category);
 			if (map == null)
 			{
 				return Collections.emptyList();
@@ -468,7 +469,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 			}
 			if (namespace != null)
 			{
-				ArrayList<IElementEntry> filter = new ArrayList<IElementEntry>();
+				List<IElementEntry> filter = new ArrayList<IElementEntry>();
 				for (IElementEntry e : result)
 				{
 					Object value = e.getValue();
@@ -678,7 +679,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 	@SuppressWarnings("unchecked")
 	private void removeEntriesFromPathToEntries(UnpackedEntry entryToRemove)
 	{
-		THashMap<String, Object> map = pathToEntries.get(entryToRemove.getCategory());
+		Map<String, Object> map = pathToEntries.get(entryToRemove.getCategory());
 		if (map == null)
 		{
 			return;
@@ -755,7 +756,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 				if (!objectResult.equals(entry))
 				{
 					IElementEntry oldEntry = (IElementEntry) objectResult;
-					HashSet<IElementEntry> list = new HashSet<IElementEntry>(2);
+					Set<IElementEntry> list = new HashSet<IElementEntry>(2);
 					list.add(oldEntry);
 					list.add(entry);
 					map.put(key, list);
@@ -808,7 +809,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 				if (!objectResult.equals(entry))
 				{
 					IElementEntry oldEntry = (IElementEntry) objectResult;
-					HashSet<IElementEntry> list = new HashSet<IElementEntry>(2);
+					Set<IElementEntry> list = new HashSet<IElementEntry>(2);
 					list.add(oldEntry);
 					list.add(entry);
 					map.put(firstCharacter, list);
@@ -857,7 +858,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 				{
 					return;
 				}
-				HashSet<UnpackedEntry> val = new HashSet<UnpackedEntry>(2);
+				Set<UnpackedEntry> val = new HashSet<UnpackedEntry>(2);
 				val.add((UnpackedEntry) pathToEntriesValue);
 				val.add(entry);
 				map.put(entryPathLowerCase, val);

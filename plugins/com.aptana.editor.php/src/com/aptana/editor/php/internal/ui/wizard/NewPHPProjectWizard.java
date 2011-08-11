@@ -39,7 +39,7 @@ import com.aptana.projects.internal.wizards.ProjectTemplateSelectionPage;
 public class NewPHPProjectWizard extends NewProjectWizard implements IExecutableExtension
 {
 
-	public static final String ID = "com.aptana.editor.php.NewPHPProjectWizard"; //$NON-NLS-1$
+	public static final String PHP_WIZARD_ID = "com.aptana.editor.php.NewPHPProjectWizard"; //$NON-NLS-1$
 	private static final String PHP_PROJ_IMAGE_PATH = "/icons/full/wizban/new_project.png"; //$NON-NLS-1$
 
 	/*
@@ -107,7 +107,7 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 	 */
 	public String getID()
 	{
-		return ID;
+		return PHP_WIZARD_ID;
 	}
 
 	/**

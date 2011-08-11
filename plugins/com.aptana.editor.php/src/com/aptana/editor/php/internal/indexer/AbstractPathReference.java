@@ -31,7 +31,7 @@ public abstract class AbstractPathReference
 	 * @param path
 	 *            - call path.
 	 */
-	public AbstractPathReference(CallPath path)
+	protected AbstractPathReference(CallPath path)
 	{
 		this.path = path;
 	}

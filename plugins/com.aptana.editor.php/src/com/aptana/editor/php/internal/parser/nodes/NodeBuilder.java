@@ -38,9 +38,9 @@ public class NodeBuilder
 	private IPHPParseNode current;
 	private IPHPParseNode root;
 	private Stack<Object> stack = new Stack<Object>();
-	private ArrayList<Object> phpStarts = new ArrayList<Object>();
-	private ArrayList<Object> phpEnds = new ArrayList<Object>();
-	private ArrayList<Object> parameters = new ArrayList<Object>();
+	private List<Object> phpStarts = new ArrayList<Object>();
+	private List<Object> phpEnds = new ArrayList<Object>();
+	private List<Object> parameters = new ArrayList<Object>();
 	private IParser htmlParser;
 
 	/**
@@ -219,7 +219,8 @@ public class NodeBuilder
 	public void handleError(String description, int startPosition, int endPosition, int lineNumber)
 	{
 		// TODO: Shalom - See what needs to be done to handle those errors.
-		System.out.println("NodeBuilderClient.handleError() --> " + description); //$NON-NLS-1$
+		IdeLog.logInfo(PHPEditorPlugin.getDefault(), "NodeBuilderClient.handleError() --> " + description, null, //$NON-NLS-1$
+				PHPEditorPlugin.DEBUG_SCOPE);
 	}
 
 	public void handleTask(String taskName, String description, int startPosition, int endPosition, int lineNumber)
@@ -379,12 +380,16 @@ public class NodeBuilder
 		else
 		{
 			if (nameIdentifier == null)
+			{
 				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
 						"PHP NodeBuilder.setNodeName got a null identifier.", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+			}
 			else
+			{
 				IdeLog.logWarning(
 						PHPEditorPlugin.getDefault(),
 						"PHP NodeBuilder.setNodeName didn't hold any current node to set a name on.", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+			}
 		}
 	}
 
@@ -508,7 +513,7 @@ public class NodeBuilder
 		Queue<IParseNode> queue = new LinkedList<IParseNode>();
 		queue.offer(parseNode);
 		// Walk the parse nodes tree and process each child.
-		while (queue.isEmpty() == false)
+		while (!queue.isEmpty())
 		{
 			IParseNode node = queue.poll();
 			((ParseNode) node).addOffset(offsetToAdd);

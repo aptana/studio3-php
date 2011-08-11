@@ -188,7 +188,7 @@ public class TypeBindingBuilder
 		 * @param scope
 		 * @param pos
 		 */
-		public VariableInfo(String variableName, Object variableType, Scope scope, int pos)
+		private VariableInfo(String variableName, Object variableType, Scope scope, int pos)
 		{
 			this.variableName = variableName;
 			variableTypes = new HashSet<Object>(1);
@@ -210,7 +210,7 @@ public class TypeBindingBuilder
 		 * @param scope
 		 * @param pos
 		 */
-		public VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos)
+		private VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos)
 		{
 			this.variableName = variableName;
 
@@ -234,7 +234,7 @@ public class TypeBindingBuilder
 		 * @param modifier
 		 *            - variable modifier.
 		 */
-		public VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos, int modifier)
+		private VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos, int modifier)
 		{
 			this.variableName = variableName;
 
@@ -438,7 +438,7 @@ public class TypeBindingBuilder
 		 * @param parent
 		 *            - scope parent.
 		 */
-		public Scope(ASTNode root, Scope parent)
+		private Scope(ASTNode root, Scope parent)
 		{
 			this.root = root;
 			this.parent = parent;
@@ -456,7 +456,7 @@ public class TypeBindingBuilder
 		 * @param entry
 		 *            - root entry if exist. null is acceptable.
 		 */
-		public Scope(ASTNode root, Scope parent, IElementEntry entry)
+		private Scope(ASTNode root, Scope parent, IElementEntry entry)
 		{
 			this.root = root;
 			this.parent = parent;
@@ -729,12 +729,12 @@ public class TypeBindingBuilder
 		 * @param classEntry
 		 *            - class entry.
 		 */
-		public ClassScopeInfo()
+		private ClassScopeInfo()
 		{
 
 		}
 
-		public ClassScopeInfo(String name)
+		private ClassScopeInfo(String name)
 		{
 			this.name = name;
 		}
@@ -836,7 +836,7 @@ public class TypeBindingBuilder
 		 */
 		private IBindingReporter reporter;
 
-		private HashMap<String, ITypeBinding> binding = new HashMap<String, ITypeBinding>();
+		private Map<String, ITypeBinding> binding = new HashMap<String, ITypeBinding>();
 		/**
 		 * Module.
 		 */
@@ -874,7 +874,7 @@ public class TypeBindingBuilder
 		 */
 		boolean localStackReported = false;
 
-		private LinkedHashMap<String, Set<Object>> localParametersMap;
+		private Map<String, Set<Object>> localParametersMap;
 
 		/**
 		 * PHPASTVisitor constructor.
@@ -884,7 +884,7 @@ public class TypeBindingBuilder
 		 * @param program
 		 *            - current module.
 		 */
-		public PHPASTVisitor(IBindingReporter reporter2, Program program)
+		private PHPASTVisitor(IBindingReporter reporter2, Program program)
 		{
 			this.reporter = reporter2;
 			this.module = program.getSourceModule();
@@ -1100,11 +1100,11 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			String functionName = functionNameIdentifier.getName();
+			// String functionName = functionNameIdentifier.getName();
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
 			localParametersMap = null;
 			if (parameters != null && parameters.size() > 0)
 			{
@@ -1159,21 +1159,21 @@ public class TypeBindingBuilder
 					parameterPositions, mandatories, functionDeclaration.getStart(), currentNamespace);
 			if (returnTypes != null)
 			{
-				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				Set<Object> returnTypesSet = new HashSet<Object>();
 				for (String returnType : returnTypes)
 				{
 					returnTypesSet.add(returnType);
 				}
 				entryValue.setReturnTypes(returnTypesSet);
 			}
-			String entryPath = ""; //$NON-NLS-1$
-			if (currentClass != null)
-			{
-				// entryPath = currentClass.getClassEntry().getEntryPath() +
-				// IElementsIndex.DELIMITER;
-			}
+			// String entryPath = ""; //$NON-NLS-1$
+			// if (currentClass != null)
+			// {
+			// entryPath = currentClass.getClassEntry().getEntryPath() +
+			// IElementsIndex.DELIMITER;
+			// }
 
-			entryPath += functionName;
+			// entryPath += functionName;
 			// FIXME
 			// currentFunction =
 			// reporter.reportEntry(IPHPIndexConstants.FUNCTION_CATEGORY,
@@ -1203,13 +1203,13 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			String functionName = functionNameIdentifier.getName();
+			// String functionName = functionNameIdentifier.getName();
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
 
-			LinkedHashMap<String, Set<Object>> parametersMap = null;
+			Map<String, Set<Object>> parametersMap = null;
 			if (parameters.size() > 0)
 			{
 				parametersMap = new LinkedHashMap<String, Set<Object>>(parameters.size());
@@ -1272,7 +1272,7 @@ public class TypeBindingBuilder
 
 			if (returnTypes != null)
 			{
-				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				Set<Object> returnTypesSet = new HashSet<Object>();
 				for (String returnType : returnTypes)
 				{
 					returnTypesSet.add(returnType);
@@ -1280,16 +1280,16 @@ public class TypeBindingBuilder
 				entryValue.setReturnTypes(returnTypesSet);
 			}
 
-			String entryPath = ""; //$NON-NLS-1$
-			if (currentClass != null)
-			{
-				// entryPath = currentClass.getClassEntry().getEntryPath() +
-				// IElementsIndex.DELIMITER;
-			}
+			//String entryPath = ""; //$NON-NLS-1$
+			// if (currentClass != null)
+			// {
+			// entryPath = currentClass.getClassEntry().getEntryPath() +
+			// IElementsIndex.DELIMITER;
+			// }
 
-			entryPath += functionName;
+			// entryPath += functionName;
 
-			reporter.report(methodDeclaration, new MethodBinding(currentClass != null ? currentClass.getName() : "", //$NON-NLS-1$
+			reporter.report(methodDeclaration, new MethodBinding((currentClass != null) ? currentClass.getName() : "", //$NON-NLS-1$
 					methodDeclaration.getFunction().getFunctionName().getName(), modifier, module));
 
 			// FIXME currentFunction =
@@ -1982,11 +1982,11 @@ public class TypeBindingBuilder
 			{
 				entryPath = currentFunction.getEntryPath() + IElementsIndex.DELIMITER;
 			}
-			else if (currentClass != null)
-			{
-				// entryPath = currentClass.getClassEntry().getEntryPath() +
-				// IElementsIndex.DELIMITER;
-			}
+			// else if (currentClass != null)
+			// {
+			// entryPath = currentClass.getClassEntry().getEntryPath() +
+			// IElementsIndex.DELIMITER;
+			// }
 
 			String varName = getVariableName(variable);
 			if (varName == null)
@@ -2042,10 +2042,10 @@ public class TypeBindingBuilder
 			{
 				currentEntry = currentFunction;
 			}
-			else if (node instanceof ClassDeclaration)
-			{
-				// currentEntry = currentClass.getClassEntry();
-			}
+			// else if (node instanceof ClassDeclaration)
+			// {
+			// currentEntry = currentClass.getClassEntry();
+			// }
 
 			Scope scope = new Scope(node, parent, currentEntry);
 			if (localParametersMap != null)
@@ -2114,23 +2114,20 @@ public class TypeBindingBuilder
 		 */
 		private void reportGlobalScopeVariables(Scope scope)
 		{
-			if (globalMode)
-			{
-				if (scope.getRoot() instanceof Program)
-				{
-					for (VariableInfo info : scope.getVariables())
-					{
-						// VariablePHPEntryValue entryValue = new VariablePHPEntryValue(
-						// 0, false, false, false,
-						// info.getVariableTypes(), info.getNodeStart());
-
-						// String entryPath = info.getName();
-						// FIXME
-						// reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY,
-						// entryPath, entryValue, module);
-					}
-				}
-			}
+			// if (globalMode)
+			// {
+			// if (scope.getRoot() instanceof Program)
+			// {
+			// for (VariableInfo info : scope.getVariables())
+			// {
+			// VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, false, false,
+			// info.getVariableTypes(), info.getNodeStart());
+			// String entryPath = info.getName();
+			// FIXME
+			// reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY, entryPath, entryValue, module);
+			// }
+			// }
+			// }
 		}
 
 		/**
@@ -2268,7 +2265,7 @@ public class TypeBindingBuilder
 					|| (classNameIdentifier.getType() != ASTNode.IDENTIFIER && classNameIdentifier.getType() != ASTNode.NAMESPACE_NAME))
 			{
 				IdeLog.logError(PHPEditorPlugin.getDefault(),
-						"Expected an identifier or namespace-name", new Exception()); //$NON-NLS-1$
+						"Expected an identifier or namespace-name", new Exception("Missing identifier")); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
 			else if (classNameIdentifier.getType() == ASTNode.IDENTIFIER)
@@ -2759,7 +2756,7 @@ public class TypeBindingBuilder
 		 * @param stack
 		 *            - stack to report.
 		 */
-		private void reportStack(Stack<Scope> stack)
+		private void reportStack(List<Scope> stack)
 		{
 			if (stack.isEmpty())
 			{
@@ -2826,34 +2823,34 @@ public class TypeBindingBuilder
 
 			// reporting function/method parameters if needed, going up in the
 			// stack searching for the function
-			for (int i = stack.size() - 1; i >= 0; i--)
-			{
-				Scope scope = stack.get(i);
-				if (scope.getEntry() != null)
-				{
-					// IElementEntry entry = scope.getEntry();
-					// if (entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY
-					// && entry.getValue() instanceof FunctionPHPEntryValue) {
-					// FunctionPHPEntryValue val = (FunctionPHPEntryValue) entry
-					// .getValue();
-					// Map<String, Set<Object>> parameters = val
-					// .getParameters();
-					// if (parameters != null && !parameters.isEmpty()) {
-					// for (Map.Entry<String, Set<Object>> parEntry : parameters
-					// .entrySet()) {
-					// //String entryPath = parEntry.getKey();
-					// // VariablePHPEntryValue value = new VariablePHPEntryValue(
-					// // 0, true, false, false, parEntry
-					// // .getValue(), val
-					// // .getStartOffset());
-					// // FIXME
-					// // reporter.reportEntry(IPHPIndexConstants.
-					// // VAR_CATEGORY, entryPath, value, module);
-					// }
-					// }
-					// }
-				}
-			}
+			// for (int i = stack.size() - 1; i >= 0; i--)
+			// {
+			// Scope scope = stack.get(i);
+			// if (scope.getEntry() != null)
+			// {
+			// IElementEntry entry = scope.getEntry();
+			// if (entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY
+			// && entry.getValue() instanceof FunctionPHPEntryValue) {
+			// FunctionPHPEntryValue val = (FunctionPHPEntryValue) entry
+			// .getValue();
+			// Map<String, Set<Object>> parameters = val
+			// .getParameters();
+			// if (parameters != null && !parameters.isEmpty()) {
+			// for (Map.Entry<String, Set<Object>> parEntry : parameters
+			// .entrySet()) {
+			// //String entryPath = parEntry.getKey();
+			// // VariablePHPEntryValue value = new VariablePHPEntryValue(
+			// // 0, true, false, false, parEntry
+			// // .getValue(), val
+			// // .getStartOffset());
+			// // FIXME
+			// // reporter.reportEntry(IPHPIndexConstants.
+			// // VAR_CATEGORY, entryPath, value, module);
+			// }
+			// }
+			// }
+			// }
+			// }
 		}
 
 		/**
@@ -2867,7 +2864,7 @@ public class TypeBindingBuilder
 		 *            - class active for the scope.
 		 * @return scope entries path
 		 */
-		String getScopePath(Stack<Scope> stack, int pos)
+		String getScopePath(List<Scope> stack, int pos)
 		{
 			StringBuffer result = new StringBuffer();
 
@@ -2958,7 +2955,7 @@ public class TypeBindingBuilder
 							paramName = paramName.substring(1);
 						}
 						String[] types = param.getTypes();
-						Set<Object> toSetParams = parametersMap != null ? parametersMap.get(paramName) : Collections
+						Set<Object> toSetParams = (parametersMap != null) ? parametersMap.get(paramName) : Collections
 								.emptySet();
 						if (toSetParams == null)
 						{
@@ -2987,7 +2984,9 @@ public class TypeBindingBuilder
 			}
 			catch (Throwable th)
 			{
-				// ignore
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"PHP Type-Binding builder - Error while applying a comment to a parameter type (applyComment)", //$NON-NLS-1$
+						th, PHPEditorPlugin.DEBUG_SCOPE);
 			}
 
 			return null;
@@ -3143,7 +3142,7 @@ public class TypeBindingBuilder
 	/**
 	 * types cache;
 	 */
-	private HashMap<Set<Object>, Set<String>> resolvedTypes = new HashMap<Set<Object>, Set<String>>();
+	private Map<Set<Object>, Set<String>> resolvedTypes = new HashMap<Set<Object>, Set<String>>();
 
 	/**
 	 * Mode.

@@ -41,7 +41,7 @@ public class PHTMLTokens
 		{
 			return NAME_UNKNOWN;
 		}
-		return NAMES[token];
+		return NAMES[(int)token];
 	}
 
 	public static short getToken(String tokenName)

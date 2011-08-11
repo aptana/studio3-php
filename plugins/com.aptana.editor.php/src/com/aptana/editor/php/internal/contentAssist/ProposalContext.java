@@ -7,6 +7,8 @@ package com.aptana.editor.php.internal.contentAssist;
  */
 class ProposalContext
 {
+	private static final int[] EMPTY_TYPES = new int[0];
+
 	/**
 	 * Context filter.
 	 */
@@ -49,9 +51,9 @@ class ProposalContext
 	 * @param types
 	 *            - types of model elements to accept, null means all types are accepted (no type check).
 	 */
-	public ProposalContext(IContextFilter filter, boolean acceptBuiltins, boolean acceptModelElements, int[] types)
+	protected ProposalContext(IContextFilter filter, boolean acceptBuiltins, boolean acceptModelElements, int[] types)
 	{
-		this.types = types == null ? new int[0] : types;
+		this.types = (types == null) ? EMPTY_TYPES : types;
 		this.contextFilter = filter;
 		this.acceptsBuiltins = acceptBuiltins;
 		this.acceptsModelElements = acceptModelElements;
