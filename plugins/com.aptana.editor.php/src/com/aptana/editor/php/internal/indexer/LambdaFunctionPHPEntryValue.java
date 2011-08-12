@@ -28,10 +28,10 @@ import com.aptana.editor.php.indexer.IPHPIndexConstants;
  */
 public class LambdaFunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHPFunctionEntryValue
 {
-	private static final String[] NO_PARAM_S = new String[0];
-	private static final boolean[] NO_PARAM_B = new boolean[0];
-	private static final Object[] NO_PARAM_O = new Object[0];
-	private static final int[] NO_PARAM_P = new int[0];
+	private static final String[] NO_STRING_PARAMS = new String[0];
+	private static final boolean[] NO_BOOLEAN_PARAMS = new boolean[0];
+	private static final Object[] NO_OBJECT_PARAMS = new Object[0];
+	private static final int[] NO_INT_PARAMS = new int[0];
 
 	/**
 	 * Parameters names.
@@ -250,7 +250,7 @@ public class LambdaFunctionPHPEntryValue extends AbstractPHPEntryValue implement
 	{
 		if (parameterMandatories == null)
 		{
-			return NO_PARAM_B;
+			return NO_BOOLEAN_PARAMS;
 		}
 		boolean[] toReturn = new boolean[parameterMandatories.length];
 		System.arraycopy(parameterMandatories, 0, toReturn, 0, parameterMandatories.length);
@@ -372,10 +372,10 @@ public class LambdaFunctionPHPEntryValue extends AbstractPHPEntryValue implement
 		}
 		else
 		{
-			parameterNames = NO_PARAM_S;
-			parameterMandatories = NO_PARAM_B;
-			parameterStartPositions = NO_PARAM_P;
-			parameterTypes = NO_PARAM_O;
+			parameterNames = NO_STRING_PARAMS;
+			parameterMandatories = NO_BOOLEAN_PARAMS;
+			parameterStartPositions = NO_INT_PARAMS;
+			parameterTypes = NO_OBJECT_PARAMS;
 		}
 	}
 

@@ -118,7 +118,6 @@ public final class PHPDocUtils
 			{
 				String readData = String.valueOf(buf, 0, numRead);
 				moduleData.append(readData);
-				buf = new char[1024];
 			}
 		}
 		finally
@@ -342,7 +341,7 @@ public final class PHPDocUtils
 				return mid; // key found
 			}
 		}
-		return -(low); // key not found.
+		return -low; // key not found.
 	}
 
 	/**

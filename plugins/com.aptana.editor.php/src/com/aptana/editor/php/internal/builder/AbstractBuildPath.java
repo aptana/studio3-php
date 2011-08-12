@@ -133,7 +133,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 		}
 
 		IModule module = getModuleByPath(resolvedPath);
-		if (module == null && (relativePath.segments()[0].length() > 0 && relativePath.segments()[0].charAt(0) == '.'))
+		if (module == null && (relativePath.segments()[0].startsWith("."))) //$NON-NLS-1$
 		{
 			return null;
 		}

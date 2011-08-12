@@ -8,10 +8,6 @@ import java.util.List;
  */
 public class FunctionDocumentation
 {
-
-	/**
-	 * 
-	 */
 	private static final TypedDescription[] EMPTY_TYPED_DESCRIPTIONS = new TypedDescription[0];
 	private String fClassDescription = ""; //$NON-NLS-1$
 	private String fMethodName = ""; //$NON-NLS-1$

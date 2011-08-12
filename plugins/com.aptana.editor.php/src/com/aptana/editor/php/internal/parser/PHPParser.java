@@ -45,11 +45,7 @@ import com.aptana.parsing.ast.ParseRootNode;
  */
 public class PHPParser implements IParser
 {
-
-	/**
-	 * 
-	 */
-	private static final ParseNode[] EMPTY_PARSE_NODES = new ParseNode[0];
+	protected static final ParseNode[] NO_CHILDREN = new ParseNode[0];
 	private PHPVersion phpVersion;
 	private IModule module;
 	private ISourceModule sourceModule;
@@ -78,7 +74,7 @@ public class PHPParser implements IParser
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, EMPTY_PARSE_NODES, startingOffset,
+		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, startingOffset,
 				startingOffset + source.length() - 1);
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
@@ -169,13 +165,13 @@ public class PHPParser implements IParser
 		if (ast != null)
 		{
 
-			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, EMPTY_PARSE_NODES, ast.getStart(),
+			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, ast.getStart(),
 					ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
 			return root;
 		}
-		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, EMPTY_PARSE_NODES, 0, 0);
+		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, 0, 0);
 	}
 
 	/**

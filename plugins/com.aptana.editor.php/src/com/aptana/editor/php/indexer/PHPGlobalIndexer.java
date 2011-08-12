@@ -695,12 +695,12 @@ public final class PHPGlobalIndexer
 		{
 			int code = handleIdentifier.hashCode();
 			File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
-			StringBuilder sb = new StringBuilder(String.valueOf(code));
-			while (pathes.get(new File(parent, sb.toString()).getAbsolutePath()) != null)
+			String sm = "" + code; //$NON-NLS-1$
+			while (pathes.get(new File(parent, sm).getAbsolutePath()) != null)
 			{
-				sb.append('l');
+				sm += 'l';
 			}
-			File result = new File(parent, sb.toString());
+			File result = new File(parent, sm);
 			pathes.put(handleIdentifier, result.getAbsolutePath());
 			savePathMappings();
 			return result;

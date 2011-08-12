@@ -3855,7 +3855,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			{
 				String readData = String.valueOf(buf, 0, numRead);
 				moduleData.append(readData);
-				buf = new char[1024];
 			}
 		}
 		finally

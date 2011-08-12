@@ -9,9 +9,6 @@ import com.aptana.editor.common.contentassist.UserAgentManager.UserAgent;
  */
 public class PropertyDocumentation extends DocumentationBase
 {
-	/**
-	 * 
-	 */
 	private static final UserAgent[] EMPTY_USER_AGENTS = new UserAgent[0];
 	private TypedDescription fReturns = new TypedDescription();
 	private TypedDescription fMember = new TypedDescription();
@@ -136,16 +133,6 @@ public class PropertyDocumentation extends DocumentationBase
 		return fAlias;
 	}
 
-	// /**
-	// * Sets the prototype based class this function is a member of, if any.
-	// * @param value A TypedDescription object representing the name and description of the prototype based class(es)
-	// this function belongs to.
-	// */
-	// public void setMemberOf(TypedDescription value)
-	// {
-	// fMember = value;
-	// }
-
 	/**
 	 * Gets the return value of this element. This can be from
 	 * 
@@ -161,16 +148,6 @@ public class PropertyDocumentation extends DocumentationBase
 
 		return fReturns;
 	}
-
-	// /**
-	// * Sets the return value of this element. This can be from @return for functions, and @type for properties
-	// * Use the name 'return' for the TypedDescription name.
-	// * @param value The return type of the object, and its descrpititon.
-	// */
-	// public void setReturn(TypedDescription value)
-	// {
-	// fReturns = value;
-	// }
 
 	/**
 	 * Gets the version that this element was introduced in (optional).
@@ -345,101 +322,6 @@ public class PropertyDocumentation extends DocumentationBase
 		fIsInvocationOnly = value;
 	}
 
-	// /**
-	// * @throws IOException
-	// * @see com.aptana.editor.php.phpdoc.parsing.DocumentationBase#read(java.io.DataInput)
-	// */
-	// public void read(DataInput input) throws IOException
-	// {
-	// super.read(input);
-	//
-	// int size = input.readInt();
-	// if (size > 0)
-	// {
-	// this.fUserAgents = new ArrayList<UserAgent>();
-	//
-	// for (int i = 0; i < size; i++)
-	// {
-	// UserAgent param = new UserAgent();
-	//
-	// param.read(input);
-	// this.fUserAgents.add(param);
-	// }
-	// }
-	//
-	// this.fReturns = new TypedDescription();
-	// this.fReturns.read(input);
-	// this.fMember = new TypedDescription();
-	// this.fMember.read(input);
-	// this.fDeprecatedDescription = input.readUTF();
-	// this.fSince = input.readUTF();
-	// this.fIsDeprecated = input.readBoolean();
-	// this.fIsPrivate = input.readBoolean();
-	// this.fIsProtected = input.readBoolean();
-	// this.fIsInternal = input.readBoolean();
-	// this.fIsNative = input.readBoolean();
-	// this.fIsInstance = input.readBoolean();
-	// this.fIsInvocationOnly = input.readBoolean();
-	// this.fIsIgnored = input.readBoolean();
-	// }
-
-	// /**
-	// * @throws IOException
-	// * @see com.aptana.editor.php.phpdoc.parsing.DocumentationBase#write(java.io.DataOutput)
-	// */
-	// public void write(DataOutput output) throws IOException
-	// {
-	// super.write(output);
-	//
-	// if (this.fUserAgents != null)
-	// {
-	// output.writeInt(this.fUserAgents.size());
-	//
-	// for (int i = 0; i < this.fUserAgents.size(); i++)
-	// {
-	// UserAgent param = (UserAgent) this.fUserAgents.get(i);
-	//
-	// param.write(output);
-	// }
-	// }
-	// else
-	// {
-	// output.writeInt(0);
-	// }
-	//
-	// this.fReturns.write(output);
-	// this.fMember.write(output);
-	// output.writeUTF(this.fDeprecatedDescription);
-	// output.writeUTF(this.fSince);
-	// output.writeBoolean(this.fIsDeprecated);
-	// output.writeBoolean(this.fIsPrivate);
-	// output.writeBoolean(this.fIsProtected);
-	// output.writeBoolean(this.fIsInternal);
-	// output.writeBoolean(this.fIsNative);
-	// output.writeBoolean(this.fIsInstance);
-	// output.writeBoolean(this.fIsInvocationOnly);
-	// output.writeBoolean(this.fIsIgnored);
-	// }
-	//
-	// /**
-	// * Returns a list of all the platforms this item is supported by
-	// * @return Returns a list of all the platforms this item is supported by
-	// */
-	// public String[] getUserAgentPlatformNames()
-	// {
-	// ArrayList<String> al = new ArrayList<String>();
-	// if (this.fUserAgents != null)
-	// {
-	// for (int i = 0; i < this.fUserAgents.size(); i++)
-	// {
-	// UserAgent param = (UserAgent) this.fUserAgents.get(i);
-	// al.add(param.getPlatform());
-	// }
-	// }
-	//
-	// return al.toArray(new String[0]);
-	// }
-
 	/**
 	 * @see com.aptana.metadata.IDocumentation#setExample(java.lang.String)
 	 */
@@ -447,100 +329,5 @@ public class PropertyDocumentation extends DocumentationBase
 	{
 
 	}
-
-	// private boolean fIsStatic = false;
-	// /**
-	// * Gets true if this object is to be accessed in a static way (optional, default is false).
-	// * @return Returns true if this object is to be accessed in a static way.
-	// */
-	// public boolean getIsStatic()
-	// {
-	// return fIsStatic;
-	// }
-	// /**
-	// * Sets to true if this object is to be accessed in a static way (optional, default is false).
-	// * @param value Boolean parameter, true if static.
-	// */
-	// public void setIsStatic(boolean value)
-	// {
-	// fIsStatic = value;
-	// }
-
-	// private boolean fIsEnum;
-	// private boolean fIsFlags;
-	// private boolean fIsPrivate;
-	// private boolean fIsFinal;
-	// private boolean fIsIgnore;
-	// private String fRequires;
-	// private boolean fIsEvent;
-	// public static final int usagePrivate = 1;
-	// public static final int usageProtected = 2;
-	// public static final int usageInternal = 4;
-	// public static final int usageFinal = 8;
-	// public static final int usageNative = 16;
-	// /**
-	// * Gets the usage of this object (private | protected | internal | final | native). This is a set of 'or'able
-	// ints.
-	// * 'native' means this is from native code, and all memebers go directly on the instance rather than looked up
-	// from the prototype.
-	// * @return Returns the usage. Use the 'usageXXX' statics in this class to determine the use.
-	// */
-	// public int getUsage()
-	// {
-	// return fUsage;
-	// }
-	// /**
-	// * Sets the usage of this object (private | protected | internal | final | native). This is a set of 'or'able
-	// ints.
-	// * @param value The usage. Use the 'or'able 'usageXXX' statics in this class to determine the use.
-	// */
-	// public void setUsage(int value)
-	// {
-	// fUsage = value;
-	// }
-	// public boolean getIsEvent()
-	// {
-	// return fIsEvent;
-	// }
-	// public void setIsEvent(boolean value)
-	// {
-	// fIsEvent = value;
-	// }
-	//
-	// public boolean getIsEnum()
-	// {
-	// return fIsEnum;
-	// }
-	// public void setIsEnum(boolean value)
-	// {
-	// fIsEnum = value;
-	// }
-	//
-	// public boolean getIsFlags()
-	// {
-	// return fIsFlags;
-	// }
-	// public void setIsFlags(boolean value)
-	// {
-	// fIsFlags = value;
-	// }
-	//
-	// public boolean getIsIgnore()
-	// {
-	// return fIsIgnore;
-	// }
-	// public void setIsIgnore(boolean value)
-	// {
-	// fIsIgnore = value;
-	// }
-	//
-	// public String getRequires()
-	// {
-	// return fRequires;
-	// }
-	// public void setRequires(String value)
-	// {
-	// fRequires = value;
-	// }
 
 }
