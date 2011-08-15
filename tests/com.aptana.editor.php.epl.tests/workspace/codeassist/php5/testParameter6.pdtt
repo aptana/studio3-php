@@ -1,0 +1,11 @@
+--TEST--
+Test type completion in a function definition
+--FILE--
+<?
+	function foo(PD|) {}
+?>
+--EXPECT--
+type(PDO)
+type(PDOException)
+type(PDORow)
+type(PDOStatement)

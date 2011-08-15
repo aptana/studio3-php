@@ -1,0 +1,10 @@
+--TEST--
+Test type completion in a function definition
+--FILE--
+<?
+	function foo($a, PDO $b) {
+		$b->l|
+	}
+?>
+--EXPECT--
+method(lastInsertId)
