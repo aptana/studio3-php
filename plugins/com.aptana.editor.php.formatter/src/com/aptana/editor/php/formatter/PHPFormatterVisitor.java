@@ -1600,15 +1600,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<Statement> actions = switchCase.actions();
 		boolean hasBlockedChild = (actions.size() == 1 && actions.get(0).getType() == ASTNode.BLOCK);
 		// compute the colon position
-		int colonOffset;
-		if (actions.size() > 0)
-		{
-			colonOffset = builder.locateCharBackward(document, ':', actions.get(0).getStart());
-		}
-		else
-		{
-			colonOffset = builder.locateCharForward(document, ':', switchCase.getValue().getEnd());
-		}
+		int endCaseOffset = (switchCase.isDefault()) ? switchCase.getStart() + 7 : switchCase.getValue().getEnd();
+		int colonOffset = builder.locateCharForward(document, ':', endCaseOffset);
 		// push the case/default node till the colon.
 		// We create a begin-end node that will hold a case-colon node as an inner child to manage its spacing.
 		FormatterPHPExpressionWrapperNode caseNode = new FormatterPHPExpressionWrapperNode(document);
