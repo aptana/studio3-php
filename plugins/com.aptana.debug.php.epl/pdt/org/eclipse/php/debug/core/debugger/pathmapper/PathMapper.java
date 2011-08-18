@@ -23,8 +23,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.php.internal.core.util.preferences.IXMLPreferencesStorable;
 import org.eclipse.php.internal.debug.core.pathmapper.PathEntry;
-import org.eclipse.php.internal.debug.core.pathmapper.VirtualPath;
 import org.eclipse.php.internal.debug.core.pathmapper.PathEntry.Type;
+import org.eclipse.php.internal.debug.core.pathmapper.VirtualPath;
 
 public class PathMapper implements IXMLPreferencesStorable {
 

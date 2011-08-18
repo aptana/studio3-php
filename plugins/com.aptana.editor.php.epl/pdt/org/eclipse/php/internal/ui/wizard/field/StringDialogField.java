@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 
 /**
  * Dialog field containing a label and a text control.

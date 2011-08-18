@@ -15,9 +15,9 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.php.util.SWTUtil;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org2.eclipse.php.util.SWTUtil;
 
 /**
  * A registry that maps <code>ImageDescriptors</code> to <code>Image</code>.

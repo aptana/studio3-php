@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.php.internal.core.CoreMessages;
+import org2.eclipse.php.internal.core.CoreMessages;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 

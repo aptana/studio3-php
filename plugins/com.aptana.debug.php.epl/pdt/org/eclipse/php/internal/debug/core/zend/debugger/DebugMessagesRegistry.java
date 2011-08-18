@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.php.debug.core.debugger.handlers.IDebugMessageHandler;
 import org.eclipse.php.debug.core.debugger.messages.IDebugMessage;
-import org.eclipse.php.internal.core.util.collections.IntHashtable;
+import org2.eclipse.php.internal.core.util.collections.IntHashtable;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 

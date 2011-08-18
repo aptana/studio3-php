@@ -30,17 +30,17 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.php.internal.core.CoreMessages;
 import org.eclipse.php.internal.core.project.IIncludePathEntry;
 import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
 import org.eclipse.php.internal.core.util.preferences.XMLPreferencesReader;
 import org.eclipse.ui.preferences.IWorkingCopyManager;
 import org.w3c.dom.Element;
+import org2.eclipse.php.internal.core.CoreMessages;
 
 import com.aptana.editor.php.util.Key;
 
-
-public class IncludePathEntry implements IIncludePathEntry {
+public class IncludePathEntry implements IIncludePathEntry
+{
 	public static final String TAG_INCLUDEPATH = "includepath"; //$NON-NLS-1$
 	public static final String TAG_INCLUDEPATHENTRY = "includepathentry"; //$NON-NLS-1$
 	public static final String TAG_ENTRY_KIND = "kind"; //$NON-NLS-1$
@@ -61,7 +61,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 	/**
 	 * Creates a class path entry of the specified kind with the given path.
 	 */
-	public IncludePathEntry(int contentKind, int entryKind, IPath path, IResource resource, boolean isExported) {
+	public IncludePathEntry(int contentKind, int entryKind, IPath path, IResource resource, boolean isExported)
+	{
 
 		this.contentKind = contentKind;
 		this.entryKind = entryKind;
@@ -72,19 +73,24 @@ public class IncludePathEntry implements IIncludePathEntry {
 
 	/**
 	 * This method gets the include path entries for a given project
+	 * 
 	 * @param preferenceKey
 	 * @param project
 	 * @param projectScope
 	 * @param workingCopyManager
 	 * @return List of IIncludePathEntrys for a given project
 	 */
-	public static List getIncludePathEntriesFromPreferences(Key preferenceKey, IProject project, ProjectScope projectScope, IWorkingCopyManager workingCopyManager) {
+	public static List getIncludePathEntriesFromPreferences(Key preferenceKey, IProject project,
+			ProjectScope projectScope, IWorkingCopyManager workingCopyManager)
+	{
 
 		final ArrayList entries = new ArrayList();
 
 		HashMap[] maps = XMLPreferencesReader.read(preferenceKey, projectScope, workingCopyManager);
-		if (maps.length > 0) {
-			for (int entryCount = 0; entryCount < maps.length; ++entryCount) {
+		if (maps.length > 0)
+		{
+			for (int entryCount = 0; entryCount < maps.length; ++entryCount)
+			{
 				IncludePathEntryDescriptor descriptor = new IncludePathEntryDescriptor();
 				descriptor.restoreFromMap(maps[entryCount]);
 				entries.add(IncludePathEntry.elementDecode(descriptor, project.getFullPath()));
@@ -94,18 +100,24 @@ public class IncludePathEntry implements IIncludePathEntry {
 	}
 
 	/**
-	 * This method gets the include path entries for a given project as a string and returns a "decoded" List of IIncludePathEntrys
-	 * @param String representing the entries they way they are saved into the preferences
+	 * This method gets the include path entries for a given project as a string and returns a "decoded" List of
+	 * IIncludePathEntrys
+	 * 
+	 * @param String
+	 *            representing the entries they way they are saved into the preferences
 	 * @param project
 	 * @return List of IIncludePathEntrys for a given project
 	 */
-	public static List getIncludePathEntriesFromPreferences(String entriesString, IProject project) {
+	public static List getIncludePathEntriesFromPreferences(String entriesString, IProject project)
+	{
 
 		final ArrayList entries = new ArrayList();
 
 		HashMap[] maps = XMLPreferencesReader.getHashFromStoredValue(entriesString);
-		if (maps.length > 0) {
-			for (int entryCount = 0; entryCount < maps.length; ++entryCount) {
+		if (maps.length > 0)
+		{
+			for (int entryCount = 0; entryCount < maps.length; ++entryCount)
+			{
 				IncludePathEntryDescriptor descriptor = new IncludePathEntryDescriptor();
 				descriptor.restoreFromMap(maps[entryCount]);
 				entries.add(IncludePathEntry.elementDecode(descriptor, project.getFullPath()));
@@ -114,27 +126,33 @@ public class IncludePathEntry implements IIncludePathEntry {
 		return entries;
 	}
 
-	public int getContentKind() {
+	public int getContentKind()
+	{
 		return contentKind;
 	}
 
-	public int getEntryKind() {
+	public int getEntryKind()
+	{
 		return entryKind;
 	}
 
-	public IPath getPath() {
+	public IPath getPath()
+	{
 		return this.path;
 	}
 
-	public IResource getResource() {
+	public IResource getResource()
+	{
 		return this.resource;
 	}
 
-	public boolean isExported() {
+	public boolean isExported()
+	{
 		return isExported;
 	}
 
-	public static IIncludePathEntry elementDecode(Element element, PHPProjectOptions options) {
+	public static IIncludePathEntry elementDecode(Element element, PHPProjectOptions options)
+	{
 
 		IPath projectPath = options.getProject().getFullPath();
 		String entryKindAttr = element.getAttribute(TAG_ENTRY_KIND);
@@ -145,40 +163,52 @@ public class IncludePathEntry implements IIncludePathEntry {
 		// exported flag (optional)
 		boolean isExported = element.getAttribute(TAG_EXPORTED).equals("true"); //$NON-NLS-1$
 
-		IIncludePathEntry entry = getEntry(pathAttr, entryKindAttr, contentKindAttr, resourceAttr, isExported, projectPath);
+		IIncludePathEntry entry = getEntry(pathAttr, entryKindAttr, contentKindAttr, resourceAttr, isExported,
+				projectPath);
 		return entry;
 	}
 
-	public static IIncludePathEntry elementDecode(IncludePathEntryDescriptor descriptor, IPath projectPath) {
+	public static IIncludePathEntry elementDecode(IncludePathEntryDescriptor descriptor, IPath projectPath)
+	{
 
-		IIncludePathEntry entry = getEntry(descriptor.getPath(), descriptor.getEntryKind(), descriptor.getContentKind(), descriptor.getResourceName(), descriptor.isExported(), projectPath);
+		IIncludePathEntry entry = getEntry(descriptor.getPath(), descriptor.getEntryKind(),
+				descriptor.getContentKind(), descriptor.getResourceName(), descriptor.isExported(), projectPath);
 		return entry;
 	}
 
-	public static IIncludePathEntry getEntry(String sPath, String sEntryKind, String sContentKind, String sResource, boolean isExported, IPath projectPath) {
-		//		 ensure path is absolute
+	public static IIncludePathEntry getEntry(String sPath, String sEntryKind, String sContentKind, String sResource,
+			boolean isExported, IPath projectPath)
+	{
+		// ensure path is absolute
 		IPath path = new Path(sPath);
 		int entryKind = entryKindFromString(sEntryKind);
-		if (entryKind != IIncludePathEntry.IPE_VARIABLE && entryKind != IIncludePathEntry.IPE_CONTAINER && !path.isAbsolute()) {
+		if (entryKind != IIncludePathEntry.IPE_VARIABLE && entryKind != IIncludePathEntry.IPE_CONTAINER
+				&& !path.isAbsolute())
+		{
 			path = projectPath.append(path);
 		}
 		IResource resource = null;
 
 		// recreate the CP entry
 		IIncludePathEntry entry = null;
-		switch (entryKind) {
+		switch (entryKind)
+		{
 
 			case IIncludePathEntry.IPE_PROJECT:
-				try {
+				try
+				{
 					resource = ResourcesPlugin.getWorkspace().getRoot().getProject(sResource);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					// Do nothing
 				}
 				entry = newProjectEntry(path, resource, isExported);
 				break;
 			case IIncludePathEntry.IPE_LIBRARY:
 			case IIncludePathEntry.IPE_JRE:
-				entry = new IncludePathEntry(contentKindFromString(sContentKind), IIncludePathEntry.IPE_LIBRARY, path, resource, isExported);
+				entry = new IncludePathEntry(contentKindFromString(sContentKind), IIncludePathEntry.IPE_LIBRARY, path,
+						resource, isExported);
 				break;
 			case IIncludePathEntry.IPE_SOURCE:
 				// must be an entry in this project or specify another project
@@ -196,7 +226,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 		return entry;
 	}
 
-	public static IIncludePathEntry newProjectEntry(IPath path, IResource resource, boolean isExported) {
+	public static IIncludePathEntry newProjectEntry(IPath path, IResource resource, boolean isExported)
+	{
 
 		if (!path.isAbsolute())
 			throw new IllegalArgumentException("Path for IIncludePathEntry must be absolute"); //$NON-NLS-1$
@@ -205,28 +236,38 @@ public class IncludePathEntry implements IIncludePathEntry {
 
 	}
 
-	public static IIncludePathEntry newContainerEntry(IPath containerPath, IResource containerResource, boolean isExported) {
+	public static IIncludePathEntry newContainerEntry(IPath containerPath, IResource containerResource,
+			boolean isExported)
+	{
 
 		if (containerPath == null)
 			throw new IllegalArgumentException("Container path cannot be null"); //$NON-NLS-1$
-		if (containerPath.segmentCount() < 1) {
-			throw new IllegalArgumentException("Illegal include path container path: \'" + containerPath.makeRelative().toString() + "\', must have at least one segment (containerID+hints)"); //$NON-NLS-1$//$NON-NLS-2$
+		if (containerPath.segmentCount() < 1)
+		{
+			throw new IllegalArgumentException(
+					"Illegal include path container path: \'" + containerPath.makeRelative().toString() + "\', must have at least one segment (containerID+hints)"); //$NON-NLS-1$//$NON-NLS-2$
 		}
-		return new IncludePathEntry(K_SOURCE, IIncludePathEntry.IPE_CONTAINER, containerPath, containerResource, isExported);
+		return new IncludePathEntry(K_SOURCE, IIncludePathEntry.IPE_CONTAINER, containerPath, containerResource,
+				isExported);
 	}
 
-	public static IIncludePathEntry newVariableEntry(IPath variablePath, IResource variableResource, boolean isExported) {
+	public static IIncludePathEntry newVariableEntry(IPath variablePath, IResource variableResource, boolean isExported)
+	{
 
 		if (variablePath == null)
 			throw new IllegalArgumentException("Variable path cannot be null"); //$NON-NLS-1$
-		if (variablePath.segmentCount() < 1) {
-			throw new IllegalArgumentException("Illegal classpath variable path: \'" + variablePath.makeRelative().toString() + "\', must have at least one segment"); //$NON-NLS-1$//$NON-NLS-2$
+		if (variablePath.segmentCount() < 1)
+		{
+			throw new IllegalArgumentException(
+					"Illegal classpath variable path: \'" + variablePath.makeRelative().toString() + "\', must have at least one segment"); //$NON-NLS-1$//$NON-NLS-2$
 		}
 
-		return new IncludePathEntry(K_SOURCE, IIncludePathEntry.IPE_VARIABLE, variablePath, variableResource, isExported);
+		return new IncludePathEntry(K_SOURCE, IIncludePathEntry.IPE_VARIABLE, variablePath, variableResource,
+				isExported);
 	}
 
-	public static IIncludePathEntry newSourceEntry(IPath path, IResource resource) {
+	public static IIncludePathEntry newSourceEntry(IPath path, IResource resource)
+	{
 
 		if (path == null)
 			throw new IllegalArgumentException("Source path cannot be null"); //$NON-NLS-1$
@@ -236,7 +277,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 		return new IncludePathEntry(K_SOURCE, IIncludePathEntry.IPE_SOURCE, path, resource, false);
 	}
 
-	public void elementEncode(XMLWriter writer, IPath projectPath, boolean newLine) {
+	public void elementEncode(XMLWriter writer, IPath projectPath, boolean newLine)
+	{
 		HashMap parameters = new HashMap();
 
 		parameters.put(TAG_ENTRY_KIND, IncludePathEntry.entryKindToString(this.entryKind));
@@ -244,22 +286,29 @@ public class IncludePathEntry implements IIncludePathEntry {
 		parameters.put(TAG_CREATEDREFERENCE, createdReference ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		IPath xmlPath = this.path;
-		if (this.entryKind != IIncludePathEntry.IPE_VARIABLE && this.entryKind != IIncludePathEntry.IPE_CONTAINER) {
+		if (this.entryKind != IIncludePathEntry.IPE_VARIABLE && this.entryKind != IIncludePathEntry.IPE_CONTAINER)
+		{
 			// translate to project relative from absolute (unless a device path)
-			if (projectPath != null && projectPath.isPrefixOf(xmlPath)) {
-				if (xmlPath.segment(0).equals(projectPath.segment(0))) {
+			if (projectPath != null && projectPath.isPrefixOf(xmlPath))
+			{
+				if (xmlPath.segment(0).equals(projectPath.segment(0)))
+				{
 					xmlPath = xmlPath.removeFirstSegments(1);
 					xmlPath = xmlPath.makeRelative();
-				} else {
+				}
+				else
+				{
 					xmlPath = xmlPath.makeAbsolute();
 				}
 			}
 		}
 		parameters.put(TAG_PATH, String.valueOf(xmlPath));
-		if (resource != null) {
+		if (resource != null)
+		{
 			parameters.put(TAG_RESOURCE, resource.getName());
 		}
-		if (this.isExported) {
+		if (this.isExported)
+		{
 			parameters.put(TAG_EXPORTED, "true");//$NON-NLS-1$
 		}
 
@@ -267,30 +316,40 @@ public class IncludePathEntry implements IIncludePathEntry {
 		writer.endTag(TAG_INCLUDEPATHENTRY);
 	}
 
-	public String elementEncode(IPath projectPath) {
+	public String elementEncode(IPath projectPath)
+	{
 		IncludePathEntryDescriptor descriptor = new IncludePathEntryDescriptor(this, projectPath);
 		return descriptor.toString();
 	}
 
-	public static void updateProjectReferences(IIncludePathEntry[] newEntries, IIncludePathEntry[] oldEntries, final IProject project, SubProgressMonitor monitor) {
-		try {
+	public static void updateProjectReferences(IIncludePathEntry[] newEntries, IIncludePathEntry[] oldEntries,
+			final IProject project, SubProgressMonitor monitor)
+	{
+		try
+		{
 			boolean changedReferences = false;
 			final IProjectDescription projectDescription = project.getDescription();
 			ArrayList referenced = new ArrayList();
 			ArrayList referencedNames = new ArrayList();
 			IProject[] referencedProjects = projectDescription.getReferencedProjects();
-			for (int i = 0; i < referencedProjects.length; i++) {
+			for (int i = 0; i < referencedProjects.length; i++)
+			{
 				referenced.add(referencedProjects[i]);
 				referencedNames.add(referencedProjects[i].getName());
 			}
 
-			for (int i = 0; i < oldEntries.length; i++) {
-				if (oldEntries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT) {
+			for (int i = 0; i < oldEntries.length; i++)
+			{
+				if (oldEntries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT)
+				{
 					String projectName = oldEntries[i].getPath().lastSegment();
-					if (!containsProject(newEntries, projectName)) {
-						if (((IncludePathEntry) oldEntries[i]).createdReference) {
+					if (!containsProject(newEntries, projectName))
+					{
+						if (((IncludePathEntry) oldEntries[i]).createdReference)
+						{
 							int index = referencedNames.indexOf(projectName);
-							if (index >= 0) {
+							if (index >= 0)
+							{
 								changedReferences = true;
 								referencedNames.remove(index);
 								referenced.remove(index);
@@ -300,11 +359,15 @@ public class IncludePathEntry implements IIncludePathEntry {
 				}
 			}
 
-			for (int i = 0; i < newEntries.length; i++) {
-				if (newEntries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT) {
+			for (int i = 0; i < newEntries.length; i++)
+			{
+				if (newEntries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT)
+				{
 					String projectName = newEntries[i].getPath().lastSegment();
-					if (!containsProject(oldEntries, projectName)) {
-						if (!referencedNames.contains(projectName)) {
+					if (!containsProject(oldEntries, projectName))
+					{
+						if (!referencedNames.contains(projectName))
+						{
 							changedReferences = true;
 							((IncludePathEntry) newEntries[i]).createdReference = true;
 							referenced.add(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName));
@@ -313,11 +376,14 @@ public class IncludePathEntry implements IIncludePathEntry {
 					}
 				}
 			}
-			if (changedReferences) {
+			if (changedReferences)
+			{
 				IProject[] referenceProjects = (IProject[]) referenced.toArray(new IProject[referenced.size()]);
 				projectDescription.setReferencedProjects(referenceProjects);
-				WorkspaceJob job = new WorkspaceJob(CoreMessages.getString("IncludePathEntry_2")) {
-					public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+				WorkspaceJob job = new WorkspaceJob(CoreMessages.getString("IncludePathEntry_2"))
+				{
+					public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException
+					{
 						project.setDescription(projectDescription, monitor);
 						return Status.OK_STATUS;
 					}
@@ -325,15 +391,20 @@ public class IncludePathEntry implements IIncludePathEntry {
 				job.setRule(project.getParent());
 				job.schedule();
 			}
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private static boolean containsProject(IIncludePathEntry[] entries, String projectName) {
-		for (int i = 0; i < entries.length; i++) {
-			if (entries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT) {
+	private static boolean containsProject(IIncludePathEntry[] entries, String projectName)
+	{
+		for (int i = 0; i < entries.length; i++)
+		{
+			if (entries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT)
+			{
 				if (entries[i].getPath().lastSegment().equals(projectName))
 					return true;
 			}
@@ -344,7 +415,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 	/**
 	 * Returns the entry kind of a <code>PackageFragmentRoot</code> from its <code>String</code> form.
 	 */
-	static int entryKindFromString(String kindStr) {
+	static int entryKindFromString(String kindStr)
+	{
 
 		if (kindStr.equalsIgnoreCase("prj")) //$NON-NLS-1$
 			return IIncludePathEntry.IPE_PROJECT;
@@ -364,9 +436,11 @@ public class IncludePathEntry implements IIncludePathEntry {
 	/**
 	 * Returns a <code>String</code> for the entry kind of a class path entry.
 	 */
-	static String entryKindToString(int kind) {
+	static String entryKindToString(int kind)
+	{
 
-		switch (kind) {
+		switch (kind)
+		{
 			case IIncludePathEntry.IPE_PROJECT:
 				return "prj"; //$NON-NLS-1$
 			case IIncludePathEntry.IPE_SOURCE:
@@ -387,7 +461,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 	/**
 	 * Returns the content kind of a <code>PackageFragmentRoot</code> from its <code>String</code> form.
 	 */
-	static int contentKindFromString(String kindStr) {
+	static int contentKindFromString(String kindStr)
+	{
 
 		if (kindStr.equalsIgnoreCase("binary")) //$NON-NLS-1$
 			return IIncludePathEntry.K_BINARY;
@@ -399,9 +474,11 @@ public class IncludePathEntry implements IIncludePathEntry {
 	/**
 	 * Returns a <code>String</code> for the content kind of a class path entry.
 	 */
-	static String contentKindToString(int kind) {
+	static String contentKindToString(int kind)
+	{
 
-		switch (kind) {
+		switch (kind)
+		{
 			case IIncludePathEntry.K_BINARY:
 				return "binary"; //$NON-NLS-1$
 			case IIncludePathEntry.K_SOURCE:
@@ -411,10 +488,12 @@ public class IncludePathEntry implements IIncludePathEntry {
 		}
 	}
 
-	public String validate() {
+	public String validate()
+	{
 		String message = null;
 
-		switch (entryKind) {
+		switch (entryKind)
+		{
 
 			case IIncludePathEntry.IPE_PROJECT:
 				if (resource == null || !resource.exists())
@@ -422,7 +501,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 				break;
 			case IIncludePathEntry.IPE_LIBRARY:
 			case IIncludePathEntry.IPE_JRE:
-				if (resource == null || !resource.exists()) {
+				if (resource == null || !resource.exists())
+				{
 					File file = new File(path.toOSString());
 					if (!file.exists())
 						message = CoreMessages.getString("IncludePathEntry_5") + path.toOSString();
@@ -433,8 +513,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 					message = CoreMessages.getString("IncludePathEntry_6") + path.toOSString();
 				break;
 			case IIncludePathEntry.IPE_VARIABLE:
-				//				if (resource == null || !resource.exists())
-				//					message = "included variable not found: " + path.toOSString();
+				// if (resource == null || !resource.exists())
+				// message = "included variable not found: " + path.toOSString();
 				break;
 			case IIncludePathEntry.IPE_CONTAINER:
 				break;
@@ -444,15 +524,18 @@ public class IncludePathEntry implements IIncludePathEntry {
 		return message;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.php.internal.core.project.IIncludePathEntry#setResource(org.eclipse.core.resources.IResource)
 	 */
-	public void setResource(IResource resource) {
+	public void setResource(IResource resource)
+	{
 		this.resource = resource;
 
 	}
 
-	public int hashCode() {
+	public int hashCode()
+	{
 		final int PRIME = 31;
 		int result = 1;
 		result = PRIME * result + contentKind;
@@ -461,7 +544,8 @@ public class IncludePathEntry implements IIncludePathEntry {
 		return result;
 	}
 
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -473,10 +557,12 @@ public class IncludePathEntry implements IIncludePathEntry {
 			return false;
 		if (entryKind != other.entryKind)
 			return false;
-		if (path == null) {
+		if (path == null)
+		{
 			if (other.path != null)
 				return false;
-		} else if (!path.equals(other.path))
+		}
+		else if (!path.equals(other.path))
 			return false;
 		return true;
 	}

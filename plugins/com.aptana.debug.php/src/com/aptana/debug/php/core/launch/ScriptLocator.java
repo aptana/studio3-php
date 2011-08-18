@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
+import com.aptana.debug.core.IActiveResourcePathGetterAdapter;
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 
 /**

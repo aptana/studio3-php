@@ -15,7 +15,6 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
-import org.eclipse.php.internal.core.util.ScrolledCompositeImpl;
 import org.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
 import org.eclipse.php.internal.debug.ui.pathmapper.PathMappingComposite;
 import org.eclipse.php.internal.debug.ui.wizard.CompositeFragment;
@@ -28,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org2.eclipse.php.internal.core.util.ScrolledCompositeImpl;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.webserver.core.AbstractWebServerConfiguration;

@@ -12,7 +12,12 @@ package org.eclipse.php.internal.debug.ui.launching.exe;
 
 import java.util.ArrayList;
 
-import org.eclipse.debug.ui.*;
+import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
+import org.eclipse.debug.ui.CommonTab;
+import org.eclipse.debug.ui.EnvironmentTab;
+import org.eclipse.debug.ui.ILaunchConfigurationDialog;
+import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.php.internal.debug.ui.launching.LaunchConfigurationsTabsRegistry;
 import org.eclipse.php.internal.debug.ui.launching.PHPDebugArgumentsTab;
 

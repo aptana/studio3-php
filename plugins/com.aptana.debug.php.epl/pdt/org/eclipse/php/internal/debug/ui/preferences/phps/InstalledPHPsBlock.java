@@ -50,7 +50,6 @@ import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
 import org.eclipse.php.internal.debug.ui.wizard.ClosableWizardDialog;
 import org.eclipse.php.internal.debug.ui.wizard.exe.PHPExeEditDialog;
 import org.eclipse.php.internal.debug.ui.wizard.exe.PHPExeWizard;
-import org.eclipse.php.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -76,6 +75,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
+import org2.eclipse.php.util.SWTUtil;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.php.internal.ui.PHPPluginImages;

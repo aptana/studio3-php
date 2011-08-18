@@ -32,7 +32,6 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.eclipse.php.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -47,6 +46,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org2.eclipse.php.internal.ui.wizard.field.DialogField;
+import org2.eclipse.php.util.SWTUtil;
 
 import com.aptana.editor.php.internal.ui.wizard.TableLayoutComposite;
 import com.aptana.editor.php.internal.ui.wizard.field.IListAdapter;

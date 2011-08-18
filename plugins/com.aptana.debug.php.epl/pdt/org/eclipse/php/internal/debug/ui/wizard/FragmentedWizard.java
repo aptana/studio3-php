@@ -31,13 +31,13 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.php.internal.core.util.WorkspaceRunnableAdapter;
-import org.eclipse.php.internal.ui.PHPUIMessages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org2.eclipse.php.internal.core.util.WorkspaceRunnableAdapter;
+import org2.eclipse.php.internal.ui.PHPUIMessages;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 

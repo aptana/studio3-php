@@ -23,7 +23,6 @@ import org.eclipse.php.internal.debug.ui.wizard.CompositeFragment;
 import org.eclipse.php.internal.debug.ui.wizard.ICompositeFragmentFactory;
 import org.eclipse.php.internal.debug.ui.wizard.IControlHandler;
 import org.eclipse.php.internal.debug.ui.wizard.WizardFragmentsFactoryRegistry;
-import org.eclipse.php.util.SWTUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -33,6 +32,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org2.eclipse.php.util.SWTUtil;
 
 public class PHPExeEditDialog extends TitleAreaDialog implements IControlHandler
 {

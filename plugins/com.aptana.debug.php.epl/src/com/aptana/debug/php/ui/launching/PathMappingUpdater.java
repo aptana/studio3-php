@@ -15,7 +15,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
-import org.eclipse.php.util.SWTUtil;
+import org2.eclipse.php.util.SWTUtil;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;

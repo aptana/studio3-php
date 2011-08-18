@@ -14,9 +14,9 @@ package org.eclipse.php.internal.debug.core.zend.debugger;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchesListener;
-import org.eclipse.php.internal.core.util.collections.IntHashtable;
-import org.eclipse.php.internal.core.util.collections.IntMap;
 import org.eclipse.swt.browser.Browser;
+import org2.eclipse.php.internal.core.util.collections.IntHashtable;
+import org2.eclipse.php.internal.core.util.collections.IntMap;
 /**
  * This class is responsible for mapping debug session id's to the ILaunch that is responsible for
  * the session.

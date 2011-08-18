@@ -19,7 +19,6 @@ import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.php.internal.debug.core.preferences.stepFilters.DebugStepFilter;
 import org.eclipse.php.internal.debug.core.preferences.stepFilters.IStepFilterTypes;
 import org.eclipse.php.internal.debug.ui.PHPDebugUIMessages;
-import org.eclipse.php.internal.ui.util.StatusInfo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -31,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org2.eclipse.php.util.StatusInfo;
 
 /**
  * This dialog represents a Debug Filter Pattern UI.

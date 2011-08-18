@@ -25,8 +25,6 @@ import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.php.internal.core.util.ScrolledCompositeImpl;
-import org.eclipse.php.internal.ui.PHPUIMessages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -45,6 +43,8 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceSorter;
+import org2.eclipse.php.internal.core.util.ScrolledCompositeImpl;
+import org2.eclipse.php.internal.ui.PHPUIMessages;
 
 public abstract class AbstractPHPPropertyPreferencePage extends PropertyPage implements IWorkbenchPreferencePage {
 	/*

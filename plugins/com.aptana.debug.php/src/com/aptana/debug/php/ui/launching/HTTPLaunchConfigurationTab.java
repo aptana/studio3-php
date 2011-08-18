@@ -46,8 +46,8 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	{
 		listGET = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] { "&Add", "&Edit",
 				"&Remove", null, "&Up", "&Down" }, new NameValueLabelProvider());
-		listPOST = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] { "A&dd", "Ed&it", "Re&move",
-				null, "U&p", "D&own" }, new NameValueLabelProvider());
+		listPOST = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] { "A&dd", "Ed&it",
+				"Re&move", null, "U&p", "D&own" }, new NameValueLabelProvider());
 		ListDialogField.ColumnsDescription columnsDescription = new ListDialogField.ColumnsDescription(new String[] {
 				"Name", "Value" }, true);
 		listGET.setTableColumns(columnsDescription);
@@ -111,8 +111,10 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	{
 		try
 		{
-			List<String> GET = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_GET, Collections.EMPTY_LIST);
-			List<String> POST = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_POST, Collections.EMPTY_LIST);
+			List<String> GET = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_GET,
+					Collections.EMPTY_LIST);
+			List<String> POST = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_POST,
+					Collections.EMPTY_LIST);
 			// Convert to name-value pairs
 			ArrayList<NameValuePair> pairsGET = new ArrayList<NameValuePair>();
 			for (String pair : GET)

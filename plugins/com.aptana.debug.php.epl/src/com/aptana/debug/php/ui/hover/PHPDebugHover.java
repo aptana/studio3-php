@@ -52,8 +52,8 @@ import org.eclipse.php.internal.debug.core.zend.debugger.DefaultExpressionsManag
 import org.eclipse.php.internal.debug.core.zend.debugger.Expression;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
 import org.eclipse.php.internal.debug.core.zend.model.PHPStackFrame;
-import org.eclipse.php.util.StringUtils;
 import org.w3c.dom.Node;
+import org2.eclipse.php.util.StringUtils;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.editor.php.indexer.IElementEntry;

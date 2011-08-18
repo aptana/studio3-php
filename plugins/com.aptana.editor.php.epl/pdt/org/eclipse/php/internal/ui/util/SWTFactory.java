@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org2.eclipse.php.internal.ui.util.PixelConverter;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
 

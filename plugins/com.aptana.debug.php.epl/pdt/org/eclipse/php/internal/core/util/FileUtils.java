@@ -10,13 +10,20 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.php.internal.core.CoreMessages;
+import org2.eclipse.php.internal.core.CoreMessages;
 
 /**
  * File Utilities class.

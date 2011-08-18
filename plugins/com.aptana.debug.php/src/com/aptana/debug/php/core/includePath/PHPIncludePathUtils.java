@@ -55,7 +55,8 @@ import com.aptana.editor.php.internal.builder.preferences.ProjectDependencies;
  * 
  * @author Denis Denisenko
  */
-public final class PHPIncludePathUtils {
+public final class PHPIncludePathUtils
+{
 	/**
 	 * Gets interpreter include paths list by project.
 	 * 
@@ -63,54 +64,62 @@ public final class PHPIncludePathUtils {
 	 *            - project.
 	 * @return interpreter include paths list.
 	 */
-	public static List<String> getInterpreterIncludePath(IProject project) {
-		ProjectDependencies dependencies = DependenciesManager
-				.getDependencies(project);
-		if (dependencies == null) {
+	public static List<String> getInterpreterIncludePath(IProject project)
+	{
+		ProjectDependencies dependencies = DependenciesManager.getDependencies(project);
+		if (dependencies == null)
+		{
 			return Collections.emptyList();
 		}
 
-//		if (dependencies.getDirectories().size() == 0
-//				&& dependencies.getWorkspaceResources().size() == 0) {
-//			return Collections.emptyList();
-//		}
+		// if (dependencies.getDirectories().size() == 0
+		// && dependencies.getWorkspaceResources().size() == 0) {
+		// return Collections.emptyList();
+		// }
 
 		List<String> result = new ArrayList<String>();
 
 		// appending directories
-		for (File directory : dependencies.getDirectories()) {
+		for (File directory : dependencies.getDirectories())
+		{
 			result.add(directory.getAbsolutePath());
 		}
-		IPHPLibrary[] allLibraries = LibraryManager.getInstance()
-				.getAllLibraries();
-		HashSet<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays
-				.asList(allLibraries));
-		if (dependencies.isUsesCustomLibs()) {
-			ArrayList<String> notUsedLibrariesIds = dependencies
-					.getNotUsedLibrariesIds();
-			for (String s : notUsedLibrariesIds) {
-				IPHPLibrary library = LibraryManager.getInstance()
-						.getLibrary(s);
-				if (library != null) {
+		IPHPLibrary[] allLibraries = LibraryManager.getInstance().getAllLibraries();
+		HashSet<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays.asList(allLibraries));
+		if (dependencies.isUsesCustomLibs())
+		{
+			List<String> notUsedLibrariesIds = dependencies.getNotUsedLibrariesIds();
+			for (String s : notUsedLibrariesIds)
+			{
+				IPHPLibrary library = LibraryManager.getInstance().getLibrary(s);
+				if (library != null)
+				{
 					usedLibraries.remove(library);
 				}
 			}
-		} else {
-			for (IPHPLibrary l : allLibraries) {
-				if (!l.isTurnedOn()) {
+		}
+		else
+		{
+			for (IPHPLibrary l : allLibraries)
+			{
+				if (!l.isTurnedOn())
+				{
 					usedLibraries.remove(l);
 				}
 			}
 		}
-		for (IPHPLibrary l : usedLibraries) {
-			for (String s : l.getDirectories()) {
+		for (IPHPLibrary l : usedLibraries)
+		{
+			for (String s : l.getDirectories())
+			{
 				File fl = new File(s);
 				result.add(fl.getAbsolutePath());
 			}
 		}
 
 		// appending projects
-		for (IResource workspaceResource : dependencies.getWorkspaceResources()) {
+		for (IResource workspaceResource : dependencies.getWorkspaceResources())
+		{
 			IPath resourcePath = workspaceResource.getLocation();
 			result.add(resourcePath.toOSString());
 		}
@@ -121,6 +130,7 @@ public final class PHPIncludePathUtils {
 	/**
 	 * CGIIncludePathUtils constructor.
 	 */
-	private PHPIncludePathUtils() {
+	private PHPIncludePathUtils()
+	{
 	}
 }

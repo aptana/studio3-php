@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.php.internal.ui.wizard.field;
 
+import org2.eclipse.php.internal.ui.wizard.field.DialogField;
+
 /**
  * Change listener used by <code>StringButtonDialogField</code>
  */

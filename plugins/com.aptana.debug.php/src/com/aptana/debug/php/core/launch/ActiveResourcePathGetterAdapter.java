@@ -47,6 +47,7 @@ import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.osgi.internal.profile.Profile;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -56,6 +57,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.aptana.core.resources.UniformResourceStorage;
 import com.aptana.debug.php.PHPDebugPlugin;
+import com.aptana.debug.ui.internal.UniformResourceStorageEditorInput;
 
 
 /**

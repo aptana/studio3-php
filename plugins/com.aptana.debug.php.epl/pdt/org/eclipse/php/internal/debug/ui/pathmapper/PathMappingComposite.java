@@ -23,7 +23,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
-import org.eclipse.php.internal.core.util.ScrolledCompositeImpl;
 import org.eclipse.php.internal.debug.core.pathmapper.PathEntry.Type;
 import org.eclipse.php.internal.ui.wizard.field.ListDialogField;
 import org.eclipse.swt.SWT;
@@ -41,6 +40,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org2.eclipse.php.internal.core.util.ScrolledCompositeImpl;
 
 import com.aptana.editor.php.internal.ui.PHPPluginImages;
 import com.aptana.editor.php.internal.ui.wizard.field.IListAdapter;

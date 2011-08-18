@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -52,12 +53,14 @@ import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 
 /**
- * The ExternalFileWrapper is an {@link IFile} wrapper that allows the setting of a device name.
- * This {@link ExternalFileWrapper} is useful when dealing with non-workspace files (externals).
- * Note : Create instances of this class via the createFile() method.
+ * The ExternalFileWrapper is an {@link IFile} wrapper that allows the setting of a device name. This
+ * {@link ExternalFileWrapper} is useful when dealing with non-workspace files (externals). Note : Create instances of
+ * this class via the createFile() method.
+ * 
  * @author shalom
  */
-public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreConstants, Cloneable, IPathRequestor {
+public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreConstants, Cloneable, IPathRequestor
+{
 
 	private IPath path;
 	private IFile file;
@@ -65,12 +68,16 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 
 	/**
 	 * Constructs a new ExternalFileWrapper.
-	 * @param pathString Full path string
+	 * 
+	 * @param pathString
+	 *            Full path string
 	 */
-	ExternalFileWrapper(String pathString) {
+	ExternalFileWrapper(String pathString)
+	{
 		this.path = Path.fromOSString(pathString);
 		IPath p = new Path(path.toOSString());
-		if (path.segmentCount() == 1) {
+		if (path.segmentCount() == 1)
+		{
 			p = new Path(ExternalFilesRegistry.getInstance().getExternalFilesProject().getFullPath().toOSString());
 			p = p.append(path.segment(0));
 			p = p.setDevice(path.getDevice());
@@ -80,26 +87,26 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	}
 
 	/**
-	 * Returns the full path of this file. 
-	 * Since this file is an external file, the returned full path includes the device 
-	 * name (which is normally null for a non-workspace IFiles created by the {@link WorkspaceRoot}.
+	 * Returns the full path of this file. Since this file is an external file, the returned full path includes the
+	 * device name (which is normally null for a non-workspace IFiles created by the {@link WorkspaceRoot}.
 	 * 
 	 * @return The file's full path.
 	 */
-	public IPath getFullPath() {
+	public IPath getFullPath()
+	{
 		return path;
 	}
 
-	/** 
-	 * Returns the absolute path in the local file system to this resource.
-	 * Unlike the default {@link File} implementation, in case that the file is outside the workspace, 
-	 * the returned value will be a valid, non-null, {@link IPath}, which is the result of the {@link #getFullPath()}
-	 * method call.
+	/**
+	 * Returns the absolute path in the local file system to this resource. Unlike the default {@link File}
+	 * implementation, in case that the file is outside the workspace, the returned value will be a valid, non-null,
+	 * {@link IPath}, which is the result of the {@link #getFullPath()} method call.
 	 * 
 	 * @see #getFullPath()
 	 * @return The absolute path in the local file system to this resource
 	 */
-	public IPath getLocation() {
+	public IPath getLocation()
+	{
 		return path;
 	}
 
@@ -109,7 +116,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#accept(org.eclipse.core.resources.IResourceProxyVisitor, int)
 	 */
-	public void accept(IResourceProxyVisitor visitor, int memberFlags) throws CoreException {
+	public void accept(IResourceProxyVisitor visitor, int memberFlags) throws CoreException
+	{
 		file.accept(visitor, memberFlags);
 	}
 
@@ -120,7 +128,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#accept(org.eclipse.core.resources.IResourceVisitor, int, boolean)
 	 */
-	public void accept(IResourceVisitor visitor, int depth, boolean includePhantoms) throws CoreException {
+	public void accept(IResourceVisitor visitor, int depth, boolean includePhantoms) throws CoreException
+	{
 		file.accept(visitor, depth, includePhantoms);
 	}
 
@@ -131,7 +140,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#accept(org.eclipse.core.resources.IResourceVisitor, int, int)
 	 */
-	public void accept(IResourceVisitor visitor, int depth, int memberFlags) throws CoreException {
+	public void accept(IResourceVisitor visitor, int depth, int memberFlags) throws CoreException
+	{
 		file.accept(visitor, depth, memberFlags);
 	}
 
@@ -140,7 +150,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#accept(org.eclipse.core.resources.IResourceVisitor)
 	 */
-	public void accept(IResourceVisitor visitor) throws CoreException {
+	public void accept(IResourceVisitor visitor) throws CoreException
+	{
 		file.accept(visitor);
 	}
 
@@ -150,9 +161,12 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param keepHistory
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#appendContents(java.io.InputStream, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#appendContents(java.io.InputStream, boolean, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor)
+			throws CoreException
+	{
 		file.appendContents(source, force, keepHistory, monitor);
 	}
 
@@ -161,9 +175,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#appendContents(java.io.InputStream, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#appendContents(java.io.InputStream, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.appendContents(source, updateFlags, monitor);
 	}
 
@@ -172,10 +188,14 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#clearHistory(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void clearHistory(IProgressMonitor monitor) {
-		try {
+	public void clearHistory(IProgressMonitor monitor)
+	{
+		try
+		{
 			file.clearHistory(monitor);
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPDebugEPLPlugin.logError("Unexpected exception", e);
 		}
 	}
@@ -185,7 +205,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.runtime.jobs.ISchedulingRule#contains(org.eclipse.core.runtime.jobs.ISchedulingRule)
 	 */
-	public boolean contains(ISchedulingRule rule) {
+	public boolean contains(ISchedulingRule rule)
+	{
 		return file.contains(rule);
 	}
 
@@ -194,9 +215,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param force
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.runtime.IPath, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.runtime.IPath, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void copy(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {
+	public void copy(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException
+	{
 		file.copy(destination, force, monitor);
 	}
 
@@ -205,9 +228,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void copy(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void copy(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.copy(destination, updateFlags, monitor);
 	}
 
@@ -216,9 +241,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param force
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.resources.IProjectDescription, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.resources.IProjectDescription, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {
+	public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException
+	{
 		file.copy(description, force, monitor);
 	}
 
@@ -227,9 +254,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.resources.IProjectDescription, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#copy(org.eclipse.core.resources.IProjectDescription, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.copy(description, updateFlags, monitor);
 	}
 
@@ -238,9 +267,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param force
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#create(java.io.InputStream, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#create(java.io.InputStream, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void create(InputStream source, boolean force, IProgressMonitor monitor) throws CoreException {
+	public void create(InputStream source, boolean force, IProgressMonitor monitor) throws CoreException
+	{
 		file.create(source, force, monitor);
 	}
 
@@ -251,7 +282,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#create(java.io.InputStream, int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void create(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void create(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.create(source, updateFlags, monitor);
 	}
 
@@ -260,9 +292,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#createLink(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#createLink(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.createLink(localLocation, updateFlags, monitor);
 	}
 
@@ -273,7 +307,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#createLink(java.net.URI, int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void createLink(URI location, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void createLink(URI location, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.createLink(location, updateFlags, monitor);
 	}
 
@@ -283,7 +318,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#createMarker(java.lang.String)
 	 */
-	public IMarker createMarker(String type) throws CoreException {
+	public IMarker createMarker(String type) throws CoreException
+	{
 		return file.createMarker(type);
 	}
 
@@ -291,7 +327,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#createProxy()
 	 */
-	public IResourceProxy createProxy() {
+	public IResourceProxy createProxy()
+	{
 		return file.createProxy();
 	}
 
@@ -302,7 +339,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#delete(boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException
+	{
 		file.delete(force, keepHistory, monitor);
 	}
 
@@ -312,7 +350,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#delete(boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void delete(boolean force, IProgressMonitor monitor) throws CoreException {
+	public void delete(boolean force, IProgressMonitor monitor) throws CoreException
+	{
 		file.delete(force, monitor);
 	}
 
@@ -322,7 +361,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#delete(int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.delete(updateFlags, monitor);
 	}
 
@@ -333,7 +373,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#deleteMarkers(java.lang.String, boolean, int)
 	 */
-	public void deleteMarkers(String type, boolean includeSubtypes, int depth) throws CoreException {
+	public void deleteMarkers(String type, boolean includeSubtypes, int depth) throws CoreException
+	{
 		file.deleteMarkers(type, includeSubtypes, depth);
 	}
 
@@ -342,7 +383,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#equals(java.lang.Object)
 	 */
-	public boolean equals(Object other) {
+	public boolean equals(Object other)
+	{
 		return file.equals(other);
 	}
 
@@ -350,7 +392,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#exists()
 	 */
-	public boolean exists() {
+	public boolean exists()
+	{
 		return file.exists();
 	}
 
@@ -360,10 +403,14 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#findMarker(long)
 	 */
-	public IMarker findMarker(long id) {
-		try {
+	public IMarker findMarker(long id)
+	{
+		try
+		{
 			return file.findMarker(id);
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPDebugEPLPlugin.logError("Unexpected exception", e);
 			return null;
 		}
@@ -377,10 +424,14 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#findMarkers(java.lang.String, boolean, int)
 	 */
-	public IMarker[] findMarkers(String type, boolean includeSubtypes, int depth) throws CoreException {
-		try {
+	public IMarker[] findMarkers(String type, boolean includeSubtypes, int depth) throws CoreException
+	{
+		try
+		{
 			return file.findMarkers(type, includeSubtypes, depth);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return new IMarker[0];
 		}
 	}
@@ -390,7 +441,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class adapter) {
+	public Object getAdapter(Class adapter)
+	{
 		return file.getAdapter(adapter);
 	}
 
@@ -399,7 +451,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#getCharset()
 	 */
-	public String getCharset() throws CoreException {
+	public String getCharset() throws CoreException
+	{
 		return file.getCharset();
 	}
 
@@ -409,7 +462,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#getCharset(boolean)
 	 */
-	public String getCharset(boolean checkImplicit) throws CoreException {
+	public String getCharset(boolean checkImplicit) throws CoreException
+	{
 		return file.getCharset(checkImplicit);
 	}
 
@@ -419,7 +473,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#getCharsetFor(java.io.Reader)
 	 */
-	public String getCharsetFor(Reader reader) throws CoreException {
+	public String getCharsetFor(Reader reader) throws CoreException
+	{
 		return file.getCharsetFor(reader);
 	}
 
@@ -428,16 +483,22 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#getContentDescription()
 	 */
-	public IContentDescription getContentDescription() throws CoreException {
-		try {
+	public IContentDescription getContentDescription() throws CoreException
+	{
+		try
+		{
 			return file.getContentDescription();
-		} catch (CoreException ce) {
+		}
+		catch (CoreException ce)
+		{
 		}
 		return getDummyContentDescription();
 	}
 
-	private IContentDescription getDummyContentDescription() {
-		if (dummyDescription == null) {
+	private IContentDescription getDummyContentDescription()
+	{
+		if (dummyDescription == null)
+		{
 			dummyDescription = new DummyContentDescription();
 		}
 		return dummyDescription;
@@ -448,11 +509,16 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#getContents()
 	 */
-	public InputStream getContents() throws CoreException {
-		try {
+	public InputStream getContents() throws CoreException
+	{
+		try
+		{
 			return new FileInputStream(path.toFile());
-		} catch (FileNotFoundException e) {
-			throw new CoreException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
+		}
+		catch (FileNotFoundException e)
+		{
+			throw new CoreException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IStatus.ERROR,
+					e.getMessage(), e));
 		}
 	}
 
@@ -462,7 +528,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#getContents(boolean)
 	 */
-	public InputStream getContents(boolean force) throws CoreException {
+	public InputStream getContents(boolean force) throws CoreException
+	{
 		return file.getContents(force);
 	}
 
@@ -472,7 +539,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @deprecated
 	 * @see org.eclipse.core.resources.IFile#getEncoding()
 	 */
-	public int getEncoding() throws CoreException {
+	public int getEncoding() throws CoreException
+	{
 		return file.getEncoding();
 	}
 
@@ -480,7 +548,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getFileExtension()
 	 */
-	public String getFileExtension() {
+	public String getFileExtension()
+	{
 		return file.getFileExtension();
 	}
 
@@ -489,10 +558,14 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IFile#getHistory(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public IFileState[] getHistory(IProgressMonitor monitor) {
-		try {
+	public IFileState[] getHistory(IProgressMonitor monitor)
+	{
+		try
+		{
 			return file.getHistory(monitor);
-		} catch (CoreException e) {
+		}
+		catch (CoreException e)
+		{
 			PHPDebugEPLPlugin.logError("Unexpected exception", e);
 			return new IFileState[0];
 		}
@@ -502,7 +575,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getLocalTimeStamp()
 	 */
-	public long getLocalTimeStamp() {
+	public long getLocalTimeStamp()
+	{
 		return file.getLocalTimeStamp();
 	}
 
@@ -510,7 +584,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getLocationURI()
 	 */
-	public URI getLocationURI() {
+	public URI getLocationURI()
+	{
 		return file.getLocationURI();
 	}
 
@@ -519,7 +594,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getMarker(long)
 	 */
-	public IMarker getMarker(long id) {
+	public IMarker getMarker(long id)
+	{
 		return file.getMarker(id);
 	}
 
@@ -527,7 +603,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getModificationStamp()
 	 */
-	public long getModificationStamp() {
+	public long getModificationStamp()
+	{
 		return file.getModificationStamp();
 	}
 
@@ -535,7 +612,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IFile#getName()
 	 */
-	public String getName() {
+	public String getName()
+	{
 		return file.getName();
 	}
 
@@ -543,7 +621,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getParent()
 	 */
-	public IContainer getParent() {
+	public IContainer getParent()
+	{
 		return file.getParent();
 	}
 
@@ -553,7 +632,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#getPersistentProperty(org.eclipse.core.runtime.QualifiedName)
 	 */
-	public String getPersistentProperty(QualifiedName key) throws CoreException {
+	public String getPersistentProperty(QualifiedName key) throws CoreException
+	{
 		return file.getPersistentProperty(key);
 	}
 
@@ -561,7 +641,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getProject()
 	 */
-	public IProject getProject() {
+	public IProject getProject()
+	{
 		return ExternalFilesRegistry.getInstance().getExternalFilesProject();
 	}
 
@@ -569,7 +650,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getProjectRelativePath()
 	 */
-	public IPath getProjectRelativePath() {
+	public IPath getProjectRelativePath()
+	{
 		return file.getProjectRelativePath();
 	}
 
@@ -577,7 +659,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getRawLocation()
 	 */
-	public IPath getRawLocation() {
+	public IPath getRawLocation()
+	{
 		return file.getRawLocation();
 	}
 
@@ -585,7 +668,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getRawLocationURI()
 	 */
-	public URI getRawLocationURI() {
+	public URI getRawLocationURI()
+	{
 		return file.getRawLocationURI();
 	}
 
@@ -593,7 +677,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getResourceAttributes()
 	 */
-	public ResourceAttributes getResourceAttributes() {
+	public ResourceAttributes getResourceAttributes()
+	{
 		return file.getResourceAttributes();
 	}
 
@@ -603,7 +688,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#getSessionProperty(org.eclipse.core.runtime.QualifiedName)
 	 */
-	public Object getSessionProperty(QualifiedName key) throws CoreException {
+	public Object getSessionProperty(QualifiedName key) throws CoreException
+	{
 		return file.getSessionProperty(key);
 	}
 
@@ -611,7 +697,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getType()
 	 */
-	public int getType() {
+	public int getType()
+	{
 		return file.getType();
 	}
 
@@ -619,7 +706,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#getWorkspace()
 	 */
-	public IWorkspace getWorkspace() {
+	public IWorkspace getWorkspace()
+	{
 		return file.getWorkspace();
 	}
 
@@ -627,7 +715,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#isAccessible()
 	 */
-	public boolean isAccessible() {
+	public boolean isAccessible()
+	{
 		return file.isAccessible();
 	}
 
@@ -636,7 +725,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.runtime.jobs.ISchedulingRule#isConflicting(org.eclipse.core.runtime.jobs.ISchedulingRule)
 	 */
-	public boolean isConflicting(ISchedulingRule rule) {
+	public boolean isConflicting(ISchedulingRule rule)
+	{
 		return file.isConflicting(rule);
 	}
 
@@ -644,7 +734,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#isDerived()
 	 */
-	public boolean isDerived() {
+	public boolean isDerived()
+	{
 		return file.isDerived();
 	}
 
@@ -652,7 +743,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#isLinked()
 	 */
-	public boolean isLinked() {
+	public boolean isLinked()
+	{
 		return file.isLinked();
 	}
 
@@ -661,7 +753,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#isLinked(int)
 	 */
-	public boolean isLinked(int options) {
+	public boolean isLinked(int options)
+	{
 		return file.isLinked(options);
 	}
 
@@ -671,7 +764,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @deprecated
 	 * @see org.eclipse.core.resources.IResource#isLocal(int)
 	 */
-	public boolean isLocal(int depth) {
+	public boolean isLocal(int depth)
+	{
 		return file.isLocal(depth);
 	}
 
@@ -679,7 +773,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#isPhantom()
 	 */
-	public boolean isPhantom() {
+	public boolean isPhantom()
+	{
 		return file.isPhantom();
 	}
 
@@ -687,7 +782,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IFile#isReadOnly()
 	 */
-	public boolean isReadOnly() {
+	public boolean isReadOnly()
+	{
 		return file.isReadOnly();
 	}
 
@@ -696,7 +792,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#isSynchronized(int)
 	 */
-	public boolean isSynchronized(int depth) {
+	public boolean isSynchronized(int depth)
+	{
 		return file.isSynchronized(depth);
 	}
 
@@ -704,7 +801,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @return
 	 * @see org.eclipse.core.resources.IResource#isTeamPrivateMember()
 	 */
-	public boolean isTeamPrivateMember() {
+	public boolean isTeamPrivateMember()
+	{
 		return file.isTeamPrivateMember();
 	}
 
@@ -714,9 +812,12 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param keepHistory
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#move(org.eclipse.core.runtime.IPath, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#move(org.eclipse.core.runtime.IPath, boolean, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor)
+			throws CoreException
+	{
 		file.move(destination, force, keepHistory, monitor);
 	}
 
@@ -725,9 +826,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param force
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.runtime.IPath, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.runtime.IPath, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void move(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {
+	public void move(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException
+	{
 		file.move(destination, force, monitor);
 	}
 
@@ -736,9 +839,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void move(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void move(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.move(destination, updateFlags, monitor);
 	}
 
@@ -748,9 +853,12 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param keepHistory
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.resources.IProjectDescription, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.resources.IProjectDescription, boolean, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void move(IProjectDescription description, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	public void move(IProjectDescription description, boolean force, boolean keepHistory, IProgressMonitor monitor)
+			throws CoreException
+	{
 		file.move(description, force, keepHistory, monitor);
 	}
 
@@ -759,9 +867,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.resources.IProjectDescription, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IResource#move(org.eclipse.core.resources.IProjectDescription, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.move(description, updateFlags, monitor);
 	}
 
@@ -771,7 +881,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#refreshLocal(int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void refreshLocal(int depth, IProgressMonitor monitor) throws CoreException {
+	public void refreshLocal(int depth, IProgressMonitor monitor) throws CoreException
+	{
 		file.refreshLocal(depth, monitor);
 	}
 
@@ -780,7 +891,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#revertModificationStamp(long)
 	 */
-	public void revertModificationStamp(long value) throws CoreException {
+	public void revertModificationStamp(long value) throws CoreException
+	{
 		file.revertModificationStamp(value);
 	}
 
@@ -790,7 +902,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IFile#setCharset(java.lang.String, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void setCharset(String newCharset, IProgressMonitor monitor) throws CoreException {
+	public void setCharset(String newCharset, IProgressMonitor monitor) throws CoreException
+	{
 		file.setCharset(newCharset, monitor);
 	}
 
@@ -800,7 +913,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @deprecated
 	 * @see org.eclipse.core.resources.IFile#setCharset(java.lang.String)
 	 */
-	public void setCharset(String newCharset) throws CoreException {
+	public void setCharset(String newCharset) throws CoreException
+	{
 		file.setCharset(newCharset);
 	}
 
@@ -810,9 +924,12 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param keepHistory
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#setContents(org.eclipse.core.resources.IFileState, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#setContents(org.eclipse.core.resources.IFileState, boolean, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor)
+			throws CoreException
+	{
 		file.setContents(source, force, keepHistory, monitor);
 	}
 
@@ -821,9 +938,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#setContents(org.eclipse.core.resources.IFileState, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#setContents(org.eclipse.core.resources.IFileState, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.setContents(source, updateFlags, monitor);
 	}
 
@@ -833,9 +952,12 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param keepHistory
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#setContents(java.io.InputStream, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#setContents(java.io.InputStream, boolean, boolean,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void setContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	public void setContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor)
+			throws CoreException
+	{
 		file.setContents(source, force, keepHistory, monitor);
 	}
 
@@ -844,9 +966,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param updateFlags
 	 * @param monitor
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IFile#setContents(java.io.InputStream, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.resources.IFile#setContents(java.io.InputStream, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException
+	{
 		file.setContents(source, updateFlags, monitor);
 	}
 
@@ -855,7 +979,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#setDerived(boolean)
 	 */
-	public void setDerived(boolean isDerived) throws CoreException {
+	public void setDerived(boolean isDerived) throws CoreException
+	{
 		file.setDerived(isDerived);
 	}
 
@@ -867,7 +992,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @deprecated
 	 * @see org.eclipse.core.resources.IResource#setLocal(boolean, int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void setLocal(boolean flag, int depth, IProgressMonitor monitor) throws CoreException {
+	public void setLocal(boolean flag, int depth, IProgressMonitor monitor) throws CoreException
+	{
 		file.setLocal(flag, depth, monitor);
 	}
 
@@ -877,7 +1003,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#setLocalTimeStamp(long)
 	 */
-	public long setLocalTimeStamp(long value) throws CoreException {
+	public long setLocalTimeStamp(long value) throws CoreException
+	{
 		return file.setLocalTimeStamp(value);
 	}
 
@@ -885,9 +1012,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param key
 	 * @param value
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#setPersistentProperty(org.eclipse.core.runtime.QualifiedName, java.lang.String)
+	 * @see org.eclipse.core.resources.IResource#setPersistentProperty(org.eclipse.core.runtime.QualifiedName,
+	 *      java.lang.String)
 	 */
-	public void setPersistentProperty(QualifiedName key, String value) throws CoreException {
+	public void setPersistentProperty(QualifiedName key, String value) throws CoreException
+	{
 		file.setPersistentProperty(key, value);
 	}
 
@@ -896,7 +1025,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @deprecated
 	 * @see org.eclipse.core.resources.IResource#setReadOnly(boolean)
 	 */
-	public void setReadOnly(boolean readOnly) {
+	public void setReadOnly(boolean readOnly)
+	{
 		file.setReadOnly(readOnly);
 	}
 
@@ -905,7 +1035,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#setResourceAttributes(org.eclipse.core.resources.ResourceAttributes)
 	 */
-	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
+	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException
+	{
 		file.setResourceAttributes(attributes);
 	}
 
@@ -913,9 +1044,11 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @param key
 	 * @param value
 	 * @throws CoreException
-	 * @see org.eclipse.core.resources.IResource#setSessionProperty(org.eclipse.core.runtime.QualifiedName, java.lang.Object)
+	 * @see org.eclipse.core.resources.IResource#setSessionProperty(org.eclipse.core.runtime.QualifiedName,
+	 *      java.lang.Object)
 	 */
-	public void setSessionProperty(QualifiedName key, Object value) throws CoreException {
+	public void setSessionProperty(QualifiedName key, Object value) throws CoreException
+	{
 		file.setSessionProperty(key, value);
 	}
 
@@ -924,7 +1057,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#setTeamPrivateMember(boolean)
 	 */
-	public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException {
+	public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException
+	{
 		file.setTeamPrivateMember(isTeamPrivate);
 	}
 
@@ -933,7 +1067,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * @throws CoreException
 	 * @see org.eclipse.core.resources.IResource#touch(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void touch(IProgressMonitor monitor) throws CoreException {
+	public void touch(IProgressMonitor monitor) throws CoreException
+	{
 		file.touch(monitor);
 	}
 
@@ -941,7 +1076,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.internal.watson.IPathRequestor#requestName()
 	 */
-	public String requestName() {
+	public String requestName()
+	{
 		return getName();
 	}
 
@@ -949,7 +1085,8 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.internal.watson.IPathRequestor#requestPath()
 	 */
-	public IPath requestPath() {
+	public IPath requestPath()
+	{
 		return getFullPath();
 	}
 
@@ -957,61 +1094,72 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	public String toString()
+	{
 		return getFullPath().toOSString();
 	}
 
 	/**
-	 * Creates and returns an {@link ExternalFileWrapper} for a file that has the given pathString.
-	 * Use this to create NEW instances of the ExternalFileDecorator.
-	 * Note that the created file will not be automatically inserted into the ExternalFilesRegistry.
-	 * @param pathString A full path string. 
+	 * Creates and returns an {@link ExternalFileWrapper} for a file that has the given pathString. Use this to create
+	 * NEW instances of the ExternalFileDecorator. Note that the created file will not be automatically inserted into
+	 * the ExternalFilesRegistry.
+	 * 
+	 * @param pathString
+	 *            A full path string.
 	 * @return An {@link IFile} (new instance of {@link ExternalFileWrapper}).
 	 */
-	public synchronized static IFile createFile(String pathString) {
-		if (File.separatorChar != '\\') {
+	public synchronized static IFile createFile(String pathString)
+	{
+		if (File.separatorChar != '\\')
+		{
 			pathString = pathString.replace('\\', '/');
 		}
 		return new ExternalFileWrapper(pathString);
 	}
 
-	
-
 	/*
 	 * Dummy content description for external php files.
 	 */
-	private static class DummyContentDescription implements IContentDescription {
+	private static class DummyContentDescription implements IContentDescription
+	{
 
 		IContentType contentType;
 
-		public DummyContentDescription() {
+		public DummyContentDescription()
+		{
 			contentType = Platform.getContentTypeManager().getContentType(IPHPConstants.CONTENT_TYPE_HTML_PHP);
 		}
 
-		public String getCharset() {
+		public String getCharset()
+		{
 			return null;
 		}
 
-		public IContentType getContentType() {
+		public IContentType getContentType()
+		{
 			return contentType;
 		}
 
-		public Object getProperty(QualifiedName key) {
+		public Object getProperty(QualifiedName key)
+		{
 			return null;
 		}
 
-		public boolean isRequested(QualifiedName key) {
+		public boolean isRequested(QualifiedName key)
+		{
 			return false;
 		}
 
-		public void setProperty(QualifiedName key, Object value) {
+		public void setProperty(QualifiedName key, Object value)
+		{
 		}
 	}
 
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	public int hashCode()
+	{
 		return file.hashCode();
 	}
 
@@ -1065,14 +1213,42 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 
 	public boolean isHidden(int options)
 	{
-		
+
 		// FIXME: SG - use return file.isHidden(); when the PHP plugin compatibility will become a 3.5 only
 		return false;
 	}
 
 	public boolean isTeamPrivateMember(int options)
 	{
-		// FIXME: SG - use return file.isTeamPrivateMember(options); when the PHP plugin compatibility will become a 3.5 only
+		// FIXME: SG - use return file.isTeamPrivateMember(options); when the PHP plugin compatibility will become a 3.5
+		// only
 		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#getPathVariableManager()
+	 */
+	public IPathVariableManager getPathVariableManager()
+	{
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#isVirtual()
+	 */
+	public boolean isVirtual()
+	{
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#setDerived(boolean, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public void setDerived(boolean isDerived, IProgressMonitor monitor) throws CoreException
+	{
+		// do nothing
 	}
 }
