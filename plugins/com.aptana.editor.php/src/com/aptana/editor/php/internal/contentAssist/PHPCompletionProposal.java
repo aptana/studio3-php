@@ -35,7 +35,7 @@ import com.aptana.editor.common.contentassist.CommonCompletionProposal;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>, Pavel Petrochenko
  */
-public class PHPCompletionProposal extends CommonCompletionProposal implements Comparable<PHPCompletionProposal>
+public class PHPCompletionProposal extends CommonCompletionProposal
 {
 	/** The type of the object. This is an 'enum' of JSCompletionProposalComparator sorting types. */
 	private int fObjectType;
@@ -161,7 +161,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 		if (validated && event != null)
 		{
 			// make sure that we change the replacement length as the document content changes
-			int delta = (event.fText == null ? 0 : event.fText.length()) - event.fLength;
+			int delta = ((event.fText == null) ? 0 : event.fText.length()) - event.fLength;
 			final int newLength = Math.max(_replacementLength + delta, 0);
 			_replacementLength = newLength;
 		}
@@ -174,6 +174,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 	 * @see com.aptana.editor.common.contentassist.CommonCompletionProposal#apply(org.eclipse.jface.text.ITextViewer,
 	 * char, int, int)
 	 */
+	@SuppressWarnings("unused")
 	@Override
 	public void apply(ITextViewer viewer, char trigger, int stateMask, int offset)
 	{
@@ -356,7 +357,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 			{
 				document.removePositionCategory(getCategory());
 			}
-			catch (BadPositionCategoryException e)
+			catch (BadPositionCategoryException e) // $codepro.audit.disable emptyCatchClause
 			{
 				// ignore
 			}
@@ -414,7 +415,9 @@ public class PHPCompletionProposal extends CommonCompletionProposal implements C
 		builder.append(getReplacementString());
 		builder.append(", Display: "); //$NON-NLS-1$
 		builder.append(getDisplayString());
-		builder.append("}"); //$NON-NLS-1$
+		builder.append(", Relevance: "); //$NON-NLS-1$
+		builder.append(getRelevance());
+		builder.append('}');
 		return builder.toString();
 	}
 }

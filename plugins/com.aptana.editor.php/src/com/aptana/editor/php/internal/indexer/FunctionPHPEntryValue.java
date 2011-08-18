@@ -7,7 +7,7 @@
  */
 package com.aptana.editor.php.internal.indexer;
 
-import gnu.trove.THashSet;
+import gnu.trove.set.hash.THashSet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,8 +16,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
@@ -28,6 +28,12 @@ import com.aptana.editor.php.indexer.IPHPIndexConstants;
  */
 public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHPFunctionEntryValue
 {
+
+	private static final String[] NO_STRING_PARAMS = new String[0];
+	private static final boolean[] NO_BOOLEAN_PARAMS = new boolean[0];
+	private static final Object[] NO_OBJECT_PARAMS = new Object[0];
+	private static final int[] NO_INT_PARAMS = new int[0];
+
 	/**
 	 * Whether the function is method.
 	 */
@@ -91,7 +97,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	 * @throws IllegalArgumentException
 	 *             in any case where the parameterMandatories parameter length is different from the expected.
 	 */
-	public FunctionPHPEntryValue(int modifiers, boolean isMethod, LinkedHashMap<String, Set<Object>> parameters,
+	public FunctionPHPEntryValue(int modifiers, boolean isMethod, Map<String, Set<Object>> parameters,
 			int[] parameterStartPositions, boolean[] parameterMandatories, int startPosition, String nameSpace)
 	{
 		super(modifiers, nameSpace);
@@ -151,7 +157,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 					}
 					else
 					{
-						THashSet<Object> typesToSave = new THashSet<Object>(types.size());
+						Set<Object> typesToSave = new THashSet<Object>(types.size());
 						typesToSave.addAll(types);
 						parameterTypes[i] = typesToSave;
 					}
@@ -221,7 +227,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 		if (returnTypes instanceof Object[])
 		{
 			Object[] returnTypesArray = (Object[]) returnTypes;
-			THashSet<Object> result = new THashSet<Object>(returnTypesArray.length);
+			Set<Object> result = new THashSet<Object>(returnTypesArray.length);
 			for (int i = 0; i < returnTypesArray.length; i++)
 			{
 				result.add(returnTypesArray[i]);
@@ -231,7 +237,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 		}
 		else
 		{
-			THashSet<Object> result = new THashSet<Object>(1);
+			Set<Object> result = new THashSet<Object>(1);
 			result.add(returnTypes);
 			return result;
 		}
@@ -247,7 +253,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	{
 		if (parameterMandatories == null)
 		{
-			return new boolean[0];
+			return NO_BOOLEAN_PARAMS;
 		}
 		boolean[] toReturn = new boolean[parameterMandatories.length];
 		System.arraycopy(parameterMandatories, 0, toReturn, 0, parameterMandatories.length);
@@ -269,15 +275,15 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	 * 
 	 * @return function parameters.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map<String, Set<Object>> getParameters()
 	{
 		if (parameterNames != null)
 		{
-			LinkedHashMap<String, Set<Object>> result = new LinkedHashMap<String, Set<Object>>(parameterNames.length);
+			Map<String, Set<Object>> result = new LinkedHashMap<String, Set<Object>>(parameterNames.length);
 			for (int i = 0; i < parameterNames.length; i++)
 			{
-				HashSet<Object> types = new HashSet<Object>();
+				Set<Object> types = new HashSet<Object>();
 				Object typeObj = parameterTypes[i];
 
 				if (typeObj != null)
@@ -351,7 +357,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	{
 		da.writeBoolean(isMethod);
 		IndexPersistence.writeType(returnTypes, da);
-		int len = parameterNames == null ? 0 : parameterNames.length;
+		int len = (parameterNames == null) ? 0 : parameterNames.length;
 		da.writeInt(len);
 		for (int a = 0; a < len; a++)
 		{
@@ -361,11 +367,6 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 			IndexPersistence.writeType(parameterTypes[a], da);
 		}
 	}
-
-	private static String[] NO_PARAM_S = new String[0];
-	private static boolean[] NO_PARAM_B = new boolean[0];
-	private static Object[] NO_PARAM_O = new Object[0];
-	private static int[] NO_PARAM_P = new int[0];
 
 	@Override
 	protected void internalRead(DataInputStream di) throws IOException
@@ -389,10 +390,10 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 		}
 		else
 		{
-			parameterNames = NO_PARAM_S;
-			parameterMandatories = NO_PARAM_B;
-			parameterStartPositions = NO_PARAM_P;
-			parameterTypes = NO_PARAM_O;
+			parameterNames = NO_STRING_PARAMS;
+			parameterMandatories = NO_BOOLEAN_PARAMS;
+			parameterStartPositions = NO_INT_PARAMS;
+			parameterTypes = NO_OBJECT_PARAMS;
 		}
 	}
 

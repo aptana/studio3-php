@@ -1,19 +1,7 @@
 package com.aptana.editor.php.internal.ui.editor;
 
-import static com.aptana.editor.php.internal.core.IPHPConstants.COMMAND;
-import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_HTML_PHP;
-import static com.aptana.editor.php.internal.core.IPHPConstants.CONTENT_TYPE_PHP;
-import static com.aptana.editor.php.internal.core.IPHPConstants.DEFAULT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_DOC_COMMENT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_MULTI_LINE_COMMENT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_SINGLE_LINE_COMMENT;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_DOUBLE;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_STRING_SINGLE;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_HEREDOC;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PHP_NOWDOC;
-import static com.aptana.editor.php.internal.core.IPHPConstants.PREFIX;
-
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.EndOfLineRule;
@@ -22,82 +10,116 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 
+import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonEditorPlugin;
+import com.aptana.editor.common.CommonUtil;
 import com.aptana.editor.common.IPartitioningConfiguration;
 import com.aptana.editor.common.ISourceViewerConfiguration;
 import com.aptana.editor.common.scripting.IContentTypeTranslator;
 import com.aptana.editor.common.scripting.QualifiedContentType;
+import com.aptana.editor.common.text.rules.CommentScanner;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
+import com.aptana.editor.css.ICSSConstants;
+import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.js.IJSConstants;
+import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
+import com.aptana.editor.php.internal.text.rules.FastPHPStringTokenScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
+import com.aptana.editor.php.internal.ui.editor.scanner.PHPDocScanner;
 
-public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration
+public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration, IPHPConstants
 {
-	public static final String[] CONTENT_TYPES = new String[] { DEFAULT, PHP_SINGLE_LINE_COMMENT,
-		PHP_DOC_COMMENT, PHP_MULTI_LINE_COMMENT, COMMAND, PHP_STRING_SINGLE, PHP_STRING_DOUBLE, PHP_HEREDOC,
-		PHP_NOWDOC };/* REGULAR_EXPRESSION */
+	public static final String[] CONTENT_TYPES = new String[] { DEFAULT, PHP_HASH_LINE_COMMENT, PHP_SLASH_LINE_COMMENT,
+			PHP_DOC_COMMENT, PHP_MULTI_LINE_COMMENT, PHP_STRING_SINGLE, PHP_STRING_DOUBLE, PHP_HEREDOC, PHP_NOWDOC };/* REGULAR_EXPRESSION */
 
 	private static final String[][] TOP_CONTENT_TYPES = new String[][] { { CONTENT_TYPE_PHP } };
 
 	private IPredicateRule[] partitioningRules = new IPredicateRule[] {
-			new EndOfLineRule("//", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
-			new EndOfLineRule("#", new Token(PHP_SINGLE_LINE_COMMENT)), //$NON-NLS-1$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("/**", "*/", new Token(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("/*", "*/", new Token(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", new Token(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", new Token(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_HEREDOC), false)),
-			new PartitionerSwitchingIgnoreRule(new HeredocRule(new Token(PHP_NOWDOC), true)),
-	};
-
-	private PHPCodeScanner codeScanner;
-	private RuleBasedScanner singleLineCommentScanner;
-	private RuleBasedScanner multiLineCommentScanner;
-	// private RuleBasedScanner commandScanner;
-	private RuleBasedScanner singleQuotedStringScanner;
-	private RuleBasedScanner doubleQuotedStringScanner;
-	private RuleBasedScanner heredocScanner;
-	private RuleBasedScanner nowdocScanner;
-
-	private RuleBasedScanner phpDocCommentScanner;
+			new EndOfLineRule("//", getToken(PHP_SLASH_LINE_COMMENT)), //$NON-NLS-1$
+			new EndOfLineRule("#", getToken(PHP_HASH_LINE_COMMENT)), //$NON-NLS-1$
+			new PartitionerSwitchingIgnoreRule(
+					new MultiLineRule("/**", "*/", getToken(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
+					"/*", "*/", getToken(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", getToken(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", getToken(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_HEREDOC), false)),
+			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_NOWDOC), true)), };
 
 	private static PHPSourceConfiguration instance;
 
 	static
 	{
 		IContentTypeTranslator c = CommonEditorPlugin.getDefault().getContentTypeTranslator();
+		// Toplevel
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP), new QualifiedContentType("text.html.basic")); //$NON-NLS-1$
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IDocument.DEFAULT_CONTENT_TYPE),
 				new QualifiedContentType("text.html.basic")); //$NON-NLS-1$
+
+		// Inside PHP tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CONTENT_TYPE_PHP), new QualifiedContentType(
 				"source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
+
+		// Outside PHP tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IHTMLConstants.CONTENT_TYPE_HTML),
 				new QualifiedContentType("text.html.basic")); //$NON-NLS-1$
+
+		// CSS
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, ICSSConstants.CONTENT_TYPE_CSS),
+				new QualifiedContentType("text.html.basic", "source.css.embedded.html")); //$NON-NLS-1$ //$NON-NLS-2$
+
+		// JS
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IJSConstants.CONTENT_TYPE_JS),
+				new QualifiedContentType("text.html.basic", "source.js.embedded.html")); //$NON-NLS-1$ //$NON-NLS-2$
+
+		// Single-quoted string
 		c.addTranslation(new QualifiedContentType(PHP_STRING_SINGLE), new QualifiedContentType(
 				"string.quoted.single.php")); //$NON-NLS-1$
+
+		// Double-quoted string
 		c.addTranslation(new QualifiedContentType(PHP_STRING_DOUBLE), new QualifiedContentType(
 				"string.quoted.double.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(PHP_HEREDOC), new QualifiedContentType(
-				"string.unquoted.heredoc.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(PHP_SINGLE_LINE_COMMENT), new QualifiedContentType(
+
+		// heredoc
+		c.addTranslation(new QualifiedContentType(PHP_HEREDOC), new QualifiedContentType("string.unquoted.heredoc.php")); //$NON-NLS-1$
+
+		// '#' Single line comments
+		c.addTranslation(new QualifiedContentType(PHP_HASH_LINE_COMMENT), new QualifiedContentType(
+				"comment.line.number-sign.php")); //$NON-NLS-1$
+
+		// '//' Single line comments
+		c.addTranslation(new QualifiedContentType(PHP_SLASH_LINE_COMMENT), new QualifiedContentType(
 				"comment.line.double-slash.php")); //$NON-NLS-1$
+
+		// PHPDoc
 		c.addTranslation(new QualifiedContentType(PHP_DOC_COMMENT), new QualifiedContentType(
 				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType("comment.php")); //$NON-NLS-1$
+
+		// Multiline comments
+		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT),
+				new QualifiedContentType("comment.block.php")); //$NON-NLS-1$
+
+		// PHP Start tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.START_SWITCH_TAG),
-				new QualifiedContentType("punctuation.section.embedded.begin.php")); //$NON-NLS-1$
-		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.END_SWITCH_TAG), new QualifiedContentType(
-				"punctuation.section.embedded.end.php")); //$NON-NLS-1$
+				new QualifiedContentType(
+						"text.html.basic", "source.php.embedded.block.html", "punctuation.section.embedded.begin.php")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		// PHP End tags
+		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.END_SWITCH_TAG),
+				new QualifiedContentType(
+						"text.html.basic", "source.php.embedded.block.html", "punctuation.section.embedded.end.php")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
-	
-	private PHPSourceConfiguration() {
+
+	private PHPSourceConfiguration()
+	{
 	}
 
 	public static PHPSourceConfiguration getDefault()
@@ -139,7 +161,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	 */
 	public ISubPartitionScanner createSubPartitionScanner()
 	{
-		return new SubPartitionScanner(partitioningRules, CONTENT_TYPES, new Token(DEFAULT));
+		return new SubPartitionScanner(partitioningRules, CONTENT_TYPES, getToken(DEFAULT));
 	}
 
 	/*
@@ -169,20 +191,20 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		reconciler.setRepairer(dr, DEFAULT);
 
 		dr = new ThemeingDamagerRepairer(getSingleLineCommentScanner());
-		reconciler.setDamager(dr, PHP_SINGLE_LINE_COMMENT);
-		reconciler.setRepairer(dr, PHP_SINGLE_LINE_COMMENT);
+		reconciler.setDamager(dr, PHP_HASH_LINE_COMMENT);
+		reconciler.setRepairer(dr, PHP_HASH_LINE_COMMENT);
+
+		dr = new ThemeingDamagerRepairer(getSingleLineCommentScanner());
+		reconciler.setDamager(dr, PHP_SLASH_LINE_COMMENT);
+		reconciler.setRepairer(dr, PHP_SLASH_LINE_COMMENT);
 
 		dr = new ThemeingDamagerRepairer(getPhpDocCommentScanner());
 		reconciler.setDamager(dr, PHP_DOC_COMMENT);
 		reconciler.setRepairer(dr, PHP_DOC_COMMENT);
-		
+
 		dr = new ThemeingDamagerRepairer(getMultiLineCommentScanner());
 		reconciler.setDamager(dr, PHP_MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, PHP_MULTI_LINE_COMMENT);
-
-		// dr = new ThemeingDamagerRepairer(getCommandScanner());
-		// reconciler.setDamager(dr, PHPSourceConfiguration.COMMAND);
-		// reconciler.setRepairer(dr, PHPSourceConfiguration.COMMAND);
 
 		dr = new ThemeingDamagerRepairer(getSingleQuotedStringScanner());
 		reconciler.setDamager(dr, PHP_STRING_SINGLE);
@@ -195,94 +217,75 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		dr = new ThemeingDamagerRepairer(getHeredocScanner());
 		reconciler.setDamager(dr, PHP_HEREDOC);
 		reconciler.setRepairer(dr, PHP_HEREDOC);
-		
+
 		dr = new ThemeingDamagerRepairer(getNowdocScanner());
 		reconciler.setDamager(dr, PHP_NOWDOC);
 		reconciler.setRepairer(dr, PHP_NOWDOC);
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.ISourceViewerConfiguration#getContentAssistProcessor(com.aptana.editor.common.
+	 * AbstractThemeableEditor, java.lang.String)
+	 */
+	public IContentAssistProcessor getContentAssistProcessor(AbstractThemeableEditor editor, String contentType)
+	{
+		if (contentType.startsWith(IPHPConstants.PREFIX))
+		{
+			return new PHPContentAssistProcessor(editor);
+		}
+		// In any other case, call the HTMLSourceViewerConfiguration to compute the assist processor.
+		return HTMLSourceConfiguration.getDefault().getContentAssistProcessor(editor, contentType);
+	}
+
 	private ITokenScanner getCodeScanner()
 	{
-		if (codeScanner == null)
-		{
-			codeScanner = new PHPCodeScanner();
-		}
-		return codeScanner;
+		return new PHPCodeScanner();
 	}
 
 	private ITokenScanner getPhpDocCommentScanner()
 	{
-		if (phpDocCommentScanner == null)
-		{
-			phpDocCommentScanner = new RuleBasedScanner();
-			phpDocCommentScanner.setDefaultReturnToken(getToken("comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
-		}
-		return phpDocCommentScanner;
+		return new PHPDocScanner();
 	}
-	
+
 	private ITokenScanner getMultiLineCommentScanner()
 	{
-		if (multiLineCommentScanner == null)
-		{
-			multiLineCommentScanner = new RuleBasedScanner();
-			multiLineCommentScanner.setDefaultReturnToken(getToken("comment.php")); //$NON-NLS-1$
-		}
-		return multiLineCommentScanner;
+		return new CommentScanner(getToken("comment.block.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getSingleLineCommentScanner()
 	{
-		if (singleLineCommentScanner == null)
-		{
-			singleLineCommentScanner = new RuleBasedScanner();
-			singleLineCommentScanner.setDefaultReturnToken(getToken("comment.line.number-sign.php")); //$NON-NLS-1$
-		}
-		return singleLineCommentScanner;
+		return new CommentScanner(getToken("")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getSingleQuotedStringScanner()
 	{
-		if (singleQuotedStringScanner == null)
-		{
-			singleQuotedStringScanner = new RuleBasedScanner();
-			singleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.single.php")); //$NON-NLS-1$
-		}
+		RuleBasedScanner singleQuotedStringScanner = new RuleBasedScanner();
+		singleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.single.php")); //$NON-NLS-1$
 		return singleQuotedStringScanner;
 	}
 
 	private ITokenScanner getDoubleQuotedStringScanner()
 	{
-		if (doubleQuotedStringScanner == null)
-		{
-			doubleQuotedStringScanner = new RuleBasedScanner();
-			doubleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.double.php")); //$NON-NLS-1$
-		}
-		return doubleQuotedStringScanner;
+		return new FastPHPStringTokenScanner(getToken("string.quoted.double.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getHeredocScanner()
 	{
-		if (heredocScanner == null)
-		{
-			heredocScanner = new RuleBasedScanner();
-			heredocScanner.setDefaultReturnToken(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
-		}
-		return heredocScanner;
+		return new FastPHPStringTokenScanner(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
 	}
 
 	private ITokenScanner getNowdocScanner()
 	{
-		if (nowdocScanner == null)
-		{
-			nowdocScanner = new RuleBasedScanner();
-			nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
-		}
+		RuleBasedScanner nowdocScanner = new RuleBasedScanner();
+		nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
 		return nowdocScanner;
 	}
 
-	private IToken getToken(String tokenName)
+	private static IToken getToken(String tokenName)
 	{
-		return new Token(tokenName);
+		return CommonUtil.getToken(tokenName);
 	}
+
 }

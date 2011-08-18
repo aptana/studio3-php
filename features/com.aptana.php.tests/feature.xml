@@ -18,7 +18,18 @@
    </license>
 
    <requires>
-      <import plugin="com.aptana.php.libraries"/>
+      <import plugin="org.junit"/>
+      <import plugin="com.aptana.editor.php"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="com.aptana.editor.php.epl"/>
+      <import plugin="com.aptana.editor.common"/>
+      <import plugin="com.aptana.editor.html"/>
+      <import plugin="com.aptana.parsing"/>
+      <import plugin="com.aptana.core"/>
    </requires>
 
    <plugin
@@ -43,23 +54,18 @@
          unpack="false"/>
 
    <plugin
-         id="com.aptana.editor.php"
+         id="com.aptana.editor.php.formatter"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="com.aptana.editor.php.epl"
+         id="com.aptana.editor.php.formatter.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
+         fragment="true"
          unpack="false"/>
-
-   <plugin
-         id="com.aptana.php.libraries"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
 </feature>

@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;

@@ -17,8 +17,9 @@ import java.util.Set;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -108,7 +109,7 @@ public class PHPOffsetMapper
 			// Check if we are in an 'include' or 'require'
 			IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
 			ITypedRegion partition = document.getPartition(lexeme.getStartingOffset());
-			int previousPartitionEnd = partition != null ? partition.getOffset() - 1 : -1;
+			int previousPartitionEnd = (partition != null) ? partition.getOffset() - 1 : -1;
 			if (previousPartitionEnd > 0
 					&& (IPHPConstants.PHP_STRING_SINGLE.equals(partition.getType()) || IPHPConstants.PHP_STRING_DOUBLE
 							.equals(partition.getType())))
@@ -121,8 +122,8 @@ public class PHPOffsetMapper
 				int lexemePosition = newLexemeProvider.getLexemeFloorIndex(previousPartitionEnd - 1);
 				Lexeme<PHPTokenType> importLexeme = PHPContextCalculator.findLexemeBackward(newLexemeProvider,
 						lexemePosition, new String[] { PHPRegionTypes.PHP_INCLUDE, PHPRegionTypes.PHP_INCLUDE_ONCE,
-								PHPRegionTypes.PHP_REQUIRE, PHPRegionTypes.PHP_REQUIRE_ONCE },
-						new String[] { PHPRegionTypes.WHITESPACE });
+								PHPRegionTypes.PHP_REQUIRE, PHPRegionTypes.PHP_REQUIRE_ONCE }, new String[] {
+								PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_TOKEN });
 				if (importLexeme != null)
 				{
 					return getIncludeLocation(lexeme, source);
@@ -131,7 +132,7 @@ public class PHPOffsetMapper
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error locating code-location target", e); //$NON-NLS-1$
 		}
 
 		String fullPath = null;
@@ -212,7 +213,7 @@ public class PHPOffsetMapper
 		{
 			String toFind = callPath.get(callPath.size() - 1);
 			boolean variableCompletion = false;
-			if (toFind.startsWith("$")) //$NON-NLS-1$
+			if (toFind.length() > 0 && toFind.charAt(0) == '$')
 			{
 				variableCompletion = true;
 				toFind = toFind.substring(1);
@@ -300,7 +301,7 @@ public class PHPOffsetMapper
 					0, 0, ""); //$NON-NLS-1$
 			return new CodeLocation(includedModule.getFullPath(), startLexeme);
 		}
-		catch (Throwable th)
+		catch (Throwable th) // $codepro.audit.disable emptyCatchClause
 		{
 			// skip
 		}

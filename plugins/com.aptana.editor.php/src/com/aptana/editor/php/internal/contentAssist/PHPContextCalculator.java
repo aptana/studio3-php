@@ -9,14 +9,16 @@ import java.util.Set;
 import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationExtension;
-import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org2.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
@@ -53,15 +55,21 @@ public class PHPContextCalculator
 	 */
 	protected static final String NAMESPACE_PROPOSAL_CONTEXT_TYPE = "NAMESPACE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
 
-	private static final String NEW_LINE = System.getProperty("line.separator", "\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+	/**
+	 * Variable-type proposal context type.
+	 */
+	protected static final String VARIABLE_TYPE_PROPOSAL_CONTEXT_TYPE = "VARIABLE_TYPE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
+
+	private static final String NEW_LINE = System.getProperty("line.separator", "\r\n"); //$NON-NLS-1$ //$NON-NLS-2$ // $codepro.audit.disable platformSpecificLineSeparator
 
 	/**
 	 * DEFAULT_DELIMITER
 	 */
 	public static final String DEFAULT_DELIMITER = NEW_LINE + "\u2022\t"; //$NON-NLS-1$
 
-	// private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	private static final int[] EMPTY_TYPES = new int[0];
 	private ProposalContext currentContext;
+	private Character insertedChar;
 
 	/**
 	 * Calculate and return the {@link ProposalContext} for the given offset.
@@ -74,6 +82,31 @@ public class PHPContextCalculator
 	{
 		internalCalculateContext(lexemeProvider, offset);
 		return currentContext;
+	}
+
+	/**
+	 * Calculate and return the {@link ProposalContext} for the given offset.<br>
+	 * The calculation here is also accepting a character that is currently being inserted to the document, but not yet
+	 * exist in the LexemeProvider. This functionality is useful when computing the
+	 * {@link PHPContentAssistProcessor#isValidAutoActivationLocation(char, int, org.eclipse.jface.text.IDocument, int)}
+	 * using the context, since at this stage the LexemeProvider does not know about the inserted char.
+	 * 
+	 * @param lexemeProvider
+	 * @param offset
+	 * @param insertedChar
+	 *            A char that is currently being inserted into the given offset, but is not yet reflected in the
+	 *            LexemeProvider.
+	 * @return A Proposal Context.
+	 */
+	public ProposalContext calculateCompletionContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset,
+			char insertedChar)
+	{
+		// auto-box it
+		this.insertedChar = insertedChar;
+		ProposalContext context = calculateCompletionContext(lexemeProvider, offset);
+		// reset the char after the computation
+		this.insertedChar = null;
+		return context;
 	}
 
 	/*
@@ -225,13 +258,11 @@ public class PHPContextCalculator
 
 		IContextFilter filter = new IContextFilter()
 		{
-
 			public boolean acceptBuiltin(Object builtinElement)
 			{
 				if (builtinElement instanceof IPHPParseNode)
 				{
-					if (!alreadyHaveExtends
-							&& "extends".equals(((IPHPParseNode) builtinElement).getNodeName()) //$NON-NLS-1$
+					if (!alreadyHaveExtends && "extends".equals(((IPHPParseNode) builtinElement).getNodeName()) //$NON-NLS-1$
 							|| (!alreadyHaveImplements && declaredClass && "implements".equals(((IPHPParseNode) builtinElement).getNodeName()))) //$NON-NLS-1$
 					{
 						return true;
@@ -245,9 +276,14 @@ public class PHPContextCalculator
 			{
 				return false;
 			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
 		};
 
-		currentContext = new ProposalContext(filter, true, false, new int[0]);
+		currentContext = new ProposalContext(filter, true, false, EMPTY_TYPES);
 		currentContext.setAutoActivateCAAfterApply(true);
 		return true;
 	}
@@ -308,9 +344,18 @@ public class PHPContextCalculator
 			return true;
 		}
 
+		// We need to verify that in case we are not right after an 'implement' keyword, we have a comma before we can
+		// allow another interface to be inserted.
+		Lexeme<PHPTokenType> previousNameOrToken = findLexemeBackward(lexemeProvider, lexemePosition, new String[] {
+				PHPRegionTypes.PHP_IMPLEMENTS, PHPRegionTypes.PHP_TOKEN }, new String[] { PHPRegionTypes.WHITESPACE, });
+		if (previousNameOrToken == null
+				|| (previousNameOrToken.getType().getType() == PHPRegionTypes.PHP_TOKEN && !isLexemeText(
+						previousNameOrToken, ","))) //$NON-NLS-1$
+		{
+			return false;
+		}
 		IContextFilter filter = new IContextFilter()
 		{
-
 			public boolean acceptBuiltin(Object builtinElement)
 			{
 				if (builtinElement instanceof PHPClassParseNode)
@@ -337,9 +382,14 @@ public class PHPContextCalculator
 
 				return false;
 			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
 		};
 
-		currentContext = new ProposalContext(filter, true, true, new int[0]);
+		currentContext = new ProposalContext(filter, true, true, EMPTY_TYPES);
 		currentContext.setType(IMPLEMENTS_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
@@ -419,7 +469,6 @@ public class PHPContextCalculator
 
 		IContextFilter filter = new IContextFilter()
 		{
-
 			public boolean acceptBuiltin(Object builtinElement)
 			{
 				if (builtinElement instanceof PHPClassParseNode)
@@ -457,9 +506,14 @@ public class PHPContextCalculator
 
 				return false;
 			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
 		};
 
-		currentContext = new ProposalContext(filter, true, true, new int[0]);
+		currentContext = new ProposalContext(filter, true, true, EMPTY_TYPES);
 		currentContext.setType(EXTENDS_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
@@ -482,16 +536,87 @@ public class PHPContextCalculator
 		{
 			return false;
 		}
-
-		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1,
+		Lexeme<PHPTokenType> functionKeyWord = findLexemeBackward(lexemeProvider, lexemePosition - 1,
 				PHPRegionTypes.PHP_FUNCTION, new String[] { PHPRegionTypes.PHP_STRING, PHPRegionTypes.PHP_TOKEN,
 						PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_VARIABLE });
-		if (nearestKeyWord == null)
+		if (functionKeyWord == null)
 		{
 			return false;
 		}
 
-		currentContext = getDenyAllProposalContext();
+		// Check for any $ sign
+		Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexeme(lexemePosition);
+		if (insertedChar != null && insertedChar.charValue() == '$'
+				|| isLexemeText(lexeme, PHPContentAssistProcessor.DOLLAR_SIGN))
+		{
+			// Deny any proposals
+			currentContext = getDenyAllProposalContext();
+			return true;
+		}
+		// In any case we are inside the function declaration parentheses, we would like to show code assist for
+		// variable-types.
+		// Before that, we need to verify that the entered char, or the existing one in the offset, is a comma or an
+		// open-parenthesis.
+		boolean contextOK = false;
+		if ((insertedChar != null && (insertedChar.charValue() == ',' || insertedChar.charValue() == '('))
+				|| isLexemeText(lexeme, ",") || isLexemeText(lexeme, "(")) //$NON-NLS-1$ //$NON-NLS-2$
+		{
+			contextOK = true;
+		}
+		else
+		{
+			// We need to specifically look for a comma or an open parenthesis, skipping only whitespace tokens.
+			Lexeme<PHPTokenType> currentLexeme = null;
+			int positionShift = (insertedChar != null) ? 0 : -1;
+			for (int i = lexemePosition + positionShift; i >= 0; i--)
+			{
+				currentLexeme = lexemeProvider.getLexeme(i);
+				String type = currentLexeme.getType().getType();
+				if (type.equals(PHPRegionTypes.PHP_TOKEN))
+				{
+					if (isLexemeText(currentLexeme, ",") || isLexemeText(currentLexeme, "(")) { //$NON-NLS-1$ //$NON-NLS-2$
+						contextOK = true;
+					}
+					break;
+				}
+				else if (!type.equals(PHPRegionTypes.WHITESPACE))
+				{
+					break;
+				}
+			}
+		}
+
+		// We are not in a good offset to offer any assistance
+		if (!contextOK)
+		{
+			// Deny any proposals
+			currentContext = getDenyAllProposalContext();
+			return true;
+		}
+
+		// Accept classes and interfaces
+		IContextFilter filter = new IContextFilter()
+		{
+			public boolean acceptBuiltin(Object builtinElement)
+			{
+				return builtinElement instanceof PHPClassParseNode;
+			}
+
+			public boolean acceptElementEntry(IElementEntry element)
+			{
+
+				return element.getValue() instanceof ClassPHPEntryValue;
+			}
+
+			// deny any external snippets
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
+		};
+
+		currentContext = new ProposalContext(filter, true, true, EMPTY_TYPES);
+		currentContext.setType(VARIABLE_TYPE_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
 
@@ -573,9 +698,14 @@ public class PHPContextCalculator
 
 				return element.getValue() instanceof NamespacePHPEntryValue;
 			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
 		};
 
-		currentContext = new ProposalContext(filter, true, true, new int[0]);
+		currentContext = new ProposalContext(filter, true, true, EMPTY_TYPES);
 		currentContext.setType(NEW_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
@@ -651,13 +781,18 @@ public class PHPContextCalculator
 
 			public boolean acceptBuiltin(Object builtinElement)
 			{
-				return (builtinElement instanceof PHPNamespaceNode);
+				return builtinElement instanceof PHPNamespaceNode;
 			}
 
 			public boolean acceptElementEntry(IElementEntry element)
 			{
 				Object value = element.getValue();
 				return value instanceof NamespacePHPEntryValue || value instanceof ClassPHPEntryValue;
+			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
 			}
 		};
 		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.NAMESPACE_CATEGORY });
@@ -683,7 +818,7 @@ public class PHPContextCalculator
 	public static Lexeme<PHPTokenType> findLexemeBackward(LexemeProvider<PHPTokenType> lexemeProvider,
 			int startPosition, Object typesToFind, String[] allowedTypesToSkip)
 	{
-		HashSet<String> typesSet = new HashSet<String>();
+		Set<String> typesSet = new HashSet<String>();
 		if (typesToFind instanceof String)
 		{
 			typesSet.add(typesToFind.toString());
@@ -745,9 +880,14 @@ public class PHPContextCalculator
 			{
 				return false;
 			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
 		};
 
-		return new ProposalContext(filter, false, false, new int[0]);
+		return new ProposalContext(filter, false, false, EMPTY_TYPES);
 	}
 
 	/**
@@ -788,11 +928,11 @@ public class PHPContextCalculator
 			}
 			if (PHPRegionTypes.PHP_TOKEN.equals(type))
 			{
-				if (")".equals(currentLexeme.getText())) //$NON-NLS-1$
+				if (isLexemeText(currentLexeme, ")")) //$NON-NLS-1$
 				{
 					level++;
 				}
-				else if ("(".equals(currentLexeme.getText())) //$NON-NLS-1$
+				else if (isLexemeText(currentLexeme, "(")) //$NON-NLS-1$
 				{
 					if (level == 0)
 					{
@@ -914,7 +1054,7 @@ public class PHPContextCalculator
 		}
 		StringReader sr = new StringReader(s);
 		GC gc = new GC(Display.getCurrent());
-		String result = ""; //$NON-NLS-1$
+		StringBuilder result = new StringBuilder();
 		LineBreakingReader r = new LineBreakingReader(sr, gc, maxWidth);
 
 		try
@@ -922,21 +1062,34 @@ public class PHPContextCalculator
 			String line = r.readLine();
 			while (line != null)
 			{
-				result += line;
+				result.append(line);
 				line = r.readLine();
 				if (line != null)
 				{
-					result += delimiter;
+					result.append(delimiter);
 				}
 			}
 		}
 		catch (IOException e)
 		{
+			// Will probably never happen since we are reading from a StringReader
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(), "Error reading from a stream", e, null); //$NON-NLS-1$
 		}
-
+		finally
+		{
+			sr.close();
+		}
 		gc.dispose();
 
-		return result;
+		return result.toString();
+	}
+
+	/**
+	 * Returns true if the given lexeme contains the given text.
+	 */
+	static boolean isLexemeText(Lexeme<PHPTokenType> lexeme, String content)
+	{
+		return lexeme != null && content.equals(lexeme.getText());
 	}
 
 	/**
@@ -952,7 +1105,7 @@ public class PHPContextCalculator
 		private ContextInformation contextInformation;
 		private final int contextPosition;
 
-		public PHPContextInformationWrapper(ContextInformation information, int contextPosition)
+		protected PHPContextInformationWrapper(ContextInformation information, int contextPosition)
 		{
 			this.contextInformation = information;
 			this.contextPosition = contextPosition;

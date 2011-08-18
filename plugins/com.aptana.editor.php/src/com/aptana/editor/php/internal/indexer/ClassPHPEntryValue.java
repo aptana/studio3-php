@@ -218,10 +218,10 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue
 	protected void internalWrite(DataOutputStream da) throws IOException
 	{
 		da.writeInt(endOffset);
-		String s = superClassName != null ? superClassName : ""; //$NON-NLS-1$
+		String s = (superClassName != null) ? superClassName : ""; //$NON-NLS-1$
 		da.writeUTF(s);
 		List<String> emptyList = Collections.emptyList();
-		List<String> inter = interfaces != null ? interfaces : emptyList;
+		List<String> inter = (interfaces != null) ? interfaces : emptyList;
 		da.writeInt(inter.size());
 		for (String i : inter)
 		{
@@ -245,7 +245,7 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue
 		}
 		else
 		{
-			ArrayList<String> s = new ArrayList<String>(sz);
+			List<String> s = new ArrayList<String>(sz);
 			for (int a = 0; a < sz; a++)
 			{
 				s.add(di.readUTF());

@@ -1,6 +1,9 @@
 /**
- * Aptana Inc.
- * License: EPL
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.editor.php.util;
 
@@ -10,6 +13,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.WorkbenchEncoding;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.core.builder.IModule;
 
@@ -55,7 +60,9 @@ public class EncodingUtils
 		catch (Throwable e)
 		{
 			// If there is any error, return the default
-			// IdeLog.logError(PHPPlugin.getDefault(), "Error setting the PHP tooltip charset", e); //$NON-NLS-1$
+			IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+					"PHP encoding utils - Returning the default encoding due to an error (getModuleEncoding)", //$NON-NLS-1$
+					e, PHPEditorPlugin.DEBUG_SCOPE);
 		}
 		if (charset == null)
 		{

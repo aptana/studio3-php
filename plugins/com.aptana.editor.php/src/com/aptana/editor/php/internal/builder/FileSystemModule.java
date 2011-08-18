@@ -9,13 +9,15 @@ package com.aptana.editor.php.internal.builder;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import org.eclipse.core.filesystem.EFS;
+
+import com.aptana.core.resources.FileStoreUniformResource;
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.editor.php.internal.core.builder.IBuildPath;
 import com.aptana.editor.php.internal.core.builder.IModule;
-import com.aptana.editor.php.internal.core.builder.PHPUniformResource;
 
 /**
  * File system - based module.
@@ -28,7 +30,7 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 	 * File.
 	 */
 	private File file;
-	private PHPUniformResource uniformResource;
+	private IUniformResource uniformResource;
 	private boolean isInWorkspace;
 
 	/**
@@ -51,10 +53,12 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws FileNotFoundException
 	 */
-	public InputStream getContents() throws IOException
+	public InputStream getContents() throws FileNotFoundException
 	{
-		return new FileInputStream(file);
+		return new FileInputStream(file); // $codepro.audit.disable closeWhereCreated
 	}
 
 	/**
@@ -128,7 +132,7 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 	{
 		if (uniformResource == null)
 		{
-			uniformResource = new PHPUniformResource(file);
+			uniformResource = new FileStoreUniformResource(EFS.getLocalFileSystem().fromLocalFile(file));
 		}
 		return uniformResource;
 	}

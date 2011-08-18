@@ -27,6 +27,11 @@ public class PHPTokenType implements ITypePredicate
 		return true;
 	}
 
+	public short getIndex()
+	{
+		return -1;
+	}
+
 	public String getType()
 	{
 		return type;

@@ -3,7 +3,13 @@ Show own class members
 --PREFERENCES--
 org.eclipse.php.core/contentAssistShowStrictOptions=false
 --FILE--
-<? class MyClass { function getInstance() { sel|} } ?> 
+<? 
+class MyClass { 
+  function getInstance() { 
+    sel|
+  } 
+} 
+?> 
 --EXPECT--
 keyword(self)
 

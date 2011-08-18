@@ -17,6 +17,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
 
@@ -57,7 +58,7 @@ public class WorkspaceFolderSelectionDialog extends ElementTreeSelectionDialog
 				}
 				catch (CoreException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Workspace folder selection dialog error", e); //$NON-NLS-1$
 					return false;
 				}
 

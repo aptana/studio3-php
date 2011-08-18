@@ -1,42 +1,18 @@
 /**
- * This file Copyright (c) 2005-2010 Aptana, Inc. This program is
- * dual-licensed under both the Aptana Public License and the GNU General
- * Public license. You may elect to use one or the other of these licenses.
- * 
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT. Redistribution, except as permitted by whichever of
- * the GPL or APL you select, is prohibited.
- *
- * 1. For the GPL license (GPL), you can redistribute and/or modify this
- * program under the terms of the GNU General Public License,
- * Version 3, as published by the Free Software Foundation.  You should
- * have received a copy of the GNU General Public License, Version 3 along
- * with this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
- * Aptana provides a special exception to allow redistribution of this file
- * with certain other free and open source software ("FOSS") code and certain additional terms
- * pursuant to Section 7 of the GPL. You may view the exception and these
- * terms on the web at http://www.aptana.com/legal/gpl/.
- * 
- * 2. For the Aptana Public License (APL), this program and the
- * accompanying materials are made available under the terms of the APL
- * v1.0 which accompanies this distribution, and is available at
- * http://www.aptana.com/legal/apl/.
- * 
- * You may view the GPL, Aptana's exception and additional terms, and the
- * APL in the file titled license.html at the root of the corresponding
- * plugin containing this source file.
- * 
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.editor.php.formatter.nodes;
 
 import com.aptana.editor.php.formatter.PHPFormatterConstants;
+import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterDocument;
+import com.aptana.formatter.IFormatterWriter;
 import com.aptana.formatter.nodes.FormatterBlockWithBeginEndNode;
+import com.aptana.formatter.nodes.NodeTypes.TypeBracket;
 
 /**
  * A PHP node formatter for parentheses, which can be used for any other single char open and close pair, such as
@@ -48,6 +24,9 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 {
 
 	private boolean asWrapper;
+	private boolean newLineBeforeClosing;
+	private TypeBracket parenthesesType;
+	private int containedElementsCount;
 
 	/**
 	 * Constructs a new FormatterPHPParenthesesNode
@@ -56,12 +35,18 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	 * @param asWrapper
 	 *            Indicate that these parentheses do not have an open and close brackets, but is acting as a wrapper
 	 *            node for an expression that appears inside it. For example, an 'echo' statement without the
-	 *            parentheses.
+	 * @param forceSameLine
+	 *            Force the open and close parentheses.
+	 * @param type
+	 *            The bracket (parentheses) type - a {@link TypeBracket} value.
 	 */
-	public FormatterPHPParenthesesNode(IFormatterDocument document, boolean asWrapper)
+	public FormatterPHPParenthesesNode(IFormatterDocument document, boolean asWrapper, int containedElementsCount,
+			TypeBracket type)
 	{
-		this(document);
+		super(document);
 		this.asWrapper = asWrapper;
+		this.containedElementsCount = containedElementsCount;
+		this.parenthesesType = type;
 	}
 
 	/**
@@ -69,9 +54,20 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	 * 
 	 * @param document
 	 */
-	public FormatterPHPParenthesesNode(IFormatterDocument document)
+	public FormatterPHPParenthesesNode(IFormatterDocument document, TypeBracket type)
 	{
-		super(document);
+		this(document, false, 0, type);
+	}
+
+	/**
+	 * Force a new line before the closing parentheses.<br>
+	 * The new line will only be inserted when this node is <b>not</b> a wrapper node.
+	 * 
+	 * @param newLineBeforeClosing
+	 */
+	public void setNewLineBeforeClosing(boolean newLineBeforeClosing)
+	{
+		this.newLineBeforeClosing = newLineBeforeClosing;
 	}
 
 	/*
@@ -85,20 +81,45 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 		{
 			return 1;
 		}
-		return getInt(PHPFormatterConstants.SPACES_BEFORE_PARENTHESES);
+
+		switch (parenthesesType)
+		{
+			case DECLARATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_DECLARATION_PARENTHESES);
+			case INVOCATION_PARENTHESIS:
+			case ARRAY_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_INVOCATION_PARENTHESES);
+			case ARRAY_SQUARE:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_ARRAY_ACCESS_PARENTHESES);
+			case CONDITIONAL_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_CONDITIONAL_PARENTHESES);
+			case LOOP_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_OPENING_LOOP_PARENTHESES);
+			default:
+				return 0;
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.AbstractFormatterNode#getSpacesCountAfter()
+	/**
+	 * We override the acceptBody to control any spaces that should be added before or after the body.
+	 * 
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#acceptBody(com.aptana.formatter.IFormatterContext,
+	 *      com.aptana.formatter.IFormatterWriter)
 	 */
 	@Override
-	public int getSpacesCountAfter()
+	protected void acceptBody(IFormatterContext context, IFormatterWriter visitor) throws Exception
 	{
-		if (isAsWrapper())
+		int spacesBeforeBody = getSpacesBeforeBody();
+		if (spacesBeforeBody > 0)
 		{
-			return 0;
+			writeSpaces(visitor, context, spacesBeforeBody);
 		}
-		return getInt(PHPFormatterConstants.SPACES_AFTER_PARENTHESES);
+		super.acceptBody(context, visitor);
+		int spacesAfterBody = getSpacesAfterBody();
+		if (spacesAfterBody > 0)
+		{
+			writeSpaces(visitor, context, spacesAfterBody);
+		}
 	}
 
 	/*
@@ -118,4 +139,96 @@ public class FormatterPHPParenthesesNode extends FormatterBlockWithBeginEndNode
 	{
 		return asWrapper;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isIndenting()
+	 */
+	@Override
+	protected boolean isIndenting()
+	{
+		switch (parenthesesType)
+		{
+			case ARRAY_PARENTHESIS:
+				return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS);
+		}
+		return super.isIndenting();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingEndNewLine()
+	 */
+	@Override
+	protected boolean isAddingEndNewLine()
+	{
+		if (!asWrapper && newLineBeforeClosing)
+		{
+			return true;
+		}
+		switch (parenthesesType)
+		{
+			case ARRAY_PARENTHESIS:
+				if (containedElementsCount > 1)
+				{
+					return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BETWEEN_ARRAY_CREATION_ELEMENTS);
+				}
+		}
+		return false;
+	}
+
+	/**
+	 * @return The amount of spaces that we should insert before the body.
+	 */
+	private int getSpacesBeforeBody()
+	{
+		if (isAsWrapper())
+		{
+			return 0;
+		}
+		switch (parenthesesType)
+		{
+			case DECLARATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_DECLARATION_PARENTHESES);
+			case INVOCATION_PARENTHESIS:
+			case ARRAY_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_INVOCATION_PARENTHESES);
+			case ARRAY_SQUARE:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_ARRAY_ACCESS_PARENTHESES);
+			case CONDITIONAL_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_CONDITIONAL_PARENTHESES);
+			case LOOP_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_AFTER_OPENING_LOOP_PARENTHESES);
+			default:
+				return 0;
+		}
+	}
+
+	/**
+	 * @return The amount of spaces that we should insert after the body.
+	 */
+	private int getSpacesAfterBody()
+	{
+		if (isAsWrapper())
+		{
+			return 0;
+		}
+		switch (parenthesesType)
+		{
+			case DECLARATION_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_DECLARATION_PARENTHESES);
+			case INVOCATION_PARENTHESIS:
+			case ARRAY_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_INVOCATION_PARENTHESES);
+			case ARRAY_SQUARE:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_ARRAY_ACCESS_PARENTHESES);
+			case CONDITIONAL_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_CONDITIONAL_PARENTHESES);
+			case LOOP_PARENTHESIS:
+				return getInt(PHPFormatterConstants.SPACES_BEFORE_CLOSING_LOOP_PARENTHESES);
+			default:
+				return 0;
+		}
+	}
+
 }

@@ -1,17 +1,104 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.ui.editor.scanner.tokenMap;
 
-import org.eclipse.php.internal.core.PHPVersion;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import java_cup.runtime.Symbol;
+
+import org.eclipse.jface.text.rules.IToken;
+import org2.eclipse.php.internal.core.PHPVersion;
+
+import com.aptana.core.util.StringUtil;
+import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
 /**
  * A PHP token mapper factory that returns the right {@link IPHPTokenMapper} according to the given {@link PHPVersion}.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
+ * @author cwilliams
  */
+@SuppressWarnings("nls")
 public class PHPTokenMapperFactory
 {
 	private static PHP4TokenMapper php4TokenMapper;
 	private static PHP5TokenMapper php5TokenMapper;
 	private static PHP53TokenMapper php53TokenMapper;
+
+	private static final Pattern CONSTANT_PATTERN = Pattern.compile("[A-Z_][\\dA-Z_]*");
+
+	private static Set<String> ASSIGNMENTS = new HashSet<String>();
+	static
+	{
+		ASSIGNMENTS.add("=");
+		ASSIGNMENTS.add("|=");
+		ASSIGNMENTS.add("&=");
+		ASSIGNMENTS.add("^=");
+		ASSIGNMENTS.add("%=");
+		ASSIGNMENTS.add("/=");
+		ASSIGNMENTS.add("*=");
+	}
+	private static Set<String> LOGICAL_OPERATORS = new HashSet<String>();
+	static
+	{
+		LOGICAL_OPERATORS.add("!");
+		LOGICAL_OPERATORS.add("&&");
+		LOGICAL_OPERATORS.add("||");
+		LOGICAL_OPERATORS.add("^");
+		LOGICAL_OPERATORS.add("and");
+		LOGICAL_OPERATORS.add("or");
+		LOGICAL_OPERATORS.add("xor");
+		LOGICAL_OPERATORS.add("as");
+	}
+
+	private static Set<String> INC_DEC_OPERATORS = new HashSet<String>();
+	static
+	{
+		INC_DEC_OPERATORS.add("--");
+		INC_DEC_OPERATORS.add("++");
+	}
+
+	private static Set<String> ARITHMETIC_OPERATORS = new HashSet<String>();
+	static
+	{
+		ARITHMETIC_OPERATORS.add("-");
+		ARITHMETIC_OPERATORS.add("+");
+		ARITHMETIC_OPERATORS.add("*");
+		ARITHMETIC_OPERATORS.add("/");
+		ARITHMETIC_OPERATORS.add("%");
+	}
+
+	private static Set<String> BITWISE_OPERATORS = new HashSet<String>();
+	static
+	{
+		BITWISE_OPERATORS.add("<<");
+		BITWISE_OPERATORS.add(">>");
+		BITWISE_OPERATORS.add("~");
+		BITWISE_OPERATORS.add("^");
+		BITWISE_OPERATORS.add("&");
+		BITWISE_OPERATORS.add("|");
+	}
+
+	private static Set<String> COMPARISON_OPERATORS = new HashSet<String>();
+	static
+	{
+		COMPARISON_OPERATORS.add("<");
+		COMPARISON_OPERATORS.add("==");
+		COMPARISON_OPERATORS.add("===");
+		COMPARISON_OPERATORS.add("!==");
+		COMPARISON_OPERATORS.add("!=");
+		COMPARISON_OPERATORS.add("<=");
+		COMPARISON_OPERATORS.add(">=");
+		COMPARISON_OPERATORS.add("<>");
+		COMPARISON_OPERATORS.add(">");
+	}
 
 	/**
 	 * Returns the {@link IPHPTokenMapper} that match the given {@link PHPVersion}
@@ -46,5 +133,69 @@ public class PHPTokenMapperFactory
 
 		}
 		throw new IllegalArgumentException("Unknown PHP version " + phpVersion.getAlias()); //$NON-NLS-1$
+	}
+
+	/**
+	 * Common handling of fall-through cases for scopes across versions of PHP token mappers.
+	 * 
+	 * @param scanner
+	 * @param sym
+	 * @return
+	 */
+	public static IToken mapDefaultToken(PHPCodeScanner scanner, Symbol sym)
+	{
+		String tokenContent = scanner.getSymbolValue(sym);
+		if (";".equals(tokenContent))
+		{
+			return scanner.getToken("punctuation.terminator.expression.php");
+		}
+		if ("(".equals(tokenContent))
+		{
+			return scanner.getToken("punctuation.definition.parameters.begin.php"); //$NON-NLS-1$
+		}
+		if (")".equals(tokenContent))
+		{
+			return scanner.getToken("punctuation.definition.parameters.end.php"); //$NON-NLS-1$
+		}
+		if ("[".equals(tokenContent))
+		{
+			return scanner.getToken("variable.other.php keyword.operator.index-start.php"); //$NON-NLS-1$
+		}
+		if ("]".equals(tokenContent))
+		{
+			return scanner.getToken("variable.other.php keyword.operator.index-end.php"); //$NON-NLS-1$
+		}
+		// Operators
+		if (ASSIGNMENTS.contains(tokenContent))
+		{
+			return scanner.getToken("keyword.operator.assignment.php");
+		}
+		if (LOGICAL_OPERATORS.contains(tokenContent))
+		{
+			return scanner.getToken("keyword.operator.logical.php");
+		}
+		if (COMPARISON_OPERATORS.contains(tokenContent))
+		{
+			return scanner.getToken("keyword.operator.comparison.php");
+		}
+		if (ARITHMETIC_OPERATORS.contains(tokenContent))
+		{
+			return scanner.getToken("keyword.operator.arithmetic.php");
+		}
+		if (BITWISE_OPERATORS.contains(tokenContent))
+		{
+			return scanner.getToken("keyword.operator.bitwise.php");
+		}
+		if (INC_DEC_OPERATORS.contains(tokenContent))
+		{
+			return scanner.getToken("keyword.operator.increment-decrement.php");
+		}
+		// All uppercase is constant
+		if (CONSTANT_PATTERN.matcher(tokenContent).matches())
+		{
+			return scanner.getToken("constant.other.php");
+		}
+
+		return scanner.getToken(StringUtil.EMPTY);
 	}
 }

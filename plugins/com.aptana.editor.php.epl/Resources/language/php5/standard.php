@@ -519,9 +519,23 @@ function iptcembed ($iptcdata, $jpeg_file_name, $spool = null) {}
  * mime is the correspondant MIME type of the image.
  * This information can be used to deliver images with correct the HTTP 
  * Content-type header:
- * getimagesize and MIME types
- * ]]>
  * </p>
+ * <p>
+ * Example #1 getimagesize and MIME types
+ * </p>
+ * <pre>
+ *   &lt;?php
+ *     $size = getimagesize($filename);
+ *     $fp = fopen($filename, "rb");
+ *     if ($size && $fp) {
+ *     &nbsp;&nbsp;header("Content-type: {$size['mime']}");
+ *     &nbsp;&nbsp;fpassthru($fp);
+ *     &nbsp;&nbsp;exit;
+ *     } else {
+ *     &nbsp;&nbsp;// error
+ *     }
+ *  ?&gt;
+ * </pre>
  * <p>
  * channels will be 3 for RGB pictures and 4 for CMYK
  * pictures.
@@ -1478,9 +1492,15 @@ function money_format ($format, $number) {}
  * start characters long, false will be returned.
  * </p>
  * <p>
- * Using a negative start
- * ]]>
+ * Example #1 Using a negative start
  * </p>
+ * <pre>
+ *   &lt;?php
+ *   $rest = substr("abcdef", -1);    // returns "f"
+ *   $rest = substr("abcdef", -2);    // returns "ef"
+ *   $rest = substr("abcdef", -3, 1); // returns "d"
+ *  ?&gt;
+ * </pre>
  * @param length int[optional] <p>
  * If length is given and is positive, the string
  * returned will contain at most length characters
@@ -1499,8 +1519,17 @@ function money_format ($format, $number) {}
  * If length is given and is 0,
  * false or &null; an empty string will be returned.
  * </p>
- * Using a negative length
- * ]]>
+ * <p>
+ * Example #2 Using a negative length
+ * </p>
+ * <pre>
+ *   &lt;?php
+ *   $rest = substr("abcdef", 0, -1);  // returns "abcde"
+ *   $rest = substr("abcdef", 2, -1);  // returns "cde"
+ *   $rest = substr("abcdef", 4, -4);  // returns false
+ *   $rest = substr("abcdef", -3, -1); // returns "de"
+ *  ?&gt;
+ * </pre>
  * @return string the extracted part of string&return.falseforfailure;.
  */
 function substr ($string, $start, $length = null) {}
@@ -1619,14 +1648,26 @@ function addslashes ($str) {}
  * When you define a sequence of characters in the charlist argument
  * make sure that you know what characters come between the
  * characters that you set as the start and end of the range.
- * ]]>
+ * <pre>
+ *  &lt;?php
+ *  echo addcslashes('foo[ ]', 'A..z');
+ *  // output:  \f\o\o\[ \]
+ *  // All upper and lower-case letters will be escaped
+ *  // ... but so will the [\]^_`
+ *  ?&gt;
+ * </pre>
  * Also, if the first character in a range has a higher ASCII value
  * than the second character in the range, no range will be
  * constructed. Only the start, end and period characters will be
  * escaped. Use the ord function to find the
  * ASCII value for a character.
- * ]]>
  * </p>
+ * <pre>
+ *  &lt;?php
+ *  echo addcslashes("zoo['.']", 'z..A');
+ *  // output:  \zoo['\.']
+ *  ?&gt;
+ * </pre>
  * <p>
  * Be careful if you choose to escape characters 0, a, b, f, n, r,
  * t and v. They will be converted to \0, \a, \b, \f, \n, \r, \t
@@ -4007,9 +4048,28 @@ function error_get_last () {}
  * <p>
  * Note that the parameters for call_user_func are
  * not passed by reference.
- * call_user_func example and references
- * ]]>
- * &example.outputs;
+ * Example #1 call_user_func example and references
+ * <pre>
+ *  &lt;?php
+ *  error_reporting(E_ALL);
+ *  function increment(&$var)
+ *  {
+ *  &nbsp;&nbsp;$var++;
+ *  }
+ *  
+ *  $a = 0;
+ *  call_user_func('increment', $a);
+ *  echo $a."\n";
+ *  
+ *  call_user_func_array('increment', array(&$a)); // You can use this instead before PHP 5.3
+ *  echo $a."\n";
+ *  ?&gt;
+ * </pre>
+ * The above example will output:
+ * <pre>
+ * 0
+ * 1
+ * </pre>
  * </p>
  * @param _ mixed[optional] 
  * @return mixed the function result, or false on error.
@@ -4525,19 +4585,32 @@ function setrawcookie ($name, $value = null, $expire = null, $path = null, $doma
  * the ErrorDocument directive), you may want to
  * make sure that your script generates the proper status code.
  * </p>
+ * <pre>
+ * &lt;?php
+ *     header("HTTP/1.0 404 Not Found");
+ * ?&gt;
+ * </pre>
  * <p>
- * ]]>
+ * For FastCGI you must use the following for a 404 response:
  * </p>
+ * <pre>
+ * &lt;?php
+ *     header("Status: 404 Not Found");
+ * ?&gt;
+ * </pre>
  * <p>
  * The second special case is the "Location:" header. Not only does
  * it send this header back to the browser, but it also returns a
  * REDIRECT (302) status code to the browser
- * unless the 201 or
- * a 3xx status code has already been set.
+ * unless the 201 or a 3xx status code has already been set.
  * </p>
- * <p>
- * ]]>
- * </p>
+ * <pre>
+ * &lt;?php
+ *     header("Location: http://www.example.com/"); /&#42; Redirect browser &#42;/
+ *     /&#42; Make sure that code below does not get executed when we redirect. &#42;/
+ *     exit;
+ * ?&gt;
+ * </pre>
  * @param replace bool[optional] <p>
  * The optional replace parameter indicates
  * whether the header should replace a previous similar header, or
@@ -4545,11 +4618,15 @@ function setrawcookie ($name, $value = null, $expire = null, $path = null, $doma
  * but if you pass in false as the second argument you can force
  * multiple headers of the same type. For example:
  * </p>
- * <p>
- * ]]>
- * </p>
+ * <pre>
+ * &lt;?php
+ *     header('WWW-Authenticate: Negotiate');
+ *     header('WWW-Authenticate: NTLM', false);
+ * ?&gt;
+ * </pre>
  * @param http_response_code int[optional] <p>
- * Forces the HTTP response code to the specified value.
+ * Forces the HTTP response code to the specified value. Note that this parameter only has an 
+ * effect if the string is not empty.
  * </p>
  * @return void 
  */
@@ -5667,8 +5744,12 @@ function fread ($handle, $length) {}
  * <p>
  * On the Windows platform, be careful to escape any backslashes
  * used in the path to the file, or use forward slashes.
- * ]]>
  * </p>
+ * <pre>
+ * &lt;?php
+ *     $handle = fopen("c:\\folder\\resource.txt", "r");
+ * ?&gt;
+ * </pre>
  * @param mode string <p>
  * The mode parameter specifies the type of access
  * you require to the stream. It may be any of the following:
@@ -6769,8 +6850,14 @@ function flock ($handle, $operation, &$wouldblock = null) {}
  * URL.
  * </p>
  * <p>
- * What get_meta_tags parses
- * ]]>
+ * Example #1 What get_meta_tags() parses
+ * <pre>
+ * &lt;meta name="author" content="name"&gt;
+ * &lt;meta name="keywords" content="php documentation"&gt;
+ * &lt;meta name="DESCRIPTION" content="a php manual"&gt;
+ * &lt;meta name="geo.position" content="49.33;-86.59"&gt;
+ * &lt;/head&gt; &lt;!-- parsing stops here --&gt;
+ * </pre>
  * (pay attention to line endings - PHP uses a native function to
  * parse the input, so a Mac file won't work on Unix).
  * </p>
@@ -7884,9 +7971,13 @@ function lchgrp ($filename, $group) {}
  * not work properly. To ensure the expected operation,
  * you need to prefix mode with a zero (0):
  * </p>
- * <p>
- * ]]>
- * </p>
+ * <pre>
+ *   &lt;?php
+ *   chmod("/somedir/somefile", 755);   // decimal; probably incorrect
+ *   chmod("/somedir/somefile", "u+rwx,go+rx"); // string; incorrect
+ *   chmod("/somedir/somefile", 0755);  // octal; correct value of mode
+ *   ?&gt;
+ * </pre>
  * <p>
  * The mode parameter consists of three octal
  * number components specifying access restrictions for the owner,
@@ -7899,6 +7990,21 @@ function lchgrp ($filename, $group) {}
  * about modes on Unix systems with 'man 1 chmod'
  * and 'man 2 chmod'.
  * </p>
+ * <pre>
+ *   &lt;?php
+ *   // Read and write for owner, nothing for everybody else
+ *   chmod("/somedir/somefile", 0600);
+ *   
+ *   // Read and write for owner, read for everybody else
+ *   chmod("/somedir/somefile", 0644);
+ *   
+ *   // Everything for owner, read and execute for others
+ *   chmod("/somedir/somefile", 0755);
+ *   
+ *   // Everything for owner, read and execute for owner's group
+ *   chmod("/somedir/somefile", 0750);
+ *   ?&gt;
+ * </pre>
  * <p>
  * @return bool Returns true on success or false on failure.
  */
@@ -8002,8 +8108,12 @@ function diskfreespace ($path) {}
  * (Windows only) When PHP is talking to a SMTP server directly, if a full
  * stop is found on the start of a line, it is removed. To counter-act this,
  * replace these occurrences with a double dot.
- * ]]>
  * </p>
+ * <pre>
+ * &lt;?php
+ *   $text = str_replace("\n.", "\n..", $text);
+ * ?&gt;
+ * </pre>
  * @param additional_headers string[optional] <p>
  * String to be inserted at the end of the email header.
  * </p>
@@ -8418,20 +8528,28 @@ function ob_get_level () {}
  * @return array If called without the full_status parameter
  * or with full_status = false a simple array
  * with the following elements is returned:
- * 2
- * [type] => 0
- * [status] => 0
- * [name] => URL-Rewriter
- * [del] => 1
+ * <pre>
+ * Array
+ * (
+ * &nbsp;&nbsp;[level] => 2
+ * &nbsp;&nbsp;[type] => 0
+ * &nbsp;&nbsp;[status] => 0
+ * &nbsp;&nbsp;[name] => URL-Rewriter
+ * &nbsp;&nbsp;[del] => 1
  * )
- * ]]>
+ * </pre>
+ * <p>
  * Simple ob_get_status results
- * KeyValue
- * levelOutput nesting level
- * typePHP_OUTPUT_HANDLER_INTERNAL (0) or PHP_OUTPUT_HANDLER_USER (1)
- * statusOne of PHP_OUTPUT_HANDLER_START (0), PHP_OUTPUT_HANDLER_CONT (1) or PHP_OUTPUT_HANDLER_END (2)
- * nameName of active output handler or ' default output handler' if none is set
- * delErase-flag as set by ob_start
+ *   <b>Key:</b> level
+ *   <b>Value:</b> Output nesting level
+ *   <b>Key:</b> type
+ *   <b>Value:</b> PHP_OUTPUT_HANDLER_INTERNAL (0) or PHP_OUTPUT_HANDLER_USER (1)
+ *   <b>Key:</b> status
+ *   <b>Value:</b> One of PHP_OUTPUT_HANDLER_START (0), PHP_OUTPUT_HANDLER_CONT (1) or PHP_OUTPUT_HANDLER_END (2)
+ *   <b>Key:</b> name
+ *   <b>Value:</b> Name of active output handler or ' default output handler' if none is set
+ *   <b>Key:</b> del
+ *   <b>Value:</b> Erase-flag as set by ob_start()
  * </p>
  * <p>
  * If called with full_status = true an array
@@ -8439,30 +8557,35 @@ function ob_get_level () {}
  * The output level is used as key of the top level array and each array
  * element itself is another array holding status information
  * on one active output level.
- * Array
- * (
- * [chunk_size] => 0
- * [size] => 40960
- * [block_size] => 10240
- * [type] => 1
- * [status] => 0
- * [name] => default output handler
- * [del] => 1
- * )
- * [1] => Array
- * (
- * [chunk_size] => 0
- * [size] => 40960
- * [block_size] => 10240
- * [type] => 0
- * [buffer_size] => 0
- * [status] => 0
- * [name] => URL-Rewriter
- * [del] => 1
- * )
- * )
- * ]]>
  * </p>
+ * <pre>
+ *  Array
+ *  (
+ *  &nbsp;&nbsp;[0] => Array
+ *  &nbsp;&nbsp;&nbsp;&nbsp;(
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[chunk_size] => 0
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[size] => 40960
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[block_size] => 10240
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[type] => 1
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[status] => 0
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[name] => default output handler
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[del] => 1
+ *  &nbsp;&nbsp;&nbsp;&nbsp;)
+ * 
+ *  &nbsp;&nbsp;[1] => Array
+ *  &nbsp;&nbsp;&nbsp;&nbsp;(
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[chunk_size] => 0
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[size] => 40960
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[block_size] => 10240
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[type] => 0
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[buffer_size] => 0
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[status] => 0
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[name] => URL-Rewriter
+ *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[del] => 1
+ *  &nbsp;&nbsp;&nbsp;&nbsp;)
+ * 
+ *  )
+ * </pre>
  * <p>
  * The full output contains these additional elements:
  * Full ob_get_status results

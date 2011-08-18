@@ -18,55 +18,56 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.Assignment;
-import org.eclipse.php.internal.core.ast.nodes.Block;
-import org.eclipse.php.internal.core.ast.nodes.CatchClause;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
-import org.eclipse.php.internal.core.ast.nodes.ClassName;
-import org.eclipse.php.internal.core.ast.nodes.Comment;
-import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Dispatch;
-import org.eclipse.php.internal.core.ast.nodes.DoStatement;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
-import org.eclipse.php.internal.core.ast.nodes.FieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ForEachStatement;
-import org.eclipse.php.internal.core.ast.nodes.ForStatement;
-import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
-import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
-import org.eclipse.php.internal.core.ast.nodes.FunctionName;
-import org.eclipse.php.internal.core.ast.nodes.GlobalStatement;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.IfStatement;
-import org.eclipse.php.internal.core.ast.nodes.Include;
-import org.eclipse.php.internal.core.ast.nodes.InfixExpression;
-import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.MethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
-import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
-import org.eclipse.php.internal.core.ast.nodes.Program;
-import org.eclipse.php.internal.core.ast.nodes.ReturnStatement;
-import org.eclipse.php.internal.core.ast.nodes.Scalar;
-import org.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticDispatch;
-import org.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.StaticStatement;
-import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
-import org.eclipse.php.internal.core.ast.nodes.TryStatement;
-import org.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Variable;
-import org.eclipse.php.internal.core.ast.nodes.VariableBase;
-import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
-import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
+import org2.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.Assignment;
+import org2.eclipse.php.internal.core.ast.nodes.Block;
+import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
+import org2.eclipse.php.internal.core.ast.nodes.ClassName;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Dispatch;
+import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
+import org2.eclipse.php.internal.core.ast.nodes.GlobalStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.IfStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Include;
+import org2.eclipse.php.internal.core.ast.nodes.InfixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.ReturnStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Scalar;
+import org2.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticDispatch;
+import org2.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
+import org2.eclipse.php.internal.core.ast.nodes.VariableBase;
+import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
+import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.IPHPTypeConstants;
 import com.aptana.editor.php.core.model.ISourceModule;
@@ -143,7 +144,8 @@ public class TypeBindingBuilder
 		}
 		else
 		{
-			PHPEditorPlugin.logError(new IllegalArgumentException("Cannot build the PHP bindings with a null AST")); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error building the PHP bindings for the AST", //$NON-NLS-1$
+					new IllegalArgumentException("Cannot build the PHP bindings with a null AST")); //$NON-NLS-1$
 		}
 	}
 
@@ -186,7 +188,7 @@ public class TypeBindingBuilder
 		 * @param scope
 		 * @param pos
 		 */
-		public VariableInfo(String variableName, Object variableType, Scope scope, int pos)
+		private VariableInfo(String variableName, Object variableType, Scope scope, int pos)
 		{
 			this.variableName = variableName;
 			variableTypes = new HashSet<Object>(1);
@@ -208,7 +210,7 @@ public class TypeBindingBuilder
 		 * @param scope
 		 * @param pos
 		 */
-		public VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos)
+		private VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos)
 		{
 			this.variableName = variableName;
 
@@ -232,7 +234,7 @@ public class TypeBindingBuilder
 		 * @param modifier
 		 *            - variable modifier.
 		 */
-		public VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos, int modifier)
+		private VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos, int modifier)
 		{
 			this.variableName = variableName;
 
@@ -436,7 +438,7 @@ public class TypeBindingBuilder
 		 * @param parent
 		 *            - scope parent.
 		 */
-		public Scope(ASTNode root, Scope parent)
+		private Scope(ASTNode root, Scope parent)
 		{
 			this.root = root;
 			this.parent = parent;
@@ -454,7 +456,7 @@ public class TypeBindingBuilder
 		 * @param entry
 		 *            - root entry if exist. null is acceptable.
 		 */
-		public Scope(ASTNode root, Scope parent, IElementEntry entry)
+		private Scope(ASTNode root, Scope parent, IElementEntry entry)
 		{
 			this.root = root;
 			this.parent = parent;
@@ -727,12 +729,12 @@ public class TypeBindingBuilder
 		 * @param classEntry
 		 *            - class entry.
 		 */
-		public ClassScopeInfo()
+		private ClassScopeInfo()
 		{
 
 		}
 
-		public ClassScopeInfo(String name)
+		private ClassScopeInfo(String name)
 		{
 			this.name = name;
 		}
@@ -834,7 +836,7 @@ public class TypeBindingBuilder
 		 */
 		private IBindingReporter reporter;
 
-		private HashMap<String, ITypeBinding> binding = new HashMap<String, ITypeBinding>();
+		private Map<String, ITypeBinding> binding = new HashMap<String, ITypeBinding>();
 		/**
 		 * Module.
 		 */
@@ -861,7 +863,7 @@ public class TypeBindingBuilder
 		// * Backuped variable scopes.
 		// */
 		// private Stack<Scope> backupedScopes = new Stack<Scope>();
-		//		
+		//
 		// /**
 		// * Scopes of the previous node.
 		// */
@@ -872,7 +874,7 @@ public class TypeBindingBuilder
 		 */
 		boolean localStackReported = false;
 
-		private LinkedHashMap<String, Set<Object>> localParametersMap;
+		private Map<String, Set<Object>> localParametersMap;
 
 		/**
 		 * PHPASTVisitor constructor.
@@ -882,7 +884,7 @@ public class TypeBindingBuilder
 		 * @param program
 		 *            - current module.
 		 */
-		public PHPASTVisitor(IBindingReporter reporter2, Program program)
+		private PHPASTVisitor(IBindingReporter reporter2, Program program)
 		{
 			this.reporter = reporter2;
 			this.module = program.getSourceModule();
@@ -906,7 +908,8 @@ public class TypeBindingBuilder
 
 			Expression superClassIdentifier = classDeclaration.getSuperClass();
 			String superClassName = null;
-			if (superClassIdentifier != null && (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
+			if (superClassIdentifier != null
+					&& (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
 			{
 				superClassName = ((Identifier) superClassIdentifier).getName();
 				superClassIdentifier.setBinding(resolveTypeBinding(superClassName));
@@ -974,7 +977,8 @@ public class TypeBindingBuilder
 		private void visitStaticDispatch(StaticDispatch classConstantAccess)
 		{
 			Expression className = classConstantAccess.getClassName();
-			if (className != null && (className.getType() == ASTNode.NAMESPACE_NAME || className.getType() == ASTNode.IDENTIFIER))
+			if (className != null
+					&& (className.getType() == ASTNode.NAMESPACE_NAME || className.getType() == ASTNode.IDENTIFIER))
 			{
 				IBinding resolveTypeBinding = resolveTypeBinding(((Identifier) className).getName());
 				reporter.report(classConstantAccess, resolveTypeBinding);
@@ -1067,8 +1071,8 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			VariableInfo info = new VariableInfo(defineName, defineTypes, getCurrentScope(), functionInvocation
-					.getStart(), PHPFlags.AccStatic);
+			VariableInfo info = new VariableInfo(defineName, defineTypes, getCurrentScope(),
+					functionInvocation.getStart(), PHPFlags.AccStatic);
 			getCurrentScope().addVariable(info);
 			// VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0,
 			// false, false, true, defineTypes,
@@ -1096,11 +1100,11 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			String functionName = functionNameIdentifier.getName();
+			// String functionName = functionNameIdentifier.getName();
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
 			localParametersMap = null;
 			if (parameters != null && parameters.size() > 0)
 			{
@@ -1155,21 +1159,21 @@ public class TypeBindingBuilder
 					parameterPositions, mandatories, functionDeclaration.getStart(), currentNamespace);
 			if (returnTypes != null)
 			{
-				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				Set<Object> returnTypesSet = new HashSet<Object>();
 				for (String returnType : returnTypes)
 				{
 					returnTypesSet.add(returnType);
 				}
 				entryValue.setReturnTypes(returnTypesSet);
 			}
-			String entryPath = ""; //$NON-NLS-1$
-			if (currentClass != null)
-			{
-				// entryPath = currentClass.getClassEntry().getEntryPath() +
-				// IElementsIndex.DELIMITER;
-			}
+			// String entryPath = ""; //$NON-NLS-1$
+			// if (currentClass != null)
+			// {
+			// entryPath = currentClass.getClassEntry().getEntryPath() +
+			// IElementsIndex.DELIMITER;
+			// }
 
-			entryPath += functionName;
+			// entryPath += functionName;
 			// FIXME
 			// currentFunction =
 			// reporter.reportEntry(IPHPIndexConstants.FUNCTION_CATEGORY,
@@ -1199,13 +1203,13 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			String functionName = functionNameIdentifier.getName();
+			// String functionName = functionNameIdentifier.getName();
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
 
-			LinkedHashMap<String, Set<Object>> parametersMap = null;
+			Map<String, Set<Object>> parametersMap = null;
 			if (parameters.size() > 0)
 			{
 				parametersMap = new LinkedHashMap<String, Set<Object>>(parameters.size());
@@ -1268,7 +1272,7 @@ public class TypeBindingBuilder
 
 			if (returnTypes != null)
 			{
-				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				Set<Object> returnTypesSet = new HashSet<Object>();
 				for (String returnType : returnTypes)
 				{
 					returnTypesSet.add(returnType);
@@ -1276,16 +1280,16 @@ public class TypeBindingBuilder
 				entryValue.setReturnTypes(returnTypesSet);
 			}
 
-			String entryPath = ""; //$NON-NLS-1$
-			if (currentClass != null)
-			{
-				// entryPath = currentClass.getClassEntry().getEntryPath() +
-				// IElementsIndex.DELIMITER;
-			}
+			//String entryPath = ""; //$NON-NLS-1$
+			// if (currentClass != null)
+			// {
+			// entryPath = currentClass.getClassEntry().getEntryPath() +
+			// IElementsIndex.DELIMITER;
+			// }
 
-			entryPath += functionName;
+			// entryPath += functionName;
 
-			reporter.report(methodDeclaration, new MethodBinding(currentClass != null ? currentClass.getName() : "", //$NON-NLS-1$
+			reporter.report(methodDeclaration, new MethodBinding((currentClass != null) ? currentClass.getName() : "", //$NON-NLS-1$
 					methodDeclaration.getFunction().getFunctionName().getName(), modifier, module));
 
 			// FIXME currentFunction =
@@ -1339,8 +1343,8 @@ public class TypeBindingBuilder
 				}
 				InfixExpression expr = (InfixExpression) parent;
 				Set<Object> types = countInfixExpressionTypes(expr);
-				VariableInfo variableInfo = new VariableInfo(variableName, types, getCurrentScope(), variable
-						.getStart());
+				VariableInfo variableInfo = new VariableInfo(variableName, types, getCurrentScope(),
+						variable.getStart());
 				getCurrentScope().addVariable(variableInfo);
 			}
 
@@ -1957,8 +1961,8 @@ public class TypeBindingBuilder
 
 			Set<Object> rightSideTypes = countExpressionTypes(value);
 
-			VariableInfo variableInfo = new VariableInfo(variableName, rightSideTypes, getCurrentScope(), variable
-					.getStart(), staticDeclaration ? PHPFlags.AccStatic : 0);
+			VariableInfo variableInfo = new VariableInfo(variableName, rightSideTypes, getCurrentScope(),
+					variable.getStart(), staticDeclaration ? PHPFlags.AccStatic : 0);
 			getCurrentScope().addVariable(variableInfo);
 
 			return true;
@@ -1978,11 +1982,11 @@ public class TypeBindingBuilder
 			{
 				entryPath = currentFunction.getEntryPath() + IElementsIndex.DELIMITER;
 			}
-			else if (currentClass != null)
-			{
-				// entryPath = currentClass.getClassEntry().getEntryPath() +
-				// IElementsIndex.DELIMITER;
-			}
+			// else if (currentClass != null)
+			// {
+			// entryPath = currentClass.getClassEntry().getEntryPath() +
+			// IElementsIndex.DELIMITER;
+			// }
 
 			String varName = getVariableName(variable);
 			if (varName == null)
@@ -2038,10 +2042,10 @@ public class TypeBindingBuilder
 			{
 				currentEntry = currentFunction;
 			}
-			else if (node instanceof ClassDeclaration)
-			{
-				// currentEntry = currentClass.getClassEntry();
-			}
+			// else if (node instanceof ClassDeclaration)
+			// {
+			// currentEntry = currentClass.getClassEntry();
+			// }
 
 			Scope scope = new Scope(node, parent, currentEntry);
 			if (localParametersMap != null)
@@ -2110,23 +2114,20 @@ public class TypeBindingBuilder
 		 */
 		private void reportGlobalScopeVariables(Scope scope)
 		{
-			if (globalMode)
-			{
-				if (scope.getRoot() instanceof Program)
-				{
-					for (VariableInfo info : scope.getVariables())
-					{
-						// VariablePHPEntryValue entryValue = new VariablePHPEntryValue(
-						// 0, false, false, false,
-						// info.getVariableTypes(), info.getNodeStart());
-
-						// String entryPath = info.getName();
-						// FIXME
-						// reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY,
-						// entryPath, entryValue, module);
-					}
-				}
-			}
+			// if (globalMode)
+			// {
+			// if (scope.getRoot() instanceof Program)
+			// {
+			// for (VariableInfo info : scope.getVariables())
+			// {
+			// VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, false, false,
+			// info.getVariableTypes(), info.getNodeStart());
+			// String entryPath = info.getName();
+			// FIXME
+			// reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY, entryPath, entryValue, module);
+			// }
+			// }
+			// }
 		}
 
 		/**
@@ -2263,7 +2264,8 @@ public class TypeBindingBuilder
 			if (classNameIdentifier == null
 					|| (classNameIdentifier.getType() != ASTNode.IDENTIFIER && classNameIdentifier.getType() != ASTNode.NAMESPACE_NAME))
 			{
-				PHPEditorPlugin.logError(new IllegalArgumentException("Expected an identifier or namespace-name")); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Expected an identifier or namespace-name", new Exception("Missing identifier")); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
 			else if (classNameIdentifier.getType() == ASTNode.IDENTIFIER)
@@ -2754,7 +2756,7 @@ public class TypeBindingBuilder
 		 * @param stack
 		 *            - stack to report.
 		 */
-		private void reportStack(Stack<Scope> stack)
+		private void reportStack(List<Scope> stack)
 		{
 			if (stack.isEmpty())
 			{
@@ -2821,34 +2823,34 @@ public class TypeBindingBuilder
 
 			// reporting function/method parameters if needed, going up in the
 			// stack searching for the function
-			for (int i = stack.size() - 1; i >= 0; i--)
-			{
-				Scope scope = stack.get(i);
-				if (scope.getEntry() != null)
-				{
-					// IElementEntry entry = scope.getEntry();
-					// if (entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY
-					// && entry.getValue() instanceof FunctionPHPEntryValue) {
-					// FunctionPHPEntryValue val = (FunctionPHPEntryValue) entry
-					// .getValue();
-					// Map<String, Set<Object>> parameters = val
-					// .getParameters();
-					// if (parameters != null && !parameters.isEmpty()) {
-					// for (Map.Entry<String, Set<Object>> parEntry : parameters
-					// .entrySet()) {
-					// //String entryPath = parEntry.getKey();
-					// // VariablePHPEntryValue value = new VariablePHPEntryValue(
-					// // 0, true, false, false, parEntry
-					// // .getValue(), val
-					// // .getStartOffset());
-					// // FIXME
-					// // reporter.reportEntry(IPHPIndexConstants.
-					// // VAR_CATEGORY, entryPath, value, module);
-					// }
-					// }
-					// }
-				}
-			}
+			// for (int i = stack.size() - 1; i >= 0; i--)
+			// {
+			// Scope scope = stack.get(i);
+			// if (scope.getEntry() != null)
+			// {
+			// IElementEntry entry = scope.getEntry();
+			// if (entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY
+			// && entry.getValue() instanceof FunctionPHPEntryValue) {
+			// FunctionPHPEntryValue val = (FunctionPHPEntryValue) entry
+			// .getValue();
+			// Map<String, Set<Object>> parameters = val
+			// .getParameters();
+			// if (parameters != null && !parameters.isEmpty()) {
+			// for (Map.Entry<String, Set<Object>> parEntry : parameters
+			// .entrySet()) {
+			// //String entryPath = parEntry.getKey();
+			// // VariablePHPEntryValue value = new VariablePHPEntryValue(
+			// // 0, true, false, false, parEntry
+			// // .getValue(), val
+			// // .getStartOffset());
+			// // FIXME
+			// // reporter.reportEntry(IPHPIndexConstants.
+			// // VAR_CATEGORY, entryPath, value, module);
+			// }
+			// }
+			// }
+			// }
+			// }
 		}
 
 		/**
@@ -2862,7 +2864,7 @@ public class TypeBindingBuilder
 		 *            - class active for the scope.
 		 * @return scope entries path
 		 */
-		String getScopePath(Stack<Scope> stack, int pos)
+		String getScopePath(List<Scope> stack, int pos)
 		{
 			StringBuffer result = new StringBuffer();
 
@@ -2953,7 +2955,7 @@ public class TypeBindingBuilder
 							paramName = paramName.substring(1);
 						}
 						String[] types = param.getTypes();
-						Set<Object> toSetParams = parametersMap != null ? parametersMap.get(paramName) : Collections
+						Set<Object> toSetParams = (parametersMap != null) ? parametersMap.get(paramName) : Collections
 								.emptySet();
 						if (toSetParams == null)
 						{
@@ -2982,7 +2984,9 @@ public class TypeBindingBuilder
 			}
 			catch (Throwable th)
 			{
-				// ignore
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"PHP Type-Binding builder - Error while applying a comment to a parameter type (applyComment)", //$NON-NLS-1$
+						th, PHPEditorPlugin.DEBUG_SCOPE);
 			}
 
 			return null;
@@ -3138,7 +3142,7 @@ public class TypeBindingBuilder
 	/**
 	 * types cache;
 	 */
-	private HashMap<Set<Object>, Set<String>> resolvedTypes = new HashMap<Set<Object>, Set<String>>();
+	private Map<Set<Object>, Set<String>> resolvedTypes = new HashMap<Set<Object>, Set<String>>();
 
 	/**
 	 * Mode.
@@ -3212,7 +3216,8 @@ public class TypeBindingBuilder
 		}
 		catch (Throwable th)
 		{
-			PHPEditorPlugin.logError("Unexpected exception while indexing module " + program.toString(), th); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Unexpected exception while indexing module " + program.toString(), th); //$NON-NLS-1$
 		}
 	}
 

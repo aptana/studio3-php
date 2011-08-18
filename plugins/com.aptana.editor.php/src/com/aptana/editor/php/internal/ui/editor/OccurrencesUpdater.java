@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.dltk.internal.ui.text.ScriptWordFinder;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -30,20 +29,6 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.php.internal.core.ast.locator.PhpElementConciliator;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.Program;
-import org.eclipse.php.internal.core.ast.nodes.Variable;
-import org.eclipse.php.internal.core.corext.NodeFinder;
-import org.eclipse.php.internal.core.search.IOccurrencesFinder;
-import org.eclipse.php.internal.core.search.OccurrencesFinderFactory;
-import org.eclipse.php.internal.core.search.IOccurrencesFinder.OccurrenceLocation;
-import org.eclipse.php.internal.ui.preferences.PreferenceConstants;
-import org.eclipse.php.internal.ui.viewsupport.ISelectionListenerWithAST;
-import org.eclipse.php.internal.ui.viewsupport.SelectionListenerWithASTManager;
-import org.eclipse.php.ui.editor.SharedASTProvider;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWindowListener;
@@ -51,7 +36,23 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.IDocumentProvider;
+import org2.eclipse.dltk.internal.ui.text.ScriptWordFinder;
+import org2.eclipse.php.internal.core.ast.locator.PhpElementConciliator;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
+import org2.eclipse.php.internal.core.corext.NodeFinder;
+import org2.eclipse.php.internal.core.search.IOccurrencesFinder;
+import org2.eclipse.php.internal.core.search.IOccurrencesFinder.OccurrenceLocation;
+import org2.eclipse.php.internal.core.search.OccurrencesFinderFactory;
+import org2.eclipse.php.internal.ui.preferences.PreferenceConstants;
+import org2.eclipse.php.internal.ui.viewsupport.ISelectionListenerWithAST;
+import org2.eclipse.php.internal.ui.viewsupport.SelectionListenerWithASTManager;
+import org2.eclipse.php.ui.editor.SharedASTProvider;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.outline.IParseListener;
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -98,7 +99,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	 * @param editor
 	 *            A {@link PHPSourceEditor}
 	 */
-	public OccurrencesUpdater(PHPSourceEditor editor)
+	protected OccurrencesUpdater(PHPSourceEditor editor)
 	{
 		this.editor = editor;
 	}
@@ -106,7 +107,8 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	protected void initialize(IPreferenceStore store)
 	{
 		// Setup the Mark Occurrences
-		fMarkOccurrenceAnnotations = store.getBoolean(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES);
+		fMarkOccurrenceAnnotations = store
+				.getBoolean(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES);
 		fStickyOccurrenceAnnotations = store.getBoolean(PreferenceConstants.EDITOR_STICKY_OCCURRENCES);
 		fMarkTypeOccurrences = store.getBoolean(PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES);
 		fMarkMethodOccurrences = store.getBoolean(PreferenceConstants.EDITOR_MARK_METHOD_OCCURRENCES);
@@ -156,7 +158,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error installing the PHP occurrences finder", e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -262,10 +264,10 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 
 		ASTNode selectedNode = NodeFinder.perform(ast, selection.getOffset(), selection.getLength());
 
-		if (locations == null && fMarkExceptions)
-		{
-			// TODO: Shalom - Implement
-		}
+		// if (locations == null && fMarkExceptions)
+		// {
+		// TODO: Shalom - Implement
+		// }
 
 		if (locations == null && fMarkMethodExitPoints)
 		{
@@ -332,9 +334,13 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		if (locations == null)
 		{
 			if (!fStickyOccurrenceAnnotations)
+			{
 				removeOccurrenceAnnotations();
+			}
 			else if (hasChanged) // check consistency of current annotations
+			{
 				removeOccurrenceAnnotations();
+			}
 			return;
 		}
 
@@ -449,9 +455,13 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 			{
 				fMarkOccurrenceAnnotations = newBooleanValue;
 				if (!fMarkOccurrenceAnnotations)
+				{
 					uninstallOccurrencesFinder();
+				}
 				else
+				{
 					installOccurrencesFinder(true);
+				}
 			}
 			return;
 		}
@@ -527,13 +537,15 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 					{
 						try
 						{
-							final Program ast = SharedASTProvider.getAST((ISourceModule) source, SharedASTProvider.WAIT_ACTIVE_ONLY,
-									editor.getProgressMonitor());
-							fPostSelectionListenerWithAST.selectionChanged(editor, (ITextSelection)fForcedMarkOccurrencesSelection, ast);
+							final Program ast = SharedASTProvider.getAST((ISourceModule) source,
+									SharedASTProvider.WAIT_ACTIVE_ONLY, editor.getProgressMonitor());
+							fPostSelectionListenerWithAST.selectionChanged(editor,
+									(ITextSelection) fForcedMarkOccurrencesSelection, ast);
 						}
 						catch (Exception e)
 						{
-							PHPEditorPlugin.logError(e);
+							IdeLog.logError(PHPEditorPlugin.getDefault(),
+									"PHP occurrences updater - Error updating the selection", e); //$NON-NLS-1$
 						}
 					}
 				}
@@ -568,13 +580,13 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 				{
 					try
 					{
-						updateOccurrenceAnnotations((ITextSelection) fForcedMarkOccurrencesSelection, SharedASTProvider
-								.getAST((ISourceModule) sourceModule, SharedASTProvider.WAIT_NO, editor
-										.getProgressMonitor()));
+						updateOccurrenceAnnotations((ITextSelection) fForcedMarkOccurrencesSelection,
+								SharedASTProvider.getAST((ISourceModule) sourceModule, SharedASTProvider.WAIT_NO,
+										editor.getProgressMonitor()));
 					}
 					catch (Exception e)
 					{
-						PHPEditorPlugin.logError(e);
+						IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP code-scanner - Update error", e); //$NON-NLS-1$
 					}
 				}
 			}
@@ -712,7 +724,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		private boolean fCanceled = false;
 		private final OccurrenceLocation[] fLocations;
 
-		public OccurrencesFinderJob(IDocument document, OccurrenceLocation[] locations, ISelection selection)
+		protected OccurrencesFinderJob(IDocument document, OccurrenceLocation[] locations, ISelection selection)
 		{
 			super(Messages.PHPSourceEditor_markOccurrencesJob_name);
 			fDocument = document;
@@ -721,9 +733,13 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 
 			ISelectionProvider selectionProvider = editor.getSelectionProvider();
 			if (selectionProvider instanceof ISelectionValidator)
+			{
 				fPostSelectionValidator = (ISelectionValidator) selectionProvider;
+			}
 			else
+			{
 				fPostSelectionValidator = null;
+			}
 		}
 
 		void doCancel()

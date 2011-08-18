@@ -1,121 +1,100 @@
 /**
- * This file Copyright (c) 2005-2010 Aptana, Inc. This program is
- * dual-licensed under both the Aptana Public License and the GNU General
- * Public license. You may elect to use one or the other of these licenses.
- * 
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT. Redistribution, except as permitted by whichever of
- * the GPL or APL you select, is prohibited.
- *
- * 1. For the GPL license (GPL), you can redistribute and/or modify this
- * program under the terms of the GNU General Public License,
- * Version 3, as published by the Free Software Foundation.  You should
- * have received a copy of the GNU General Public License, Version 3 along
- * with this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
- * Aptana provides a special exception to allow redistribution of this file
- * with certain other free and open source software ("FOSS") code and certain additional terms
- * pursuant to Section 7 of the GPL. You may view the exception and these
- * terms on the web at http://www.aptana.com/legal/gpl/.
- * 
- * 2. For the Aptana Public License (APL), this program and the
- * accompanying materials are made available under the terms of the APL
- * v1.0 which accompanies this distribution, and is available at
- * http://www.aptana.com/legal/apl/.
- * 
- * You may view the GPL, Aptana's exception and additional terms, and the
- * APL in the file titled license.html at the root of the corresponding
- * plugin containing this source file.
- * 
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.editor.php.formatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.php.internal.core.ast.nodes.ASTError;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.ArrayAccess;
-import org.eclipse.php.internal.core.ast.nodes.ArrayCreation;
-import org.eclipse.php.internal.core.ast.nodes.ArrayElement;
-import org.eclipse.php.internal.core.ast.nodes.Assignment;
-import org.eclipse.php.internal.core.ast.nodes.BackTickExpression;
-import org.eclipse.php.internal.core.ast.nodes.Block;
-import org.eclipse.php.internal.core.ast.nodes.BreakStatement;
-import org.eclipse.php.internal.core.ast.nodes.CastExpression;
-import org.eclipse.php.internal.core.ast.nodes.CatchClause;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
-import org.eclipse.php.internal.core.ast.nodes.ClassName;
-import org.eclipse.php.internal.core.ast.nodes.CloneExpression;
-import org.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
-import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ContinueStatement;
-import org.eclipse.php.internal.core.ast.nodes.DeclareStatement;
-import org.eclipse.php.internal.core.ast.nodes.DoStatement;
-import org.eclipse.php.internal.core.ast.nodes.EchoStatement;
-import org.eclipse.php.internal.core.ast.nodes.EmptyStatement;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
-import org.eclipse.php.internal.core.ast.nodes.FieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ForEachStatement;
-import org.eclipse.php.internal.core.ast.nodes.ForStatement;
-import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
-import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
-import org.eclipse.php.internal.core.ast.nodes.FunctionName;
-import org.eclipse.php.internal.core.ast.nodes.GlobalStatement;
-import org.eclipse.php.internal.core.ast.nodes.GotoLabel;
-import org.eclipse.php.internal.core.ast.nodes.GotoStatement;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.IfStatement;
-import org.eclipse.php.internal.core.ast.nodes.IgnoreError;
-import org.eclipse.php.internal.core.ast.nodes.InLineHtml;
-import org.eclipse.php.internal.core.ast.nodes.Include;
-import org.eclipse.php.internal.core.ast.nodes.InfixExpression;
-import org.eclipse.php.internal.core.ast.nodes.InstanceOfExpression;
-import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.LambdaFunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ListVariable;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.MethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
-import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
-import org.eclipse.php.internal.core.ast.nodes.PostfixExpression;
-import org.eclipse.php.internal.core.ast.nodes.PrefixExpression;
-import org.eclipse.php.internal.core.ast.nodes.Quote;
-import org.eclipse.php.internal.core.ast.nodes.Reference;
-import org.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
-import org.eclipse.php.internal.core.ast.nodes.ReturnStatement;
-import org.eclipse.php.internal.core.ast.nodes.Scalar;
-import org.eclipse.php.internal.core.ast.nodes.Statement;
-import org.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
-import org.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
-import org.eclipse.php.internal.core.ast.nodes.StaticStatement;
-import org.eclipse.php.internal.core.ast.nodes.SwitchCase;
-import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
-import org.eclipse.php.internal.core.ast.nodes.ThrowStatement;
-import org.eclipse.php.internal.core.ast.nodes.TryStatement;
-import org.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
-import org.eclipse.php.internal.core.ast.nodes.UseStatement;
-import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
-import org.eclipse.php.internal.core.ast.nodes.Variable;
-import org.eclipse.php.internal.core.ast.nodes.VariableBase;
-import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
-import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org.eclipse.jface.text.IRegion;
+import org2.eclipse.php.internal.core.ast.nodes.ASTError;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayCreation;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayElement;
+import org2.eclipse.php.internal.core.ast.nodes.Assignment;
+import org2.eclipse.php.internal.core.ast.nodes.BackTickExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Block;
+import org2.eclipse.php.internal.core.ast.nodes.BreakStatement;
+import org2.eclipse.php.internal.core.ast.nodes.CastExpression;
+import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
+import org2.eclipse.php.internal.core.ast.nodes.ClassName;
+import org2.eclipse.php.internal.core.ast.nodes.CloneExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
+import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.EchoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.EmptyStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
+import org2.eclipse.php.internal.core.ast.nodes.GlobalStatement;
+import org2.eclipse.php.internal.core.ast.nodes.GotoLabel;
+import org2.eclipse.php.internal.core.ast.nodes.GotoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.IfStatement;
+import org2.eclipse.php.internal.core.ast.nodes.IgnoreError;
+import org2.eclipse.php.internal.core.ast.nodes.InLineHtml;
+import org2.eclipse.php.internal.core.ast.nodes.Include;
+import org2.eclipse.php.internal.core.ast.nodes.InfixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.InstanceOfExpression;
+import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.LambdaFunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ListVariable;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
+import org2.eclipse.php.internal.core.ast.nodes.PostfixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.PrefixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Quote;
+import org2.eclipse.php.internal.core.ast.nodes.Reference;
+import org2.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
+import org2.eclipse.php.internal.core.ast.nodes.ReturnStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Scalar;
+import org2.eclipse.php.internal.core.ast.nodes.Statement;
+import org2.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
+import org2.eclipse.php.internal.core.ast.nodes.VariableBase;
+import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
+import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.core.util.StringUtil;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPArrayElementNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBreakNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseBodyNode;
@@ -123,6 +102,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPCaseColonNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPDeclarationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseIfNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPElseNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPExcludedTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPExpressionWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionBodyNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPFunctionInvocationNode;
@@ -139,10 +119,12 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypeOperator;
-import com.aptana.editor.php.formatter.nodes.NodeTypes.TypePunctuation;
 import com.aptana.formatter.FormatterDocument;
+import com.aptana.formatter.FormatterUtils;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
+import com.aptana.formatter.nodes.NodeTypes.TypeBracket;
+import com.aptana.formatter.nodes.NodeTypes.TypeOperator;
+import com.aptana.formatter.nodes.NodeTypes.TypePunctuation;
 
 /**
  * A PHP formatter node builder.
@@ -154,6 +136,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	// Match words in a string
 	private static final Pattern WORD_PATTERN = Pattern.compile("\\w+"); //$NON-NLS-1$
+	private static final Pattern LINE_SPLIT_PATTERN = Pattern.compile("\r?\n|\r"); //$NON-NLS-1$
 	public static final String INVOCATION_ARROW = "->"; //$NON-NLS-1$
 	public static final String STATIC_INVOCATION = "::"; //$NON-NLS-1$
 	private static final char[] SEMICOLON_AND_COLON = new char[] { ';', ',' };
@@ -161,21 +144,97 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	private FormatterDocument document;
 	private PHPFormatterNodeBuilder builder;
+	private Set<Integer> commentEndOffsets;
+	private List<IRegion> onOffRegions;
 
 	/**
 	 * @param builder
 	 * @param document
+	 * @param comments
 	 */
-	public PHPFormatterVisitor(FormatterDocument document, PHPFormatterNodeBuilder builder)
+	public PHPFormatterVisitor(FormatterDocument document, PHPFormatterNodeBuilder builder, List<Comment> comments)
 	{
 		this.document = document;
 		this.builder = builder;
+		processComments(comments);
+	}
+
+	/**
+	 * Collect the comments ending offsets (including the white-spaces that appear after them). Also, in case a
+	 * formatter on/off tag was set, process the comments content to exclude some of the source from formatting.
+	 * 
+	 * @param comments
+	 */
+	private void processComments(List<Comment> comments)
+	{
+		commentEndOffsets = new HashSet<Integer>();
+		if (comments == null)
+		{
+			return;
+		}
+		boolean onOffEnabled = document.getBoolean(PHPFormatterConstants.FORMATTER_OFF_ON_ENABLED);
+		LinkedHashMap<Integer, String> commentsMap = onOffEnabled ? new LinkedHashMap<Integer, String>(comments.size())
+				: null;
+		for (Comment comment : comments)
+		{
+			int commentType = comment.getCommentType();
+			int end = comment.getEnd();
+			if (commentType == Comment.TYPE_SINGLE_LINE)
+			{
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end));
+			}
+			else if (commentType == Comment.TYPE_MULTILINE || commentType == Comment.TYPE_PHPDOC)
+			{
+				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end + 1));
+			}
+			// Add to the map of comments when the On-Off is enabled.
+			if (onOffEnabled)
+			{
+				int start = comment.getStart();
+				String commentStr = document.get(start, end);
+				commentsMap.put(start, commentStr);
+			}
+		}
+		// Generate the On-Off regions
+		if (onOffEnabled && !commentsMap.isEmpty())
+		{
+			Pattern onPattern = Pattern.compile(Pattern.quote(document.getString(PHPFormatterConstants.FORMATTER_ON)));
+			Pattern offPattern = Pattern
+					.compile(Pattern.quote(document.getString(PHPFormatterConstants.FORMATTER_OFF)));
+			onOffRegions = FormatterUtils.resolveOnOffRegions(commentsMap, onPattern, offPattern,
+					document.getLength() - 1);
+		}
+	}
+
+	/**
+	 * Returns the On-Off formatting regions, as detected from the comments.<br>
+	 * In case the formatter preferences have this option disabled, or in case there are no On-Off regions, the returned
+	 * list is <code>null</code>.
+	 * 
+	 * @return A {@link List} that hold the regions that should be skipped when formatting the source; Null, in case
+	 *         there are no on-off regions.
+	 */
+	public List<IRegion> getOnOffRegions()
+	{
+		return onOffRegions;
+	}
+
+	/**
+	 * Returns true if there is a comment right before the given element.<br>
+	 * There should be only whitespaces between the given offset and the comment.
+	 * 
+	 * @param offset
+	 * @return True, if the given offset is right after a comment.
+	 */
+	private boolean hasCommentBefore(int offset)
+	{
+		return commentEndOffsets.contains(offset);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.IfStatement
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.IfStatement
 	 * )
 	 */
 	@Override
@@ -193,7 +252,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		conditionNode.setBegin(builder.createTextNode(document, start, start + 2));
 		builder.push(conditionNode);
 		// push the condition elements that appear in parentheses
-		pushNodeInParentheses('(', ')', start + 2, trueStatement.getStart(), ifStatement.getCondition());
+		pushNodeInParentheses('(', ')', start + 2, trueStatement.getStart(), ifStatement.getCondition(),
+				TypeBracket.CONDITIONAL_PARENTHESIS);
 		// Construct the 'true' part of the 'if' and visit its children
 		if (hasTrueBlock)
 		{
@@ -225,7 +285,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			{
 				int elseBlockStart = elsePos + trueBlockEnd + 1;
 				int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
-				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock);
+				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock,
+						hasCommentBefore(elseBlockStart));
 				elseNode.setBegin(builder.createTextNode(document, elseBlockStart, elseBlockDeclarationEnd));
 				builder.push(elseNode);
 			}
@@ -239,7 +300,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				{
 					// Wrap the incoming 'if' with an Else-If node that will allow us later to break it and indent
 					// it.
-					FormatterPHPElseIfNode elseIfNode = new FormatterPHPElseIfNode(document);
+					FormatterPHPElseIfNode elseIfNode = new FormatterPHPElseIfNode(document,
+							hasCommentBefore(falseBlockStart));
 					elseIfNode.setBegin(builder.createTextNode(document, falseBlockStart, falseBlockStart));
 					builder.push(elseIfNode);
 					falseStatement.accept(this);
@@ -265,7 +327,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ArrayAccess
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.ArrayAccess
 	 * )
 	 */
 	@Override
@@ -277,21 +339,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (arrayAccess.getArrayType() == ArrayAccess.VARIABLE_HASHTABLE)
 		{
 			// push a curly brackets and visit the index
-			pushNodeInParentheses('{', '}', name.getEnd(), arrayAccess.getEnd(), index);
+			pushNodeInParentheses('{', '}', name.getEnd(), arrayAccess.getEnd(), index, TypeBracket.ARRAY_CURLY);
 		}
 		else
 		{
 			// push a square brackets and visit the index
-			pushNodeInParentheses('[', ']', name.getEnd(), arrayAccess.getEnd(), index);
+			pushNodeInParentheses('[', ']', name.getEnd(), arrayAccess.getEnd(), index, TypeBracket.ARRAY_SQUARE);
 		}
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ArrayCreation
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ArrayCreation )
 	 */
 	@Override
 	public boolean visit(ArrayCreation arrayCreation)
@@ -302,15 +363,18 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int declarationEndOffset = arrayCreation.getStart() + 5;
 		visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
 		List<ArrayElement> elements = arrayCreation.elements();
-		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements);
+		// It's possible to have an extra comma at the end of the array creation. This comma is not
+		// included in the elements given to us by the arrayCreation so we have to look for it by passing 'true'
+		// as the value of 'lookForExtraComma'.
+		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements,
+				TypePunctuation.ARRAY_COMMA, true, TypeBracket.ARRAY_PARENTHESIS);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ArrayElement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ArrayElement )
 	 */
 	@Override
 	public boolean visit(ArrayElement arrayElement)
@@ -329,14 +393,22 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			rightNodes = new ArrayList<ASTNode>(1);
 			rightNodes.add(value);
 		}
+		ArrayCreation parent = (ArrayCreation) arrayElement.getParent();
+		boolean hasSingleElement = parent.elements().size() == 1;
+		FormatterPHPArrayElementNode arrayElementNode = new FormatterPHPArrayElementNode(document, hasSingleElement,
+				hasCommentBefore(arrayElement.getStart()));
+		arrayElementNode.setBegin(builder.createTextNode(document, arrayElement.getStart(), arrayElement.getStart()));
+		arrayElementNode.setEnd(builder.createTextNode(document, arrayElement.getEnd(), arrayElement.getEnd()));
+		builder.push(arrayElementNode);
 		visitNodeLists(leftNodes, rightNodes, TypeOperator.KEY_VALUE, null);
+		builder.checkedPop(arrayElementNode, -1);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Assignment
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Assignment
 	 * )
 	 */
 	@Override
@@ -351,8 +423,46 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * FormalParameter)
+	 */
+	@Override
+	public boolean visit(FormalParameter formalParameter)
+	{
+		Expression parameterName = formalParameter.getParameterName();
+		Expression parameterType = formalParameter.getParameterType();
+		if (parameterType != null)
+		{
+			if (parameterType.getType() == ASTNode.IDENTIFIER)
+			{
+				visit((Identifier) parameterType);
+			}
+			else if (parameterType.getType() == ASTNode.NAMESPACE_NAME)
+			{
+				visit((NamespaceName) parameterType);
+			}
+			visitTextNode(parameterName, true, 1);
+		}
+		else
+		{
+			parameterName.accept(this);
+		}
+		Expression defaultValue = formalParameter.getDefaultValue();
+		if (defaultValue != null)
+		{
+			// locate the '=' operator and push it before visiting the defaultValue
+			int assignmentOffset = builder.getNextNonWhiteCharOffset(document, parameterName.getEnd());
+			pushTypeOperator(TypeOperator.ASSIGNMENT, assignmentOffset, false);
+			visitTextNode(defaultValue, true, 0);
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ASTError)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.ASTError
+	 * )
 	 */
 	@Override
 	public boolean visit(ASTError astError)
@@ -363,7 +473,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * BackTickExpression)
 	 */
 	@Override
@@ -376,7 +486,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Block)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Block)
 	 */
 	@Override
 	public boolean visit(Block block)
@@ -404,7 +514,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * BreakStatement)
 	 */
 	@Override
@@ -416,7 +526,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (expression == null)
 		{
 			FormatterPHPBreakNode breakNode = new FormatterPHPBreakNode(document, breakStatement.getParent());
-			breakNode.setBegin(builder.createTextNode(document, start, end));
+			breakNode.setBegin(builder.createTextNode(document, start, start + 5));
 			builder.push(breakNode);
 			builder.checkedPop(breakNode, -1);
 		}
@@ -424,17 +534,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// treat it as we treat the 'continue' statement
 			// push the 'break' keyword.
-			pushKeyword(start, 5, true);
+			pushKeyword(start, 5, true, false);
 			// visit the break expression
 			expression.accept(this);
-			pushSpaceConsumingNode(end - 1);
 		}
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end - 1, false, true);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ClassDeclaration)
 	 */
 	@Override
@@ -446,7 +556,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ClassInstanceCreation)
 	 */
 	@Override
@@ -464,7 +574,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// create a constructor node
 			List<Expression> ctorParams = classInstanceCreation.ctorParams();
-			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams);
+			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams,
+					TypePunctuation.COMMA, false, TypeBracket.DECLARATION_PARENTHESIS);
 		}
 		// check and push a semicolon (if appears after the end of this instance creation)
 		// pushSemicolon(creationEnd, false, true);
@@ -474,7 +585,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ClassName
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.ClassName
 	 * )
 	 */
 	@Override
@@ -486,7 +597,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * CloneExpression)
 	 */
 	@Override
@@ -498,13 +609,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the expression as if it's in a parentheses expression
 		List<ASTNode> expressionInList = new ArrayList<ASTNode>(1);
 		expressionInList.add(cloneExpression.getExpression());
-		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList);
+		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList, TypePunctuation.COMMA,
+				false, TypeBracket.INVOCATION_PARENTHESIS);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ConditionalExpression)
 	 */
 	@Override
@@ -529,14 +641,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ConstantDeclaration)
 	 */
 	@Override
 	public boolean visit(ConstantDeclaration classConstantDeclaration)
 	{
 		// push the 'const' keyword.
-		pushKeyword(classConstantDeclaration.getStart(), 5, true);
+		pushKeyword(classConstantDeclaration.getStart(), 5, true, false);
 		// Push the declarations. Each has an assignment char and they are separated by commas.
 		List<? extends ASTNode> leftNodes = classConstantDeclaration.names();
 		List<? extends ASTNode> rightNodes = classConstantDeclaration.initializers();
@@ -599,7 +711,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ContinueStatement)
 	 */
 	@Override
@@ -607,23 +719,22 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		// push the 'continue' keyword.
 		int continueStart = continueStatement.getStart();
-		pushKeyword(continueStart, 8, true);
-		// visit the continue expression, if exists
+		int end = continueStatement.getEnd() - 1;
 		Expression expression = continueStatement.getExpression();
+
+		pushKeyword(continueStart, 8, true, expression == null);
+		// visit the continue expression, if exists
 		if (expression != null)
 		{
 			expression.accept(this);
 		}
-		else
-		{
-			pushSpaceConsumingNode(continueStatement.getEnd() - 1);
-		}
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * DeclareStatement)
 	 */
 	@Override
@@ -637,9 +748,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(declareStatement, start, start + 7);
 		// push the parentheses with the names and the values that we have inside
 		int openParen = builder.locateCharForward(document, '(', start + 7);
-		int closeParen = builder.locateCharBackward(document, ')', (body != null) ? body.getStart() : declareStatement
-				.getEnd());
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		int closeParen = builder.locateCharBackward(document, ')',
+				(body != null) ? body.getStart() : declareStatement.getEnd());
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document,
+				TypeBracket.DECLARATION_PARENTHESIS);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		// push the list of names and values
@@ -655,9 +767,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.EchoStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * EchoStatement )
 	 */
 	@Override
 	public boolean visit(EchoStatement echoStatement)
@@ -667,7 +778,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(echoStatement, echoStart, echoStart + 4);
 		// push the expressions one at a time, with comma nodes between them.
 		List<Expression> expressions = echoStatement.expressions();
-		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions);
+		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions, TypePunctuation.COMMA, false,
+				TypeBracket.INVOCATION_PARENTHESIS);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
 		int end = expressions.get(expressions.size() - 1).getEnd();
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
@@ -676,7 +788,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * EmptyStatement)
 	 */
 	@Override
@@ -688,7 +800,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ExpressionStatement)
 	 */
 	@Override
@@ -719,7 +831,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.FieldAccess
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.FieldAccess
 	 * )
 	 */
 	@Override
@@ -733,9 +845,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ForStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ForStatement )
 	 */
 	@Override
 	public boolean visit(ForStatement forStatement)
@@ -751,7 +862,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int expressionEndOffset = (body != null) ? body.getStart() : forStatement.getEnd();
 		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
 		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document,
+				TypeBracket.LOOP_PARENTHESIS);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		// visit the initializers, the conditions and the updaters.
@@ -773,7 +885,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ForEachStatement)
 	 */
 	@Override
@@ -790,7 +902,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int expressionEndOffset = (body != null) ? body.getStart() : forEachStatement.getEnd();
 		int openParen = builder.locateCharForward(document, '(', declarationEndOffset);
 		int closeParen = builder.locateCharBackward(document, ')', expressionEndOffset);
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document,
+				TypeBracket.LOOP_PARENTHESIS);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		// push the expression
@@ -821,21 +934,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * WhileStatement)
 	 */
 	@Override
 	public boolean visit(WhileStatement whileStatement)
 	{
-		visitCommonLoopBlock(whileStatement, whileStatement.getStart() + 5, whileStatement.getBody(), whileStatement
-				.getCondition());
+		visitCommonLoopBlock(whileStatement, whileStatement.getStart() + 5, whileStatement.getBody(),
+				whileStatement.getCondition());
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.DoStatement
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.DoStatement
 	 * )
 	 */
 	@Override
@@ -859,20 +972,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FunctionDeclaration)
 	 */
 	@Override
 	public boolean visit(FunctionDeclaration functionDeclaration)
 	{
-		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getFunctionName(), functionDeclaration
-				.formalParameters(), functionDeclaration.getBody());
+		visitFunctionDeclaration(functionDeclaration, functionDeclaration.getFunctionName(),
+				functionDeclaration.formalParameters(), null, functionDeclaration.getBody());
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FunctionInvocation)
 	 */
 	@Override
@@ -884,13 +997,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * GlobalStatement)
 	 */
 	@Override
 	public boolean visit(GlobalStatement globalStatement)
 	{
-		pushKeyword(globalStatement.getStart(), 6, true);
+		pushKeyword(globalStatement.getStart(), 6, true, false);
 		List<Variable> variables = globalStatement.variables();
 		visitNodeLists(variables, null, null, TypePunctuation.COMMA);
 		// we also need to push the semicolon for the global
@@ -901,7 +1014,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.GotoLabel
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.GotoLabel
 	 * )
 	 */
 	@Override
@@ -923,15 +1036,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.GotoStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * GotoStatement )
 	 */
 	@Override
 	public boolean visit(GotoStatement gotoStatement)
 	{
 		Identifier label = gotoStatement.getLabel();
-		pushKeyword(gotoStatement.getStart(), 4, true);
+		pushKeyword(gotoStatement.getStart(), 4, true, false);
 		label.accept(this);
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, gotoStatement.getEnd() - 1, false, true);
 		return false;
@@ -940,7 +1052,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Identifier
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Identifier
 	 * )
 	 */
 	@Override
@@ -953,7 +1065,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.IgnoreError
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.IgnoreError
 	 * )
 	 */
 	@Override
@@ -971,7 +1083,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Include)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Include
+	 * )
 	 */
 	@Override
 	public boolean visit(Include include)
@@ -979,7 +1092,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the 'include' keyword.
 		int includeStart = include.getStart();
 		int keywordLength = Include.getType(include.getIncludeType()).length();
-		pushKeyword(includeStart, keywordLength, true);
+		pushKeyword(includeStart, keywordLength, true, false);
 		// visit the include expression.
 		Expression expression = include.getExpression();
 		expression.accept(this);
@@ -988,7 +1101,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InfixExpression)
 	 */
 	@Override
@@ -997,6 +1110,16 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		String operatorString = InfixExpression.getOperator(infixExpression.getOperator());
 		ASTNode left = infixExpression.getLeft();
 		ASTNode right = infixExpression.getRight();
+		if (infixExpression.getOperator() == InfixExpression.OP_IS_NOT_EQUAL && left != null && right != null)
+		{
+			// There can be two types of not-equal: != or <>
+			// We have to check for the actual one.
+			String expression = document.get(left.getEnd(), right.getStart()).trim();
+			if (!operatorString.equals(expression))
+			{
+				operatorString = TypeOperator.NOT_EQUAL_ALTERNATE.toString();
+			}
+		}
 		visitLeftRightExpression(infixExpression, left, right, operatorString);
 		return false;
 	}
@@ -1004,7 +1127,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.InLineHtml
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.InLineHtml
 	 * )
 	 */
 	@Override
@@ -1016,7 +1139,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InstanceOfExpression)
 	 */
 	@Override
@@ -1038,7 +1161,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InterfaceDeclaration)
 	 */
 	@Override
@@ -1050,22 +1173,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * LambdaFunctionDeclaration)
 	 */
 	@Override
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
 		visitFunctionDeclaration(lambdaFunctionDeclaration, null, lambdaFunctionDeclaration.formalParameters(),
-				lambdaFunctionDeclaration.getBody());
+				lambdaFunctionDeclaration.lexicalVariables(), lambdaFunctionDeclaration.getBody());
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.ListVariable
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ListVariable )
 	 */
 	@Override
 	public boolean visit(ListVariable listVariable)
@@ -1073,13 +1195,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<VariableBase> variables = listVariable.variables();
 		int start = listVariable.getStart();
 		pushFunctionInvocationName(listVariable, start, start + 4);
-		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables);
+		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables, TypePunctuation.COMMA, false,
+				TypeBracket.DECLARATION_PARENTHESIS);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * MethodDeclaration)
 	 */
 	@Override
@@ -1093,7 +1216,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FieldsDeclaration)
 	 */
 	@Override
@@ -1116,7 +1239,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * MethodInvocation)
 	 */
 	@Override
@@ -1130,49 +1253,61 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticMethodInvocation)
 	 */
 	@Override
 	public boolean visit(StaticMethodInvocation staticMethodInvocation)
 	{
-		visitLeftRightExpression(staticMethodInvocation, staticMethodInvocation.getClassName(), staticMethodInvocation
-				.getMethod(), STATIC_INVOCATION);
+		visitLeftRightExpression(staticMethodInvocation, staticMethodInvocation.getClassName(),
+				staticMethodInvocation.getMethod(), STATIC_INVOCATION);
 		// note: we push the semicolon as part of the function-invocation that we have in this node.
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * NamespaceDeclaration)
 	 */
 	@Override
 	public boolean visit(NamespaceDeclaration namespaceDeclaration)
 	{
-		pushKeyword(namespaceDeclaration.getStart(), 9, true);
+		int start = namespaceDeclaration.getStart();
+		pushKeyword(start, 9, true, false);
+		int end = start + 9;
 		NamespaceName namespaceName = namespaceDeclaration.getName();
-		namespaceName.accept(this);
-		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, namespaceName.getEnd(), false, true);
-		// visit the namespace body block. This block is invisible one, but we wrap it in a special
+		if (namespaceName != null)
+		{
+			namespaceName.accept(this);
+			end = namespaceName.getEnd();
+		}
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
+		// visit the namespace body block. If this block is invisible one, wrap it in a special
 		// namespace block to allow indentation customization.
 		FormatterPHPNamespaceBlockNode bodyNode = new FormatterPHPNamespaceBlockNode(document);
 		Block body = namespaceDeclaration.getBody();
-		int start = body.getStart();
-		int end = body.getEnd();
-		bodyNode.setBegin(builder.createTextNode(document, start, start));
-		builder.push(bodyNode);
-		body.childrenAccept(this);
-		bodyNode.setEnd(builder.createTextNode(document, end, end));
-		builder.checkedPop(bodyNode, namespaceDeclaration.getEnd());
+		if (body.isCurly())
+		{
+			body.accept(this);
+		}
+		else
+		{
+			int bodyStart = body.getStart();
+			int bodyEnd = body.getEnd();
+			bodyNode.setBegin(builder.createTextNode(document, bodyStart, bodyStart));
+			builder.push(bodyNode);
+			body.childrenAccept(this);
+			bodyNode.setEnd(builder.createTextNode(document, bodyEnd, bodyEnd));
+			builder.checkedPop(bodyNode, namespaceDeclaration.getEnd());
+		}
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.NamespaceName
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * NamespaceName )
 	 */
 	@Override
 	public boolean visit(NamespaceName namespaceName)
@@ -1192,13 +1327,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ParenthesisExpression)
 	 */
 	@Override
 	public boolean visit(ParenthesisExpression parenthesisExpression)
 	{
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document, TypeBracket.PARENTHESIS);
 		int start = parenthesisExpression.getStart();
 		parenthesesNode.setBegin(builder.createTextNode(document, start, start + 1));
 		builder.push(parenthesesNode);
@@ -1211,7 +1346,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * PostfixExpression)
 	 */
 	@Override
@@ -1236,7 +1371,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * PrefixExpression)
 	 */
 	@Override
@@ -1262,16 +1397,19 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Quote)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Quote)
 	 */
 	@Override
 	public boolean visit(Quote quote)
 	{
 		int quoteType = quote.getQuoteType();
-		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC)
+		String quoteStr = document.get(quote.getStart(), quote.getEnd());
+		// Check for HEREDOC, NOWDOC and multi-lines strings.
+		if (quoteType == Quote.QT_HEREDOC || quoteType == Quote.QT_NOWDOC
+				|| LINE_SPLIT_PATTERN.split(quoteStr, 2).length == 2)
 		{
-			FormatterPHPHeredocNode heredocNode = new FormatterPHPHeredocNode(document, quote.getStart(), quote
-					.getEnd());
+			FormatterPHPHeredocNode heredocNode = new FormatterPHPHeredocNode(document, quote.getStart(),
+					quote.getEnd());
 			IFormatterContainerNode parentNode = builder.peek();
 			parentNode.addChild(heredocNode);
 		}
@@ -1285,7 +1423,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Reference
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Reference
 	 * )
 	 */
 	@Override
@@ -1302,7 +1440,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ReflectionVariable)
 	 */
 	@Override
@@ -1319,7 +1457,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ReturnStatement)
 	 */
 	@Override
@@ -1327,44 +1465,63 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		// push the 'return' keyword.
 		int returnStart = returnStatement.getStart();
-		pushKeyword(returnStart, 6, true);
-		// visit the return expression.
 		Expression expression = returnStatement.getExpression();
+		pushKeyword(returnStart, 6, true, expression == null);
+		// visit the return expression.
 		if (expression != null)
 		{
 			expression.accept(this);
 		}
+		// Check if the statement ends with a semicolon. If so, push it as a text node.
+		// push the ending semicolon
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, returnStatement.getEnd() - 1, false, true);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Scalar)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Scalar)
 	 */
 	@Override
 	public boolean visit(Scalar scalar)
 	{
+		// In case the Scalar is a string, we need to check if the string spans across multiple lines. If this is the
+		// case, we have to exclude part of this scalar from the formatting. Otherwise, we'll change the content of that
+		// string.
+		if (scalar.getScalarType() == Scalar.TYPE_STRING)
+		{
+			String[] split = LINE_SPLIT_PATTERN.split(scalar.getStringValue(), 2);
+			if (split.length > 1)
+			{
+				// We have a multi-line string.
+				FormatterPHPExcludedTextNode heredocNode = new FormatterPHPExcludedTextNode(document, 0, 0);
+				heredocNode.setBegin(builder.createTextNode(document, scalar.getStart(), scalar.getEnd()));
+				IFormatterContainerNode parentNode = builder.peek();
+				parentNode.addChild(heredocNode);
+				return false;
+			}
+		}
 		visitTextNode(scalar, true, 0);
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticConstantAccess)
 	 */
 	@Override
 	public boolean visit(StaticConstantAccess classConstantAccess)
 	{
-		visitLeftRightExpression(classConstantAccess, classConstantAccess.getClassName(), classConstantAccess
-				.getConstant(), TypeOperator.STATIC_INVOCATION.toString());
+		visitLeftRightExpression(classConstantAccess, classConstantAccess.getClassName(),
+				classConstantAccess.getConstant(), TypeOperator.STATIC_INVOCATION.toString());
 		return false;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticFieldAccess)
 	 */
 	@Override
@@ -1377,13 +1534,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * StaticStatement)
 	 */
 	@Override
 	public boolean visit(StaticStatement staticStatement)
 	{
-		pushKeyword(staticStatement.getStart(), 6, true);
+		pushKeyword(staticStatement.getStart(), 6, true, false);
 		List<Expression> expressions = staticStatement.expressions();
 		visitNodeLists(expressions, null, null, TypePunctuation.COMMA);
 		// push the ending semicolon
@@ -1393,7 +1550,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * SwitchStatement)
 	 */
 	@Override
@@ -1434,7 +1591,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.SwitchCase
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.SwitchCase
 	 * )
 	 */
 	@Override
@@ -1443,15 +1600,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<Statement> actions = switchCase.actions();
 		boolean hasBlockedChild = (actions.size() == 1 && actions.get(0).getType() == ASTNode.BLOCK);
 		// compute the colon position
-		int colonOffset;
-		if (actions.size() > 0)
-		{
-			colonOffset = builder.locateCharBackward(document, ':', actions.get(0).getStart());
-		}
-		else
-		{
-			colonOffset = builder.locateCharForward(document, ':', switchCase.getValue().getEnd());
-		}
+		int endCaseOffset = (switchCase.isDefault()) ? switchCase.getStart() + 7 : switchCase.getValue().getEnd();
+		int colonOffset = builder.locateCharForward(document, ':', endCaseOffset);
 		// push the case/default node till the colon.
 		// We create a begin-end node that will hold a case-colon node as an inner child to manage its spacing.
 		FormatterPHPExpressionWrapperNode caseNode = new FormatterPHPExpressionWrapperNode(document);
@@ -1467,7 +1617,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(caseColonNode, -1);
 		builder.checkedPop(caseNode, -1);
 		// push the case/default content
-		FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document, hasBlockedChild);
+		FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document, hasBlockedChild, hasBlockedChild
+				&& hasCommentBefore(actions.get(0).getStart()));
 		if (hasBlockedChild)
 		{
 			Block body = (Block) actions.get(0);
@@ -1501,7 +1652,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * CastExpression)
 	 */
 	@Override
@@ -1519,7 +1670,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.CatchClause
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.CatchClause
 	 * )
 	 */
 	@Override
@@ -1534,13 +1685,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ThrowStatement)
 	 */
 	@Override
 	public boolean visit(ThrowStatement throwStatement)
 	{
-		pushKeyword(throwStatement.getStart(), 5, true);
+		pushKeyword(throwStatement.getStart(), 5, true, false);
 		Expression expression = throwStatement.getExpression();
 		expression.accept(this);
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, expression.getEnd(), false, true);
@@ -1549,9 +1700,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.TryStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TryStatement )
 	 */
 	@Override
 	public boolean visit(TryStatement tryStatement)
@@ -1568,7 +1718,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * UnaryOperation)
 	 */
 	@Override
@@ -1584,14 +1734,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.UseStatement
-	 * )
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * UseStatement )
 	 */
 	@Override
 	public boolean visit(UseStatement useStatement)
 	{
-		pushKeyword(useStatement.getStart(), 3, true);
+		pushKeyword(useStatement.getStart(), 3, true, false);
 		List<UseStatementPart> parts = useStatement.parts();
 		visitNodeLists(parts, null, null, TypePunctuation.COMMA);
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, useStatement.getEnd() - 1, false, true);
@@ -1600,7 +1749,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * UseStatementPart)
 	 */
 	@Override
@@ -1616,7 +1765,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			String text = document.get(namespaceName.getEnd(), alias.getStart());
 			int asOffset = text.toLowerCase().indexOf("as"); //$NON-NLS-1$
 			asOffset += namespaceName.getEnd();
-			pushKeyword(asOffset, 2, false);
+			pushKeyword(asOffset, 2, false, false);
 			alias.accept(this);
 		}
 		return false;
@@ -1625,7 +1774,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse.php.internal.core.ast.nodes.Variable)
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.Variable
+	 * )
 	 */
 	@Override
 	public boolean visit(Variable variable)
@@ -1666,14 +1816,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(typeNode, -1);
 
 		// add the class body
-		FormatterPHPTypeBodyNode typeBodyNode = new FormatterPHPTypeBodyNode(document);
+		FormatterPHPTypeBodyNode typeBodyNode = new FormatterPHPTypeBodyNode(document,
+				hasCommentBefore(body.getStart()));
 		typeBodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
 		builder.push(typeBodyNode);
 		body.childrenAccept(this);
 		int end = body.getEnd();
 		builder.checkedPop(typeBodyNode, end - 1);
-		int endWithSemicolon = locateCharMatchInLine(end, SEMICOLON_AND_COLON, document, false);
-		typeBodyNode.setEnd(builder.createTextNode(document, end - 1, endWithSemicolon));
+		typeBodyNode.setEnd(builder.createTextNode(document, end - 1, end));
 	}
 
 	/**
@@ -1689,7 +1839,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushFunctionInvocationName(functionInvocation, functionName.getStart(), functionName.getEnd());
 		// push the parenthesis and the parameters (if exist)
 		List<Expression> invocationParameters = functionInvocation.parameters();
-		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters);
+		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters,
+				TypePunctuation.COMMA, false, TypeBracket.INVOCATION_PARENTHESIS);
 	}
 
 	/**
@@ -1714,9 +1865,19 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param declarationEndOffset
 	 * @param expressionEndOffset
 	 * @param parameters
+	 * @param punctuationType
+	 *            A {@link TypePunctuation}. Usually this should be a COMMA, but it can also be something else to
+	 *            provide special formatting styles.
+	 * @param lookForExtraComma
+	 *            Indicate that the parameters list may end with an extra comma that is not included in them. This
+	 *            function will look for that comma if the value is true and will add it as a punctuation node in case
+	 *            it was found.
+	 * @param bracketsType
+	 *            The type of parentheses to push.
 	 */
 	private void pushParametersInParentheses(int declarationEndOffset, int expressionEndOffset,
-			List<? extends ASTNode> parameters)
+			List<? extends ASTNode> parameters, TypePunctuation punctuationType, boolean lookForExtraComma,
+			TypeBracket bracketsType)
 	{
 		// in some cases, we get a ParethesisExpression inside a single parameter.
 		// for those cases, we skip the parentheses node push and go straight to the
@@ -1726,15 +1887,15 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		FormatterPHPParenthesesNode parenthesesNode = null;
 		if (pushParenthesisNode)
 		{
-			int openParen = getNextNonWhiteCharOffset(document, declarationEndOffset);
+			int openParen = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
 			if (document.charAt(openParen) == '(')
 			{
-				parenthesesNode = new FormatterPHPParenthesesNode(document);
+				parenthesesNode = new FormatterPHPParenthesesNode(document, false, parameters.size(), bracketsType);
 				parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 			}
 			else
 			{
-				parenthesesNode = new FormatterPHPParenthesesNode(document, true);
+				parenthesesNode = new FormatterPHPParenthesesNode(document, true, parameters.size(), bracketsType);
 				parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen));
 			}
 			builder.push(parenthesesNode);
@@ -1742,7 +1903,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 		if (parameters != null && parameters.size() > 0)
 		{
-			visitNodeLists(parameters, null, null, TypePunctuation.COMMA);
+			visitNodeLists(parameters, null, null, punctuationType);
+			if (lookForExtraComma)
+			{
+				// Look ahead to find any extra comma that we may have. If found, push it as a punctuation node.
+				int lastParamEnd = parameters.get(parameters.size() - 1).getEnd();
+				int nextNonWhitespace = builder.getNextNonWhiteCharOffset(document, lastParamEnd);
+				if (document.charAt(nextNonWhitespace) == ',')
+				{
+					pushTypePunctuation(punctuationType, nextNonWhitespace);
+				}
+			}
 		}
 		if (pushParenthesisNode)
 		{
@@ -1753,32 +1924,19 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				closeParenStart = builder.locateCharBackward(document, ')', expressionEndOffset);
 				closeParenEnd = closeParenStart + 1;
 			}
-			builder.checkedPop(parenthesesNode, -1);
+			if (hasCommentBefore(closeParenStart))
+			{
+				// Make sure that the closing pair will not get pushed up when there is a comment line right before it.
+				parenthesesNode.setNewLineBeforeClosing(true);
+				builder.checkedPop(parenthesesNode, closeParenStart);
+			}
+			else
+			{
+				builder.checkedPop(parenthesesNode, -1);
+			}
+
 			parenthesesNode.setEnd(builder.createTextNode(document, closeParenStart, closeParenEnd));
 		}
-	}
-
-	/**
-	 * Returns the next non-white char offset. In case all the chars after the given start offset are white-spaces,
-	 * return the given start offset.
-	 * 
-	 * @param document
-	 * @param startOffset
-	 * @return The next non-white char; Or the given start-offset if all the chars right to the start offset were
-	 *         whitespaces.
-	 */
-	private int getNextNonWhiteCharOffset(FormatterDocument document, int startOffset)
-	{
-		int length = document.getLength();
-		for (int offset = startOffset; offset < length; offset++)
-		{
-			char charAt = document.charAt(offset);
-			if (!Character.isWhitespace(charAt))
-			{
-				return offset;
-			}
-		}
-		return startOffset;
 	}
 
 	/**
@@ -1793,11 +1951,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param node
 	 */
 	private void pushNodeInParentheses(char openChar, char closeChar, int declarationEndOffset,
-			int expressionEndOffset, ASTNode node)
+			int expressionEndOffset, ASTNode node, TypeBracket type)
 	{
 		int openParen = builder.locateCharForward(document, openChar, declarationEndOffset);
 		int closeParen = builder.locateCharBackward(document, closeChar, expressionEndOffset);
-		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document);
+		FormatterPHPParenthesesNode parenthesesNode = new FormatterPHPParenthesesNode(document, type);
 		parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
 		builder.push(parenthesesNode);
 		if (node != null)
@@ -1827,7 +1985,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		boolean isFirst = true;
 		while (matcher.find())
 		{
-			FormatterPHPKeywordNode modifierNode = new FormatterPHPKeywordNode(document, isFirst);
+			FormatterPHPKeywordNode modifierNode = new FormatterPHPKeywordNode(document, isFirst, false);
 			modifierNode.setBegin(builder.createTextNode(document, matcher.start() + startOffset, matcher.end()
 					+ startOffset));
 			builder.push(modifierNode);
@@ -1838,7 +1996,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		{
 			// if we got to this point with the 'isFirst' as 'true', we know that the modifiers are empty.
 			// in this case, we need to push an empty modifiers node.
-			FormatterPHPKeywordNode emptyModifier = new FormatterPHPKeywordNode(document, isFirst);
+			FormatterPHPKeywordNode emptyModifier = new FormatterPHPKeywordNode(document, isFirst, false);
 			emptyModifier.setBegin(builder.createTextNode(document, startOffset, startOffset));
 			builder.push(emptyModifier);
 			builder.checkedPop(emptyModifier, -1);
@@ -1857,7 +2015,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (condition != null)
 		{
 			int conditionEnd = (body != null) ? body.getStart() : node.getEnd();
-			pushNodeInParentheses('(', ')', declarationEndOffset, conditionEnd, condition);
+			pushNodeInParentheses('(', ')', declarationEndOffset, conditionEnd, condition, TypeBracket.LOOP_PARENTHESIS);
 		}
 		// visit the body
 		commonVisitBlockBody(node, body);
@@ -1958,7 +2116,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private void visitBlockNode(Block block, ASTNode parent, boolean consumeEndingSemicolon)
 	{
 		boolean isAlternativeSyntaxBlock = !block.isCurly();
-		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, false);
+		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, hasCommentBefore(block.getStart()));
 		blockNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
 		builder.push(blockNode);
 		// visit the children
@@ -1991,11 +2149,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * 
 	 * @param functionDeclaration
 	 * @param functionName
-	 * @param parameters
+	 * @param formalParameters
+	 * @param lexicalParameters
 	 * @param body
 	 */
 	private void visitFunctionDeclaration(ASTNode functionDeclaration, Identifier functionName,
-			List<FormalParameter> parameters, Block body)
+			List<FormalParameter> formalParameters, List<Expression> lexicalParameters, Block body)
 	{
 		// First, push the function declaration node
 		int declarationEnd = functionDeclaration.getStart() + 8;
@@ -2006,16 +2165,41 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			visitTextNode(functionName, true, 1);
 			declarationEnd = functionName.getEnd();
 		}
+		boolean hasLexicalParams = (lexicalParameters != null && !lexicalParameters.isEmpty());
+		int parametersEnd = (body != null) ? body.getStart() : functionDeclaration.getEnd();
+		if (hasLexicalParams)
+		{
+			int firstLexicalOffset = lexicalParameters.get(0).getStart();
+			// Search backward for the letter 'u' from the word 'use'
+			parametersEnd = builder.locateCharBackward(document, 'u', firstLexicalOffset) - 1;
+		}
 		// push the function parameters
-		pushParametersInParentheses(declarationEnd, body.getStart(), parameters);
+		pushParametersInParentheses(declarationEnd, parametersEnd, formalParameters, TypePunctuation.COMMA, false,
+				TypeBracket.DECLARATION_PARENTHESIS);
+		// In case we have 'lexical' parameters, like we get with a lambda-function, we push them after pushing the
+		// 'use' keyword (for example: function($aaa) use ($bbb, $ccc)...)
+		if (hasLexicalParams)
+		{
+			// Locate and push the 'use'
+			int useKeywordStart = builder.getNextNonWhiteCharOffset(document, builder.peek().getEndOffset());
+			pushKeyword(useKeywordStart, 3, false, false);
+			// Push the lexical parameters
+			pushParametersInParentheses(useKeywordStart + 3, body.getStart(), lexicalParameters, TypePunctuation.COMMA,
+					false, TypeBracket.DECLARATION_PARENTHESIS);
+		}
+
 		// Then, push the body
-		FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document);
-		bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
-		builder.push(bodyNode);
-		body.childrenAccept(this);
-		int bodyEnd = body.getEnd();
-		builder.checkedPop(bodyNode, bodyEnd - 1);
-		bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, bodyEnd));
+		if (body != null)
+		{
+			FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document,
+					hasCommentBefore(body.getStart()));
+			bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
+			builder.push(bodyNode);
+			body.childrenAccept(this);
+			int bodyEnd = body.getEnd();
+			builder.checkedPop(bodyNode, bodyEnd - 1);
+			bodyNode.setEnd(builder.createTextNode(document, bodyEnd - 1, bodyEnd));
+		}
 	}
 
 	/**
@@ -2071,21 +2255,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 	}
 
-	/**
-	 * Push a text node that will consume all the spaces before it.
-	 * 
-	 * @param offset
-	 *            The offset to mark the start and end offset of the node. Any whitespace that appears before this node
-	 *            should be consumed.
-	 */
-	private void pushSpaceConsumingNode(int offset)
-	{
-		FormatterPHPTextNode textNode = new FormatterPHPTextNode(document, true, 0, 0);
-		textNode.setBegin(builder.createTextNode(document, offset, offset));
-		builder.push(textNode);
-		builder.checkedPop(textNode, offset);
-	}
-
 	private void pushTypeOperator(TypeOperator operator, int startOffset, boolean isUnary)
 	{
 		FormatterPHPOperatorNode node = new FormatterPHPOperatorNode(document, operator, isUnary);
@@ -2134,10 +2303,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param start
 	 * @param keywordLength
 	 * @param isFirstInLine
+	 * @param isLastInLine
 	 */
-	private void pushKeyword(int start, int keywordLength, boolean isFirstInLine)
+	private void pushKeyword(int start, int keywordLength, boolean isFirstInLine, boolean isLastInLine)
 	{
-		FormatterPHPKeywordNode keywordNode = new FormatterPHPKeywordNode(document, isFirstInLine);
+		FormatterPHPKeywordNode keywordNode = new FormatterPHPKeywordNode(document, isFirstInLine, isLastInLine);
 		keywordNode.setBegin(builder.createTextNode(document, start, start + keywordLength));
 		builder.push(keywordNode);
 		builder.checkedPop(keywordNode, -1);
@@ -2153,7 +2323,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 *            false, and a non-whitespace appear between the given offset and the semicolon, the method will
 	 *            <b>not</b> push a semicolon node.
 	 * @param isLineTerminating
-	 *            Indicates that this semicolon is a line terminating one.
+	 *            Indicates that this punctuation node is a line terminating one.
 	 */
 	private void findAndPushPunctuationNode(TypePunctuation type, int offsetToSearch, boolean ignoreNonWhitespace,
 			boolean isLineTerminating)

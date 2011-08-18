@@ -122,7 +122,7 @@ public class ScriptMarkerAnnotation extends MarkerAnnotation implements IScriptA
 	/*
 	 * @see IJavaAnnotation#getOverlaidIterator()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Iterator getOverlaidIterator()
 	{
 		// not supported

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -34,14 +36,18 @@ import com.aptana.editor.php.internal.indexer.IncludePHPEntryValue;
 
 /**
  * Refactoring utils.
+ * 
  * @author Denis Denisenko
  */
 public final class RefactoringUtils
 {
 	/**
 	 * Constructs include path from one module to another.
-	 * @param from - module to construct include path from.
-	 * @param to - module to construct include path to.
+	 * 
+	 * @param from
+	 *            - module to construct include path from.
+	 * @param to
+	 *            - module to construct include path to.
 	 * @return constructed include path
 	 */
 	public static ConstructedIncludePath constructIncludePath(IModule from, IModule to)
@@ -49,11 +55,12 @@ public final class RefactoringUtils
 		IBuildPath fromBuildPath = from.getBuildPath();
 		IBuildPath toBuildPath = to.getBuildPath();
 		Set<IBuildPath> fromDependencies = fromBuildPath.getDependencies();
-		if (fromDependencies.equals(toBuildPath)){
+		if (fromDependencies.equals(toBuildPath))
+		{
 			String includePath = constructPathFromRoot(to);
 			return new ConstructedIncludePath(includePath, null, null);
 		}
-		//if "from" build-path directly depends from "to" build-path
+		// if "from" build-path directly depends from "to" build-path
 		if (fromDependencies.contains(toBuildPath))
 		{
 			String includePath = constructPathFromRoot(to);
@@ -61,7 +68,7 @@ public final class RefactoringUtils
 		}
 		else
 		{
-			//for local modules using its project-based build-path instead of native module build-path
+			// for local modules using its project-based build-path instead of native module build-path
 			if (to instanceof LocalModule)
 			{
 				IFile file = ((LocalModule) to).getFile();
@@ -73,59 +80,60 @@ public final class RefactoringUtils
 						if (file.exists())
 						{
 							IProject project = file.getProject();
-							IBuildPath projectBuildPath = 
-								BuildPathManager.getInstance().getBuildPathByResource(project);
+							IBuildPath projectBuildPath = BuildPathManager.getInstance()
+									.getBuildPathByResource(project);
 							if (projectBuildPath != null)
 							{
 								IModule alternativeToModule = projectBuildPath.getModule(file);
 								if (alternativeToModule != null)
 								{
 									String includePath = constructPathFromRoot(alternativeToModule);
-									return new ConstructedIncludePath(includePath, fromBuildPath,
-											projectBuildPath);
+									return new ConstructedIncludePath(includePath, fromBuildPath, projectBuildPath);
 								}
 							}
 						}
-					} 
+					}
 					catch (CoreException e)
 					{
-						//ignore
+						IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+								"PHP Refactoring - Error while constructing an include-path (constructIncludePath)", //$NON-NLS-1$
+								e, PHPEditorPlugin.DEBUG_SCOPE);
 					}
 				}
 			}
-			
-			//in other case, using original build-paths for reporting unsatisfied state
+
+			// in other case, using original build-paths for reporting unsatisfied state
 			String includePath = constructPathFromRoot(to);
 			return new ConstructedIncludePath(includePath, fromBuildPath, toBuildPath);
 		}
 	}
-	
+
 	/**
 	 * Constructs include path from one module to another.
 	 * 
-	 * @param from - module to construct include path from.
-	 * @param toBuildPath - destination build-path.
-	 * @param toPath - path inside destination build-path.
-	 * 
+	 * @param from
+	 *            - module to construct include path from.
+	 * @param toBuildPath
+	 *            - destination build-path.
+	 * @param toPath
+	 *            - path inside destination build-path.
 	 * @return constructed include path
 	 */
-	public static ConstructedIncludePath constructIncludePath(IModule from, IBuildPath toBuildPath,
-			IPath toPath)
+	public static ConstructedIncludePath constructIncludePath(IModule from, IBuildPath toBuildPath, IPath toPath)
 	{
 		IBuildPath fromBuildPath = from.getBuildPath();
 		Set<IBuildPath> fromDependencies = fromBuildPath.getDependencies();
-		
-		//if "from" build-path directly depends from "to" build-path
-		if (fromBuildPath.equals(toBuildPath)||fromDependencies.contains(toBuildPath))
+
+		// if "from" build-path directly depends from "to" build-path
+		if (fromBuildPath.equals(toBuildPath) || fromDependencies.contains(toBuildPath))
 		{
 			String includePath = constructPathFromRoot(toPath);
 			return new ConstructedIncludePath(includePath, null, null);
 		}
 		else
 		{
-			//for local modules using its project-based build-path instead of native module build-path
-			if (toBuildPath instanceof ProjectBuildPath || 
-					toBuildPath instanceof WorkspaceFolderBuildpath)
+			// for local modules using its project-based build-path instead of native module build-path
+			if (toBuildPath instanceof ProjectBuildPath || toBuildPath instanceof WorkspaceFolderBuildpath)
 			{
 				IProject project = null;
 				if (toBuildPath instanceof ProjectBuildPath)
@@ -134,20 +142,17 @@ public final class RefactoringUtils
 				}
 				else
 				{
-					project = 
-						((WorkspaceFolderBuildpath) toBuildPath).getFolder().getProject();
+					project = ((WorkspaceFolderBuildpath) toBuildPath).getFolder().getProject();
 				}
-				IBuildPath projectBuildPath = 
-					BuildPathManager.getInstance().getBuildPathByResource(project);
+				IBuildPath projectBuildPath = BuildPathManager.getInstance().getBuildPathByResource(project);
 				if (projectBuildPath != null)
 				{
 					String includePath = constructPathFromRoot(toPath);
-					return new ConstructedIncludePath(includePath, fromBuildPath,
-							projectBuildPath);
+					return new ConstructedIncludePath(includePath, fromBuildPath, projectBuildPath);
 				}
 			}
-			
-			//in other case, using original build-paths for reporting unsatisfied state
+
+			// in other case, using original build-paths for reporting unsatisfied state
 			String includePath = constructPathFromRoot(toPath);
 			return new ConstructedIncludePath(includePath, fromBuildPath, toBuildPath);
 		}
@@ -155,18 +160,20 @@ public final class RefactoringUtils
 
 	/**
 	 * Gets all the values of the entries that include the module specified.
-	 * @param index - index to use.
-	 * @param module - module.
+	 * 
+	 * @param index
+	 *            - index to use.
+	 * @param module
+	 *            - module.
 	 * @return map from module to the list of entries defined in that module
 	 */
 	public static Map<IModule, List<IncludePHPEntryValue>> getIncludes(IElementsIndex index, IModule module)
 	{
-		Map<IModule, List<IncludePHPEntryValue>> candidates = 
-			new HashMap<IModule, List<IncludePHPEntryValue>>();
-		
+		Map<IModule, List<IncludePHPEntryValue>> candidates = new HashMap<IModule, List<IncludePHPEntryValue>>();
+
 		String moduleShortName = module.getShortName();
-		
-		//collecting initial candidates
+
+		// collecting initial candidates
 		Set<IModule> modules = index.getModules();
 		for (IModule currentModule : modules)
 		{
@@ -177,7 +184,7 @@ public final class RefactoringUtils
 				if (entryValue instanceof IncludePHPEntryValue)
 				{
 					IncludePHPEntryValue includeValue = (IncludePHPEntryValue) entryValue;
-					if(includeValue.getIncludePath().endsWith(moduleShortName))
+					if (includeValue.getIncludePath().endsWith(moduleShortName))
 					{
 						List<IncludePHPEntryValue> moduleValues = candidates.get(currentModule);
 						if (moduleValues == null)
@@ -185,17 +192,16 @@ public final class RefactoringUtils
 							moduleValues = new ArrayList<IncludePHPEntryValue>(1);
 							candidates.put(currentModule, moduleValues);
 						}
-						
+
 						moduleValues.add(includeValue);
 					}
 				}
 			}
 		}
-		
-		Map<IModule, List<IncludePHPEntryValue>> result = 
-			new HashMap<IModule, List<IncludePHPEntryValue>>();
-		
-		//filtering candidates
+
+		Map<IModule, List<IncludePHPEntryValue>> result = new HashMap<IModule, List<IncludePHPEntryValue>>();
+
+		// filtering candidates
 		for (Entry<IModule, List<IncludePHPEntryValue>> entry : candidates.entrySet())
 		{
 			IModule currentModule = entry.getKey();
@@ -204,8 +210,7 @@ public final class RefactoringUtils
 			{
 				String includePathString = value.getIncludePath();
 				IPath includePath = new Path(includePathString);
-				IModule resolvedModule = 
-					currentModule.getBuildPath().resolveRelativePath(currentModule, includePath);
+				IModule resolvedModule = currentModule.getBuildPath().resolveRelativePath(currentModule, includePath);
 				if (resolvedModule != null && resolvedModule.equals(module))
 				{
 					List<IncludePHPEntryValue> moduleValues = result.get(currentModule);
@@ -214,18 +219,20 @@ public final class RefactoringUtils
 						moduleValues = new ArrayList<IncludePHPEntryValue>(1);
 						result.put(currentModule, moduleValues);
 					}
-					
+
 					moduleValues.add(value);
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Constructs path from the root of a build path to a module.
-	 * @param module - module.
+	 * 
+	 * @param module
+	 *            - module.
 	 * @return include path.
 	 */
 	private static String constructPathFromRoot(IModule module)
@@ -237,21 +244,23 @@ public final class RefactoringUtils
 		{
 			return null;
 		}
-		
+
 		for (int i = 0; i < segments.length - 1; i++)
 		{
 			result.append(segments[i]);
-			result.append("/"); //$NON-NLS-1$
+			result.append('/');
 		}
-		
+
 		result.append(segments[segments.length - 1]);
-		
+
 		return result.toString();
 	}
-	
+
 	/**
 	 * Constructs path from the root of a build path to a module.
-	 * @param modulePath - module path from root.
+	 * 
+	 * @param modulePath
+	 *            - module path from root.
 	 * @return include path.
 	 */
 	public static String constructPathFromRoot(IPath modulePath)
@@ -262,39 +271,43 @@ public final class RefactoringUtils
 		{
 			return null;
 		}
-		
+
 		for (int i = 0; i < segments.length - 1; i++)
 		{
 			result.append(segments[i]);
-			result.append("/"); //$NON-NLS-1$
+			result.append('/');
 		}
-		
+
 		result.append(segments[segments.length - 1]);
-		
+
 		return result.toString();
 	}
+
 	/**
 	 * Gets module includes.
-	 * @param module - module
 	 * 
+	 * @param module
+	 *            - module
 	 * @return module includes list
 	 */
 	public static List<IncludePHPEntryValue> getModuleIncludes(IModule module)
 	{
 		return getModuleIncludes(module, PHPGlobalIndexer.getInstance().getIndex());
 	}
-	
+
 	/**
 	 * Gets module includes.
-	 * @param module - module
-	 * @param index - index to use.
 	 * 
+	 * @param module
+	 *            - module
+	 * @param index
+	 *            - index to use.
 	 * @return module includes list
 	 */
 	public static List<IncludePHPEntryValue> getModuleIncludes(IModule module, IElementsIndex index)
 	{
 		List<IncludePHPEntryValue> result = new ArrayList<IncludePHPEntryValue>();
-		
+
 		List<IElementEntry> moduleEntries = index.getModuleEntries(module);
 		for (IElementEntry entry : moduleEntries)
 		{
@@ -304,10 +317,10 @@ public final class RefactoringUtils
 				result.add((IncludePHPEntryValue) entryValue);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * RefactoringUtils constructor.
 	 */

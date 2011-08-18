@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
@@ -113,7 +113,7 @@ public class ContentAssistUtils
 	 * @param eq
 	 * @return list of model element that matches to given name
 	 */
-	public synchronized static ArrayList<Object> selectModelElements(String name, boolean eq)
+	public synchronized static List<Object> selectModelElements(String name, boolean eq)
 	{
 		if (index == null || index.isEmpty())
 		{
@@ -131,7 +131,7 @@ public class ContentAssistUtils
 			return null;
 		}
 
-		ArrayList<Object> toReturn = new ArrayList<Object>();
+		List<Object> toReturn = new ArrayList<Object>();
 
 		if (name.length() == 0)
 		{

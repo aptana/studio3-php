@@ -15,6 +15,7 @@ import com.aptana.editor.php.internal.core.builder.IDirectory;
 
 /**
  * Abstract directory.
+ * 
  * @author Denis Denisenko
  */
 public abstract class AbstractDirectory extends AbstractBuildPathResource implements IDirectory
@@ -22,14 +23,17 @@ public abstract class AbstractDirectory extends AbstractBuildPathResource implem
 
 	/**
 	 * AbstractDirectory constructor.
-	 * @param buildPath - build path.
-	 * @param fullPath - full path.
+	 * 
+	 * @param buildPath
+	 *            - build path.
+	 * @param fullPath
+	 *            - full path.
 	 */
-	public AbstractDirectory(IBuildPath buildPath, String fullPath)
+	protected AbstractDirectory(IBuildPath buildPath, String fullPath)
 	{
 		super(buildPath, fullPath);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

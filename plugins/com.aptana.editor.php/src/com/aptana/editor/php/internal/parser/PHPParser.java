@@ -3,25 +3,31 @@ package com.aptana.editor.php.internal.parser;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.nodes.AST;
-import org.eclipse.php.internal.core.ast.nodes.ASTParser;
-import org.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.nodes.AST;
+import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.IOUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
+import com.aptana.editor.php.internal.parser.nodes.PHPCommentNode;
 import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.IParser;
@@ -39,7 +45,7 @@ import com.aptana.parsing.ast.ParseRootNode;
  */
 public class PHPParser implements IParser
 {
-
+	protected static final ParseNode[] NO_CHILDREN = new ParseNode[0];
 	private PHPVersion phpVersion;
 	private IModule module;
 	private ISourceModule sourceModule;
@@ -64,12 +70,12 @@ public class PHPParser implements IParser
 	/**
 	 * Override the default implementation to provide support for PHP nodes inside JavaScript.
 	 */
-	public IParseRootNode parse(IParseState parseState) throws java.lang.Exception
+	public IParseRootNode parse(IParseState parseState) // $codepro.audit.disable declaredExceptions
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		IParseRootNode root = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], startingOffset, startingOffset
-				+ source.length());
+		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, startingOffset,
+				startingOffset + source.length() - 1);
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
 		{
@@ -88,27 +94,33 @@ public class PHPParser implements IParser
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule);
+			parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule); // $codepro.audit.disable
+																									// closeWhereCreated
 			program = parser.createAST(null);
 		}
 		catch (Exception e)
 		{
 			// TODO: handle exception
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP parser error", e); //$NON-NLS-1$
 		}
 		if (program != null)
 		{
 			processChildren(program, root, source);
 		}
-		parseState.setParseResult(root);
 		if (program != null)
 		{
+			parseState.setParseResult(root);
 			try
 			{
 				program.setSourceModule(ModelUtils.convertModule(module));
 				// TODO: Shalom - check for Program errors?
 				// if (!ast.hasSyntaxErrors() && module != null) {
-				program.getAST().flushErrors();
+				AST ast = program.getAST();
+				if (ast.hasErrors())
+				{
+					parseState.setParseResult(null);
+				}
+				ast.flushErrors();
 				if (module != null)
 				{
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
@@ -118,7 +130,7 @@ public class PHPParser implements IParser
 			}
 			catch (Throwable t)
 			{
-				PHPEditorPlugin.logError(t);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP parser error", t); //$NON-NLS-1$
 			}
 			reconciled(program, false, new NullProgressMonitor());
 		}
@@ -146,20 +158,20 @@ public class PHPParser implements IParser
 	 * @throws java.lang.Exception
 	 * @see {@link #parse(IParseState)}
 	 */
-	public IParseRootNode parse(InputStream source) throws java.lang.Exception
+	public IParseRootNode parse(InputStream source)
 	{
 		String input = IOUtil.read(source);
-		Program ast = parseAST(new StringReader(input));
+		Program ast = parseAST(new StringReader(input)); // $codepro.audit.disable closeWhereCreated
 		if (ast != null)
 		{
 
-			IParseRootNode root = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], ast.getStart(), ast
-					.getEnd());
+			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, ast.getStart(),
+					ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
 			return root;
 		}
-		return new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], 0, 0);
+		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, 0, 0);
 	}
 
 	/**
@@ -182,7 +194,7 @@ public class PHPParser implements IParser
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP parser error", e); //$NON-NLS-1$
 		}
 		return ast;
 	}
@@ -207,14 +219,20 @@ public class PHPParser implements IParser
 	/*
 	 * Process the AST and update the given IParseNode
 	 */
-	private void processChildren(Program ast, IParseNode root, String source)
+	private void processChildren(Program ast, ParseRootNode root, String source)
 	{
 		/*
 		 * kept here for Debug purposes ApplyAll astPrinter = new ApplyAll() {
 		 * @Override public boolean apply(ASTNode node) { System.out.println(node.toString()); return true; } };
 		 * ast.accept(astPrinter);
 		 */
-		NodeBuilder builderClient = new NodeBuilder();
+		List<IParseNode> commentNodes = new ArrayList<IParseNode>();
+		for (Comment c : ast.comments())
+		{
+			commentNodes.add(new PHPCommentNode(c));
+		}
+		root.setCommentNodes(commentNodes.toArray(new IParseNode[commentNodes.size()]));
+		NodeBuilder builderClient = new NodeBuilder(source);
 		ast.accept(new NodeBuildingVisitor(builderClient, source));
 		PHPBlockNode nodes = builderClient.populateNodes();
 		for (IParseNode child : nodes.getChildren())

@@ -18,7 +18,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.php.internal.core.PHPVersion;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPartService;
@@ -30,10 +32,12 @@ import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org2.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.outline.CommonOutlinePage;
 import com.aptana.editor.common.parsing.FileService;
+import com.aptana.editor.common.text.reconciler.IFoldingComputer;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -46,10 +50,10 @@ import com.aptana.editor.php.internal.builder.BuildPathManager;
 import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.SingleFileBuildPath;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.core.model.ISourceModuleProviderEditor;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
 import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.parser.nodes.PHPExtendsNode;
 import com.aptana.editor.php.internal.ui.actions.IPHPActionKeys;
@@ -94,7 +98,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	// Mark Occurrences management
 	private OccurrencesUpdater occurrencesUpdater;
-	
+
 	/**
 	 * Constructs a new PHP source editor.
 	 */
@@ -119,8 +123,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		setPreferenceStore(store);
 
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
-		documentProvider = new PHPDocumentProvider();
-		setDocumentProvider(documentProvider);
+		setDocumentProvider(documentProvider = PHPEditorPlugin.getDefault().getPHPDocumentProvider());
 		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor?
 	}
 
@@ -131,7 +134,13 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			phpParseState = new PHPParseState();
 		}
-		return new FileService(PHPMimeType.MIME_TYPE, phpParseState);
+		return new FileService(IPHPConstants.CONTENT_TYPE_PHP, phpParseState);
+	}
+
+	@Override
+	public IFoldingComputer createFoldingComputer(IDocument document)
+	{
+		return new PHPFoldingComputer(this, document);
 	}
 
 	/*
@@ -144,6 +153,15 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		super.createPartControl(parent);
 		IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 		contextService.activateContext(PHP_EDITOR_CONTEXT);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.AbstractThemeableEditor#installOccurrencesUpdater()
+	 */
+	@Override
+	protected void installOccurrencesUpdater()
+	{
 		// Initialize the occurrences annotations marker
 		occurrencesUpdater = new OccurrencesUpdater(this);
 		occurrencesUpdater.initialize(getPreferenceStore());
@@ -235,34 +253,29 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		PHPVersionProvider.getInstance().removePHPVersionListener(this);
 		PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
 		PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
-		occurrencesUpdater.dispose();
+		if (occurrencesUpdater != null)
+		{
+			occurrencesUpdater.dispose();
+		}
 		super.dispose();
 	}
 
 	@Override
-	protected CommonOutlinePage createOutlinePage()
+	public ITreeContentProvider getOutlineContentProvider()
 	{
-		CommonOutlinePage outline = super.createOutlinePage();
-		// Add the PHP-HTML (PHTML) outline provider
-		outline.setContentProvider(new PHTMLOutlineContentProvider());
-		outline.setLabelProvider(new PHPDecoratingLabelProvider(getFileService().getParseState()));
+		return new PHTMLOutlineContentProvider();
+	}
 
-		return outline;
+	@Override
+	public ILabelProvider getOutlineLabelProvider()
+	{
+		return new PHPDecoratingLabelProvider(getFileService().getParseState());
 	}
 
 	@Override
 	protected char[] getPairMatchingCharacters()
 	{
 		return PAIR_MATCHING_CHARS;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.editor.html.HTMLEditor#installOpenTagCloser()
-	 */
-	protected void installOpenTagCloser()
-	{
-		new PHPOpenTagCloser(getSourceViewer()).install();
 	}
 
 	/*
@@ -290,7 +303,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	public String getLanguage()
 	{
-		return PHPMimeType.MIME_TYPE;
+		return IPHPConstants.CONTENT_TYPE_PHP;
 	}
 
 	public void phpVersionChanged(PHPVersion newVersion)
@@ -300,7 +313,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
-				getFileService().parse(true);
+				getFileService().parse(true, monitor);
 				return Status.OK_STATUS;
 			}
 		};
@@ -429,11 +442,9 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			if (sourceURI == null)
 			{
-				if (PHPEditorPlugin.DEBUG)
-				{
-					PHPEditorPlugin.log(new Status(IStatus.WARNING, PHPEditorPlugin.PLUGIN_ID,
-							"sourceUri was null. Returning null")); //$NON-NLS-1$
-				}
+				IdeLog.logWarning(
+						PHPEditorPlugin.getDefault(),
+						"PHPSourceEditor::computeModule() - sourceUri was null. Returning null", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 				return null;
 			}
 			String struri = sourceURI;
@@ -455,15 +466,15 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 						uri = new URI(struri.substring(0, fileNameStart + 1) + encoded);
 					}
 				}
-				catch (UnsupportedEncodingException e1)
+				catch (UnsupportedEncodingException e1) // $codepro.audit.disable emptyCatchClause
 				{
 				}
-				catch (URISyntaxException e2)
+				catch (URISyntaxException e2) // $codepro.audit.disable emptyCatchClause
 				{
 				}
 				if (uri == null)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "PHPSourceEditor::computeModule() - malformed URI", e); //$NON-NLS-1$
 					return null;
 				}
 			}
@@ -491,7 +502,9 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 				}
 				catch (CoreException e)
 				{
-					// ignore
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"PHP Source Editor error in computing module(computeModule)", //$NON-NLS-1$
+							e, PHPEditorPlugin.DEBUG_SCOPE);
 				}
 			}
 
@@ -518,5 +531,15 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		module = fileSystemModule;
 		sourceModule = null;
 		return fileSystemModule;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.html.HTMLEditor#getPluginPreferenceStore()
+	 */
+	@Override
+	protected IPreferenceStore getPluginPreferenceStore()
+	{
+		return PHPEplPlugin.getDefault().getPreferenceStore();
 	}
 }

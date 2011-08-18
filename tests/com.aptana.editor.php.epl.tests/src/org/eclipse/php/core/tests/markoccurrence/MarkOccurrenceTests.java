@@ -34,16 +34,16 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.php.core.tests.AbstractPDTTTest;
 import org.eclipse.php.core.tests.PdttFile;
 import org.eclipse.php.core.tests.TestUtils;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.locator.PhpElementConciliator;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.ASTParser;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.Program;
-import org.eclipse.php.internal.core.corext.NodeFinder;
-import org.eclipse.php.internal.core.search.IOccurrencesFinder;
-import org.eclipse.php.internal.core.search.OccurrencesFinderFactory;
-import org.eclipse.php.internal.core.search.IOccurrencesFinder.OccurrenceLocation;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.locator.PhpElementConciliator;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.corext.NodeFinder;
+import org2.eclipse.php.internal.core.search.IOccurrencesFinder;
+import org2.eclipse.php.internal.core.search.IOccurrencesFinder.OccurrenceLocation;
+import org2.eclipse.php.internal.core.search.OccurrencesFinderFactory;
 
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.core.PHPVersionProvider;
@@ -58,6 +58,7 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 
 	protected static final char OFFSET_CHAR = '|';
 	protected static final Map<PHPVersion, String[]> TESTS = new LinkedHashMap<PHPVersion, String[]>();
+	protected static int testNumber;
 	static
 	{
 		TESTS.put(PHPVersion.PHP5, new String[] { "/workspace/markoccurrence/php5" });
@@ -126,7 +127,7 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 							{
 								if (testFile != null)
 								{
-									testFile.delete(true, null);
+									safeDelete(testFile);
 									testFile = null;
 								}
 							}
@@ -143,18 +144,13 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 					catch (final Exception e)
 					{
 						phpVerSuite.addTest(new TestCase(fileName)
-						{ // dummy
-									// test
-									// indicating
-									// PDTT
-									// file
-									// parsing
-									// failure
-									protected void runTest() throws Throwable
-									{
-										throw e;
-									}
-								});
+						{
+							// dummy test indicating PDTT file parsing failure
+							protected void runTest() throws Throwable
+							{
+								throw e;
+							}
+						});
 					}
 				}
 			}
@@ -221,13 +217,20 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 		// replace the offset character
 		data = data.substring(0, offset) + data.substring(offset + 1);
 
-		testFile = project.getFile("test.php"); //$NON-NLS-1$
+		testNumber++;
+		testFile = project.getFile("test-" + testNumber + ".php"); //$NON-NLS-1$
+		if (testFile.exists())
+		{
+			safeDelete(testFile);
+			testFile = project.getFile("test-" + testNumber + ".php"); //$NON-NLS-1$
+		}
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 
+		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
-		// PHPCoreTests.waitForAutoBuild();
+
 		Program astRoot = createProgramFromSource(testFile);
 		ASTNode selectedNode = NodeFinder.perform(astRoot, offset, 0);
 		OccurrenceLocation[] locations = null;
@@ -247,7 +250,6 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 			}
 		}
 		compareProposals(locations, newStarts);
-		// return locations;
 	}
 
 	/**
@@ -318,6 +320,7 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 		return ModelUtils.getModule(testFile);
 	}
 
+	@SuppressWarnings("unused")
 	public static void compareProposals(OccurrenceLocation[] proposals, List<Integer> starts) throws Exception
 	{
 		// String[] lines = pdttFile.getExpected().split("\n");
@@ -350,8 +353,8 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 			errorBuf.append("\nEXPECTED COMPLETIONS LIST:\n-----------------------------\n");
 			for (int i = 0; i < starts.size() / 2; i++)
 			{
-				errorBuf.append('[').append(starts.get(i * 2)).append(',').append(
-						starts.get(i * 2 + 1) - starts.get(i * 2)).append(']').append("\n");
+				errorBuf.append('[').append(starts.get(i * 2)).append(',')
+						.append(starts.get(i * 2 + 1) - starts.get(i * 2)).append(']').append("\n");
 			}
 			errorBuf.append("\nACTUAL COMPLETIONS LIST:\n-----------------------------\n");
 			for (OccurrenceLocation p : proposals)

@@ -3,7 +3,7 @@ package com.aptana.editor.php.internal.ui.editor.scanner.tokenMap;
 import java_cup.runtime.Symbol;
 
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.php.internal.core.ast.scanner.php5.ParserConstants;
+import org2.eclipse.php.internal.core.ast.scanner.php5.ParserConstants;
 
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
@@ -15,18 +15,20 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 	{
 		switch (sym.sym)
 		{
+			case T_ECHO:
+			case T_EVAL:
+				return scanner.getToken("support.function.construct.php"); //$NON-NLS-1$
+			case T_DEFINE:
+				return scanner.getToken("support.function.builtin_functions.php"); //$NON-NLS-1$
 			case T_USE:
 			case T_CLONE:
 			case T_DECLARE:
-			case T_DEFINE:
 			case T_ENDDECLARE:
 			case T_ARRAY:
 			case T_THROW:
 			case T_TRY:
 			case T_CATCH:
-			case T_ECHO:
 			case T_EMPTY:
-			case T_EVAL:
 			case T_HALT_COMPILER:
 			case T_LIST:
 			case T_NEW:
@@ -60,33 +62,44 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 				// TODO - Shalom: Missing DIE, TRUE, FALSE
 				return scanner.getToken("keyword.control.php"); //$NON-NLS-1$
 			case T_FINAL:
+				return scanner.getToken("storage.modifier.final.php"); //$NON-NLS-1$
 			case T_STATIC:
+				return scanner.getToken("storage.modifier.static.php"); //$NON-NLS-1$
 			case T_PRIVATE:
+				return scanner.getToken("storage.modifier.private.php"); //$NON-NLS-1$
 			case T_PUBLIC:
+				return scanner.getToken("storage.modifier.public.php"); //$NON-NLS-1$
 			case T_PROTECTED:
-				return scanner.getToken("storage.modifier.php"); //$NON-NLS-1$
+				return scanner.getToken("storage.modifier.protected.php"); //$NON-NLS-1$
+			case T_ABSTRACT:
+				return scanner.getToken("storage.modifier.abstract.php"); //$NON-NLS-1$
 			case T_FUNCTION:
+				return scanner.getToken("storage.type.function.php"); //$NON-NLS-1$
 			case T_CLASS:
+				return scanner.getToken("storage.type.class.php"); //$NON-NLS-1$
+			case T_INTERFACE:
 			case T_GLOBAL:
 			case T_VAR:
 				return scanner.getToken("storage.type.php"); //$NON-NLS-1$
 			case T_INSTANCEOF:
 			case T_EXTENDS:
-			case T_ABSTRACT:
 			case T_IMPLEMENTS:
-			case T_INTERFACE:
 				return scanner.getToken("keyword.other.class.php"); //$NON-NLS-1$
 			case T_INCLUDE:
 			case T_INCLUDE_ONCE:
 			case T_REQUIRE:
 			case T_REQUIRE_ONCE:
 				return scanner.getToken("keyword.control.import.php"); //$NON-NLS-1$
+			case T_OBJECT_OPERATOR:
+				return scanner.getToken("keyword.operator.class.php"); //$NON-NLS-1$
+			case T_PAAMAYIM_NEKUDOTAYIM:
+				return scanner.getToken("meta.function-call.static.php"); //$NON-NLS-1$
 			case T_AT:
 			case T_AS:
 			case T_LOGICAL_AND:
 			case T_LOGICAL_OR:
 			case T_LOGICAL_XOR:
-				return scanner.getToken("keyword.operator.php"); //$NON-NLS-1$
+				return scanner.getToken("keyword.operator.logical.php"); //$NON-NLS-1$
 			case T_VARIABLE:
 				if (THIS.equals(scanner.getSymbolValue(sym)))
 				{
@@ -101,6 +114,11 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 				return scanner.getToken("constant.language.php"); //$NON-NLS-1$
 			case T_CONST:
 				return scanner.getToken("constant.php"); //$NON-NLS-1$
+			case T_LNUMBER:
+			case T_DNUMBER:
+				return scanner.getToken("constant.numeric.php"); //$NON-NLS-1$
+			case T_CONSTANT_ENCAPSED_STRING:
+				return scanner.getToken("string.quoted.php"); //$NON-NLS-1$
 			case T_STRING:
 				String tokenContent = scanner.getSymbolValue(sym);
 				if (SELF.equals(tokenContent) || PARENT.equals(tokenContent))
@@ -113,7 +131,7 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
-					return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+					return scanner.getToken("constant.language.other.php"); //$NON-NLS-1$
 				}
 				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)
@@ -131,8 +149,8 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 						return scanner.getToken("support.constant"); //$NON-NLS-1$
 					}
 				}
-			default:
-				return scanner.getToken("default.php"); //$NON-NLS-1$
+			default: // $codepro.audit.disable nonTerminatedCaseClause
+				return PHPTokenMapperFactory.mapDefaultToken(scanner, sym);
 		}
 	}
 }

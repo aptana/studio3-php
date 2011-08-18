@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.Path;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -163,7 +164,9 @@ public final class ElementsIndexingUtils
 			}
 			catch (Throwable th)
 			{
-				// skip
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"PHP elements indexing - Error while including modules (addModulesIncluded)", //$NON-NLS-1$
+						th, PHPEditorPlugin.INDEXER_SCOPE);
 			}
 		}
 	}

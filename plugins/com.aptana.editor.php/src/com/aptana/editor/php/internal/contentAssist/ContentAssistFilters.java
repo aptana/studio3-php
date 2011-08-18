@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -66,8 +66,11 @@ public class ContentAssistFilters
 
 		for (IElementEntry entry : entries)
 		{
-			if ((entry.getCategory() == IPHPIndexConstants.VAR_CATEGORY
-					|| entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY || entry.getCategory() == IPHPIndexConstants.CONST_CATEGORY)
+			if (entry.getCategory() == IPHPIndexConstants.CONST_CATEGORY)
+			{
+				result.add(entry);
+			}
+			else if ((entry.getCategory() == IPHPIndexConstants.VAR_CATEGORY || entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY)
 					&& entry.getValue() instanceof AbstractPHPEntryValue)
 			{
 

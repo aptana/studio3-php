@@ -47,7 +47,7 @@ public abstract class AbstractMember extends AbstractModelElement implements IMe
 	 * @param entry
 	 *            - entry.
 	 */
-	public AbstractMember(IElementEntry entry)
+	protected AbstractMember(IElementEntry entry)
 	{
 		this.entry = entry;
 	}

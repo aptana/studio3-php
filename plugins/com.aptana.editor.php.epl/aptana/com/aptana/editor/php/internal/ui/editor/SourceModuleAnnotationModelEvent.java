@@ -9,6 +9,7 @@ import org.eclipse.jface.text.source.AnnotationModelEvent;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -56,7 +57,7 @@ public class SourceModuleAnnotationModelEvent extends AnnotationModelEvent
 			}
 			catch (CoreException e)
 			{
-				PHPEplPlugin.logError(e);
+				IdeLog.logError(PHPEplPlugin.getDefault(), "Error getting a PHP error marker", e); //$NON-NLS-1$
 			}
 		}
 	}

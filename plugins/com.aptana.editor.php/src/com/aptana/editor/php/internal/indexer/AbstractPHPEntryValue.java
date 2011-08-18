@@ -12,7 +12,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import com.aptana.editor.php.indexer.IReportable;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.ast.ILanguageNode;
 
 /**
@@ -40,13 +40,13 @@ public abstract class AbstractPHPEntryValue implements IReportable, ILanguageNod
 	 * @param modifiers
 	 *            - modifiers.
 	 */
-	public AbstractPHPEntryValue(int modifiers, String namespace)
+	protected AbstractPHPEntryValue(int modifiers, String namespace)
 	{
 		this.modifiers = modifiers;
 		this.nameSpace = namespace;
 	}
 
-	public AbstractPHPEntryValue(DataInputStream di) throws IOException
+	protected AbstractPHPEntryValue(DataInputStream di) throws IOException
 	{
 		this.modifiers = di.readInt();
 		this.startOffset = di.readInt();
@@ -139,6 +139,6 @@ public abstract class AbstractPHPEntryValue implements IReportable, ILanguageNod
 	 */
 	public String getLanguage()
 	{
-		return PHPMimeType.MIME_TYPE;
+		return IPHPConstants.CONTENT_TYPE_PHP;
 	}
 }

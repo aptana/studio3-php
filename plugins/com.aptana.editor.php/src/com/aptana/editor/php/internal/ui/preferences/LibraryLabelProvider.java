@@ -9,13 +9,14 @@ package com.aptana.editor.php.internal.ui.preferences;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.builder.IPHPLibrary;
@@ -30,9 +31,9 @@ public final class LibraryLabelProvider extends LabelProvider
 	static Image uLibraryImage = AbstractUIPlugin.imageDescriptorFromPlugin(PHPEplPlugin.PLUGIN_ID,
 			"/icons/full/obj16/library_obj.gif").createImage(); //$NON-NLS-1$
 
-	private final HashMap<URL, Image> images;
+	private final Map<URL,Image> images;
 
-	public LibraryLabelProvider(HashMap<URL, Image> images)
+	public LibraryLabelProvider(Map<URL,Image> images)
 	{
 		this.images = images;
 	}
@@ -62,7 +63,8 @@ public final class LibraryLabelProvider extends LabelProvider
 				}
 				catch (IOException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"PHP library label provider - error getting a library image", e); //$NON-NLS-1$
 					return null;
 				}
 			}

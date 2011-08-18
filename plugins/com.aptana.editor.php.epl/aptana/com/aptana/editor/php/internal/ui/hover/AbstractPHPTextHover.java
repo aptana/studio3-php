@@ -8,15 +8,18 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextHoverExtension2;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.php.internal.ui.text.PHPWordFinder;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org2.eclipse.php.internal.ui.text.PHPWordFinder;
+
+import com.aptana.editor.common.contentassist.CommonTextHover;
 
 /**
  * Base class for PHP information hovers
  */
-public abstract class AbstractPHPTextHover implements ITextHover, ITextHoverExtension, ITextHoverExtension2
+public abstract class AbstractPHPTextHover extends CommonTextHover implements ITextHover, ITextHoverExtension,
+		ITextHoverExtension2
 {
 	private IEditorPart fEditor;
 

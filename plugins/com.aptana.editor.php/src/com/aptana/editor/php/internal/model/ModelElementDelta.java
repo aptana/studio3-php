@@ -1,3 +1,4 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 /*******************************************************************************
  * Copyright (c) 2005, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +11,7 @@
 package com.aptana.editor.php.internal.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IResourceDelta;
 
@@ -296,11 +298,11 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 	 * Creates the nested delta deltas based on the affected element its delta, and the root of this delta tree. Returns
 	 * the root of the created delta tree.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"rawtypes"})
 	protected ModelElementDelta createDeltaTree(IModelElement element, ModelElementDelta delta)
 	{
 		ModelElementDelta childDelta = delta;
-		ArrayList ancestors = getAncestors(element);
+		List ancestors = getAncestors(element);
 		if (ancestors == null)
 		{
 			if (this.equalsAndSameParent(delta.getElement(), getElement()))
@@ -349,8 +351,8 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 	 * bottom-up order. If the given element is not a descendant of the root of this tree, <code>null</code> is
 	 * returned.
 	 */
-	@SuppressWarnings("unchecked")
-	private ArrayList getAncestors(IModelElement element)
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private List getAncestors(IModelElement element)
 	{
 		IModelElement parent = element.getParent();
 		if (parent == null)
@@ -559,7 +561,7 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 	/**
 	 * @see IModelElementDelta
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	protected IModelElementDelta[] getChildrenOfType(int type)
 	{
 		int length = affectedChildren.length;
@@ -567,7 +569,7 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 		{
 			return new IModelElementDelta[] {};
 		}
-		ArrayList children = new ArrayList(length);
+		List children = new ArrayList(length);
 		for (int i = 0; i < length; i++)
 		{
 			if (affectedChildren[i].getKind() == type)
@@ -611,20 +613,20 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 		{
 			for (int i = 0; i < children.length; ++i)
 			{
-				buffer.append("\n"); //$NON-NLS-1$
+				buffer.append('\n');
 				buffer.append(((ModelElementDelta) children[i]).toDebugString(depth + 1));
 			}
 		}
 		for (int i = 0; i < resourceDeltasCounter; i++)
 		{
-			buffer.append("\n");//$NON-NLS-1$
+			buffer.append('\n');
 			for (int j = 0; j < depth + 1; j++)
 			{
 				buffer.append('\t');
 			}
 			IResourceDelta resourceDelta = resourceDeltas[i];
 			buffer.append(resourceDelta.toString());
-			buffer.append("["); //$NON-NLS-1$
+			buffer.append('[');
 			switch (resourceDelta.getKind())
 			{
 				case IResourceDelta.ADDED:
@@ -640,7 +642,7 @@ public class ModelElementDelta extends SimpleDelta implements IModelElementDelta
 					buffer.append('?');
 					break;
 			}
-			buffer.append("]"); //$NON-NLS-1$
+			buffer.append(']');
 		}
 		return buffer.toString();
 	}

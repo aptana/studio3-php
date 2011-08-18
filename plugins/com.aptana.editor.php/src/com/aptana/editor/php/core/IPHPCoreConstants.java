@@ -1,6 +1,6 @@
 package com.aptana.editor.php.core;
 
-import org.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.PHPEditorPlugin;
 

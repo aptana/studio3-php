@@ -12,7 +12,8 @@ import java.io.IOException;
 import beaver.Symbol;
 
 import com.aptana.editor.common.parsing.CompositeParser;
-import com.aptana.editor.html.parsing.IHTMLParserConstants;
+import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.ast.ParseNode;
@@ -20,14 +21,14 @@ import com.aptana.parsing.ast.ParseRootNode;
 
 public class PHTMLParser extends CompositeParser
 {
-
 	public PHTMLParser()
 	{
-		super(new PHTMLParserScanner(), IHTMLParserConstants.LANGUAGE);
+		super(new PHTMLParserScanner(), IHTMLConstants.CONTENT_TYPE_HTML);
 	}
 
 	@Override
-	protected IParseNode processEmbeddedlanguage(IParseState parseState) throws Exception
+	protected IParseNode processEmbeddedlanguage(IParseState parseState) throws Exception // $codepro.audit.disable
+																							// declaredExceptions
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
@@ -43,8 +44,8 @@ public class PHTMLParser extends CompositeParser
 				case PHTMLTokens.PHP:
 					if (root == null)
 					{
-						root = new ParseRootNode(PHPMimeType.MIME_TYPE, new ParseNode[0], startingOffset,
-								startingOffset + source.length());
+						root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, PHPParser.NO_CHILDREN, startingOffset,
+								startingOffset + source.length() - 1);
 					}
 					processPHPBlock(root);
 					break;
@@ -55,7 +56,7 @@ public class PHTMLParser extends CompositeParser
 		return root;
 	}
 
-	private void processPHPBlock(IParseNode root) throws IOException, Exception
+	private void processPHPBlock(IParseNode root) throws IOException, Exception // $codepro.audit.disable
 	{
 		Symbol startTag = getCurrentSymbol();
 		advance();
@@ -71,12 +72,21 @@ public class PHTMLParser extends CompositeParser
 			id = getCurrentSymbol().getId();
 		}
 
-		IParseNode result = getParseResult(PHPMimeType.MIME_TYPE, start, end);
+		IParseNode result = getParseResult(IPHPConstants.CONTENT_TYPE_PHP, start, end);
 		if (result != null)
 		{
 			Symbol endTag = getCurrentSymbol();
-			ParseNode phpNode = new ParseNode(PHPMimeType.MIME_TYPE);
-			phpNode.setLocation(startTag.getStart(), endTag.getEnd());
+			ParseNode phpNode = new ParseNode(IPHPConstants.CONTENT_TYPE_PHP);
+			int endOffset;
+			if ("?>".equals(endTag.value)) //$NON-NLS-1$
+			{
+				endOffset = endTag.getEnd() + 1;
+			}
+			else
+			{
+				endOffset = endTag.getEnd();
+			}
+			phpNode.setLocation(startTag.getStart(), endOffset);
 			root.addChild(phpNode);
 		}
 	}

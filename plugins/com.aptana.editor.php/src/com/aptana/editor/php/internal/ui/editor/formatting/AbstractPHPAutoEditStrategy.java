@@ -14,9 +14,13 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.preferences.IPreferenceConstants;
+import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
@@ -33,26 +37,26 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	/**
 	 * A set of PHP alternate end types, such as endif, endfor and such.
 	 */
-	protected static HashSet<String> ALTERNATIVE_END_STYLES = new HashSet<String>(Arrays.asList(
+	protected static Set<String> ALTERNATIVE_END_STYLES = new HashSet<String>(Arrays.asList(
 			PHPRegionTypes.PHP_ENDDECLARE, PHPRegionTypes.PHP_ENDFOR, PHPRegionTypes.PHP_ENDFOREACH,
 			PHPRegionTypes.PHP_ENDIF, PHPRegionTypes.PHP_ENDSWITCH, PHPRegionTypes.PHP_ENDWHILE));
 	/**
 	 * A set of possible PHP alternate start types, such as if, for and such.
 	 */
-	protected static HashSet<String> ALTERNATIVE_START_STYLES = new HashSet<String>(Arrays.asList(
+	protected static Set<String> ALTERNATIVE_START_STYLES = new HashSet<String>(Arrays.asList(
 			PHPRegionTypes.PHP_DECLARE, PHPRegionTypes.PHP_FOR, PHPRegionTypes.PHP_FOREACH, PHPRegionTypes.PHP_IF,
 			PHPRegionTypes.PHP_SWITCH, PHPRegionTypes.PHP_WHILE));
 
 	/**
 	 * A set of PHP block types, such as for, while and such.
 	 */
-	protected static HashSet<String> BLOCK_TYPES = new HashSet<String>(Arrays.asList(PHPRegionTypes.PHP_IF,
+	protected static Set<String> BLOCK_TYPES = new HashSet<String>(Arrays.asList(PHPRegionTypes.PHP_IF,
 			PHPRegionTypes.PHP_FOR, PHPRegionTypes.PHP_FOREACH, PHPRegionTypes.PHP_ELSEIF, PHPRegionTypes.PHP_ELSE,
 			PHPRegionTypes.PHP_SWITCH, PHPRegionTypes.PHP_WHILE, PHPRegionTypes.PHP_CASE, PHPRegionTypes.PHP_DEFAULT));
 	/**
 	 * When we hit those while searching for a pair match, we can tell for sure we are out of the search scope.
 	 */
-	protected static HashSet<String> TERMINATORS = new HashSet<String>(Arrays.asList(PHPRegionTypes.PHP_FUNCTION,
+	protected static Set<String> TERMINATORS = new HashSet<String>(Arrays.asList(PHPRegionTypes.PHP_FUNCTION,
 			PHPRegionTypes.PHP_CLASS, PHPRegionTypes.PHP_PUBLIC, PHPRegionTypes.PHP_PROTECTED,
 			PHPRegionTypes.PHP_PRIVATE));
 	/**
@@ -98,6 +102,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		this.contentType = contentType;
 		this.configuration = configuration;
 		this.sourceViewer = sourceViewer;
+
 	}
 
 	/**
@@ -119,8 +124,8 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		{
 			if (includeOtherPartitions)
 			{
-				lexemeProvider = ParsingUtils.createLexemeProvider(document, Math
-						.max(0, offset - MAX_CHARS_TO_LEX_BACK), offset);
+				lexemeProvider = ParsingUtils.createLexemeProvider(document,
+						Math.max(0, offset - MAX_CHARS_TO_LEX_BACK), offset);
 			}
 			else
 			{
@@ -149,7 +154,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 */
 	public void customizeDocumentCommand(IDocument document, DocumentCommand command)
 	{
-		if (command.text == null || command.length > 0)
+		if (command.text == null || command.length > 0 || !isAutoIndentEnabled())
 		{
 			return;
 		}
@@ -249,7 +254,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 					if (lowerIndentItems != null && lowerIndentItems.contains(type))
 					{
 						String indent = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
-						indent += configuration.getIndent();
+						indent += configuration.getIndent(); // $codepro.audit.disable stringConcatenationInLoop
 						indentationBuffer.append(indent);
 						return;
 					}
@@ -543,6 +548,15 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	}
 
 	/**
+	 * Returns the preference value of auto insert indents
+	 */
+
+	protected boolean isAutoIndentEnabled()
+	{
+		return PHPEplPlugin.getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.EDITOR_AUTO_INDENT);
+	}
+
+	/**
 	 * indentAfterNewLine
 	 * 
 	 * @param d
@@ -582,7 +596,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		String indentation = StringUtils.EMPTY;
 		try
 		{
-			int p = (offset == d.getLength() ? offset - 1 : offset);
+			int p = ((offset == d.getLength()) ? offset - 1 : offset);
 			IRegion line = d.getLineInformationOfOffset(p);
 
 			int lineOffset = line.getOffset();
@@ -593,7 +607,10 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		}
 		catch (BadLocationException excp)
 		{
-			// stop work
+			IdeLog.logWarning(
+					PHPEditorPlugin.getDefault(),
+					"PHP Auto Edit Strategy - Bad location while computing the indentation at offset (getIndentationAtOffset)", //$NON-NLS-1$
+					excp, PHPEditorPlugin.DEBUG_SCOPE);
 		}
 
 		return indentation;
@@ -651,6 +668,9 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		}
 		catch (BadLocationException e1)
 		{
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+					"PHP Auto Edit Strategy - Bad location while computing a line indentation (getIndentationString)", //$NON-NLS-1$
+					e1, PHPEditorPlugin.DEBUG_SCOPE);
 		}
 		if (lineIndent.equals(StringUtils.EMPTY))
 		{
@@ -681,17 +701,17 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		}
 		int indentCount = (int) Math.floor(indentSize / indentStringWidth); // assume no dived by zero from above tests
 
-		String indentation = StringUtils.EMPTY;
+		StringBuilder indentation = new StringBuilder();
 		for (int i = 0; i < indentCount; i++)
 		{
-			indentation += indentString;
+			indentation.append(indentString);
 		}
 		// here we might want to allow one tab when there are three spaces on the previous line when tabwdith = 4
 		// logic is just get the ending from the previous line
 		int extra = indentSize % indentStringWidth;
-		indentation += spaces.substring(0, extra);// lineIndent.substring(lineIndent.length() - extra);
+		indentation.append(spaces.substring(0, extra));// lineIndent.substring(lineIndent.length() - extra);
 
-		return indentation;
+		return indentation.toString();
 	}
 
 }

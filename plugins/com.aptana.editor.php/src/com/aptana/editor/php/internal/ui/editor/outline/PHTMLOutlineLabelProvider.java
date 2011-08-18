@@ -1,7 +1,7 @@
 package com.aptana.editor.php.internal.ui.editor.outline;
 
 import com.aptana.editor.html.outline.HTMLOutlineLabelProvider;
-import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.IParseState;
 
 public class PHTMLOutlineLabelProvider extends HTMLOutlineLabelProvider
@@ -14,7 +14,7 @@ public class PHTMLOutlineLabelProvider extends HTMLOutlineLabelProvider
 	 */
 	public PHTMLOutlineLabelProvider()
 	{
-		addSubLanguage(PHPMimeType.MIME_TYPE, new PHPOutlineLabelProvider());
+		addSubLanguage(IPHPConstants.CONTENT_TYPE_PHP, new PHPOutlineLabelProvider());
 	}
 
 	/**

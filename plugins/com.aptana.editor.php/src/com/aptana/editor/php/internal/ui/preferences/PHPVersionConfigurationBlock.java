@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.ui.util.StatusInfo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -18,7 +16,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.ui.util.StatusInfo;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants.Keys;
 import com.aptana.editor.php.ui.preferences.IStatusChangeListener;
@@ -182,7 +183,9 @@ public class PHPVersionConfigurationBlock extends PHPCoreOptionsConfigurationBlo
 		int index = PHP_ALIASES.indexOf(phpAlias);
 		if (index < 0)
 		{
-			PHPEditorPlugin.logWarning("Unresolved PHP version: " + phpAlias); //$NON-NLS-1$
+			IdeLog.logWarning(
+					PHPEditorPlugin.getDefault(),
+					"Unresolved PHP version: " + phpAlias, new Exception("Unresolved PHP version"), PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$ //$NON-NLS-2$
 			index = 0;
 		}
 		fPHPVersions.select(index);

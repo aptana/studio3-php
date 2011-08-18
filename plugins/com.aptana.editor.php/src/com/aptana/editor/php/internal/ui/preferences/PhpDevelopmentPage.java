@@ -1,12 +1,12 @@
 package com.aptana.editor.php.internal.ui.preferences;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.ui.preferences.PropertyAndPreferencePage;

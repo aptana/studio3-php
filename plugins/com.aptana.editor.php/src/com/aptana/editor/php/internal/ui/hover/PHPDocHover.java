@@ -1,8 +1,9 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.internal.ui.hover;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ToolBarManager;
@@ -17,16 +18,18 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension4;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.osgi.framework.Bundle;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.IOUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.hover.ThemedInformationControl;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
@@ -122,8 +125,8 @@ public class PHPDocHover extends AbstractPHPTextHover
 		{
 			if (BrowserInformationControl.isAvailable(parent))
 			{
-				BrowserInformationControl iControl = new BrowserInformationControl(parent, null, EditorsUI
-						.getTooltipAffordanceString())
+				BrowserInformationControl iControl = new BrowserInformationControl(parent, null,
+						EditorsUI.getTooltipAffordanceString())
 				{
 					public IInformationControlCreator getInformationPresenterControlCreator()
 					{
@@ -134,7 +137,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 			}
 			else
 			{
-				return new DefaultInformationControl(parent, EditorsUI.getTooltipAffordanceString());
+				return new ThemedInformationControl(parent, null, EditorsUI.getTooltipAffordanceString());
 			}
 		}
 
@@ -200,7 +203,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 	{
 		PHPDocumentationBrowserInformationControlInput info = (PHPDocumentationBrowserInformationControlInput) getHoverInfo2(
 				textViewer, hoverRegion);
-		return info != null ? info.getHtml() : null;
+		return (info != null) ? info.getHtml() : null;
 	}
 
 	/*
@@ -210,7 +213,11 @@ public class PHPDocHover extends AbstractPHPTextHover
 	 */
 	public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion)
 	{
-		return internalGetHoverInfo(textViewer, hoverRegion);
+		if (isHoverEnabled())
+		{
+			return internalGetHoverInfo(textViewer, hoverRegion);
+		}
+		return null;
 	}
 
 	private PHPDocumentationBrowserInformationControlInput internalGetHoverInfo(ITextViewer textViewer,
@@ -218,8 +225,9 @@ public class PHPDocHover extends AbstractPHPTextHover
 	{
 		Object[] elements = getPHPElementsAt(textViewer, hoverRegion);
 		if (elements == null || elements.length == 0)
+		{
 			return null;
-
+		}
 		String constantValue = null;
 		return getHoverInfo(elements, constantValue, null);
 	}
@@ -250,7 +258,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 				String name = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
 				if (!StringUtil.EMPTY.equals(name))
 				{
-					ArrayList<Object> elements = ContentAssistUtils.selectModelElements(name, true);
+					List<Object> elements = ContentAssistUtils.selectModelElements(name, true);
 					if (elements != null && !elements.isEmpty())
 					{
 						// return the first element only
@@ -260,7 +268,8 @@ public class PHPDocHover extends AbstractPHPTextHover
 			}
 			catch (BadLocationException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"PHP documentation hover - error getting an element at offset - " + hoverRegion.getOffset(), e); //$NON-NLS-1$
 			}
 
 		}
@@ -282,6 +291,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 	 *            the previous input, or <code>null</code>
 	 * @return the HTML hover info for the given element(s) or <code>null</code> if no information is available
 	 */
+	@SuppressWarnings("unused")
 	private static PHPDocumentationBrowserInformationControlInput getHoverInfo(Object[] elements, String constantValue,
 			PHPDocumentationBrowserInformationControlInput previousInput)
 	{
@@ -396,7 +406,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 			}
 			catch (IOException ex)
 			{
-				PHPEditorPlugin.logError(ex);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP document hover - Error loading the style-sheet", ex); //$NON-NLS-1$
 				return StringUtil.EMPTY;
 			}
 		}

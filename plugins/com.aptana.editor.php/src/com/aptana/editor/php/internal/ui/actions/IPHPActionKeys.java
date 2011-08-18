@@ -13,12 +13,4 @@ public interface IPHPActionKeys
 	 * @since Aptana PHP 3.0
 	 */
 	public static final String OPEN_DECLARATION = "com.aptana.editor.php.openDeclaration"; //$NON-NLS-1$
-	
-	/**
-	 * Action key for the toggle mark occurrences action <code>"com.aptana.editor.php.toggleMarkOccurrences"</code>).
-	 * 
-	 * @since Aptana PHP 3.0
-	 */
-	public static final String TOGGLE_MARK_OCCURRENCES = "com.aptana.editor.php.toggleMarkOccurrences"; //$NON-NLS-1$
-
 }

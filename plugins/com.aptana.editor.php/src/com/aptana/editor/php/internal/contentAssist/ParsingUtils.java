@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.parsing.lexer.Range;
@@ -238,14 +238,22 @@ public final class ParsingUtils
 				offset++;
 				ch = content.charAt(c);
 				if (ch == '(')
+				{
 					openings++;
+				}
 				else if (ch == ')')
+				{
 					openings--;
+				}
 				if (openings == 0)
+				{
 					break;
+				}
 			}
 			if (openings != 0)
+			{
 				return originalOffset; // The function is not closed
+			}
 		}
 		return offset;
 	}
@@ -260,7 +268,7 @@ public final class ParsingUtils
 	 */
 	public static boolean isFunctionCall(String call)
 	{
-		return call.indexOf("(") >= 1; //$NON-NLS-1$
+		return call.indexOf('(') >= 1;
 	}
 
 	/**
@@ -273,7 +281,7 @@ public final class ParsingUtils
 	 */
 	public static String getFunctionNameFromCall(String call)
 	{
-		int openingBracketIndex = call.indexOf("("); //$NON-NLS-1$
+		int openingBracketIndex = call.indexOf('(');
 		if (openingBracketIndex < 1)
 		{
 			return null;

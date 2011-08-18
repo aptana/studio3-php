@@ -1,32 +1,45 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
-import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.InLineHtml;
-import org.eclipse.php.internal.core.ast.nodes.Include;
-import org.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
-import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
-import org.eclipse.php.internal.core.ast.nodes.Scalar;
-import org.eclipse.php.internal.core.ast.nodes.UseStatement;
-import org.eclipse.php.internal.core.ast.nodes.UseStatementPart;
-import org.eclipse.php.internal.core.ast.nodes.Variable;
-import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
-import org.eclipse.php.internal.core.documentModel.phpElementData.BasicPHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
+import org2.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.IfStatement;
+import org2.eclipse.php.internal.core.ast.nodes.InLineHtml;
+import org2.eclipse.php.internal.core.ast.nodes.Include;
+import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Scalar;
+import org2.eclipse.php.internal.core.ast.nodes.Statement;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
+import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
+import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.BasicPHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 
@@ -37,6 +50,7 @@ import com.aptana.editor.php.internal.indexer.PHPDocUtils;
  */
 public final class NodeBuildingVisitor extends AbstractVisitor
 {
+	private static final String DEFINE = "define"; //$NON-NLS-1$
 	private NodeBuilder nodeBuilder;
 	private String source;
 
@@ -54,8 +68,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(InLineHtml inLineHtml)
 	{
-		nodeBuilder.handlePHPEnd(inLineHtml.getStart(), -1);
-		nodeBuilder.handlePHPStart(inLineHtml.getEnd(), -1);
+		nodeBuilder.handleInlineHtml(inLineHtml.getStart(), inLineHtml.getEnd());
 		return super.visit(inLineHtml);
 	}
 
@@ -64,7 +77,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = interfaceDeclaration.getName();
 		String name = nameIdentifier.getName();
-		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
 				interfaceDeclaration.getProgramRoot().comments(), interfaceDeclaration.getStart(), source);
 		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
 		nodeBuilder.handleClassDeclaration(name, PHPFlags.AccInterface, docBlock, interfaceDeclaration.getStart(),
@@ -80,7 +93,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	{
 		Identifier nameIdentifier = classDeclaration.getName();
 		String name = nameIdentifier.getName();
-		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
 				classDeclaration.getProgramRoot().comments(), classDeclaration.getStart(), source);
 		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
 		nodeBuilder.handleClassDeclaration(name, classDeclaration.getModifier(), docBlock, classDeclaration.getStart(),
@@ -185,6 +198,69 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		return super.visit(include);
 	}
 
+	public boolean visit(FunctionInvocation functionInvocation)
+	{
+		FunctionName funcName = functionInvocation.getFunctionName();
+		if (funcName == null)
+		{
+			return super.visit(functionInvocation);
+		}
+		Expression name = funcName.getName();
+		if (name instanceof Identifier)
+		{
+			if (!DEFINE.equals(((Identifier) name).getName().toLowerCase()))
+			{
+				return super.visit(functionInvocation);
+			}
+		}
+		if (name instanceof Variable)
+		{
+			Variable nameVar = (Variable) name;
+			name = nameVar.getName();
+			if (name instanceof Identifier)
+			{
+				if (!DEFINE.equals(((Identifier) name).getName()))
+				{
+					return super.visit(functionInvocation);
+				}
+			}
+		}
+
+		List<Expression> parameters = functionInvocation.parameters();
+
+		if (parameters.size() >= 2)
+		{
+			Expression param = parameters.get(0);
+			if (param.getType() == ASTNode.SCALAR && Scalar.TYPE_STRING == ((Scalar) param).getScalarType())
+			{
+				// Get the 'define' name
+				String define = ((Scalar) param).getStringValue();
+				if (define.startsWith("\"")) //$NON-NLS-1$
+				{
+					define = define.substring(1);
+				}
+				if (define.endsWith("\"")) //$NON-NLS-1$
+				{
+					define = define.substring(0, define.length() - 1);
+				}
+				if (define.startsWith("\'")) //$NON-NLS-1$;
+				{
+					define = define.substring(1);
+				}
+				if (define.endsWith("\'")) //$NON-NLS-1$
+				{
+					define = define.substring(0, define.length() - 1);
+				}
+				org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils
+						.findPHPDocComment(functionInvocation.getProgramRoot().comments(),
+								functionInvocation.getStart(), source);
+				PHPDocBlockImp docBlock = convertToDocBlock(docComment);
+				nodeBuilder.handleDefine(define, null, docBlock, param.getStart(), param.getEnd() - 1, -1);
+			}
+		}
+		return super.visit(functionInvocation);
+	}
+
 	@Override
 	public boolean visit(ConstantDeclaration node)
 	{
@@ -200,16 +276,28 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	public boolean visit(NamespaceDeclaration node)
 	{
 		NamespaceName name = node.getName();
-		List<Identifier> segments = name.segments();
+		List<Identifier> segments;
+		if (name == null)
+		{
+			segments = Collections.emptyList();
+		}
+		else
+		{
+			segments = name.segments();
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		for (Identifier i : segments)
 		{
 			stringBuilder.append(i.getName());
 			stringBuilder.append('\\');
 		}
-		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+		if (stringBuilder.length() > 0)
+		{
+			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+		}
 		String segmentsString = stringBuilder.toString();
-		nodeBuilder.handleNamespaceDeclaration(segmentsString, node.getStart(), node.getEnd() - 1, name.getEnd() - 1);
+		int nameEndOffset = (name != null) ? name.getEnd() - 1 : node.getStart() + 8;
+		nodeBuilder.handleNamespaceDeclaration(segmentsString, node.getStart(), node.getEnd() - 1, nameEndOffset);
 		return super.visit(node);
 	}
 
@@ -229,8 +317,8 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			}
 			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 			String segmentsString = stringBuilder.toString();
-			nodeBuilder.handleUse(segmentsString, alias != null ? alias.getName() : null, node.getStart(), node
-					.getEnd() - 1);
+			nodeBuilder.handleUse(segmentsString, (alias != null) ? alias.getName() : null, node.getStart(),
+					node.getEnd() - 1);
 		}
 		return super.visit(node);
 	}
@@ -263,11 +351,11 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 			if (defaultValue != null && defaultValue.getType() == ASTNode.SCALAR)
 				defaultVal = ((Scalar) defaultValue).getStringValue();
 
-			nodeBuilder.handleFunctionParameter(type, vName, false, false, defaultVal, p.getStart(), p.getEnd(), p
-					.getEnd() - 1, -1);
+			nodeBuilder.handleFunctionParameter(type, vName, false, false, defaultVal, p.getStart(), p.getEnd(),
+					p.getEnd() - 1, -1);
 		}
 		Identifier functionName = functionDeclaration.getFunctionName();
-		org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
 				functionDeclaration.getProgramRoot().comments(), functionDeclaration.getStart(), source);
 		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
 		nodeBuilder.handleFunctionDeclaration(functionName.getName(), isClassFunction, modifiers, docBlock,
@@ -278,53 +366,298 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TryStatement)
+	 */
+	@Override
+	public boolean visit(TryStatement tryStatement)
+	{
+		List<CatchClause> catchClauses = tryStatement.catchClauses();
+		int end = tryStatement.getEnd();
+		if (catchClauses != null && !catchClauses.isEmpty())
+		{
+			end = catchClauses.get(0).getStart() - 1;
+		}
+		nodeBuilder.handleTryStatement(tryStatement.getStart(), end);
+		return super.visit(tryStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.CatchClause
+	 * )
+	 */
+	@Override
+	public boolean visit(CatchClause catchClause)
+	{
+		nodeBuilder.handleCatchStatement(catchClause.getStart(), catchClause.getEnd());
+		return super.visit(catchClause);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.DoStatement
+	 * )
+	 */
+	@Override
+	public boolean visit(DoStatement doStatement)
+	{
+		nodeBuilder.handleDoStatement(doStatement.getStart(), doStatement.getEnd());
+		return super.visit(doStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ForEachStatement)
+	 */
+	@Override
+	public boolean visit(ForEachStatement forEachStatement)
+	{
+		nodeBuilder.handleForEachStatement(forEachStatement.getStart(), forEachStatement.getEnd());
+		return super.visit(forEachStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ForStatement)
+	 */
+	@Override
+	public boolean visit(ForStatement forStatement)
+	{
+		nodeBuilder.handleForStatement(forStatement.getStart(), forStatement.getEnd());
+		return super.visit(forStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.IfStatement
+	 * )
+	 */
+	@Override
+	public boolean visit(IfStatement ifStatement)
+	{
+		Statement trueStatement = ifStatement.getTrueStatement();
+		Statement falseStatement = ifStatement.getFalseStatement();
+		if (trueStatement != null && trueStatement.getType() != ASTNode.IF_STATEMENT)
+		{
+			nodeBuilder.handleIfElseStatement(trueStatement.getStart(), trueStatement.getEnd(), "if"); //$NON-NLS-1$
+		}
+		if (falseStatement != null)
+		{
+			nodeBuilder.handleIfElseStatement(falseStatement.getStart(), falseStatement.getEnd(), "else"); //$NON-NLS-1$
+		}
+		return super.visit(ifStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.SwitchCase
+	 * )
+	 */
+	@Override
+	public boolean visit(SwitchCase switchCase)
+	{
+		nodeBuilder.handleSwitchCaseStatement(switchCase.getStart(), switchCase.getEnd());
+		return super.visit(switchCase);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * SwitchStatement)
+	 */
+	@Override
+	public boolean visit(SwitchStatement switchStatement)
+	{
+		nodeBuilder.handleSwitchStatement(switchStatement.getStart(), switchStatement.getEnd());
+		return super.visit(switchStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * WhileStatement)
+	 */
+	@Override
+	public boolean visit(WhileStatement whileStatement)
+	{
+		nodeBuilder.handleWhileStatement(whileStatement.getStart(), whileStatement.getEnd());
+		return super.visit(whileStatement);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * CatchClause)
+	 */
+	@Override
+	public void endVisit(CatchClause catchClause)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * DoStatement)
+	 */
+	@Override
+	public void endVisit(DoStatement doStatement)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ForEachStatement)
+	 */
+	@Override
+	public void endVisit(ForEachStatement forEachStatement)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ForStatement)
+	 */
+	@Override
+	public void endVisit(ForStatement forStatement)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * IfStatement)
+	 */
+	@Override
+	public void endVisit(IfStatement ifStatement)
+	{
+		if (ifStatement.getTrueStatement() != null)
+		{
+			nodeBuilder.handleCommonDeclarationEnd();
+		}
+		if (ifStatement.getFalseStatement() != null)
+		{
+			nodeBuilder.handleCommonDeclarationEnd();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * SwitchCase)
+	 */
+	@Override
+	public void endVisit(SwitchCase switchCase)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * SwitchStatement)
+	 */
+	@Override
+	public void endVisit(SwitchStatement switchStatement)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TryStatement)
+	 */
+	@Override
+	public void endVisit(TryStatement tryStatement)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * WhileStatement)
+	 */
+	@Override
+	public void endVisit(WhileStatement whileStatement)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * ClassDeclaration)
 	 */
 	@Override
 	public void endVisit(ClassDeclaration classDeclaration)
 	{
-		nodeBuilder.handleClassDeclarationEnd(classDeclaration);
+		nodeBuilder.handleCommonDeclarationEnd();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * FunctionDeclaration)
 	 */
 	@Override
 	public void endVisit(FunctionDeclaration functionDeclaration)
 	{
-		nodeBuilder.handleFunctionDeclarationEnd(functionDeclaration);
+		nodeBuilder.handleCommonDeclarationEnd();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * InterfaceDeclaration)
 	 */
 	@Override
 	public void endVisit(InterfaceDeclaration interfaceDeclaration)
 	{
-		nodeBuilder.handleClassDeclarationEnd(interfaceDeclaration);
+		nodeBuilder.handleCommonDeclarationEnd();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @seeorg.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org.eclipse.php.internal.core.ast.nodes.
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
 	 * NamespaceDeclaration)
 	 */
 	@Override
 	public void endVisit(NamespaceDeclaration namespaceDeclaration)
 	{
-		// TODO Auto-generated method stub
-		nodeBuilder.handleNamespaceDeclarationEnd(namespaceDeclaration);
+		nodeBuilder.handleCommonDeclarationEnd();
 	}
 
 	/**
 	 * @param interfaces
 	 */
-	protected void handleInterfaces(List<Identifier> interfaces)
+	private void handleInterfaces(List<Identifier> interfaces)
 	{
 		String[] extendedInterfacesNames = new String[interfaces.size()];
 		int[][] extendedInterfacesStartEnd = new int[extendedInterfacesNames.length][2];
@@ -339,12 +672,12 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Converts a {@link org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock} to a {@link PHPDocBlockImp}.
+	 * Converts a {@link org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock} to a {@link PHPDocBlockImp}.
 	 * 
 	 * @param docComment
 	 * @return A new {@link PHPDocBlockImp}, or null if the given docComment is null
 	 */
-	protected PHPDocBlockImp convertToDocBlock(org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment)
+	private PHPDocBlockImp convertToDocBlock(org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment)
 	{
 		if (docComment == null)
 		{

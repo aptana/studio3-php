@@ -17,18 +17,19 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.nodes.ASTNode;
-import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.Expression;
-import org.eclipse.php.internal.core.ast.nodes.Identifier;
-import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
-import org.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org2.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.model.IField;
 import com.aptana.editor.php.core.model.IMethod;
@@ -86,7 +87,7 @@ public final class PHPSearchEngine
 		 * @param ea
 		 * @param kind
 		 */
-		public ElementNode(IElementEntry e, AbstractPHPEntryValue ea, int kind)
+		private ElementNode(IElementEntry e, AbstractPHPEntryValue ea, int kind)
 		{
 			super();
 			this.e = e;
@@ -95,7 +96,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#toExternalReference()
+		 * @see com.aptana.editor.php.search.IElementNode#toExternalReference()
 		 */
 		public ExternalReference toExternalReference()
 		{
@@ -117,7 +118,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#getModifiers()
+		 * @see com.aptana.editor.php.search.IElementNode#getModifiers()
 		 */
 		public int getModifiers()
 		{
@@ -125,7 +126,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#getName()
+		 * @see com.aptana.editor.php.search.IElementNode#getName()
 		 */
 		public String getName()
 		{
@@ -134,7 +135,7 @@ public final class PHPSearchEngine
 		}
 
 		/**
-		 * @see com.aptana.ide.editor.php.search.IElementNode#getPath()
+		 * @see com.aptana.editor.php.search.IElementNode#getPath()
 		 */
 		public String getPath()
 		{
@@ -164,7 +165,7 @@ public final class PHPSearchEngine
 		public boolean isOnBuildPath(IProject project)
 		{
 			IBuildPath buildPathByResource = BuildPathManager.getInstance().getBuildPathByResource(project);
-			HashSet<IBuildPath> pa = new HashSet<IBuildPath>();
+			Set<IBuildPath> pa = new HashSet<IBuildPath>();
 			pa.add(buildPathByResource);
 			pa.addAll(buildPathByResource.getDependencies());
 			if (!pa.contains(e.getModule().getBuildPath()))
@@ -324,32 +325,33 @@ public final class PHPSearchEngine
 		 * IEditorPart activeEditor = PlatformUI.getWorkbench()
 		 * .getActiveWorkbenchWindow().getActivePage().getActiveEditor(); if (activeEditor instanceof PHPSourceEditor) {
 		 * PHPSourceEditor editor = (PHPSourceEditor) activeEditor; IFileLanguageService languageService =
-		 * editor.getFileContext() .getLanguageService(PHPMimeType.MIME_TYPE); PHPOffsetMapper mapper = (PHPOffsetMapper)
-		 * languageService .getOffsetMapper(); String source = editor.getViewer().getDocument().get(); IElementsIndex
-		 * index = mapper.getIndex(source, source.length()); List<IElementEntry> entries = index.getEntries(
-		 * IElementsIndex.ANY_CETEGORY, name); for (IElementEntry e : entries) { Object value = e.getValue(); if (value
-		 * instanceof ClassPHPEntryValue) { ClassPHPEntryValue ph = (ClassPHPEntryValue) value; IModule module =
-		 * e.getModule(); if (module instanceof LocalModule) { LocalModule lmodule = (LocalModule) module;
-		 * FileEditorInput fileEditorInput = new FileEditorInput( lmodule.getFile()); return new
+		 * editor.getFileContext() .getLanguageService(PHPMimeType.MIME_TYPE); PHPOffsetMapper mapper =
+		 * (PHPOffsetMapper) languageService .getOffsetMapper(); String source = editor.getViewer().getDocument().get();
+		 * IElementsIndex index = mapper.getIndex(source, source.length()); List<IElementEntry> entries =
+		 * index.getEntries( IElementsIndex.ANY_CETEGORY, name); for (IElementEntry e : entries) { Object value =
+		 * e.getValue(); if (value instanceof ClassPHPEntryValue) { ClassPHPEntryValue ph = (ClassPHPEntryValue) value;
+		 * IModule module = e.getModule(); if (module instanceof LocalModule) { LocalModule lmodule = (LocalModule)
+		 * module; FileEditorInput fileEditorInput = new FileEditorInput( lmodule.getFile()); return new
 		 * ExternalReference(fileEditorInput, new Range(ph.getStartOffset(), ph .getEndOffset())); } if (module
 		 * instanceof FileSystemModule) { FileSystemModule ms = (FileSystemModule) module; IEditorInput
 		 * createJavaFileEditorInput = CoreUIUtils .createJavaFileEditorInput(new File(ms .getFullPath())); return new
 		 * ExternalReference(createJavaFileEditorInput, new Range(ph.getStartOffset(), ph .getEndOffset())); } } } }
 		 */
 		// TODO: Shalom Implement me
-		PHPEditorPlugin.logWarning("Missing implementation for PHPSearchEngine::resolveClassToReference()"); //$NON-NLS-1$
+		IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+				"Missing implementation for PHPSearchEngine::resolveClassToReference()", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 		return null;
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getAllKnownTypes()
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getAllKnownTypes()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Collection<ITypeNode> getAllKnownTypes()
 	{
-		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex().getEntriesStartingWith(
-				IPHPIndexConstants.CLASS_CATEGORY, ""); //$NON-NLS-1$
-		ArrayList<IElementNode> nodes = new ArrayList<IElementNode>();
+		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
+				.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, ""); //$NON-NLS-1$
+		List<IElementNode> nodes = new ArrayList<IElementNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -357,8 +359,8 @@ public final class PHPSearchEngine
 		return (Collection) nodes;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void processValue(ArrayList nodes, final IElementEntry e)
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void processValue(List nodes, final IElementEntry e)
 	{
 		Object value = e.getValue();
 		if (value instanceof ClassPHPEntryValue)
@@ -394,14 +396,14 @@ public final class PHPSearchEngine
 			}
 			catch (Exception ex)
 			{
-				PHPEditorPlugin.logError(ex);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error getting a PHP class node", ex); //$NON-NLS-1$
 			}
 		}
 		return null;
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#addListener(com.aptana.ide.editor.php.indexer.IIndexChangeListener)
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#addListener(com.aptana.editor.php.indexer.IIndexChangeListener)
 	 */
 	public void addListener(IIndexChangeListener listener)
 	{
@@ -409,7 +411,7 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#removeListener(com.aptana.ide.editor.php.indexer.IIndexChangeListener)
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#removeListener(com.aptana.editor.php.indexer.IIndexChangeListener)
 	 */
 	public void removeListener(IIndexChangeListener listener)
 	{
@@ -417,13 +419,13 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getTypes(java.lang.String)
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getTypes(java.lang.String)
 	 */
 	public Collection<ITypeNode> getTypes(String name)
 	{
-		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex().getEntries(
-				IPHPIndexConstants.CLASS_CATEGORY, name);
-		ArrayList<ITypeNode> nodes = new ArrayList<ITypeNode>();
+		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
+				.getEntries(IPHPIndexConstants.CLASS_CATEGORY, name);
+		List<ITypeNode> nodes = new ArrayList<ITypeNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -432,13 +434,13 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getAllKnownConstants()
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getAllKnownConstants()
 	 */
 	public Collection<IElementNode> getAllKnownConstants()
 	{
-		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex().getEntriesStartingWith(
-				IPHPIndexConstants.CONST_CATEGORY, ""); //$NON-NLS-1$
-		ArrayList<IElementNode> nodes = new ArrayList<IElementNode>();
+		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
+				.getEntriesStartingWith(IPHPIndexConstants.CONST_CATEGORY, ""); //$NON-NLS-1$
+		List<IElementNode> nodes = new ArrayList<IElementNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -447,13 +449,13 @@ public final class PHPSearchEngine
 	}
 
 	/**
-	 * @see com.aptana.ide.editor.php.parsing.nodes.ITypeResolver#getAllKnownFunctions()
+	 * @see com.aptana.editor.php.parsing.nodes.ITypeResolver#getAllKnownFunctions()
 	 */
 	public Collection<IElementNode> getAllKnownFunctions()
 	{
-		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex().getEntriesStartingWith(
-				IPHPIndexConstants.FUNCTION_CATEGORY, ""); //$NON-NLS-1$
-		ArrayList<IElementNode> nodes = new ArrayList<IElementNode>();
+		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
+				.getEntriesStartingWith(IPHPIndexConstants.FUNCTION_CATEGORY, ""); //$NON-NLS-1$
+		List<IElementNode> nodes = new ArrayList<IElementNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -475,7 +477,7 @@ public final class PHPSearchEngine
 			if (superClass != null && superClass.getType() == ASTNode.IDENTIFIER)
 			{
 				String classname = ((Identifier) superClass).getName();
-				HashSet<String> visited = new HashSet<String>();
+				Set<String> visited = new HashSet<String>();
 				IMethodReference checkType = checkType(classname, methodname, visited);
 				if (checkType != null)
 				{
@@ -499,7 +501,7 @@ public final class PHPSearchEngine
 		return null;
 	}
 
-	private IMethodReference checkType(final String classname, final String methodname, HashSet<String> visited)
+	private IMethodReference checkType(final String classname, final String methodname, Set<String> visited)
 	{
 		if (!visited.contains(classname))
 		{
@@ -581,8 +583,6 @@ public final class PHPSearchEngine
 					}
 				}
 			}
-			;
-
 		}
 		return null;
 	}
@@ -603,8 +603,8 @@ public final class PHPSearchEngine
 
 	public IType[] findTypes(String name, ISearchScope scope)
 	{
-		List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex().getEntries(
-				IPHPIndexConstants.CLASS_CATEGORY, name);
+		List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex()
+				.getEntries(IPHPIndexConstants.CLASS_CATEGORY, name);
 		if (entries != null)
 		{
 			List<IType> convertClasses = ModelUtils.convertTypes(entries);
@@ -615,8 +615,8 @@ public final class PHPSearchEngine
 
 	public IMethod[] findMethods(String name, ISearchScope scope)
 	{
-		List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex().getEntries(
-				IPHPIndexConstants.FUNCTION_CATEGORY, name);
+		List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex()
+				.getEntries(IPHPIndexConstants.FUNCTION_CATEGORY, name);
 		if (entries != null)
 		{
 			List<IModelElement> convertClasses = ModelUtils.convertEntries(entries);
@@ -640,8 +640,8 @@ public final class PHPSearchEngine
 
 	public IField[] findConstants(String name, ISearchScope scope)
 	{
-		List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex().getEntries(
-				IPHPIndexConstants.CONST_CATEGORY, name);
+		List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex()
+				.getEntries(IPHPIndexConstants.CONST_CATEGORY, name);
 		if (entries != null)
 		{
 			List<IModelElement> convertClasses = ModelUtils.convertEntries(entries);

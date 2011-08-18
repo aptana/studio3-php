@@ -1,22 +1,16 @@
 package com.aptana.editor.php.tests;
 
-import java.io.ByteArrayInputStream;
-
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -25,13 +19,17 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+import org2.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.editor.common.tests.util.TestProject;
 import com.aptana.editor.php.core.PHPNature;
 
 public abstract class ProjectBasedTestCase extends TestCase
 {
 
+	protected TestProject testProject;
 	protected IProject project;
+
 	protected IFile file;
 	protected ITextEditor editor;
 
@@ -47,14 +45,15 @@ public abstract class ProjectBasedTestCase extends TestCase
 	{
 		try
 		{
-			// Need to force the editor shut!
 			if (editor != null)
 				editor.close(false);
-			// Delete the generated file
-			if (file != null)
-				file.delete(true, new NullProgressMonitor());
-			// Delete the generated project
-			project.delete(true, new NullProgressMonitor());
+
+			// Delete the generated project (with any files we have in it)
+			testProject.delete();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 		finally
 		{
@@ -65,35 +64,22 @@ public abstract class ProjectBasedTestCase extends TestCase
 		}
 	}
 
-	protected IFile createFile(IProject project, String fileName, String contents) throws CoreException
+	protected IFile createFile(String fileName, String contents) throws CoreException
 	{
-		IFile file = project.getFile(fileName);
-		ByteArrayInputStream source = new ByteArrayInputStream(contents.getBytes());
-		file.create(source, true, new NullProgressMonitor());
-		return file;
+		return testProject.createFile(fileName, contents, new NullProgressMonitor());
 	}
 
 	protected IProject createProject() throws CoreException
 	{
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IProject project = workspace.getRoot().getProject(getProjectName());
-		IProjectDescription description = workspace.newProjectDescription(project.getName());
-		description.setNatureIds(new String[] { PHPNature.NATURE_ID });
-		if (!project.exists())
+		testProject = new TestProject(getProjectName(), new String[] { PHPNature.NATURE_ID }, new NullProgressMonitor());
+		project = testProject.getInnerProject();
+		try
 		{
-			project.create(description, new NullProgressMonitor());
+			setProjectOptions(project);
 		}
-		if (!project.isOpen())
+		catch (BackingStoreException e)
 		{
-			project.open(new NullProgressMonitor());
-			try
-			{
-				setProjectOptions(project);
-			}
-			catch (BackingStoreException e)
-			{
-				throw new CoreException(new Status(IStatus.ERROR, getPluginPreferenceQualifier(), e.getMessage(), e));
-			}
+			throw new CoreException(new Status(IStatus.ERROR, getPluginPreferenceQualifier(), e.getMessage(), e));
 		}
 		return project;
 	}
@@ -106,9 +92,9 @@ public abstract class ProjectBasedTestCase extends TestCase
 	protected abstract String getProjectName();
 
 	protected abstract PHPVersion getInitialPHPVersion();
-	
+
 	protected abstract String getPluginPreferenceQualifier();
-	
+
 	protected abstract void setProjectOptions(IProject project) throws BackingStoreException;
 
 	protected void setCaretOffset(int offset) throws PartInitException
@@ -136,7 +122,7 @@ public abstract class ProjectBasedTestCase extends TestCase
 	{
 		if (file == null)
 		{
-			file = createFile(project, fileName, contents);
+			file = createFile(fileName, contents);
 			getEditor();
 		}
 		return file;

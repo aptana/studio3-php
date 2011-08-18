@@ -7,9 +7,9 @@
  */
 package com.aptana.editor.php.internal.parser.nodes;
 
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
-import com.aptana.editor.php.internal.parser.PHPMimeType;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.ast.INameNode;
 import com.aptana.parsing.ast.ParseNode;
 
@@ -32,7 +32,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode()
 	{
-		super(PHPMimeType.MIME_TYPE);
+		super(IPHPConstants.CONTENT_TYPE_PHP);
 		name = EMPTY;
 	}
 
@@ -47,12 +47,12 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String name)
 	{
-		super(PHPMimeType.MIME_TYPE);
+		super(IPHPConstants.CONTENT_TYPE_PHP);
 		this.nodeType = nodeType;
-		this.name = name.length() != 0 ? name : " "; //$NON-NLS-1$
+		this.name = (name.length() != 0) ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;
 		// this.endOffset = endOffset >= startOffset ? endOffset : startOffset;
-		this.setLocation(startOffset, endOffset >= startOffset ? endOffset : startOffset);
+		this.setLocation(startOffset, (endOffset >= startOffset) ? endOffset : startOffset);
 		this.modifiers = modifiers;
 	}
 
@@ -122,7 +122,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	/**
 	 * Returns the type of this node.
 	 */
-	public short getType()
+	public short getNodeType()
 	{
 		return nodeType;
 	}
@@ -207,6 +207,6 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	@Override
 	public int hashCode()
 	{
-		return 31 * super.hashCode() + this.getNameNode().getName().hashCode();
+		return 31 * super.hashCode() + this.getNameNode().getName().hashCode() + getNodeName().hashCode();
 	}
 }

@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,9 +29,12 @@ import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.ModelManager;
+import com.aptana.editor.php.internal.ui.editor.PHPDocumentProvider;
 import com.aptana.theme.IThemeManager;
 import com.aptana.theme.Theme;
 import com.aptana.theme.ThemePlugin;
@@ -37,21 +47,23 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.editor.php"; //$NON-NLS-1$
-
+	public static final String DEBUG_SCOPE = PLUGIN_ID + "/debug"; //$NON-NLS-1$
+	public static final String INDEXER_SCOPE = PLUGIN_ID + "/debug/indexer"; //$NON-NLS-1$
 	public static final String BUILDER_ID = PLUGIN_ID + ".aptanaPhpBuilder"; //$NON-NLS-1$
-	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(PLUGIN_ID + "/debug")).booleanValue(); //$NON-NLS-1$
-	public static final boolean INDEXER_DEBUG = Boolean
-			.valueOf(Platform.getDebugOption(PLUGIN_ID + "/indexer_debug")).booleanValue(); //$NON-NLS-1$
+	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(DEBUG_SCOPE)).booleanValue();
+	public static final boolean INDEXER_DEBUG = Boolean.valueOf(Platform.getDebugOption(INDEXER_SCOPE)).booleanValue();
 
 	// The shared instance
 	private static PHPEditorPlugin plugin;
 
 	private IPreferenceChangeListener fThemeChangeListener;
 
+	private PHPDocumentProvider phpDocumentProvider;
+
 	/**
 	 * The constructor
 	 */
-	public PHPEditorPlugin()
+	public PHPEditorPlugin() // $codepro.audit.disable
 	{
 	}
 
@@ -59,7 +71,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception
+	public void start(BundleContext context) throws Exception // $codepro.audit.disable declaredExceptions
 	{
 		super.start(context);
 		plugin = this;
@@ -74,7 +86,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				return Status.OK_STATUS;
 			}
 		};
-		loadBuiltins.setSystem(true);
+		loadBuiltins.setSystem(!EclipseUtil.showSystemJobs());
 		loadBuiltins.setPriority(Job.BUILD);
 		loadBuiltins.schedule(2000L);
 	}
@@ -88,7 +100,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		{
 			private void setOccurrenceColors()
 			{
-				IEclipsePreferences prefs = new InstanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
+				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
 				prefs.put("PHPReadOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
 				prefs.put("PHPWriteOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
@@ -96,7 +108,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				{
 					prefs.flush();
 				}
-				catch (BackingStoreException e)
+				catch (BackingStoreException e) // $codepro.audit.disable emptyCatchClause
 				{
 					// ignore
 				}
@@ -116,7 +128,8 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 					}
 				};
 				setOccurrenceColors();
-				new InstanceScope().getNode(ThemePlugin.PLUGIN_ID).addPreferenceChangeListener(fThemeChangeListener);
+				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
+						.addPreferenceChangeListener(fThemeChangeListener);
 				return Status.OK_STATUS;
 			}
 		};
@@ -136,23 +149,26 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				long mark = 0L;
 				if (DEBUG)
 				{
-					System.out.println("PHPPlugin call to PHPGlobalIndexer starts"); //$NON-NLS-1$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(), "PHPPlugin call to PHPGlobalIndexer starts", null, //$NON-NLS-1$
+							PHPEditorPlugin.DEBUG_SCOPE);
 					mark = System.currentTimeMillis();
 				}
 				PHPGlobalIndexer.getInstance();
 				if (DEBUG)
 				{
-					System.out
-							.println("PHPPlugin call to PHPGlobalIndexer ended (done after " + (System.currentTimeMillis() - mark) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
-					System.out.println("PHPPlugin call to ModelManager starts"); //$NON-NLS-1$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+							"PHPPlugin call to PHPGlobalIndexer ended (done after " //$NON-NLS-1$
+									+ (System.currentTimeMillis() - mark) + "ms)", null, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(), "PHPPlugin call to ModelManager starts", null, //$NON-NLS-1$
+							PHPEditorPlugin.DEBUG_SCOPE);
 					mark = System.currentTimeMillis();
 				}
 				// initializing model
 				ModelManager.getInstance(); // FIXME - SG - This is where the hang starts
 				if (DEBUG)
 				{
-					System.out
-							.println("PHPPlugin call to ModelManager ended (done after " + (System.currentTimeMillis() - mark) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(), "PHPPlugin call to ModelManager ended (done after " //$NON-NLS-1$
+							+ (System.currentTimeMillis() - mark) + "ms)", null, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 				}
 				return Status.OK_STATUS;
 			}
@@ -165,14 +181,15 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception
+	public void stop(BundleContext context) throws Exception // $codepro.audit.disable declaredExceptions
 	{
 		try
 		{
 			PHPGlobalIndexer.getInstance().save();
 			if (fThemeChangeListener != null)
 			{
-				new InstanceScope().getNode(ThemePlugin.PLUGIN_ID).removePreferenceChangeListener(fThemeChangeListener);
+				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
+						.removePreferenceChangeListener(fThemeChangeListener);
 				fThemeChangeListener = null;
 			}
 		}
@@ -251,6 +268,20 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	}
 
 	/**
+	 * Returns PHP document provider
+	 * 
+	 * @return
+	 */
+	public synchronized PHPDocumentProvider getPHPDocumentProvider()
+	{
+		if (phpDocumentProvider == null)
+		{
+			phpDocumentProvider = new PHPDocumentProvider();
+		}
+		return phpDocumentProvider;
+	}
+
+	/**
 	 * getImageDescriptor
 	 * 
 	 * @param path
@@ -261,28 +292,83 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	public static void logInfo(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
-	}
-
-	public static void logError(Throwable e)
-	{
-		logError(e.getLocalizedMessage(), e);
-	}
-
-	public static void logError(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, string, e));
-	}
-
-	public static void logWarning(String message)
-	{
-		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
-	}
-
+	/**
+	 * Log a particular status
+	 * 
+	 * @deprecated Use IdeLog instead
+	 */
 	public static void log(IStatus status)
 	{
-		getDefault().getLog().log(status);
+		IdeLog.log(getDefault(), status);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @param e
+	 * @deprecated Use IdeLog instead
+	 */
+	public static void log(Throwable e)
+	{
+		IdeLog.logError(getDefault(), e.getLocalizedMessage(), e);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logError(Throwable e)
+	{
+		IdeLog.logError(getDefault(), e.getLocalizedMessage(), e);
+	}
+
+	/**
+	 * logError
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logError(String message, Throwable e)
+	{
+		IdeLog.logError(getDefault(), message, e);
+	}
+
+	/**
+	 * logWarning
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logWarning(String message)
+	{
+		IdeLog.logWarning(getDefault(), message, null, null);
+	}
+
+	/**
+	 * logWarning
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 * @param e
+	 */
+	public static void logWarning(String message, Throwable e)
+	{
+		IdeLog.logWarning(getDefault(), message, e, null);
+	}
+
+	/**
+	 * logInfo
+	 * 
+	 * @deprecated Use IdeLog instead
+	 * @param message
+	 */
+	public static void logInfo(String message)
+	{
+		IdeLog.logInfo(getDefault(), message, null);
 	}
 }

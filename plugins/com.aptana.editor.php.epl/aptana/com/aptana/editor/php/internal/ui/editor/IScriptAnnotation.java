@@ -2,7 +2,7 @@ package com.aptana.editor.php.internal.ui.editor;
 
 import java.util.Iterator;
 
-import org.eclipse.dltk.compiler.problem.CategorizedProblem;
+import org2.eclipse.dltk.compiler.problem.CategorizedProblem;
 
 /**
  * Interface of annotations representing markers and problems.
@@ -52,7 +52,7 @@ public interface IScriptAnnotation
 	 * 
 	 * @return an iterator over the overlaid annotations
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	Iterator getOverlaidIterator();
 
 	/**

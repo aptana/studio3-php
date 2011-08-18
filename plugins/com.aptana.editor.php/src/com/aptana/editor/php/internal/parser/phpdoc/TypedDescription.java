@@ -5,18 +5,21 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a class that holds type info and descriptions, used when representing return types, params, and exceptions.
  */
 public class TypedDescription
 {
+	private static final TypedDescription[] EMPTY_TYPED_DESCRIPTIONS = new TypedDescription[0];
+	private static final String[] EMPTY_STR_ARR = new String[0];
 	private ArrayList<String> fTypes;
 	private ArrayList<TypedDescription> fDefaultValues;
 	private String fDescription = ""; //$NON-NLS-1$
 	private String fName = ""; //$NON-NLS-1$
 
-	private static HashMap<String, String> builtInAliases;
+	private static Map<String, String> builtInAliases;
 	static
 	{
 		builtInAliases = new HashMap<String, String>();
@@ -90,9 +93,9 @@ public class TypedDescription
 	{
 		if (fTypes == null)
 		{
-			return new String[0];
+			return EMPTY_STR_ARR;
 		}
-		return (String[]) fTypes.toArray(new String[0]);
+		return fTypes.toArray(new String[fTypes.size()]);
 	}
 
 	/**
@@ -135,9 +138,9 @@ public class TypedDescription
 	{
 		if (fDefaultValues == null)
 		{
-			return new TypedDescription[0];
+			return EMPTY_TYPED_DESCRIPTIONS;
 		}
-		return (TypedDescription[]) fDefaultValues.toArray(new TypedDescription[0]);
+		return fDefaultValues.toArray(new TypedDescription[fDefaultValues.size()]);
 	}
 
 	/**

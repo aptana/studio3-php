@@ -2,7 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="indexer" name="%phpIndexerParticipant.name" schema="schema/indexer.exsd"/>
-   <extension-point id="phpTextHovers" name="PHP Text Hover" schema="schema/phpTextHovers.exsd"/>
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -40,6 +39,57 @@
       <builder
             id="com.aptana.editor.php.aptanaPhpBuilder">
       </builder>
+      <content-type
+            id="com.aptana.contenttype.phtml.php">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.beaver">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.coffeescript">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.css">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.diff">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.dtd">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.html">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.idl">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.js">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.jsca">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.jsca">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.jss">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.markdown">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.sdocml">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.svg">
+      </content-type>
+      <content-type
+            id="com.aptana.contenttype.xsl">
+      </content-type>
+      <content-type
+            id="com.aptana.editor.text.content-type.generic">
+      </content-type>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
@@ -83,17 +133,24 @@
             class="com.aptana.editor.php.internal.ui.preferences.PHPBuildpathPropertyPage"
             id="com.aptana.editor.php.buildPathPropertyPage"
             name="%buildPath">
-         <filter
-               name="projectNature"
-               value="com.aptana.editor.php.phpNature">
-         </filter>
+         <enabledWhen>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="com.aptana.editor.php.phpNature">
+               </test>
+            </and>
+         </enabledWhen>
       </page>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="com.aptana.editor.common.preferences.EditorsPreferencePage"
-            class="org.eclipse.php.internal.ui.preferences.PHPPreferencePage"
+            class="org2.eclipse.php.internal.ui.preferences.PHPPreferencePage"
             id="com.aptana.editor.php.preference.PHPPreferencePage"
             name="PHP">
       </page>
@@ -154,12 +211,6 @@
             id="com.aptana.editor.php.openDeclaration"
             name="%openDeclaration.name">
       </command>
-      <command
-            categoryId="com.aptana.editor.php.source.category"
-            description="%toggleMarkOccurrencesDesc"
-            id="com.aptana.editor.php.toggleMarkOccurrences"
-            name="%markOccurrences">
-      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -170,34 +221,6 @@
             sequence="F3">
       </key>
       <!-- Mark occurrences -->
-	  <key sequence="M2+M3+O" contextId="com.aptana.editor.php.editorContext"
-		    commandId="com.aptana.editor.php.toggleMarkOccurrences"
-		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-	  </key>
-	  <key platform="carbon" sequence="COMMAND+ALT+O"
-		    contextId="com.aptana.editor.php.editorContext" commandId="com.aptana.editor.php.toggleMarkOccurrences"
-		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-	  </key>
-   </extension>
-   <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            id="com.aptana.editor.php.presentation"
-            label="%phpEditorPresentationLabel"
-            visible="false">
-         <action
-               allowLabelUpdate="true"
-               definitionId="com.aptana.editor.php.toggleMarkOccurrences"
-               disabledIcon="icons/full/dtool16/mark_occurrences.gif"
-               icon="icons/full/etool16/mark_occurrences.gif"
-               id="com.aptana.editor.php.toggleMarkOccurrences"
-               label="%markOccurrences"
-               retarget="true"
-               style="toggle"
-               toolbarPath="org.eclipse.ui.edit.text.actionSet.presentation/Presentation"
-               tooltip="%markOccurrences">
-         </action>
-      </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -206,9 +229,6 @@
          <actionSet
                id="com.aptana.editor.php.presentation">
          </actionSet>
-         <newWizardShortcut
-               id="com.aptana.editor.php.NewPHPProjectWizard">
-         </newWizardShortcut>
       </perspectiveExtension>
    </extension>
    <extension
@@ -226,14 +246,12 @@
          point="com.aptana.parsing.parser">
       <parser
             class="com.aptana.editor.php.internal.parser.PHTMLParser"
-            content-type="com.aptana.contenttype.phtml.php"
-            language="text/php">
+            content-type="com.aptana.contenttype.phtml.php">
       </parser>
       <!-- Register the PHP parser to work on partitions as well. This is needed for the code-formatting process. -->
       <parser
             class="com.aptana.editor.php.internal.parser.PHPParser"
-            content-type="com.aptana.contenttype.php"
-            language="text/php">
+            content-type="com.aptana.contenttype.php">
       </parser>
    </extension>
    <extension
@@ -301,17 +319,15 @@
    <extension
          point="org.eclipse.core.filebuffers.annotationModelCreation">
       <factory
-            class="com.aptana.editor.php.internal.ui.editor.ExternalAnnotationsFactory"
+            class="com.aptana.editor.common.ExternalFileAnnotationModelFactory"
             contentTypeId="com.aptana.contenttype.phtml.php">
       </factory>
    </extension>
    <extension
-         point="com.aptana.editor.php.phpTextHovers">
-      <textHover
-            activatePlugin="true"
-            class="com.aptana.editor.php.internal.ui.hover.PHPDocHover"
-            id="com.aptana.editor.php.docHover"
-            name="PHP Doc Hover">
-      </textHover>
+         point="com.aptana.preview.previewHandlers">
+      <handler
+            class="com.aptana.preview.handlers.WebServerPreviewHandler"
+            contentType="com.aptana.contenttype.phtml.php">
+      </handler>
    </extension>
 </plugin>

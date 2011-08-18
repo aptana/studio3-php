@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.dltk.compiler.problem.CategorizedProblem;
-import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.jface.text.quickassist.IQuickFixableAnnotation;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationAccessExtension;
@@ -24,6 +22,8 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.AnnotationPreferenceLookup;
+import org2.eclipse.dltk.compiler.problem.CategorizedProblem;
+import org2.eclipse.dltk.compiler.problem.IProblem;
 
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.internal.ui.PHPPluginImages;
@@ -288,7 +288,7 @@ public class ProblemAnnotation extends Annotation implements
 	/*
 	 * @see IJavaAnnotation#getOverlaidIterator()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Iterator getOverlaidIterator() {
 		if (fOverlaids != null)
 			return fOverlaids.iterator();

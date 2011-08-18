@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.eclipse.php.core.compiler.PHPFlags;
+import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 
@@ -49,9 +49,9 @@ public class AccessModifierEntryFilter implements IEntryFilter
 	/**
 	 * {@inheritDoc}
 	 */
-	public LinkedHashSet<IElementEntry> filter(Collection<IElementEntry> toFilter)
+	public Set<IElementEntry> filter(Collection<IElementEntry> toFilter)
 	{
-		LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 
 		for (IElementEntry entry : toFilter)
 		{

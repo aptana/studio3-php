@@ -25,7 +25,7 @@ class CallInfo
 	 * @param nameEndPos
 	 *            - the function name end position.
 	 */
-	public CallInfo(String name, int nameEndPos)
+	protected CallInfo(String name, int nameEndPos)
 	{
 		this.name = name;
 		this.nameEndOffset = nameEndPos;

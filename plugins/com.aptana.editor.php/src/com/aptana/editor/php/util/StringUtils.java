@@ -1,3 +1,11 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.util;
 
 public class StringUtils
@@ -99,7 +107,7 @@ public class StringUtils
 		int e = 0;
 		StringBuffer result = new StringBuffer();
 
-		while ((e = str.indexOf(pattern, s)) >= 0)
+		while ((e = str.indexOf(pattern, s)) >= 0) // $codepro.audit.disable assignmentInCondition
 		{
 			result.append(str.substring(s, e));
 			result.append(replace);

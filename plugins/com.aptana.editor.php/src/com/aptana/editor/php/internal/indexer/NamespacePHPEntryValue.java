@@ -27,13 +27,13 @@ public class NamespacePHPEntryValue extends AbstractPHPEntryValue
 	}
 
 	@Override
-	protected void internalRead(DataInputStream di) throws IOException
+	protected void internalRead(DataInputStream di)
 	{
 
 	}
 
 	@Override
-	protected void internalWrite(DataOutputStream da) throws IOException
+	protected void internalWrite(DataOutputStream da)
 	{
 
 	}

@@ -3,8 +3,8 @@ package com.aptana.editor.php.internal.indexer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.php.internal.core.ast.nodes.Comment;
-import org.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 /**
  * PHP Module comments collector.

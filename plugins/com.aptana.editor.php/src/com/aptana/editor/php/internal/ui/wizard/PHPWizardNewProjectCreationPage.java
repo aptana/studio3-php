@@ -3,36 +3,34 @@
  */
 package com.aptana.editor.php.internal.ui.wizard;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.php.internal.core.PHPVersion;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
+import org2.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.core.CorePreferenceConstants;
 import com.aptana.editor.php.internal.ui.preferences.Messages;
 import com.aptana.editor.php.internal.ui.preferences.PHPVersionConfigurationBlock;
+import com.aptana.projects.internal.wizards.CommonWizardNewProjectCreationPage;
 
 /**
  * New PHP project main creation page.
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPage
+public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreationPage
 {
 
 	private Combo fPHPVersions;
+	private String selectedAlias;
 
 	public PHPWizardNewProjectCreationPage(String pageName)
 	{
@@ -61,50 +59,67 @@ public class PHPWizardNewProjectCreationPage extends WizardNewProjectCreationPag
 		fPHPVersions = new Combo(group, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
 		fPHPVersions.setItems(PHPVersionConfigurationBlock.PHP_VERSION_NAMES
 				.toArray(new String[PHPVersionConfigurationBlock.PHP_VERSION_NAMES.size()]));
-		selectVersion(PHPVersion.PHP5_3.getAlias());
+		selectedAlias = PHPVersion.PHP5_3.getAlias();
+		setSelectedVersion(selectedAlias);
+		// Update the 'selectedAlias' on combo selection changes.
+		// We do that to avoid a 'widget dispose' errors when accessing this field after the page was disposed.
+		fPHPVersions.addSelectionListener(new SelectionListener()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				selectedAlias = PHPVersionConfigurationBlock.PHP_ALIASES.get(fPHPVersions.getSelectionIndex());
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
 		Dialog.applyDialogFont(control);
 		setControl(control);
 	}
 
-	public boolean isLocationDefault()
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.projects.internal.wizards.IWizardProjectCreationPage#isCloneFromGit()
+	 */
+	public boolean isCloneFromGit()
 	{
-		return getLocationPath().equals(Platform.getLocation());
+		return false;
 	}
 
-	protected Preferences getPreferences(IProject project)
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.projects.internal.wizards.IWizardProjectCreationPage#getCloneURI()
+	 */
+	public String getCloneURI()
 	{
-		return new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
+		return null;
 	}
 
 	/**
-	 * Apply the selected PHP version into the project's preferences.
+	 * Returns the selected PHP version.
 	 * 
-	 * @param project
+	 * @return The selected PHP version.
 	 */
-	protected void setPhpLangOptions(IProject project)
+	public String getSelectedVersion()
 	{
-		Preferences preferences = getPreferences(project);
-		preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, PHPVersionConfigurationBlock.PHP_ALIASES.get(fPHPVersions
-				.getSelectionIndex()));
-		try
-		{
-			preferences.flush();
-		}
-		catch (BackingStoreException e)
-		{
-			PHPEditorPlugin.logError(e);
-		}
+		return selectedAlias;
 	}
 
 	/**
-	 * @param phpVersion
+	 * Select a PHP version.
+	 * 
+	 * @param phpAlias
+	 *            The version alias.
 	 */
-	private void selectVersion(String phpAlias)
+	private void setSelectedVersion(String phpAlias)
 	{
 		int index = PHPVersionConfigurationBlock.PHP_ALIASES.indexOf(phpAlias);
 		if (index < 0)
 		{
-			PHPEditorPlugin.logWarning("Unresolved PHP version: " + phpAlias); //$NON-NLS-1$
+			IdeLog.logWarning(
+					PHPEditorPlugin.getDefault(),
+					"Unresolved PHP version: " + phpAlias, new Exception("Unresolved PHP version"), PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$ //$NON-NLS-2$
 			index = 0;
 		}
 		fPHPVersions.select(index);

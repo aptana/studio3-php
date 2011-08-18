@@ -1,3 +1,4 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.internal.indexer;
 
 import java.io.BufferedReader;
@@ -5,21 +6,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.ast.nodes.ASTParser;
-import org.eclipse.php.internal.core.ast.nodes.Comment;
-import org.eclipse.php.internal.core.ast.nodes.Program;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
-import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -59,14 +60,15 @@ public final class PHPDocUtils
 				InputStream stream = PHPBuiltins.getInstance().getBuiltinResourceStream(entryPath);
 				if (stream != null)
 				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(stream)); // $codepro.audit.disable
+																								// closeWhereCreated
 					return innerParsePHPDoc(offset, reader);
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			PHPEditorPlugin.logError("Failed locating the PHP function doc", ex); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Failed locating the PHP function doc", ex); //$NON-NLS-1$
 			return null;
 		}
 		return null;
@@ -85,8 +87,9 @@ public final class PHPDocUtils
 	{
 		try
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(), EncodingUtils
-					.getModuleEncoding(module)));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(), // $codepro.audit.disable
+																									// closeWhereCreated
+					EncodingUtils.getModuleEncoding(module)));
 			return innerParsePHPDoc(offset, reader);
 		}
 		catch (Exception ex)
@@ -104,18 +107,35 @@ public final class PHPDocUtils
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	private static PHPDocBlock innerParsePHPDoc(int offset, BufferedReader reader) throws IOException, Exception
+	private static PHPDocBlock innerParsePHPDoc(int offset, BufferedReader reader) throws IOException, Exception // $codepro.audit.disable
 	{
 		StringBuffer moduleData = new StringBuffer();
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1)
+		try
 		{
-			String readData = String.valueOf(buf, 0, numRead);
-			moduleData.append(readData);
-			buf = new char[1024];
+			char[] buf = new char[1024];
+			int numRead = 0;
+			while ((numRead = reader.read(buf)) != -1) // $codepro.audit.disable
+			{
+				String readData = String.valueOf(buf, 0, numRead);
+				moduleData.append(readData);
+			}
 		}
-		reader.close();
+		finally
+		{
+			if (reader != null)
+			{
+				try
+				{
+					reader.close();
+				}
+				catch (IOException e)
+				{
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"Error closing a BufferedReader in the PDTPHPModuleIndexer", e,//$NON-NLS-1$
+							PHPEditorPlugin.INDEXER_SCOPE);
+				}
+			}
+		}
 
 		String contents = moduleData.toString();
 		int b = -1;
@@ -146,7 +166,8 @@ public final class PHPDocUtils
 		PHPVersion version = PHPVersionProvider.getDefaultPHPVersion();
 		// TODO - Perhaps we'll need to pass a preference value for the 'short-tags' instead of passing 'true' by
 		// default.
-		ASTParser parser = ASTParser.newParser(new StringReader(contents), version, true);
+		ASTParser parser = ASTParser.newParser(new StringReader(contents), version, true); // $codepro.audit.disable
+																							// closeWhereCreated
 		Program program = parser.createAST(null);
 
 		CommentsVisitor commentsVisitor = new CommentsVisitor();
@@ -308,13 +329,19 @@ public final class PHPDocUtils
 			int cmp = midVal.getStart() - offset;
 
 			if (cmp < 0)
+			{
 				low = mid + 1;
+			}
 			else if (cmp > 0)
+			{
 				high = mid - 1;
+			}
 			else
+			{
 				return mid; // key found
+			}
 		}
-		return -(low); // key not found.
+		return -low; // key not found.
 	}
 
 	/**
@@ -574,7 +601,7 @@ public final class PHPDocUtils
 				}
 			}
 
-			ArrayList<TypedDescription> vars = documentation.getVars();
+			List<TypedDescription> vars = documentation.getVars();
 			if (vars != null)
 			{
 				for (TypedDescription var : vars)

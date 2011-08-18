@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.util;
 
 import java.io.File;
@@ -16,6 +23,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 
@@ -33,7 +41,8 @@ public class EditorUtils
 	{
 		if (file == null)
 		{
-			PHPEditorPlugin.logError(new IllegalArgumentException("The file cannot be null")); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Error open a file in the editor", new IllegalArgumentException("file is null")); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
 		try
@@ -52,7 +61,7 @@ public class EditorUtils
 		}
 		catch (Exception e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error open a file in the editor", e); //$NON-NLS-1$
 		}
 		return null;
 	}
@@ -112,7 +121,7 @@ public class EditorUtils
 				}
 			}
 		});
-		
+
 		return editorResult[0];
 	}
 
@@ -122,6 +131,7 @@ public class EditorUtils
 	private static boolean isSameDocument(final ITextViewer viewer, IEditorPart editor)
 	{
 		return editor instanceof PHPSourceEditor
-				&& ((PHPSourceEditor) editor).getDocumentProvider().getDocument(editor.getEditorInput()) == viewer.getDocument();
+				&& ((PHPSourceEditor) editor).getDocumentProvider().getDocument(editor.getEditorInput()) == viewer
+						.getDocument();
 	}
 }

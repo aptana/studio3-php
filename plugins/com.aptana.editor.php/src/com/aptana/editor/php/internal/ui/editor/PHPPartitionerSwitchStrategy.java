@@ -12,8 +12,7 @@ public class PHPPartitionerSwitchStrategy extends PartitionerSwitchStrategy
 
 	private static final String[][] PHP_PAIRS = new String[][] { { "<?php", "?>" }, //$NON-NLS-1$ //$NON-NLS-2$
 			{ "<?=", "?>" }, //$NON-NLS-1$ //$NON-NLS-2$
-			{ "<?", "?>" }, //$NON-NLS-1$ //$NON-NLS-2$
-			{ "<%", "%>" } //$NON-NLS-1$ //$NON-NLS-2$
+			{ "<?", "?>" } //$NON-NLS-1$ //$NON-NLS-2$
 	};
 
 	/**

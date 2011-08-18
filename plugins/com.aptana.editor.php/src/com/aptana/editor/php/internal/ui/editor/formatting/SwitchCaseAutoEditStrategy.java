@@ -9,8 +9,9 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
@@ -91,15 +92,15 @@ public class SwitchCaseAutoEditStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP 'switch-case' auto-indent strategy", e); //$NON-NLS-1$
 		}
 	}
 
 	/*
 	 * Indent the switch case
 	 */
-	private void indentSwitchCase(String completeWord, IDocument document,
-			DocumentCommand command) throws BadLocationException
+	private void indentSwitchCase(String completeWord, IDocument document, DocumentCommand command)
+			throws BadLocationException
 	{
 		// We add one, as the letter is just being type
 		int startOffset = command.offset - completeWord.length() + 1;

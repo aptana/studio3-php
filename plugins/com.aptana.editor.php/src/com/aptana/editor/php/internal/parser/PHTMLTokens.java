@@ -22,7 +22,7 @@ public class PHTMLTokens
 	public static final short PHP_END = 201;
 	public static final short PHP_HEREDOC = 202;
 	private static final short MAXIMUM = 3;
-	private static final short OFFSET = 100;
+	private static final short OFFSET = 200;
 
 	private static final String[] NAMES = { "EOF", "PHP", "PHP_END", "PHP_HEREDOC" };
 	private static final String NAME_UNKNOWN = "UNKNOWN"; //$NON-NLS-1$
@@ -41,7 +41,7 @@ public class PHTMLTokens
 		{
 			return NAME_UNKNOWN;
 		}
-		return NAMES[token];
+		return NAMES[(int)token];
 	}
 
 	public static short getToken(String tokenName)

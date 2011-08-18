@@ -216,7 +216,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	/**
 	 * {@inheritDoc}
 	 */
-	public void refresh(IProgressMonitor monitor) throws ModelException
+	public void refresh(IProgressMonitor monitor)
 	{
 		monitor.done();
 	}
@@ -236,7 +236,7 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	/**
 	 * {@inheritDoc}
 	 */
-	public void store(OutputStream outputStream, IProgressMonitor monitor) throws ModelException
+	public void store(OutputStream outputStream, IProgressMonitor monitor)
 	{
 		monitor.done();
 	}

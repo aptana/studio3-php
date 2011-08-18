@@ -20,17 +20,22 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.php.internal.core.PHPVersion;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
-import org.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
-import org.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
+import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -49,7 +54,6 @@ import com.aptana.parsing.ast.IParseNode;
 public final class PHPBuiltins
 {
 
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	public static final String LANGUAGE_LIBRARY_PATH_BASE = "Resources/language/php"; //$NON-NLS-1$
 	public static final String PHP4_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "4"; //$NON-NLS-1$
 	public static final String PHP5_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "5"; //$NON-NLS-1$
@@ -61,16 +65,16 @@ public final class PHPBuiltins
 
 	private Object mutex = new Object();
 
-	private HashSet<Object> php4Names = new HashSet<Object>();
-	private HashSet<Object> php5Names = new HashSet<Object>();
-	private HashSet<Object> php53Names = new HashSet<Object>();
+	private Set<Object> php4Names = new HashSet<Object>();
+	private Set<Object> php5Names = new HashSet<Object>();
+	private Set<Object> php53Names = new HashSet<Object>();
 	// Holds a function name map to the resource name that contains it
-	private HashMap<String, String> builtInFunctions = new HashMap<String, String>();
+	private Map<String, String> builtInFunctions = new HashMap<String, String>();
 	// Holds a Class/Constant name map to the resource name that contains it
-	private HashMap<String, String> builtInClasses = new HashMap<String, String>();
-	private HashMap<String, String> builtInConstants = new HashMap<String, String>();
+	private Map<String, String> builtInClasses = new HashMap<String, String>();
+	private Map<String, String> builtInConstants = new HashMap<String, String>();
 
-	private TreeSet<Object> builtins;
+	private SortedSet<Object> builtins;
 	private boolean initializing;
 
 	private void addKeywords()
@@ -201,7 +205,7 @@ public final class PHPBuiltins
 	}
 
 	/**
-	 * Adds built-in.
+	 * Adds built-in. By default, the type of node that will be added is IPHPParseNode.KEYWORD_NODE.
 	 * 
 	 * @param string
 	 * @param nodeName
@@ -209,12 +213,30 @@ public final class PHPBuiltins
 	 * @param phpVersions
 	 *            An optional array of supported php-versions. In case none is passed, the built-in will be added to all
 	 *            versions
+	 * @see PHPBuiltins#addBuiltin(String, String, String, short, PHPVersion...)
 	 */
 	private void addBuiltin(String string, String nodeName, String description, PHPVersion... phpVersions)
 	{
-		PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, 0, -1, -1, nodeName);
+		addBuiltin(string, nodeName, description, IPHPParseNode.KEYWORD_NODE, phpVersions);
+	}
+
+	/**
+	 * Adds built-in.
+	 * 
+	 * @param string
+	 * @param nodeName
+	 * @param description
+	 * @param nodeType
+	 * @param phpVersions
+	 *            An optional array of supported php-versions. In case none is passed, the built-in will be added to all
+	 *            versions
+	 */
+	private void addBuiltin(String string, String nodeName, String description, short nodeType,
+			PHPVersion... phpVersions)
+	{
+		PHPBaseParseNode node = new PHPBaseParseNode(nodeType, 0, -1, -1, nodeName);
 		builtins.add(node);
-		node.setDocumentation(new PHPDocBlockImp(description, EMPTY_STRING, NO_TAGS, 0));
+		node.setDocumentation(new PHPDocBlockImp(description, StringUtil.EMPTY, NO_TAGS, 0));
 		if (phpVersions != null && phpVersions.length > 0)
 		{
 			for (PHPVersion version : phpVersions)
@@ -295,7 +317,9 @@ public final class PHPBuiltins
 	 */
 	private void addSuperGlobal(String string, String nodeName)
 	{
-		addBuiltin(string, nodeName, MessageFormat.format(Messages.SUPERGLOBAL_LABEL, nodeName));
+		// add the super-globals as constants.
+		addBuiltin(string, nodeName, MessageFormat.format(Messages.SUPERGLOBAL_LABEL, nodeName),
+				IPHPParseNode.CONST_NODE);
 	}
 
 	/**
@@ -414,7 +438,8 @@ public final class PHPBuiltins
 			}
 			catch (MalformedURLException e)
 			{
-				PHPEditorPlugin.logError("Error retrieving the built-in resource.", e); //$NON-NLS-1$
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"Error retrieving the built-in resource", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 
 		}
@@ -425,10 +450,8 @@ public final class PHPBuiltins
 	{
 		try
 		{
-			if (PHPEditorPlugin.DEBUG || PHPEditorPlugin.INDEXER_DEBUG)
-			{
-				System.out.println("Indexing the PHP API libraries..."); //$NON-NLS-1$
-			}
+			IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+					"Indexing the PHP API libraries...", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			this.builtins = new TreeSet<Object>(new Comparator<Object>()
 			{
 				public int compare(Object arg0, Object arg1)
@@ -447,30 +470,33 @@ public final class PHPBuiltins
 					return res;
 				}
 			});
-			HashMap<Object, Object> builtins = new HashMap<Object, Object>(INITIAL_CAPACITY);
+			Map<Object, Object> builtins = new HashMap<Object, Object>(INITIAL_CAPACITY);
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp4);
 			PHPParser parser = new PHPParser(PHPVersion.PHP4);
 			long timeMillis = System.currentTimeMillis();
 			initPHP4Builtins(parser, builtins);
-			if (PHPEditorPlugin.DEBUG)
+			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{
-				System.out.println("Parsed PHP4 built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP4 built-ins (" //$NON-NLS-1$
+						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				timeMillis = System.currentTimeMillis();
 			}
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp5);
 			parser = new PHPParser(PHPVersion.PHP5);
 			initPHP5Builtins(parser, builtins);
-			if (PHPEditorPlugin.DEBUG)
+			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{
-				System.out.println("Parsed PHP5 built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP5 built-ins (" //$NON-NLS-1$
+						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				timeMillis = System.currentTimeMillis();
 			}
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp53);
 			parser = new PHPParser(PHPVersion.PHP5_3);
 			initPHP53Builtins(parser, builtins);
-			if (PHPEditorPlugin.DEBUG)
+			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{
-				System.out.println("Parsed PHP53 built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP5.3 built-ins (" //$NON-NLS-1$
+						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				timeMillis = System.currentTimeMillis();
 			}
 			this.builtins.addAll(builtins.values());
@@ -485,18 +511,16 @@ public final class PHPBuiltins
 			 * +nodeName+"</string>"); count++; } } }
 			 */
 			addKeywords();
-			if (PHPEditorPlugin.DEBUG)
-			{
-				System.out.println("Loaded all built-ins (" + (System.currentTimeMillis() - timeMillis) + "ms)"); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+			IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Loaded all built-ins (" //$NON-NLS-1$
+					+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 		}
 		catch (Throwable t)
 		{
-			PHPEditorPlugin.logError(t);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the PHP Built-in API", t); //$NON-NLS-1$
 		}
 	}
 
-	private void initPHP4Builtins(PHPParser parser, HashMap<Object, Object> builtins)
+	private void initPHP4Builtins(PHPParser parser, Map<Object, Object> builtins)
 	{
 		try
 		{
@@ -531,17 +555,18 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " + url.getFile(), e); //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error loading the built-in PHP API for " + url.getFile(), e); //$NON-NLS-1$
 				}
 			}
 		}
-		catch (IOException ioe)
+		catch (Exception e)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API.", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API.", e); //$NON-NLS-1$
 		}
 	}
 
-	private void initPHP5Builtins(PHPParser parser, HashMap<Object, Object> builtins)
+	private void initPHP5Builtins(PHPParser parser, Map<Object, Object> builtins)
 	{
 		try
 		{
@@ -576,18 +601,19 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " + url.getFile(), //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error loading the built-in PHP API for " + url.getFile(), //$NON-NLS-1$
 							e);
 				}
 			}
 		}
-		catch (IOException ioe)
+		catch (Exception e)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API", ioe); //$NON-NLS-1$
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API", e); //$NON-NLS-1$
 		}
 	}
 
-	private void initPHP53Builtins(PHPParser parser, HashMap<Object, Object> builtins)
+	private void initPHP53Builtins(PHPParser parser, Map<Object, Object> builtins)
 	{
 		try
 		{
@@ -622,15 +648,15 @@ public final class PHPBuiltins
 				}
 				catch (Exception e)
 				{
-					PHPEditorPlugin.logError("Error loading the built-in PHP API for " //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
 							+ url.getFile(), e);
 				}
 			}
 		}
-		catch (IOException ioe)
+		catch (Exception e)
 		{
-			PHPEditorPlugin.logError("Error loading the built-in PHP API for " //$NON-NLS-1$
-					, ioe);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
+					, e);
 		}
 	}
 
@@ -650,7 +676,8 @@ public final class PHPBuiltins
 			IParseNode[] children = child.getChildren();
 			for (IParseNode node : children)
 			{
-				if (node instanceof PHPFunctionParseNode || node instanceof PHPVariableParseNode)
+				if (node instanceof PHPFunctionParseNode || node instanceof PHPVariableParseNode
+						|| node instanceof PHPConstantNode)
 				{
 					builtInClasses.put(child.getNameNode().getName() + IElementsIndex.DELIMITER
 							+ node.getNameNode().getName(), url.toString().intern());
@@ -660,28 +687,38 @@ public final class PHPBuiltins
 		else if (child instanceof PHPConstantNode || child.getNodeType() == IPHPParseNode.KEYWORD_NODE
 				|| child.getNodeType() == IPHPParseNode.CONST_NODE)
 		{
-			// Convert this PHP constant to a PHP parse node with a Keyword
-			// type.
-			// Also, make sure that the documentation is providing some basics.
-			PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
-			IPHPDocBlock documentation = phpChild.getDocumentation();
-			@SuppressWarnings("unused")
-			boolean docsFromBuiltinSource = true;
-			if (documentation == null || EMPTY_STRING.equals(documentation.getShortDescription()))
-			{
-				docsFromBuiltinSource = false;
-				documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
-						.getNameNode().getName()), EMPTY_STRING, NO_TAGS, 0);
-			}
-			PHPBaseParseNode node = new PHPBaseParseNode(IPHPParseNode.KEYWORD_NODE, phpChild.getModifiers(), child
-					.getStartingOffset(), child.getEndingOffset(), phpChild.getNameNode().getName());
-			node.setDocumentation(documentation);
-			builtins.add(node);
-			// if (docsFromBuiltinSource)
-			// {
-			builtInConstants.put(child.getNameNode().getName(), url.toString().intern());
-			// }
+			addAsKeyword(child, url);
 		}
+	}
+
+	private void addAsKeyword(IParseNode child, URL url)
+	{
+		// Convert this PHP constant to a PHP parse node with a Keyword
+		// type.
+		// Also, make sure that the documentation is providing some basics.
+		PHPBaseParseNode phpChild = (PHPBaseParseNode) child;
+		IPHPDocBlock documentation = phpChild.getDocumentation();
+		if (documentation == null || StringUtil.EMPTY.equals(documentation.getShortDescription()))
+		{
+			documentation = new PHPDocBlockImp(MessageFormat.format(Messages.PREDEFINED_CONSTANT_LABEL, child
+					.getNameNode().getName()), StringUtil.EMPTY, NO_TAGS, 0);
+		}
+		short type = (child.getNodeType() == IPHPParseNode.KEYWORD_NODE) ? IPHPParseNode.KEYWORD_NODE
+				: IPHPParseNode.CONST_NODE;
+		PHPBaseParseNode node = new PHPBaseParseNode(type, phpChild.getModifiers(), child.getStartingOffset(),
+				child.getEndingOffset(), phpChild.getNameNode().getName());
+		node.setDocumentation(documentation);
+		builtins.add(node);
+		String parentName = (child.getParent() != null) ? child.getParent().getNameNode().getName() : StringUtil.EMPTY;
+		if (parentName == null)
+		{
+			parentName = StringUtil.EMPTY;
+		}
+		else if (parentName.length() > 0)
+		{
+			parentName += IElementsIndex.DELIMITER;
+		}
+		builtInConstants.put(parentName + child.getNameNode().getName(), url.toString().intern());
 	}
 
 	/*
@@ -690,8 +727,8 @@ public final class PHPBuiltins
 	 * @return A URL array holding the resources for the children of the root library.
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
-	private static URL[] getBuiltinsURLs(String libraryPath) throws IOException
+	@SuppressWarnings("rawtypes")
+	private static URL[] getBuiltinsURLs(String libraryPath)
 	{
 		List<URL> urls = new ArrayList<URL>();
 		Enumeration entries = PHPEplPlugin.getDefault().getBundle().findEntries(libraryPath, "*.php", true); //$NON-NLS-1$
@@ -763,10 +800,8 @@ public final class PHPBuiltins
 			initBuiltins(monitor);
 		}
 		initializing = false;
-		if (PHPEditorPlugin.INDEXER_DEBUG)
-		{
-			System.out.println("Built-ins clean: " + (System.currentTimeMillis() - start) + "ms"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Built-ins clean: " //$NON-NLS-1$
+				+ (System.currentTimeMillis() - start) + "ms", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 	}
 
 }

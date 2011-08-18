@@ -9,6 +9,7 @@ package com.aptana.editor.php.internal.builder.preferences;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -25,21 +26,21 @@ public class ProjectDependencies
 	/**
 	 * Directories.
 	 */
-	private ArrayList<File> directories = new ArrayList<File>();
+	private List<File> directories = new ArrayList<File>();
 
 	/**
 	 * Projects.
 	 */
-	private ArrayList<IResource> workspaceResources = new ArrayList<IResource>();
+	private List<IResource> workspaceResources = new ArrayList<IResource>();
 
-	private ArrayList<String> librariesIds = new ArrayList<String>();
+	private List<String> librariesIds = new ArrayList<String>();
 
-	public ArrayList<String> getNotUsedLibrariesIds()
+	public List<String> getNotUsedLibrariesIds()
 	{
 		return librariesIds;
 	}
 
-	public void setNotUsedLibrariesIds(ArrayList<String> librariesIds)
+	public void setNotUsedLibrariesIds(List<String> librariesIds)
 	{
 		this.librariesIds = librariesIds;
 	}
@@ -127,7 +128,7 @@ public class ProjectDependencies
 	/**
 	 * @return directories
 	 */
-	public ArrayList<File> getDirectories()
+	public List<File> getDirectories()
 	{
 		return new ArrayList<File>(directories);
 	}
@@ -135,7 +136,7 @@ public class ProjectDependencies
 	/**
 	 * @return projects
 	 */
-	public ArrayList<IResource> getWorkspaceResources()
+	public List<IResource> getWorkspaceResources()
 	{
 		return new ArrayList<IResource>(workspaceResources);
 	}
@@ -144,7 +145,7 @@ public class ProjectDependencies
 	 * @param ps
 	 * @param fs
 	 */
-	public void set(ArrayList<IResource> ps, ArrayList<File> fs)
+	public void set(List<IResource> ps, List<File> fs)
 	{
 		directories = new ArrayList<File>(fs);
 		workspaceResources = new ArrayList<IResource>(ps);

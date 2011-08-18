@@ -7,7 +7,7 @@
  */
 package com.aptana.editor.php.internal.indexer;
 
-import gnu.trove.THashSet;
+import gnu.trove.set.hash.THashSet;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

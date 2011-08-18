@@ -29,6 +29,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -47,12 +48,7 @@ import com.aptana.editor.php.internal.core.builder.IModule;
  */
 public final class BuildPathManager
 {
-
-	private static class Mutex
-	{
-	};
-
-	private static Mutex mutex = new Mutex();
+	private static Object mutex = new Object();
 
 	/**
 	 * Build path manager instance.
@@ -119,12 +115,20 @@ public final class BuildPathManager
 	 */
 	public synchronized IModule getModuleByResource(Object resource)
 	{
+		if (resource == null)
+		{
+			return null;
+		}
 		for (IBuildPath path : buildPaths.values())
 		{
-			IModule module = path.getModule(resource);
-			if (module != null)
+			// double check the path - See http://jira.appcelerator.org/browse/APSTUD-3048
+			if (path != null)
 			{
-				return module;
+				IModule module = path.getModule(resource);
+				if (module != null)
+				{
+					return module;
+				}
 			}
 		}
 		return null;
@@ -217,11 +221,9 @@ public final class BuildPathManager
 		indexExternalLibraries();
 		indexLocalProjects(workspace);
 		bindListeners(workspace);
-		if (PHPEditorPlugin.DEBUG)
-		{
-			long l1 = System.currentTimeMillis();
-			System.out.println("Indexer init:" + (l1 - l0)); //$NON-NLS-1$
-		}
+		IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+				"Indexer init: " + (System.currentTimeMillis() - l0) + "ms)", null, //$NON-NLS-1$ //$NON-NLS-2$
+				PHPEditorPlugin.DEBUG_SCOPE);
 	}
 
 	public void indexExternalLibraries()
@@ -249,7 +251,7 @@ public final class BuildPathManager
 					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 					root.accept(new IResourceVisitor()
 					{
-						public boolean visit(IResource resource) throws CoreException
+						public boolean visit(IResource resource)
 						{
 							// ignoring inaccessible resources
 							if (!resource.isAccessible())
@@ -275,14 +277,14 @@ public final class BuildPathManager
 				}
 				catch (CoreException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error handling a libraries change", e); //$NON-NLS-1$
 				}
 			}
 
 			public void userLibrariesChanged(UserLibrary[] newLibraries)
 			{
 				Set<IPHPLibrary> emptySet = Collections.emptySet();
-				HashSet<File> files = new HashSet<File>();
+				Set<File> files = new HashSet<File>();
 				for (Object o : buildPaths.keySet())
 				{
 					if (o instanceof File)
@@ -290,7 +292,7 @@ public final class BuildPathManager
 						files.add((File) o);
 					}
 				}
-				HashSet<File> currrentFiles = new HashSet<File>(files);
+				Set<File> currrentFiles = new HashSet<File>(files);
 				IPHPLibrary[] current = LibraryManager.getInstance().getAllLibraries();
 				for (IPHPLibrary l : current)
 				{
@@ -305,7 +307,7 @@ public final class BuildPathManager
 				{
 					IBuildPath path = getBuildPathByResource(f);
 					removeBuildPath(f);
-					path.close();
+					path.close(); // $codepro.audit.disable closeInFinally
 					currrentFiles.remove(f);
 				}
 				for (UserLibrary l : newLibraries)
@@ -389,7 +391,8 @@ public final class BuildPathManager
 							}
 							catch (CoreException e)
 							{
-								PHPEditorPlugin.logError(e);
+								IdeLog.logError(PHPEditorPlugin.getDefault(),
+										"Error handling a resource-change event", e); //$NON-NLS-1$
 							}
 						}
 					}
@@ -416,7 +419,7 @@ public final class BuildPathManager
 				}
 			}
 
-			private void removeProject(IProject project, Set<IProject> toRemove) throws CoreException
+			private void removeProject(IProject project, Set<IProject> toRemove)
 			{
 				if (buildPaths.containsKey(project))
 				{
@@ -495,7 +498,7 @@ public final class BuildPathManager
 
 		for (IBuildPath path : removedPaths)
 		{
-			path.close();
+			path.close(); // $codepro.audit.disable closeInFinally
 		}
 
 		notifyChanged(addedPaths, removedPaths);
@@ -524,7 +527,7 @@ public final class BuildPathManager
 			}
 			catch (Throwable th)
 			{
-				PHPEditorPlugin.logError("Unable notifying build path change listener", th); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Unable notifying build path change listener", th); //$NON-NLS-1$
 			}
 		}
 	}
@@ -537,7 +540,7 @@ public final class BuildPathManager
 		{
 			root.accept(new IResourceVisitor()
 			{
-				public boolean visit(IResource resource) throws CoreException
+				public boolean visit(IResource resource)
 				{
 					// not visiting inaccessible resources
 					if (!resource.isAccessible())
@@ -565,7 +568,7 @@ public final class BuildPathManager
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error indexing local projects", e); //$NON-NLS-1$
 		}
 
 		updateProjectsDependencies(root);
@@ -584,7 +587,7 @@ public final class BuildPathManager
 		{
 			root.accept(new IResourceVisitor()
 			{
-				public boolean visit(IResource resource) throws CoreException
+				public boolean visit(IResource resource)
 				{
 					// ignoring inaccessible resources
 					if (!resource.isAccessible())
@@ -610,7 +613,7 @@ public final class BuildPathManager
 		}
 		catch (CoreException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error updating the project dependencies", e); //$NON-NLS-1$
 		}
 	}
 
@@ -643,7 +646,7 @@ public final class BuildPathManager
 				}
 				catch (CoreException e)
 				{
-					PHPEditorPlugin.logError("Error in the PHP build", e); //$NON-NLS-1$
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error creating a build-path", e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -698,10 +701,10 @@ public final class BuildPathManager
 			path.addDependency(dependencyBuildPath);
 		}
 		IPHPLibrary[] allLibraries = LibraryManager.getInstance().getAllLibraries();
-		HashSet<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays.asList(allLibraries));
+		Set<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays.asList(allLibraries));
 		if (dependencies.isUsesCustomLibs())
 		{
-			ArrayList<String> notUsedLibrariesIds = dependencies.getNotUsedLibrariesIds();
+			List<String> notUsedLibrariesIds = dependencies.getNotUsedLibrariesIds();
 			for (String s : notUsedLibrariesIds)
 			{
 				IPHPLibrary library = LibraryManager.getInstance().getLibrary(s);

@@ -8,18 +8,20 @@
 package com.aptana.editor.php.indexer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 public final class ASTVisitorRegistry
 {
 	private static final String EXTENSION_POINT_NAME = "com.aptana.editor.php.astVisitor"; //$NON-NLS-1$
 	private static ASTVisitorRegistry instance;
-	private ArrayList<IIndexingASTVisitor> visitors;
+	private List<IIndexingASTVisitor> visitors;
 
 	private ASTVisitorRegistry()
 	{
@@ -37,7 +39,7 @@ public final class ASTVisitorRegistry
 			}
 			catch (CoreException e1)
 			{
-				PHPEditorPlugin.logError(e1);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading a PHP indexing AST visitor extension", e1); //$NON-NLS-1$
 			}
 		}
 	}

@@ -9,6 +9,7 @@ package com.aptana.editor.php.internal.ui.preferences;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -67,8 +68,8 @@ public class PHPBuildpathPropertyPage extends PropertyPage implements IWorkbench
 	@Override
 	protected void performDefaults()
 	{
-		ArrayList<IResource> ps = new ArrayList<IResource>();
-		ArrayList<File> fs = new ArrayList<File>();
+		List<IResource> ps = new ArrayList<IResource>();
+		List<File> fs = new ArrayList<File>();
 		bps.init(ps, fs);
 		super.performDefaults();
 	}

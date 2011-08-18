@@ -9,13 +9,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ControlEnableState;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.php.internal.ui.PHPUIMessages;
-import org.eclipse.php.internal.ui.util.StatusInfo;
-import org.eclipse.php.internal.ui.util.StatusUtil;
-import org.eclipse.php.internal.ui.wizard.SelectionButtonDialogField;
-import org.eclipse.php.internal.ui.wizard.field.DialogField;
-import org.eclipse.php.internal.ui.wizard.field.IDialogFieldListener;
-import org.eclipse.php.internal.ui.wizard.field.LayoutUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -29,11 +22,18 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org2.eclipse.php.internal.ui.PHPUIMessages;
+import org2.eclipse.php.internal.ui.util.StatusInfo;
+import org2.eclipse.php.internal.ui.util.StatusUtil;
+import org2.eclipse.php.internal.ui.wizard.SelectionButtonDialogField;
+import org2.eclipse.php.internal.ui.wizard.field.DialogField;
+import org2.eclipse.php.internal.ui.wizard.field.IDialogFieldListener;
+import org2.eclipse.php.internal.ui.wizard.field.LayoutUtil;
 
 /**
  * Base for project property and preference pages
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public abstract class PropertyAndPreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IWorkbenchPropertyPage {
 
 	public static String PHP_NATURE = "com.aptana.editor.php.phpNature"; //$NON-NLS-1$

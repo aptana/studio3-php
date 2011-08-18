@@ -1,3 +1,4 @@
+// $codepro.audit.disable useEquals
 /**
  * Aptana Studio
  * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -42,8 +44,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants.Keys;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
@@ -63,16 +67,14 @@ import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
  * 
  * @author Denis Denisenko
  */
+// $codepro.audit.disable useEquals
 public final class PHPGlobalIndexer
 {
+	public static final Object FAMILY_PHP_BUILD = new Object();
 
-	private static class Mutex
-	{
-	};
+	private static Object mutex = new Object();
 
-	private static Mutex mutex = new Mutex();
-
-	private final class WrapIndexer implements IModuleIndexer, IProgramIndexer
+	private static final class WrapIndexer implements IModuleIndexer, IProgramIndexer
 	{
 		private final IConfigurationElement element;
 		private IModuleIndexer indexer;
@@ -91,7 +93,8 @@ public final class PHPGlobalIndexer
 			}
 			catch (CoreException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error indexing a PHP module", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 
 		}
@@ -117,7 +120,8 @@ public final class PHPGlobalIndexer
 			}
 			catch (CoreException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error indexing a PHP module", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 		}
 	}
@@ -132,20 +136,21 @@ public final class PHPGlobalIndexer
 			{
 				try
 				{
-					Thread.sleep(SAVING_INTERVAL);
+					Thread.sleep(SAVING_INTERVAL); // $codepro.audit.disable disallowSleepInsideWhile
 					try
 					{
 						doSave();
 					}
 					catch (Exception e)
 					{
-						PHPEditorPlugin.logError(e);
-						e.printStackTrace();
+						IdeLog.logError(PHPEditorPlugin.getDefault(),
+								"Error saving the PHP index", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 					}
 				}
 				catch (InterruptedException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"Saving the PHP index was interrupted", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 					return;
 				}
 			}
@@ -187,12 +192,12 @@ public final class PHPGlobalIndexer
 	 */
 	private IBuildPathChangeListener buildPathChangeListener;
 
-	private HashSet<IIndexChangeListener> listeners = new HashSet<IIndexChangeListener>();
+	private Set<IIndexChangeListener> listeners = new HashSet<IIndexChangeListener>();
 
 	/**
 	 * Module index listeners.
 	 */
-	private HashSet<IModuleIndexListener> moduleIndexListeners = new HashSet<IModuleIndexListener>();
+	private Set<IModuleIndexListener> moduleIndexListeners = new HashSet<IModuleIndexListener>();
 
 	/**
 	 * Gets indexer instance.
@@ -366,12 +371,25 @@ public final class PHPGlobalIndexer
 				monitor.done();
 				markDirtyPathes(modules);
 				fireChanged(0);
-				if (PHPEditorPlugin.INDEXER_DEBUG)
-				{
-					System.out.println("Indexer handleModulesRemoved [took " + (System.currentTimeMillis() - start) //$NON-NLS-1$
-							+ "ms)"); //$NON-NLS-1$
-				}
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+						"Indexer handleModulesRemoved [took " + (System.currentTimeMillis() - start) + "ms)", null, //$NON-NLS-1$ //$NON-NLS-2$
+						PHPEditorPlugin.INDEXER_SCOPE);
 				return Status.OK_STATUS;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+			 */
+			@Override
+			public boolean belongsTo(Object family)
+			{
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				{
+					return true;
+				}
+				return super.belongsTo(family);
 			}
 		};
 
@@ -444,12 +462,25 @@ public final class PHPGlobalIndexer
 				fireChanged(0);
 				markDirtyPathes(modules);
 				monitor.done();
-				if (PHPEditorPlugin.INDEXER_DEBUG)
-				{
-					System.out.println("Indexer handleModulesChanged [took " + (System.currentTimeMillis() - start) //$NON-NLS-1$
-							+ "ms)"); //$NON-NLS-1$
-				}
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+						"Indexer handleModulesChanged [took " + (System.currentTimeMillis() - start) + "ms)", null, //$NON-NLS-1$ //$NON-NLS-2$
+						PHPEditorPlugin.INDEXER_SCOPE);
 				return Status.OK_STATUS;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+			 */
+			@Override
+			public boolean belongsTo(Object family)
+			{
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				{
+					return true;
+				}
+				return super.belongsTo(family);
 			}
 		};
 
@@ -510,14 +541,26 @@ public final class PHPGlobalIndexer
 				monitor.done();
 				markDirtyPathes(modules);
 				fireChanged(0);
-				if (PHPEditorPlugin.INDEXER_DEBUG)
-				{
-					System.out.println("Indexer handleModulesAdded [took " + (System.currentTimeMillis() - start) //$NON-NLS-1$
-							+ "ms)"); //$NON-NLS-1$
-				}
+				IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+						"Indexer handleModulesAdded [took " + (System.currentTimeMillis() - start) + "ms)", null, //$NON-NLS-1$ //$NON-NLS-2$
+						PHPEditorPlugin.INDEXER_SCOPE);
 				return Status.OK_STATUS;
 			}
 
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+			 */
+			@Override
+			public boolean belongsTo(Object family)
+			{
+				if (family == FAMILY_PHP_BUILD || family == ResourcesPlugin.FAMILY_AUTO_BUILD
+						|| family == ResourcesPlugin.FAMILY_MANUAL_BUILD)
+				{
+					return true;
+				}
+				return super.belongsTo(family);
+			}
 		};
 
 		return job;
@@ -556,8 +599,9 @@ public final class PHPGlobalIndexer
 						}
 						catch (Throwable th)
 						{
-							PHPEditorPlugin.logError(Messages.PHPGlobalIndexer_UnableLoad + elementName
-									+ Messages.PHPGlobalIndexer_ProviderDecl, th);
+							IdeLog.logError(PHPEditorPlugin.getDefault(), Messages.PHPGlobalIndexer_UnableLoad
+									+ elementName + Messages.PHPGlobalIndexer_ProviderDecl, th,
+									PHPEditorPlugin.INDEXER_SCOPE);
 						}
 					}
 				}
@@ -565,7 +609,7 @@ public final class PHPGlobalIndexer
 		}
 	}
 
-	static HashSet<IBuildPath> needSaving = new HashSet<IBuildPath>();
+	static Set<IBuildPath> needSaving = new HashSet<IBuildPath>();
 
 	/**
 	 * Save the index, if needed.
@@ -577,7 +621,11 @@ public final class PHPGlobalIndexer
 
 	private void doSave()
 	{
-		HashSet<IBuildPath> bp = new HashSet<IBuildPath>();
+		if (EclipseUtil.isTesting())
+		{
+			return;
+		}
+		Set<IBuildPath> bp = new HashSet<IBuildPath>();
 		synchronized (needSaving)
 		{
 			bp.addAll(needSaving);
@@ -596,17 +644,17 @@ public final class PHPGlobalIndexer
 					UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(p);
 					if (elementIndex != null)
 					{
-						IndexPersistence.store(elementIndex, new DataOutputStream(stream), p);
+						IndexPersistence.store(elementIndex, new DataOutputStream(stream), p); // $codepro.audit.disable
+																								// closeWhereCreated
 					}
 				}
 				catch (IOException e)
 				{
-					PHPEditorPlugin.logError(e);
+					IdeLog.logError(PHPEditorPlugin.getDefault(),
+							"Error saving the PHP index", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 				}
 				finally
 				{
-					// long l1 = System.currentTimeMillis();
-					// System.out.println("Saving:" + (l1 - l0));
 					if (stream != null)
 					{
 						try
@@ -615,7 +663,8 @@ public final class PHPGlobalIndexer
 						}
 						catch (IOException e)
 						{
-							PHPEditorPlugin.logError(e);
+							IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+									"Error closing a stream", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 						}
 					}
 				}
@@ -665,10 +714,10 @@ public final class PHPGlobalIndexer
 		File pathesFile = new File(parent, "indexMappings"); //$NON-NLS-1$
 		if (pathesFile.exists())
 		{
+			DataInputStream dataInputStream = null;
 			try
 			{
-				BufferedInputStream stream = new BufferedInputStream(new FileInputStream(pathesFile));
-				DataInputStream dataInputStream = new DataInputStream(stream);
+				dataInputStream = new DataInputStream(new BufferedInputStream(new FileInputStream(pathesFile)));
 				int readInt = dataInputStream.readInt();
 				for (int a = 0; a < readInt; a++)
 				{
@@ -680,11 +729,27 @@ public final class PHPGlobalIndexer
 						pathes.put(handle, path);
 					}
 				}
-				dataInputStream.close();
 			}
 			catch (IOException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error loading PHP index-mapping", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+			}
+			finally
+			{
+				if (dataInputStream != null)
+				{
+					try
+					{
+						dataInputStream.close();
+					}
+					catch (IOException e)
+					{
+						IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+								"Error closing a DataInputStream in the PHPGlobalIndexer", e, //$NON-NLS-1$
+								PHPEditorPlugin.INDEXER_SCOPE);
+					}
+				}
 			}
 		}
 	}
@@ -693,26 +758,40 @@ public final class PHPGlobalIndexer
 	{
 		File parent = PHPEditorPlugin.getDefault().getStateLocation().toFile();
 		File pathesFile = new File(parent, "indexMappings"); //$NON-NLS-1$
-
+		DataOutputStream dataOutputStream = null;
 		try
 		{
-			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(pathesFile));
-			DataOutputStream dataOutputStream = new DataOutputStream(stream);
+			dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(pathesFile)));
 			dataOutputStream.writeInt(pathes.size());
 			for (String s : pathes.keySet())
 			{
 				dataOutputStream.writeUTF(s);
 				dataOutputStream.writeUTF(pathes.get(s));
 			}
-			dataOutputStream.close();
 		}
 		catch (IOException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(),
+					"Error saving PHP index-mapping", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+		}
+		finally
+		{
+			if (dataOutputStream != null)
+			{
+				try
+				{
+					dataOutputStream.close();
+				}
+				catch (IOException e)
+				{
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"Error closing a DataInputStream in the PHPGlobalIndexer", e, PHPEditorPlugin.INDEXER_SCOPE);//$NON-NLS-1$
+				}
+			}
 		}
 	}
 
-	private HashMap<String, String> pathes;
+	private Map<String, String> pathes;
 
 	int modulesNum = 0;
 
@@ -733,7 +812,7 @@ public final class PHPGlobalIndexer
 					{
 						break;
 					}
-					final ArrayList<IModule> modules = new ArrayList<IModule>();
+					final List<IModule> modules = new ArrayList<IModule>();
 					UnpackedElementIndex index = new UnpackedElementIndex();
 					boolean loaded = false;
 					File indexFile = getIndexFile(path);
@@ -754,16 +833,31 @@ public final class PHPGlobalIndexer
 								indexFile.delete();
 								if (!(e instanceof IOException))
 								{
-									e.printStackTrace();
+									IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the PHP index", e); //$NON-NLS-1$
 								}
 
 							}
-							di.close();
 						}
 						catch (Exception e1)
 						{
-							PHPEditorPlugin.logError(e1);
-							e1.printStackTrace();
+							IdeLog.logError(PHPEditorPlugin.getDefault(),
+									"Error indexing local PHP modules", e1, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+						}
+						finally
+						{
+							if (di != null)
+							{
+								try
+								{
+									di.close();
+								}
+								catch (IOException e)
+								{
+									IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+											"Error closing a DataInputStream in the PHPGlobalIndexer", e,//$NON-NLS-1$
+											PHPEditorPlugin.INDEXER_SCOPE);
+								}
+							}
 						}
 					}
 					if (monitor.isCanceled())
@@ -781,9 +875,9 @@ public final class PHPGlobalIndexer
 					else
 					{
 						mainIndex.addIndex(path, index);
-						ArrayList<IModule> changed = new ArrayList<IModule>();
+						List<IModule> changed = new ArrayList<IModule>();
 						List<IModule> asList = Arrays.asList(index.getAllModules());
-						HashSet<IModule> all = new HashSet<IModule>(asList);
+						Set<IModule> all = new HashSet<IModule>(asList);
 						for (IModule m : modules)
 						{
 							if (monitor.isCanceled())
@@ -906,7 +1000,7 @@ public final class PHPGlobalIndexer
 						{
 							job.join();
 						}
-						catch (InterruptedException e)
+						catch (InterruptedException e) // $codepro.audit.disable emptyCatchClause
 						{
 						}
 					}
@@ -959,7 +1053,7 @@ public final class PHPGlobalIndexer
 	/**
 	 * @param modulesLeft
 	 */
-	protected synchronized void fireChanged(int modulesLeft)
+	private synchronized void fireChanged(int modulesLeft)
 	{
 		for (IIndexChangeListener l : listeners)
 		{
@@ -970,7 +1064,7 @@ public final class PHPGlobalIndexer
 	/**
 	 * @param modulesLeft
 	 */
-	protected synchronized void fireChangeProcessed()
+	private synchronized void fireChangeProcessed()
 	{
 		for (IIndexChangeListener l : listeners)
 		{
@@ -986,7 +1080,7 @@ public final class PHPGlobalIndexer
 	 * @param removed
 	 *            - removed modules.
 	 */
-	protected void fireBeforeIndexing(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories)
+	private void fireBeforeIndexing(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories)
 	{
 		List<IModuleIndexListener> listeners = new ArrayList<IModuleIndexListener>();
 		synchronized (moduleIndexListeners)
@@ -1008,7 +1102,7 @@ public final class PHPGlobalIndexer
 	 * @param changed
 	 *            - changed.
 	 */
-	protected void fireAfterIndexing(List<IModule> added, List<IModule> changed, List<IDirectory> addedDirectories)
+	private void fireAfterIndexing(List<IModule> added, List<IModule> changed, List<IDirectory> addedDirectories)
 	{
 		List<IModuleIndexListener> toNotify = new ArrayList<IModuleIndexListener>();
 		synchronized (moduleIndexListeners)
@@ -1077,7 +1171,8 @@ public final class PHPGlobalIndexer
 			}
 			catch (CoreException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error cleaning the PHP index", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
 			}
 			BuildPathManager buildPathManager = BuildPathManager.getInstance();
 			IBuildPath buildPath = buildPathManager.getBuildPathByResource(project);
@@ -1121,7 +1216,7 @@ public final class PHPGlobalIndexer
 			{
 				job.join();
 			}
-			catch (InterruptedException e)
+			catch (InterruptedException e) // $codepro.audit.disable emptyCatchClause
 			{
 			}
 			Job savingJob = new Job(Messages.PHPGlobalIndexer_savingIndex)
@@ -1133,7 +1228,7 @@ public final class PHPGlobalIndexer
 					return Status.OK_STATUS;
 				}
 			};
-			savingJob.setSystem(true);
+			savingJob.setSystem(!EclipseUtil.showSystemJobs());
 			savingJob.setPriority(Job.BUILD);
 		}
 	}

@@ -9,8 +9,9 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
+import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
@@ -50,6 +51,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	 */
 	public void customizeDocumentCommand(IDocument document, DocumentCommand command)
 	{
+		if (!isAutoIndentEnabled())
+		{
+			return;
+		}
 		innerCustomizeDocumentCommand(document, command);
 		// we have to reset if for the next run
 		this.lexemeProvider = null;
@@ -77,11 +82,12 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 				return;
 			}
 
-			if (IPHPConstants.PHP_COMMENT.equals(regionType))
-			{
-				// TODO
-				// commentStrategy.customizeDocumentCommand(document, command);
-			}
+			// if (IPHPConstants.PHP_SLASH_LINE_COMMENT.equals(regionType)
+			// || IPHPConstants.PHP_HASH_LINE_COMMENT.equals(regionType))
+			// {
+			// TODO
+			// commentStrategy.customizeDocumentCommand(document, command);
+			// }
 			if (TextUtilities.endsWith(document.getLegalLineDelimiters(), command.text) != -1)
 			{
 
@@ -121,15 +127,33 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 					// The colon char can appear in a switch-case blocks and when using an old-style php if-else, loops
 					// or switch-case blocks.
 					// To decide what is the case here, we look at the first word in the current line.
-					Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, floorLexeme
-							.getStartingOffset());
+					Lexeme<PHPTokenType> firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider,
+							floorLexeme.getStartingOffset());
 					if (firstLexemeInLine == null)
 					{
 						return;
 					}
-
+					if (lexemeText.equals(";")) { //$NON-NLS-1$
+						Lexeme<PHPTokenType> previousNonWhitespaceLexeme = getPreviousNonWhitespaceLexeme(firstLexemeInLine
+								.getStartingOffset() - 1);
+						if (previousNonWhitespaceLexeme != null)
+						{
+							String indent = indentAfterOneLineBlock(previousNonWhitespaceLexeme.getStartingOffset(),
+									document);
+							if (indent != null)
+							{
+								command.text += indent;
+								return;
+							}
+						}
+					}
+					if (lexemeText.equals(")")) //$NON-NLS-1$
+					{
+						indentAfterNewLine(document, command);
+						// command.text += configuration.getIndent();
+						return;
+					}
 					indentAfterNewLine(document, command);
-
 					// This will cause a line after a 'block-type' to be indented, even when the
 					// type has no open bracket. For now, it's disabled. If we would like to have it enabled, we should
 					// consider de-denting the line back if the user start typing a curly-open on that line.
@@ -170,7 +194,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 						customizeCloseCurly(document, command, floorLexeme);
 					}
 				}
-				else if (indentAfterOpenBrace(document, command) == false)
+				else if (!indentAfterOpenBrace(document, command))
 				{
 					command.text += copyIntentationFromPreviousLine(document, command);
 					// command.text += getIndentationAtOffset(document, floorLexeme.getStartingOffset());
@@ -196,7 +220,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 			return;
 		}
 	}
@@ -221,18 +245,28 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		if (lineInfo.getOffset() > 0)
 		{
 			Lexeme<PHPTokenType> firstLexemeInLine = null;
+			int count = 10; // place it here to avoid any unexpected infinite loops..
 			do
 			{
+				if (count-- == 0)
+				{
+					IdeLog.logWarning(
+							PHPEditorPlugin.getDefault(),
+							"Stopped a possible infinite loop in the PHPAutoIndentStrategy", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+					break;
+				}
 				firstLexemeInLine = getFirstLexemeInLine(document, lexemeProvider, lineInfo.getOffset());
 				// Check if the line of lexeme ends with with a curly bracket or a colon.
 				// If so, we have a block that span more then one line.
 				lineInfo = document.getLineInformationOfOffset(firstLexemeInLine.getStartingOffset());
-				Lexeme<PHPTokenType> lastLexemeInLine = getLastLexemeInLine(document, lexemeProvider, lineInfo
-						.getOffset());
-				if (lastLexemeInLine != null && firstLexemeInLine != null
-						&& BLOCK_TYPES.contains(firstLexemeInLine.getType().getType()))
+				Lexeme<PHPTokenType> lastLexemeInLine = getLastLexemeInLine(document, lexemeProvider,
+						lineInfo.getOffset());
+				if (lastLexemeInLine != null
+						&& firstLexemeInLine != null
+						&& (BLOCK_TYPES.contains(firstLexemeInLine.getType().getType()) || BLOCK_TYPES
+								.contains(lastLexemeInLine.getType().getType())))
 				{
-					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$ //$NON-NLS-2$
+					if ("{".equals(lastLexemeInLine.getText()) || ":".equals(lastLexemeInLine.getText())) //$NON-NLS-1$//$NON-NLS-2$
 					{
 						// it's a block, so return what we have
 						if (indent == null)
@@ -241,6 +275,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 									+ getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 						}
 						return indent;
+					}
+					if ("else".equals(lastLexemeInLine.getText())) //$NON-NLS-1$
+					{
+						return getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 					}
 					indent = getIndentationAtOffset(document, firstLexemeInLine.getStartingOffset());
 				}
@@ -310,7 +348,8 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 									hasClosing = true;
 									break;
 								}
-								if (next == '\n' || next == '\r' || !Character.isWhitespace(next))
+								if (next == '\n' || next == '\r' || !Character.isWhitespace(next)) // $codepro.audit.disable
+																									// platformSpecificLineSeparator
 								{
 									// we could not find any closing bracket
 									break;
@@ -343,7 +382,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 			}
 			catch (BadLocationException e)
 			{
-				PHPEditorPlugin.logError(e);
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 			}
 		}
 		if (result)
@@ -421,7 +460,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException e)
 		{
-			PHPEditorPlugin.logError(e);
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error in the PHP auto-indent strategy", e); //$NON-NLS-1$
 		}
 
 	}
@@ -469,6 +508,10 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 		}
 		catch (BadLocationException excp)
 		{
+			IdeLog.logWarning(
+					PHPEditorPlugin.getDefault(),
+					"PHP Auto Edit Strategy - Bad location while computing an indentation (copyIntentationFromPreviousLine)", //$NON-NLS-1$
+					excp, PHPEditorPlugin.DEBUG_SCOPE);
 		}
 
 		return StringUtils.EMPTY;

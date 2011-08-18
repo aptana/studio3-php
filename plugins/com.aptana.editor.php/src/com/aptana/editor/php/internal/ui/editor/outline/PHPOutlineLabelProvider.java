@@ -1,8 +1,8 @@
 package com.aptana.editor.php.internal.ui.editor.outline;
 
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.swt.graphics.Image;
+import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -141,7 +141,7 @@ public class PHPOutlineLabelProvider extends LabelProvider
 		if (parseNode != null)
 		{
 			int modifiers = parseNode.getModifiers();
-			switch (parseNode.getType())
+			switch (parseNode.getNodeType())
 			{
 				case IPHPParseNode.BLOCK_NODE:
 				case IPHPParseNode.KEYWORD_NODE:
@@ -166,7 +166,6 @@ public class PHPOutlineLabelProvider extends LabelProvider
 				case IPHPParseNode.CLASS_NODE:
 					result = getClassNodeImage(modifiers);
 					break;
-
 				default:
 					result = getDefaultImage(element);
 					break;

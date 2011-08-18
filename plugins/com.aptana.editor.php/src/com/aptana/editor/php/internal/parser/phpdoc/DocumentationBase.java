@@ -5,14 +5,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.eclipse.php.util.StringUtils;
+import org2.eclipse.php.util.StringUtils;
 
 /**
  * @author Robin Debreuil
  */
-public abstract class DocumentationBase
+public abstract class DocumentationBase // $codepro.audit.disable noAbstractMethods
 {
-
+	private static final String[] NO_STRINGS = new String[0];
 	private String fAuthor = ""; //$NON-NLS-1$
 	private String fName = ""; //$NON-NLS-1$
 	private String fDescription = ""; //$NON-NLS-1$
@@ -28,7 +28,7 @@ public abstract class DocumentationBase
 	private String userAgent = ""; //$NON-NLS-1$
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getName()
+	 * @see com.aptana.metadata.IDocumentation#getName()
 	 */
 	public String getName()
 	{
@@ -36,7 +36,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setName(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setName(java.lang.String)
 	 */
 	public void setName(String value)
 	{
@@ -44,7 +44,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getDescription()
+	 * @see com.aptana.metadata.IDocumentation#getDescription()
 	 */
 	public String getDescription()
 	{
@@ -52,7 +52,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setDescription(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setDescription(java.lang.String)
 	 */
 	public void setDescription(String value)
 	{
@@ -60,7 +60,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getRemarks()
+	 * @see com.aptana.metadata.IDocumentation#getRemarks()
 	 */
 	public String getRemarks()
 	{
@@ -68,7 +68,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setRemarks(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setRemarks(java.lang.String)
 	 */
 	public void setRemarks(String value)
 	{
@@ -76,7 +76,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getAuthor()
+	 * @see com.aptana.metadata.IDocumentation#getAuthor()
 	 */
 	public String getAuthor()
 	{
@@ -84,7 +84,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setAuthor(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setAuthor(java.lang.String)
 	 */
 	public void setAuthor(String value)
 	{
@@ -92,7 +92,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getVersion()
+	 * @see com.aptana.metadata.IDocumentation#getVersion()
 	 */
 	public String getVersion()
 	{
@@ -100,7 +100,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setVersion(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setVersion(java.lang.String)
 	 */
 	public void setVersion(String value)
 	{
@@ -108,19 +108,19 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getSees()
+	 * @see com.aptana.metadata.IDocumentation#getSees()
 	 */
 	public String[] getSees()
 	{
 		if (fSees == null)
 		{
-			return new String[0];
+			return NO_STRINGS;
 		}
-		return fSees.toArray(new String[0]);
+		return fSees.toArray(NO_STRINGS);
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#addSee(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#addSee(java.lang.String)
 	 */
 	public void addSee(String value)
 	{
@@ -134,43 +134,8 @@ public abstract class DocumentationBase
 		fSees.add(value);
 	}
 
-	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#getErrors()
-	// */
-	// public ErrorMessage[] getErrors()
-	// {
-	// if (fErrors == null)
-	// {
-	// return new ErrorMessage[0];
-	// }
-	//
-	// return fErrors.toArray(new ErrorMessage[0]);
-	// }
-	//
-	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#clearErrors()
-	// */
-	// public void clearErrors()
-	// {
-	// fErrors.clear();
-	// fErrors = null;
-	// }
-	//
-	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#addError(com.aptana.ide.parsing.ErrorMessage)
-	// */
-	// public void addError(ErrorMessage e)
-	// {
-	// if (fErrors == null)
-	// {
-	// fErrors = new ArrayList<ErrorMessage>();
-	// }
-	//
-	// fErrors.add(e);
-	// }
-
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getDocumentType()
+	 * @see com.aptana.metadata.IDocumentation#getDocumentType()
 	 */
 	public int getDocumentType()
 	{
@@ -178,7 +143,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setDocumentType(int)
+	 * @see com.aptana.metadata.IDocumentation#setDocumentType(int)
 	 */
 	public void setDocumentType(int type)
 	{
@@ -201,64 +166,6 @@ public abstract class DocumentationBase
 	{
 		this.userAgent = userAgent;
 	}
-
-	// /**
-	// * @param id
-	// * @return Returns the fID.
-	// */
-	// public CodeLocation[] getID(String id)
-	// {
-	// if(fID == null)
-	// {
-	// return null;
-	// }
-	//		
-	// if(fID.containsKey(id))
-	// {
-	// ArrayList<CodeLocation> al = fID.get(id);
-	// return al.toArray(new CodeLocation[0]);
-	// }
-	//		
-	// return null;
-	// }
-	//
-	// /**
-	// * @param id The ID to set.
-	// * @param location
-	// */
-	// public void setID(String id, CodeLocation location)
-	// {
-	// if(fID == null)
-	// {
-	// fID = new HashMap<String, ArrayList<CodeLocation>>();
-	// }
-	//		
-	// if(fID.containsKey(id))
-	// {
-	// ArrayList<CodeLocation> al = fID.get(id);
-	// al.add(location);
-	// }
-	// else
-	// {
-	// ArrayList<CodeLocation> list = new ArrayList<CodeLocation>();
-	// list.add(location);
-	// fID.put(id, list);
-	// }
-	//		
-	// }
-	// /**
-	// * Gets the String IDs for all the @id tags in this doc object.
-	// * @return Returns the String IDs for all the @id tags in this doc object.
-	// */
-	// public String[] getIDs()
-	// {
-	// if(fID == null)
-	// {
-	// return new String[0];
-	// }
-	//		
-	// return fID.keySet().toArray(new String[0]);
-	// }
 
 	/**
 	 * Read in a binary representation of this object
@@ -299,7 +206,7 @@ public abstract class DocumentationBase
 		output.writeUTF(this.fAuthor);
 		output.writeUTF(this.fName);
 		output.writeUTF(this.fDescription);
-		output.writeUTF(StringUtils.join("\n\n", getExamples())); //$NON-NLS-1$
+		output.writeUTF(StringUtils.join("\n\n", getExamples())); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 		output.writeUTF(this.fRemarks);
 		output.writeUTF(this.fVersion);
 
@@ -319,7 +226,7 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#addSDocLocation(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#addSDocLocation(java.lang.String)
 	 */
 	public void addSDocLocation(String value)
 	{
@@ -334,43 +241,34 @@ public abstract class DocumentationBase
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getSDocLocations()
+	 * @see com.aptana.metadata.IDocumentation#getSDocLocations()
 	 */
 	public String[] getSDocLocations()
 	{
 		if (fSDocLocations == null)
 		{
-			return new String[0];
+			return NO_STRINGS;
 		}
-		return fSDocLocations.toArray(new String[0]);
+		return fSDocLocations.toArray(NO_STRINGS);
 	}
 
-	// /**
-	// * @see com.aptana.ide.metadata.IDocumentation#getExample()
-	// * @deprecated Use the array method instead
-	// */
-	// public String getExample()
-	// {
-	// return StringUtils.join(FileUtils.NEW_LINE + FileUtils.NEW_LINE, getExamples());
-	// }
-
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#getExamples()
+	 * @see com.aptana.metadata.IDocumentation#getExamples()
 	 */
 	public String[] getExamples()
 	{
 		if (fExamples != null)
 		{
-			return fExamples.toArray(new String[0]);
+			return fExamples.toArray(NO_STRINGS);
 		}
 		else
 		{
-			return new String[0];
+			return NO_STRINGS;
 		}
 	}
 
 	/**
-	 * @see com.aptana.ide.metadata.IDocumentation#setExample(java.lang.String)
+	 * @see com.aptana.metadata.IDocumentation#setExample(java.lang.String)
 	 */
 	public void addExample(String value)
 	{
@@ -384,5 +282,4 @@ public abstract class DocumentationBase
 
 		fExamples.add(value);
 	}
-
 }

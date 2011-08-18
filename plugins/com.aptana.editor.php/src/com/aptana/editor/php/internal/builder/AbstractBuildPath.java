@@ -14,9 +14,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.core.builder.IBuildPath;
 import com.aptana.editor.php.internal.core.builder.IBuildPathChangeListener;
@@ -130,7 +133,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 		}
 
 		IModule module = getModuleByPath(resolvedPath);
-		if (module == null && relativePath.segments()[0].startsWith(".")) //$NON-NLS-1$
+		if (module == null && (relativePath.segments()[0].startsWith("."))) //$NON-NLS-1$
 		{
 			return null;
 		}
@@ -194,7 +197,8 @@ public abstract class AbstractBuildPath implements IBuildPath
 
 		// if no module found in this class, checking the build paths, current build path depends from.
 		// but first getting rid of the "./" and "../" paths
-		if (relativePath.segmentCount() >= 1 && relativePath.segment(0).startsWith(".")) //$NON-NLS-1$
+		if (relativePath.segmentCount() >= 1
+				&& (relativePath.segment(0).length() > 0 && relativePath.segment(0).charAt(0) == '.'))
 		{
 			return result;
 		}
@@ -233,6 +237,11 @@ public abstract class AbstractBuildPath implements IBuildPath
 	 */
 	protected void notifyChangedBefore(List<IModule> changed, List<IModule> removed, List<IDirectory> removedDirectories)
 	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		if (!workspace.isAutoBuilding())
+		{
+			return;
+		}
 		Set<IBuildPathChangeListener> buildPathListeners = null;
 		synchronized (listeners)
 		{
@@ -246,7 +255,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 			}
 			catch (Throwable th)
 			{
-				PHPEditorPlugin.logError("Unable notifying build path change listener", th); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Unable notifying build path change listener", th); //$NON-NLS-1$
 			}
 		}
 	}
@@ -268,6 +277,11 @@ public abstract class AbstractBuildPath implements IBuildPath
 	protected void notifyChangedAfter(List<IModule> added, List<IModule> changed, List<IModule> removed,
 			List<IDirectory> addedDirectories, List<IDirectory> removedDirectories)
 	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		if (!workspace.isAutoBuilding())
+		{
+			return;
+		}
 		Set<IBuildPathChangeListener> buildPathListeners = null;
 		synchronized (listeners)
 		{
@@ -281,7 +295,7 @@ public abstract class AbstractBuildPath implements IBuildPath
 			}
 			catch (Throwable th)
 			{
-				PHPEditorPlugin.logError("Unable notifying build path change listener", th); //$NON-NLS-1$
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Unable notifying build path change listener", th); //$NON-NLS-1$
 			}
 		}
 	}
