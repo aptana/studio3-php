@@ -3,9 +3,10 @@ package com.aptana.editor.php.internal.contentAssist;
 import com.aptana.editor.php.indexer.IElementEntry;
 
 /**
- * Abstract context filter.
+ * A context filter interface for filter implementations that can be queried when computing the content assist
+ * proposals.
  * 
- * @author Denis Denisenko
+ * @author Denis Denisenko, Shalom Gibly
  */
 interface IContextFilter
 {
@@ -26,4 +27,11 @@ interface IContextFilter
 	 * @return true if element is accepted, false otherwise.
 	 */
 	boolean acceptBuiltin(Object builtinElement);
+
+	/**
+	 * Whether this context allows displaying external proposals from Rubles/Snippets.
+	 * 
+	 * @return True, if external proposals are allowed to be displayed; False, otherwise.
+	 */
+	boolean acceptExternalProposals();
 }

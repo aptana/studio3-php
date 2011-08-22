@@ -100,6 +100,7 @@ import com.aptana.parsing.lexer.Range;
  */
 public class PHPContentAssistProcessor extends CommonContentAssistProcessor implements IContentAssistProcessor
 {
+	private static final IContextInformation[] EMPTY_CONTEXT_INFO = new IContextInformation[0];
 	private static final int EXTERNAL_CLASS_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 10;
 	private static final int EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 15;
 	private static final int EXTERNAL_CONSTANT_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 20;
@@ -159,7 +160,9 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static Image fIcon5off = PHPEditorPlugin.getImage("icons/full/obj16/v5_off.png"); //$NON-NLS-1$
 	private static Image fIcon4off = PHPEditorPlugin.getImage("icons/full/obj16/v4_off.png"); //$NON-NLS-1$
 
-	private static char[] autoactivationCharacters = new char[] { '>', '@', '$', ':', '\\', ' ' };
+	// Auto-activation chars. Note that we omit the $ sign, as we have to verify its context. The $ is handled as any
+	// other char in the isValidAutoActivationLocation()
+	private static char[] autoactivationCharacters = new char[] { '>', '@', ':', '\\', ' ' };
 	private static final char[] contextInformationActivationChars = { '(', ',' };
 	private static PHPDecoratingLabelProvider labelProvider = new PHPDecoratingLabelProvider();
 	private ITextViewer viewer;
@@ -240,7 +243,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// ignore it
 		}
 		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
+		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c);
 		if (!currentContext.acceptModelsElements() && !currentContext.isAutoActivateCAAfterApply())
 		{
 			return false;
@@ -255,6 +258,40 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	public boolean isValidIdentifier(char c, int keyCode)
 	{
 		return (Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c) || c == '$');
+	}
+
+	/**
+	 * Calls the SnippetsCompletionProcessor to contribute any relevant snippets for the offset, in case the current
+	 * context allows snippet proposals.
+	 * 
+	 * @see com.aptana.editor.common.CommonContentAssistProcessor#addSnippetProposals(org.eclipse.jface.text.ITextViewer,
+	 *      int)
+	 */
+	@Override
+	protected Collection<? extends ICompletionProposal> addSnippetProposals(ITextViewer viewer, int offset)
+	{
+		if (currentContext != null && !currentContext.acceptExternalProposals())
+		{
+			return Collections.emptyList();
+		}
+		return super.addSnippetProposals(viewer, offset);
+	}
+
+	/**
+	 * (Experimental) This hooks our Ruble scripting up to Content Assist, allowing them to contribute possible
+	 * proposals, in case the current context allows snippet proposals. (non-Javadoc)
+	 * 
+	 * @see com.aptana.editor.common.CommonContentAssistProcessor#addRubleProposals(org.eclipse.jface.text.ITextViewer,
+	 *      int)
+	 */
+	@Override
+	protected List<ICompletionProposal> addRubleProposals(ITextViewer viewer, int offset)
+	{
+		if (currentContext != null && !currentContext.acceptExternalProposals())
+		{
+			return Collections.emptyList();
+		}
+		return super.addRubleProposals(viewer, offset);
 	}
 
 	@Override
@@ -274,7 +311,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @param document
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	public ICompletionProposal[] computeCompletionProposals(IDocument document, int offset)
 	{
 		// First, check if we are in a PHP partition
@@ -359,7 +395,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						if (contentS.length() == 0)
 						{
 							pos = left;
-						}
+					}
 						contentS.append(value == null ? '\\' : value);
 					}
 					else
@@ -371,9 +407,9 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				{
 					if (left <= offset && right >= offset)
 					{
-						// return getNamespaceCompletionProposals(content, contentS.toString(), offset,
-						// contentS.length(), 1,
-						// viewer);
+				// return getNamespaceCompletionProposals(content, contentS.toString(), offset,
+				// contentS.length(), 1,
+				// viewer);
 					}
 				}
 				if (left < offset && right > offset)

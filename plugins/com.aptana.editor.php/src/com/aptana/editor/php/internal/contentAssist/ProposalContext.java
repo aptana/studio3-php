@@ -88,6 +88,15 @@ class ProposalContext
 	}
 
 	/**
+	 * Whether the context allows us to show external proposals from Rubles/Snippets.
+	 */
+	public boolean acceptExternalProposals()
+	{
+		// delegate this to the filter
+		return contextFilter.acceptExternalProposals();
+	}
+
+	/**
 	 * Whether certain model element type is accepted. Hint only, filter MUST filter accordingly.
 	 * 
 	 * @param type

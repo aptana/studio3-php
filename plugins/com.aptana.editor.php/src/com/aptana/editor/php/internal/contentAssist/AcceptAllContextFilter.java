@@ -24,4 +24,13 @@ class AcceptAllContextFilter implements IContextFilter
 	{
 		return true;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.internal.contentAssist.IContextFilter#acceptExternalProposals()
+	 */
+	public boolean acceptExternalProposals()
+	{
+		return true;
+	}
 }
