@@ -66,6 +66,7 @@ public class PHPContextCalculator
 	public static final String DEFAULT_DELIMITER = NEW_LINE + "\u2022\t"; //$NON-NLS-1$
 
 	// private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	private static final int[] EMPTY_TYPES = new int[0];
 	private ProposalContext currentContext;
 	private Character insertedChar;
 
