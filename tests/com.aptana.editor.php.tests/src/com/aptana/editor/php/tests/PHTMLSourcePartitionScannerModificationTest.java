@@ -56,7 +56,7 @@ public class PHTMLSourcePartitionScannerModificationTest extends TestCase {
 	}
 	
 	private void paste(int offset, int replaceLength, String text) throws BadLocationException {
-		document.replace(offset, 0, text);		
+		document.replace(offset, replaceLength, text);
 	}
 
 	private void paste(int offset, String text) throws BadLocationException {
@@ -226,6 +226,53 @@ public class PHTMLSourcePartitionScannerModificationTest extends TestCase {
 		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 3, 3);
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 6, 2);
 		assertContentType(HTMLSourceConfiguration.HTML_TAG, 8, 2);
+	}
+
+	public void testAPSTUD_3354() throws BadLocationException {
+		paste(0, "<?\n\n?>\n<p class=\"x<?=?>y<?=?>z\" >\n<p id=\"'<?=?>'\">");
+
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 0, 2);
+		assertContentType(PHPSourceConfiguration.DEFAULT, 2, 2);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 4, 2);
+		assertContentType(HTMLSourceConfiguration.DEFAULT, 6, 1);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 7, 11);
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 18, 3);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 21, 2);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 23, 1);
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 24, 3);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 27, 2);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 29, 4);
+		assertContentType(HTMLSourceConfiguration.DEFAULT, 33, 1);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 34, 8);
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 42, 3);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 45, 2);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 47, 3);
+
+		paste(3, "'");
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 0, 2);
+		assertContentType(PHPSourceConfiguration.DEFAULT, 2, 1);
+		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, 3, 40);
+		assertContentType(PHPSourceConfiguration.DEFAULT, 43, 3);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 46, 2);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 48, 3);
+
+		paste(3, 1, "");
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 0, 2);
+		assertContentType(PHPSourceConfiguration.DEFAULT, 2, 2);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 4, 2);
+		assertContentType(HTMLSourceConfiguration.DEFAULT, 6, 1);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 7, 11);
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 18, 3);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 21, 2);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 23, 1);
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 24, 3);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 27, 2);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 29, 4);
+		assertContentType(HTMLSourceConfiguration.DEFAULT, 33, 1);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 34, 8);
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, 42, 3);
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, 45, 2);
+		assertContentType(HTMLSourceConfiguration.HTML_TAG, 47, 3);
 	}
 
 }
