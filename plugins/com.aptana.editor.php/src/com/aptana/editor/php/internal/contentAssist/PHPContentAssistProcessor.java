@@ -226,7 +226,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			String openPhp = document.get(Math.max(0, offset - 4),
 					Math.min(Math.min(offset, 4), document.getLength() - 1));
-			if (openPhp.endsWith("<?p") || openPhp.endsWith("<?ph")) //$NON-NLS-1$ //$NON-NLS-2$
+			if (openPhp.endsWith("<?") || openPhp.endsWith("<?p") || openPhp.endsWith("<?ph")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			{
 				return false;
 			}
