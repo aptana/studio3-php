@@ -224,23 +224,16 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		// make sure we don't popup a proposal when typing the <?php
 		try
 		{
-			String openTag = null;
-			if (c == 'h')
-			{
-				openTag = document.get(offset - 3, 3);
-			}
-			if (c == 'p')
-			{
-				openTag = document.get(offset - 4, 4);
-			}
-			if (openTag != null && openTag.startsWith("<?p")) //$NON-NLS-1$
+			String openPhp = document.get(Math.max(0, offset - 4),
+					Math.min(Math.min(offset, 4), document.getLength() - 1));
+			if (openPhp.endsWith("<?") || openPhp.endsWith("<?p") || openPhp.endsWith("<?ph")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			{
 				return false;
 			}
 		}
-		catch (Exception e)
+		catch (Exception e) // $codepro.audit.disable emptyCatchClause
 		{
-			// ignore it
+			// ignore it and just use the lexemeProvider
 		}
 		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c);
@@ -257,7 +250,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 */
 	public boolean isValidIdentifier(char c, int keyCode)
 	{
-		return (Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c) || c == '$');
+		return Character.isJavaIdentifierStart(c) || Character.isJavaIdentifierPart(c);
 	}
 
 	/**
@@ -352,7 +345,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		String content = document.get();
 
-		AbstractPhpLexer lexer = PhpLexerFactory.createLexer(new StringReader(content), phpVersion);
+		AbstractPhpLexer lexer = PhpLexerFactory.createLexer(new StringReader(content), phpVersion); // $codepro.audit.disable
+																										// closeWhereCreated
 		int state = -1;
 		try
 		{
@@ -373,7 +367,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		String prev = null;
 		String prev2 = null;
 		String lastN = null;
-		int pos = 0;
 		StringBuilder contentS = null;
 		try
 		{
@@ -392,26 +385,22 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				{
 					if (next_token == PHPRegionTypes.PHP_STRING || next_token == PHPRegionTypes.PHP_NS_SEPARATOR)
 					{
-						if (contentS.length() == 0)
-						{
-							pos = left;
-					}
-						contentS.append(value == null ? '\\' : value);
+						contentS.append((value == null) ? '\\' : value);
 					}
 					else
 					{
 						lastN = null;
 					}
 				}
-				if (lastN != null)
-				{
-					if (left <= offset && right >= offset)
-					{
+				// if (lastN != null)
+				// {
+				// if (left <= offset && right >= offset)
+				// {
 				// return getNamespaceCompletionProposals(content, contentS.toString(), offset,
 				// contentS.length(), 1,
 				// viewer);
-					}
-				}
+				// }
+				// }
 				if (left < offset && right > offset)
 				{
 
@@ -421,7 +410,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						{
 							if (checkInclude(prev2) || checkInclude(prev))
 							{
-								String substring = value.substring(1, offset - left);
+								// String substring = value.substring(1, offset - left);
 								// FIXME: Shalom - Implement getFilePathCompletionProposals
 								// return getFilePathCompletionProposals(substring, left + 1, substring.length(), 1,
 								// viewer);
@@ -447,7 +436,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error computing PHP completion proposals", e); //$NON-NLS-1$
 		}
 
-		int startOffset = offset < content.length() ? offset : offset - 1;
+		int startOffset = (offset < content.length()) ? offset : offset - 1;
 		for (int a = startOffset; a >= 0; a--)
 		{
 			char c = content.charAt(a);
@@ -473,7 +462,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		boolean forceActivation = false;
 		// The only reason why we test for a null viewer here is to allow testing without any ITextViewer attachment.
-		Boolean fa = (viewer != null) ? (Boolean) viewer.getTextWidget().getData("ASSIST_FORCE_ACTIVATION") : null; //$NON-NLS-1$
+		Boolean fa = (viewer != null && viewer.getTextWidget() != null) ? (Boolean) viewer.getTextWidget().getData(
+				"ASSIST_FORCE_ACTIVATION") : null; //$NON-NLS-1$
 		if (fa != null)
 		{
 			forceActivation = fa;
@@ -493,7 +483,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 
 		// resetting the force activation flag.
-		if (viewer != null)
+		if (viewer != null && viewer.getTextWidget() != null)
 		{
 			viewer.getTextWidget().setData("ASSIST_FORCE_ACTIVATION", false);//$NON-NLS-1$
 		}
@@ -517,7 +507,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	public ICompletionProposal[] computeCompletionProposalInternal(ITypedRegion partition, final int offset,
 			String content, boolean proposeBuiltins, boolean forceActivation)
 	{
-		final int start = offset == 0 ? 0 : offset - 1;
+		final int start = (offset == 0) ? 0 : offset - 1;
 
 		this.offset = offset;
 		this.content = content;
@@ -661,7 +651,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private ICompletionProposal[] dereferencingCompletion(IElementsIndex index, List<String> callPath, int offset,
 			IModule module)
 	{
-		Set<IElementEntry> result = computeDereferenceEntries(index, callPath, offset == 0 ? 0 : offset - 1, module,
+		Set<IElementEntry> result = computeDereferenceEntries(index, callPath, (offset == 0) ? 0 : offset - 1, module,
 				false, aliases, namespace);
 		if (result == null || result.isEmpty())
 		{
@@ -768,7 +758,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private ICompletionProposal[] dereferencingStaticCompletion(IElementsIndex index, List<String> callPath,
 			int offset, IModule module)
 	{
-		Set<IElementEntry> result = computeStaticDereferenceEntries(index, callPath, offset == 0 ? 0 : offset - 1,
+		Set<IElementEntry> result = computeStaticDereferenceEntries(index, callPath, (offset == 0) ? 0 : offset - 1,
 				module, false, aliases, namespace);
 		if (result == null || result.isEmpty())
 		{
@@ -782,7 +772,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			String lastName = ElementsIndexingUtils.getLastNameInPath(currentEntry.getEntryPath());
 			if (isVariableEntry(currentEntry) && !isConstVariable(currentEntry))
 			{
-				lastName = "$" + lastName; //$NON-NLS-1$
+				lastName = "$" + lastName; //$NON-NLS-1$ // $codepro.audit.disable stringConcatenationInLoop
 			}
 			if (!usedName.contains(lastName))
 			{
@@ -1053,7 +1043,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else if (isClassEntry(entry))
 		{
-			HashSet<Object> result = new HashSet<Object>(1);
+			Set<Object> result = new HashSet<Object>(1);
 			result.add(ElementsIndexingUtils.getFirstNameInPath(entry.getEntryPath()));
 			return result;
 		}
@@ -1100,7 +1090,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				return null;
 			}
-			LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+			Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 			result.add(currentClass);
 			return result;
 		}
@@ -1111,7 +1101,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				return null;
 			}
-			LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+			Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 			Object clazz = currentClass.getValue();
 			if (clazz instanceof ClassPHPEntryValue)
 			{
@@ -1202,7 +1192,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			clazz = clazz.substring(1);
 		}
 
-		ArrayList<IElementEntry> namespaceEntries = getNamespaceEntries(clazz, module, aliases);
+		List<IElementEntry> namespaceEntries = getNamespaceEntries(clazz, module, aliases);
 		clazz = getNameByAlias(clazz, index, namespace, aliases, namespaceEntries);
 		List<IElementEntry> leftEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, clazz);
 		if (leftEntries == null)
@@ -1528,7 +1518,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			variableCompletion = true;
 		}
 
-		ArrayList<Object> items = new ArrayList<Object>();
+		List<Object> items = new ArrayList<Object>();
 
 		IElementsIndex index;
 		if (variableCompletion)
@@ -1674,7 +1664,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			boolean exactMatch, IModule module, boolean filter, ProposalContext proposalContext, String namespace,
 			Map<String, String> aliases)
 	{
-		ArrayList<IElementEntry> namespaceEntries = getNamespaceEntries(name, module, aliases);
+		List<IElementEntry> namespaceEntries = getNamespaceEntries(name, module, aliases);
 		// [http://php.net/manual/en/language.namespaces.faq.php]
 		// "Names that contain a backslash but do not begin with a backslash like my\name can be resolved in 2 different
 		// ways. If there is an import statement that aliases another name to my, then the import alias is applied to
@@ -1839,7 +1829,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			entries = ContentAssistFilters.filterGlobalVariables(entries, globalImports);
 		}
 		Set<IElementEntry> filterResult = ContentAssistFilters.filterByModule(entries, module, index);
-		ArrayList<IElementEntry> result = new ArrayList<IElementEntry>();
+		List<IElementEntry> result = new ArrayList<IElementEntry>();
 		result.addAll(filterResult);
 		return result;
 	}
@@ -1850,9 +1840,9 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @param aliases
 	 * @return
 	 */
-	private static ArrayList<IElementEntry> getNamespaceEntries(String name, IModule module, Map<String, String> aliases)
+	private static List<IElementEntry> getNamespaceEntries(String name, IModule module, Map<String, String> aliases)
 	{
-		ArrayList<IElementEntry> namespaceEntries = new ArrayList<IElementEntry>();
+		List<IElementEntry> namespaceEntries = new ArrayList<IElementEntry>();
 		if (aliases != null)
 		{
 			for (String s : aliases.keySet())
@@ -1881,18 +1871,18 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 * @return The identifier name with regards to the namespace aliases
 	 */
 	private static String getNameByAlias(String name, IElementsIndex index, String namespace,
-			Map<String, String> aliases, ArrayList<IElementEntry> namespaceEntries)
+			Map<String, String> aliases, List<IElementEntry> namespaceEntries)
 	{
 
 		boolean foundAlias = false;
-		String lowerCaseName = name != null ? name.toLowerCase() : EMPTY_STRING;
+		String lowerCaseName = (name != null) ? name.toLowerCase() : EMPTY_STRING;
 		if (aliases != null)
 		{
 			for (String s : aliases.keySet())
 			{
 				if (lowerCaseName.startsWith(s.toLowerCase()))
 				{
-					name = aliases.get(s) + name.substring(s.length());
+					name = aliases.get(s) + name.substring(s.length()); // $codepro.audit.disable
 					foundAlias = true;
 					break;
 				}
@@ -2038,7 +2028,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *            - whether the new instance completion is on.
 	 * @return
 	 */
-	private List<ICompletionProposal> createProposals(final int offset, String name, ArrayList<Object> items,
+	private List<ICompletionProposal> createProposals(final int offset, String name, List<Object> items,
 			IModule module, boolean applyDollarSymbol, IElementsIndex index, boolean newInstanceCompletion)
 	{
 		String origName = name;
@@ -2100,7 +2090,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 					if (lowerCase.startsWith(GLOBAL_NAMESPACE))
 					{
-						firstName = GLOBAL_NAMESPACE + firstName;
+						firstName = GLOBAL_NAMESPACE + firstName; // $codepro.audit.disable stringConcatenationInLoop
 					}
 					else if (!usedNames.contains(firstName))
 					{
@@ -2620,7 +2610,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 
 			StringBuilder builder = new StringBuilder();
-			builder.append("("); //$NON-NLS-1$
+			builder.append('(');
 
 			if (preferenceStore.getBoolean(IContentAssistPreferencesConstants.INSERT_FUNCTION_PARAMETERS))
 			{
@@ -2637,7 +2627,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						result.positions = new ArrayList<Position>();
 					}
 					updateResult(result, builder, Arrays.asList(parNames));
-					builder.append(")"); //$NON-NLS-1$
+					builder.append(')');
 					result.replaceString += builder.toString();
 					result.cursorShift = 1;
 					return result;
@@ -2674,7 +2664,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				}
 			}
 
-			builder.append(")"); //$NON-NLS-1$
+			builder.append(')');
 			result.replaceString += builder.toString();
 			result.cursorShift = 1;
 		}
@@ -2791,7 +2781,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						String parameterName = parameters[i].getVariableName();
 						if (parameterName != null && !parameterName.startsWith(DOLLAR_SIGN))
 						{
-							parameterName = DOLLAR_SIGN + parameterName;
+							parameterName = DOLLAR_SIGN + parameterName; // $codepro.audit.disable
+																			// stringConcatenationInLoop
 							int start = builder.length() + result.replaceString.length();
 
 							builder.append(parameterName);
@@ -3127,7 +3118,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				if (localModule == null || localModule.equals(((IElementEntry) item).getModule()))
 				{
 					// local items should have the original order and come first
-					itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_HIGH);
+					itemsToProposals.get(item).setRelevance(ICommonCompletionProposal.RELEVANCE_HIGH + 5);
 				}
 				else
 				{
@@ -3244,16 +3235,16 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		IDocument document = viewer.getDocument();
 		if (document == null)
 		{
-			return new IContextInformation[0];
+			return EMPTY_CONTEXT_INFO;
 		}
 		String content = document.get();
 		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		CallInfo info = PHPContextCalculator.calculateCallInfo(lexemeProvider, offset);
 		if (info == null)
 		{
-			return new IContextInformation[0];
+			return EMPTY_CONTEXT_INFO;
 		}
-		ArrayList<?> items = ContentAssistUtils.selectModelElements(info.getName(), true);
+		List<?> items = ContentAssistUtils.selectModelElements(info.getName(), true);
 		// if no built-in items found, trying to find the custom ones
 		if (items.size() == 0)
 		{
@@ -3265,7 +3256,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			List<String> callPath = ParsingUtils.parseCallPath(partition, content, info.getNameEndPos(), OPS, false);
 			if (callPath == null || callPath.isEmpty())
 			{
-				return new IContextInformation[0];
+				return EMPTY_CONTEXT_INFO;
 			}
 
 			if (callPath.size() > 1)
@@ -3294,21 +3285,21 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 			if (entries == null)
 			{
-				return new IContextInformation[0];
+				return EMPTY_CONTEXT_INFO;
 			}
 
 			// FIXME: Shalom - What about class constructors?
 			entries = ContentAssistFilters.filterAllButFunctions(entries, index);
 			if (entries.size() == 0)
 			{
-				return new IContextInformation[0];
+				return EMPTY_CONTEXT_INFO;
 			}
 
 			IElementEntry funcEntry = entries.iterator().next();
 			IContextInformation ci = PHPContextCalculator.computeArgContextInformation(funcEntry, info.getNameEndPos());
 			if (ci == null || StringUtil.isEmpty(ci.getInformationDisplayString()))
 			{
-				return new IContextInformation[0];
+				return EMPTY_CONTEXT_INFO;
 			}
 			IContextInformation[] res = new IContextInformation[1];
 			res[0] = ci;
@@ -3335,7 +3326,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 			else
 			{
-				ici = new IContextInformation[0];
+				ici = EMPTY_CONTEXT_INFO;
 			}
 			return ici;
 		}
@@ -3357,13 +3348,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	public IContextInformationValidator getContextInformationValidator()
 	{
 		return new PHPContextInformationValidator();
-	}
-
-	@Override
-	public String getErrorMessage()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/*
