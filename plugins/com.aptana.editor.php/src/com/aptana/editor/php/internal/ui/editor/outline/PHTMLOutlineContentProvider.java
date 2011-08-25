@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.aptana.editor.common.outline.CommonOutlineItem;
 import com.aptana.editor.html.outline.HTMLOutlineContentProvider;
+import com.aptana.editor.html.parsing.ast.HTMLTextNode;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.parsing.ast.IParseNode;
 
@@ -49,7 +50,7 @@ public class PHTMLOutlineContentProvider extends HTMLOutlineContentProvider
 					list.add(getOutlineItem(element));
 				}
 			}
-			else
+			else if (!(node instanceof HTMLTextNode))
 			{
 				list.add(getOutlineItem(node));
 			}
