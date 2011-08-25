@@ -19,6 +19,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.util.SafeRunnable;
 import org.osgi.framework.Bundle;
 
@@ -108,13 +109,29 @@ public abstract class AbstractPDTTTest extends TestCase
 		{
 			public void handleException(Throwable e)
 			{
+				// Try deleting again after a a short delay
+				try
+				{
+					Thread.sleep(1000L);
+					doDelete(resource);
+				}
+				catch (Exception e1)
+				{
+					e1.printStackTrace();
+				}
 				e.printStackTrace();
 			}
 
 			public void run() throws Exception
 			{
-				resource.refreshLocal(IResource.DEPTH_ZERO, null);
+				doDelete(resource);
+			}
+
+			private void doDelete(IResource resource) throws CoreException
+			{
+				resource.getParent().refreshLocal(IResource.DEPTH_ONE, null);
 				resource.delete(true, null);
+				resource.getParent().refreshLocal(IResource.DEPTH_ONE, null);
 			}
 		};
 		SafeRunnable.run(safeRunnable);
