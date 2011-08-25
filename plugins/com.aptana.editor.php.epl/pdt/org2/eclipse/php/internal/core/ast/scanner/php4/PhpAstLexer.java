@@ -1084,16 +1084,17 @@ public class PhpAstLexer implements org2.eclipse.php.internal.core.ast.scanner.A
     private void handlePHPDocEnd() {
 		addComment(Comment.TYPE_PHPDOC);
     }
-    
-    protected void handleVarComment() {
-    	String content = yytext();
+
+	protected void handleVarComment() {
+		// [Appcelerator Mod]
+		String content = yytext();
 		int start = getTokenStartPosition();
 		int end = start + getTokenLength();
 		VarComment varComment = ASTUtils.parseVarComment(ast, content, start, end);
 		if (varComment != null) {
 			getCommentList().add(varComment);
 		}
-    }
+	}
 
     private Symbol createFullSymbol(int symbolNumber) {
         Symbol symbol = createSymbol(symbolNumber);
