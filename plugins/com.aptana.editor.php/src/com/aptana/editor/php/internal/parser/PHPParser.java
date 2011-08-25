@@ -126,7 +126,7 @@ public class PHPParser implements IParser
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
 				}
 				// Recalculate the type bindings
-				TypeBindingBuilder.buildBindings(program);
+				TypeBindingBuilder.buildBindings(program, source);
 			}
 			catch (Throwable t)
 			{

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +17,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
@@ -254,6 +256,24 @@ public final class PHPDocUtils
 	}
 
 	/**
+	 * Locates a var comment above the given offset (e.g. <code><b>@var $a Type</b></code>)
+	 * 
+	 * @param comments
+	 * @param offset
+	 * @param content
+	 * @return An {@link VarComment}
+	 */
+	public static VarComment findTypedVarComment(List<Comment> comments, int offset, String content)
+	{
+		Comment c = getCommentByType(comments, offset, content, Comment.TYPE_MULTILINE);
+		if (c instanceof VarComment)
+		{
+			return (VarComment) c;
+		}
+		return null;
+	}
+
+	/**
 	 * Finds the PHPDoc comment that appears right above the given offset. In case there is no comment, or there are
 	 * non-white characters between the offset and the comment, this method returns null.
 	 * 
@@ -266,6 +286,21 @@ public final class PHPDocUtils
 	 * @return IPHPDocBlock The PhpDoc, or null.
 	 */
 	public static PHPDocBlock findPHPDocComment(List<Comment> comments, int offset, String content)
+	{
+		return (PHPDocBlock) getCommentByType(comments, offset, content, Comment.TYPE_PHPDOC);
+	}
+
+	/**
+	 * Locate a comment that appears right above the given index (separated only with whitespace chars).
+	 * 
+	 * @param comments
+	 * @param offset
+	 * @param content
+	 * @param type
+	 *            The comment's type (e.g. Comment.TYPE_PHPDOC etc.)
+	 * @return A comment, or null if none was found.
+	 */
+	private static Comment getCommentByType(List<Comment> comments, int offset, String content, int type)
 	{
 		if (comments == null || comments.isEmpty())
 		{
@@ -286,7 +321,7 @@ public final class PHPDocUtils
 			return null;
 		}
 
-		if (nearestComment.getCommentType() != Comment.TYPE_PHPDOC)
+		if (nearestComment.getCommentType() != type)
 		{
 			return null;
 		}
@@ -310,8 +345,7 @@ public final class PHPDocUtils
 				}
 			}
 		}
-
-		return (PHPDocBlock) nearestComment;
+		return nearestComment;
 	}
 
 	/*
@@ -645,5 +679,46 @@ public final class PHPDocUtils
 		additionalInfo = bld.toString();
 
 		return additionalInfo;
+	}
+
+	/**
+	 * Returns a list of {@link VarComment}s within a specified start and end offsets.
+	 * 
+	 * @param comments
+	 *            A sorted list of comments
+	 * @param start
+	 * @param end
+	 */
+	public static List<VarComment> findTypedVarComments(List<Comment> comments, int start, int end)
+	{
+		List<VarComment> result = new LinkedList<VarComment>();
+		// locate the last comment in the given list and create a result list from all the VarComments on top of it,
+		// till we hit the start offset.
+		// We use a linked list to append comments at the start of the result with better performance.
+		int commentIndex = findComment(comments, end);
+		if (commentIndex < 0)
+		{
+			// The nearest comment we found should always have a negative value, as it should never overlap with the
+			// given offset
+			commentIndex = -commentIndex - 1;
+		}
+		if (commentIndex >= comments.size())
+		{
+			// off bounds
+			return result;
+		}
+		for (; commentIndex > -1; commentIndex--)
+		{
+			Comment comment = comments.get(commentIndex);
+			if (comment.getStart() < start)
+			{
+				break;
+			}
+			if (comment instanceof VarComment)
+			{
+				result.add(0, (VarComment) comment);
+			}
+		}
+		return result;
 	}
 }
