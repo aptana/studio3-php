@@ -1,5 +1,5 @@
 --TEST--
-Test Commented Variable With 2 Global Class Types and spaces in PHPDoc
+Test Commented Variable nested in a method
 --FILE--
 <?php 
     // PDT style of supporting the var type
@@ -8,12 +8,11 @@ Test Commented Variable With 2 Global Class Types and spaces in PHPDoc
 	} 
 	
 	class Foobar2 {
-		public function nonsense2(){} 
+		public function nonsense2(){
+			/* @var $obj Foobar1 */
+			$obj->|
+		} 
 	} 
-	
-	/* @var $obj Foobar1|Foobar2 */
-	$obj->|
  ?>
 --EXPECT--
 method(nonsense1)
-method(nonsense2)

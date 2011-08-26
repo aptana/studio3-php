@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org2.eclipse.php.internal.core.ast.util;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +24,7 @@ import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
 public class ASTUtils
 {
 
-	private static final Pattern VAR_COMMENT_PATTERN = Pattern.compile("(.*)(\\$[^\\s]+)(\\s+)([^\\s]+).*"); //$NON-NLS-1$
+	private static final Pattern VAR_COMMENT_PATTERN = Pattern.compile("(.*)(\\$[\\S]+)(\\s+)([\\S]+).*"); //$NON-NLS-1$
 
 	/**
 	 * Parses @@var comment using regular expressions
@@ -48,7 +48,7 @@ public class ASTUtils
 			String varName = m.group(2);
 			int varEnd = varStart + varName.length();
 
-			List<TypeReference> typeReferences = new LinkedList<TypeReference>();
+			List<TypeReference> typeReferences = new ArrayList<TypeReference>();
 			int typeStart = varEnd + m.group(3).length();
 			String types = m.group(4);
 

@@ -70,7 +70,7 @@ public class CommentsVisitor extends AbstractVisitor
 		if (isResolvingVarComments && comment instanceof VarComment)
 		{
 			// We set up a mapping from the parent node to all his child VarComments.
-			// That way we can later locates them while creating the scopes. Note that comments are not inserted into
+			// That way we can later locate them while creating the scopes. Note that comments are not inserted into
 			// the AST, they are basically provided as a list.
 			ASTNode parent = Locator.locateNode(comment.getProgramRoot(), Math.max(0, comment.getStart() - 1));
 			if (parent != null)

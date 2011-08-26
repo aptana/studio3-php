@@ -227,7 +227,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 			protected IStatus run(IProgressMonitor monitor)
 			{
 				try {
-					Thread.sleep(400L);
+					Thread.sleep(600L);
 				} catch (Exception e) {
 				}
 				return Status.OK_STATUS;
