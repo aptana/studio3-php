@@ -177,7 +177,7 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 0); // '<'style
 		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 22); // '>'
 		assertContentType(CSSSourceConfiguration.DEFAULT, source, 23); // '\n'
-		assertContentType(CSSSourceConfiguration.STRING, source, 24); // '''
+		assertContentType(CSSSourceConfiguration.STRING_DOUBLE, source, 24); // '''
 		// PHP start switch
 		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 25); // '<'
 		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 26); // '?'
@@ -187,8 +187,8 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		// PHP end switch
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 38); // '?'
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 39); // '>'
-		assertContentType(CSSSourceConfiguration.STRING, source, 40); // 'x'
-		assertContentType(CSSSourceConfiguration.STRING, source, 41); // '''
+		assertContentType(CSSSourceConfiguration.STRING_DOUBLE, source, 40); // 'x'
+		assertContentType(CSSSourceConfiguration.STRING_DOUBLE, source, 41); // '''
 		assertContentType(CSSSourceConfiguration.DEFAULT, source, 42); // ';'
 		assertContentType(CSSSourceConfiguration.DEFAULT, source, 43); // '\n'
 		// div
@@ -201,7 +201,7 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 0); // '<'style
 		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 22); // '>'
 		assertContentType(CSSSourceConfiguration.DEFAULT, source, 23); // '\n'
-		assertContentType(CSSSourceConfiguration.STRING, source, 24); // '''
+		assertContentType(CSSSourceConfiguration.STRING_SINGLE, source, 24); // '''
 		// PHP start switch
 		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 25); // '<'
 		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 26); // '?'
@@ -211,8 +211,8 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		// PHP end switch
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 38); // '?'
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 39); // '>'
-		assertContentType(CSSSourceConfiguration.STRING, source, 40); // 'x'
-		assertContentType(CSSSourceConfiguration.STRING, source, 41); // '''
+		assertContentType(CSSSourceConfiguration.STRING_SINGLE, source, 40); // 'x'
+		assertContentType(CSSSourceConfiguration.STRING_SINGLE, source, 41); // '''
 		assertContentType(CSSSourceConfiguration.DEFAULT, source, 42); // ';'
 		assertContentType(CSSSourceConfiguration.DEFAULT, source, 43); // '\n'
 		// div
