@@ -15,6 +15,7 @@ import org.eclipse.jface.text.IDocument;
 import com.aptana.editor.common.ExtendedFastPartitioner;
 import com.aptana.editor.common.TextUtils;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
+import com.aptana.editor.css.CSSSourceConfiguration;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.js.JSSourceConfiguration;
 import com.aptana.editor.php.internal.ui.editor.PHPPartitionerSwitchStrategy;
@@ -168,6 +169,54 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 48); // '<'/li
 		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 52); // li'>'
 
+	}
+
+	public void testAPSTUD3387_DoubleQuotes()
+	{
+		String source = "<style type=\"text/css\">\n\"<?= Time.now ?>x\";\n</style>"; //$NON-NLS-1$
+		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 0); // '<'style
+		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 22); // '>'
+		assertContentType(CSSSourceConfiguration.DEFAULT, source, 23); // '\n'
+		assertContentType(CSSSourceConfiguration.STRING, source, 24); // '''
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 25); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 26); // '?'
+		// inline PHP inside the script
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 28); // ' 'Time
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 37); // now' '
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 38); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 39); // '>'
+		assertContentType(CSSSourceConfiguration.STRING, source, 40); // 'x'
+		assertContentType(CSSSourceConfiguration.STRING, source, 41); // '''
+		assertContentType(CSSSourceConfiguration.DEFAULT, source, 42); // ';'
+		assertContentType(CSSSourceConfiguration.DEFAULT, source, 43); // '\n'
+		// div
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 44); // '<'
+	}
+
+	public void testAPSTUD3387_SingleQuotes()
+	{
+		String source = "<style type=\"text/css\">\n'<?= Time.now ?>x';\n</style>"; //$NON-NLS-1$
+		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 0); // '<'style
+		assertContentType(HTMLSourceConfiguration.HTML_STYLE, source, 22); // '>'
+		assertContentType(CSSSourceConfiguration.DEFAULT, source, 23); // '\n'
+		assertContentType(CSSSourceConfiguration.STRING, source, 24); // '''
+		// PHP start switch
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 25); // '<'
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 26); // '?'
+		// inline PHP inside the script
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 28); // ' 'Time
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 37); // now' '
+		// PHP end switch
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 38); // '?'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 39); // '>'
+		assertContentType(CSSSourceConfiguration.STRING, source, 40); // 'x'
+		assertContentType(CSSSourceConfiguration.STRING, source, 41); // '''
+		assertContentType(CSSSourceConfiguration.DEFAULT, source, 42); // ';'
+		assertContentType(CSSSourceConfiguration.DEFAULT, source, 43); // '\n'
+		// div
+		assertContentType(HTMLSourceConfiguration.HTML_TAG_CLOSE, source, 44); // '<'
 	}
 
 	public void testAfterTagBeforeSpace()
