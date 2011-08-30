@@ -119,6 +119,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
+import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.formatter.FormatterDocument;
 import com.aptana.formatter.FormatterUtils;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
@@ -146,6 +147,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private PHPFormatterNodeBuilder builder;
 	private Set<Integer> commentEndOffsets;
 	private List<IRegion> onOffRegions;
+	private List<Comment> comments;
 
 	/**
 	 * @param builder
@@ -167,6 +169,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void processComments(List<Comment> comments)
 	{
+		this.comments = comments;
 		commentEndOffsets = new HashSet<Integer>();
 		if (comments == null)
 		{
@@ -1581,6 +1584,17 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// deduct the 'endswitch' length.
 			// we already removed 1 offset above, so we remove the extra 8.
 			endingOffset -= 8;
+		}
+		// APSTUD-3382 - Check if we have a comment right before the end of this switch.
+		if (hasCommentBefore(endingOffset))
+		{
+			Comment comment = PHPDocUtils.getCommentByType(comments, endingOffset, document.getText(),
+					Comment.TYPE_MULTILINE | Comment.TYPE_PHPDOC | Comment.TYPE_SINGLE_LINE);
+			if (comment != null)
+			{
+				// push a text node for that comment
+				blockNode.addChild(builder.createTextNode(document, comment.getStart(), comment.getEnd()));
+			}
 		}
 		blockNode.setEnd(builder.createTextNode(document, endingOffset, endingOffset + 1));
 		// pop the block node

@@ -297,10 +297,10 @@ public final class PHPDocUtils
 	 * @param offset
 	 * @param content
 	 * @param type
-	 *            The comment's type (e.g. Comment.TYPE_PHPDOC etc.)
+	 *            The comment's type (e.g. Comment.TYPE_PHPDOC, Comment.TYPE_PHPDOC | Comment.TYPE_SINGLE_LINE etc.)
 	 * @return A comment, or null if none was found.
 	 */
-	private static Comment getCommentByType(List<Comment> comments, int offset, String content, int type)
+	public static Comment getCommentByType(List<Comment> comments, int offset, String content, int type)
 	{
 		if (comments == null || comments.isEmpty())
 		{
@@ -321,7 +321,7 @@ public final class PHPDocUtils
 			return null;
 		}
 
-		if (nearestComment.getCommentType() != type)
+		if ((nearestComment.getCommentType() & type) == 0)
 		{
 			return null;
 		}
@@ -348,7 +348,7 @@ public final class PHPDocUtils
 		return nearestComment;
 	}
 
-	/*
+	/**
 	 * Perform a binary search for a comment that appears right on top of the given offset
 	 */
 	private static int findComment(List<Comment> comments, int offset)
