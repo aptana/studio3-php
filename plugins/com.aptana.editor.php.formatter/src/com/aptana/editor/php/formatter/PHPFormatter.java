@@ -110,6 +110,8 @@ import org.eclipse.text.edits.TextEdit;
 import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.rewrite.ASTRewriteFlattener;
+import org2.eclipse.php.internal.core.ast.rewrite.RewriteEventStore;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
@@ -126,6 +128,7 @@ import com.aptana.formatter.IDebugScopes;
 import com.aptana.formatter.IFormatterContext;
 import com.aptana.formatter.IFormatterIndentGenerator;
 import com.aptana.formatter.IScriptFormatter;
+import com.aptana.formatter.epl.FormatterPlugin;
 import com.aptana.formatter.nodes.IFormatterContainerNode;
 import com.aptana.formatter.ui.FormatterException;
 import com.aptana.formatter.ui.FormatterMessages;
@@ -393,16 +396,29 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		ASTMatcher matcher = new ASTMatcher(true);
 		// We need to check if the formatter is set to split log comments.
 		// If so, we'll have to check the comments in a different way. Otherwise, the matcher will throw a false
+		boolean result = true;
+		boolean matchWithoutComments = true;
 		if (getBoolean(WRAP_COMMENTS))
 		{
-			boolean matchWithoutComments = matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), false);
-			return matchWithoutComments
+			matchWithoutComments = matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), false);
+			result = matchWithoutComments
 					&& matchComments(inputAST.comments(), outputAST.comments(), inputString, outputString);
 		}
 		else
 		{
-			return matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), true);
+			result = matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), true);
 		}
+		if (!result && FormatterPlugin.getDefault().isDebugging())
+		{
+			// Log the failure
+			if (matchWithoutComments)
+			{
+				String flattenedInputAST = ASTRewriteFlattener.asString(inputAST, new RewriteEventStore());
+				String flattenedOutputAST = ASTRewriteFlattener.asString(outputAST, new RewriteEventStore());
+				FormatterUtils.logDiff(flattenedInputAST, flattenedOutputAST);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -622,12 +638,23 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			String nextOutputComment = getNextFlattenedComment(outputIterator, outputString);
 			if (!nextInputComment.equals(nextOutputComment))
 			{
+				if (FormatterPlugin.getDefault().isDebugging())
+				{
+					IdeLog.logError(PHPCodeFormatterPlugin.getDefault(),
+							"PHP Formatter error. The following comments content did not match after the formatting: \nINPUT:\n" //$NON-NLS-1$
+									+ nextInputComment + "\nOUTPUT:\n" + nextOutputComment); //$NON-NLS-1$
+				}
 				return false;
 			}
 		}
 		// check for any remaining comments in the iterators
 		if (inputIterator.hasNext() || outputIterator.hasNext())
 		{
+			if (FormatterPlugin.getDefault().isDebugging())
+			{
+				IdeLog.logError(PHPCodeFormatterPlugin.getDefault(),
+						"PHP Formatter error: The formatter changed the comments count in the document"); //$NON-NLS-1$
+			}
 			return false;
 		}
 		return true;
