@@ -1,3 +1,4 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.internal.indexer;
 
 import java.io.BufferedReader;
@@ -5,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,7 +60,8 @@ public final class PHPDocUtils
 				InputStream stream = PHPBuiltins.getInstance().getBuiltinResourceStream(entryPath);
 				if (stream != null)
 				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(stream)); // $codepro.audit.disable
+																								// closeWhereCreated
 					return innerParsePHPDoc(offset, reader);
 				}
 			}
@@ -86,7 +87,8 @@ public final class PHPDocUtils
 	{
 		try
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(),
+			BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(), // $codepro.audit.disable
+																									// closeWhereCreated
 					EncodingUtils.getModuleEncoding(module)));
 			return innerParsePHPDoc(offset, reader);
 		}
@@ -105,18 +107,35 @@ public final class PHPDocUtils
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	private static PHPDocBlock innerParsePHPDoc(int offset, BufferedReader reader) throws IOException, Exception
+	private static PHPDocBlock innerParsePHPDoc(int offset, BufferedReader reader) throws IOException, Exception // $codepro.audit.disable
 	{
 		StringBuffer moduleData = new StringBuffer();
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1)
+		try
 		{
-			String readData = String.valueOf(buf, 0, numRead);
-			moduleData.append(readData);
-			buf = new char[1024];
+			char[] buf = new char[1024];
+			int numRead = 0;
+			while ((numRead = reader.read(buf)) != -1) // $codepro.audit.disable
+			{
+				String readData = String.valueOf(buf, 0, numRead);
+				moduleData.append(readData);
+			}
 		}
-		reader.close();
+		finally
+		{
+			if (reader != null)
+			{
+				try
+				{
+					reader.close();
+				}
+				catch (IOException e)
+				{
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"Error closing a BufferedReader in the PDTPHPModuleIndexer", e,//$NON-NLS-1$
+							PHPEditorPlugin.INDEXER_SCOPE);
+				}
+			}
+		}
 
 		String contents = moduleData.toString();
 		int b = -1;
@@ -147,7 +166,8 @@ public final class PHPDocUtils
 		PHPVersion version = PHPVersionProvider.getDefaultPHPVersion();
 		// TODO - Perhaps we'll need to pass a preference value for the 'short-tags' instead of passing 'true' by
 		// default.
-		ASTParser parser = ASTParser.newParser(new StringReader(contents), version, true);
+		ASTParser parser = ASTParser.newParser(new StringReader(contents), version, true); // $codepro.audit.disable
+																							// closeWhereCreated
 		Program program = parser.createAST(null);
 
 		CommentsVisitor commentsVisitor = new CommentsVisitor();
@@ -247,6 +267,21 @@ public final class PHPDocUtils
 	 */
 	public static PHPDocBlock findPHPDocComment(List<Comment> comments, int offset, String content)
 	{
+		return (PHPDocBlock) getCommentByType(comments, offset, content, Comment.TYPE_PHPDOC);
+	}
+
+	/**
+	 * Locate a comment that appears right above the given index (separated only with whitespace chars).
+	 * 
+	 * @param comments
+	 * @param offset
+	 * @param content
+	 * @param type
+	 *            The comment's type (e.g. Comment.TYPE_PHPDOC, Comment.TYPE_PHPDOC | Comment.TYPE_SINGLE_LINE etc.)
+	 * @return A comment, or null if none was found.
+	 */
+	public static Comment getCommentByType(List<Comment> comments, int offset, String content, int type)
+	{
 		if (comments == null || comments.isEmpty())
 		{
 			return null;
@@ -266,7 +301,7 @@ public final class PHPDocUtils
 			return null;
 		}
 
-		if (nearestComment.getCommentType() != Comment.TYPE_PHPDOC)
+		if ((nearestComment.getCommentType() & type) == 0)
 		{
 			return null;
 		}
@@ -290,11 +325,10 @@ public final class PHPDocUtils
 				}
 			}
 		}
-
-		return (PHPDocBlock) nearestComment;
+		return nearestComment;
 	}
 
-	/*
+	/**
 	 * Perform a binary search for a comment that appears right on top of the given offset
 	 */
 	private static int findComment(List<Comment> comments, int offset)
@@ -309,13 +343,19 @@ public final class PHPDocUtils
 			int cmp = midVal.getStart() - offset;
 
 			if (cmp < 0)
+			{
 				low = mid + 1;
+			}
 			else if (cmp > 0)
+			{
 				high = mid - 1;
+			}
 			else
+			{
 				return mid; // key found
+			}
 		}
-		return -(low); // key not found.
+		return -low; // key not found.
 	}
 
 	/**
@@ -575,7 +615,7 @@ public final class PHPDocUtils
 				}
 			}
 
-			ArrayList<TypedDescription> vars = documentation.getVars();
+			List<TypedDescription> vars = documentation.getVars();
 			if (vars != null)
 			{
 				for (TypedDescription var : vars)
