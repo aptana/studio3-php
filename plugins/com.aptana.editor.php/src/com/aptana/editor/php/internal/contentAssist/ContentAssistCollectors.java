@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -110,53 +111,45 @@ public class ContentAssistCollectors
 								// Add an element entry
 								result.add(new IElementEntry()
 								{
-
 									private VariablePHPEntryValue value;
 
+									public int getCategory()
+									{
+										return IPHPIndexConstants.VAR_CATEGORY;
+									}
 
+									public String getEntryPath()
+									{
+										// Returns the function name.
+										// This is useful when we have a
+										// built-in class function
+										// completion.
+										return classParseNode.getNodeName() + IElementsIndex.DELIMITER
+												+ varParseNode.getNodeName();
+									}
 
+									public String getLowerCaseEntryPath()
+									{
+										String path = getEntryPath();
+										return (path != null) ? path.toLowerCase() : EMPTY_STRING;
+									}
 
+									public IModule getModule()
+									{
+										return null;
+									}
 
-
-
-
-										public int getCategory()
+									public Object getValue()
+									{
+										if (value != null)
 										{
-											return IPHPIndexConstants.VAR_CATEGORY;
+											return value;
 										}
-
-										public String getEntryPath()
-										{
-											// Returns the function name.
-											// This is useful when we have a
-											// built-in class function
-											// completion.
-											return classParseNode.getNodeName() + IElementsIndex.DELIMITER
-													+ varParseNode.getNodeName();
-										}
-
-										public String getLowerCaseEntryPath()
-										{
-											String path = getEntryPath();
-											return (path != null) ? path.toLowerCase() : EMPTY_STRING;
-										}
-
-										public IModule getModule()
-										{
-											return null;
-										}
-
-										public Object getValue()
-										{
-											if (value != null)
-											{
-												return value;
-											}
-											// @formatter:off
-											value = new VariablePHPEntryValue(varParseNode.getModifiers(), varParseNode.isParameter(), 
-													varParseNode.isLocalVariable(), varParseNode.isField(), varParseNode.getNodeType(), 
-													varParseNode.getStartingOffset(), namespace);
-											// @formatter:on
+										// @formatter:off
+										value = new VariablePHPEntryValue(varParseNode.getModifiers(), varParseNode.isParameter(), 
+												varParseNode.isLocalVariable(), varParseNode.isField(), varParseNode.getNodeType(), 
+												varParseNode.getStartingOffset(), namespace);
+										// @formatter:on
 										return value;
 									}
 
@@ -322,10 +315,37 @@ public class ContentAssistCollectors
 					result = type;
 				}
 			}
+			else if (aliases.containsKey(typeName))
+			{
+				result = aliases.get(typeName);
+			}
 			else if (!aliases.containsValue(typeName) && !typeName.contains(PHPContentAssistProcessor.GLOBAL_NAMESPACE)
 					&& !PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace))
 			{
-				result = namespace + PHPContentAssistProcessor.GLOBAL_NAMESPACE + typeName;
+				// We need to look for the type name in the values of the aliases.
+				// For each value, we compare the last segment to the type, and if they match, we treat that value as
+				// the result.
+				boolean found = false;
+				Set<Entry<String, String>> entrySet = aliases.entrySet();
+				for (Entry<String, String> entry : entrySet)
+				{
+					String value = entry.getValue();
+					int lastNamesaceDelimiter = value.lastIndexOf(PHPContentAssistProcessor.GLOBAL_NAMESPACE);
+					if (lastNamesaceDelimiter > -1 && lastNamesaceDelimiter < value.length() - 1)
+					{
+						if (typeName.equals(value.substring(lastNamesaceDelimiter + 1)))
+						{
+							result = value;
+							found = true;
+							break;
+						}
+					}
+
+				}
+				if (!found)
+				{
+					result = namespace + PHPContentAssistProcessor.GLOBAL_NAMESPACE + typeName;
+				}
 			}
 		}
 		return result + IElementsIndex.DELIMITER;

@@ -5,14 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
-import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
@@ -29,8 +27,6 @@ public class ContentAssistUtils
 	 * &lt;br&gt;
 	 */
 	private static final int BR_DELTA = 2;
-
-	private static final Object EMPTY_STRING = ""; //$NON-NLS-1$
 
 	/**
 	 * Built-in info
@@ -55,57 +51,6 @@ public class ContentAssistUtils
 	public static void cleanIndex()
 	{
 		index = null;
-	}
-
-	/**
-	 * Check if a given entry is in the namespace specified.
-	 * 
-	 * @param value
-	 * @param namespace
-	 * @return True, in case the value's namespace matches the given namespace .
-	 */
-	public static boolean isInNamespace(AbstractPHPEntryValue value, String namespace)
-	{
-		if (value == null)
-		{
-			return false;
-		}
-		String valueNamespace = value.getNameSpace();
-		if (valueNamespace == null || EMPTY_STRING.equals(valueNamespace))
-		{
-			return namespace == null || EMPTY_STRING.equals(namespace)
-					|| PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace);
-		}
-		else
-		{
-			return valueNamespace.equals(namespace);
-		}
-	}
-
-	/**
-	 * Check if a given entry is in one of the namespaces specified.
-	 * 
-	 * @param value
-	 * @param namespaces
-	 *            A set of namespaces
-	 * @return True, in case the value's namespace matches one of given namespace .
-	 */
-	public static boolean isInNamespace(AbstractPHPEntryValue value, Set<String> namespaces)
-	{
-		if (value == null)
-		{
-			return false;
-		}
-		String valueNamespace = value.getNameSpace();
-		if (valueNamespace == null || EMPTY_STRING.equals(valueNamespace))
-		{
-			return namespaces == null || namespaces.isEmpty()
-					|| namespaces.contains(PHPContentAssistProcessor.GLOBAL_NAMESPACE);
-		}
-		else
-		{
-			return namespaces != null && namespaces.contains(valueNamespace);
-		}
 	}
 
 	/**

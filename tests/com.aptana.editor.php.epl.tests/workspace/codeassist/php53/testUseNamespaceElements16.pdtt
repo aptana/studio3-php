@@ -1,12 +1,10 @@
 --TEST--
 Use statement test.
-Test the CA when using a type from a global NS
+Test the CA when using a type from a global NS (expect no CA when not using the 'use' keyword)
 using the 'as' keyword
 --FILE--
 <?php
 namespace Second\NS;
-
-use PDO;
 
 class AAA extends PDO {
 	function foo() {
@@ -16,6 +14,3 @@ class AAA extends PDO {
 }
 ?>
 --EXPECT--
-method(errorCode)
-method(errorInfo)
-method(exec)

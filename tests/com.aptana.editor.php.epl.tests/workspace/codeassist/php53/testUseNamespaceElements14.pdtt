@@ -6,9 +6,9 @@ using the 'as' keyword
 <?php
 namespace Second\NS;
 
-use PDO;
+use PDO as MyPDO;
 
-class AAA extends PDO {
+class AAA extends MyPDO {
 	function foo() {
 		$this -> e|
 	}
