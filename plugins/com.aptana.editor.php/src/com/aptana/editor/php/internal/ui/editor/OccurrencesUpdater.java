@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -345,10 +344,9 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		}
 
 		fOccurrencesFinderJob = new OccurrencesFinderJob(document, locations, selection);
-		// fOccurrencesFinderJob.setPriority(Job.DECORATE);
-		// fOccurrencesFinderJob.setSystem(true);
-		// fOccurrencesFinderJob.schedule();
-		fOccurrencesFinderJob.run(new NullProgressMonitor());
+		fOccurrencesFinderJob.setPriority(Job.DECORATE);
+		fOccurrencesFinderJob.setUser(true);
+		fOccurrencesFinderJob.schedule();
 	}
 
 	/*
