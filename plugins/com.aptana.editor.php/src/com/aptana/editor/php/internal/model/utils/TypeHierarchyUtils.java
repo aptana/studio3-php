@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -303,9 +302,9 @@ public final class TypeHierarchyUtils
 			return false;
 		}
 		String valueNamespace = value.getNameSpace();
-		if (valueNamespace == null || StringUtil.EMPTY.equals(valueNamespace))
+		if (valueNamespace == null || valueNamespace.length() == 0)
 		{
-			return namespace == null || StringUtil.EMPTY.equals(namespace)
+			return namespace == null || namespace.length() == 0
 					|| PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace);
 		}
 		else
@@ -329,7 +328,7 @@ public final class TypeHierarchyUtils
 			return false;
 		}
 		String valueNamespace = value.getNameSpace();
-		if (valueNamespace == null || StringUtil.EMPTY.equals(valueNamespace))
+		if (valueNamespace == null || valueNamespace.length() == 0)
 		{
 			return namespaces == null || namespaces.isEmpty()
 					|| namespaces.contains(PHPContentAssistProcessor.GLOBAL_NAMESPACE);
