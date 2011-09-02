@@ -414,11 +414,16 @@ public class PHPScopesTest extends TestCase
 		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 9); // '-'
 		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 10); // '>'
 
-		// 'layout ()'
+		// 'layout()'
 		assertScope("source.php source.php.embedded.block.html meta.function-call.object.php", source, 14); // 'o'
 
-		// 'sidenav' - note that the source is not ending with a semicolon, so the expected scope is a generic one
-		assertScope("source.php source.php.embedded.block.html", source, 24); // 'e'
+		// '->'
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 19); // -
+		assertScope("source.php source.php.embedded.block.html keyword.operator.class.php", source, 20); // >
+
+		// sidenav
+		assertScope("source.php source.php.embedded.block.html variable.other.property.php", source, 21); // s
+		assertScope("source.php source.php.embedded.block.html variable.other.property.php", source, 27); // v
 	}
 
 	public void testAPSTUD2790()
@@ -514,6 +519,75 @@ public class PHPScopesTest extends TestCase
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source,
 				source.length() - 1); // '>'
 	}
+
+	public void testAPSTUD3207()
+	{
+		// @formatter:off
+		String source = "<?php\n" +
+				"define (\"valid_username\",\"Valid username\");\n" + 
+				"echo valid_username; ?>";
+		// @formatter:on
+
+		// PHP start switch
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0); // '<'
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 1); // '?'
+
+		// define
+		assertScope("source.php source.php.embedded.block.html support.function.builtin_functions.php", source, 6);
+		assertScope("source.php source.php.embedded.block.html support.function.builtin_functions.php", source, 11);
+
+		// assertScope("source.php source.php.embedded.block.html", source, 12); //
+		assertScope("source.php source.php.embedded.block.html", source, 13); // (
+		// FIXME We don't have the punctuation and meta scopes for strings proper!
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+		// source, 14); // "
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+		// source, 15); // v
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+		// source, 28); // e
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+		// source, 29); // "
+		assertScope("source.php source.php.embedded.block.html", source, 30); // ,
+		// FIXME We don't have the punctuation and meta scopes for strings proper!
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+		// source, 31); // "
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+		// source, 32); // V
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+		// source, 45); // e
+		// assertScope(
+		// "source.php source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+		// source, 46); // "
+
+		// echo
+		assertScope("source.php source.php.embedded.block.html support.function.construct.php", source, 50); // e
+		assertScope("source.php source.php.embedded.block.html support.function.construct.php", source, 53); // o
+
+		// assertScope("source.php source.php.embedded.block.html", source, 54); //
+
+		// valid_username
+		assertScope("source.php source.php.embedded.block.html constant.other.php", source, 55); // v
+		assertScope("source.php source.php.embedded.block.html constant.other.php", source, 68); // e
+
+		assertScope("source.php source.php.embedded.block.html punctuation.terminator.expression.php", source, 69); // ;
+		// assertScope("source.php source.php.embedded.block.html", source, 70); //
+
+		// PHP end switch
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 71); // '?'
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 72); // '>'
+	}
+
+	// comment = 'In PHP, any identifier which is not a variable is taken to be a constant.
+	// However, if there is no constant defined with the given name then a notice
+	// is generated and the constant is assumed to have the value of its name.';
+	// match = '[a-zA-Z_\x{7f}-\x{ff}][a-zA-Z0-9_\x{7f}-\x{ff}]*';
 
 	// TODO Add test for all the new tokens added in PHPTokenMapperFactory
 

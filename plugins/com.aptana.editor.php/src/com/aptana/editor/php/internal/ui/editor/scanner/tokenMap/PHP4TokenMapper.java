@@ -6,6 +6,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org2.eclipse.php.internal.core.ast.scanner.php4.ParserConstants;
 
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
+import com.aptana.editor.php.internal.parser.PHPTokenType;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
 public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
@@ -17,9 +18,9 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 		{
 			case T_ECHO:
 			case T_EVAL:
-				return scanner.getToken("support.function.construct.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.SUPPORT_FUNCTION_CONSTRUCT);
 			case T_DEFINE:
-				return scanner.getToken("support.function.builtin_functions.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.SUPPORT_FUNCTION_BUILTIN);
 			case T_USE:
 			case T_DECLARE:
 			case T_ENDDECLARE:
@@ -34,7 +35,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_START_HEREDOC:
 			case T_END_HEREDOC:
 				// case T_NAMESPACE:
-				return scanner.getToken("keyword.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.KEYWORD);
 			case T_WHILE:
 			case T_ENDWHILE:
 			case T_DO:
@@ -55,56 +56,56 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_ELSEIF:
 			case T_ENDIF:
 				// TODO - Shalom: Missing DIE, TRUE, FALSE
-				return scanner.getToken("keyword.control.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.KEYWORD_CONTROL);
 			case T_STATIC:
-				return scanner.getToken("storage.modifier.static.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.STORAGE_MODIFIER_STATIC);
 			case T_FUNCTION:
-				return scanner.getToken("storage.type.function.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.STORAGE_TYPE_FUNCTION);
 			case T_CLASS:
-				return scanner.getToken("storage.type.class.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.STORAGE_TYPE_CLASS);
 			case T_VAR:
 			case T_GLOBAL:
-				return scanner.getToken("storage.type.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.STORAGE_TYPE);
 			case T_EXTENDS:
-				return scanner.getToken("keyword.other.class.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.KEYWORD_OTHER_CLASS);
 			case T_INCLUDE:
 			case T_INCLUDE_ONCE:
 			case T_REQUIRE:
 			case T_REQUIRE_ONCE:
-				return scanner.getToken("keyword.control.import.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.KEYWORD_CONTROL_IMPORT);
 			case T_OBJECT_OPERATOR:
-				return scanner.getToken("keyword.operator.class.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.KEYWORD_OP_CLASS);
 			case T_PAAMAYIM_NEKUDOTAYIM:
-				return scanner.getToken("meta.function-call.static.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.META_FUNCTION_CALL_STATIC);
 			case T_AT:
 			case T_AS:
 			case T_LOGICAL_AND:
 			case T_LOGICAL_OR:
 			case T_LOGICAL_XOR:
-				return scanner.getToken("keyword.operator.logical.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.KEYWORD_OP_LOGICAL);
 			case T_LINE:
 			case T_FILE:
 			case T_FUNC_C:
 			case T_CLASS_C:
-				return scanner.getToken("constant.language.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.CONSTANT_LANGUAGE);
 			case T_VARIABLE:
 				if (THIS.equals(scanner.getSymbolValue(sym)))
 				{
-					return scanner.getToken("variable.language.php"); //$NON-NLS-1$ 
+					return scanner.getToken(PHPTokenType.VARIABLE_LANGUAGE);
 				}
-				return scanner.getToken("variable.other.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.VARIABLE_OTHER);
 			case T_CONST:
-				return scanner.getToken("constant.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.CONSTANT);
 			case T_LNUMBER:
 			case T_DNUMBER:
-				return scanner.getToken("constant.numeric.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.CONSTANT_NUMERIC);
 			case T_CONSTANT_ENCAPSED_STRING:
-				return scanner.getToken("string.quoted.php"); //$NON-NLS-1$
+				return scanner.getToken(PHPTokenType.STRING_QUOTED);
 			case T_STRING:
 				String tokenContent = scanner.getSymbolValue(sym);
 				if (SELF.equals(tokenContent) || PARENT.equals(tokenContent))
 				{
-					return scanner.getToken("variable.language.php"); //$NON-NLS-1$
+					return scanner.getToken(PHPTokenType.VARIABLE_LANGUAGE);
 				}
 				if (TRUE.equalsIgnoreCase(tokenContent) || FALSE.equalsIgnoreCase(tokenContent)
 						|| NULL.equalsIgnoreCase(tokenContent) || ON.equalsIgnoreCase(tokenContent)
@@ -112,22 +113,22 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 						|| NO.equalsIgnoreCase(tokenContent) || NL.equalsIgnoreCase(tokenContent)
 						|| BR.equalsIgnoreCase(tokenContent) || TAB.equalsIgnoreCase(tokenContent))
 				{
-					return scanner.getToken("constant.language.other.php"); //$NON-NLS-1$
+					return scanner.getToken(PHPTokenType.CONSTANT_LANGUAGE_OTHER);
 				}
 				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)
 				{
 					if (builtins.isBuiltinFunction(tokenContent))
 					{
-						return scanner.getToken("support.function.php"); //$NON-NLS-1$
+						return scanner.getToken(PHPTokenType.SUPPORT_FUNCTION);
 					}
 					else if (builtins.isBuiltinClass(tokenContent))
 					{
-						return scanner.getToken("support.class.php"); //$NON-NLS-1$
+						return scanner.getToken(PHPTokenType.SUPPORT_CLASS);
 					}
 					else if (builtins.isBuiltinConstant(tokenContent))
 					{
-						return scanner.getToken("support.constant.php"); //$NON-NLS-1$
+						return scanner.getToken(PHPTokenType.SUPPORT_CONSTANT);
 					}
 				}
 			default: // $codepro.audit.disable nonTerminatedCaseClause

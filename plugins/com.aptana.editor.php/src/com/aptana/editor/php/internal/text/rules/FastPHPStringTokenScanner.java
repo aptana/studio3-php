@@ -33,7 +33,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	private static final IToken TOKEN_VARIABLE_PUNCTUATION = getToken(PHPTokenType.VARIABLE_PUNCTUATION);
 	private static final IToken TOKEN_FUNCTION_PUNCTUATION = getToken(PHPTokenType.FUNCTION_PUNCTUATION);
 	private static final IToken TOKEN_STATIC_PUNCTUATION = getToken(PHPTokenType.STATIC_PUNCTUATION);
-	private static final IToken TOKEN_SINGLE_QUOTED = new Token("string.quoted.single.php"); //$NON-NLS-1$
+	private static final IToken TOKEN_SINGLE_QUOTED = getToken(PHPTokenType.STRING_SINGLE);
 
 	private final IToken fDefaultToken;
 	private final BufferedDocumentScanner fScanner = new BufferedDocumentScanner(100);

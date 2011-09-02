@@ -12,6 +12,7 @@ import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonEditorPlugin;
 import com.aptana.editor.common.CommonUtil;
@@ -32,6 +33,7 @@ import com.aptana.editor.js.IJSConstants;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
+import com.aptana.editor.php.internal.parser.PHPTokenType;
 import com.aptana.editor.php.internal.text.rules.FastPHPStringTokenScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPDocScanner;
@@ -83,30 +85,32 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 		// Single-quoted string
 		c.addTranslation(new QualifiedContentType(PHP_STRING_SINGLE), new QualifiedContentType(
-				"string.quoted.single.php")); //$NON-NLS-1$
+				PHPTokenType.STRING_SINGLE.toString()));
 
 		// Double-quoted string
 		c.addTranslation(new QualifiedContentType(PHP_STRING_DOUBLE), new QualifiedContentType(
-				"string.quoted.double.php")); //$NON-NLS-1$
+				PHPTokenType.STRING_DOUBLE.toString()));
 
 		// heredoc
-		c.addTranslation(new QualifiedContentType(PHP_HEREDOC), new QualifiedContentType("string.unquoted.heredoc.php")); //$NON-NLS-1$
+		c.addTranslation(new QualifiedContentType(PHP_HEREDOC),
+				new QualifiedContentType(PHPTokenType.HEREDOC.toString()));
 
 		// '#' Single line comments
 		c.addTranslation(new QualifiedContentType(PHP_HASH_LINE_COMMENT), new QualifiedContentType(
-				"comment.line.number-sign.php")); //$NON-NLS-1$
+				PHPTokenType.COMMENT_HASH.toString()));
 
 		// '//' Single line comments
 		c.addTranslation(new QualifiedContentType(PHP_SLASH_LINE_COMMENT), new QualifiedContentType(
-				"comment.line.double-slash.php")); //$NON-NLS-1$
+				PHPTokenType.COMMENT_SLASH.toString()));
 
 		// PHPDoc
 		c.addTranslation(new QualifiedContentType(PHP_DOC_COMMENT), new QualifiedContentType(
-				"comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
+				PHPTokenType.COMMENT_PHPDOC.toString()));
 
 		// Multiline comments
 		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT),
-				new QualifiedContentType("comment.block.php")); //$NON-NLS-1$
+ new QualifiedContentType(
+				PHPTokenType.COMMENT_BLOCK.toString()));
 
 		// PHP Start tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CompositePartitionScanner.START_SWITCH_TAG),
@@ -251,36 +255,41 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	private ITokenScanner getMultiLineCommentScanner()
 	{
-		return new CommentScanner(getToken("comment.block.php")); //$NON-NLS-1$
+		return new CommentScanner(getToken(PHPTokenType.COMMENT_BLOCK));
 	}
 
 	private ITokenScanner getSingleLineCommentScanner()
 	{
-		return new CommentScanner(getToken("")); //$NON-NLS-1$
+		return new CommentScanner(getToken(StringUtil.EMPTY));
 	}
 
 	private ITokenScanner getSingleQuotedStringScanner()
 	{
 		RuleBasedScanner singleQuotedStringScanner = new RuleBasedScanner();
-		singleQuotedStringScanner.setDefaultReturnToken(getToken("string.quoted.single.php")); //$NON-NLS-1$
+		singleQuotedStringScanner.setDefaultReturnToken(getToken(PHPTokenType.STRING_SINGLE));
 		return singleQuotedStringScanner;
 	}
 
 	private ITokenScanner getDoubleQuotedStringScanner()
 	{
-		return new FastPHPStringTokenScanner(getToken("string.quoted.double.php")); //$NON-NLS-1$
+		return new FastPHPStringTokenScanner(getToken(PHPTokenType.STRING_DOUBLE));
 	}
 
 	private ITokenScanner getHeredocScanner()
 	{
-		return new FastPHPStringTokenScanner(getToken("string.unquoted.heredoc.php")); //$NON-NLS-1$
+		return new FastPHPStringTokenScanner(getToken(PHPTokenType.HEREDOC));
 	}
 
 	private ITokenScanner getNowdocScanner()
 	{
 		RuleBasedScanner nowdocScanner = new RuleBasedScanner();
-		nowdocScanner.setDefaultReturnToken(getToken("string.unquoted.nowdoc.php")); //$NON-NLS-1$
+		nowdocScanner.setDefaultReturnToken(getToken(PHPTokenType.NOWDOC));
 		return nowdocScanner;
+	}
+
+	private static IToken getToken(PHPTokenType type)
+	{
+		return CommonUtil.getToken(type.toString());
 	}
 
 	private static IToken getToken(String tokenName)
