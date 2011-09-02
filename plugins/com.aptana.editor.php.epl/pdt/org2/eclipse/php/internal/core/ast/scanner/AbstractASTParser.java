@@ -1,12 +1,13 @@
 package org2.eclipse.php.internal.core.ast.scanner;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import java_cup.runtime.Scanner;
 import java_cup.runtime.Symbol;
 
 import org.eclipse.core.resources.IResource;
-
+import org.eclipse.core.runtime.Platform;
 import org2.eclipse.dltk.compiler.problem.DefaultProblem;
 import org2.eclipse.dltk.compiler.problem.IProblem;
 import org2.eclipse.dltk.compiler.problem.IProblemReporter;
@@ -15,6 +16,9 @@ import org2.eclipse.php.internal.core.ast.nodes.AST;
 import org2.eclipse.php.internal.core.ast.nodes.ASTError;
 
 import com.aptana.core.resources.IUniformResource;
+import com.aptana.editor.common.CommonEditorPlugin;
+import com.aptana.editor.common.preferences.IPreferenceConstants;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 
 /**
  * Base class for every PhpAstParser that also handles error reporting.<br>
@@ -68,6 +72,13 @@ public abstract class AbstractASTParser extends java_cup.runtime.lr_parser
 	 */
 	public final void report_error(String message, Object info)
 	{
+		if (!Platform.getPreferencesService().getBoolean(
+				CommonEditorPlugin.PLUGIN_ID,
+				MessageFormat.format("{0}:{1}", IPHPConstants.CONTENT_TYPE_HTML_PHP, //$NON-NLS-1$
+						IPreferenceConstants.PARSE_ERROR_ENABLED), true, null))
+		{
+			return;
+		}
 		if (info instanceof Symbol)
 		{
 			Symbol s = (Symbol) info;
