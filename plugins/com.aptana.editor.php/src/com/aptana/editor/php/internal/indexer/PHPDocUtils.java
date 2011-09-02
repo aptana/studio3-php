@@ -569,8 +569,7 @@ public final class PHPDocUtils
 		String additionalInfo = Messages.PHPDocUtils_noAvailableDocs;
 		StringBuilder bld = new StringBuilder();
 
-		bld.append("<b>" + name //$NON-NLS-1$
-				+ "</b><br>"); //$NON-NLS-1$
+		bld.append("<b>" + name + "</b><br>"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if (documentation != null)
 		{
@@ -579,7 +578,6 @@ public final class PHPDocUtils
 			longDescription = longDescription.replaceAll("\r\n", "<br>"); //$NON-NLS-1$ //$NON-NLS-2$
 			longDescription = longDescription.replaceAll("\r", "<br>"); //$NON-NLS-1$ //$NON-NLS-2$
 			longDescription = longDescription.replaceAll("\n", "<br>"); //$NON-NLS-1$ //$NON-NLS-2$
-
 			if (longDescription.length() > 0)
 			{
 				bld.append(longDescription);
@@ -662,7 +660,8 @@ public final class PHPDocUtils
 				}
 			}
 		}
-		// Specifically look for HTML 'input' tags and change their open and close chars. The HTML rendering does not
+		// Specifically look for HTML 'input' tags and change their open and close chars. The HTML rendering does
+		// not
 		// remove them when the hover is rendered, introducing form inputs in the hover popup.
 		// @See https://aptana.lighthouseapp.com/projects/35272/tickets/1653
 		Matcher inputMatcher = INPUT_TAG_PATTERN.matcher(bld.toString());
@@ -677,7 +676,6 @@ public final class PHPDocUtils
 			addedOffset += 4;
 		}
 		additionalInfo = bld.toString();
-
 		return additionalInfo;
 	}
 

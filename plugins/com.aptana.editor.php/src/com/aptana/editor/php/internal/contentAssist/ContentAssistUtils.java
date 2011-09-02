@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
@@ -51,6 +52,18 @@ public class ContentAssistUtils
 	public static void cleanIndex()
 	{
 		index = null;
+	}
+
+	// Patterns used for stripping HTML in case there is no support for a BrowserInformationControl on the system
+	private static final Map<Pattern, String> htmlStrippingMap;
+	static
+	{
+		htmlStrippingMap = new HashMap<Pattern, String>();
+		htmlStrippingMap.put(Pattern.compile("<b>|</b>"), StringUtil.EMPTY); //$NON-NLS-1$
+		htmlStrippingMap.put(Pattern.compile("<p>|</p>"), "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		htmlStrippingMap.put(Pattern.compile("<br>|</br>"), "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		htmlStrippingMap.put(Pattern.compile("&lt"), "<"); //$NON-NLS-1$ //$NON-NLS-2$
+		htmlStrippingMap.put(Pattern.compile("&gt"), ">"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -216,8 +229,7 @@ public class ContentAssistUtils
 		}
 		else
 		{
-			buf.append("<b>" + ((PHPFunctionParseNode) node).getSignature() //$NON-NLS-1$
-					+ "</b><br>"); //$NON-NLS-1$
+			buf.append("<b>" + ((PHPFunctionParseNode) node).getSignature() + "</b><br>"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (documentation != null)
 		{
@@ -245,6 +257,21 @@ public class ContentAssistUtils
 		}
 		additionalInfo = buf.toString();
 		return additionalInfo;
+	}
+
+	/**
+	 * Strip out, or replace with regular ascii characters, any 'b', 'br', 'lt' or 'gt' tags.
+	 * 
+	 * @param content
+	 * @return
+	 */
+	public static String stripBasicHTML(String content)
+	{
+		for (Pattern strippingPattern : htmlStrippingMap.keySet())
+		{
+			content = strippingPattern.matcher(content).replaceAll(htmlStrippingMap.get(strippingPattern));
+		}
+		return content;
 	}
 
 	/**
