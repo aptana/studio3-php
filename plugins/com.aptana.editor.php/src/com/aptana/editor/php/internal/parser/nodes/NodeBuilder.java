@@ -8,8 +8,10 @@
 package com.aptana.editor.php.internal.parser.nodes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -20,16 +22,24 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.html.IHTMLConstants;
 import com.aptana.editor.html.parsing.HTMLParseState;
+import com.aptana.editor.html.parsing.ast.HTMLElementNode;
+import com.aptana.editor.html.parsing.ast.HTMLTextNode;
 import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.parsing.IParseState;
-import com.aptana.parsing.IParser;
-import com.aptana.parsing.IParserPool;
+import com.aptana.parsing.ParseState;
 import com.aptana.parsing.ParserPoolFactory;
 import com.aptana.parsing.ast.IParseNode;
+import com.aptana.parsing.ast.IParseRootNode;
 import com.aptana.parsing.ast.ParseNode;
 
 /**
- * @author Pavel Petrochenko
+ * PHP Node Builder.<br>
+ * This builder is used by the {@link NodeBuildingVisitor} when a PHP node is to be created.<br>
+ * The builder also parses the HTML parts in the source, and creates a nodes tree that is a composition of the PHP nodes
+ * and the HTML nodes.<br>
+ * Once the node building is done, calling the {@link #populateNodes()} will return a root parse node that holds the
+ * nodes tree.
+ * 
+ * @author Pavel Petrochenko, Shalom Gibly
  */
 public class NodeBuilder
 {
@@ -41,7 +51,6 @@ public class NodeBuilder
 	private List<Object> phpStarts = new ArrayList<Object>();
 	private List<Object> phpEnds = new ArrayList<Object>();
 	private List<Object> parameters = new ArrayList<Object>();
-	private IParser htmlParser;
 
 	/**
 	 * Whether to collect variables.
@@ -49,6 +58,7 @@ public class NodeBuilder
 	private boolean collectVariables = false;
 	private boolean hasSyntaxErrors;
 	private String source;
+	private boolean parseHTML;
 
 	public boolean hasSyntaxErrors()
 	{
@@ -56,6 +66,9 @@ public class NodeBuilder
 	}
 
 	/**
+	 * Constructs a new NodeBuilder
+	 * 
+	 * @param source
 	 * @param root
 	 */
 	public NodeBuilder(String source, IPHPParseNode root)
@@ -63,28 +76,33 @@ public class NodeBuilder
 		this.source = source;
 		this.current = root;
 		this.root = root;
+		this.parseHTML = true;
 	}
 
 	/**
+	 * Constructs a new NodeBuilder
 	 * 
+	 * @param source
 	 */
 	public NodeBuilder(String source)
 	{
-		this.source = source;
-		current = new PHPBaseParseNode((short) 0, 0, 0, 0, EMPTY_STRING);
-		this.root = current;
+		this(source, new PHPBaseParseNode((short) 0, 0, 0, 0, EMPTY_STRING));
 	}
 
 	/**
-	 * NodeBuilderClient constructor.
+	 * Constructs a new NodeBuilder
 	 * 
+	 * @param source
 	 * @param collectVariables
 	 *            - whether to collect variables.
+	 * @param parseHTML
+	 *            - whether
 	 */
-	public NodeBuilder(String source, boolean collectVariables)
+	public NodeBuilder(String source, boolean collectVariables, boolean parseHTML)
 	{
 		this(source);
 		this.collectVariables = collectVariables;
+		this.parseHTML = parseHTML;
 	}
 
 	public void handleClassConstDeclaration(String constName, IPHPDocBlock docInfo, int startPosition, int endPosition,
@@ -223,14 +241,6 @@ public class NodeBuilder
 				PHPEditorPlugin.DEBUG_SCOPE);
 	}
 
-	public void handleTask(String taskName, String description, int startPosition, int endPosition, int lineNumber)
-	{
-		// IUserData userData = PHPCodeDataFactory.createUserData(workingFileName, startPosition, endPosition,
-		// startPosition, lineNumber);
-		// markers.add(new PHPTask(taskName, description, userData));
-		// TODO
-	}
-
 	public void handleFunctionDeclaration(String functionName, boolean isClassFunction, int modifier,
 			IPHPDocBlock docInfo, int startPosition, int stopPosition, int lineNumber)
 	{
@@ -284,25 +294,9 @@ public class NodeBuilder
 		{
 			bn.addChild(current.getChild(a));
 		}
-		IParserPool pool = ParserPoolFactory.getInstance().getParserPool(IHTMLConstants.CONTENT_TYPE_HTML);
-		if (pool != null)
+		if (parseHTML)
 		{
-			try
-			{
-				htmlParser = pool.checkOut();
-				if (htmlParser != null)
-				{
-					replaceHtmlNodes(bn);
-				}
-			}
-			finally
-			{
-				if (htmlParser != null)
-				{
-					pool.checkIn(htmlParser);
-					htmlParser = null;
-				}
-			}
+			replaceHtmlNodes(bn);
 		}
 		return bn;
 	}
@@ -315,17 +309,210 @@ public class NodeBuilder
 	 */
 	private void replaceHtmlNodes(IParseNode pn)
 	{
-		for (int i = 0; i < pn.getChildCount(); i++)
+
+		IParseRootNode htmlParseResult = null;
+		try
 		{
-			IParseNode child = pn.getChild(i);
-			if (child.getNodeType() == PHPBaseParseNode.HTML_NODE)
+			ParseState parseState = new HTMLParseState();
+			parseState.setEditState(source, null, 0, 0);
+			htmlParseResult = ParserPoolFactory.parse(IHTMLConstants.CONTENT_TYPE_HTML, parseState);
+		}
+		catch (Exception e)
+		{
+			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+					"A problem while integrating the HTML parse result nodes into the PHP parse result nodes", e); //$NON-NLS-1$
+		}
+
+		Map<Integer, HTMLElementNode> htmlOffsetToNode = new HashMap<Integer, HTMLElementNode>();
+		mapHTMLElementNodes(htmlParseResult.getChildren(), htmlOffsetToNode);
+		integrateNodesRecursively(pn, htmlOffsetToNode);
+	}
+
+	/**
+	 * Integrate the PHP nodes and the HTML nodes.
+	 * 
+	 * @param phpParseNode
+	 * @param htmlElementNodes
+	 */
+	private void integrateNodesRecursively(IParseNode phpParseNode, Map<Integer, HTMLElementNode> htmlElementNodes)
+	{
+		Queue<IParseNode> queue = new LinkedList<IParseNode>();
+		HTMLElementNode htmlNode = null;
+		for (IParseNode node : phpParseNode.getChildren())
+		{
+			if (htmlNode != null)
 			{
-				// Replace that node with nodes that we grab through an HTML parser.
-				insertHtmlNodes(pn, child, i);
+				// check if the next child is under the HTML node
+				if (htmlNode.contains(node.getStartingOffset()))
+				{
+					if (node.getNodeType() != PHPBaseParseNode.HTML_NODE)
+					{
+						repositionNode((ParseNode) node, htmlNode);
+						// We still need to visit that PHP node, so adding it to the queue
+						queue.offer(node);
+					}
+					continue;
+				}
+				else
+				{
+					// reset the HTML node
+					htmlNode = null;
+				}
+			}
+			if (node.getNodeType() == PHPBaseParseNode.HTML_NODE)
+			{
+				// find the first non-white character in the node
+				int offset = node.getStartingOffset();
+				for (; offset < node.getEndingOffset(); offset++)
+				{
+					if (!Character.isWhitespace(source.charAt(offset)))
+					{
+						break;
+					}
+				}
+				htmlNode = htmlElementNodes.get(offset);
+				if (htmlNode != null)
+				{
+					// Found a matching HTML element node at this offset.
+					// Replace the PHP node that represents the HTML part with the real HTML node
+					IParseNode parent = node.getParent();
+					while (parent != null && parent.isFilteredFromOutline()
+							&& parent.getNodeType() != PHPBaseParseNode.BLOCK_NODE)
+					{
+						node = parent;
+						parent = node.getParent();
+					}
+					if (parent != null)
+					{
+						IParseNode nextSibling = htmlNode.getNextSibling();
+						List<IParseNode> toInsert = new ArrayList<IParseNode>();
+						toInsert.add(htmlNode);
+						// check if we need to insert any siblings as well
+						while (nextSibling != null && nextSibling.getStartingOffset() < node.getEndingOffset())
+						{
+							if (nextSibling instanceof HTMLElementNode)
+							{
+								toInsert.add(nextSibling);
+							}
+							nextSibling = nextSibling.getNextSibling();
+						}
+						// avoid any index out of bound in some cases.
+						int nodeIndex = node.getIndex();
+						if (nodeIndex > -1 && parent.getChildCount() > nodeIndex)
+						{
+							// Insert the node and the siblings that are nested in the PHP HTML node.
+							IParseNode[] children = parent.getChildren();
+							int siblingsCount = toInsert.size();
+							IParseNode[] newChildren = new IParseNode[children.length + siblingsCount];
+							System.arraycopy(children, 0, newChildren, 0, nodeIndex);
+							System.arraycopy(toInsert.toArray(), 0, newChildren, nodeIndex, siblingsCount);
+							System.arraycopy(children, nodeIndex, newChildren, siblingsCount + nodeIndex,
+									newChildren.length - nodeIndex - siblingsCount);
+							((ParseNode) parent).setChildren(newChildren);
+						}
+
+					}
+				}
 			}
 			else
 			{
-				replaceHtmlNodes(child);
+				queue.offer(node);
+			}
+		}
+
+		// Recursively call the nodes in the queue
+		for (IParseNode node : queue)
+		{
+			integrateNodesRecursively(node, htmlElementNodes);
+		}
+	}
+
+	/**
+	 * Reposition a node under a new parent
+	 * 
+	 * @param phpNode
+	 * @param newHtmlParent
+	 * @param phpNodeIndex
+	 */
+	private void repositionNode(ParseNode phpNode, HTMLElementNode newHtmlParent)
+	{
+		IParseNode phpNodeParent = phpNode.getParent();
+		int phpNodeIndex = phpNode.getIndex();
+		if (newHtmlParent.getParent() != phpNodeParent)
+		{
+			// position the HTML at the PHP nodes tree
+			newHtmlParent.setParent(phpNodeParent);
+			phpNodeParent.replaceChild(phpNodeIndex, newHtmlParent);
+		}
+		// At this point, we already injected the HTML into the PHP tree.
+		// We set the HTML node as a parent of the given PHP node.
+		IParseNode closesedHTMLNode = newHtmlParent.getNodeAtOffset(phpNode.getStartingOffset());
+		if (closesedHTMLNode.getParent() instanceof HTMLElementNode)
+		{
+			newHtmlParent = (HTMLElementNode) closesedHTMLNode.getParent();
+		}
+		phpNode.setParent(newHtmlParent);
+		// We inject the PHP node into the HTML node, replacing the text-node that represents it.
+		IParseNode[] htmlChildren = newHtmlParent.getChildren();
+		List<IParseNode> newChildren = new ArrayList<IParseNode>(htmlChildren.length);
+		boolean phpChildInserted = false;
+		for (int i = 0; i < htmlChildren.length; i++)
+		{
+			IParseNode child = htmlChildren[i];
+			if (!phpChildInserted && child.contains(phpNode.getStartingOffset()) && child instanceof HTMLTextNode)
+			{
+				// found the PHP representation in the HTML nodes.
+				newChildren.add(phpNode);
+				phpChildInserted = true;
+			}
+			else if (phpChildInserted)
+			{
+				// consume any child that is nested in this php element
+				if (!phpNode.contains(child.getStartingOffset()))
+				{
+					newChildren.add(child);
+				}
+			}
+			else
+			{
+				newChildren.add(child);
+			}
+		}
+		htmlChildren = newChildren.toArray(new IParseNode[newChildren.size()]);
+		newHtmlParent.setChildren(htmlChildren);
+
+		// Finally, we need to remove the PHP node from its original PHP parent. To do so, we manipulate the array of
+		// children and re-insert it to the parent.
+		IParseNode[] phpChildren = phpNodeParent.getChildren();
+		IParseNode[] newPhpChildren = new IParseNode[phpChildren.length - 1];
+		System.arraycopy(phpChildren, 0, newPhpChildren, 0, phpNodeIndex);
+		System.arraycopy(phpChildren, phpNodeIndex + 1, newPhpChildren, phpNodeIndex, phpChildren.length - phpNodeIndex
+				- 1);
+		((ParseNode) phpNodeParent).setChildren(newPhpChildren);
+	}
+
+	/**
+	 * Generate a {@link Map} that holds {@link HTMLElementNode}s offsets to node references in the given
+	 * {@link IParseNode} tree.
+	 * 
+	 * @param parseNode
+	 * @return A Map of nodes-offset to node.
+	 */
+	private void mapHTMLElementNodes(IParseNode[] parseNodes, Map<Integer, HTMLElementNode> offsetToNode)
+	{
+		for (IParseNode child : parseNodes)
+		{
+			if (child instanceof HTMLElementNode)
+			{
+				HTMLElementNode previous = offsetToNode.put(child.getStartingOffset(), (HTMLElementNode) child);
+				if (previous != null)
+				{
+					// Just in case, have this check in case something is wrong in the HTML result.
+					// This will prevent any infinite recursion.
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Invalid HTML parse result structure"); //$NON-NLS-1$
+					return;
+				}
+				mapHTMLElementNodes(child.getChildren(), offsetToNode);
 			}
 		}
 	}
@@ -394,18 +581,6 @@ public class NodeBuilder
 	}
 
 	/**
-	 * Add a common node to the
-	 * 
-	 * @param start
-	 * @param end
-	 * @param shouldDisplayInOutline
-	 */
-	public void handleCommonBlock(String name, int start, int end, boolean shouldDisplayInOutline)
-	{
-
-	}
-
-	/**
 	 * Handle a common declaration end.
 	 */
 	public void handleCommonDeclarationEnd()
@@ -445,84 +620,85 @@ public class NodeBuilder
 		}
 	}
 
-	/**
-	 * Append the HTML nodes children into the PHP block node.
-	 * 
-	 * @param parent
-	 * @param htmlNode
-	 */
-	private void insertHtmlNodes(IParseNode parent, IParseNode htmlNode, int htmlNodeIndex)
-	{
-		IParseNode nodes = getHtmlNodes(htmlNode);
-		// Skip the root node and grab the children directly.
-		IParseNode[] htmlChildren = nodes.getChildren();
-		if (htmlChildren.length > 0)
-		{
-			IParseNode[] siblings = parent.getChildren();
-			IParseNode[] newChildren = new IParseNode[siblings.length + htmlChildren.length - 1];
-			// Copy up to the HTML node index (not including the node)
-			System.arraycopy(siblings, 0, newChildren, 0, htmlNodeIndex);
-			// Copy the new HTML children
-			System.arraycopy(htmlChildren, 0, newChildren, htmlNodeIndex, htmlChildren.length);
-			// Finally, copy the rest of the nodes that exist after the original HTML index
-			System.arraycopy(siblings, htmlNodeIndex + 1, newChildren, htmlNodeIndex + htmlChildren.length,
-					siblings.length - htmlNodeIndex - 1);
-			((ParseNode) parent).setChildren(newChildren);
-		}
-	}
+	// /**
+	// * Append the HTML nodes children into the PHP block node.
+	// *
+	// * @param parent
+	// * @param htmlNode
+	// */
+	// private void insertHtmlNodes(IParseNode parent, IParseNode htmlNode, int htmlNodeIndex)
+	// {
+	// IParseNode nodes = getHtmlNodes(htmlNode);
+	// // Skip the root node and grab the children directly.
+	// IParseNode[] htmlChildren = nodes.getChildren();
+	// if (htmlChildren.length > 0)
+	// {
+	// IParseNode[] siblings = parent.getChildren();
+	// IParseNode[] newChildren = new IParseNode[siblings.length + htmlChildren.length - 1];
+	// // Copy up to the HTML node index (not including the node)
+	// System.arraycopy(siblings, 0, newChildren, 0, htmlNodeIndex);
+	// // Copy the new HTML children
+	// System.arraycopy(htmlChildren, 0, newChildren, htmlNodeIndex, htmlChildren.length);
+	// // Finally, copy the rest of the nodes that exist after the original HTML index
+	// System.arraycopy(siblings, htmlNodeIndex + 1, newChildren, htmlNodeIndex + htmlChildren.length,
+	// siblings.length - htmlNodeIndex - 1);
+	// ((ParseNode) parent).setChildren(newChildren);
+	// }
+	// }
 
-	/**
-	 * This method is called when the PHP nodes are populated. The method will replace any existing PHPHTMLNode that we
-	 * have in the stack with 'real' HTML nodes that we grab from the HTML parser.
-	 * 
-	 * @param htmlNode
-	 *            an {@link IParseNode} representing the HTML content.
-	 * @return The parse node for the HTML, as generated by the HTML parser.
-	 */
-	private IParseNode getHtmlNodes(IParseNode htmlNode)
-	{
+	// /**
+	// * This method is called when the PHP nodes are populated. The method will replace any existing PHPHTMLNode that
+	// we
+	// * have in the stack with 'real' HTML nodes that we grab from the HTML parser.
+	// *
+	// * @param htmlNode
+	// * an {@link IParseNode} representing the HTML content.
+	// * @return The parse node for the HTML, as generated by the HTML parser.
+	// */
+	// private IParseNode getHtmlNodes(IParseNode htmlNode)
+	// {
+	//
+	// try
+	// {
+	// IParseState parseState = new HTMLParseState();
+	// String input = source.substring(htmlNode.getStartingOffset(), htmlNode.getEndingOffset());
+	// parseState.setEditState(input, null, 0, 0);
+	// IParseNode parseResult = htmlParser.parse(parseState);
+	// if (parseResult != null)
+	// {
+	// // We need to shift the offsets of all the returned nodes to fit out source.
+	// updateOffsets(htmlNode.getStartingOffset(), ((ParseNode) parseResult));
+	// return parseResult;
+	// }
+	// }
+	// catch (Exception e)
+	// {
+	// IdeLog.logError(PHPEditorPlugin.getDefault(),
+	//					"Error getting the HTML nodes for the HTML part in the PHP source", e); //$NON-NLS-1$
+	// }
+	// // If we got null from the HTML parser as parse-result, we just return the original PHP-HTML node.
+	// return htmlNode;
+	// }
 
-		try
-		{
-			IParseState parseState = new HTMLParseState();
-			String input = source.substring(htmlNode.getStartingOffset(), htmlNode.getEndingOffset());
-			parseState.setEditState(input, null, 0, 0);
-			IParseNode parseResult = htmlParser.parse(parseState);
-			if (parseResult != null)
-			{
-				// We need to shift the offsets of all the returned nodes to fit out source.
-				updateOffsets(htmlNode.getStartingOffset(), ((ParseNode) parseResult));
-				return parseResult;
-			}
-		}
-		catch (Exception e)
-		{
-			IdeLog.logError(PHPEditorPlugin.getDefault(),
-					"Error getting the HTML nodes for the HTML part in the PHP source", e); //$NON-NLS-1$
-		}
-		// If we got null from the HTML parser as parse-result, we just return the original PHP-HTML node.
-		return htmlNode;
-	}
-
-	/**
-	 * @param offsetToAdd
-	 * @param parseNode
-	 */
-	private void updateOffsets(int offsetToAdd, ParseNode parseNode)
-	{
-		Queue<IParseNode> queue = new LinkedList<IParseNode>();
-		queue.offer(parseNode);
-		// Walk the parse nodes tree and process each child.
-		while (!queue.isEmpty())
-		{
-			IParseNode node = queue.poll();
-			((ParseNode) node).addOffset(offsetToAdd);
-			for (IParseNode child : node)
-			{
-				queue.offer(child);
-			}
-		}
-	}
+	// /**
+	// * @param offsetToAdd
+	// * @param parseNode
+	// */
+	// private void updateOffsets(int offsetToAdd, ParseNode parseNode)
+	// {
+	// Queue<IParseNode> queue = new LinkedList<IParseNode>();
+	// queue.offer(parseNode);
+	// // Walk the parse nodes tree and process each child.
+	// while (!queue.isEmpty())
+	// {
+	// IParseNode node = queue.poll();
+	// ((ParseNode) node).addOffset(offsetToAdd);
+	// for (IParseNode child : node)
+	// {
+	// queue.offer(child);
+	// }
+	// }
+	// }
 
 	/**
 	 * @param start
