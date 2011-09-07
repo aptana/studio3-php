@@ -69,7 +69,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 		// Inside PHP tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, CONTENT_TYPE_PHP), new QualifiedContentType(
-				"source.php", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
+				"text.html.basic", "source.php.embedded.block.html")); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// Outside PHP tags
 		c.addTranslation(new QualifiedContentType(CONTENT_TYPE_HTML_PHP, IHTMLConstants.CONTENT_TYPE_HTML),
@@ -108,8 +108,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 				PHPTokenType.COMMENT_PHPDOC.toString()));
 
 		// Multiline comments
-		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT),
- new QualifiedContentType(
+		c.addTranslation(new QualifiedContentType(PHP_MULTI_LINE_COMMENT), new QualifiedContentType(
 				PHPTokenType.COMMENT_BLOCK.toString()));
 
 		// PHP Start tags
@@ -265,14 +264,12 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 
 	private ITokenScanner getSingleQuotedStringScanner()
 	{
-		RuleBasedScanner singleQuotedStringScanner = new RuleBasedScanner();
-		singleQuotedStringScanner.setDefaultReturnToken(getToken(PHPTokenType.STRING_SINGLE));
-		return singleQuotedStringScanner;
+		return new SingleQuotedStringScanner();
 	}
 
 	private ITokenScanner getDoubleQuotedStringScanner()
 	{
-		return new FastPHPStringTokenScanner(getToken(PHPTokenType.STRING_DOUBLE));
+		return new FastPHPStringTokenScanner(getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE));
 	}
 
 	private ITokenScanner getHeredocScanner()
@@ -287,9 +284,9 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 		return nowdocScanner;
 	}
 
-	private static IToken getToken(PHPTokenType type)
+	static IToken getToken(PHPTokenType type)
 	{
-		return CommonUtil.getToken(type.toString());
+		return getToken(type.toString());
 	}
 
 	private static IToken getToken(String tokenName)
