@@ -53,7 +53,7 @@ public class PHTMLOutlineTest extends TestCase
 	 * 
 	 * @return A {@link Test} that wraps a {@link TestSuite}.
 	 */
-	public Test suite()
+	public static Test suite()
 	{
 		TestSuite suite = new TestSuite("PHP Outline Tests");
 		String[] inputFiles = getFiles(INPUT_DIRECTORY);
@@ -90,7 +90,7 @@ public class PHTMLOutlineTest extends TestCase
 	 * 
 	 * @throws Exception
 	 */
-	protected void setUpSuite() throws Exception
+	protected static void setUpSuite() throws Exception
 	{
 		// do nothing for now
 	}
@@ -100,7 +100,7 @@ public class PHTMLOutlineTest extends TestCase
 	 * 
 	 * @throws Exception
 	 */
-	protected void tearDownSuite()
+	protected static void tearDownSuite()
 	{
 		// do nothing for now
 	}
@@ -112,7 +112,7 @@ public class PHTMLOutlineTest extends TestCase
 	 * @param filename
 	 * @param fileType
 	 */
-	protected void outlineTest(String filename)
+	protected static void outlineTest(String filename)
 	{
 		try
 		{
@@ -157,7 +157,7 @@ public class PHTMLOutlineTest extends TestCase
 	 * @param content
 	 * @throws IOException
 	 */
-	private void writeContent(String outputFileName, String content) throws IOException
+	private static void writeContent(String outputFileName, String content) throws IOException
 	{
 		// in case the output file does not exist, create one and inject the output into it.
 		URL fileURL = FileLocator.find(Platform.getBundle(TEST_BUNDLE_ID), Path.fromPortableString(outputFileName),
@@ -182,7 +182,7 @@ public class PHTMLOutlineTest extends TestCase
 	 * @return The string content
 	 * @throws IOException
 	 */
-	private String readContent(String filename) throws IOException
+	private static String readContent(String filename) throws IOException
 	{
 		InputStream stream = FileLocator.openStream(Platform.getBundle(TEST_BUNDLE_ID),
 				Path.fromPortableString(filename), false);
@@ -196,7 +196,7 @@ public class PHTMLOutlineTest extends TestCase
 	 *            The input/output directory to scan files for.
 	 */
 	@SuppressWarnings("unchecked")
-	protected String[] getFiles(String directory)
+	protected static String[] getFiles(String directory)
 	{
 		Enumeration<String> entryPaths = Platform.getBundle(TEST_BUNDLE_ID).getEntryPaths(directory);
 		ArrayList<String> filePaths = new ArrayList<String>();

@@ -12,7 +12,7 @@ public class CoreTests
 		TestSuite suite = new TestSuite(CoreTests.class.getName());
 		// $JUnit-BEGIN$
 		suite.addTestSuite(PHPVersionProviderTest.class);
-		suite.addTest(new PHTMLOutlineTest().suite());
+		suite.addTest(PHTMLOutlineTest.suite());
 		// $JUnit-END$
 		return suite;
 	}

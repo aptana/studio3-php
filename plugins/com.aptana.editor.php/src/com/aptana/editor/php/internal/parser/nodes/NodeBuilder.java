@@ -20,6 +20,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Identifier;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.html.IHTMLConstants;
 import com.aptana.editor.html.parsing.HTMLParseState;
 import com.aptana.editor.html.parsing.ast.HTMLElementNode;
@@ -43,8 +44,6 @@ import com.aptana.parsing.ast.ParseNode;
  */
 public class NodeBuilder
 {
-
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private IPHPParseNode current;
 	private IPHPParseNode root;
 	private Stack<Object> stack = new Stack<Object>();
@@ -86,7 +85,7 @@ public class NodeBuilder
 	 */
 	public NodeBuilder(String source)
 	{
-		this(source, new PHPBaseParseNode((short) 0, 0, 0, 0, EMPTY_STRING));
+		this(source, new PHPBaseParseNode((short) 0, 0, 0, 0, StringUtil.EMPTY));
 	}
 
 	/**
@@ -122,7 +121,7 @@ public class NodeBuilder
 
 	public void handleNamespaceDeclaration(String namespaceName, int startPosition, int endPosition, int stopPosition)
 	{
-		PHPNamespaceNode un = new PHPNamespaceNode(startPosition, endPosition, namespaceName, EMPTY_STRING);
+		PHPNamespaceNode un = new PHPNamespaceNode(startPosition, endPosition, namespaceName, StringUtil.EMPTY);
 		un.setNameNode(namespaceName, startPosition, stopPosition);
 		pushNode(un);
 	}
@@ -322,10 +321,7 @@ public class NodeBuilder
 			IdeLog.logWarning(PHPEditorPlugin.getDefault(),
 					"A problem while integrating the HTML parse result nodes into the PHP parse result nodes", e); //$NON-NLS-1$
 		}
-
-		Map<Integer, HTMLElementNode> htmlOffsetToNode = new HashMap<Integer, HTMLElementNode>();
-		mapHTMLElementNodes(htmlParseResult.getChildren(), htmlOffsetToNode);
-		integrateNodesRecursively(pn, htmlOffsetToNode);
+		integrateNodesRecursively(pn, mapHTMLElementNodes(htmlParseResult.getChildren()));
 	}
 
 	/**
@@ -456,9 +452,8 @@ public class NodeBuilder
 		IParseNode[] htmlChildren = newHtmlParent.getChildren();
 		List<IParseNode> newChildren = new ArrayList<IParseNode>(htmlChildren.length);
 		boolean phpChildInserted = false;
-		for (int i = 0; i < htmlChildren.length; i++)
+		for (IParseNode child : htmlChildren)
 		{
-			IParseNode child = htmlChildren[i];
 			if (!phpChildInserted && child.contains(phpNode.getStartingOffset()) && child instanceof HTMLTextNode)
 			{
 				// found the PHP representation in the HTML nodes.
@@ -498,8 +493,10 @@ public class NodeBuilder
 	 * @param parseNode
 	 * @return A Map of nodes-offset to node.
 	 */
-	private void mapHTMLElementNodes(IParseNode[] parseNodes, Map<Integer, HTMLElementNode> offsetToNode)
+	private Map<Integer, HTMLElementNode> mapHTMLElementNodes(IParseNode[] parseNodes)
 	{
+		// Recursively traverse the HTML tree to collect the HTMLElementNode
+		Map<Integer, HTMLElementNode> offsetToNode = new HashMap<Integer, HTMLElementNode>();
 		for (IParseNode child : parseNodes)
 		{
 			if (child instanceof HTMLElementNode)
@@ -510,11 +507,12 @@ public class NodeBuilder
 					// Just in case, have this check in case something is wrong in the HTML result.
 					// This will prevent any infinite recursion.
 					IdeLog.logError(PHPEditorPlugin.getDefault(), "Invalid HTML parse result structure"); //$NON-NLS-1$
-					return;
+					return offsetToNode;
 				}
-				mapHTMLElementNodes(child.getChildren(), offsetToNode);
+				offsetToNode.putAll(mapHTMLElementNodes(child.getChildren()));
 			}
 		}
+		return offsetToNode;
 	}
 
 	/**
@@ -619,86 +617,6 @@ public class NodeBuilder
 			current.addChild(new PHPHTMLNode(start, end));
 		}
 	}
-
-	// /**
-	// * Append the HTML nodes children into the PHP block node.
-	// *
-	// * @param parent
-	// * @param htmlNode
-	// */
-	// private void insertHtmlNodes(IParseNode parent, IParseNode htmlNode, int htmlNodeIndex)
-	// {
-	// IParseNode nodes = getHtmlNodes(htmlNode);
-	// // Skip the root node and grab the children directly.
-	// IParseNode[] htmlChildren = nodes.getChildren();
-	// if (htmlChildren.length > 0)
-	// {
-	// IParseNode[] siblings = parent.getChildren();
-	// IParseNode[] newChildren = new IParseNode[siblings.length + htmlChildren.length - 1];
-	// // Copy up to the HTML node index (not including the node)
-	// System.arraycopy(siblings, 0, newChildren, 0, htmlNodeIndex);
-	// // Copy the new HTML children
-	// System.arraycopy(htmlChildren, 0, newChildren, htmlNodeIndex, htmlChildren.length);
-	// // Finally, copy the rest of the nodes that exist after the original HTML index
-	// System.arraycopy(siblings, htmlNodeIndex + 1, newChildren, htmlNodeIndex + htmlChildren.length,
-	// siblings.length - htmlNodeIndex - 1);
-	// ((ParseNode) parent).setChildren(newChildren);
-	// }
-	// }
-
-	// /**
-	// * This method is called when the PHP nodes are populated. The method will replace any existing PHPHTMLNode that
-	// we
-	// * have in the stack with 'real' HTML nodes that we grab from the HTML parser.
-	// *
-	// * @param htmlNode
-	// * an {@link IParseNode} representing the HTML content.
-	// * @return The parse node for the HTML, as generated by the HTML parser.
-	// */
-	// private IParseNode getHtmlNodes(IParseNode htmlNode)
-	// {
-	//
-	// try
-	// {
-	// IParseState parseState = new HTMLParseState();
-	// String input = source.substring(htmlNode.getStartingOffset(), htmlNode.getEndingOffset());
-	// parseState.setEditState(input, null, 0, 0);
-	// IParseNode parseResult = htmlParser.parse(parseState);
-	// if (parseResult != null)
-	// {
-	// // We need to shift the offsets of all the returned nodes to fit out source.
-	// updateOffsets(htmlNode.getStartingOffset(), ((ParseNode) parseResult));
-	// return parseResult;
-	// }
-	// }
-	// catch (Exception e)
-	// {
-	// IdeLog.logError(PHPEditorPlugin.getDefault(),
-	//					"Error getting the HTML nodes for the HTML part in the PHP source", e); //$NON-NLS-1$
-	// }
-	// // If we got null from the HTML parser as parse-result, we just return the original PHP-HTML node.
-	// return htmlNode;
-	// }
-
-	// /**
-	// * @param offsetToAdd
-	// * @param parseNode
-	// */
-	// private void updateOffsets(int offsetToAdd, ParseNode parseNode)
-	// {
-	// Queue<IParseNode> queue = new LinkedList<IParseNode>();
-	// queue.offer(parseNode);
-	// // Walk the parse nodes tree and process each child.
-	// while (!queue.isEmpty())
-	// {
-	// IParseNode node = queue.poll();
-	// ((ParseNode) node).addOffset(offsetToAdd);
-	// for (IParseNode child : node)
-	// {
-	// queue.offer(child);
-	// }
-	// }
-	// }
 
 	/**
 	 * @param start
