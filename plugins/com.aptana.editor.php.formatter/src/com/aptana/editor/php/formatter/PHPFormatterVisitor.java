@@ -1935,7 +1935,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int closeParenEnd = expressionEndOffset;
 			if (!parenthesesNode.isAsWrapper())
 			{
-				closeParenStart = builder.locateCharBackward(document, ')', expressionEndOffset);
+				closeParenStart = builder.locateCharBackward(document, ')', expressionEndOffset - 1);
 				closeParenEnd = closeParenStart + 1;
 			}
 			if (hasCommentBefore(closeParenStart))
