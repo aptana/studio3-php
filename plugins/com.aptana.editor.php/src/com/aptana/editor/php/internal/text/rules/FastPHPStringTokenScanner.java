@@ -39,7 +39,6 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	private final IToken fDefaultToken;
 	private final BufferedDocumentScanner fScanner = new BufferedDocumentScanner(100);
-	private boolean firstQuote;
 
 	/**
 	 * 
@@ -50,20 +49,20 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.text.rules.ITokenScanner#setRange(org.eclipse.jface
-	 * .text.IDocument, int, int)
+	 * @see org.eclipse.jface.text.rules.ITokenScanner#setRange(org.eclipse.jface .text.IDocument, int, int)
 	 */
 	public void setRange(IDocument document, int offset, int length) {
 		super.setRange(document, offset, length);
 		fScanner.setRange(document, offset, length);
-		firstQuote = true;
+		if (fScanner.read() == '"') {
+			queueToken(TOKEN_BEGIN_QUOTE, fScanner.getOffset()-1, 1);
+		} else {
+			fScanner.unread();
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.jface.text.rules.ITokenScanner#nextToken()
 	 */
 	public IToken nextToken() {
@@ -78,8 +77,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	private void resumeTokenScan() {
 		int startOffset = fScanner.getOffset();
 		int ch = fScanner.read();
-		switch (ch)
-		{
+		switch (ch) {
 			case '\\':
 				readEscape(startOffset);
 				break;
@@ -88,31 +86,23 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 				break;
 			case '{':
 				ch = fScanner.read();
-				if (ch == '$')
-				{
+				if (ch == '$') {
 					fScanner.unread();
 					readComplexVariable(startOffset);
+				} else if (ch != ICharacterScanner.EOF) {
+					fScanner.unread();
+					readDefault(startOffset);
 				}
-				else if (ch != ICharacterScanner.EOF)
-				{
+				break;
+			case '"':
+				if (fScanner.read() == ICharacterScanner.EOF) {
+					queueToken(TOKEN_END_QUOTE, startOffset, 1);
+				} else {
 					fScanner.unread();
 					readDefault(startOffset);
 				}
 				break;
 			case ICharacterScanner.EOF:
-				break;
-			case '"':
-				IToken token = null;
-				if (firstQuote)
-				{
-					token = TOKEN_BEGIN_QUOTE;
-					firstQuote = !firstQuote;
-				}
-				else
-				{
-					token = TOKEN_END_QUOTE;
-				}
-				queueToken(token, startOffset, fScanner.getOffset() - startOffset);
 				break;
 			default:
 				readDefault(startOffset);
@@ -122,8 +112,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	private void readDefault(int offset) {
 		int ch = fScanner.read();
-		while (ch != '\\' && ch != '$' && ch != '{' && ch != '"' && ch != ICharacterScanner.EOF)
-		{
+		while (ch != '\\' && ch != '$' && ch != '{' && ch != '"' && ch != ICharacterScanner.EOF) {
 			ch = fScanner.read();
 		}
 		if (ch != ICharacterScanner.EOF) {
