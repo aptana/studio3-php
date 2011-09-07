@@ -140,6 +140,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static final String SELF_ACTIVATION_SEQUENCE = "self"; //$NON-NLS-1$
 
 	/**
+	 * "static" activation sequence.
+	 */
+	private static final String STATIC_ACTIVATION_SEQUENCE = "static"; //$NON-NLS-1$
+
+	/**
 	 * "parent" activation sequence.
 	 */
 	private static final String PARENT_ACTIVATION_SEQUENCE = "parent"; //$NON-NLS-1$
@@ -815,7 +820,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return null;
 		}
 
-		boolean innerCompletion = SELF_ACTIVATION_SEQUENCE.equals(callPath.get(0));
+		boolean selfCompletion = SELF_ACTIVATION_SEQUENCE.equals(callPath.get(0));
+		boolean staticCompletion = STATIC_ACTIVATION_SEQUENCE.equals(callPath.get(0));
 		boolean parentCompletion = PARENT_ACTIVATION_SEQUENCE.equals(callPath.get(0));
 
 		boolean currentExactMatch = true;
@@ -824,8 +830,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			currentExactMatch = exactMatch;
 		}
 		Set<IElementEntry> result = computeStaticDereferenceRightEntries(index, leftDereferenceEntries,
-				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, innerCompletion,
-				parentCompletion, aliases, namespace);
+				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, selfCompletion
+						|| staticCompletion, parentCompletion, aliases, namespace);
 		if (result == null || result.isEmpty())
 		{
 			return null;
@@ -848,7 +854,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					applyAccessRestriction = true;
 				}
 				result = computeDereferenceRightEntries(leftDereferenceEntries, index, pathEntryName(callPath.get(i)),
-						offset, module, currentExactMatch, applyAccessRestriction, innerCompletion, aliases, namespace);
+						offset, module, currentExactMatch, applyAccessRestriction, selfCompletion, aliases, namespace);
 				if (result == null || result.isEmpty())
 				{
 					return null;
@@ -1083,7 +1089,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 
-		if (SELF_ACTIVATION_SEQUENCE.equals(left))
+		if (SELF_ACTIVATION_SEQUENCE.equals(left) || STATIC_ACTIVATION_SEQUENCE.equals(left))
 		{
 			IElementEntry currentClass = getCurrentClass(index, module, offset);
 			if (currentClass == null)
