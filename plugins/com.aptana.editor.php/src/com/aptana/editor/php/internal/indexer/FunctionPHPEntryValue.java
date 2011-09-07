@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 
 /**
@@ -106,9 +108,17 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 		{
 			if (parameters.size() != 0)
 			{
-				if (parameterStartPositions == null || parameters.size() != parameterStartPositions.length)
+				if (parameterStartPositions == null || parameters.size() < parameterStartPositions.length)
 				{
 					throw new IllegalArgumentException("Illegal parameter start positions: " + parameterStartPositions); //$NON-NLS-1$
+				}
+				else if (parameterStartPositions != null && parameters.size() > parameterStartPositions.length)
+				{
+					// Just log a potential problem. Probably the PHPDoc comment defines an extra parameter that
+					// does not exist in the function declaration.
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"An extra parameter is defined in the PHPDoc, but not in the function declaration.", //$NON-NLS-1$
+							(String) null);
 				}
 			}
 
