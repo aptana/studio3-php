@@ -24,6 +24,8 @@ import com.aptana.editor.php.internal.parser.PHPTokenType;
  */
 public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
+	private static final IToken TOKEN_END_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_END);
+	private static final IToken TOKEN_BEGIN_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_BEGIN);
 	private static final IToken TOKEN_ESCAPE_CHARACTER = getToken(PHPTokenType.CHARACTER_ESCAPE);
 	private static final IToken TOKEN_VARIABLE = getToken(PHPTokenType.VARIABLE);
 	private static final IToken TOKEN_NUMERIC = getToken(PHPTokenType.NUMERIC);
@@ -37,6 +39,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	private final IToken fDefaultToken;
 	private final BufferedDocumentScanner fScanner = new BufferedDocumentScanner(100);
+	private boolean firstQuote;
 
 	/**
 	 * 
@@ -55,6 +58,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	public void setRange(IDocument document, int offset, int length) {
 		super.setRange(document, offset, length);
 		fScanner.setRange(document, offset, length);
+		firstQuote = true;
 	}
 
 	/*
@@ -74,34 +78,52 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	private void resumeTokenScan() {
 		int startOffset = fScanner.getOffset();
 		int ch = fScanner.read();
-		switch (ch) {
-		case '\\':
-			readEscape(startOffset);
-			break;
-		case '$':
-			readSimpleVariable(startOffset);
-			break;
-		case '{':
-			ch = fScanner.read();
-			if (ch == '$') {
-				fScanner.unread();
-				readComplexVariable(startOffset);
-			} else if (ch != ICharacterScanner.EOF) {
-				fScanner.unread();
+		switch (ch)
+		{
+			case '\\':
+				readEscape(startOffset);
+				break;
+			case '$':
+				readSimpleVariable(startOffset);
+				break;
+			case '{':
+				ch = fScanner.read();
+				if (ch == '$')
+				{
+					fScanner.unread();
+					readComplexVariable(startOffset);
+				}
+				else if (ch != ICharacterScanner.EOF)
+				{
+					fScanner.unread();
+					readDefault(startOffset);
+				}
+				break;
+			case ICharacterScanner.EOF:
+				break;
+			case '"':
+				IToken token = null;
+				if (firstQuote)
+				{
+					token = TOKEN_BEGIN_QUOTE;
+					firstQuote = !firstQuote;
+				}
+				else
+				{
+					token = TOKEN_END_QUOTE;
+				}
+				queueToken(token, startOffset, fScanner.getOffset() - startOffset);
+				break;
+			default:
 				readDefault(startOffset);
-			}
-			break;
-		case ICharacterScanner.EOF:
-			break;
-		default:
-			readDefault(startOffset);
-			break;
+				break;
 		}
 	}
 
 	private void readDefault(int offset) {
 		int ch = fScanner.read();
-		while (ch != '\\' && ch != '$' && ch != '{' && ch != ICharacterScanner.EOF) {
+		while (ch != '\\' && ch != '$' && ch != '{' && ch != '"' && ch != ICharacterScanner.EOF)
+		{
 			ch = fScanner.read();
 		}
 		if (ch != ICharacterScanner.EOF) {
