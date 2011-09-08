@@ -217,33 +217,69 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 	public void testHashSingleLinePHPComment()
 	{
 		String source = "<?php\n" + "# This is a singleline comment.\n" + "?>";
-		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 2); // '<?'
-		assertContentType(PHPSourceConfiguration.PHP_HASH_LINE_COMMENT, source, 6, 30); // #
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_HASH_LINE_COMMENT, source, 6, 32); // #
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 38, 2); // '?>'
 	}
 
 	public void testSlashSingleLinePHPComment()
 	{
 		String source = "<?php\n" + "// This is a singleline comment.\n" + "?>";
-		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 2); // '<?'
-		assertContentType(PHPSourceConfiguration.PHP_SLASH_LINE_COMMENT, source, 6, 31); // /
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_SLASH_LINE_COMMENT, source, 6, 33); // /
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 39, 2); // '?>'
 	}
 
 	public void testSingleQuotedString()
 	{
 		String source = "<?php\n" + "'This is a single quoted string.'\n" + "?>";
-		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 2); // '<'
-		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, source, 6, 32); // ''
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_SINGLE, source, 6, 33); // ''
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 39, 1); // '\n'
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 40, 2); // '?'
 	}
 
 	public void testDoubleQuotedString()
 	{
 		String source = "<?php\n" + "\"This is a double quoted string.\"\n" + "?>";
-		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 2); // '<?'
-		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 32); // ""
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 33); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 39, 1); // '\n'
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 40, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithSimpleVariable()
+	{
+		String source = "<?php\n" + "\"Variable = ${a}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 17); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 23, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 24, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithComplexVariable()
+	{
+		String source = "<?php\n" + "\"Variable = {$a}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 17); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 23, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 24, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithComplexVariableWithQuotes()
+	{
+		String source = "<?php\n" + "\"Variable = {$a[\"a\"]}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 22); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 28, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 29, 2); // '?>'
 	}
 
 	// TODO Add a test for a heredoc partition

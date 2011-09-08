@@ -34,6 +34,7 @@ import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
 import com.aptana.editor.php.internal.parser.PHPTokenType;
+import com.aptana.editor.php.internal.text.rules.DoubleQuotedStringRule;
 import com.aptana.editor.php.internal.text.rules.FastPHPStringTokenScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPDocScanner;
@@ -53,7 +54,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
 					"/*", "*/", getToken(PHP_MULTI_LINE_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\'", "\'", getToken(PHP_STRING_SINGLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
-			new PartitionerSwitchingIgnoreRule(new MultiLineRule("\"", "\"", getToken(PHP_STRING_DOUBLE), '\\', true)), //$NON-NLS-1$ //$NON-NLS-2$
+			new PartitionerSwitchingIgnoreRule(new DoubleQuotedStringRule(getToken(PHP_STRING_DOUBLE))),
 			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_HEREDOC), false)),
 			new PartitionerSwitchingIgnoreRule(new HeredocRule(getToken(PHP_NOWDOC), true)), };
 
