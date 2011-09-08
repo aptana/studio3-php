@@ -704,6 +704,43 @@ public class PHPScopesTest extends TestCase
 		assertScope("text.html.basic meta.tag.block.any.html punctuation.definition.tag.end.html", source, 39); // >
 	}
 
+	public void testComplexVariable()
+	{
+		// @formatter:off
+		String source = "<?= \"var={$_GET[\"var\"]}\" ?>";
+		// @formatter:on
+
+		// <?= "No content found" ?>
+		// FIXME These are all saying block.html, but Textmate uses line.html for single liner php code
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0, 3);
+		assertScope("text.html.basic source.php.embedded.block.html", source, 3, 1);
+		// FIXME we don't offer up string quote punctuation scopes, but should!
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+				source, 4, 1); // "
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 5, 4);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.variable.php",
+				source, 9, 1);
+		/*
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php punctuation.definition.variable.php",
+				source, 10, 1);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php",
+				source, 11, 4);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php keyword.operator.index-start.php",
+				source, 15, 1);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 16, 5);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php keyword.operator.index-end.php",
+				source, 21, 1);
+		*/
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.variable.php",
+				source, 22, 1);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.end.php",
+				source, 23, 1); // "
+		assertScope("text.html.basic source.php.embedded.block.html", source, 24, 1);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 25, 2);
+	}
+
 	// comment = 'In PHP, any identifier which is not a variable is taken to be a constant.
 	// However, if there is no constant defined with the given name then a notice
 	// is generated and the constant is assumed to have the value of its name.';
@@ -720,6 +757,14 @@ public class PHPScopesTest extends TestCase
 		catch (BadLocationException e)
 		{
 			fail(e.getMessage());
+		}
+	}
+
+	private void assertScope(String scope, String code, int offset, int length)
+	{
+		for (int i = 0; i < length; ++i)
+		{
+			assertScope(scope, code, offset+i);
 		}
 	}
 
