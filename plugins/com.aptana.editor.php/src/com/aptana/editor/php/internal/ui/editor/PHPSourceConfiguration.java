@@ -22,6 +22,7 @@ import com.aptana.editor.common.scripting.IContentTypeTranslator;
 import com.aptana.editor.common.scripting.QualifiedContentType;
 import com.aptana.editor.common.text.rules.CommentScanner;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
+import com.aptana.editor.common.text.rules.EmptyCommentRule;
 import com.aptana.editor.common.text.rules.ISubPartitionScanner;
 import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
@@ -49,6 +50,7 @@ public class PHPSourceConfiguration implements IPartitioningConfiguration, ISour
 	private IPredicateRule[] partitioningRules = new IPredicateRule[] {
 			new EndOfLineRule("//", getToken(PHP_SLASH_LINE_COMMENT)), //$NON-NLS-1$
 			new EndOfLineRule("#", getToken(PHP_HASH_LINE_COMMENT)), //$NON-NLS-1$
+			new EmptyCommentRule(getToken(PHP_MULTI_LINE_COMMENT)),
 			new PartitionerSwitchingIgnoreRule(
 					new MultiLineRule("/**", "*/", getToken(PHP_DOC_COMMENT), (char) 0, true)), //$NON-NLS-1$ //$NON-NLS-2$
 			new PartitionerSwitchingIgnoreRule(new MultiLineRule(
