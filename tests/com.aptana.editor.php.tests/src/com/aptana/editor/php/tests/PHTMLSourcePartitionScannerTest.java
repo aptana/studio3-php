@@ -252,7 +252,27 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 40, 2); // '?>'
 	}
 
-	public void testDoubleQuotedStringWithSimpleVariable()
+	public void testDoubleQuotedStringWithSimpleVariable1()
+	{
+		String source = "<?php\n" + "\"Variable = $a\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 15); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 21, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 22, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithSimpleVariable2()
+	{
+		String source = "<?php\n" + "\"Variable = $a['0']\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 20); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 26, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 27, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithSimpleVariable3()
 	{
 		String source = "<?php\n" + "\"Variable = ${a}\"\n" + "?>";
 		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
@@ -262,7 +282,7 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 24, 2); // '?>'
 	}
 
-	public void testDoubleQuotedStringWithComplexVariable()
+	public void testDoubleQuotedStringWithComplexVariable1()
 	{
 		String source = "<?php\n" + "\"Variable = {$a}\"\n" + "?>";
 		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
@@ -270,6 +290,56 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 17); // ""
 		assertContentType(PHPSourceConfiguration.DEFAULT, source, 23, 1); // '\n'
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 24, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithComplexVariable2()
+	{
+		String source = "<?php\n" + "\"Variable = {$a->b}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 20); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 26, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 27, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithComplexVariable3()
+	{
+		String source = "<?php\n" + "\"Variable = {$a->b()}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 22); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 28, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 29, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithComplexVariable4()
+	{
+		String source = "<?php\n" + "\"Variable = {$a['a']}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 22); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 28, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 29, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithComplexVariableLiteral()
+	{
+		String source = "<?php\n" + "\"Variable = {${$a}}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 20); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 26, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 27, 2); // '?>'
+	}
+
+	public void testDoubleQuotedStringWithComplexVariableLiteralWithQuotes()
+	{
+		String source = "<?php\n" + "\"Variable = {${\"a\"}}\"\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_STRING_DOUBLE, source, 6, 21); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 27, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 28, 2); // '?>'
 	}
 
 	public void testDoubleQuotedStringWithComplexVariableWithQuotes()
@@ -282,8 +352,85 @@ public class PHTMLSourcePartitionScannerTest extends TestCase
 		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 29, 2); // '?>'
 	}
 
-	// TODO Add a test for a heredoc partition
-	// TODO Add a test for a nowdoc partition
+	public void testHeredoc()
+	{
+		String source = "<?php\n" + "<<<EOT\nThis is a heredoc string.\nEOT\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_HEREDOC, source, 6, 36); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 42, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 43, 2); // '?>'
+	}
+
+	public void testHeredocWithSemicolon()
+	{
+		String source = "<?php\n" + "<<<EOT\nThis is a heredoc string.\nEOT;\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_HEREDOC, source, 6, 36); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 42, 2); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 44, 2); // '?>'
+	}
+
+	public void testHeredocWithFakeEnding()
+	{
+		String source = "<?php\n" + "<<<EOT\nThis is a \nEOTheredoc string.\nEOT\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_HEREDOC, source, 6, 40); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 46, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 47, 2); // '?>'
+	}
+
+	public void testHeredocWithVariable()
+	{
+		String source = "<?php\n" + "<<<EOT\nThis is a heredoc {$string}.\nEOT\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_HEREDOC, source, 6, 39); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 45, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 46, 2); // '?>'
+	}
+
+	public void testNowdoc()
+	{
+		String source = "<?php\n" + "<<<'EOT'\nThis is  nowdoc string.\nEOT\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_NOWDOC, source, 6, 36); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 42, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 43, 2); // '?>'
+	}
+
+	public void testNowdocWithSemicolon()
+	{
+		String source = "<?php\n" + "<<<'EOT'\nThis is  nowdoc string.\nEOT;\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_NOWDOC, source, 6, 36); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 42, 2); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 44, 2); // '?>'
+	}
+
+	public void testNowdocWithFakeEnding()
+	{
+		String source = "<?php\n" + "<<<'EOT'\nThis is  \nEOTnowdoc string.\nEOT\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_NOWDOC, source, 6, 40); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 46, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 47, 2); // '?>'
+	}
+
+	public void testNowdocWithVariable()
+	{
+		String source = "<?php\n" + "<<<'EOT'\nThis is  nowdoc {$string}.\nEOT\n" + "?>";
+		assertContentType(CompositePartitionScanner.START_SWITCH_TAG, source, 0, 5); // '<?'
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 5, 1); // '\n'
+		assertContentType(PHPSourceConfiguration.PHP_NOWDOC, source, 6, 39); // ""
+		assertContentType(PHPSourceConfiguration.DEFAULT, source, 45, 1); // '\n'
+		assertContentType(CompositePartitionScanner.END_SWITCH_TAG, source, 46, 2); // '?>'
+	}
 
 	private void assertContentType(String contentType, String code, int offset)
 	{
