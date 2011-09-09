@@ -9,19 +9,14 @@
 package com.aptana.editor.php.internal.text.rules;
 
 import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
-import org.eclipse.jface.text.rules.SingleLineRule;
-import org.eclipse.jface.text.rules.Token;
 
 /**
  * @author Max Stepanov
  *
  */
 public class DoubleQuotedStringRule extends MultiLineRule {
-
-	private static final IPredicateRule COMPLEX_VARIABLE_RULE = new SingleLineRule("{$", "}", new Token("CVT"), '\\'); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	/**
 	 * @param token
@@ -36,16 +31,22 @@ public class DoubleQuotedStringRule extends MultiLineRule {
 	@Override
 	protected boolean endSequenceDetected(ICharacterScanner scanner) {
 		int c;
+		int openBrackets = 0;
 		while ((c = scanner.read()) != ICharacterScanner.EOF) {
-			if (c == '{') {
-				scanner.unread();
-				if (COMPLEX_VARIABLE_RULE.evaluate(scanner).isUndefined()) {
-					scanner.read();
+			if (c == fEscapeCharacter) {
+				scanner.read();
+			} else if (openBrackets > 0) {
+				if (c == '{') {
+					++openBrackets;
+				} else if (c == '}') {
+					--openBrackets;
+				}
+			} else if (c == '{') {
+				if ((c = scanner.read()) == '$') {
+					openBrackets = 1;
 				}
 			} else if ((c == fEndSequence[0] && sequenceDetected(scanner, fEndSequence, fBreaksOnEOF))) {
 				break;
-			} else if (c == fEscapeCharacter) {
-				scanner.read();
 			}
 		}
 		return true;
