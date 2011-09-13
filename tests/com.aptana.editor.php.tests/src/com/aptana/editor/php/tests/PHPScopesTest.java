@@ -111,8 +111,7 @@ public class PHPScopesTest extends TestCase
 					source, 12 + tag.length()); // end of tag
 			// comments
 			assertScope("text.html.basic source.php.embedded.block.html comment.block.documentation.phpdoc.php",
-					source,
-					38 + tag.length()); // **/
+					source, 38 + tag.length()); // **/
 			// PHP end switch
 			assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source,
 					40 + tag.length()); // '?'
@@ -614,33 +613,31 @@ public class PHPScopesTest extends TestCase
 
 		// assertScope("text.html.basic source.php.embedded.block.html", source, 12); //
 		assertScope("text.html.basic source.php.embedded.block.html", source, 13); // (
-		// FIXME We don't have the punctuation and meta scopes for strings proper!
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
-		// source, 14); // "
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
-		// source, 15); // v
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
-		// source, 28); // e
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
-		// source, 29); // "
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+				source, 14); // "
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 15); // v
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 28); // e
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.end.php",
+				source, 29); // "
 		assertScope("text.html.basic source.php.embedded.block.html", source, 30); // ,
-		// FIXME We don't have the punctuation and meta scopes for strings proper!
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
-		// source, 31); // "
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
-		// source, 32); // V
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
-		// source, 45); // e
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
-		// source, 46); // "
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+				source, 31); // "
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 32); // V
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 45); // e
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.end.php",
+				source, 46); // "
 
 		// echo
 		assertScope("text.html.basic source.php.embedded.block.html support.function.construct.php", source, 50); // e
@@ -684,7 +681,6 @@ public class PHPScopesTest extends TestCase
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 12); // ?
 		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 13); // =
 		assertScope("text.html.basic source.php.embedded.block.html", source, 14); //
-		// FIXME we don't offer up string quote punctuation scopes, but should!
 		assertScope(
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
 				source, 15); // "
@@ -710,43 +706,221 @@ public class PHPScopesTest extends TestCase
 		String source = "<?= \"var={$_GET[\"var\"]}\" ?>";
 		// @formatter:on
 
-		// <?= "No content found" ?>
+		// <?=
 		// FIXME These are all saying block.html, but Textmate uses line.html for single liner php code
-		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0, 3);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0,
+				3);
 		assertScope("text.html.basic source.php.embedded.block.html", source, 3, 1);
-		// FIXME we don't offer up string quote punctuation scopes, but should!
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.begin.php",
 				source, 4, 1); // "
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
 				source, 5, 4);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.variable.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php punctuation.definition.variable.php",
 				source, 9, 1);
-		/*
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php punctuation.definition.variable.php",
-				source, 10, 1);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php",
+
+		// FIXME We don't break out dollar sign as special scope
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php punctuation.definition.variable.php",
+		// source, 10, 1);
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php",
 				source, 11, 4);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php keyword.operator.index-start.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php keyword.operator.index-start.php",
 				source, 15, 1);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
-				source, 16, 5);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php keyword.operator.index-end.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php punctuation.definition.string.begin.php",
+				source, 16, 1);
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 16, 3);
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php punctuation.definition.string.end.php",
+				source, 16, 1);
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php keyword.operator.index-end.php",
 				source, 21, 1);
-		*/
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.variable.php",
+
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php punctuation.definition.variable.php",
 				source, 22, 1);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.end.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.end.php",
 				source, 23, 1); // "
 		assertScope("text.html.basic source.php.embedded.block.html", source, 24, 1);
-		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 25, 2);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 25,
+				2);
 	}
 
-	// comment = 'In PHP, any identifier which is not a variable is taken to be a constant.
-	// However, if there is no constant defined with the given name then a notice
-	// is generated and the constant is assumed to have the value of its name.';
-	// match = '[a-zA-Z_\x{7f}-\x{ff}][a-zA-Z0-9_\x{7f}-\x{ff}]*';
+	public void testAPSTUD3446()
+	{
+		// @formatter:off
+		String source = "<?php\n" +
+				"  FOOBAR;\n" +
+				"  foobar();\n" +
+				"  foobar ();\n" +
+				"?>\n";
+		// @formatter:on
 
-	// TODO Add test for all the new tokens added in PHPTokenMapperFactory
+		// FIXME These are all saying block.html, but Textmate uses line.html for single liner php code
+		// FIXME Whitespace seems to just re-use the preceding scope...
+		// <?=
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0,
+				5); // <?php
+		assertScope("text.html.basic source.php.embedded.block.html", source, 5, 3); // \n
+		assertScope("text.html.basic source.php.embedded.block.html constant.other.php", source, 8, 6); // FOOBAR
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 14,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 15, 3); // \n
+		assertScope("text.html.basic source.php.embedded.block.html meta.function-call.php", source, 18, 6); // foobar
+		assertScope("text.html.basic source.php.embedded.block.html", source, 24, 2); // ()
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 26,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 27, 3); // \n
+		assertScope("text.html.basic source.php.embedded.block.html meta.function-call.php", source, 30, 6); // foobar
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 36, 1); //
+		assertScope("text.html.basic source.php.embedded.block.html", source, 37, 2); // ()
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 39,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 40, 1); // \n
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 41,
+				2); // ?>
+	}
+
+	public void testVariableIndexAccess()
+	{
+		// @formatter:off
+		String source = "<?php\n" +
+				"  abc[0];\n" +
+				"?>\n";
+		// @formatter:on
+
+		// <?=
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0,
+				5); // <?php
+		assertScope("text.html.basic source.php.embedded.block.html", source, 5, 3); // \n
+		assertScope("text.html.basic source.php.embedded.block.html constant.other.php", source, 8, 3); // abc
+		assertScope(
+				"text.html.basic source.php.embedded.block.html variable.other.php keyword.operator.index-start.php",
+				source, 11, 1); // [
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.php constant.numeric.php", source,
+				12, 1); // 0
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.php keyword.operator.index-end.php",
+				source, 13, 1); // ]
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 14,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 15, 1); // \n
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 16,
+				2); // ?>
+	}
+
+	public void testGlobalVariables()
+	{
+		// @formatter:off
+		String source = "<?php\n" +
+				"$_GET;\n" +
+				"$_COOKIE;\n" +
+				"$_POST;\n" +
+				"$_REQUEST;\n" +
+				"$_ENV;\n" +
+				"$_SERVER;\n" +
+				"$_SESSION;\n" +
+				"$_FILES;\n" +
+				"$GLOBALS;\n" +
+				"?>\n";
+		// @formatter:on
+
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.begin.php", source, 0,
+				5); // <?php
+		assertScope("text.html.basic source.php.embedded.block.html", source, 5, 1); // \n
+
+		// $_GET
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 6, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.php", source, 7, 4); // _GET
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 11,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 12, 1); // \n
+
+		// $_COOKIE
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 13, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.php", source, 14, 7);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 21,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 22, 1); // \n
+
+		// $_POST
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 23, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.php", source, 24, 5);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 29,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 30, 1); // \n
+
+		// $_REQUEST
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 31, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.php", source, 32, 8);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 40,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 41, 1); // \n
+
+		// $_ENV
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 42, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.safer.php", source, 43, 4);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 47,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 48, 1); // \n
+
+		// $_SERVER
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 49, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.safer.php", source, 50, 7);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 57,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 58, 1); // \n
+
+		// $_SESSION
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 59, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.safer.php", source, 60, 8);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 68,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 69, 1); // \n
+
+		// $_FILES
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 70, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.php", source, 71, 6);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 77,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 78, 1); // \n
+
+		// $GLOBALS
+		// assertScope(
+		// "text.html.basic source.php.embedded.block.html variable.other.global.php punctuation.definition.variable.php",
+		// source, 79, 1); // $
+		assertScope("text.html.basic source.php.embedded.block.html variable.other.global.safer.php", source, 80, 7);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.terminator.expression.php", source, 87,
+				1); // ;
+		// assertScope("text.html.basic source.php.embedded.block.html", source, 88, 1); // \n
+
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 89,
+				2); // ?>
+	}
 
 	private void assertScope(String scope, String code, int offset)
 	{
@@ -764,7 +938,7 @@ public class PHPScopesTest extends TestCase
 	{
 		for (int i = 0; i < length; ++i)
 		{
-			assertScope(scope, code, offset+i);
+			assertScope(scope, code, offset + i);
 		}
 	}
 

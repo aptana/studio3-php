@@ -143,17 +143,49 @@ public class PHPCodeScanner implements ITokenScanner
 				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
 				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
 				{
-					token = getToken(PHPTokenType.META_FUNCTION_CALL_OBJECT.toString());
+					token = getToken(PHPTokenType.META_FUNCTION_CALL_OBJECT);
 				}
 				else
 				{
-					token = getToken(PHPTokenType.VARIABLE_OTHER_PROPERTY.toString());
+					token = getToken(PHPTokenType.VARIABLE_OTHER_PROPERTY);
 				}
 			}
 			else
 			{
-				token = getToken(PHPTokenType.VARIABLE_OTHER_PROPERTY.toString());
+				token = getToken(PHPTokenType.VARIABLE_OTHER_PROPERTY);
 			}
+			// Push the tokens we looked ahead back onto our queue
+			for (QueuedToken addBack : popped)
+			{
+				push(addBack.getToken(), addBack.getOffset(), addBack.getLength());
+			}
+			fLength = lastLength;
+			fOffset = lastOffset;
+		}
+		// function calls
+		else if (scopeEquals(token, PHPTokenType.CONSTANT_OTHER))
+		{
+			// Lookahead to see if there's a trailing paren! If so, make it a function-call
+			int lastOffset = getTokenOffset();
+			int lastLength = getTokenLength();
+			List<QueuedToken> popped = new ArrayList<QueuedToken>();
+			IToken next = pop();
+			while (next.isWhitespace())
+			{
+				popped.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
+				next = pop();
+			}
+			popped.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
+
+			if (!next.isEOF())
+			{
+				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
+				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
+				{
+					token = getToken(PHPTokenType.META_FUNCTION_CALL);
+				}
+			}
+
 			// Push the tokens we looked ahead back onto our queue
 			for (QueuedToken addBack : popped)
 			{

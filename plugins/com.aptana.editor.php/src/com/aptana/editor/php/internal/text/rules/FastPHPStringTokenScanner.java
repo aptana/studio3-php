@@ -27,11 +27,11 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	private static final IToken TOKEN_END_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_END);
 	private static final IToken TOKEN_BEGIN_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_BEGIN);
 	private static final IToken TOKEN_ESCAPE_CHARACTER = getToken(PHPTokenType.CHARACTER_ESCAPE);
-	private static final IToken TOKEN_VARIABLE = getToken(PHPTokenType.VARIABLE);
+	private static final IToken TOKEN_VARIABLE = getToken(PHPTokenType.VARIABLE_OTHER);
 	private static final IToken TOKEN_NUMERIC = getToken(PHPTokenType.NUMERIC);
 	private static final IToken TOKEN_CLASS_OPERATOR = getToken(PHPTokenType.CLASS_OPERATOR);
-	private static final IToken TOKEN_ARRAY_BEGIN = getToken(PHPTokenType.ARRAY_BEGIN);
-	private static final IToken TOKEN_ARRAY_END = getToken(PHPTokenType.ARRAY_END);
+	private static final IToken TOKEN_ARRAY_BEGIN = getToken(PHPTokenType.PUNCTUATION_LBRACKET);
+	private static final IToken TOKEN_ARRAY_END = getToken(PHPTokenType.PUNCTUATION_RBRACKET);
 	private static final IToken TOKEN_VARIABLE_PUNCTUATION = getToken(PHPTokenType.VARIABLE_PUNCTUATION);
 	private static final IToken TOKEN_FUNCTION_PUNCTUATION = getToken(PHPTokenType.FUNCTION_PUNCTUATION);
 	private static final IToken TOKEN_STATIC_PUNCTUATION = getToken(PHPTokenType.STATIC_PUNCTUATION);
@@ -193,6 +193,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 			if (ch != ICharacterScanner.EOF) {
 				fScanner.unread();
 			}
+			// FIXME We really need to delegate to PHPCodeScanner to properly get the correct tokens here...
 			queueToken(TOKEN_VARIABLE, offset, fScanner.getOffset() - offset);
 			readVariableOperator(fScanner.getOffset());
 		} else if (ch == '{') { // we have ${

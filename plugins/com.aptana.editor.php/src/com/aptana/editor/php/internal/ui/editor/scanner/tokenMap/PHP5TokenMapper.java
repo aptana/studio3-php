@@ -102,9 +102,18 @@ public class PHP5TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_LOGICAL_XOR:
 				return scanner.getToken(PHPTokenType.KEYWORD_OP_LOGICAL);
 			case T_VARIABLE:
-				if (THIS.equals(scanner.getSymbolValue(sym)))
+				String value = scanner.getSymbolValue(sym);
+				if (THIS.equals(value))
 				{
 					return scanner.getToken(PHPTokenType.VARIABLE_LANGUAGE);
+				}
+				if (PHPTokenMapperFactory.GLOBALS.contains(value))
+				{
+					return scanner.getToken(PHPTokenType.VARIABLE_OTHER_GLOBAL);
+				}
+				if (PHPTokenMapperFactory.SAFER_GLOBALS.contains(value))
+				{
+					return scanner.getToken(PHPTokenType.VARIABLE_OTHER_GLOBAL_SAFER);
 				}
 				return scanner.getToken(PHPTokenType.VARIABLE_OTHER);
 			case T_LINE:

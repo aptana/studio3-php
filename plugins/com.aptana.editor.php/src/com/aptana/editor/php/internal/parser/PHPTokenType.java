@@ -45,6 +45,7 @@ public enum PHPTokenType
 	KEYWORD_OP_LOGICAL("keyword.operator.logical.php"),
 	KEYWORD_OTHER("keyword.other.phpdoc.php"),
 	KEYWORD_OTHER_CLASS("keyword.other.class.php"),
+	META_FUNCTION_CALL("meta.function-call.php"),
 	META_FUNCTION_CALL_OBJECT("meta.function-call.object.php"),
 	META_FUNCTION_CALL_STATIC("meta.function-call.static.php"),
 	META_STRING_CONTENTS_SINGLE("meta.string-contents.quoted.single.php"),
@@ -76,11 +77,12 @@ public enum PHPTokenType
 	SUPPORT_FUNCTION("support.function.php"),
 	SUPPORT_FUNCTION_BUILTIN("support.function.builtin_functions.php"),
 	SUPPORT_FUNCTION_CONSTRUCT("support.function.construct.php"),
-	VARIABLE("variable.other.php"),
 	VARIABLE_LANGUAGE("variable.language.php"),
 	VARIABLE_OTHER("variable.other.php"),
+	VARIABLE_OTHER_GLOBAL("variable.other.global.php"),
+	VARIABLE_OTHER_GLOBAL_SAFER("variable.other.global.safer.php"),
 	VARIABLE_OTHER_PROPERTY("variable.other.property.php"),
-	VARIABLE_PUNCTUATION("punctuation.definition.variable.php");
+	VARIABLE_PUNCTUATION("meta.string-contents.quoted.double.php punctuation.definition.variable.php");
 
 	private final String scope;
 

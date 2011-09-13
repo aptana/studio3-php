@@ -35,6 +35,25 @@ public class PHPTokenMapperFactory
 
 	private static final Pattern CONSTANT_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
 
+	public static Set<String> GLOBALS = new HashSet<String>();
+	static
+	{
+		GLOBALS.add(IPHPTokenMapper.COOKIE);
+		GLOBALS.add(IPHPTokenMapper.FILES);
+		GLOBALS.add(IPHPTokenMapper.POST);
+		GLOBALS.add(IPHPTokenMapper.GET);
+		GLOBALS.add(IPHPTokenMapper.REQUEST);
+	}
+
+	public static Set<String> SAFER_GLOBALS = new HashSet<String>();
+	static
+	{
+		SAFER_GLOBALS.add(IPHPTokenMapper.GLOBALS);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SESSION);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SERVER);
+		SAFER_GLOBALS.add(IPHPTokenMapper.ENV);
+	}
+
 	private static Set<String> ASSIGNMENTS = new HashSet<String>();
 	static
 	{
