@@ -8,6 +8,7 @@
 package com.aptana.editor.php.internal.ui.wizard;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -30,6 +31,8 @@ import com.aptana.editor.php.core.PHPNature;
 import com.aptana.projects.WebProjectNature;
 import com.aptana.projects.internal.wizards.NewProjectWizard;
 import com.aptana.projects.internal.wizards.ProjectTemplateSelectionPage;
+import com.aptana.usage.FeatureEvent;
+import com.aptana.usage.StudioAnalytics;
 
 /**
  * A new PHP Project Wizard class.
@@ -174,5 +177,11 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 		job.setSystem(true);
 		job.setPriority(Job.SHORT);
 		job.schedule();
+	}
+
+	@Override
+	protected void sendProjectCreateEvent(Map<String, String> payload)
+	{
+		StudioAnalytics.getInstance().sendEvent(new FeatureEvent("project.create.php", payload)); //$NON-NLS-1$
 	}
 }
