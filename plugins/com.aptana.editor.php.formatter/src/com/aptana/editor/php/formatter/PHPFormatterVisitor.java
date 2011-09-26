@@ -1127,20 +1127,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(InfixExpression infixExpression)
 	{
-		String operatorString = InfixExpression.getOperator(infixExpression.getOperator());
 		ASTNode left = infixExpression.getLeft();
 		ASTNode right = infixExpression.getRight();
-		if (infixExpression.getOperator() == InfixExpression.OP_IS_NOT_EQUAL && left != null && right != null)
-		{
-			// There can be two types of not-equal: != or <>
-			// We have to check for the actual one.
-			String expression = document.get(left.getEnd(), right.getStart()).trim();
-			if (!operatorString.equals(expression))
-			{
-				operatorString = TypeOperator.NOT_EQUAL_ALTERNATE.toString();
-			}
-		}
-		visitLeftRightExpression(infixExpression, left, right, operatorString);
+		// Instead of calling InfixExpression.getOperator(infixExpression.getOperator()), we grab the operator
+		// from the document as is. This way, we will be able to handle case-insensitive operators, as well as 'synonym'
+		// operators such as <> and !=.
+		String operatorStringAsIs = document.get(left.getEnd(), right.getStart()).trim();
+		visitLeftRightExpression(infixExpression, left, right, operatorStringAsIs);
 		return false;
 	}
 
@@ -2278,7 +2271,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			rightOffset = parentNode.getEnd();
 		}
 		int operatorOffset = document.get(leftOffset, rightOffset).indexOf(operatorString) + leftOffset;
-		TypeOperator typeOperator = TypeOperator.getTypeOperator(operatorString);
+		TypeOperator typeOperator = TypeOperator.getTypeOperator(operatorString.toLowerCase());
 		pushTypeOperator(typeOperator, operatorOffset, false);
 		if (right != null)
 		{
