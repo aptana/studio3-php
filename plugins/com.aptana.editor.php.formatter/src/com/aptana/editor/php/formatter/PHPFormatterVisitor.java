@@ -625,17 +625,34 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ConditionalExpression conditionalExpression)
 	{
+		// (APSTUD-5303) Since PHP 5.3, it is possible to leave out the middle part of the ternary operator.
+		// Expression expr1 ?: expr3 returns expr1 if expr1 evaluates to TRUE, and expr3 otherwise.
 		Expression condition = conditionalExpression.getCondition();
 		condition.accept(this);
 		Expression ifTrue = conditionalExpression.getIfTrue();
 		Expression ifFalse = conditionalExpression.getIfFalse();
 		// push the conditional operator
-		int conditionalOpOffset = condition.getEnd() + document.get(condition.getEnd(), ifTrue.getStart()).indexOf('?');
+		int startLookup;
+		int endLookup;
+		if (ifTrue != null)
+		{
+			startLookup = ifTrue.getStart();
+			endLookup = ifTrue.getEnd();
+		}
+		else
+		{
+			startLookup = ifFalse.getStart();
+			endLookup = condition.getEnd();
+		}
+		int conditionalOpOffset = condition.getEnd() + document.get(condition.getEnd(), startLookup).indexOf('?');
 		pushTypeOperator(TypeOperator.CONDITIONAL, conditionalOpOffset, false);
 		// visit the true part
-		ifTrue.accept(this);
+		if (ifTrue != null)
+		{
+			ifTrue.accept(this);
+		}
 		// push the colon separator
-		int colonOffset = ifTrue.getEnd() + document.get(ifTrue.getEnd(), ifFalse.getStart()).indexOf(':');
+		int colonOffset = endLookup + document.get(endLookup, ifFalse.getStart()).indexOf(':');
 		pushTypeOperator(TypeOperator.CONDITIONAL_COLON, colonOffset, false);
 		// visit the false part
 		ifFalse.accept(this);
