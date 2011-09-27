@@ -252,10 +252,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// First, construct the if condition node
 		int start = ifStatement.getStart();
 		FormatterPHPIfNode conditionNode = new FormatterPHPIfNode(document, hasTrueBlock, ifStatement);
-		conditionNode.setBegin(builder.createTextNode(document, start, start + 2));
+		int startLength = (document.charAt(start) == 'e') ? 6 : 2;
+		// If the expression starts with an 'e', it's an "elseif" expression. Otherwise, it's an "if" expression.
+		conditionNode.setBegin(builder.createTextNode(document, start, start + startLength));
 		builder.push(conditionNode);
 		// push the condition elements that appear in parentheses
-		pushNodeInParentheses('(', ')', start + 2, trueStatement.getStart(), ifStatement.getCondition(),
+		pushNodeInParentheses('(', ')', start + startLength, trueStatement.getStart(), ifStatement.getCondition(),
 				TypeBracket.CONDITIONAL_PARENTHESIS);
 		// Construct the 'true' part of the 'if' and visit its children
 		if (hasTrueBlock)
@@ -278,7 +280,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// 'elseif' word.
 			int trueBlockEnd = trueStatement.getEnd();
 			int falseBlockStart = falseStatement.getStart();
-			String segment = (trueBlockEnd != falseBlockStart) ? document.get(trueBlockEnd + 1, falseBlockStart)
+			String segment = (trueBlockEnd != falseBlockStart) ? document.get(trueBlockEnd, falseBlockStart)
 					: StringUtil.EMPTY;
 			int elsePos = segment.toLowerCase().indexOf("else"); //$NON-NLS-1$
 			boolean isElseIf = (falseStatement.getType() == ASTNode.IF_STATEMENT);
@@ -286,7 +288,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			FormatterPHPElseNode elseNode = null;
 			if (!isConnectedElsif)
 			{
-				int elseBlockStart = elsePos + trueBlockEnd + 1;
+				int elseBlockStart = elsePos + trueBlockEnd;
 				int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
 				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock,
 						hasCommentBefore(elseBlockStart));
