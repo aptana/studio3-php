@@ -7,43 +7,38 @@
  */
 package com.aptana.editor.php.internal.ui.wizard;
 
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.aptana.core.build.UnifiedBuilder;
 import com.aptana.core.logging.IdeLog;
-import com.aptana.core.projects.templates.IProjectTemplate;
 import com.aptana.core.projects.templates.TemplateType;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.projects.WebProjectNature;
-import com.aptana.projects.internal.wizards.NewProjectWizard;
-import com.aptana.projects.internal.wizards.ProjectTemplateSelectionPage;
-import com.aptana.usage.FeatureEvent;
-import com.aptana.usage.StudioAnalytics;
+import com.aptana.projects.internal.wizards.AbstractNewProjectWizard;
+import com.aptana.projects.internal.wizards.IWizardProjectCreationPage;
 
 /**
  * A new PHP Project Wizard class.
  * 
  * @author Shalom Gibly <sgibly@appcelerator.com>
  */
-public class NewPHPProjectWizard extends NewProjectWizard implements IExecutableExtension
+public class NewPHPProjectWizard extends AbstractNewProjectWizard implements IExecutableExtension
 {
 
 	public static final String PHP_WIZARD_ID = "com.aptana.editor.php.NewPHPProjectWizard"; //$NON-NLS-1$
 	private static final String PHP_PROJ_IMAGE_PATH = "/icons/full/wizban/new_project.png"; //$NON-NLS-1$
+	private String selectedVersion;
 
 	/*
 	 * (non-Javadoc)
@@ -61,28 +56,21 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 		setDialogSettings(section);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.projects.internal.wizards.NewProjectWizard#addPages()
-	 */
-	public void addPages()
+	@Override
+	protected IWizardProjectCreationPage createMainPage()
 	{
-		mainPage = new PHPWizardNewProjectCreationPage("phpProjectPage"); //$NON-NLS-1$
+		PHPWizardNewProjectCreationPage mainPage = new PHPWizardNewProjectCreationPage("phpProjectPage"); //$NON-NLS-1$
 		mainPage.setTitle(Messages.NewPHPProjectWizard_projectWizardTitle);
 		mainPage.setDescription(Messages.NewPHPProjectWizard_projectWizardDescription);
 		mainPage.setWizard(this);
 		mainPage.setPageComplete(false);
-		addPage(mainPage);
+		return mainPage;
+	}
 
-		List<IProjectTemplate> templates = getProjectTemplates(new TemplateType[] { TemplateType.PHP });
-		if (templates.size() > 0)
-		{
-			addPage(templatesPage = new ProjectTemplateSelectionPage("templateSelectionPage", templates)); //$NON-NLS-1$
-		}
-
-		// TODO - Hook the project reference page to the builder and enable it
-		// referencePage = new WizardNewProjectReferencePage("phpReferencePage"); //$NON-NLS-1$
-		// addPage(referencePage);
+	@Override
+	protected TemplateType[] getProjectTemplateTypes()
+	{
+		return new TemplateType[] { TemplateType.PHP };
 	}
 
 	/*
@@ -139,12 +127,19 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 	 */
 	public boolean performFinish()
 	{
-		boolean finish = super.performFinish();
-		if (finish)
-		{
-			setPhpLangOptions(newProject);
-		}
-		return finish;
+		PHPWizardNewProjectCreationPage pcp = (PHPWizardNewProjectCreationPage) mainPage;
+		selectedVersion = pcp.getSelectedVersion();
+		return super.performFinish();
+	}
+
+	@Override
+	protected IProject createNewProject(IProgressMonitor monitor) throws InvocationTargetException
+	{
+		SubMonitor sub = SubMonitor.convert(monitor, 100);
+		IProject project = super.createNewProject(sub.newChild(90));
+		setPhpLangOptions(project, sub.newChild(10));
+		sub.done();
+		return project;
 	}
 
 	/**
@@ -153,35 +148,24 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 	 * 
 	 * @param project
 	 */
-	protected void setPhpLangOptions(final IProject project)
+	protected void setPhpLangOptions(final IProject project, IProgressMonitor monitor)
 	{
-		Job job = new Job("Setting the PHP Version...") //$NON-NLS-1$
+		Preferences preferences = new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
+		preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, selectedVersion);
+		try
 		{
-			@Override
-			protected IStatus run(IProgressMonitor monitor)
-			{
-				PHPWizardNewProjectCreationPage pcp = (PHPWizardNewProjectCreationPage) getPages()[0];
-				Preferences preferences = new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
-				preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, pcp.getSelectedVersion());
-				try
-				{
-					preferences.flush();
-				}
-				catch (BackingStoreException e)
-				{
-					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
-				}
-				return Status.OK_STATUS;
-			}
-		};
-		job.setSystem(true);
-		job.setPriority(Job.SHORT);
-		job.schedule();
+			preferences.flush();
+		}
+		catch (BackingStoreException e)
+		{
+			// TODO Throw the exception up as an InvocationTargetException?
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
+		}
 	}
 
 	@Override
-	protected void sendProjectCreateEvent(Map<String, String> payload)
+	protected String getProjectCreateEventName()
 	{
-		StudioAnalytics.getInstance().sendEvent(new FeatureEvent("project.create.php", payload)); //$NON-NLS-1$
+		return "project.create.php"; //$NON-NLS-1$
 	}
 }
