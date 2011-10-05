@@ -933,7 +933,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 
-		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace);
+		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace, aliases);
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// now searching for the possible right parts
@@ -1218,7 +1218,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (isStaticDereferencing || module == null || module.equals(entry.getModule()))
 			{
 				ClassPHPEntryValue value = (ClassPHPEntryValue) entry.getValue();
-				if (ContentAssistUtils.isInNamespace(value, namespace))
+				if (TypeHierarchyUtils.isInNamespace(value, namespace))
 				{
 					result.add(entry);
 				}
@@ -1312,7 +1312,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		// FIXME - Shalom (???) - Have the ancestors look at the current module and remove any other ancestor from a
 		// different module and a similar name
-		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace);
+
+		// Determine the type and its ancestors. Use the namespace and the aliases (the 'use' statements within this
+		// namespace) when detecting the ancestors.
+		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace, aliases);
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// now searching for the possible right parts
@@ -1459,7 +1462,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		for (IElementEntry entry : leftEntries)
 		{
 			VariablePHPEntryValue value = (VariablePHPEntryValue) entry.getValue();
-			if (ContentAssistUtils.isInNamespace(value, namespace))
+			if (TypeHierarchyUtils.isInNamespace(value, namespace))
 			{
 				result.add(entry);
 			}

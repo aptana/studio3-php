@@ -252,10 +252,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// First, construct the if condition node
 		int start = ifStatement.getStart();
 		FormatterPHPIfNode conditionNode = new FormatterPHPIfNode(document, hasTrueBlock, ifStatement);
-		conditionNode.setBegin(builder.createTextNode(document, start, start + 2));
+		int startLength = (document.charAt(start) == 'e') ? 6 : 2;
+		// If the expression starts with an 'e', it's an "elseif" expression. Otherwise, it's an "if" expression.
+		conditionNode.setBegin(builder.createTextNode(document, start, start + startLength));
 		builder.push(conditionNode);
 		// push the condition elements that appear in parentheses
-		pushNodeInParentheses('(', ')', start + 2, trueStatement.getStart(), ifStatement.getCondition(),
+		pushNodeInParentheses('(', ')', start + startLength, trueStatement.getStart(), ifStatement.getCondition(),
 				TypeBracket.CONDITIONAL_PARENTHESIS);
 		// Construct the 'true' part of the 'if' and visit its children
 		if (hasTrueBlock)
@@ -278,7 +280,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// 'elseif' word.
 			int trueBlockEnd = trueStatement.getEnd();
 			int falseBlockStart = falseStatement.getStart();
-			String segment = (trueBlockEnd != falseBlockStart) ? document.get(trueBlockEnd + 1, falseBlockStart)
+			String segment = (trueBlockEnd != falseBlockStart) ? document.get(trueBlockEnd, falseBlockStart)
 					: StringUtil.EMPTY;
 			int elsePos = segment.toLowerCase().indexOf("else"); //$NON-NLS-1$
 			boolean isElseIf = (falseStatement.getType() == ASTNode.IF_STATEMENT);
@@ -286,7 +288,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			FormatterPHPElseNode elseNode = null;
 			if (!isConnectedElsif)
 			{
-				int elseBlockStart = elsePos + trueBlockEnd + 1;
+				int elseBlockStart = elsePos + trueBlockEnd;
 				int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
 				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock,
 						hasCommentBefore(elseBlockStart));
@@ -401,9 +403,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		FormatterPHPArrayElementNode arrayElementNode = new FormatterPHPArrayElementNode(document, hasSingleElement,
 				hasCommentBefore(arrayElement.getStart()));
 		arrayElementNode.setBegin(builder.createTextNode(document, arrayElement.getStart(), arrayElement.getStart()));
-		arrayElementNode.setEnd(builder.createTextNode(document, arrayElement.getEnd(), arrayElement.getEnd()));
 		builder.push(arrayElementNode);
 		visitNodeLists(leftNodes, rightNodes, TypeOperator.KEY_VALUE, null);
+		arrayElementNode.setEnd(builder.createTextNode(document, arrayElement.getEnd(), arrayElement.getEnd()));
 		builder.checkedPop(arrayElementNode, -1);
 		return false;
 	}
@@ -625,17 +627,34 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ConditionalExpression conditionalExpression)
 	{
+		// (APSTUD-5303) Since PHP 5.3, it is possible to leave out the middle part of the ternary operator.
+		// Expression expr1 ?: expr3 returns expr1 if expr1 evaluates to TRUE, and expr3 otherwise.
 		Expression condition = conditionalExpression.getCondition();
 		condition.accept(this);
 		Expression ifTrue = conditionalExpression.getIfTrue();
 		Expression ifFalse = conditionalExpression.getIfFalse();
 		// push the conditional operator
-		int conditionalOpOffset = condition.getEnd() + document.get(condition.getEnd(), ifTrue.getStart()).indexOf('?');
+		int startLookup;
+		int endLookup;
+		if (ifTrue != null)
+		{
+			startLookup = ifTrue.getStart();
+			endLookup = ifTrue.getEnd();
+		}
+		else
+		{
+			startLookup = ifFalse.getStart();
+			endLookup = condition.getEnd();
+		}
+		int conditionalOpOffset = condition.getEnd() + document.get(condition.getEnd(), startLookup).indexOf('?');
 		pushTypeOperator(TypeOperator.CONDITIONAL, conditionalOpOffset, false);
 		// visit the true part
-		ifTrue.accept(this);
+		if (ifTrue != null)
+		{
+			ifTrue.accept(this);
+		}
 		// push the colon separator
-		int colonOffset = ifTrue.getEnd() + document.get(ifTrue.getEnd(), ifFalse.getStart()).indexOf(':');
+		int colonOffset = endLookup + document.get(endLookup, ifFalse.getStart()).indexOf(':');
 		pushTypeOperator(TypeOperator.CONDITIONAL_COLON, colonOffset, false);
 		// visit the false part
 		ifFalse.accept(this);
@@ -1110,20 +1129,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(InfixExpression infixExpression)
 	{
-		String operatorString = InfixExpression.getOperator(infixExpression.getOperator());
 		ASTNode left = infixExpression.getLeft();
 		ASTNode right = infixExpression.getRight();
-		if (infixExpression.getOperator() == InfixExpression.OP_IS_NOT_EQUAL && left != null && right != null)
-		{
-			// There can be two types of not-equal: != or <>
-			// We have to check for the actual one.
-			String expression = document.get(left.getEnd(), right.getStart()).trim();
-			if (!operatorString.equals(expression))
-			{
-				operatorString = TypeOperator.NOT_EQUAL_ALTERNATE.toString();
-			}
-		}
-		visitLeftRightExpression(infixExpression, left, right, operatorString);
+		// Instead of calling InfixExpression.getOperator(infixExpression.getOperator()), we grab the operator
+		// from the document as is. This way, we will be able to handle case-insensitive operators, as well as 'synonym'
+		// operators such as <> and !=.
+		String operatorStringAsIs = document.get(left.getEnd(), right.getStart()).trim();
+		visitLeftRightExpression(infixExpression, left, right, operatorStringAsIs);
 		return false;
 	}
 
@@ -2261,7 +2273,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			rightOffset = parentNode.getEnd();
 		}
 		int operatorOffset = document.get(leftOffset, rightOffset).indexOf(operatorString) + leftOffset;
-		TypeOperator typeOperator = TypeOperator.getTypeOperator(operatorString);
+		TypeOperator typeOperator = TypeOperator.getTypeOperator(operatorString.toLowerCase());
 		pushTypeOperator(typeOperator, operatorOffset, false);
 		if (right != null)
 		{

@@ -2,6 +2,7 @@ package com.aptana.editor.php.internal.ui.editor.hyperlink;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -66,7 +67,7 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 		{
 			return null;
 		}
-		ArrayList<IHyperlink> result = new ArrayList<IHyperlink>();
+		List<IHyperlink> result = new ArrayList<IHyperlink>();
 		PHPOffsetMapper offsetMapper = editor.getOffsetMapper();
 		ICodeLocation codeLocation = offsetMapper.findTarget(lexeme, lexemeProvider);
 		if (codeLocation != null)
@@ -87,14 +88,14 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 	 * 
 	 * @author Shalom Gibly <sgibly@aptana.com>
 	 */
-	class PHPHyperLink implements IHyperlink
+	static class PHPHyperLink implements IHyperlink
 	{
 		private IRegion region;
 		private String hyperlinkText;
 		private String typeLabel;
 		private final ICodeLocation codeLocation;
 
-		public PHPHyperLink(ICodeLocation codeLocation, IRegion region, String hyperlinkText, String typeLabel)
+		protected PHPHyperLink(ICodeLocation codeLocation, IRegion region, String hyperlinkText, String typeLabel)
 		{
 			this.codeLocation = codeLocation;
 			this.region = region;

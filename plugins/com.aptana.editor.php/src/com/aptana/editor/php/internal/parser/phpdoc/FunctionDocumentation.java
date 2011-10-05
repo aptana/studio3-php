@@ -1,13 +1,14 @@
 package com.aptana.editor.php.internal.parser.phpdoc;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Robin Debreuil
  */
 public class FunctionDocumentation
 {
-
+	private static final TypedDescription[] EMPTY_TYPED_DESCRIPTIONS = new TypedDescription[0];
 	private String fClassDescription = ""; //$NON-NLS-1$
 	private String fMethodName = ""; //$NON-NLS-1$
 	// private int fKind;
@@ -16,7 +17,7 @@ public class FunctionDocumentation
 	private ArrayList<TypedDescription> fExceptions;
 	private boolean fIsConstructor = false;
 	private boolean fIsMethod = false;
-	private ArrayList<TypedDescription> fVars;
+	private List<TypedDescription> fVars;
 	private String fDescription;
 	private com.aptana.editor.php.internal.parser.phpdoc.TypedDescription fReturns;
 
@@ -97,10 +98,10 @@ public class FunctionDocumentation
 	{
 		if (fParams == null)
 		{
-			return new TypedDescription[0];
+			return EMPTY_TYPED_DESCRIPTIONS;
 		}
 
-		return (TypedDescription[]) fParams.toArray(new TypedDescription[0]);
+		return fParams.toArray(new TypedDescription[fParams.size()]);
 	}
 
 	/**
@@ -202,9 +203,9 @@ public class FunctionDocumentation
 	{
 		if (fExceptions == null)
 		{
-			return new TypedDescription[0];
+			return EMPTY_TYPED_DESCRIPTIONS;
 		}
-		return (TypedDescription[]) fExceptions.toArray(new TypedDescription[0]);
+		return fExceptions.toArray(new TypedDescription[fExceptions.size()]);
 	}
 
 	/**
@@ -335,7 +336,7 @@ public class FunctionDocumentation
 		fVars.add(typeDescr);
 	}
 
-	public ArrayList<TypedDescription> getVars()
+	public List<TypedDescription> getVars()
 	{
 		return fVars;
 	}

@@ -29,12 +29,12 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 	/**
 	 * Build-paths to accept.
 	 */
-	private HashSet<IBuildPath> activeBuildPaths = new HashSet<IBuildPath>();
+	private Set<IBuildPath> activeBuildPaths = new HashSet<IBuildPath>();
 
 	/**
 	 * Build-paths to accept.
 	 */
-	private HashSet<IBuildPath> passiveBuildPaths = new HashSet<IBuildPath>();
+	private Set<IBuildPath> passiveBuildPaths = new HashSet<IBuildPath>();
 
 	/**
 	 * BuildPathElementEntriesFilter constructor.
@@ -90,7 +90,7 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 	public Set<IElementEntry> filter(Collection<IElementEntry> toFilter)
 	{
 
-		LinkedHashSet<IElementEntry> result = new LinkedHashSet<IElementEntry>();
+		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		if (activeBuildPaths == null)
 		{
 			result.addAll(toFilter);

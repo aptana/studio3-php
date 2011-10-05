@@ -49,10 +49,10 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	{
 		super(IPHPConstants.CONTENT_TYPE_PHP);
 		this.nodeType = nodeType;
-		this.name = name.length() != 0 ? name : " "; //$NON-NLS-1$
+		this.name = (name.length() != 0) ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;
 		// this.endOffset = endOffset >= startOffset ? endOffset : startOffset;
-		this.setLocation(startOffset, endOffset >= startOffset ? endOffset : startOffset);
+		this.setLocation(startOffset, (endOffset >= startOffset) ? endOffset : startOffset);
 		this.modifiers = modifiers;
 	}
 

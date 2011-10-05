@@ -10,9 +10,9 @@ import org2.eclipse.php.util.StringUtils;
 /**
  * @author Robin Debreuil
  */
-public abstract class DocumentationBase
+public abstract class DocumentationBase // $codepro.audit.disable noAbstractMethods
 {
-
+	private static final String[] NO_STRINGS = new String[0];
 	private String fAuthor = ""; //$NON-NLS-1$
 	private String fName = ""; //$NON-NLS-1$
 	private String fDescription = ""; //$NON-NLS-1$
@@ -114,9 +114,9 @@ public abstract class DocumentationBase
 	{
 		if (fSees == null)
 		{
-			return new String[0];
+			return NO_STRINGS;
 		}
-		return fSees.toArray(new String[0]);
+		return fSees.toArray(NO_STRINGS);
 	}
 
 	/**
@@ -133,41 +133,6 @@ public abstract class DocumentationBase
 
 		fSees.add(value);
 	}
-
-	// /**
-	// * @see com.aptana.metadata.IDocumentation#getErrors()
-	// */
-	// public ErrorMessage[] getErrors()
-	// {
-	// if (fErrors == null)
-	// {
-	// return new ErrorMessage[0];
-	// }
-	//
-	// return fErrors.toArray(new ErrorMessage[0]);
-	// }
-	//
-	// /**
-	// * @see com.aptana.metadata.IDocumentation#clearErrors()
-	// */
-	// public void clearErrors()
-	// {
-	// fErrors.clear();
-	// fErrors = null;
-	// }
-	//
-	// /**
-	// * @see com.aptana.metadata.IDocumentation#addError(com.aptana.parsing.ErrorMessage)
-	// */
-	// public void addError(ErrorMessage e)
-	// {
-	// if (fErrors == null)
-	// {
-	// fErrors = new ArrayList<ErrorMessage>();
-	// }
-	//
-	// fErrors.add(e);
-	// }
 
 	/**
 	 * @see com.aptana.metadata.IDocumentation#getDocumentType()
@@ -201,64 +166,6 @@ public abstract class DocumentationBase
 	{
 		this.userAgent = userAgent;
 	}
-
-	// /**
-	// * @param id
-	// * @return Returns the fID.
-	// */
-	// public CodeLocation[] getID(String id)
-	// {
-	// if(fID == null)
-	// {
-	// return null;
-	// }
-	//		
-	// if(fID.containsKey(id))
-	// {
-	// ArrayList<CodeLocation> al = fID.get(id);
-	// return al.toArray(new CodeLocation[0]);
-	// }
-	//		
-	// return null;
-	// }
-	//
-	// /**
-	// * @param id The ID to set.
-	// * @param location
-	// */
-	// public void setID(String id, CodeLocation location)
-	// {
-	// if(fID == null)
-	// {
-	// fID = new HashMap<String, ArrayList<CodeLocation>>();
-	// }
-	//		
-	// if(fID.containsKey(id))
-	// {
-	// ArrayList<CodeLocation> al = fID.get(id);
-	// al.add(location);
-	// }
-	// else
-	// {
-	// ArrayList<CodeLocation> list = new ArrayList<CodeLocation>();
-	// list.add(location);
-	// fID.put(id, list);
-	// }
-	//		
-	// }
-	// /**
-	// * Gets the String IDs for all the @id tags in this doc object.
-	// * @return Returns the String IDs for all the @id tags in this doc object.
-	// */
-	// public String[] getIDs()
-	// {
-	// if(fID == null)
-	// {
-	// return new String[0];
-	// }
-	//		
-	// return fID.keySet().toArray(new String[0]);
-	// }
 
 	/**
 	 * Read in a binary representation of this object
@@ -299,7 +206,7 @@ public abstract class DocumentationBase
 		output.writeUTF(this.fAuthor);
 		output.writeUTF(this.fName);
 		output.writeUTF(this.fDescription);
-		output.writeUTF(StringUtils.join("\n\n", getExamples())); //$NON-NLS-1$
+		output.writeUTF(StringUtils.join("\n\n", getExamples())); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 		output.writeUTF(this.fRemarks);
 		output.writeUTF(this.fVersion);
 
@@ -340,19 +247,10 @@ public abstract class DocumentationBase
 	{
 		if (fSDocLocations == null)
 		{
-			return new String[0];
+			return NO_STRINGS;
 		}
-		return fSDocLocations.toArray(new String[0]);
+		return fSDocLocations.toArray(NO_STRINGS);
 	}
-
-	// /**
-	// * @see com.aptana.metadata.IDocumentation#getExample()
-	// * @deprecated Use the array method instead
-	// */
-	// public String getExample()
-	// {
-	// return StringUtils.join(FileUtils.NEW_LINE + FileUtils.NEW_LINE, getExamples());
-	// }
 
 	/**
 	 * @see com.aptana.metadata.IDocumentation#getExamples()
@@ -361,11 +259,11 @@ public abstract class DocumentationBase
 	{
 		if (fExamples != null)
 		{
-			return fExamples.toArray(new String[0]);
+			return fExamples.toArray(NO_STRINGS);
 		}
 		else
 		{
-			return new String[0];
+			return NO_STRINGS;
 		}
 	}
 
@@ -384,5 +282,4 @@ public abstract class DocumentationBase
 
 		fExamples.add(value);
 	}
-
 }

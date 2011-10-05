@@ -5,14 +5,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
-import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
@@ -29,8 +28,6 @@ public class ContentAssistUtils
 	 * &lt;br&gt;
 	 */
 	private static final int BR_DELTA = 2;
-
-	private static final Object EMPTY_STRING = ""; //$NON-NLS-1$
 
 	/**
 	 * Built-in info
@@ -57,55 +54,16 @@ public class ContentAssistUtils
 		index = null;
 	}
 
-	/**
-	 * Check if a given entry is in the namespace specified.
-	 * 
-	 * @param value
-	 * @param namespace
-	 * @return True, in case the value's namespace matches the given namespace .
-	 */
-	public static boolean isInNamespace(AbstractPHPEntryValue value, String namespace)
+	// Patterns used for stripping HTML in case there is no support for a BrowserInformationControl on the system
+	private static final Map<Pattern, String> htmlStrippingMap;
+	static
 	{
-		if (value == null)
-		{
-			return false;
-		}
-		String valueNamespace = value.getNameSpace();
-		if (valueNamespace == null || EMPTY_STRING.equals(valueNamespace))
-		{
-			return namespace == null || EMPTY_STRING.equals(namespace)
-					|| PHPContentAssistProcessor.GLOBAL_NAMESPACE.equals(namespace);
-		}
-		else
-		{
-			return valueNamespace.equals(namespace);
-		}
-	}
-
-	/**
-	 * Check if a given entry is in one of the namespaces specified.
-	 * 
-	 * @param value
-	 * @param namespaces
-	 *            A set of namespaces
-	 * @return True, in case the value's namespace matches one of given namespace .
-	 */
-	public static boolean isInNamespace(AbstractPHPEntryValue value, Set<String> namespaces)
-	{
-		if (value == null)
-		{
-			return false;
-		}
-		String valueNamespace = value.getNameSpace();
-		if (valueNamespace == null || EMPTY_STRING.equals(valueNamespace))
-		{
-			return namespaces == null || namespaces.isEmpty()
-					|| namespaces.contains(PHPContentAssistProcessor.GLOBAL_NAMESPACE);
-		}
-		else
-		{
-			return namespaces != null && namespaces.contains(valueNamespace);
-		}
+		htmlStrippingMap = new HashMap<Pattern, String>();
+		htmlStrippingMap.put(Pattern.compile("<b>|</b>"), StringUtil.EMPTY); //$NON-NLS-1$
+		htmlStrippingMap.put(Pattern.compile("<p>|</p>"), "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		htmlStrippingMap.put(Pattern.compile("<br>|</br>"), "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		htmlStrippingMap.put(Pattern.compile("&lt"), "<"); //$NON-NLS-1$ //$NON-NLS-2$
+		htmlStrippingMap.put(Pattern.compile("&gt"), ">"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -113,7 +71,7 @@ public class ContentAssistUtils
 	 * @param eq
 	 * @return list of model element that matches to given name
 	 */
-	public synchronized static ArrayList<Object> selectModelElements(String name, boolean eq)
+	public synchronized static List<Object> selectModelElements(String name, boolean eq)
 	{
 		if (index == null || index.isEmpty())
 		{
@@ -131,7 +89,7 @@ public class ContentAssistUtils
 			return null;
 		}
 
-		ArrayList<Object> toReturn = new ArrayList<Object>();
+		List<Object> toReturn = new ArrayList<Object>();
 
 		if (name.length() == 0)
 		{
@@ -271,8 +229,7 @@ public class ContentAssistUtils
 		}
 		else
 		{
-			buf.append("<b>" + ((PHPFunctionParseNode) node).getSignature() //$NON-NLS-1$
-					+ "</b><br>"); //$NON-NLS-1$
+			buf.append("<b>" + ((PHPFunctionParseNode) node).getSignature() + "</b><br>"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (documentation != null)
 		{
@@ -300,6 +257,21 @@ public class ContentAssistUtils
 		}
 		additionalInfo = buf.toString();
 		return additionalInfo;
+	}
+
+	/**
+	 * Strip out, or replace with regular ascii characters, any 'b', 'br', 'lt' or 'gt' tags.
+	 * 
+	 * @param content
+	 * @return
+	 */
+	public static String stripBasicHTML(String content)
+	{
+		for (Pattern strippingPattern : htmlStrippingMap.keySet())
+		{
+			content = strippingPattern.matcher(content).replaceAll(htmlStrippingMap.get(strippingPattern));
+		}
+		return content;
 	}
 
 	/**

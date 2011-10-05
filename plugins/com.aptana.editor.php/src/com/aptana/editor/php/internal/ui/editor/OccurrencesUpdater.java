@@ -98,7 +98,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	 * @param editor
 	 *            A {@link PHPSourceEditor}
 	 */
-	public OccurrencesUpdater(PHPSourceEditor editor)
+	protected OccurrencesUpdater(PHPSourceEditor editor)
 	{
 		this.editor = editor;
 	}
@@ -263,10 +263,10 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 
 		ASTNode selectedNode = NodeFinder.perform(ast, selection.getOffset(), selection.getLength());
 
-		if (locations == null && fMarkExceptions)
-		{
-			// TODO: Shalom - Implement
-		}
+		// if (locations == null && fMarkExceptions)
+		// {
+		// TODO: Shalom - Implement
+		// }
 
 		if (locations == null && fMarkMethodExitPoints)
 		{
@@ -333,9 +333,13 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		if (locations == null)
 		{
 			if (!fStickyOccurrenceAnnotations)
+			{
 				removeOccurrenceAnnotations();
+			}
 			else if (hasChanged) // check consistency of current annotations
+			{
 				removeOccurrenceAnnotations();
+			}
 			return;
 		}
 
@@ -449,9 +453,13 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 			{
 				fMarkOccurrenceAnnotations = newBooleanValue;
 				if (!fMarkOccurrenceAnnotations)
+				{
 					uninstallOccurrencesFinder();
+				}
 				else
+				{
 					installOccurrencesFinder(true);
+				}
 			}
 			return;
 		}
@@ -714,7 +722,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		private boolean fCanceled = false;
 		private final OccurrenceLocation[] fLocations;
 
-		public OccurrencesFinderJob(IDocument document, OccurrenceLocation[] locations, ISelection selection)
+		protected OccurrencesFinderJob(IDocument document, OccurrenceLocation[] locations, ISelection selection)
 		{
 			super(Messages.PHPSourceEditor_markOccurrencesJob_name);
 			fDocument = document;
@@ -723,9 +731,13 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 
 			ISelectionProvider selectionProvider = editor.getSelectionProvider();
 			if (selectionProvider instanceof ISelectionValidator)
+			{
 				fPostSelectionValidator = (ISelectionValidator) selectionProvider;
+			}
 			else
+			{
 				fPostSelectionValidator = null;
+			}
 		}
 
 		void doCancel()

@@ -83,6 +83,12 @@ public class FormatterPHPIfNode extends FormatterPHPDeclarationNode
 	{
 		if (inElseIf)
 		{
+			// This node may be an "elseif" representation, so we check for the first char in the text.
+			if (getDocument().charAt(getStartOffset()) == 'e')
+			{
+				// Check if we need to add a new line before an 'else' expression (we treat it as one in this case)
+				return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_ELSE_STATEMENT);
+			}
 			return getDocument().getBoolean(PHPFormatterConstants.NEW_LINES_BEFORE_IF_IN_ELSEIF_STATEMENT);
 		}
 		return true;

@@ -30,13 +30,13 @@ public final class LibraryManager
 	private static final String USERLIBRARIES = "com.aptana.editor.php.userLibraries"; //$NON-NLS-1$
 	private static final String LIBRARIES_TURNED_OFF = "com.aptana.editor.php.turnedOffLibraries"; //$NON-NLS-1$
 
-	private HashSet<ILibraryListener> listeners = new HashSet<ILibraryListener>();
+	private Set<ILibraryListener> listeners = new HashSet<ILibraryListener>();
 
 	private static LibraryManager instance;
 
-	private HashSet<String> turnedOff = new HashSet<String>();
+	private Set<String> turnedOff = new HashSet<String>();
 
-	private HashSet<UserLibrary> userLibraries = new HashSet<UserLibrary>();
+	private Set<UserLibrary> userLibraries = new HashSet<UserLibrary>();
 
 	/**
 	 * Constructor
@@ -55,7 +55,7 @@ public final class LibraryManager
 		String str = readFromPreferences(USERLIBRARIES);
 		if (str != null && str.length() != 0)
 		{
-			String[] split = str.split("\r"); //$NON-NLS-1$
+			String[] split = str.split("\r"); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 			for (String s : split)
 			{
 				userLibraries.add(new UserLibrary(s));
@@ -88,7 +88,7 @@ public final class LibraryManager
 		for (UserLibrary l : libraries)
 		{
 			bld.append(l.toString());
-			bld.append('\r');
+			bld.append('\r'); // $codepro.audit.disable platformSpecificLineSeparator
 		}
 		if (bld.length() > 0)
 		{
@@ -128,7 +128,7 @@ public final class LibraryManager
 	{
 		StringBuilder bld = new StringBuilder();
 		// Collect all the libraries that are currently turned on.
-		HashSet<IPHPLibrary> currentLibraries = new HashSet<IPHPLibrary>();
+		Set<IPHPLibrary> currentLibraries = new HashSet<IPHPLibrary>();
 		IPHPLibrary[] libraries = getAllLibraries();
 		for (IPHPLibrary l : libraries)
 		{
@@ -137,7 +137,7 @@ public final class LibraryManager
 				currentLibraries.add(l);
 			}
 		}
-		HashSet<String> tn = new HashSet<String>();
+		Set<String> tn = new HashSet<String>();
 		for (IPHPLibrary l : turnedOff)
 		{
 			bld.append(l.getId());
@@ -153,7 +153,7 @@ public final class LibraryManager
 		saveToPreferences(LIBRARIES_TURNED_OFF, bld.toString());
 
 		// Collect the changes and notify the listeners
-		HashSet<IPHPLibrary> newLibraries = new HashSet<IPHPLibrary>();
+		Set<IPHPLibrary> newLibraries = new HashSet<IPHPLibrary>();
 		for (IPHPLibrary l : libraries)
 		{
 			if (l.isTurnedOn())
@@ -161,8 +161,8 @@ public final class LibraryManager
 				newLibraries.add(l);
 			}
 		}
-		HashSet<IPHPLibrary> added = new HashSet<IPHPLibrary>();
-		HashSet<IPHPLibrary> removed = new HashSet<IPHPLibrary>();
+		Set<IPHPLibrary> added = new HashSet<IPHPLibrary>();
+		Set<IPHPLibrary> removed = new HashSet<IPHPLibrary>();
 		for (IPHPLibrary l : newLibraries)
 		{
 			if (!currentLibraries.contains(l))
@@ -213,7 +213,7 @@ public final class LibraryManager
 	 * @param value
 	 *            The string value to save
 	 */
-	protected void saveToPreferences(String key, String value)
+	private void saveToPreferences(String key, String value)
 	{
 		IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode(PHPEditorPlugin.PLUGIN_ID);
 		prefs.put(key, value);
@@ -227,7 +227,7 @@ public final class LibraryManager
 		}
 	}
 
-	protected String readFromPreferences(String key)
+	private String readFromPreferences(String key)
 	{
 		IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode(PHPEditorPlugin.PLUGIN_ID);
 		return prefs.get(key, StringUtil.EMPTY);

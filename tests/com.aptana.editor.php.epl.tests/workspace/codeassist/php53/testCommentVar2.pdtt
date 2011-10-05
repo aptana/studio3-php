@@ -2,6 +2,7 @@
 Test Commented Variable With 2 Global Class Types and spaces in PHPDoc
 --FILE--
 <?php 
+    // PDT style of supporting var type
 	class Foobar1 {
 		public function nonsense1(){} 
 	} 
@@ -10,8 +11,7 @@ Test Commented Variable With 2 Global Class Types and spaces in PHPDoc
 		public function nonsense2(){} 
 	} 
 	
-	/* @var $obj \Foobar1|\Foobar2 */ 
-	$obj = null; 
+	/* @var $obj Foobar1|Foobar2 */ 
 	$obj->|
  ?>
 --EXPECT--

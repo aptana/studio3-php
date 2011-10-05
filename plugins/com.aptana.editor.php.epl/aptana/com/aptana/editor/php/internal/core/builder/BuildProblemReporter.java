@@ -28,6 +28,7 @@ import org2.eclipse.dltk.compiler.problem.ProblemCollector;
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.core.resources.MarkerUtils;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -99,6 +100,10 @@ public class BuildProblemReporter extends ProblemCollector
 	{
 		try
 		{
+			if (EclipseUtil.isTesting())
+			{
+				return;
+			}
 			IResource workspaceResource = null;
 			IUniformResource externalResource = null;
 			if (isExternal)
@@ -108,6 +113,12 @@ public class BuildProblemReporter extends ProblemCollector
 			else
 			{
 				workspaceResource = (IResource) resource;
+				if (workspaceResource == null || !workspaceResource.isAccessible())
+				{
+					IdeLog.logWarning(PHPEplPlugin.getDefault(),
+							"BuildProblemReporter::flush -> Unexpected null or non-accessible resource"); //$NON-NLS-1$
+					return;
+				}
 			}
 			if (!oldMarkersDeleted)
 			{
@@ -189,11 +200,15 @@ public class BuildProblemReporter extends ProblemCollector
 				// .getProblemArgumentsForMarker(arguments));
 				// }
 			}
-			problems.clear();
 		}
 		catch (CoreException e)
 		{
 			IdeLog.logError(PHPEplPlugin.getDefault(), "Error updating PHP error markers", e); //$NON-NLS-1$
+		}
+		finally
+		{
+			// in any case, clear the problems
+			problems.clear();
 		}
 	}
 }

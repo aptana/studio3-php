@@ -37,7 +37,7 @@ public abstract class AbstractBuildPathResource implements IBuildPathResource
 	 * @param fullPath
 	 *            - module full path.
 	 */
-	public AbstractBuildPathResource(IBuildPath buildPath, String fullPath)
+	protected AbstractBuildPathResource(IBuildPath buildPath, String fullPath)
 	{
 		super();
 		this.buildPath = buildPath;
@@ -97,6 +97,7 @@ public abstract class AbstractBuildPathResource implements IBuildPathResource
 		{
 			return false;
 		}
+		// A generic comparison using the class
 		if (getClass() != obj.getClass())
 		{
 			return false;

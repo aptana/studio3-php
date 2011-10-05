@@ -127,7 +127,7 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 							{
 								if (testFile != null)
 								{
-									testFile.delete(true, null);
+									safeDelete(testFile);
 									testFile = null;
 								}
 							}
@@ -221,8 +221,8 @@ public class MarkOccurrenceTests extends AbstractPDTTTest
 		testFile = project.getFile("test-" + testNumber + ".php"); //$NON-NLS-1$
 		if (testFile.exists())
 		{
-			testFile.refreshLocal(IResource.DEPTH_ZERO, null);
-			testFile.delete(true, null);
+			safeDelete(testFile);
+			testFile = project.getFile("test-" + testNumber + ".php"); //$NON-NLS-1$
 		}
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);

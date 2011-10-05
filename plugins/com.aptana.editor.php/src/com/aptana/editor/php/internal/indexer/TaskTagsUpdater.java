@@ -38,7 +38,7 @@ import com.aptana.editor.php.internal.validation.Task;
 
 public class TaskTagsUpdater
 {
-	private static final Pattern NEWLINE_SPLIT = Pattern.compile("\r\n|\r|\n"); //$NON-NLS-1$
+	private static final Pattern NEWLINE_SPLIT = Pattern.compile("\r\n|\r|\n"); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 
 	private static final String APTANA_TASK = "aptana_task"; //$NON-NLS-1$
 
@@ -70,7 +70,7 @@ public class TaskTagsUpdater
 				else
 				{
 					List<IBuildPath> buildPaths = BuildPathManager.getInstance().getBuildPaths();
-					ArrayList<IModule> lm = new ArrayList<IModule>();
+					List<IModule> lm = new ArrayList<IModule>();
 					for (IBuildPath p : buildPaths)
 					{
 						lm.addAll(p.getModules());
@@ -107,7 +107,7 @@ public class TaskTagsUpdater
 						"Error updating the document errors. The workspace tree is locked.", PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			}
 
-			if (file == null || file.exists() == false)
+			if (file == null || !file.exists())
 			{
 				return;
 			}

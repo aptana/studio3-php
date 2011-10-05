@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +17,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
@@ -251,6 +253,24 @@ public final class PHPDocUtils
 		}
 
 		return result;
+	}
+
+	/**
+	 * Locates a var comment above the given offset (e.g. <code><b>@var $a Type</b></code>)
+	 * 
+	 * @param comments
+	 * @param offset
+	 * @param content
+	 * @return An {@link VarComment}
+	 */
+	public static VarComment findTypedVarComment(List<Comment> comments, int offset, String content)
+	{
+		Comment c = getCommentByType(comments, offset, content, Comment.TYPE_MULTILINE);
+		if (c instanceof VarComment)
+		{
+			return (VarComment) c;
+		}
+		return null;
 	}
 
 	/**
@@ -549,8 +569,7 @@ public final class PHPDocUtils
 		String additionalInfo = Messages.PHPDocUtils_noAvailableDocs;
 		StringBuilder bld = new StringBuilder();
 
-		bld.append("<b>" + name //$NON-NLS-1$
-				+ "</b><br>"); //$NON-NLS-1$
+		bld.append("<b>" + name + "</b><br>"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if (documentation != null)
 		{
@@ -559,7 +578,6 @@ public final class PHPDocUtils
 			longDescription = longDescription.replaceAll("\r\n", "<br>"); //$NON-NLS-1$ //$NON-NLS-2$
 			longDescription = longDescription.replaceAll("\r", "<br>"); //$NON-NLS-1$ //$NON-NLS-2$
 			longDescription = longDescription.replaceAll("\n", "<br>"); //$NON-NLS-1$ //$NON-NLS-2$
-
 			if (longDescription.length() > 0)
 			{
 				bld.append(longDescription);
@@ -642,7 +660,8 @@ public final class PHPDocUtils
 				}
 			}
 		}
-		// Specifically look for HTML 'input' tags and change their open and close chars. The HTML rendering does not
+		// Specifically look for HTML 'input' tags and change their open and close chars. The HTML rendering does
+		// not
 		// remove them when the hover is rendered, introducing form inputs in the hover popup.
 		// @See https://aptana.lighthouseapp.com/projects/35272/tickets/1653
 		Matcher inputMatcher = INPUT_TAG_PATTERN.matcher(bld.toString());
@@ -657,7 +676,47 @@ public final class PHPDocUtils
 			addedOffset += 4;
 		}
 		additionalInfo = bld.toString();
-
 		return additionalInfo;
+	}
+
+	/**
+	 * Returns a list of {@link VarComment}s within a specified start and end offsets.
+	 * 
+	 * @param comments
+	 *            A sorted list of comments
+	 * @param start
+	 * @param end
+	 */
+	public static List<VarComment> findTypedVarComments(List<Comment> comments, int start, int end)
+	{
+		List<VarComment> result = new LinkedList<VarComment>();
+		// locate the last comment in the given list and create a result list from all the VarComments on top of it,
+		// till we hit the start offset.
+		// We use a linked list to append comments at the start of the result with better performance.
+		int commentIndex = findComment(comments, end);
+		if (commentIndex < 0)
+		{
+			// The nearest comment we found should always have a negative value, as it should never overlap with the
+			// given offset
+			commentIndex = -commentIndex - 1;
+		}
+		if (commentIndex >= comments.size())
+		{
+			// off bounds
+			return result;
+		}
+		for (; commentIndex > -1; commentIndex--)
+		{
+			Comment comment = comments.get(commentIndex);
+			if (comment.getStart() < start)
+			{
+				break;
+			}
+			if (comment instanceof VarComment)
+			{
+				result.add(0, (VarComment) comment);
+			}
+		}
+		return result;
 	}
 }

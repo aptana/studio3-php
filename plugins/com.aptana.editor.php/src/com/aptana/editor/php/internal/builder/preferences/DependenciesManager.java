@@ -148,7 +148,7 @@ public final class DependenciesManager
 	{
 		String string = PHPEditorPlugin.getDefault().getPreferenceStore().getString("php-extensions"); //$NON-NLS-1$
 		String[] split = string.split(File.pathSeparator);
-		ArrayList<PHPExtension> result = new ArrayList<PHPExtension>();
+		List<PHPExtension> result = new ArrayList<PHPExtension>();
 		for (String s : split)
 		{
 			if (s.length() > 0)

@@ -87,7 +87,7 @@ public final class PHPSearchEngine
 		 * @param ea
 		 * @param kind
 		 */
-		public ElementNode(IElementEntry e, AbstractPHPEntryValue ea, int kind)
+		private ElementNode(IElementEntry e, AbstractPHPEntryValue ea, int kind)
 		{
 			super();
 			this.e = e;
@@ -165,7 +165,7 @@ public final class PHPSearchEngine
 		public boolean isOnBuildPath(IProject project)
 		{
 			IBuildPath buildPathByResource = BuildPathManager.getInstance().getBuildPathByResource(project);
-			HashSet<IBuildPath> pa = new HashSet<IBuildPath>();
+			Set<IBuildPath> pa = new HashSet<IBuildPath>();
 			pa.add(buildPathByResource);
 			pa.addAll(buildPathByResource.getDependencies());
 			if (!pa.contains(e.getModule().getBuildPath()))
@@ -276,7 +276,7 @@ public final class PHPSearchEngine
 					try
 					{
 						// FIXME: Shalom - Perhaps get the real PHP version from the module.
-						PHPParser parser = new PHPParser(PHPVersion.PHP5_3);
+						PHPParser parser = new PHPParser(PHPVersion.PHP5_3, false);
 						IParseNode parseNode = parser.parse(module.getContents());
 						IParseNode findClassNode = findClassNode(parseNode, name);
 						return (IPHPParseNode) findClassNode;
@@ -351,7 +351,7 @@ public final class PHPSearchEngine
 	{
 		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
 				.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, ""); //$NON-NLS-1$
-		ArrayList<IElementNode> nodes = new ArrayList<IElementNode>();
+		List<IElementNode> nodes = new ArrayList<IElementNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -360,7 +360,7 @@ public final class PHPSearchEngine
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void processValue(ArrayList nodes, final IElementEntry e)
+	private void processValue(List nodes, final IElementEntry e)
 	{
 		Object value = e.getValue();
 		if (value instanceof ClassPHPEntryValue)
@@ -389,7 +389,7 @@ public final class PHPSearchEngine
 			try
 			{
 				// FIXME: Shalom - Parhaps get the real PHP version from the module.
-				PHPParser parser = new PHPParser(PHPVersion.PHP5_3);
+				PHPParser parser = new PHPParser(PHPVersion.PHP5_3, false);
 				IParseNode parseNode = parser.parse(module.getContents());
 				IParseNode findClassNode = findClassNode(parseNode, e.getEntryPath());
 				return (PHPClassParseNode) findClassNode;
@@ -425,7 +425,7 @@ public final class PHPSearchEngine
 	{
 		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
 				.getEntries(IPHPIndexConstants.CLASS_CATEGORY, name);
-		ArrayList<ITypeNode> nodes = new ArrayList<ITypeNode>();
+		List<ITypeNode> nodes = new ArrayList<ITypeNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -440,7 +440,7 @@ public final class PHPSearchEngine
 	{
 		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
 				.getEntriesStartingWith(IPHPIndexConstants.CONST_CATEGORY, ""); //$NON-NLS-1$
-		ArrayList<IElementNode> nodes = new ArrayList<IElementNode>();
+		List<IElementNode> nodes = new ArrayList<IElementNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -455,7 +455,7 @@ public final class PHPSearchEngine
 	{
 		List<IElementEntry> entriesStartingWith = PHPGlobalIndexer.getInstance().getIndex()
 				.getEntriesStartingWith(IPHPIndexConstants.FUNCTION_CATEGORY, ""); //$NON-NLS-1$
-		ArrayList<IElementNode> nodes = new ArrayList<IElementNode>();
+		List<IElementNode> nodes = new ArrayList<IElementNode>();
 		for (final IElementEntry e : entriesStartingWith)
 		{
 			processValue(nodes, e);
@@ -477,7 +477,7 @@ public final class PHPSearchEngine
 			if (superClass != null && superClass.getType() == ASTNode.IDENTIFIER)
 			{
 				String classname = ((Identifier) superClass).getName();
-				HashSet<String> visited = new HashSet<String>();
+				Set<String> visited = new HashSet<String>();
 				IMethodReference checkType = checkType(classname, methodname, visited);
 				if (checkType != null)
 				{
@@ -501,7 +501,7 @@ public final class PHPSearchEngine
 		return null;
 	}
 
-	private IMethodReference checkType(final String classname, final String methodname, HashSet<String> visited)
+	private IMethodReference checkType(final String classname, final String methodname, Set<String> visited)
 	{
 		if (!visited.contains(classname))
 		{
@@ -583,8 +583,6 @@ public final class PHPSearchEngine
 					}
 				}
 			}
-			;
-
 		}
 		return null;
 	}

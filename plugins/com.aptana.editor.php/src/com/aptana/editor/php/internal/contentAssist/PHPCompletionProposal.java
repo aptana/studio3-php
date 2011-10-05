@@ -161,7 +161,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal
 		if (validated && event != null)
 		{
 			// make sure that we change the replacement length as the document content changes
-			int delta = (event.fText == null ? 0 : event.fText.length()) - event.fLength;
+			int delta = ((event.fText == null) ? 0 : event.fText.length()) - event.fLength;
 			final int newLength = Math.max(_replacementLength + delta, 0);
 			_replacementLength = newLength;
 		}
@@ -357,7 +357,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal
 			{
 				document.removePositionCategory(getCategory());
 			}
-			catch (BadPositionCategoryException e)
+			catch (BadPositionCategoryException e) // $codepro.audit.disable emptyCatchClause
 			{
 				// ignore
 			}
@@ -417,7 +417,7 @@ public class PHPCompletionProposal extends CommonCompletionProposal
 		builder.append(getDisplayString());
 		builder.append(", Relevance: "); //$NON-NLS-1$
 		builder.append(getRelevance());
-		builder.append("}"); //$NON-NLS-1$
+		builder.append('}');
 		return builder.toString();
 	}
 }

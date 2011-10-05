@@ -45,36 +45,56 @@ import com.aptana.parsing.ast.ParseRootNode;
  */
 public class PHPParser implements IParser
 {
-
+	protected static final ParseNode[] NO_CHILDREN = new ParseNode[0];
 	private PHPVersion phpVersion;
 	private IModule module;
 	private ISourceModule sourceModule;
+	private boolean parseHTML;
 
 	/**
-	 * Constructs a new PHPParser
+	 * Constructs a new PHPParser.<br>
+	 * By default, the node building that is done by the parser will involve HTML parsing as well.
+	 * 
+	 * @see #PHPParser(PHPVersion, boolean)
 	 */
 	public PHPParser()
 	{
+		this(null);
+	}
+
+	/**
+	 * Constructs a new PHPParser with a preset PHPVersion.<br>
+	 * By default, the node building that is done by the parser will involve HTML parsing as well.
+	 * 
+	 * @param phpVersion
+	 * @see #PHPParser(PHPVersion, boolean)
+	 */
+	public PHPParser(PHPVersion phpVersion)
+	{
+		this(phpVersion, true);
 	}
 
 	/**
 	 * Constructs a new PHPParser with a preset PHPVersion
 	 * 
 	 * @param phpVersion
+	 * @param parseHTML
+	 *            - indicate whether the node building that is done by the parser should involve HTML parsing as well.
 	 */
-	public PHPParser(PHPVersion phpVersion)
+	public PHPParser(PHPVersion phpVersion, boolean parseHTML)
 	{
 		this.phpVersion = phpVersion;
+		this.parseHTML = parseHTML;
 	}
 
 	/**
 	 * Override the default implementation to provide support for PHP nodes inside JavaScript.
 	 */
-	public IParseRootNode parse(IParseState parseState) throws java.lang.Exception
+	public IParseRootNode parse(IParseState parseState) // $codepro.audit.disable declaredExceptions
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
-		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset,
+		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, startingOffset,
 				startingOffset + source.length() - 1);
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
@@ -94,7 +114,8 @@ public class PHPParser implements IParser
 		try
 		{
 			PHPVersion version = (phpVersion == null) ? PHPVersionProvider.getDefaultPHPVersion() : phpVersion;
-			parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule);
+			parser = ASTParser.newParser(new StringReader(source), version, true, sourceModule); // $codepro.audit.disable
+																									// closeWhereCreated
 			program = parser.createAST(null);
 		}
 		catch (Exception e)
@@ -125,7 +146,7 @@ public class PHPParser implements IParser
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
 				}
 				// Recalculate the type bindings
-				TypeBindingBuilder.buildBindings(program);
+				TypeBindingBuilder.buildBindings(program, source);
 			}
 			catch (Throwable t)
 			{
@@ -157,20 +178,20 @@ public class PHPParser implements IParser
 	 * @throws java.lang.Exception
 	 * @see {@link #parse(IParseState)}
 	 */
-	public IParseRootNode parse(InputStream source) throws java.lang.Exception
+	public IParseRootNode parse(InputStream source)
 	{
 		String input = IOUtil.read(source);
-		Program ast = parseAST(new StringReader(input));
+		Program ast = parseAST(new StringReader(input)); // $codepro.audit.disable closeWhereCreated
 		if (ast != null)
 		{
 
-			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], ast.getStart(),
+			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, ast.getStart(),
 					ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
 			return root;
 		}
-		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], 0, 0);
+		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, 0, 0);
 	}
 
 	/**
@@ -231,7 +252,7 @@ public class PHPParser implements IParser
 			commentNodes.add(new PHPCommentNode(c));
 		}
 		root.setCommentNodes(commentNodes.toArray(new IParseNode[commentNodes.size()]));
-		NodeBuilder builderClient = new NodeBuilder(source);
+		NodeBuilder builderClient = new NodeBuilder(source, false, parseHTML);
 		ast.accept(new NodeBuildingVisitor(builderClient, source));
 		PHPBlockNode nodes = builderClient.populateNodes();
 		for (IParseNode child : nodes.getChildren())

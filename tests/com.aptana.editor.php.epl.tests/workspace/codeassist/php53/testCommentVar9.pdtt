@@ -1,0 +1,28 @@
+--TEST--
+Test Commented Variable skipping a nested out-of-scope var type
+--FILE--
+<?php
+    class Foobar1 {
+		public function nonsense1(){} 
+	} 
+	
+	class Foobar2 {
+		public function nonsense2(){} 
+	} 
+
+	function __construct($z_argument) {
+		/* @var $z_first  Foobar1  */
+		$first -> nonsense1();
+		while ($a <= 10) {
+			/* @var $z_second  Foobar1|Foobar2  */
+			$second -> nonsense2();
+
+		}
+		/* @var $z_third  Foobar1|Foobar2  */
+		$z_|
+	}
+?>
+--EXPECT--
+field($z_argument)
+field($z_first)
+field($z_third)

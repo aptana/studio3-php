@@ -466,10 +466,10 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 						uri = new URI(struri.substring(0, fileNameStart + 1) + encoded);
 					}
 				}
-				catch (UnsupportedEncodingException e1)
+				catch (UnsupportedEncodingException e1) // $codepro.audit.disable emptyCatchClause
 				{
 				}
-				catch (URISyntaxException e2)
+				catch (URISyntaxException e2) // $codepro.audit.disable emptyCatchClause
 				{
 				}
 				if (uri == null)
@@ -502,7 +502,9 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 				}
 				catch (CoreException e)
 				{
-					// ignore
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"PHP Source Editor error in computing module(computeModule)", //$NON-NLS-1$
+							e, PHPEditorPlugin.DEBUG_SCOPE);
 				}
 			}
 

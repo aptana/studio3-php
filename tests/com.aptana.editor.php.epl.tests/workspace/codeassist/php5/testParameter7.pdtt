@@ -1,0 +1,14 @@
+--TEST--
+Test type completion in a function definition
+--FILE--
+<?
+	class PDO_LOCAL extends PDO {
+	}
+	function foo(PD|) {}
+?>
+--EXPECT--
+type(PDO_LOCAL)
+type(PDO)
+type(PDOException)
+type(PDORow)
+type(PDOStatement)

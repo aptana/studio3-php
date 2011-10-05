@@ -119,7 +119,7 @@ public class HeredocRule implements IPredicateRule
 	{
 		StringBuilder buffer = new StringBuilder();
 		int character;
-		while ((character = scanner.read()) != ICharacterScanner.EOF)
+		while ((character = scanner.read()) != ICharacterScanner.EOF) // $codepro.audit.disable assignmentInCondition
 		{
 			++readCount;
 			if (isNewLine(scanner, character))
@@ -172,7 +172,7 @@ public class HeredocRule implements IPredicateRule
 	{
 		StringBuilder buffer = new StringBuilder();
 		int character;
-		while ((character = scanner.read()) != ICharacterScanner.EOF)
+		while ((character = scanner.read()) != ICharacterScanner.EOF) // $codepro.audit.disable assignmentInCondition
 		{
 			++readCount;
 			if (isNewLine(scanner, character))

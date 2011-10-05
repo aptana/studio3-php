@@ -25,7 +25,7 @@ public class CallPath
 	 * 
 	 * @author Denis Denisenko
 	 */
-	public abstract static class Entry
+	public abstract static class Entry // $codepro.audit.disable noAbstractMethods
 	{
 		/**
 		 * Entry name.
@@ -38,7 +38,7 @@ public class CallPath
 		 * @param name
 		 *            - entry name.
 		 */
-		public Entry(String name)
+		protected Entry(String name)
 		{
 			this.name = name;
 		}
@@ -275,10 +275,7 @@ public class CallPath
 		{
 			typesArray.add(false);
 		}
-		else
-		{
-			// appropriate bit is already 0 so doing nothing
-		}
+		// else - appropriate bit is already 0 so doing nothing
 
 		names.add(name);
 	}
@@ -446,7 +443,7 @@ public class CallPath
 		}
 		else
 		{
-			return ((types & _masks[i]) != 0);
+			return (types & _masks[i]) != 0;
 		}
 	}
 

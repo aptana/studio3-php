@@ -1,8 +1,9 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.internal.ui.hover;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ToolBarManager;
@@ -19,6 +20,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.osgi.framework.Bundle;
@@ -202,7 +204,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 	{
 		PHPDocumentationBrowserInformationControlInput info = (PHPDocumentationBrowserInformationControlInput) getHoverInfo2(
 				textViewer, hoverRegion);
-		return info != null ? info.getHtml() : null;
+		return (info != null) ? info.getHtml() : null;
 	}
 
 	/*
@@ -219,7 +221,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 		return null;
 	}
 
-	private PHPDocumentationBrowserInformationControlInput internalGetHoverInfo(ITextViewer textViewer,
+	private PHPDocumentationBrowserInformationControlInput internalGetHoverInfo(final ITextViewer textViewer,
 			IRegion hoverRegion)
 	{
 		Object[] elements = getPHPElementsAt(textViewer, hoverRegion);
@@ -228,7 +230,16 @@ public class PHPDocHover extends AbstractPHPTextHover
 			return null;
 		}
 		String constantValue = null;
-		return getHoverInfo(elements, constantValue, null);
+		final boolean[] browserAvailable = new boolean[1];
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				// Run in UI thread
+				browserAvailable[0] = BrowserInformationControl.isAvailable(textViewer.getTextWidget().getShell());
+			}
+		});
+		return getHoverInfo(elements, constantValue, browserAvailable[0], null);
 	}
 
 	/*
@@ -257,7 +268,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 				String name = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
 				if (!StringUtil.EMPTY.equals(name))
 				{
-					ArrayList<Object> elements = ContentAssistUtils.selectModelElements(name, true);
+					List<Object> elements = ContentAssistUtils.selectModelElements(name, true);
 					if (elements != null && !elements.isEmpty())
 					{
 						// return the first element only
@@ -286,13 +297,14 @@ public class PHPDocHover extends AbstractPHPTextHover
 	 *            the resolved elements
 	 * @param constantValue
 	 *            a constant value iff result contains exactly 1 constant field, or <code>null</code>
+	 * @param useHTMLTags
 	 * @param previousInput
 	 *            the previous input, or <code>null</code>
 	 * @return the HTML hover info for the given element(s) or <code>null</code> if no information is available
 	 */
 	@SuppressWarnings("unused")
 	private static PHPDocumentationBrowserInformationControlInput getHoverInfo(Object[] elements, String constantValue,
-			PHPDocumentationBrowserInformationControlInput previousInput)
+			boolean useHTMLTags, PHPDocumentationBrowserInformationControlInput previousInput)
 	{
 		int nResults = elements.length;
 		StringBuffer buffer = new StringBuffer();
@@ -309,17 +321,20 @@ public class PHPDocHover extends AbstractPHPTextHover
 			Object element = elements[0];
 			if (element != null)
 			{
-				setHeader(element, buffer);
-				setDocumentation(element, buffer);
+				setHeader(element, buffer, useHTMLTags);
+				setDocumentation(element, buffer, useHTMLTags);
 				if (buffer.length() > 0)
 				{
-					HTMLPrinter.insertPageProlog(buffer, 0, PHPDocHover.getStyleSheet());
-					if (base != null)
+					if (useHTMLTags)
 					{
-						int endHeadIdx = buffer.indexOf("</head>"); //$NON-NLS-1$
-						buffer.insert(endHeadIdx, "\n<base href='" + base + "'>\n"); //$NON-NLS-1$ //$NON-NLS-2$
+						HTMLPrinter.insertPageProlog(buffer, 0, PHPDocHover.getStyleSheet());
+						if (base != null)
+						{
+							int endHeadIdx = buffer.indexOf("</head>"); //$NON-NLS-1$
+							buffer.insert(endHeadIdx, "\n<base href='" + base + "'>\n"); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						HTMLPrinter.addPageEpilog(buffer);
 					}
-					HTMLPrinter.addPageEpilog(buffer);
 					return new PHPDocumentationBrowserInformationControlInput(previousInput, element,
 							buffer.toString(), leadingImageWidth);
 				}
@@ -332,8 +347,9 @@ public class PHPDocHover extends AbstractPHPTextHover
 		return null;
 	}
 
-	private static void setDocumentation(Object element, StringBuffer buffer)
+	private static void setDocumentation(Object element, StringBuffer buffer, boolean useHTMLTags)
 	{
+		String computedDocumentation = null;
 		if (element instanceof IElementEntry)
 		{
 			IElementEntry entry = (IElementEntry) element;
@@ -341,16 +357,24 @@ public class PHPDocHover extends AbstractPHPTextHover
 			int startOffset = phpValue.getStartOffset();
 			PHPDocBlock comment = PHPDocUtils.findFunctionPHPDocComment(entry, startOffset);
 			FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
-			buffer.append(PHPDocUtils.computeDocumentation(documentation, entry.getEntryPath()));
+			computedDocumentation = PHPDocUtils.computeDocumentation(documentation, entry.getEntryPath());
 		}
 		else if (element instanceof PHPBaseParseNode)
 		{
 			PHPBaseParseNode node = (PHPBaseParseNode) element;
-			buffer.append(ContentAssistUtils.getDocumentation(node, node.getNodeName()));
+			computedDocumentation = ContentAssistUtils.getDocumentation(node, node.getNodeName());
+		}
+		if (computedDocumentation != null)
+		{
+			if (!useHTMLTags)
+			{
+				computedDocumentation = ContentAssistUtils.stripBasicHTML(computedDocumentation);
+			}
+			buffer.append(computedDocumentation);
 		}
 	}
 
-	private static void setHeader(Object element, StringBuffer buffer)
+	private static void setHeader(Object element, StringBuffer buffer, boolean useHTMLTags)
 	{
 		// Set the header to display the file location
 		if (element instanceof IElementEntry)
@@ -358,16 +382,34 @@ public class PHPDocHover extends AbstractPHPTextHover
 			IElementEntry entry = (IElementEntry) element;
 			if (entry.getModule() != null)
 			{
-				buffer.append("<div class=\"header\""); //$NON-NLS-1$
-				HTMLPrinter.addSmallHeader(buffer, entry.getModule().getShortName());
-				buffer.append("</div>"); //$NON-NLS-1$
+				if (useHTMLTags)
+				{
+					buffer.append("<div class=\"header\""); //$NON-NLS-1$
+					HTMLPrinter.addSmallHeader(buffer, entry.getModule().getShortName());
+					buffer.append("</div>"); //$NON-NLS-1$
+				}
+				else
+				{
+					// plain printing
+					buffer.append('[');
+					buffer.append(entry.getModule().getShortName());
+					buffer.append("]\n"); //$NON-NLS-1$
+				}
 			}
 		}
 		else if (element instanceof PHPBaseParseNode)
 		{
-			buffer.append("<div class=\"header\""); //$NON-NLS-1$
-			HTMLPrinter.addSmallHeader(buffer, "PHP API"); //$NON-NLS-1$
-			buffer.append("</div>"); //$NON-NLS-1$
+			if (useHTMLTags)
+			{
+				buffer.append("<div class=\"header\""); //$NON-NLS-1$
+				HTMLPrinter.addSmallHeader(buffer, "PHP API"); //$NON-NLS-1$
+				buffer.append("</div>"); //$NON-NLS-1$
+			}
+			else
+			{
+				// plain printing
+				buffer.append("[PHP API]\n"); //$NON-NLS-1$
+			}
 		}
 	}
 

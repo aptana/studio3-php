@@ -9,7 +9,7 @@ package com.aptana.editor.php.internal.builder;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.eclipse.core.filesystem.EFS;
@@ -53,10 +53,12 @@ public class FileSystemModule extends AbstractBuildPathResource implements IModu
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws FileNotFoundException
 	 */
-	public InputStream getContents() throws IOException
+	public InputStream getContents() throws FileNotFoundException
 	{
-		return new FileInputStream(file);
+		return new FileInputStream(file); // $codepro.audit.disable closeWhereCreated
 	}
 
 	/**

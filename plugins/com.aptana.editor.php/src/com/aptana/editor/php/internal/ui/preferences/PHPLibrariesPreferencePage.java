@@ -11,6 +11,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.PreferencePage;
@@ -52,7 +55,7 @@ public class PHPLibrariesPreferencePage extends PreferencePage implements IWorkb
 
 		boolean select;
 
-		public SelectAction(boolean doSelect)
+		private SelectAction(boolean doSelect)
 		{
 			this.select = doSelect;
 		}
@@ -78,7 +81,7 @@ public class PHPLibrariesPreferencePage extends PreferencePage implements IWorkb
 		body.setLayout(new GridLayout(1, false));
 		Label label = new Label(body, SWT.NONE | SWT.WRAP);
 		label.setText(Messages.PHPLibrariesPreferencePage_librariesTitle);
-		final HashMap<URL, Image> images = new HashMap<URL, Image>();
+		final Map<URL,Image> images = new HashMap<URL, Image>();
 		Composite tableAndButton = new Composite(body, SWT.NONE);
 		tableAndButton.setLayout(new GridLayout(2, false));
 		newCheckList = CheckboxTableViewer.newCheckList(tableAndButton, SWT.BORDER);
@@ -216,7 +219,7 @@ public class PHPLibrariesPreferencePage extends PreferencePage implements IWorkb
 	IPHPLibrary[] getContent()
 	{
 		int count = newCheckList.getTable().getItemCount();
-		ArrayList<IPHPLibrary> ul = new ArrayList<IPHPLibrary>();
+		List<IPHPLibrary> ul = new ArrayList<IPHPLibrary>();
 		for (int a = 0; a < count; a++)
 		{
 			Object elementAt = newCheckList.getElementAt(a);
@@ -234,7 +237,7 @@ public class PHPLibrariesPreferencePage extends PreferencePage implements IWorkb
 	@Override
 	public boolean performOk()
 	{
-		HashSet<IPHPLibrary> turnedOff = new HashSet<IPHPLibrary>();
+		Set<IPHPLibrary> turnedOff = new HashSet<IPHPLibrary>();
 		for (IPHPLibrary l : LibraryManager.getInstance().getAllLibraries())
 		{
 			boolean checked = newCheckList.getChecked(l);

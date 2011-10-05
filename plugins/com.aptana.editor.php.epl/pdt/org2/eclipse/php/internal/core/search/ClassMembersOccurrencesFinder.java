@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
 import org2.eclipse.php.internal.core.ast.nodes.Assignment;
 import org2.eclipse.php.internal.core.ast.nodes.Block;
 import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
@@ -382,6 +383,9 @@ public class ClassMembersOccurrencesFinder extends AbstractOccurrencesFinder {
 	 * @throws RuntimeException
 	 */
 	private void checkDispatch(ASTNode node) {
+		while (node.getType() == ASTNode.ARRAY_ACCESS) {
+			node = ((ArrayAccess) node).getName();
+		}
 		if (node.getType() == ASTNode.IDENTIFIER) {
 			Identifier id = (Identifier) node;
 			if (id.getName().equalsIgnoreCase(classMemberName)) {
@@ -398,8 +402,17 @@ public class ClassMembersOccurrencesFinder extends AbstractOccurrencesFinder {
 						}
 					}
 				} else {
-					addOccurrence(new OccurrenceLocation(node.getStart(), node
-							.getLength(), getOccurrenceType(node), fDescription));
+					int start = node.getStart();
+					int length = node.getLength();
+					if (node.getParent().getType() == ASTNode.VARIABLE)
+					{
+						if (((Variable) node.getParent()).isDollared() && start - 1 >= 0)
+						{
+							start--;
+							length++;
+						}
+					}
+					addOccurrence(new OccurrenceLocation(start, length, getOccurrenceType(node), fDescription));
 				}
 			}
 		}

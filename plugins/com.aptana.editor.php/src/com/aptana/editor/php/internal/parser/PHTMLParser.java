@@ -21,14 +21,14 @@ import com.aptana.parsing.ast.ParseRootNode;
 
 public class PHTMLParser extends CompositeParser
 {
-
 	public PHTMLParser()
 	{
 		super(new PHTMLParserScanner(), IHTMLConstants.CONTENT_TYPE_HTML);
 	}
 
 	@Override
-	protected IParseNode processEmbeddedlanguage(IParseState parseState) throws Exception
+	protected IParseNode processEmbeddedlanguage(IParseState parseState) throws Exception // $codepro.audit.disable
+																							// declaredExceptions
 	{
 		String source = new String(parseState.getSource());
 		int startingOffset = parseState.getStartingOffset();
@@ -44,7 +44,7 @@ public class PHTMLParser extends CompositeParser
 				case PHTMLTokens.PHP:
 					if (root == null)
 					{
-						root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0], startingOffset,
+						root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, PHPParser.NO_CHILDREN, startingOffset,
 								startingOffset + source.length() - 1);
 					}
 					processPHPBlock(root);
@@ -56,7 +56,7 @@ public class PHTMLParser extends CompositeParser
 		return root;
 	}
 
-	private void processPHPBlock(IParseNode root) throws IOException, Exception
+	private void processPHPBlock(IParseNode root) throws IOException, Exception // $codepro.audit.disable
 	{
 		Symbol startTag = getCurrentSymbol();
 		advance();

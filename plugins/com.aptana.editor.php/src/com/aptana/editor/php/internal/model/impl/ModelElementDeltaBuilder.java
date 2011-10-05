@@ -12,6 +12,7 @@ package com.aptana.editor.php.internal.model.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.aptana.editor.php.core.model.IModelElement;
@@ -29,7 +30,7 @@ import com.aptana.editor.php.internal.model.impl.env.SourceTypeElementInfo;
  * operation by locally caching the contents of the script element when it is created. When the method createDeltas() is
  * called, it creates a delta over the cached contents and the new contents.
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ModelElementDeltaBuilder
 {
 	/**
@@ -65,12 +66,12 @@ public class ModelElementDeltaBuilder
 	/**
 	 * List of added elements
 	 */
-	ArrayList added;
+	List added;
 
 	/**
 	 * List of removed elements
 	 */
-	ArrayList removed;
+	List removed;
 
 	/**
 	 * Doubly linked list item
@@ -80,7 +81,7 @@ public class ModelElementDeltaBuilder
 		public IModelElement previous;
 		public IModelElement next;
 
-		public ListItem(IModelElement previous, IModelElement next)
+		protected ListItem(IModelElement previous, IModelElement next)
 		{
 			this.previous = previous;
 			this.next = next;
@@ -260,8 +261,8 @@ public class ModelElementDeltaBuilder
 				SourceMethodElementInfo oldSourceMethodInfo = (SourceMethodElementInfo) oldInfo;
 				SourceMethodElementInfo newSourceMethodInfo = (SourceMethodElementInfo) newInfo;
 				if (!equals(oldSourceMethodInfo.getArgumentNames(), newSourceMethodInfo.getArgumentNames())
-						|| !equals(oldSourceMethodInfo.getArgumentInitializers(), newSourceMethodInfo
-								.getArgumentInitializers()))
+						|| !equals(oldSourceMethodInfo.getArgumentInitializers(),
+								newSourceMethodInfo.getArgumentInitializers()))
 				{
 					this.delta.changed(newElement, IModelElementDelta.F_CONTENT);
 				}
@@ -471,7 +472,7 @@ public class ModelElementDeltaBuilder
 	public String toString()
 	{
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Built delta:\n"); //$NON-NLS-1$
+		buffer.append("Built delta:\n"); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 		buffer.append(this.delta.toString());
 		return buffer.toString();
 	}
@@ -508,7 +509,7 @@ public class ModelElementDeltaBuilder
 		if (first.length != second.length)
 			return false;
 
-		for (int i = first.length; --i >= 0;)
+		for (int i = first.length - 1; i >= 0; i--)
 		{
 			if (first[i] == null && second[i] != null)
 			{

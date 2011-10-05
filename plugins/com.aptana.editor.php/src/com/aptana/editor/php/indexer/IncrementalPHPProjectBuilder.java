@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.aptana.core.CorePlugin;
@@ -30,7 +29,7 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#clean(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	protected void clean(IProgressMonitor monitor) throws CoreException
+	protected void clean(IProgressMonitor monitor)
 	{
 		IProject project = getProject();
 		PHPGlobalIndexer.getInstance().clean(project, monitor);
@@ -62,7 +61,7 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@SuppressWarnings("rawtypes")
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException
+	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 	{
 		// FIXME - SG: Convert from Indexer timer to the builder system.
 		IProject project = getProject();

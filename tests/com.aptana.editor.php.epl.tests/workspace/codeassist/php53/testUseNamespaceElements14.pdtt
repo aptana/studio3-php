@@ -1,0 +1,21 @@
+--TEST--
+Use statement test.
+Test the CA when using a type from a global NS
+using the 'as' keyword
+--FILE--
+<?php
+namespace Second\NS;
+
+use PDO as MyPDO;
+
+class AAA extends MyPDO {
+	function foo() {
+		$this -> e|
+	}
+
+}
+?>
+--EXPECT--
+method(errorCode)
+method(errorInfo)
+method(exec)

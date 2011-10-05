@@ -84,7 +84,7 @@ public class ProjectBuildPath extends AbstractBuildPath
 		 * @param removed
 		 *            - removed modules list to fill.
 		 */
-		public PHPElementsDeltaVisitor(List<IModule> added, List<IModule> changed, List<IModule> removed,
+		private PHPElementsDeltaVisitor(List<IModule> added, List<IModule> changed, List<IModule> removed,
 				List<IDirectory> addedDirectories, List<IDirectory> removedDirectories)
 		{
 			this.added = added;
@@ -97,7 +97,7 @@ public class ProjectBuildPath extends AbstractBuildPath
 		/**
 		 * {@inheritDoc}
 		 */
-		public boolean visit(IResourceDelta delta) throws CoreException
+		public boolean visit(IResourceDelta delta)
 		{
 			IResource resource = delta.getResource();
 
@@ -629,7 +629,7 @@ public class ProjectBuildPath extends AbstractBuildPath
 		{
 			project.accept(new IResourceVisitor()
 			{
-				public boolean visit(IResource resource) throws CoreException
+				public boolean visit(IResource resource)
 				{
 					// ignoring inaccessible resources
 					if (!resource.isAccessible())

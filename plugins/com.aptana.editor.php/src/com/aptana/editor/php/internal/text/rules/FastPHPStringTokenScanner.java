@@ -24,16 +24,18 @@ import com.aptana.editor.php.internal.parser.PHPTokenType;
  */
 public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
+	private static final IToken TOKEN_END_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_END);
+	private static final IToken TOKEN_BEGIN_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_BEGIN);
 	private static final IToken TOKEN_ESCAPE_CHARACTER = getToken(PHPTokenType.CHARACTER_ESCAPE);
-	private static final IToken TOKEN_VARIABLE = getToken(PHPTokenType.VARIABLE);
+	private static final IToken TOKEN_VARIABLE = getToken(PHPTokenType.VARIABLE_OTHER);
 	private static final IToken TOKEN_NUMERIC = getToken(PHPTokenType.NUMERIC);
 	private static final IToken TOKEN_CLASS_OPERATOR = getToken(PHPTokenType.CLASS_OPERATOR);
-	private static final IToken TOKEN_ARRAY_BEGIN = getToken(PHPTokenType.ARRAY_BEGIN);
-	private static final IToken TOKEN_ARRAY_END = getToken(PHPTokenType.ARRAY_END);
+	private static final IToken TOKEN_ARRAY_BEGIN = getToken(PHPTokenType.PUNCTUATION_LBRACKET);
+	private static final IToken TOKEN_ARRAY_END = getToken(PHPTokenType.PUNCTUATION_RBRACKET);
 	private static final IToken TOKEN_VARIABLE_PUNCTUATION = getToken(PHPTokenType.VARIABLE_PUNCTUATION);
 	private static final IToken TOKEN_FUNCTION_PUNCTUATION = getToken(PHPTokenType.FUNCTION_PUNCTUATION);
 	private static final IToken TOKEN_STATIC_PUNCTUATION = getToken(PHPTokenType.STATIC_PUNCTUATION);
-	private static final IToken TOKEN_SINGLE_QUOTED = new Token("string.quoted.single.php"); //$NON-NLS-1$
+	private static final IToken TOKEN_SINGLE_QUOTED = getToken(PHPTokenType.STRING_SINGLE);
 
 	private final IToken fDefaultToken;
 	private final BufferedDocumentScanner fScanner = new BufferedDocumentScanner(100);
@@ -47,19 +49,20 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.text.rules.ITokenScanner#setRange(org.eclipse.jface
-	 * .text.IDocument, int, int)
+	 * @see org.eclipse.jface.text.rules.ITokenScanner#setRange(org.eclipse.jface .text.IDocument, int, int)
 	 */
 	public void setRange(IDocument document, int offset, int length) {
 		super.setRange(document, offset, length);
 		fScanner.setRange(document, offset, length);
+		if (fScanner.read() == '"') {
+			queueToken(TOKEN_BEGIN_QUOTE, fScanner.getOffset()-1, 1);
+		} else {
+			fScanner.unread();
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.jface.text.rules.ITokenScanner#nextToken()
 	 */
 	public IToken nextToken() {
@@ -75,33 +78,41 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		int startOffset = fScanner.getOffset();
 		int ch = fScanner.read();
 		switch (ch) {
-		case '\\':
-			readEscape(startOffset);
-			break;
-		case '$':
-			readSimpleVariable(startOffset);
-			break;
-		case '{':
-			ch = fScanner.read();
-			if (ch == '$') {
-				fScanner.unread();
-				readComplexVariable(startOffset);
-			} else if (ch != ICharacterScanner.EOF) {
-				fScanner.unread();
+			case '\\':
+				readEscape(startOffset);
+				break;
+			case '$':
+				readSimpleVariable(startOffset);
+				break;
+			case '{':
+				ch = fScanner.read();
+				if (ch == '$') {
+					fScanner.unread();
+					readComplexVariable(startOffset);
+				} else if (ch != ICharacterScanner.EOF) {
+					fScanner.unread();
+					readDefault(startOffset);
+				}
+				break;
+			case '"':
+				if (fScanner.read() == ICharacterScanner.EOF) {
+					queueToken(TOKEN_END_QUOTE, startOffset, 1);
+				} else {
+					fScanner.unread();
+					readDefault(startOffset);
+				}
+				break;
+			case ICharacterScanner.EOF:
+				break;
+			default:
 				readDefault(startOffset);
-			}
-			break;
-		case ICharacterScanner.EOF:
-			break;
-		default:
-			readDefault(startOffset);
-			break;
+				break;
 		}
 	}
 
 	private void readDefault(int offset) {
 		int ch = fScanner.read();
-		while (ch != '\\' && ch != '$' && ch != '{' && ch != ICharacterScanner.EOF) {
+		while (ch != '\\' && ch != '$' && ch != '{' && ch != '"' && ch != ICharacterScanner.EOF) {
 			ch = fScanner.read();
 		}
 		if (ch != ICharacterScanner.EOF) {
@@ -127,7 +138,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 			ch = fScanner.read();
 			count = 1;
 			radix = 16;
-		default:
+		default: // $codepro.audit.disable nonTerminatedCaseClause
 			while (Character.digit(ch, radix) >= 0 && count > 0) {
 				ch = fScanner.read();
 				--count;
@@ -182,6 +193,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 			if (ch != ICharacterScanner.EOF) {
 				fScanner.unread();
 			}
+			// FIXME We really need to delegate to PHPCodeScanner to properly get the correct tokens here...
 			queueToken(TOKEN_VARIABLE, offset, fScanner.getOffset() - offset);
 			readVariableOperator(fScanner.getOffset());
 		} else if (ch == '{') { // we have ${
@@ -237,7 +249,6 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 				readSimpleVariable(fScanner.getOffset());
 				unread = 0;
 			}
-			;
 		}
 		if (unread == 0) {
 			readVariableOperator(fScanner.getOffset());

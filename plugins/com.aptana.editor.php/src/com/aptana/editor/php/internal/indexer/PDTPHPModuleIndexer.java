@@ -1,3 +1,4 @@
+// $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.internal.indexer;
 
 import java.io.BufferedReader;
@@ -74,6 +75,7 @@ import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org2.eclipse.php.internal.core.ast.scanner.php53.ParserConstants;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -160,7 +162,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param scope
 		 * @param pos
 		 */
-		public VariableInfo(String variableName, Object variableType, Scope scope, int pos)
+		private VariableInfo(String variableName, Object variableType, Scope scope, int pos)
 		{
 			this.variableName = variableName;
 			variableTypes = new HashSet<Object>(1);
@@ -184,7 +186,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param scope
 		 * @param pos
 		 */
-		public VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos)
+		private VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos)
 		{
 			this.variableName = variableName;
 
@@ -210,7 +212,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param modifier
 		 *            - variable modifier.
 		 */
-		public VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos, int modifier)
+		private VariableInfo(String variableName, Set<Object> variableTypes, Scope scope, int pos, int modifier)
 		{
 			this.variableName = variableName;
 
@@ -386,7 +388,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
 				if (documentation != null)
 				{
-					ArrayList<TypedDescription> vars = documentation.getVars();
+					List<TypedDescription> vars = documentation.getVars();
 					if (vars != null && vars.size() != 0)
 					{
 						if (this.variableTypes == null)
@@ -439,7 +441,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 */
 		private Set<String> globalImports = new HashSet<String>();
 
-		private HashMap<String, String> aliases = new HashMap<String, String>();
+		private Map<String, String> aliases = new HashMap<String, String>();
 
 		/**
 		 * Scope constructor.
@@ -449,7 +451,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param parent
 		 *            - scope parent.
 		 */
-		public Scope(ASTNode root, Scope parent)
+		private Scope(ASTNode root, Scope parent)
 		{
 			this.root = root;
 			this.parent = parent;
@@ -467,7 +469,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param entry
 		 *            - root entry if exist. null is acceptable.
 		 */
-		public Scope(ASTNode root, Scope parent, IElementEntry entry)
+		private Scope(ASTNode root, Scope parent, IElementEntry entry)
 		{
 			this.root = root;
 			this.parent = parent;
@@ -752,7 +754,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param classEntry
 		 *            - class entry.
 		 */
-		public ClassScopeInfo(IElementEntry classEntry)
+		private ClassScopeInfo(IElementEntry classEntry)
 		{
 			this.classEntry = classEntry;
 		}
@@ -867,7 +869,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 		private String currentNamespace = EMPTY_STRING;
 
-		HashMap<String, String> aliases = new HashMap<String, String>();
+		Map<String, String> aliases = new HashMap<String, String>();
 
 		/**
 		 * Current class.
@@ -907,7 +909,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param module
 		 *            - current module.
 		 */
-		public PHPASTVisitor(IIndexReporter reporter, IModule module)
+		private PHPASTVisitor(IIndexReporter reporter, IModule module)
 		{
 			this.reporter = reporter;
 			this.module = module;
@@ -1149,8 +1151,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
 
-			LinkedHashMap<String, Set<Object>> parametersMap = null;
-			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+			Map<String, Set<Object>> parametersMap = null;
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 
 			if (parameters.size() > 0)
 			{
@@ -1220,7 +1223,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 					mandatories, functionDeclaration.getStart(), currentNamespace);
 			if (returnTypes != null)
 			{
-				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				Set<Object> returnTypesSet = new HashSet<Object>();
 				for (String returnType : returnTypes)
 				{
 					returnTypesSet.add(returnType);
@@ -1256,8 +1259,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			// getting function parameters
 			List<FormalParameter> parameters = lambdaFunctionDeclaration.formalParameters();
 
-			LinkedHashMap<String, Set<Object>> parametersMap = null;
-			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+			Map<String, Set<Object>> parametersMap = null;
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 
 			if (parameters.size() > 0)
 			{
@@ -1327,7 +1331,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 					parameterPositions, mandatories, lambdaFunctionDeclaration.getStart(), currentNamespace);
 			if (returnTypes != null)
 			{
-				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				Set<Object> returnTypesSet = new HashSet<Object>();
 				for (String returnType : returnTypes)
 				{
 					returnTypesSet.add(returnType);
@@ -1386,9 +1390,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = parameters == null || parameters.size() == 0 ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 
-			LinkedHashMap<String, Set<Object>> parametersMap = null;
+			Map<String, Set<Object>> parametersMap = null;
 			if (parameters.size() > 0)
 			{
 				parametersMap = new LinkedHashMap<String, Set<Object>>(parameters.size());
@@ -1453,7 +1458,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			if (returnTypes != null)
 			{
-				HashSet<Object> returnTypesSet = new HashSet<Object>();
+				Set<Object> returnTypesSet = new HashSet<Object>();
 				for (String returnType : returnTypes)
 				{
 					returnTypesSet.add(returnType);
@@ -1710,7 +1715,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 					FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
 					if (documentation != null)
 					{
-						ArrayList<TypedDescription> vars = documentation.getVars();
+						List<TypedDescription> vars = documentation.getVars();
 						if (vars != null && vars.size() != 0)
 						{
 							if (fieldTypes == null)
@@ -2214,6 +2219,22 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			Scope scope = new Scope(node, parent, currentEntry);
 
 			scopes.push(scope);
+
+			// report any @var comment variables that exists under that node
+			if (_resolvedVarComments != null && _resolvedVarComments.get(node) != null)
+			{
+				for (VarComment comment : _resolvedVarComments.get(node))
+				{
+					String variableName = comment.getVariableReference().getName();
+					if (variableName.startsWith(DOLLAR_SIGN))
+					{
+						variableName = variableName.substring(1);
+					}
+					VariableInfo variableInfo = new VariableInfo(variableName, comment.getTypeReferencesNames(), scope,
+							comment.getStart(), 0);
+					getCurrentScope().addVariable(variableInfo);
+				}
+			}
 		}
 
 		/**
@@ -3008,7 +3029,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param stack
 		 *            - stack to report.
 		 */
-		private void reportStack(Stack<Scope> stack)
+		private void reportStack(List<Scope> stack)
 		{
 			if (stack.isEmpty())
 			{
@@ -3078,15 +3099,14 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 						: IPHPIndexConstants.VAR_CATEGORY;
 				reporter.reportEntry(category, entryPath, value, module);
 			}
-
 			// reporting function/method parameters if needed, going up in the
 			// stack searching for the function
 			for (int i = stack.size() - 1; i >= 0; i--)
 			{
 				Scope scope = stack.get(i);
-				if (scope.getEntry() != null)
+				IElementEntry entry = scope.getEntry();
+				if (entry != null)
 				{
-					IElementEntry entry = scope.getEntry();
 					if (entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY
 							&& entry.getValue() instanceof FunctionPHPEntryValue
 							|| entry.getCategory() == IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY
@@ -3102,9 +3122,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							{
 								String entryPath = parEntry.getKey();
 								VariablePHPEntryValue value = new VariablePHPEntryValue(0, true, false, false,
-										parEntry.getValue(), parameterStartPositions == null
-												|| parameterStartPositions.length == 0 ? val.getStartOffset()
-												: parameterStartPositions[parCount], currentNamespace);
+										parEntry.getValue(),
+										(parameterStartPositions == null || parameterStartPositions.length == 0) ? val
+												.getStartOffset() : parameterStartPositions[parCount], currentNamespace);
 								reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY, entryPath, value, module);
 								parCount++;
 							}
@@ -3123,7 +3143,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 *            - scope depth.
 		 * @return true if the scope specified is under class or function/method scope, false otherwise.
 		 */
-		private boolean checkIfScopeIsUnderClass(Stack<Scope> stack, int currentScopeDepth)
+		private boolean checkIfScopeIsUnderClass(List<Scope> stack, int currentScopeDepth)
 		{
 			for (int i = currentScopeDepth; i >= 0; i--)
 			{
@@ -3149,7 +3169,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 *            - class active for the scope.
 		 * @return scope entries path
 		 */
-		String getScopePath(Stack<Scope> stack, int pos)
+		String getScopePath(List<Scope> stack, int pos)
 		{
 			StringBuffer result = new StringBuffer();
 
@@ -3273,7 +3293,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			}
 			catch (Throwable th)
 			{
-				// ignore
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"PHP Module Indexer - Error while applying a comment (applyComment)", //$NON-NLS-1$
+						th, PHPEditorPlugin.INDEXER_SCOPE);
 			}
 
 			return null;
@@ -3537,6 +3559,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	private boolean updateTaskTags = true;
 
 	private String _namespace;
+	private Map<ASTNode, List<VarComment>> _resolvedVarComments;
 
 	/**
 	 * @return is update task tags turned on
@@ -3631,7 +3654,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							}
 							bld.append(currentLine);
 							bld.append(" ?>"); //$NON-NLS-1$
-							Reader reader = new StringReader(bld.toString());
+							Reader reader = new StringReader(bld.toString()); // $codepro.audit.disable
+																				// closeWhereCreated
 							// TODO - Shalom: Get the right version from the module
 							AstLexer lexer = ASTFactory.getAstLexer(PHPVersion.PHP5_3, reader);
 
@@ -3671,7 +3695,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							}
 							catch (IOException e)
 							{
-
+								IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+										"PHP Module Indexer - I/O Error while indexing (indexModule)", //$NON-NLS-1$
+										e, PHPEditorPlugin.INDEXER_SCOPE);
 							}
 							for (String s : variables)
 							{
@@ -3742,9 +3768,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			}
 
 			// collecting comments
-			CommentsVisitor commentsVisitor = new CommentsVisitor();
+			CommentsVisitor commentsVisitor = new CommentsVisitor(true);
 			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
+			_resolvedVarComments = commentsVisitor.getResolvedVarComments();
 			try
 			{
 				if (isUpdateTaskTags())
@@ -3754,7 +3781,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			}
 			catch (Throwable th)
 			{
-				String message = th.getMessage();
 				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
 						"Error while updating the task tags", th, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			}
@@ -3816,7 +3842,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			}
 			catch (Throwable th)
 			{
-				String message = th.getMessage();
 				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
 						"Error while updating the task tags", th, PHPEditorPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 			}
@@ -3843,15 +3868,32 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				EncodingUtils.getModuleEncoding(module)));
 
 		StringBuffer moduleData = new StringBuffer();
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1)
+		try
 		{
-			String readData = String.valueOf(buf, 0, numRead);
-			moduleData.append(readData);
-			buf = new char[1024];
+			char[] buf = new char[1024];
+			int numRead = 0;
+			while ((numRead = reader.read(buf)) != -1) // $codepro.audit.disable assignmentInCondition
+			{
+				String readData = String.valueOf(buf, 0, numRead);
+				moduleData.append(readData);
+			}
 		}
-		reader.close();
+		finally
+		{
+			if (reader != null)
+			{
+				try
+				{
+					reader.close();
+				}
+				catch (IOException e)
+				{
+					IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+							"Error closing a BufferedReader in the PDTPHPModuleIndexer", e,//$NON-NLS-1$
+							PHPEditorPlugin.INDEXER_SCOPE);
+				}
+			}
+		}
 
 		String contents = moduleData.toString();
 
@@ -3961,7 +4003,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 					{
 						i++;
 					}
-				case '\n':
+				case '\n': // $codepro.audit.disable nonTerminatedCaseClause
 					result.append(contents.substring(lineStartPos, i + 1));
 					return result.toString();
 			}
@@ -3985,11 +4027,11 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	 * @throws Exception
 	 *             IF an exception occurs
 	 */
-	private Program parse(String contents, IModule module) throws Exception
+	private Program parse(String contents, IModule module)
 	{
 		try
 		{
-			Reader reader = new StringReader(contents);
+			Reader reader = new StringReader(contents); // $codepro.audit.disable closeWhereCreated
 			IProject project = null;
 			if (module.getBuildPath() instanceof ProjectBuildPath)
 			{

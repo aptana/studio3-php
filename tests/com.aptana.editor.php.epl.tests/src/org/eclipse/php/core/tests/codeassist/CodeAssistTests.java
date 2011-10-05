@@ -30,6 +30,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -142,7 +146,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 							{
 								if (testFile != null)
 								{
-									testFile.delete(true, null);
+									safeDelete(testFile);
 									testFile = null;
 								}
 							}
@@ -210,14 +214,28 @@ public class CodeAssistTests extends AbstractPDTTTest
 		testFile = project.getFile("test-" + testNumber + ".php");
 		if (testFile.exists())
 		{
-			testFile.refreshLocal(IResource.DEPTH_ZERO, null);
-			testFile.delete(true, null);
+			safeDelete(testFile);
+			testFile = project.getFile("test-" + testNumber + ".php");
 		}
 		testFile.create(new ByteArrayInputStream(data.getBytes()), true, null);
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
+		Job j = new Job("delay")
+		{
+			protected IStatus run(IProgressMonitor monitor)
+			{
+				try {
+					Thread.sleep(600L);
+				} catch (Exception e) {
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		j.setSystem(true);
+		j.schedule();
+		j.join();
 		return offset;
 	}
 

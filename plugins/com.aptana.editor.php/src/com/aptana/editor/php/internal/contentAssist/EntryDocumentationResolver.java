@@ -26,7 +26,7 @@ class EntryDocumentationResolver implements IDocumentationResolver
 	private final IModule module;
 	private final IElementEntry entry;
 
-	public EntryDocumentationResolver(String proposalContent, IElementsIndex index, Object val, IModule module,
+	protected EntryDocumentationResolver(String proposalContent, IElementsIndex index, Object val, IModule module,
 			IElementEntry entry)
 	{
 		this.proposalContent = proposalContent;
@@ -57,7 +57,7 @@ class EntryDocumentationResolver implements IDocumentationResolver
 			}
 			bf.append(')');
 			String sig = bf.toString();
-			FunctionDocumentation parseFunctionPHPDoc = findFunctionPHPDocComment != null ? PHPDocUtils
+			FunctionDocumentation parseFunctionPHPDoc = (findFunctionPHPDocComment != null) ? PHPDocUtils
 					.getFunctionDocumentation(findFunctionPHPDocComment) : null;
 			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, sig);
 
@@ -77,7 +77,7 @@ class EntryDocumentationResolver implements IDocumentationResolver
 			StringBuffer bf = new StringBuffer();
 			bf.append(proposalContent);
 			String sig = bf.toString();
-			FunctionDocumentation parseFunctionPHPDoc = findFunctionPHPDocComment != null ? PHPDocUtils
+			FunctionDocumentation parseFunctionPHPDoc = (findFunctionPHPDocComment != null) ? PHPDocUtils
 					.getFunctionDocumentation(findFunctionPHPDocComment) : null;
 			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, sig);
 
@@ -96,7 +96,7 @@ class EntryDocumentationResolver implements IDocumentationResolver
 			StringBuffer bf = new StringBuffer();
 			bf.append(proposalContent);
 			String sig = bf.toString();
-			FunctionDocumentation parseFunctionPHPDoc = findFunctionPHPDocComment != null ? PHPDocUtils
+			FunctionDocumentation parseFunctionPHPDoc = (findFunctionPHPDocComment != null) ? PHPDocUtils
 					.getFunctionDocumentation(findFunctionPHPDocComment) : null;
 			if (pl.isParameter())
 			{

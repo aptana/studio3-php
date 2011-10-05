@@ -21,8 +21,10 @@ import org.eclipse.jface.text.rules.Token;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
+import com.aptana.editor.common.CommonUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
+import com.aptana.editor.php.internal.parser.PHPTokenType;
 import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.IPHPTokenMapper;
 import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.PHPTokenMapperFactory;
 
@@ -84,44 +86,45 @@ public class PHPCodeScanner implements ITokenScanner
 
 		IPHPTokenMapper tokenMapper = PHPTokenMapperFactory.getMapper(fScanner.getPHPVersion());
 		token = tokenMapper.mapToken(sym, this);
-		if (scopeEquals(token, "storage.type.function.php")) //$NON-NLS-1$
+		if (scopeEquals(token, PHPTokenType.STORAGE_TYPE_FUNCTION))
 		{
 			inFunctionDeclaration = true;
 		}
 		// token scope is "default.php" and last was "storage.type.function.php", make this one
 		// "entity.name.function.php"
-		else if (scopeEquals(lastToken, "storage.type.function.php") //$NON-NLS-1$
-				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, "constant.other.php"))) //$NON-NLS-1$
+		else if (scopeEquals(lastToken, PHPTokenType.STORAGE_TYPE_FUNCTION)
+				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, PHPTokenType.CONSTANT_OTHER)))
 		{
-			token = getToken("entity.name.function.php"); //$NON-NLS-1$
+			token = getToken(PHPTokenType.ENTITY_FUNCTION.toString());
 		}
 		// token scope is "default.php" and last was "storage.type.class.php", make this one
 		// "entity.name.type.class.php"
-		else if (scopeEquals(lastToken, "storage.type.class.php") //$NON-NLS-1$
-				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, "constant.other.php"))) //$NON-NLS-1$
+		else if (scopeEquals(lastToken, PHPTokenType.STORAGE_TYPE_CLASS)
+				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, PHPTokenType.CONSTANT_OTHER)))
 		{
-			token = getToken("entity.name.type.class.php"); //$NON-NLS-1$
+			token = getToken(PHPTokenType.ENTITY_CLASS.toString());
 		}
 		// When we hit right paren, jump out of function declaration
-		else if (inFunctionDeclaration && scopeEquals(lastToken, "punctuation.definition.parameters.end.php")) //$NON-NLS-1$
+		else if (inFunctionDeclaration && scopeEquals(lastToken, PHPTokenType.PUNCTUATION_PARAM_RIGHT))
 		{
 			inFunctionDeclaration = false;
 		}
 		// Only use these special scopes for parens in function definitions
-		else if (!inFunctionDeclaration && (scopeEquals(token, "punctuation.definition.parameters.begin.php") //$NON-NLS-1$
-				|| scopeEquals(token, "punctuation.definition.parameters.end.php"))) //$NON-NLS-1$
+		else if (!inFunctionDeclaration
+				&& (scopeEquals(token, PHPTokenType.PUNCTUATION_PARAM_LEFT) || scopeEquals(token,
+						PHPTokenType.PUNCTUATION_PARAM_RIGHT)))
 		{
 			token = getToken(StringUtil.EMPTY);
 		}
 		// number inside array access
-		else if (scopeEquals(lastToken, "variable.other.php keyword.operator.index-start.php") && //$NON-NLS-1$
-				scopeEquals(token, "constant.numeric.php")) //$NON-NLS-1$
+		else if (scopeEquals(lastToken, PHPTokenType.PUNCTUATION_LBRACKET)
+				&& scopeEquals(token, PHPTokenType.CONSTANT_NUMERIC))
 		{
 			token = getToken("variable.other.php constant.numeric.php"); //$NON-NLS-1$
 		}
 		// ->identifier
-		else if (scopeEquals(lastToken, "keyword.operator.class.php") //$NON-NLS-1$
-				&& (scopeEquals(token, StringUtil.EMPTY)))
+		else if (scopeEquals(lastToken, PHPTokenType.KEYWORD_OP_CLASS)
+				&& (scopeEquals(token, StringUtil.EMPTY) || scopeEquals(token, PHPTokenType.CONSTANT_OTHER)))
 		{
 			// Lookahead to see if there's a trailing paren! If so, make it a function-call, otherwise it's a property
 			int lastOffset = getTokenOffset();
@@ -138,15 +141,51 @@ public class PHPCodeScanner implements ITokenScanner
 			if (!next.isEOF())
 			{
 				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
-				if (scopeEquals(nextMapped, "punctuation.definition.parameters.begin.php")) //$NON-NLS-1$
+				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
 				{
-					token = getToken("meta.function-call.object.php"); //$NON-NLS-1$
+					token = getToken(PHPTokenType.META_FUNCTION_CALL_OBJECT);
 				}
 				else
 				{
-					token = getToken("variable.other.property.php"); //$NON-NLS-1$
+					token = getToken(PHPTokenType.VARIABLE_OTHER_PROPERTY);
 				}
 			}
+			else
+			{
+				token = getToken(PHPTokenType.VARIABLE_OTHER_PROPERTY);
+			}
+			// Push the tokens we looked ahead back onto our queue
+			for (QueuedToken addBack : popped)
+			{
+				push(addBack.getToken(), addBack.getOffset(), addBack.getLength());
+			}
+			fLength = lastLength;
+			fOffset = lastOffset;
+		}
+		// function calls
+		else if (scopeEquals(token, PHPTokenType.CONSTANT_OTHER))
+		{
+			// Lookahead to see if there's a trailing paren! If so, make it a function-call
+			int lastOffset = getTokenOffset();
+			int lastLength = getTokenLength();
+			List<QueuedToken> popped = new ArrayList<QueuedToken>();
+			IToken next = pop();
+			while (next.isWhitespace())
+			{
+				popped.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
+				next = pop();
+			}
+			popped.add(new QueuedToken(next, getTokenOffset(), getTokenLength()));
+
+			if (!next.isEOF())
+			{
+				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
+				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
+				{
+					token = getToken(PHPTokenType.META_FUNCTION_CALL);
+				}
+			}
+
 			// Push the tokens we looked ahead back onto our queue
 			for (QueuedToken addBack : popped)
 			{
@@ -167,6 +206,11 @@ public class PHPCodeScanner implements ITokenScanner
 		}
 
 		return token;
+	}
+
+	private boolean scopeEquals(IToken token, PHPTokenType type)
+	{
+		return scopeEquals(token, type.toString());
 	}
 
 	private boolean scopeEquals(IToken token, String scope)
@@ -208,9 +252,14 @@ public class PHPCodeScanner implements ITokenScanner
 		return null;
 	}
 
+	public IToken getToken(PHPTokenType type)
+	{
+		return getToken(type.toString());
+	}
+
 	public IToken getToken(String tokenName)
 	{
-		return new Token(tokenName);
+		return CommonUtil.getToken(tokenName);
 	}
 
 	public int peek()

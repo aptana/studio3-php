@@ -8,6 +8,7 @@
 package com.aptana.editor.php.indexer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -20,7 +21,7 @@ public final class ASTVisitorRegistry
 {
 	private static final String EXTENSION_POINT_NAME = "com.aptana.editor.php.astVisitor"; //$NON-NLS-1$
 	private static ASTVisitorRegistry instance;
-	private ArrayList<IIndexingASTVisitor> visitors;
+	private List<IIndexingASTVisitor> visitors;
 
 	private ASTVisitorRegistry()
 	{
