@@ -341,7 +341,6 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 
 		fOccurrencesFinderJob = new OccurrencesFinderJob(document, locations, selection);
 		fOccurrencesFinderJob.setPriority(Job.DECORATE);
-		fOccurrencesFinderJob.setUser(true);
 		fOccurrencesFinderJob.schedule();
 	}
 
