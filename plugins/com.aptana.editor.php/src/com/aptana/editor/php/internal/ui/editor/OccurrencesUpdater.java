@@ -58,6 +58,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.model.IModelElement;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
+import com.aptana.parsing.IParseState;
 
 /**
  * This class works closely with the {@link PHPSourceEditor} to update the PHP elements occurrences annotations.
@@ -520,7 +521,7 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	 * The parser itself should already set the latest AST on the shared AST provider, so we should be fine with the new
 	 * positions on the AST.
 	 */
-	public void parseFinished()
+	public void parseCompletedSuccessfully()
 	{
 		Job updateOccurrences = new UIJob("Updating occurrences...") //$NON-NLS-1$
 		{
@@ -848,5 +849,25 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 
 			return Status.OK_STATUS;
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.outline.IParseListener#parseAboutToStart(com.aptana.parsing.IParseState)
+	 */
+	public void beforeParse(IParseState parseState)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.outline.IParseListener#afterParse(com.aptana.parsing.IParseState)
+	 */
+	public void afterParse(IParseState parseState)
+	{
+		// TODO Auto-generated method stub
+
 	}
 }
