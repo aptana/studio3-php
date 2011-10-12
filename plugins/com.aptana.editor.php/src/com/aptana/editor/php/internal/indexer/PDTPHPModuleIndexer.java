@@ -2441,7 +2441,23 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			// counting first path entry
 			Expression classNameIdentifier = dispatch.getClassName();
-			String className = ((Identifier) classNameIdentifier).getName();
+			if (classNameIdentifier == null
+					|| (classNameIdentifier.getType() != ASTNode.IDENTIFIER
+							&& classNameIdentifier.getType() != ASTNode.NAMESPACE_NAME && classNameIdentifier.getType() != ASTNode.VARIABLE))
+			{
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Expected an identifier, variable or namespace-name", new Exception("Missing identifier")); //$NON-NLS-1$ //$NON-NLS-2$
+				return null;
+			}
+			String className = null;
+			if (classNameIdentifier.getType() == ASTNode.VARIABLE)
+			{
+				className = getVariableName(((Variable) classNameIdentifier));
+			}
+			else
+			{
+				className = ((Identifier) classNameIdentifier).getName();
+			}
 			result.setClassEntry(className);
 
 			// counting second entry
