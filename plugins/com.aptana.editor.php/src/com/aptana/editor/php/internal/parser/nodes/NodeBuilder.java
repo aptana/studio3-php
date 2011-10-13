@@ -9,10 +9,12 @@ package com.aptana.editor.php.internal.parser.nodes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 
 import org2.eclipse.php.core.compiler.PHPFlags;
@@ -381,14 +383,19 @@ public class NodeBuilder
 					if (parent != null)
 					{
 						IParseNode nextSibling = htmlNode.getNextSibling();
-						List<IParseNode> toInsert = new ArrayList<IParseNode>();
+						Set<IParseNode> toInsert = new HashSet<IParseNode>();
 						toInsert.add(htmlNode);
 						// check if we need to insert any siblings as well
 						while (nextSibling != null && nextSibling.getStartingOffset() < node.getEndingOffset())
 						{
 							if (nextSibling instanceof HTMLElementNode)
 							{
-								toInsert.add(nextSibling);
+								if (!toInsert.add(nextSibling))
+								{
+									// #APSTUD-3662 ==> In case the next sibling is already there, break the loop.
+									break;
+								}
+
 							}
 							nextSibling = nextSibling.getNextSibling();
 						}
