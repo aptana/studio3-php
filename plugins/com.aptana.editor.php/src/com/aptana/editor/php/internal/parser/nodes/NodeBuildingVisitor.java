@@ -548,7 +548,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public void endVisit(IfStatement ifStatement)
 	{
-		if (ifStatement.getTrueStatement() != null)
+		if (ifStatement.getTrueStatement() != null && ifStatement.getTrueStatement() .getType() != ASTNode.IF_STATEMENT)
 		{
 			nodeBuilder.handleCommonDeclarationEnd();
 		}
