@@ -954,7 +954,6 @@ public class PHPScopesTest extends TestCase
 			viewer.configure(new PHPSourceViewerConfiguration(PHPEditorPlugin.getDefault().getPreferenceStore(), null));
 
 			IDocument document = new Document(content);
-			viewer.setDocument(document);
 
 			CompositePartitionScanner partitionScanner = new CompositePartitionScanner(HTMLSourceConfiguration
 					.getDefault().createSubPartitionScanner(), PHPSourceConfiguration.getDefault()
@@ -974,6 +973,7 @@ public class PHPScopesTest extends TestCase
 							PHPSourceConfiguration.getDefault() });
 
 			fViewers.put(content.hashCode(), viewer);
+			viewer.setDocument(document);
 		}
 		return getDocumentScopeManager().getScopeAtOffset(viewer, offset);
 	}
