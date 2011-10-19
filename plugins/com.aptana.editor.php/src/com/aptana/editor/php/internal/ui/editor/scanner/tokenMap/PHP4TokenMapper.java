@@ -14,7 +14,6 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 
 	public IToken mapToken(Symbol sym, PHPCodeScanner scanner)
 	{
-		PHPBuiltins builtins = PHPBuiltins.getInstance();
 		switch (sym.sym)
 		{
 			case T_ECHO:
@@ -91,11 +90,6 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				return scanner.getToken(PHPTokenType.CONSTANT_LANGUAGE);
 			case T_VARIABLE:
 				String value = scanner.getSymbolValue(sym);
-				if (builtins.isBuiltinConstant(value))
-				{
-					// It's a variable, and it's in the built-in constants, so we can tell it's a super-global.
-					return scanner.getToken(PHPTokenType.VARIABLE_OTHER_GLOBAL);
-				}
 				if (THIS.equals(value))
 				{
 					return scanner.getToken(PHPTokenType.VARIABLE_LANGUAGE);
@@ -103,10 +97,6 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				if (PHPTokenMapperFactory.GLOBALS.contains(value))
 				{
 					return scanner.getToken(PHPTokenType.VARIABLE_OTHER_GLOBAL);
-				}
-				if (PHPTokenMapperFactory.SAFER_GLOBALS.contains(value))
-				{
-					return scanner.getToken(PHPTokenType.VARIABLE_OTHER_GLOBAL_SAFER);
 				}
 				return scanner.getToken(PHPTokenType.VARIABLE_OTHER);
 			case T_CONST:
@@ -130,6 +120,7 @@ public class PHP4TokenMapper implements IPHPTokenMapper, ParserConstants
 				{
 					return scanner.getToken(PHPTokenType.CONSTANT_LANGUAGE_OTHER);
 				}
+				PHPBuiltins builtins = PHPBuiltins.getInstance();
 				if (builtins != null)
 				{
 					if (builtins.isBuiltinFunction(tokenContent))
