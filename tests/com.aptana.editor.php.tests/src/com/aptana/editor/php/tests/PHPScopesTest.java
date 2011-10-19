@@ -721,10 +721,9 @@ public class PHPScopesTest extends TestCase
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php punctuation.definition.variable.php",
 				source, 9, 1);
 
-		// FIXME We don't break out dollar sign as special scope
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php punctuation.definition.variable.php",
-		// source, 10, 1);
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php punctuation.definition.variable.php",
+				source, 10, 1);
 		assertScope(
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php",
 				source, 11, 4);
@@ -736,10 +735,10 @@ public class PHPScopesTest extends TestCase
 				source, 16, 1);
 		assertScope(
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php meta.string-contents.quoted.double.php",
-				source, 16, 3);
+				source, 17, 3);
 		assertScope(
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php punctuation.definition.string.end.php",
-				source, 16, 1);
+				source, 20, 1);
 		assertScope(
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php keyword.operator.index-end.php",
 				source, 21, 1);
