@@ -15,7 +15,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
 import com.aptana.editor.php.internal.contentAssist.mapping.ICodeLocation;
@@ -59,7 +59,7 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 	 */
 	public IHyperlink[] detectHyperlinks(PHPSourceEditor editor, IRegion region, boolean canShowMultipleHyperlinks)
 	{
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
 				.getDocument(editor.getEditorInput()), region.getOffset());
 
 		Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexemeFromOffset(region.getOffset());

@@ -29,7 +29,7 @@ import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.IOUtil;
 import com.aptana.core.util.StringUtil;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.common.hover.ThemedInformationControl;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -251,7 +251,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 	protected Object[] getPHPElementsAt(ITextViewer textViewer, IRegion hoverRegion)
 	{
 		PHPSourceEditor editor = (PHPSourceEditor) getEditor();
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
 				.getDocument(editor.getEditorInput()), hoverRegion.getOffset());
 
 		Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexemeFromOffset(hoverRegion.getOffset());

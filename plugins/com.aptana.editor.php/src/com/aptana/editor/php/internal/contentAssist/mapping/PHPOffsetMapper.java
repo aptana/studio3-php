@@ -20,7 +20,7 @@ import org.eclipse.jface.text.ITypedRegion;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -81,7 +81,7 @@ public class PHPOffsetMapper
 	 * @param lexemeProvider
 	 * @return An {@link IElementEntry} matching the lexeme origin, or null if none was found.
 	 */
-	public IElementEntry findEntry(Lexeme<PHPTokenType> lexeme, LexemeProvider<PHPTokenType> lexemeProvider)
+	public IElementEntry findEntry(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
 		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
 		Set<IElementEntry> entries = collectEntries(source, lexeme);
@@ -101,7 +101,7 @@ public class PHPOffsetMapper
 	 * @param lexemeProvider
 	 *            The lexeme provider, for cases that require lexeme inspection
 	 */
-	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, LexemeProvider<PHPTokenType> lexemeProvider)
+	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
 		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
 		try
@@ -117,7 +117,7 @@ public class PHPOffsetMapper
 				// Because we have a different partition type for strings, we have to check the previous partition for
 				// any include or require lexemes.
 				// We also have to create a new lexeme provider just for this region check
-				LexemeProvider<PHPTokenType> newLexemeProvider = ParsingUtils.createLexemeProvider(document,
+				ILexemeProvider<PHPTokenType> newLexemeProvider = ParsingUtils.createLexemeProvider(document,
 						previousPartitionEnd);
 				int lexemePosition = newLexemeProvider.getLexemeFloorIndex(previousPartitionEnd - 1);
 				Lexeme<PHPTokenType> importLexeme = PHPContextCalculator.findLexemeBackward(newLexemeProvider,

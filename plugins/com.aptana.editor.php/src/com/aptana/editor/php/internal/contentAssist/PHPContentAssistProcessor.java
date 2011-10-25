@@ -50,7 +50,7 @@ import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
 import com.aptana.editor.common.contentassist.ICommonCompletionProposal;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -240,7 +240,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			// ignore it and just use the lexemeProvider
 		}
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c);
 		if (!currentContext.acceptModelsElements() && !currentContext.isAutoActivateCAAfterApply())
 		{
@@ -344,7 +344,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			phpVersion = PHPVersionProvider.getDefaultPHPVersion();
 		}
 
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		// Calculates and sets completion context
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
 
@@ -3247,7 +3247,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return EMPTY_CONTEXT_INFO;
 		}
 		String content = document.get();
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		CallInfo info = PHPContextCalculator.calculateCallInfo(lexemeProvider, offset);
 		if (info == null)
 		{
