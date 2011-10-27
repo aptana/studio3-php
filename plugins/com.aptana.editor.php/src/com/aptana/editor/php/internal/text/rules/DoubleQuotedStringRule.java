@@ -44,6 +44,8 @@ public class DoubleQuotedStringRule extends MultiLineRule {
 			} else if (c == '{') {
 				if ((c = scanner.read()) == '$') {
 					openBrackets = 1;
+				} else if (c != ICharacterScanner.EOF) {
+					scanner.unread();
 				}
 			} else if ((c == fEndSequence[0] && sequenceDetected(scanner, fEndSequence, fBreaksOnEOF))) {
 				break;
