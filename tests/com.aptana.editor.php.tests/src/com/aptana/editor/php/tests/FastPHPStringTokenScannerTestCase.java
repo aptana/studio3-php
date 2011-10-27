@@ -25,6 +25,8 @@ import com.aptana.editor.php.internal.text.rules.FastPHPStringTokenScanner;
 public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestCase {
 
 	private IToken defaultToken = getToken("string.quoted.double.php");
+	private IToken punctuationBeginToken = getToken("punctuation.definition.string.begin.php");
+	private IToken punctuationEndToken = getToken("punctuation.definition.string.end.php");
 	
 	/* (non-Javadoc)
 	 * @see com.aptana.editor.common.tests.AbstractTokenScannerTestCase#createTokenScanner()
@@ -113,6 +115,25 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 2, 2);
 		assertToken(getToken(PHPTokenType.CHARACTER_ESCAPE), 4, 1); // \
 		assertToken(defaultToken, 5, 2);
+	}
+
+	public void testDoubleQuotes() {
+		String src = "\"\"";
+		IDocument document = new Document(src);
+
+		scanner.setRange(document, 0, document.getLength());
+		assertToken(punctuationBeginToken, 0, 1);
+		assertToken(punctuationEndToken, 1, 1);
+	}
+
+	public void testDollarSign() {
+		String src = "\"$\"";
+		IDocument document = new Document(src);
+
+		scanner.setRange(document, 0, document.getLength());
+		assertToken(punctuationBeginToken, 0, 1);
+		assertToken(defaultToken, 1, 1);
+		assertToken(punctuationEndToken, 2, 1);
 	}
 
 	public void testSimpleVariable() {

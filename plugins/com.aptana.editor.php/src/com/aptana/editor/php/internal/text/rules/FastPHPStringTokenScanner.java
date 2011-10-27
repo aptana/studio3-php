@@ -89,6 +89,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 				readEscape(startOffset);
 				break;
 			case '$':
+				fScanner.unread();
 				readSimpleVariable(startOffset);
 				break;
 			case '{':
@@ -160,7 +161,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	private void readSimpleVariable(int offset) {
 		int ch = fScanner.read();
-		int unread = 1;
+		int unread = 0;
 		if (ch == '$') {
 			ch = fScanner.read();
 			++unread;
@@ -179,16 +180,17 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 			IToken token = PHPTokenMapperFactory.GLOBALS.contains(name.toString()) ? TOKEN_VARIABLE_GLOBAL : TOKEN_VARIABLE_OTHER;
 			queueToken(token, offset, fScanner.getOffset() - offset);
 			readVariableOperator(fScanner.getOffset());
-			unread = 0;
+			return;
 		} else if (ch == '{') { // we have ${
 			queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);
 			readLiteral(fScanner.getOffset());
 			readDefaultUntil('}', TOKEN_VARIABLE_PUNCTUATION, fScanner.getOffset());
-			unread = 0;
+			return;
 		}
-		while (ch != ICharacterScanner.EOF && unread-- > 0) {
+		while (unread-- > 0) {
 			fScanner.unread();
 		}
+		readDefault(offset);
 	}
 
 	private void readComplexVariable(int offset) {
