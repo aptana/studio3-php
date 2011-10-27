@@ -142,11 +142,14 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 
 		scanner.setRange(document, 0, document.getLength());
 		assertToken(defaultToken, 0, 1);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 1, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 1, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 2, 1); // x
 		assertToken(defaultToken, 3, 2);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 5, 4); // $xyz
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 5, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 6, 3); // xyz
 		assertToken(defaultToken, 9, 2);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 11, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 11, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 12, 1); // x
 	}
 
 	public void testSimpleVariableClassOperator() {
@@ -154,14 +157,17 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		IDocument document = new Document(src);
 
 		scanner.setRange(document, 0, document.getLength());
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 0, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 1, 1); // x
 		assertToken(getToken(PHPTokenType.CLASS_OPERATOR), 2, 2); // ->
 		assertToken(defaultToken, 4, 1);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 5, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 5, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 6, 1); // x
 		assertToken(getToken(PHPTokenType.CLASS_OPERATOR), 7, 2); // ->
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 9, 3); // xyz
 		assertToken(defaultToken, 12, 1);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 13, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 13, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 14, 1); // x
 		assertToken(getToken(PHPTokenType.CLASS_OPERATOR), 15, 2); // ->
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 17, 1); // y
 		assertToken(getToken(PHPTokenType.CLASS_OPERATOR), 18, 2); // ->
@@ -173,12 +179,14 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		IDocument document = new Document(src);
 
 		scanner.setRange(document, 0, document.getLength());
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 0, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 1, 1); // x
 		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 2, 1); // [
 		assertToken(getToken(PHPTokenType.NUMERIC), 3, 1); // 0
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 4, 1); // ]
 		assertToken(defaultToken, 5, 1);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 6, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 6, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 7, 1); // x
 		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 8, 1); // [
 		assertToken(getToken(PHPTokenType.NUMERIC), 9, 3); // 123
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 12, 1); // ]
@@ -189,12 +197,14 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		IDocument document = new Document(src);
 
 		scanner.setRange(document, 0, document.getLength());
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 0, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 1, 1); // x
 		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 2, 1); // [
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 3, 1); // a
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 4, 1); // ]
 		assertToken(defaultToken, 5, 1);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 6, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 6, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 7, 1); // x
 		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 8, 1); // [
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 9, 3); // abc
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 12, 1); // ]
@@ -206,12 +216,14 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		IDocument document = new Document(src);
 
 		scanner.setRange(document, 0, document.getLength());
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 0, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 1, 1); // x
 		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 2, 1); // [
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 3, 2); // $a
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 5, 1); // ]
 		assertToken(defaultToken, 6, 1);
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 7, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 7, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 8, 1); // x
 		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 9, 1); // [
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 10, 4); // $abc
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 14, 1); // ]
@@ -257,7 +269,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 
 		scanner.setRange(document, 0, document.getLength());
 		assertToken(defaultToken, 0, 2); // {_
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 2, 2); // $x
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 2, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 3, 1); // x
 		assertToken(defaultToken, 4, 1);
 	}
 
@@ -268,7 +281,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		scanner.setRange(document, 0, document.getLength());
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // {
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 1, 2); // ${
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 3, 5); // $name
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 3, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 4, 4); // name
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 8, 1); // }
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 9, 1); // }
 	}
@@ -331,7 +345,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		scanner.setRange(document, 0, document.getLength());
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // {
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 1, 2); // ${
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 3, 7); // $object
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 3, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 4, 6); // object
 		assertToken(getToken(PHPTokenType.CLASS_OPERATOR), 10, 2); // ->
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 12, 7); // getName
 		assertToken(getToken(PHPTokenType.FUNCTION_PUNCTUATION), 19, 1); // (
@@ -371,7 +386,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 1, 2); // ${
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 3, 5); // beers
 		assertToken(getToken(PHPTokenType.STATIC_PUNCTUATION), 8, 2); // ::
-		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 10, 4); // $ale
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 10, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 11, 3); // ale
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 14, 1); // }
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 15, 1); // }
 	}

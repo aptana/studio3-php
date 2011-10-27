@@ -178,6 +178,10 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 				fScanner.unread();
 			}
 			IToken token = PHPTokenMapperFactory.GLOBALS.contains(name.toString()) ? TOKEN_VARIABLE_GLOBAL : TOKEN_VARIABLE_OTHER;
+			if (unread != 0) {
+				queueToken(token == TOKEN_VARIABLE_GLOBAL ? TOKEN_VARIABLE_GLOBAL_PUNCTUATION : TOKEN_VARIABLE_OTHER_PUNCTUATION, offset, 1);
+				++offset;
+			}
 			queueToken(token, offset, fScanner.getOffset() - offset);
 			readVariableOperator(fScanner.getOffset());
 			return;
