@@ -110,6 +110,7 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.progress.UIJob;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -201,8 +202,6 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 	private int selectionMode;
 
 	private ItemsListSeparator itemsListSeparator;
-
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	private boolean refreshWithLastSelection = false;
 
@@ -415,7 +414,7 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		header.setLayout(layout);
 
 		Label label = new Label(header, SWT.NONE);
-		String string = (getMessage() != null && getMessage().trim().length() > 0) ? getMessage()
+		String string = (!StringUtil.isEmpty(getMessage())) ? getMessage()
 				: Messages.FilteredItemsSelectionDialog_Filter;
 		label.setText(string);
 		label.addTraverseListener(new TraverseListener()
@@ -679,8 +678,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 						}
 					}
 					if (isSelectedHistory)
+					{
 						removeSelectedItems(selectedElements);
-
+					}
 				}
 
 				if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.SHIFT) != 0 && (e.stateMask & SWT.CTRL) != 0)
@@ -695,7 +695,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 							pattern.setFocus();
 						}
 						if (list.getElementAt(list.getTable().getSelectionIndex() - 1) instanceof ItemsListSeparator)
+						{
 							list.getTable().setSelection(list.getTable().getSelectionIndex() - 1);
+						}
 						list.getTable().notifyListeners(SWT.Selection, new Event());
 
 					}
@@ -705,7 +707,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 				{
 
 					if (list.getElementAt(list.getTable().getSelectionIndex() + 1) instanceof ItemsListSeparator)
+					{
 						list.getTable().setSelection(list.getTable().getSelectionIndex() + 1);
+					}
 					list.getTable().notifyListeners(SWT.Selection, new Event());
 				}
 
@@ -796,11 +800,11 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 	 */
 	protected void handleSelected(StructuredSelection selection)
 	{
-		IStatus status = new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, EMPTY_STRING, null);
+		IStatus status = new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, StringUtil.EMPTY, null);
 
 		if (selection.size() == 0)
 		{
-			status = new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, IStatus.ERROR, EMPTY_STRING, null);
+			status = new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, IStatus.ERROR, StringUtil.EMPTY, null);
 
 			if (lastSelection != null && getListSelectionLabelDecorator() != null)
 			{
@@ -812,7 +816,7 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		}
 		else
 		{
-			status = new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, IStatus.ERROR, EMPTY_STRING, null);
+			status = new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, IStatus.ERROR, StringUtil.EMPTY, null);
 
 			List<?> items = selection.toList();
 
@@ -833,7 +837,7 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 
 				if (tempStatus.isOK())
 				{
-					status = new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, EMPTY_STRING, null);
+					status = new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, StringUtil.EMPTY, null);
 				}
 				else
 				{
@@ -967,7 +971,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 	public void scheduleProgressMessageRefresh()
 	{
 		if (filterJob.getState() != Job.RUNNING && refreshProgressMessageJob.getState() != Job.RUNNING)
+		{
 			refreshProgressMessageJob.scheduleProgressRefresh(null);
+		}
 	}
 
 	/**
@@ -1080,7 +1086,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		}
 
 		if (itemToRemove == null)
+		{
 			return new StructuredSelection(selectedItems);
+		}
 		// Create a new selection without the collision
 		@SuppressWarnings("rawtypes")
 		List<?> newItems = new ArrayList(selectedItems);
@@ -1249,7 +1257,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 	protected void setSelectionHistory(SelectionHistory selectionHistory)
 	{
 		if (this.contentProvider != null)
+		{
 			this.contentProvider.setSelectionHistory(selectionHistory);
+		}
 	}
 
 	/**
@@ -1361,14 +1371,16 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		public IStatus runInUIThread(IProgressMonitor monitor)
 		{
 			if (monitor.isCanceled())
-				return new Status(IStatus.OK, WorkbenchPlugin.PI_WORKBENCH, IStatus.OK, EMPTY_STRING, null);
+			{
+				return new Status(IStatus.OK, WorkbenchPlugin.PI_WORKBENCH, IStatus.OK, StringUtil.EMPTY, null);
+			}
 
 			if (CustomFilteredItemsSelectionDialog.this != null)
 			{
 				CustomFilteredItemsSelectionDialog.this.refresh();
 			}
 
-			return new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, EMPTY_STRING, null);
+			return new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, StringUtil.EMPTY, null);
 		}
 
 	}
@@ -1401,17 +1413,19 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		{
 
 			if (!progressLabel.isDisposed())
-				progressLabel.setText(progressMonitor != null ? progressMonitor.getMessage() : EMPTY_STRING);
+			{
+				progressLabel.setText(progressMonitor != null ? progressMonitor.getMessage() : StringUtil.EMPTY);
+			}
 
 			if (progressMonitor == null || progressMonitor.isDone())
 			{
-				return new Status(IStatus.CANCEL, PlatformUI.PLUGIN_ID, IStatus.CANCEL, EMPTY_STRING, null);
+				return new Status(IStatus.CANCEL, PlatformUI.PLUGIN_ID, IStatus.CANCEL, StringUtil.EMPTY, null);
 			}
 
 			// Schedule cyclical with 500 milliseconds delay
 			schedule(500);
 
-			return new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, EMPTY_STRING, null);
+			return new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, StringUtil.EMPTY, null);
 		}
 
 		/**
@@ -1466,7 +1480,7 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		{
 			if (monitor.isCanceled())
 			{
-				return new Status(IStatus.CANCEL, WorkbenchPlugin.PI_WORKBENCH, IStatus.CANCEL, EMPTY_STRING, null);
+				return new Status(IStatus.CANCEL, WorkbenchPlugin.PI_WORKBENCH, IStatus.CANCEL, StringUtil.EMPTY, null);
 			}
 
 			if (CustomFilteredItemsSelectionDialog.this != null)
@@ -1480,7 +1494,7 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 				refreshJob.schedule();
 			}
 
-			return new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, EMPTY_STRING, null);
+			return new Status(IStatus.OK, PlatformUI.PLUGIN_ID, IStatus.OK, StringUtil.EMPTY, null);
 
 		}
 
@@ -1676,7 +1690,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 
 			StringBuffer result = new StringBuffer();
 			result.append(dashes);
-			result.append(" " + separatorLabel + " "); //$NON-NLS-1$//$NON-NLS-2$
+			result.append(' ');
+			result.append(separatorLabel);
+			result.append(' ');
 			result.append(dashes);
 			return result.toString().trim();
 		}
@@ -1949,13 +1965,15 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		private String getMessage()
 		{
 			if (done)
-				return ""; //$NON-NLS-1$
+			{
+				return StringUtil.EMPTY;
+			}
 
 			String message;
 
 			if (name == null)
 			{
-				message = subName == null ? "" : subName; //$NON-NLS-1$
+				message = subName == null ? StringUtil.EMPTY : subName;
 			}
 			else
 			{
@@ -1963,7 +1981,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 						name, subName });
 			}
 			if (totalWork == 0)
+			{
 				return message;
+			}
 
 			return NLS.bind(Messages.FilteredItemsSelectionDialog_Temp1, new Object[] { message,
 					new Integer((int) ((worked * 100) / totalWork)) });
@@ -2086,14 +2106,18 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 			try
 			{
 				if (monitor.isCanceled())
+				{
 					return;
+				}
 
 				this.itemsFilter = filter;
 
 				filterContent(monitor);
 
 				if (monitor.isCanceled())
+				{
 					return;
+				}
 
 				contentProvider.refresh();
 			}
@@ -2124,7 +2148,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 
 					Object item = lastCompletedResult.get(pos);
 					if (monitor.isCanceled())
+					{
 						break;
+					}
 					contentProvider.add(item, itemsFilter);
 
 					if ((pos % 500) == 0)
@@ -2199,9 +2225,13 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 				public boolean add(Object arg0)
 				{
 					if (this.size() > MAX_HISTORY_SIZE)
+					{
 						this.removeFirst();
+					}
 					if (!this.contains(arg0))
+					{
 						return super.add(arg0);
+					}
 					return false;
 				}
 
@@ -2372,8 +2402,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		public ItemsFilter(SearchPattern searchPattern)
 		{
 			patternMatcher = searchPattern;
-			String stringPattern = ""; //$NON-NLS-1$
-			if (pattern != null && !pattern.getText().equals("*")) { //$NON-NLS-1$
+			String stringPattern = StringUtil.EMPTY;
+			if (pattern != null && !pattern.getText().equals("*"))//$NON-NLS-1$
+			{
 				stringPattern = pattern.getText();
 			}
 			patternMatcher.setPattern(stringPattern);
@@ -2472,7 +2503,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 			String text = getElementName(item);
 
 			if (text == null)
+			{
 				return false;
+			}
 
 			int textLength = text.length();
 			int prefixLength = prefix.length();
@@ -2483,7 +2516,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 			for (int i = prefixLength - 1; i >= 0; i--)
 			{
 				if (Character.toLowerCase(prefix.charAt(i)) != Character.toLowerCase(text.charAt(i)))
+				{
 					return false;
+				}
 			}
 			return true;
 		}
@@ -2664,9 +2699,8 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 			if (this.selectionHistory != null)
 			{
 				Object[] items = this.selectionHistory.getHistoryItems();
-				for (int i = 0; i < items.length; i++)
+				for (Object item : items)
 				{
-					Object item = items[i];
 					if (itemsFilter == filter)
 					{
 						if (itemsFilter != null)
@@ -2770,9 +2804,13 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 			if (this.items.contains(item))
 			{
 				if (isDuplicate)
+				{
 					this.duplicates.add(item);
+				}
 				else
+				{
 					this.duplicates.remove(item);
+				}
 			}
 		}
 
@@ -2809,7 +2847,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		public void saveHistory(IMemento memento)
 		{
 			if (this.selectionHistory != null)
+			{
 				this.selectionHistory.save(memento);
+			}
 		}
 
 		/**
@@ -2917,7 +2957,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 			if (reset || (monitor != null && monitor.isCanceled()))
 			{
 				if (monitor != null)
+				{
 					monitor.done();
+				}
 				return;
 			}
 
@@ -2926,7 +2968,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 				checkDuplicates(monitor);
 			}
 			if (monitor != null)
+			{
 				monitor.done();
+			}
 		}
 
 		private void checkDuplicates(IProgressMonitor monitor)
@@ -2963,7 +3007,9 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 					}
 
 					if (subMonitor != null && reportEvery != 0 && (i + 1) % reportEvery == 0)
+					{
 						subMonitor.worked(1);
+					}
 				}
 				helperMap.clear();
 			}
@@ -3011,14 +3057,18 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 					ViewerFilter f = (ViewerFilter) iter.next();
 					filteredElements = f.filter(list, parent, filteredElements);
 					if (monitor != null)
+					{
 						monitor.worked(ticks);
+					}
 				}
 			}
 
 			if (filteredElements == null || monitor.isCanceled())
 			{
 				if (monitor != null)
+				{
 					monitor.done();
+				}
 				return new Object[0];
 			}
 
@@ -3049,11 +3099,15 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 				preparedElements.add(item);
 
 				if (monitor != null && reportEvery != 0 && ((i + 1) % reportEvery == 0))
+				{
 					monitor.worked(1);
+				}
 			}
 
 			if (monitor != null)
+			{
 				monitor.done();
+			}
 
 			return preparedElements.toArray();
 		}
@@ -3287,9 +3341,13 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 			int leftCategory = getCamelCaseCategory(o1);
 			int rightCategory = getCamelCaseCategory(o2);
 			if (leftCategory < rightCategory)
+			{
 				return -1;
+			}
 			if (leftCategory > rightCategory)
+			{
 				return +1;
+			}
 
 			return getItemsComparator().compare(o1, o2);
 		}
@@ -3297,9 +3355,13 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		private int getCamelCaseCategory(Object item)
 		{
 			if (filter == null)
+			{
 				return 0;
+			}
 			if (!filter.isCamelCasePattern())
+			{
 				return 0;
+			}
 			return filter.matchesRawNamePattern(item) ? 0 : 1;
 		}
 	}
@@ -3327,12 +3389,17 @@ public abstract class CustomFilteredItemsSelectionDialog extends SelectionStatus
 		public int compare(Object o1, Object o2)
 		{
 			if ((isHistoryElement(o1) && isHistoryElement(o2)) || (!isHistoryElement(o1) && !isHistoryElement(o2)))
+			{
 				return this.camelCaseComparator.compare(o1, o2);
-
+			}
 			if (isHistoryElement(o1))
+			{
 				return -2;
+			}
 			if (isHistoryElement(o2))
+			{
 				return +2;
+			}
 
 			return 0;
 		}
