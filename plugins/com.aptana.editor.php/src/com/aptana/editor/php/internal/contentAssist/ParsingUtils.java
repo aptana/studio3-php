@@ -7,6 +7,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.parsing.lexer.Range;
 
@@ -24,7 +25,7 @@ public final class ParsingUtils
 	 * @param offset
 	 * @return A new {@link LexemeProvider} for the partition on that offset.
 	 */
-	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int offset)
+	public static ILexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int offset)
 	{
 		if (offset == document.getLength() && offset > 0)
 		{
@@ -53,9 +54,10 @@ public final class ParsingUtils
 	 * @param document
 	 * @return A new {@link LexemeProvider} for the document.
 	 */
-	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document)
+	public static ILexemeProvider<PHPTokenType> createLexemeProvider(IDocument document)
 	{
-		return new LexemeProvider<PHPTokenType>(document, new Range(0, document.getLength() - 1), new PHPScopeScanner())
+		return new LexemeProvider<PHPTokenType>(document, new Range(0, document.getLength() - 1),
+				new PHPScopeScanner())
 		{
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
@@ -82,7 +84,7 @@ public final class ParsingUtils
 	 *            - end offset
 	 * @return A new {@link LexemeProvider} for the document.
 	 */
-	public static LexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int start, int end)
+	public static ILexemeProvider<PHPTokenType> createLexemeProvider(IDocument document, int start, int end)
 	{
 		if (end == document.getLength() && end > 0)
 		{
