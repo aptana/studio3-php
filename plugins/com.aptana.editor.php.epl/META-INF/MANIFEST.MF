@@ -87,4 +87,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  com.aptana.core,
  com.aptana.editor.common;bundle-version="3.0.0",
- com.aptana.ui;bundle-version="3.0.0"
+ com.aptana.ui;bundle-version="3.0.0",
+ com.aptana.buildpath.core
