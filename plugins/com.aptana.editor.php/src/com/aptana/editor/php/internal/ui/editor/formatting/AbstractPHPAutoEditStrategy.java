@@ -17,6 +17,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.common.contentassist.LexemeProvider;
 import com.aptana.editor.common.preferences.IPreferenceConstants;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -84,7 +85,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * spaces
 	 */
 	protected String spaces = "                                                                            "; //$NON-NLS-1$
-	protected LexemeProvider<PHPTokenType> lexemeProvider;
+	protected ILexemeProvider<PHPTokenType> lexemeProvider;
 	protected String contentType;
 	protected PHPSourceViewerConfiguration configuration;
 	protected ISourceViewer sourceViewer;
@@ -117,7 +118,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @return A {@link LexemeProvider}
 	 * @see #setLexemeProvider(LexemeProvider)
 	 */
-	protected LexemeProvider<PHPTokenType> getLexemeProvider(IDocument document, int offset,
+	protected ILexemeProvider<PHPTokenType> getLexemeProvider(IDocument document, int offset,
 			boolean includeOtherPartitions)
 	{
 		if (lexemeProvider == null)
@@ -143,7 +144,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @param lexemeProvider
 	 * @see #getLexemeProvider(IDocument)
 	 */
-	protected void setLexemeProvider(LexemeProvider<PHPTokenType> lexemeProvider)
+	protected void setLexemeProvider(ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
 		this.lexemeProvider = lexemeProvider;
 	}
@@ -402,7 +403,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @throws BadLocationException
 	 */
 	protected Lexeme<PHPTokenType> getFirstLexemeInLine(IDocument document,
-			LexemeProvider<PHPTokenType> lexemeProvider, int offset) throws BadLocationException
+			ILexemeProvider<PHPTokenType> lexemeProvider, int offset) throws BadLocationException
 	{
 		if (offset < 0)
 		{
@@ -436,7 +437,8 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @return The last non-whitespace lexeme in the given line. Null, if none is found.
 	 * @throws BadLocationException
 	 */
-	protected Lexeme<PHPTokenType> getLastLexemeInLine(IDocument document, LexemeProvider<PHPTokenType> lexemeProvider,
+	protected Lexeme<PHPTokenType> getLastLexemeInLine(IDocument document,
+			ILexemeProvider<PHPTokenType> lexemeProvider,
 			int offset) throws BadLocationException
 	{
 		IRegion lineRegion = document.getLineInformationOfOffset(offset);
@@ -473,7 +475,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @throws BadLocationException
 	 */
 	protected Lexeme<PHPTokenType> getFirstLexemeInNonEmptyLine(IDocument document,
-			LexemeProvider<PHPTokenType> lexemeProvider, int offset) throws BadLocationException
+			ILexemeProvider<PHPTokenType> lexemeProvider, int offset) throws BadLocationException
 	{
 		IRegion lineInfo = null;
 		Lexeme<PHPTokenType> lexeme = null;

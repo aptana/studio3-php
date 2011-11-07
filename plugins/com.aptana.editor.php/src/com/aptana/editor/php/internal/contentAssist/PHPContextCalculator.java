@@ -17,7 +17,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
@@ -78,7 +78,7 @@ public class PHPContextCalculator
 	 * @param offset
 	 * @return
 	 */
-	public ProposalContext calculateCompletionContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset)
+	public ProposalContext calculateCompletionContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset)
 	{
 		internalCalculateContext(lexemeProvider, offset);
 		return currentContext;
@@ -98,7 +98,7 @@ public class PHPContextCalculator
 	 *            LexemeProvider.
 	 * @return A Proposal Context.
 	 */
-	public ProposalContext calculateCompletionContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset,
+	public ProposalContext calculateCompletionContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
 			char insertedChar)
 	{
 		// auto-box it
@@ -112,7 +112,7 @@ public class PHPContextCalculator
 	/*
 	 * Do the actual calculation
 	 */
-	private void internalCalculateContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset)
+	private void internalCalculateContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset)
 	{
 		currentContext = new ProposalContext(new AcceptAllContextFilter(), true, true, null);
 		int lexemePosition = lexemeProvider.getLexemeFloorIndex(offset - 1);
@@ -183,7 +183,7 @@ public class PHPContextCalculator
 	 *            - lexeme position (of offset).
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkClassDeclarationContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset,
+	private boolean checkClassDeclarationContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
 			int lexemePosition)
 	{
 		if (lexemePosition == 0)
@@ -219,7 +219,7 @@ public class PHPContextCalculator
 	 *            - lexeme position (of offset).
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkClassExtendsOrImplementsContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset,
+	private boolean checkClassExtendsOrImplementsContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
 			int lexemePosition)
 	{
 		if (lexemePosition == 0)
@@ -299,7 +299,7 @@ public class PHPContextCalculator
 	 *            - lexeme position (of offset).
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkImplementsDeclarationContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset,
+	private boolean checkImplementsDeclarationContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
 			int lexemePosition)
 	{
 		if (lexemePosition == 0)
@@ -317,7 +317,7 @@ public class PHPContextCalculator
 		}
 	}
 
-	private boolean checkImplementsDeclarationContextInternal(LexemeProvider<PHPTokenType> lexemeProvider,
+	private boolean checkImplementsDeclarationContextInternal(ILexemeProvider<PHPTokenType> lexemeProvider,
 			int lexemePosition)
 	{
 		// searching for "implements" keyword
@@ -405,7 +405,7 @@ public class PHPContextCalculator
 	 *            - lexeme position (of offset).
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkExtendsDeclarationContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset,
+	private boolean checkExtendsDeclarationContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
 			int lexemePosition)
 	{
 		if (lexemePosition == 0)
@@ -423,7 +423,7 @@ public class PHPContextCalculator
 		}
 	}
 
-	private boolean checkExtendsDeclarationContextInternal(LexemeProvider<PHPTokenType> lexemeProvider,
+	private boolean checkExtendsDeclarationContextInternal(ILexemeProvider<PHPTokenType> lexemeProvider,
 			int lexemePosition)
 	{
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
@@ -529,7 +529,7 @@ public class PHPContextCalculator
 	 *            - lexeme position (of offset).
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkFunctionDeclarationContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset,
+	private boolean checkFunctionDeclarationContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
 			int lexemePosition)
 	{
 		if (lexemePosition == 0)
@@ -631,7 +631,7 @@ public class PHPContextCalculator
 	 *            - lexeme position.
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkNewInstanceContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	private boolean checkNewInstanceContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
 	{
 		if (lexemePosition == 0)
 		{
@@ -657,7 +657,7 @@ public class PHPContextCalculator
 	 *            - lexeme position.
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkNewInstanceContextInternal(LexemeProvider<PHPTokenType> lexemeProvider, int lexemePosition)
+	private boolean checkNewInstanceContextInternal(ILexemeProvider<PHPTokenType> lexemeProvider, int lexemePosition)
 	{
 		// searching for "new" keyword
 		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
@@ -720,7 +720,7 @@ public class PHPContextCalculator
 	 * @return true if context is recognized and set, false otherwise
 	 */
 
-	private boolean checkLineCommentContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	private boolean checkLineCommentContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
 	{
 		Lexeme<PHPTokenType> firstLexeme = lexemeProvider.getFirstLexeme();
 		if (firstLexeme != null)
@@ -746,7 +746,7 @@ public class PHPContextCalculator
 	 * @return true if context is recognized and set, false otherwise
 	 */
 
-	private boolean checkPHPDocContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	private boolean checkPHPDocContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
 	{
 		Lexeme<PHPTokenType> firstLexeme = lexemeProvider.getFirstLexeme();
 		if (firstLexeme != null && firstLexeme.getType().getType().equals(PHPRegionTypes.PHPDOC_COMMENT_START))
@@ -766,7 +766,8 @@ public class PHPContextCalculator
 	 *            - lexeme position.
 	 * @return true if context is recognized and set, false otherwise
 	 */
-	private boolean checkNamespaceUseContext(LexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	private boolean checkNamespaceUseContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
+			int lexemePosition)
 	{
 		Lexeme<PHPTokenType> nearestUseKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
 				PHPRegionTypes.PHP_USE, new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_NS_SEPARATOR,
@@ -815,7 +816,7 @@ public class PHPContextCalculator
 	 *            skipped.
 	 * @return found lexeme or null if not found
 	 */
-	public static Lexeme<PHPTokenType> findLexemeBackward(LexemeProvider<PHPTokenType> lexemeProvider,
+	public static Lexeme<PHPTokenType> findLexemeBackward(ILexemeProvider<PHPTokenType> lexemeProvider,
 			int startPosition, Object typesToFind, String[] allowedTypesToSkip)
 	{
 		Set<String> typesSet = new HashSet<String>();
@@ -897,7 +898,7 @@ public class PHPContextCalculator
 	 * @param offset
 	 * @return A {@link CallInfo}, or null if none is located.
 	 */
-	static CallInfo calculateCallInfo(LexemeProvider<PHPTokenType> lexemeProvider, int offset)
+	static CallInfo calculateCallInfo(ILexemeProvider<PHPTokenType> lexemeProvider, int offset)
 	{
 		int startPosition = lexemeProvider.getLexemeFloorIndex(offset - 1);
 		int level = 0;

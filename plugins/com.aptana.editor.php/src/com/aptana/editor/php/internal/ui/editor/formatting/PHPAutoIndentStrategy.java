@@ -12,7 +12,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.core.IPHPConstants;
@@ -527,7 +527,7 @@ public class PHPAutoIndentStrategy extends AbstractPHPAutoEditStrategy
 	 * @param ll
 	 * @return boolean
 	 */
-	public boolean canOverwriteBracket(char bracket, int offset, IDocument document, LexemeProvider<PHPTokenType> ll)
+	public boolean canOverwriteBracket(char bracket, int offset, IDocument document, ILexemeProvider<PHPTokenType> ll)
 	{
 		if (offset < document.getLength())
 		{
