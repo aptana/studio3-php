@@ -67,7 +67,9 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 	 */
 	public void addPages()
 	{
-		mainPage = new PHPWizardNewProjectCreationPage("phpProjectPage"); //$NON-NLS-1$
+		validateProjectTemplate(new TemplateType[] { TemplateType.PHP });
+
+		mainPage = new PHPWizardNewProjectCreationPage("phpProjectPage", selectedTemplate); //$NON-NLS-1$
 		mainPage.setTitle(Messages.NewPHPProjectWizard_projectWizardTitle);
 		mainPage.setDescription(Messages.NewPHPProjectWizard_projectWizardDescription);
 		mainPage.setWizard(this);
@@ -75,7 +77,7 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 		addPage(mainPage);
 
 		List<IProjectTemplate> templates = getProjectTemplates(new TemplateType[] { TemplateType.PHP });
-		if (templates.size() > 0)
+		if (templates.size() > 0 && selectedTemplate == null)
 		{
 			addPage(templatesPage = new ProjectTemplateSelectionPage("templateSelectionPage", templates)); //$NON-NLS-1$
 		}
