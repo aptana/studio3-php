@@ -59,7 +59,8 @@ public class NewPHPProjectWizard extends AbstractNewProjectWizard implements IEx
 	@Override
 	protected IWizardProjectCreationPage createMainPage()
 	{
-		PHPWizardNewProjectCreationPage mainPage = new PHPWizardNewProjectCreationPage("phpProjectPage"); //$NON-NLS-1$
+		PHPWizardNewProjectCreationPage mainPage = new PHPWizardNewProjectCreationPage(
+				"phpProjectPage", selectedTemplate); //$NON-NLS-1$
 		mainPage.setTitle(Messages.NewPHPProjectWizard_projectWizardTitle);
 		mainPage.setDescription(Messages.NewPHPProjectWizard_projectWizardDescription);
 		mainPage.setWizard(this);
