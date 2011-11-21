@@ -19,6 +19,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.widgets.Composite;
@@ -36,7 +37,7 @@ import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.parsing.FileService;
+import com.aptana.editor.common.CommonSourceViewerConfiguration;
 import com.aptana.editor.common.text.reconciler.IFoldingComputer;
 import com.aptana.editor.html.HTMLEditor;
 import com.aptana.editor.php.Messages;
@@ -125,16 +126,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		setSourceViewerConfiguration(new PHPSourceViewerConfiguration(getPreferenceStore(), this));
 		setDocumentProvider(documentProvider = PHPEditorPlugin.getDefault().getPHPDocumentProvider());
 		// TODO: Shalom - Do what updateFileInfo does in the old PHPSourceEditor?
-	}
-
-	@Override
-	protected FileService createFileService()
-	{
-		if (phpParseState == null)
-		{
-			phpParseState = new PHPParseState();
-		}
-		return new FileService(IPHPConstants.CONTENT_TYPE_PHP, phpParseState);
 	}
 
 	@Override
@@ -269,7 +260,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	public ILabelProvider getOutlineLabelProvider()
 	{
-		return new PHPDecoratingLabelProvider(getFileService().getParseState());
+		return new PHPDecoratingLabelProvider();
 	}
 
 	@Override
@@ -285,7 +276,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	protected Object getOutlineElementAt(int caret)
 	{
-		IParseNode parseResult = getFileService().getParseResult();
+		IParseNode parseResult = getAST();
 		if (parseResult != null)
 		{
 			IParseNode node = parseResult.getNodeAtOffset(caret);
@@ -313,7 +304,13 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
-				getFileService().parse(true, monitor);
+				// Force a reconcile!
+				SourceViewerConfiguration svc = getSourceViewerConfiguration();
+				if (svc instanceof CommonSourceViewerConfiguration)
+				{
+					CommonSourceViewerConfiguration csvc = (CommonSourceViewerConfiguration) svc;
+					csvc.forceReconcile();
+				}
 				return Status.OK_STATUS;
 			}
 		};

@@ -83,7 +83,8 @@ public class PHPOffsetMapper
 	 */
 	public IElementEntry findEntry(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
-		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
+		IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
+		String source = document.get();
 		Set<IElementEntry> entries = collectEntries(source, lexeme);
 		if (entries.isEmpty())
 		{
@@ -103,11 +104,12 @@ public class PHPOffsetMapper
 	 */
 	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
-		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
+		String source = null;
 		try
 		{
 			// Check if we are in an 'include' or 'require'
 			IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
+			source = document.get();
 			ITypedRegion partition = document.getPartition(lexeme.getStartingOffset());
 			int previousPartitionEnd = (partition != null) ? partition.getOffset() - 1 : -1;
 			if (previousPartitionEnd > 0
