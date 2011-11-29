@@ -28,6 +28,7 @@ import com.aptana.core.projects.templates.TemplateType;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants;
 import com.aptana.editor.php.core.PHPNature;
+import com.aptana.projects.ProjectsPlugin;
 import com.aptana.projects.WebProjectNature;
 import com.aptana.projects.internal.wizards.NewProjectWizard;
 import com.aptana.projects.internal.wizards.ProjectTemplateSelectionPage;
@@ -76,7 +77,8 @@ public class NewPHPProjectWizard extends NewProjectWizard implements IExecutable
 		mainPage.setPageComplete(false);
 		addPage(mainPage);
 
-		List<IProjectTemplate> templates = getProjectTemplates(new TemplateType[] { TemplateType.PHP });
+		List<IProjectTemplate> templates = ProjectsPlugin.getDefault().getTemplatesManager()
+				.getTemplatesForType(TemplateType.PHP);
 		if (templates.size() > 0 && selectedTemplate == null)
 		{
 			addPage(templatesPage = new ProjectTemplateSelectionPage("templateSelectionPage", templates)); //$NON-NLS-1$
