@@ -92,7 +92,7 @@ public class PHPParser implements IParser
 	 */
 	public IParseRootNode parse(IParseState parseState) // $codepro.audit.disable declaredExceptions
 	{
-		String source = new String(parseState.getSource());
+		String source = parseState.getSource();
 		int startingOffset = parseState.getStartingOffset();
 		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, startingOffset,
 				startingOffset + source.length() - 1);
