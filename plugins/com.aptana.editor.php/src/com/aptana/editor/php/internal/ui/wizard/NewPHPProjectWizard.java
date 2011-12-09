@@ -70,9 +70,9 @@ public class NewPHPProjectWizard extends AbstractNewProjectWizard implements IEx
 
 	@Override
 	protected TemplateType[] getProjectTemplateTypes()
-	{
+		{
 		return new TemplateType[] { TemplateType.PHP };
-	}
+		}
 
 	/*
 	 * (non-Javadoc)
@@ -135,13 +135,13 @@ public class NewPHPProjectWizard extends AbstractNewProjectWizard implements IEx
 
 	@Override
 	protected IProject createNewProject(IProgressMonitor monitor) throws InvocationTargetException
-	{
+		{
 		SubMonitor sub = SubMonitor.convert(monitor, 100);
 		IProject project = super.createNewProject(sub.newChild(90));
 		setPhpLangOptions(project, sub.newChild(10));
 		sub.done();
 		return project;
-	}
+		}
 
 	/**
 	 * Apply the selected PHP version into the project's preferences.<br>
@@ -151,18 +151,18 @@ public class NewPHPProjectWizard extends AbstractNewProjectWizard implements IEx
 	 */
 	protected void setPhpLangOptions(final IProject project, IProgressMonitor monitor)
 	{
-		Preferences preferences = new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
+				Preferences preferences = new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
 		preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, selectedVersion);
-		try
-		{
-			preferences.flush();
-		}
-		catch (BackingStoreException e)
-		{
+				try
+				{
+					preferences.flush();
+				}
+				catch (BackingStoreException e)
+				{
 			// TODO Throw the exception up as an InvocationTargetException?
-			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
-		}
-	}
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
+				}
+			}
 
 	@Override
 	protected String getProjectCreateEventName()
