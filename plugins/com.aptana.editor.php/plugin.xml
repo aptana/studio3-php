@@ -276,6 +276,9 @@
          <actionSet
                id="com.aptana.editor.php.presentation">
          </actionSet>
+         <newWizardShortcut
+               id="com.aptana.editor.php.NewPHPProjectWizard">
+         </newWizardShortcut>
       </perspectiveExtension>
    </extension>
    <extension
