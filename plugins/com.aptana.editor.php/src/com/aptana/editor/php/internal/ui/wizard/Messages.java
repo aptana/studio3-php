@@ -11,6 +11,8 @@ public class Messages extends NLS
 	public static String NewPHPProjectWizard_natureConfigurationError;
 	public static String NewPHPProjectWizard_projectWizardDescription;
 	public static String NewPHPProjectWizard_projectWizardTitle;
+	public static String NewPHPProjectWizard_projectWizardStepLbl;
+
 	static
 	{
 		// initialize resource bundle

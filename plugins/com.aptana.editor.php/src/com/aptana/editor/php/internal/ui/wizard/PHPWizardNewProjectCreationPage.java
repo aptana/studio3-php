@@ -47,8 +47,6 @@ public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreat
 	{
 		super.createControl(parent);
 		Composite control = (Composite) getControl();
-		GridLayout layout = new GridLayout();
-		control.setLayout(layout);
 
 		Group group = new Group(control, SWT.NONE);
 		group.setLayout(new GridLayout(2, false));
@@ -124,5 +122,11 @@ public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreat
 			index = 0;
 		}
 		fPHPVersions.select(index);
+	}
+
+	@Override
+	public String getStepName()
+	{
+		return com.aptana.editor.php.internal.ui.wizard.Messages.NewPHPProjectWizard_projectWizardStepLbl;
 	}
 }
