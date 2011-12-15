@@ -112,7 +112,6 @@
 	<target name="replace.versions" description="Replaces all the qualifiers for plugins/features with the last changed rev for that plugin/feature.">
 		<!-- Iterate through every plugin and feature directory and replace qualifier in
 		        build.properties with qualifier for just that plugin/feature! -->
-		<!-- TODO Handle if build.properties has no qualifier entry! -->
 		<for param="file">
 			<path>
 				<dirset dir="${buildDirectory}" defaultexcludes="true">
