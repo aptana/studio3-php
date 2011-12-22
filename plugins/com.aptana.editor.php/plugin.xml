@@ -380,4 +380,16 @@
             contentType="com.aptana.contenttype.phtml.php">
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.compare.contentMergeViewers">
+      <contentTypeBinding
+            contentMergeViewerId="com.aptana.editor.php.contentMergeViewer"
+            contentTypeId="com.aptana.contenttype.phtml.php">
+      </contentTypeBinding>
+      <viewer
+            class="com.aptana.editor.php.internal.ui.editor.PHPMergeViewerCreator"
+            extensions="php, phtml, inc, ctp"
+            id="com.aptana.editor.php.contentMergeViewer">
+      </viewer>
+   </extension>
 </plugin>
