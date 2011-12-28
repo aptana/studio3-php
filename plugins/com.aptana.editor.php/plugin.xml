@@ -73,9 +73,6 @@
             id="com.aptana.contenttype.jsca">
       </content-type>
       <content-type
-            id="com.aptana.contenttype.jss">
-      </content-type>
-      <content-type
             id="com.aptana.contenttype.markdown">
       </content-type>
       <content-type
@@ -89,6 +86,9 @@
       </content-type>
       <content-type
             id="com.aptana.editor.text.content-type.generic">
+      </content-type>
+      <content-type
+            id="com.appcelerator.titanium.contenttype.jss">
       </content-type>
    </extension>
    <extension
@@ -273,9 +273,6 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="com.aptana.ui.WebPerspective">
-         <actionSet
-               id="com.aptana.editor.php.presentation">
-         </actionSet>
          <newWizardShortcut
                id="com.aptana.editor.php.NewPHPProjectWizard">
          </newWizardShortcut>

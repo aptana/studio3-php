@@ -195,7 +195,6 @@ public class PHTMLOutlineTest extends TestCase
 	 * @param directory
 	 *            The input/output directory to scan files for.
 	 */
-	@SuppressWarnings("unchecked")
 	protected static String[] getFiles(String directory)
 	{
 		Enumeration<String> entryPaths = Platform.getBundle(TEST_BUNDLE_ID).getEntryPaths(directory);
