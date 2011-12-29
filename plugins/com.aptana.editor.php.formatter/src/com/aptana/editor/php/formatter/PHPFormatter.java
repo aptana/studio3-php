@@ -304,6 +304,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		{
 			if (!input.startsWith(PHP_SHORT_TAG_OPEN))
 			{
+				input = leftTrim(input, 0); // #APSTUD-4027
 				input = PHP_PREFIX + input;
 			}
 			PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
