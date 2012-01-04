@@ -156,7 +156,9 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		int unread = 1;
 		if (ch == '$') {
 			ch = fScanner.read();
-			++unread;
+			if (ch != ICharacterScanner.EOF) {
+				++unread;
+			}
 		}
 		if (Character.isLetter(ch) || ch == '_') {
 			ch = fScanner.read();
