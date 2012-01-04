@@ -93,12 +93,16 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENT
 import java.net.URL;
 import java.util.Map;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.source.ISharedTextColors;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
+import com.aptana.editor.common.util.EditorUtil;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.formatter.preferences.PHPFormatterModifyDialog;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
@@ -247,5 +251,54 @@ public class PHPFormatterFactory extends AbstractScriptFormatterFactory
 	public Object getPartitioningConfiguration()
 	{
 		return PHPSourceConfiguration.getDefault();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatterFactory#getEclipsePreferences()
+	 */
+	@Override
+	protected IEclipsePreferences getEclipsePreferences()
+	{
+		return EclipseUtil.instanceScope().getNode(PHPEplPlugin.PLUGIN_ID);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatterFactory#getFormatterTabPolicy()
+	 */
+	@Override
+	protected String getFormatterTabPolicy(Map<String, String> preferences)
+	{
+		return preferences.get(FORMATTER_TAB_CHAR);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatterFactory#getEditorTabSize()
+	 */
+	@Override
+	protected int getEditorTabSize()
+	{
+		return EditorUtil.getSpaceIndentSize(PHPEplPlugin.getDefault().getBundle().getSymbolicName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatterFactory#getDefaultEditorTabSize()
+	 */
+	protected int getDefaultEditorTabSize()
+	{
+		return EditorUtil.getDefaultSpaceIndentSize(PHPEplPlugin.getDefault().getBundle().getSymbolicName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.formatter.AbstractScriptFormatterFactory#getFormatterTabSizeKey()
+	 */
+	@Override
+	protected String getFormatterTabSizeKey()
+	{
+		return FORMATTER_TAB_SIZE;
 	}
 }
