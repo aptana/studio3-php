@@ -97,6 +97,8 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.EclipseUtil;
+import com.aptana.editor.common.util.EditorUtil;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.formatter.PHPCodeFormatterPlugin;
 import com.aptana.formatter.IDebugScopes;
 import com.aptana.formatter.ui.CodeFormatterConstants;
@@ -118,7 +120,8 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 		IEclipsePreferences store = EclipseUtil.defaultScope().getNode(PHPCodeFormatterPlugin.PLUGIN_ID);
 
 		store.put(FORMATTER_TAB_CHAR, CodeFormatterConstants.EDITOR);
-		store.put(FORMATTER_TAB_SIZE, "4"); //$NON-NLS-1$
+		store.put(FORMATTER_TAB_SIZE, Integer.toString(EditorUtil.getSpaceIndentSize(PHPEplPlugin.getDefault()
+				.getBundle().getSymbolicName())));
 		store.put(FORMATTER_INDENTATION_SIZE, "4"); //$NON-NLS-1$
 		store.putBoolean(WRAP_COMMENTS, false);
 		store.putInt(WRAP_COMMENTS_LENGTH, 80);
