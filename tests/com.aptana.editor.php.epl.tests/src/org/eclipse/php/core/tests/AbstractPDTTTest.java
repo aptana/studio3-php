@@ -58,7 +58,6 @@ public abstract class AbstractPDTTTest extends TestCase
 		return getFiles(testsDirectory, Activator.getDefault().getBundle(), ext);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected static String[] getFiles(String testsDirectory, Bundle bundle, String ext)
 	{
 		List<String> files = new LinkedList<String>();

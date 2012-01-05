@@ -22,6 +22,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.osgi.framework.Bundle;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
@@ -42,6 +43,7 @@ import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
+import com.aptana.ide.ui.io.internal.UniformFileStoreEditorInput;
 import com.aptana.parsing.lexer.Lexeme;
 
 /**
@@ -239,7 +241,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 				browserAvailable[0] = BrowserInformationControl.isAvailable(textViewer.getTextWidget().getShell());
 			}
 		});
-		return getHoverInfo(elements, constantValue, browserAvailable[0], null);
+		return getHoverInfo(elements, constantValue, browserAvailable[0], null, getEditor());
 	}
 
 	/*
@@ -300,11 +302,13 @@ public class PHPDocHover extends AbstractPHPTextHover
 	 * @param useHTMLTags
 	 * @param previousInput
 	 *            the previous input, or <code>null</code>
+	 * @param editorPart
+	 *            (can be <code>null</code>)
 	 * @return the HTML hover info for the given element(s) or <code>null</code> if no information is available
 	 */
 	@SuppressWarnings("unused")
 	private static PHPDocumentationBrowserInformationControlInput getHoverInfo(Object[] elements, String constantValue,
-			boolean useHTMLTags, PHPDocumentationBrowserInformationControlInput previousInput)
+			boolean useHTMLTags, PHPDocumentationBrowserInformationControlInput previousInput, IEditorPart editorPart)
 	{
 		int nResults = elements.length;
 		StringBuffer buffer = new StringBuffer();
@@ -321,7 +325,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 			Object element = elements[0];
 			if (element != null)
 			{
-				setHeader(element, buffer, useHTMLTags);
+				setHeader(element, buffer, useHTMLTags, editorPart);
 				setDocumentation(element, buffer, useHTMLTags);
 				if (buffer.length() > 0)
 				{
@@ -374,7 +378,7 @@ public class PHPDocHover extends AbstractPHPTextHover
 		}
 	}
 
-	private static void setHeader(Object element, StringBuffer buffer, boolean useHTMLTags)
+	private static void setHeader(Object element, StringBuffer buffer, boolean useHTMLTags, IEditorPart editorPart)
 	{
 		// Set the header to display the file location
 		if (element instanceof IElementEntry)
@@ -382,17 +386,29 @@ public class PHPDocHover extends AbstractPHPTextHover
 			IElementEntry entry = (IElementEntry) element;
 			if (entry.getModule() != null)
 			{
+				String moduleName = entry.getModule().getShortName();
+				// In case the module is from a remote location, we would like to display the file name as is, and not
+				// the temp file name that was created.
+				if (editorPart != null && editorPart.getEditorInput() instanceof UniformFileStoreEditorInput)
+				{
+					UniformFileStoreEditorInput uniformInput = (UniformFileStoreEditorInput) editorPart
+							.getEditorInput();
+					if (uniformInput.isRemote())
+					{
+						moduleName = editorPart.getTitle();
+					}
+				}
 				if (useHTMLTags)
 				{
 					buffer.append("<div class=\"header\""); //$NON-NLS-1$
-					HTMLPrinter.addSmallHeader(buffer, entry.getModule().getShortName());
+					HTMLPrinter.addSmallHeader(buffer, moduleName);
 					buffer.append("</div>"); //$NON-NLS-1$
 				}
 				else
 				{
 					// plain printing
 					buffer.append('[');
-					buffer.append(entry.getModule().getShortName());
+					buffer.append(moduleName);
 					buffer.append("]\n"); //$NON-NLS-1$
 				}
 			}

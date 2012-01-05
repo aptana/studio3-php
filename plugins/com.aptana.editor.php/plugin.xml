@@ -74,9 +74,6 @@
             id="com.aptana.contenttype.jsca">
       </content-type>
       <content-type
-            id="com.aptana.contenttype.jss">
-      </content-type>
-      <content-type
             id="com.aptana.contenttype.markdown">
       </content-type>
       <content-type
@@ -90,6 +87,9 @@
       </content-type>
       <content-type
             id="com.aptana.editor.text.content-type.generic">
+      </content-type>
+      <content-type
+            id="com.appcelerator.titanium.contenttype.jss">
       </content-type>
    </extension>
    <extension
@@ -274,9 +274,9 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="com.aptana.ui.WebPerspective">
-         <actionSet
-               id="com.aptana.editor.php.presentation">
-         </actionSet>
+         <newWizardShortcut
+               id="com.aptana.editor.php.NewPHPProjectWizard">
+         </newWizardShortcut>
       </perspectiveExtension>
    </extension>
    <extension
@@ -377,5 +377,17 @@
             class="com.aptana.preview.handlers.WebServerPreviewHandler"
             contentType="com.aptana.contenttype.phtml.php">
       </handler>
+   </extension>
+   <extension
+         point="org.eclipse.compare.contentMergeViewers">
+      <contentTypeBinding
+            contentMergeViewerId="com.aptana.editor.php.contentMergeViewer"
+            contentTypeId="com.aptana.contenttype.phtml.php">
+      </contentTypeBinding>
+      <viewer
+            class="com.aptana.editor.php.internal.ui.editor.PHPMergeViewerCreator"
+            extensions="php, phtml, inc, ctp"
+            id="com.aptana.editor.php.contentMergeViewer">
+      </viewer>
    </extension>
 </plugin>
