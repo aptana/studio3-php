@@ -152,7 +152,8 @@ public class PHPFormatterIndentationTabPage extends FormatterModifyTabPage
 				manager.enableControl(tabSize, !editorSettingsMode);
 				if (editorSettingsMode)
 				{
-					setEditorTabWidth(PHPEditorPlugin.getDefault().getPreferenceStore(), tabSize, indentationSize);
+					setEditorTabWidth(PHPEditorPlugin.getDefault().getBundle().getSymbolicName(), tabSize,
+							indentationSize);
 				}
 			}
 		}
@@ -167,7 +168,7 @@ public class PHPFormatterIndentationTabPage extends FormatterModifyTabPage
 			manager.enableControl(tabSize, !editorSettingsMode);
 			if (editorSettingsMode)
 			{
-				setEditorTabWidth(PHPEditorPlugin.getDefault().getPreferenceStore(), tabSize, indentationSize);
+				setEditorTabWidth(PHPEditorPlugin.getDefault().getBundle().getSymbolicName(), tabSize, indentationSize);
 			}
 		}
 	}

@@ -115,6 +115,7 @@ import org2.eclipse.php.internal.core.ast.rewrite.RewriteEventStore;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
+import com.aptana.editor.common.util.EditorUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.PHPParser;
@@ -484,7 +485,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public int getEditorSpecificTabWidth()
 	{
-		return FormatterUtils.getEditorTabWidth(PHPEplPlugin.getDefault().getPreferenceStore());
+		return EditorUtil.getSpaceIndentSize(PHPEplPlugin.getDefault().getBundle().getSymbolicName());
 	}
 
 	/*
