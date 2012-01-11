@@ -112,6 +112,10 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 				{
 					return scanner.getToken(PHPTokenType.VARIABLE_OTHER_GLOBAL);
 				}
+				if (PHPTokenMapperFactory.SAFER_GLOBALS.contains(value))
+				{
+					return scanner.getToken(PHPTokenType.VARIABLE_OTHER_GLOBAL_SAFER);
+				}
 				return scanner.getToken(PHPTokenType.VARIABLE_OTHER);
 			case T_LINE:
 			case T_FILE:
