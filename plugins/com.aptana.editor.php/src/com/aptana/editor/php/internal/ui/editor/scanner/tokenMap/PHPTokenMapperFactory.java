@@ -53,6 +53,14 @@ public class PHPTokenMapperFactory
 		SAFER_GLOBALS.add(IPHPTokenMapper.SERVER);
 		SAFER_GLOBALS.add(IPHPTokenMapper.ENV);
 	}
+	public static Set<String> SAFER_GLOBALS = new HashSet<String>();
+	static
+	{
+		SAFER_GLOBALS.add(IPHPTokenMapper.GLOBALS);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SESSION);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SERVER);
+		SAFER_GLOBALS.add(IPHPTokenMapper.ENV);
+	}
 
 	private static Set<String> ASSIGNMENTS = new HashSet<String>();
 	static
