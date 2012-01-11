@@ -88,7 +88,7 @@ $kk = <<<HTML
 HTML;
 // we add a comment here to force a new line at the end of this test
 ==FORMATTED==
-<?php
+
 $kk = <<<HTML
   content here $kk saas 3
 		{$example->getName()} $s[42340938409238403] 
