@@ -106,12 +106,27 @@ public class PHPScopesTest extends TestCase
 
 	// TODO Test task tags in PHPDoc comments
 
-	public void testPHPDocTags()
+	// Split these Doc-Tags tests into groups to avoid opening too many editors on the Hudson machine
+	public void testPHPDocTagsGroup1()
 	{
-		String[] tags = new String[] { "@abstract", "@access", "@author", "@category", "@copyright", "@deprecated",
-				"@example", "@final", "@filesource", "@global", "@ignore", "@internal", "@license", "@link", "@method",
-				"@name", "@package", "@param", "@property", "@return", "@see", "@since", "@static", "@staticvar",
-				"@subpackage", "@todo", "@tutorial", "@uses", "@var", "@version" };
+		innerTestTags("@abstract", "@access", "@author", "@category", "@copyright", "@deprecated", "@example",
+				"@final", "@filesource", "@global");
+	}
+
+	public void testPHPDocTagsGroup2()
+	{
+		innerTestTags("@ignore", "@internal", "@license", "@link", "@method", "@name", "@package", "@param",
+				"@property", "@return");
+	}
+
+	public void testPHPDocTagsGroup3()
+	{
+		innerTestTags("@see", "@since", "@static", "@staticvar", "@subpackage", "@todo", "@tutorial", "@uses", "@var",
+				"@version");
+	}
+
+	private void innerTestTags(String... tags)
+	{
 		for (String tag : tags)
 		{
 			String source = "<?php\n" + "/**\n" + " * " + tag + "  a PHPDoc partition.\n" + " **/\n" + "?>";
@@ -971,7 +986,8 @@ public class PHPScopesTest extends TestCase
 			File file = File.createTempFile("php_scope_test", ".php");
 			file.deleteOnExit();
 			IOUtil.write(new FileOutputStream(file), content);
-			editor = (AbstractThemeableEditor) IDE.openEditor(UIUtils.getActivePage(), new FileStoreEditorInput(EFS.getStore(file.toURI())), "com.aptana.editor.php");
+			editor = (AbstractThemeableEditor) IDE.openEditor(UIUtils.getActivePage(),
+					new FileStoreEditorInput(EFS.getStore(file.toURI())), "com.aptana.editor.php");
 			fViewers.put(content.hashCode(), editor);
 		}
 		ISourceViewer viewer = editor.getISourceViewer();
