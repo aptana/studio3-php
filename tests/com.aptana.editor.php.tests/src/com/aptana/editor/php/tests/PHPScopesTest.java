@@ -15,41 +15,18 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.eclipse.core.filesystem.EFS;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.jface.text.source.VerticalRuler;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.WorkbenchPage;
-import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import com.aptana.core.util.IOUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.ExtendedFastPartitioner;
-import com.aptana.editor.common.IPartitioningConfiguration;
-import com.aptana.editor.common.TextUtils;
 import com.aptana.editor.common.scripting.IDocumentScopeManager;
-import com.aptana.editor.common.text.rules.CompositePartitionScanner;
-import com.aptana.editor.html.HTMLSourceConfiguration;
-import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.internal.core.IPHPConstants;
-import com.aptana.editor.php.internal.ui.editor.PHPPartitionerSwitchStrategy;
-import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
-import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
 import com.aptana.ui.util.UIUtils;
 
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings({ "nls" })
 public class PHPScopesTest extends TestCase
 {
 
@@ -757,29 +734,23 @@ public class PHPScopesTest extends TestCase
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php punctuation.definition.variable.php",
 				source, 9, 1);
 
-		// FIXME We don't break out dollar sign as special scope
-		// assertScope(
-		// "text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php punctuation.definition.variable.php",
-		// source, 10, 1);
-		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php",
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php",
+				source, 10, 1);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php",
 				source, 11, 4);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php keyword.operator.index-start.php",
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php keyword.operator.index-start.php",
 				source, 15, 1);
+		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php", source, 16, 1);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php punctuation.definition.string.begin.php",
-				source, 16, 1);
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 17, 3);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php meta.string-contents.quoted.double.php",
-				source, 16, 3);
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				source, 20, 1);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php punctuation.definition.string.end.php",
-				source, 16, 1);
-		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php keyword.operator.index-end.php",
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
 				source, 21, 1);
-
 		assertScope(
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php punctuation.definition.variable.php",
 				source, 22, 1);
@@ -787,8 +758,9 @@ public class PHPScopesTest extends TestCase
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.end.php",
 				source, 23, 1); // "
 		assertScope("text.html.basic source.php.embedded.block.html", source, 24, 1);
-		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 25,
-				2);
+		assertScope(
+				"text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php",
+				source, 25, 2);
 	}
 
 	public void testAPSTUD3446()
