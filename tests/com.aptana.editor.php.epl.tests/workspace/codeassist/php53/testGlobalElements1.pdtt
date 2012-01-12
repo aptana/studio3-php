@@ -3,13 +3,13 @@ Should complete global constants from other namespace
 --FILE--
 <?
 namespace NS {
-	define('TEST1', 0);
+	define('ZEST1', 0);
 	$TEST2 = '';
 }
 
 namespace {
-	TEST|
+	ZEST|
 }
 ?>
 --EXPECT--
-field(TEST1)
+field(ZEST1)
