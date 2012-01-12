@@ -5,13 +5,13 @@ Should complete other namespace global constants defined in function
 namespace NS {
 	function foo() {
 		global $TEST2;
-		define('TEST1', 0);
+		define('ZEST1', 0);
 		$TEST2 = '';
 	}
 }
 namespace {
-	TEST|
+	ZEST|
 }
 ?>
 --EXPECT--
-field(TEST1)
+field(ZEST1)
