@@ -21,7 +21,7 @@
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.text"
-            file-extensions="php, phtml, inc, ctp"
+            file-extensions="php, phtml, inc, ctp, module, install"
             id="com.aptana.contenttype.phtml.php"
             name="%content-type.name"
             priority="normal">
