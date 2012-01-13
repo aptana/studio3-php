@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -36,7 +37,6 @@ import com.aptana.editor.php.internal.ui.editor.PHPDocumentProvider;
 import com.aptana.theme.IThemeManager;
 import com.aptana.theme.Theme;
 import com.aptana.theme.ThemePlugin;
-import com.aptana.ui.util.UIUtils;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -122,10 +122,11 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	private void setOccurrenceColors()
 	{
-		UIUtils.getDisplay().asyncExec(new Runnable()
+		Job job = new UIJob("Setting occurrence colors") //$NON-NLS-1$
 		{
 
-			public void run()
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
 				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
@@ -139,8 +140,12 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				{
 					// ignore
 				}
+				return Status.OK_STATUS;
 			}
-		});
+		};
+		job.setSystem(!EclipseUtil.showSystemJobs());
+		job.setPriority(Job.LONG);
+		job.schedule(1000L);
 	}
 
 	private void index()
