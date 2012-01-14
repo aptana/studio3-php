@@ -97,24 +97,24 @@ $example = array("fields" => array("id" => array("type" => "serial",
 ==FORMATTED==
 
 $example=array (
-		"fields" => array (
-				"id" => array (
-						"type" => "serial",
-						'unsigned' => TRUE,
-						"not null" => TRUE,
-				),
-				"uc_tax_id" => array (
-						"type" => "int",
-						'unsigned' => TRUE,
-						'size' => 'tiny',
-						"not null" => TRUE,
-						'default' => 0,
-				),
-				"taxonomy_terms" => array (
-						'description' => t ( 'Serialized array of taxonomy terms to be taxed.' ),
-						'type' => 'text',
-						'serialize' => TRUE,
-				),
+	"fields" => array (
+		"id" => array (
+			"type" => "serial",
+			'unsigned' => TRUE,
+			"not null" => TRUE,
 		),
-		"primary key" => array ( "id" ),
+		"uc_tax_id" => array (
+			"type" => "int",
+			'unsigned' => TRUE,
+			'size' => 'tiny',
+			"not null" => TRUE,
+			'default' => 0,
+		),
+		"taxonomy_terms" => array (
+			'description' => t ( 'Serialized array of taxonomy terms to be taxed.' ),
+			'type' => 'text',
+			'serialize' => TRUE,
+		),
+	),
+	"primary key" => array ( "id" ),
 );
