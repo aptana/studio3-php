@@ -218,10 +218,10 @@ class UserTest extends CDbTestCase
 
 class UserTest extends CDbTestCase {
 	public $fixtures = array(
-			'users' => 'User',
-			'userips' => 'UserIp',
-			'usercontacts' => 'UserContact',
-			'userprofiles' => 'UserProfile',
+		'users' => 'User',
+		'userips' => 'UserIp',
+		'usercontacts' => 'UserContact',
+		'userprofiles' => 'UserProfile',
 	);
 
 	public function testCreate() {
@@ -229,31 +229,31 @@ class UserTest extends CDbTestCase {
 		$newUser = new User();
 		$newUsername = 'newuser';
 		$newUser -> setAttributes(array(
-				'username' => $newUsername,
-				'password' => 'newuser',
-				'date_joined' => Yii::app() -> localtime -> UTCNow,
+			'username' => $newUsername,
+			'password' => 'newuser',
+			'date_joined' => Yii::app() -> localtime -> UTCNow,
 		));
 		$this -> assertTrue($newUser -> save());
 		// log the user's ip
 		$newUserIp = new UserIp();
 		$newUserIp -> setAttributes(array(
-				'user_id' => $newUser -> id,
-				'ip_address' => gethostbyname(gethostname()),
+			'user_id' => $newUser -> id,
+			'ip_address' => gethostbyname(gethostname()),
 		));
 		$this -> assertTrue($newUserIp -> save());
 		// record the user's contact information
 		$newUserContact = new UserContact();
 		$newUserContact -> setAttributes(array(
-				'user_id' => $newUser -> id,
-				'email' => 'test1@test.com',
+			'user_id' => $newUser -> id,
+			'email' => 'test1@test.com',
 		));
 		$this -> assertTrue($newUserContact -> save());
 		// set the appropriate profile options
 		$newUserProfile = new UserProfile();
 		$newUserProfile -> setAttributes(array(
-				'user_id' => $newUser -> id,
-				'display_email' => 1,
-				'display_im' => 0,
+			'user_id' => $newUser -> id,
+			'display_email' => 1,
+			'display_im' => 0,
 		));
 		$this -> assertTrue($newUserProfile -> save());
 
