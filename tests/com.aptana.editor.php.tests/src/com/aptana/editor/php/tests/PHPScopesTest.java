@@ -7,48 +7,36 @@
  */
 package com.aptana.editor.php.tests;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextViewer;
+import org.eclipse.core.filesystem.EFS;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.jface.text.source.VerticalRuler;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.WorkbenchPage;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
 
+import com.aptana.core.util.IOUtil;
+import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonEditorPlugin;
-import com.aptana.editor.common.ExtendedFastPartitioner;
-import com.aptana.editor.common.IPartitioningConfiguration;
-import com.aptana.editor.common.TextUtils;
 import com.aptana.editor.common.scripting.IDocumentScopeManager;
-import com.aptana.editor.common.text.rules.CompositePartitionScanner;
-import com.aptana.editor.html.HTMLSourceConfiguration;
-import com.aptana.editor.php.PHPEditorPlugin;
-import com.aptana.editor.php.internal.core.IPHPConstants;
-import com.aptana.editor.php.internal.ui.editor.PHPPartitionerSwitchStrategy;
-import com.aptana.editor.php.internal.ui.editor.PHPSourceConfiguration;
-import com.aptana.editor.php.internal.ui.editor.PHPSourceViewerConfiguration;
+import com.aptana.ui.util.UIUtils;
 
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings({ "nls" })
 public class PHPScopesTest extends TestCase
 {
 
-	private Map<Integer, ISourceViewer> fViewers;
+	private Map<Integer, AbstractThemeableEditor> fViewers;
 
 	@Override
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		fViewers = new HashMap<Integer, ISourceViewer>();
+		fViewers = new HashMap<Integer, AbstractThemeableEditor>();
 	}
 
 	@Override
@@ -56,9 +44,19 @@ public class PHPScopesTest extends TestCase
 	{
 		try
 		{
-			for (ISourceViewer viewer : fViewers.values())
+			for (AbstractThemeableEditor editor : fViewers.values())
 			{
-				((TextViewer) viewer).getControl().dispose();
+				if (editor != null)
+				{
+					if (Display.getCurrent() != null)
+					{
+						editor.getSite().getPage().closeEditor(editor, false);
+					}
+					else
+					{
+						editor.close(false);
+					}
+				}
 			}
 		}
 		finally
@@ -85,12 +83,27 @@ public class PHPScopesTest extends TestCase
 
 	// TODO Test task tags in PHPDoc comments
 
-	public void testPHPDocTags()
+	// Split these Doc-Tags tests into groups to avoid opening too many editors on the Hudson machine
+	public void testPHPDocTagsGroup1()
 	{
-		String[] tags = new String[] { "@abstract", "@access", "@author", "@category", "@copyright", "@deprecated",
-				"@example", "@final", "@filesource", "@global", "@ignore", "@internal", "@license", "@link", "@method",
-				"@name", "@package", "@param", "@property", "@return", "@see", "@since", "@static", "@staticvar",
-				"@subpackage", "@todo", "@tutorial", "@uses", "@var", "@version" };
+		innerTestTags("@abstract", "@access", "@author", "@category", "@copyright", "@deprecated", "@example",
+				"@final", "@filesource", "@global");
+	}
+
+	public void testPHPDocTagsGroup2()
+	{
+		innerTestTags("@ignore", "@internal", "@license", "@link", "@method", "@name", "@package", "@param",
+				"@property", "@return");
+	}
+
+	public void testPHPDocTagsGroup3()
+	{
+		innerTestTags("@see", "@since", "@static", "@staticvar", "@subpackage", "@todo", "@tutorial", "@uses", "@var",
+				"@version");
+	}
+
+	private void innerTestTags(String... tags)
+	{
 		for (String tag : tags)
 		{
 			String source = "<?php\n" + "/**\n" + " * " + tag + "  a PHPDoc partition.\n" + " **/\n" + "?>";
@@ -927,7 +940,7 @@ public class PHPScopesTest extends TestCase
 		{
 			assertEquals("Scope doesn't match expectations for: " + code.charAt(offset), scope, getScope(code, offset));
 		}
-		catch (BadLocationException e)
+		catch (Exception e)
 		{
 			fail(e.getMessage());
 		}
@@ -941,39 +954,19 @@ public class PHPScopesTest extends TestCase
 		}
 	}
 
-	private String getScope(String content, int offset) throws BadLocationException
+	private synchronized String getScope(String content, int offset) throws Exception
 	{
-		ISourceViewer viewer = fViewers.get(content.hashCode());
-		if (viewer == null)
+		AbstractThemeableEditor editor = fViewers.get(content.hashCode());
+		if (editor == null)
 		{
-			Control parent = ((WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage())
-					.getEditorPresentation().getLayoutPart().getControl();
-			viewer = new SourceViewer((Composite) parent, new VerticalRuler(5), SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI
-					| SWT.BORDER | SWT.FULL_SELECTION);
-			viewer.configure(new PHPSourceViewerConfiguration(PHPEditorPlugin.getDefault().getPreferenceStore(), null));
-
-			IDocument document = new Document(content);
-
-			CompositePartitionScanner partitionScanner = new CompositePartitionScanner(HTMLSourceConfiguration
-					.getDefault().createSubPartitionScanner(), PHPSourceConfiguration.getDefault()
-					.createSubPartitionScanner(), PHPPartitionerSwitchStrategy.getDefault());
-			ExtendedFastPartitioner partitioner = new ExtendedFastPartitioner(partitionScanner,
-					TextUtils.combine(new String[][] { CompositePartitionScanner.SWITCHING_CONTENT_TYPES,
-							HTMLSourceConfiguration.getDefault().getContentTypes(),
-							PHPSourceConfiguration.getDefault().getContentTypes() }));
-			partitionScanner.setPartitioner(partitioner);
-			partitioner.connect(document);
-			document.setDocumentPartitioner(partitioner);
-			// order of these next two statements is important!
-			getDocumentScopeManager().setDocumentScope(document, IPHPConstants.CONTENT_TYPE_HTML_PHP, "");
-			getDocumentScopeManager().registerConfigurations(
-					document,
-					new IPartitioningConfiguration[] { HTMLSourceConfiguration.getDefault(),
-							PHPSourceConfiguration.getDefault() });
-
-			fViewers.put(content.hashCode(), viewer);
-			viewer.setDocument(document);
+			File file = File.createTempFile("php_scope_test", ".php");
+			file.deleteOnExit();
+			IOUtil.write(new FileOutputStream(file), content);
+			editor = (AbstractThemeableEditor) IDE.openEditor(UIUtils.getActivePage(),
+					new FileStoreEditorInput(EFS.getStore(file.toURI())), "com.aptana.editor.php");
+			fViewers.put(content.hashCode(), editor);
 		}
+		ISourceViewer viewer = editor.getISourceViewer();
 		return getDocumentScopeManager().getScopeAtOffset(viewer, offset);
 	}
 

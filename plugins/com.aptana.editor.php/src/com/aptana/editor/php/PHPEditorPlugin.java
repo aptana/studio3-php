@@ -75,7 +75,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		super.start(context);
 		plugin = this;
 
-		listenForThemeChanges();
+		addThemeListener();
 		index();
 		Job loadBuiltins = new Job("Index PHP API...") { //$NON-NLS-1$
 			@Override
@@ -93,11 +93,40 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	/**
 	 * Hook up a listener for theme changes, and change the PHP occurrence colors!
 	 */
-	private void listenForThemeChanges()
+	private void addThemeListener()
 	{
-		Job job = new UIJob("Set occurrence colors to theme") //$NON-NLS-1$
+		fThemeChangeListener = new IPreferenceChangeListener()
 		{
-			private void setOccurrenceColors()
+
+			public void preferenceChange(PreferenceChangeEvent event)
+			{
+				if (event.getKey().equals(IThemeManager.THEME_CHANGED))
+				{
+					setOccurrenceColors();
+				}
+			}
+		};
+		setOccurrenceColors();
+		EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID).addPreferenceChangeListener(fThemeChangeListener);
+	}
+
+	private void removeThemeListener()
+	{
+		if (fThemeChangeListener != null)
+		{
+			EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
+					.removePreferenceChangeListener(fThemeChangeListener);
+			fThemeChangeListener = null;
+		}
+	}
+
+	private void setOccurrenceColors()
+	{
+		Job job = new UIJob("Setting occurrence colors") //$NON-NLS-1$
+		{
+
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
 				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
@@ -111,30 +140,12 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				{
 					// ignore
 				}
-			}
-
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor)
-			{
-				fThemeChangeListener = new IPreferenceChangeListener()
-				{
-					public void preferenceChange(PreferenceChangeEvent event)
-					{
-						if (event.getKey().equals(IThemeManager.THEME_CHANGED))
-						{
-							setOccurrenceColors();
-						}
-					}
-				};
-				setOccurrenceColors();
-				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
-						.addPreferenceChangeListener(fThemeChangeListener);
 				return Status.OK_STATUS;
 			}
 		};
-
-		job.setSystem(true);
-		job.schedule();
+		job.setSystem(!EclipseUtil.showSystemJobs());
+		job.setPriority(Job.LONG);
+		job.schedule(1000L);
 	}
 
 	private void index()
@@ -185,12 +196,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		try
 		{
 			PHPGlobalIndexer.getInstance().save();
-			if (fThemeChangeListener != null)
-			{
-				EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID)
-						.removePreferenceChangeListener(fThemeChangeListener);
-				fThemeChangeListener = null;
-			}
+			removeThemeListener();
 		}
 		finally
 		{

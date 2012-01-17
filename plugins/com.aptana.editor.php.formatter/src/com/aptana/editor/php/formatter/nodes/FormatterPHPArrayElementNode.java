@@ -38,16 +38,6 @@ public class FormatterPHPArrayElementNode extends FormatterBlockWithBeginEndNode
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isIndenting()
-	 */
-	@Override
-	protected boolean isIndenting()
-	{
-		return !isSingleElement && isAddingBeginNewLine();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see com.aptana.formatter.nodes.FormatterBlockNode#isAddingBeginNewLine()
 	 */
 	@Override

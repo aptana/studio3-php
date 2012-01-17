@@ -38,10 +38,6 @@ public class PHPTokenMapperFactory
 	public static Set<String> GLOBALS = new HashSet<String>();
 	static
 	{
-		GLOBALS.add(IPHPTokenMapper.GLOBALS);
-		GLOBALS.add(IPHPTokenMapper.SESSION);
-		GLOBALS.add(IPHPTokenMapper.SERVER);
-		GLOBALS.add(IPHPTokenMapper.ENV);
 		GLOBALS.add(IPHPTokenMapper.COOKIE);
 		GLOBALS.add(IPHPTokenMapper.FILES);
 		GLOBALS.add(IPHPTokenMapper.POST);
@@ -54,6 +50,14 @@ public class PHPTokenMapperFactory
 		GLOBALS.add(IPHPTokenMapper.HTTP_SERVER_VARS);
 		GLOBALS.add(IPHPTokenMapper.HTTP_COOKIE_VARS);
 
+	}
+	public static Set<String> SAFER_GLOBALS = new HashSet<String>();
+	static
+	{
+		SAFER_GLOBALS.add(IPHPTokenMapper.GLOBALS);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SESSION);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SERVER);
+		SAFER_GLOBALS.add(IPHPTokenMapper.ENV);
 	}
 
 	private static Set<String> ASSIGNMENTS = new HashSet<String>();
