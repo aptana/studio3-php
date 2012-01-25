@@ -253,6 +253,10 @@ public class PHPDocHover extends AbstractPHPTextHover
 	protected Object[] getPHPElementsAt(ITextViewer textViewer, IRegion hoverRegion)
 	{
 		PHPSourceEditor editor = (PHPSourceEditor) getEditor();
+		if (editor == null)
+		{
+			return null;
+		}
 		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
 				.getDocument(editor.getEditorInput()), hoverRegion.getOffset());
 
