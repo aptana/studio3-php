@@ -18,7 +18,7 @@ php.formatter.spaces.before.prefix=0
 php.formatter.spaces.after.arithmetic=1
 php.formatter.spaces.before.conditional.parentheses.closing=0
 php.formatter.line.after.class.declaration=1
-php.formatter.newline.before.else=false
+php.formatter.newline.before.else=true
 php.formatter.line.after.function.declaration=1
 php.formatter.spaces.after.conditional.parentheses.opening=0
 php.formatter.spaces.after.parentheses=0
@@ -32,7 +32,7 @@ php.formatter.brace.position.blocks=same.line
 php.formatter.wrap.comments.length=80
 php.formatter.indent.breakInCase=true
 php.formatter.newline.between.array.creation.elements=false
-php.formatter.newline.before.if.in.elseif=false
+php.formatter.newline.before.if.in.elseif=true
 php.formatter.spaces.before.unary=0
 php.formatter.formatter.on.off.enabled=false
 php.formatter.spaces.after.arrow=1
@@ -81,20 +81,50 @@ php.formatter.spaces.before.arithmetic=1
 php.formatter.spaces.before.invocation.parentheses.opening=0
 php.formatter.spaces.after.array.access.parentheses.opening=0
 ==CONTENT==
-<?php 
-switch ($bb) {
-            case 'bb':
-            // http://someurl
-            break;
-						default: 
-							break;
-        }
-==FORMATTED==
-
-switch ($bb) {
-	case 'bb' :
-		// http://someurl
+<?php
+switch($test) {
+	case 'modeA' : {
+	#Do something
+		$a = l;
+		break;
+	}
+	case 'ddd' :
+	// comment 2
+	$a++;
+		break;
+	case 'eee' :
+/*comment 3 */
+		break;
+	case 'eee' :
+	/**
+		 * comment 3
+		*/
 		break;
 	default :
+		  // This includes the X option too
+		break;
+}
+==FORMATTED==
+
+switch($test) {
+	case 'modeA' : {
+		#Do something
+		$a = l;
+		break;
+	}
+	case 'ddd' :
+		// comment 2
+		$a++;
+		break;
+	case 'eee' :
+		/*comment 3 */
+		break;
+	case 'eee' :
+		/**
+		 * comment 3
+		 */
+		break;
+	default :
+		// This includes the X option too
 		break;
 }
