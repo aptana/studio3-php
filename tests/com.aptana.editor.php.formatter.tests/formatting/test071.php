@@ -100,8 +100,8 @@ class aa {
 	private function bb($bb) {
 		switch ($bb) {
 			case 'bb' :
-			// first comment
-			// http://someurl
+				// first comment
+				// http://someurl
 				break;
 		}
 	}

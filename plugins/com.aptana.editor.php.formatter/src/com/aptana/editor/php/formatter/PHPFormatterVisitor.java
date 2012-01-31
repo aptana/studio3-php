@@ -1662,6 +1662,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			if (!actions.isEmpty())
 			{
 				int start = actions.get(0).getStart();
+				if (hasCommentBefore(start))
+				{
+					start = caseColonNode.getEndOffset();
+				}
 				int end = actions.get(actions.size() - 1).getEnd();
 				caseBodyNode.setBegin(builder.createTextNode(document, start, start));
 				builder.push(caseBodyNode);
