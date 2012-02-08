@@ -163,7 +163,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		};
 		job.setSystem(!EclipseUtil.showSystemJobs());
 		job.setPriority(Job.LONG);
-		job.schedule(1000L);
+		job.schedule(6000L);
 	}
 
 	private void index()
