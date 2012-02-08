@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -72,11 +71,26 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 	 */
 	public void start(BundleContext context) throws Exception // $codepro.audit.disable declaredExceptions
 	{
+		long start = System.currentTimeMillis();
 		super.start(context);
 		plugin = this;
-
+		if (DEBUG)
+		{
+			System.out.println("PHP Plugin - Super start: " + (System.currentTimeMillis() - start)); //$NON-NLS-1$
+			start = System.currentTimeMillis();
+		}
 		addThemeListener();
+		if (DEBUG)
+		{
+			System.out.println("PHP Plugin - Add theme listener: " + (System.currentTimeMillis() - start)); //$NON-NLS-1$
+			start = System.currentTimeMillis();
+		}
 		index();
+		if (DEBUG)
+		{
+			System.out.println("PHP Plugin - index(): " + (System.currentTimeMillis() - start)); //$NON-NLS-1$
+			start = System.currentTimeMillis();
+		}
 		Job loadBuiltins = new Job("Index PHP API...") { //$NON-NLS-1$
 			@Override
 			protected IStatus run(IProgressMonitor monitor)
@@ -88,6 +102,10 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		loadBuiltins.setSystem(!EclipseUtil.showSystemJobs());
 		loadBuiltins.setPriority(Job.BUILD);
 		loadBuiltins.schedule(2000L);
+		if (DEBUG)
+		{
+			System.out.println("PHP Plugin - Load Built-ins: " + (System.currentTimeMillis() - start)); //$NON-NLS-1$
+		}
 	}
 
 	/**
@@ -122,11 +140,10 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	private void setOccurrenceColors()
 	{
-		Job job = new UIJob("Setting occurrence colors") //$NON-NLS-1$
+		Job job = new Job("Setting occurrence colors") //$NON-NLS-1$
 		{
-
 			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor)
+			public IStatus run(IProgressMonitor monitor)
 			{
 				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
