@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -140,10 +141,10 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	private void setOccurrenceColors()
 	{
-		Job job = new Job("Setting occurrence colors") //$NON-NLS-1$
+		Job job = new UIJob("Setting occurrence colors") //$NON-NLS-1$
 		{
 			@Override
-			public IStatus run(IProgressMonitor monitor)
+			public IStatus runInUIThread(IProgressMonitor monitor)
 			{
 				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
