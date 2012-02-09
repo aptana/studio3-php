@@ -62,6 +62,7 @@ import com.aptana.editor.php.internal.ui.actions.OpenDeclarationAction;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPDecoratingLabelProvider;
 import com.aptana.editor.php.internal.ui.editor.outline.PHPOutlineItem;
 import com.aptana.editor.php.internal.ui.editor.outline.PHTMLOutlineContentProvider;
+import com.aptana.editor.php.util.EditorUtils;
 import com.aptana.parsing.ast.ILanguageNode;
 import com.aptana.parsing.ast.IParseNode;
 
@@ -99,6 +100,13 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	// Mark Occurrences management
 	private OccurrencesUpdater occurrencesUpdater;
+
+	static
+	{
+		// Update the Mark-Occurrences colors to match the Theme.
+		// The PHPEditorPlugin also adds a listener that will update that when the Theme changes.
+		EditorUtils.setOccurrenceColors();
+	}
 
 	/**
 	 * Constructs a new PHP source editor.

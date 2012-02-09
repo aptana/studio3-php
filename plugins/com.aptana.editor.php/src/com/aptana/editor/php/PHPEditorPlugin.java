@@ -12,21 +12,17 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.EclipseUtil;
@@ -34,8 +30,8 @@ import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.model.ModelManager;
 import com.aptana.editor.php.internal.ui.editor.PHPDocumentProvider;
+import com.aptana.editor.php.util.EditorUtils;
 import com.aptana.theme.IThemeManager;
-import com.aptana.theme.Theme;
 import com.aptana.theme.ThemePlugin;
 
 /**
@@ -121,11 +117,10 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 			{
 				if (event.getKey().equals(IThemeManager.THEME_CHANGED))
 				{
-					setOccurrenceColors();
+					EditorUtils.setOccurrenceColors();
 				}
 			}
 		};
-		setOccurrenceColors();
 		EclipseUtil.instanceScope().getNode(ThemePlugin.PLUGIN_ID).addPreferenceChangeListener(fThemeChangeListener);
 	}
 
@@ -137,33 +132,6 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 					.removePreferenceChangeListener(fThemeChangeListener);
 			fThemeChangeListener = null;
 		}
-	}
-
-	private void setOccurrenceColors()
-	{
-		Job job = new UIJob("Setting occurrence colors") //$NON-NLS-1$
-		{
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor)
-			{
-				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
-				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
-				prefs.put("PHPReadOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
-				prefs.put("PHPWriteOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
-				try
-				{
-					prefs.flush();
-				}
-				catch (BackingStoreException e) // $codepro.audit.disable emptyCatchClause
-				{
-					// ignore
-				}
-				return Status.OK_STATUS;
-			}
-		};
-		job.setSystem(!EclipseUtil.showSystemJobs());
-		job.setPriority(Job.LONG);
-		job.schedule(6000L);
 	}
 
 	private void index()
