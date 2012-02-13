@@ -34,22 +34,26 @@ import org2.eclipse.php.util.SWTUtil;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.ui.util.SWTUtils;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
-public class ServerEditDialog extends TitleAreaDialog implements IControlHandler {
+public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
+{
 
 	protected static final String FRAGMENT_GROUP_ID = "org.eclipse.php.server.ui.serverWizardAndComposite";
-	private AbstractWebServerConfiguration server;
+	private IServer server;
 	private ArrayList runtimeComposites;
 	private SelectionListener tabsListener;
 
 	/**
 	 * Instantiate a new server edit dialog.
-	 *
-	 * @param parentShell the parent SWT shell
-	 * @param server An assigned IServer
+	 * 
+	 * @param parentShell
+	 *            the parent SWT shell
+	 * @param server
+	 *            An assigned IServer
 	 */
-	public ServerEditDialog(Shell parentShell, AbstractWebServerConfiguration server) {
+	public ServerEditDialog(Shell parentShell, IServer server)
+	{
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 
@@ -57,11 +61,13 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 		runtimeComposites = new ArrayList(3);
 	}
 
-	protected Control createDialogArea(Composite parent) {
+	protected Control createDialogArea(Composite parent)
+	{
 		// Create a tabbed container that will hold all the fragments
 		CTabFolder tabs = SWTUtil.createTabFolder(parent);
 		ICompositeFragmentFactory[] factories = WizardFragmentsFactoryRegistry.getFragmentsFactories(FRAGMENT_GROUP_ID);
-		for (ICompositeFragmentFactory element : factories) {
+		for (ICompositeFragmentFactory element : factories)
+		{
 			CTabItem tabItem = new CTabItem(tabs, SWT.BORDER);
 			CompositeFragment fragment = element.createComposite(tabs, this);
 			fragment.setData(server);
@@ -78,23 +84,29 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 		return tabs;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#cancelPressed()
 	 */
-	protected void cancelPressed() {
+	protected void cancelPressed()
+	{
 		Iterator composites = runtimeComposites.iterator();
-		while (composites.hasNext()) {
+		while (composites.hasNext())
+		{
 			((CompositeFragment) composites.next()).performCancel();
 		}
 		super.cancelPressed();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
 	 */
-	protected void okPressed() {
+	protected void okPressed()
+	{
 		Iterator composites = runtimeComposites.iterator();
-		while (composites.hasNext()) {
+		while (composites.hasNext())
+		{
 			((CompositeFragment) composites.next()).performOk();
 		}
 		super.okPressed();
@@ -104,15 +116,18 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 	 * (non-Javadoc)
 	 * @see org.eclipse.php.internal.server.apache.ui.IControlHandler#setDescription(java.lang.String)
 	 */
-	public void setDescription(String desc) {
+	public void setDescription(String desc)
+	{
 		super.setMessage(desc);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.php.internal.server.apache.ui.IControlHandler#setImageDescriptor(org.eclipse.jface.resource.ImageDescriptor)
+	 * @see org.eclipse.php.internal.server.apache.ui.IControlHandler#setImageDescriptor(org.eclipse.jface.resource.
+	 * ImageDescriptor)
 	 */
-	public void setImageDescriptor(ImageDescriptor image) {
+	public void setImageDescriptor(ImageDescriptor image)
+	{
 		super.setTitleImage(image.createImage());
 	}
 
@@ -120,12 +135,16 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 	 * (non-Javadoc)
 	 * @see org.eclipse.php.internal.server.apache.ui.IControlHandler#update()
 	 */
-	public void update() {
+	public void update()
+	{
 		Button button = getButton(IDialogConstants.OK_ID);
-		if (button != null) {
+		if (button != null)
+		{
 			Iterator composites = runtimeComposites.iterator();
-			while (composites.hasNext()) {
-				if (!((CompositeFragment) composites.next()).isComplete()) {
+			while (composites.hasNext())
+			{
+				if (!((CompositeFragment) composites.next()).isComplete())
+				{
 					button.setEnabled(false);
 					return;
 				}
@@ -138,11 +157,13 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.TitleAreaDialog#setMessage(java.lang.String, int)
 	 */
-	public void setMessage(String newMessage, int newType) {
+	public void setMessage(String newMessage, int newType)
+	{
 		// Override the WARNING with an INFORMATION.
 		// We have a bug that cause the warning to be displayed in all the tabs and not
 		// only in the selected one. (TODO - Fix this)
-		if (newType == IMessageProvider.WARNING) {
+		if (newType == IMessageProvider.WARNING)
+		{
 			newType = IMessageProvider.INFORMATION;
 		}
 		super.setMessage(newMessage, newType);
@@ -152,7 +173,8 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 	 * (non-Javadoc)
 	 * @see org.eclipse.php.internal.server.apache.ui.IControlHandler#getServer()
 	 */
-	public AbstractWebServerConfiguration getServer() {
+	public IServer getServer()
+	{
 		return server;
 	}
 
@@ -160,22 +182,25 @@ public class ServerEditDialog extends TitleAreaDialog implements IControlHandler
 	 * (non-Javadoc)
 	 * @see org.eclipse.php.internal.server.apache.ui.IControlHandler#setServer(org.eclipse.wst.server.core.IServer)
 	 */
-	public void setServer(AbstractWebServerConfiguration server) {
+	public void setServer(IServer server)
+	{
 		this.server = server;
 	}
 
-	private class TabsSelectionListener implements SelectionListener {
+	private class TabsSelectionListener implements SelectionListener
+	{
 
-		public void widgetDefaultSelected(SelectionEvent e) {
+		public void widgetDefaultSelected(SelectionEvent e)
+		{
 			// Do nothing
 		}
 
-		public void widgetSelected(SelectionEvent e) {
-			CTabItem item = (CTabItem)e.item;
-			CompositeFragment fragment = (CompositeFragment)item.getControl();
+		public void widgetSelected(SelectionEvent e)
+		{
+			CTabItem item = (CTabItem) e.item;
+			CompositeFragment fragment = (CompositeFragment) item.getControl();
 			setTitle(fragment.getTitle());
 			setDescription(fragment.getDescription());
 		}
-
 	}
 }

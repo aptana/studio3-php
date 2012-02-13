@@ -9,7 +9,7 @@ package org.eclipse.php.internal.debug.ui;
 
 import org.eclipse.swt.widgets.Shell;
 
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * Represents the object which performs the connection test with the Debug Servers
@@ -24,5 +24,5 @@ public interface IDebugServerConnectionTest {
 	 * @param server - The PHPServerProxy object of the debug server
 	 * @param shell - The given shell in order to display result messages to the user
 	 */
-	public void testConnection(AbstractWebServerConfiguration server, Shell shell);
+	public void testConnection(IServer server, Shell shell);
 }

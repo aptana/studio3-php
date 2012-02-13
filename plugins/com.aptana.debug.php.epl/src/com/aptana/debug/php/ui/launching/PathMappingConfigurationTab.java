@@ -28,7 +28,7 @@ import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.debug.php.ui.pathMapper.PathMapperDialog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.ui.util.SWTUtils;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * A PHP server Path Mapping tab that should be displayed on the launch configuration for the remote debugging.
@@ -68,7 +68,7 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 		Label msg1 = new Label(composite, SWT.WRAP);
 		msg1.setText("This table displays the path mappings that were defined for the server assigned to this launch.");
 		msg1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+
 		Link link = new Link(composite, SWT.NONE);
 		link.setText("<a>Click here to change the mapping...</a>");
 		link.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -76,7 +76,7 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				AbstractWebServerConfiguration server = getServer();
+				IServer server = getServer();
 				if (server != null)
 				{
 					PathMapperDialog dialog = new PathMapperDialog(getShell(), server);
@@ -85,12 +85,16 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 						// Notify the change to all other launch configurations that use this server.
 						PathMappingUpdater pathMappingUpdater = new PathMappingUpdater();
 						pathMappingUpdater.updatePaths(server, new String[] { workingCopy.getName() });
-						// We must set the working copy with the new values before we call for an update on the rest of the tabs
-						// The same rules also apply here. We should not modify the working copy if it does not use a specific file
+						// We must set the working copy with the new values before we call for an update on the rest of
+						// the tabs
+						// The same rules also apply here. We should not modify the working copy if it does not use a
+						// specific file
 						// or does not auto-generate the script when using a specific file.
-						try {
+						try
+						{
 							if (workingCopy.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, false)
-									&& workingCopy.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_AUTO_GENERATED_URL, false))
+									&& workingCopy.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_AUTO_GENERATED_URL,
+											false))
 							{
 								// Update the current launch config
 								pathMappingUpdater.updateConfigurations(Arrays.asList(workingCopy), server);
@@ -100,18 +104,24 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 								{
 									tab.initializeFrom(workingCopy);
 								}
-							} 
+							}
 							else
 							{
 								// just update this tab (this will update the preview table)
 								initializeFrom(workingCopy);
 							}
-						} catch (CoreException ce) {
+						}
+						catch (CoreException ce)
+						{
 							PHPDebugEPLPlugin.logError("Error updating the configurations", ce);
 						}
 					}
-				} else {
-					MessageDialog.openInformation(getShell(), "Path Mapping", "There are no PHP servers defined. \nYou will need to define one in the 'Server' tab before changing the path mapping.");
+				}
+				else
+				{
+					MessageDialog
+							.openInformation(getShell(), "Path Mapping",
+									"There are no PHP servers defined. \nYou will need to define one in the 'Server' tab before changing the path mapping.");
 				}
 			}
 		});
@@ -148,9 +158,9 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 	/**
 	 * Returns the server for the working copy, or null if the working copy is null or a server was not found.
 	 * 
-	 * @return AbstractWebServerConfiguration
+	 * @return IServer
 	 */
-	private AbstractWebServerConfiguration getServer()
+	private IServer getServer()
 	{
 		if (workingCopy != null)
 		{
@@ -193,7 +203,7 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 			{
 				String serverName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""); //$NON-NLS-1$
 				if (serverName != null && !serverName.equals("")) { //$NON-NLS-1$
-					AbstractWebServerConfiguration server = PHPServersManager.getServer(serverName);
+					IServer server = PHPServersManager.getServer(serverName);
 					if (server != null)
 					{
 						PathMapper mapper = PathMapperRegistry.getByServer(server);

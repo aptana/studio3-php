@@ -17,53 +17,71 @@ import org.eclipse.php.internal.debug.ui.wizard.WizardModel;
 import org.eclipse.swt.widgets.Composite;
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * @author michael
  */
-public class PathMapperWizardFragment extends CompositeWizardFragment {
+public class PathMapperWizardFragment extends CompositeWizardFragment
+{
 
 	private PathMapperCompositeFragment compositeFragment;
-	private AbstractWebServerConfiguration server;
+	private IServer server;
 
-	public Composite getComposite() {
+	public Composite getComposite()
+	{
 		return compositeFragment;
 	}
 
-	public Composite createComposite(Composite parent, IWizardHandle handle) {
+	public Composite createComposite(Composite parent, IWizardHandle handle)
+	{
 		compositeFragment = new PathMapperCompositeFragment(parent, new WizardControlWrapper(handle), false);
 		return compositeFragment;
 	}
 
-	public void enter() {
-		if (compositeFragment != null) {
-			try {
-				server = (AbstractWebServerConfiguration) getWizardModel().getObject(WizardModel.SERVER);
-				if (server != null) {
+	public void enter()
+	{
+		if (compositeFragment != null)
+		{
+			try
+			{
+				server = (IServer) getWizardModel().getObject(WizardModel.SERVER);
+				if (server != null)
+				{
 					compositeFragment.setData(server);
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				PHPDebugEPLPlugin.logError(e);
 			}
-		} else {
+		}
+		else
+		{
 			PHPDebugEPLPlugin.logError("Could not display the Servers wizard (component is null)."); //$NON-NLS-1$
 		}
 	}
 
-	public boolean isComplete() {
-		if (compositeFragment == null) {
+	public boolean isComplete()
+	{
+		if (compositeFragment == null)
+		{
 			return super.isComplete();
 		}
 		return super.isComplete() && compositeFragment.isComplete();
 	}
 
-	public void exit() {
-		try {
-			if (compositeFragment != null) {
+	public void exit()
+	{
+		try
+		{
+			if (compositeFragment != null)
+			{
 				compositeFragment.performOk();
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 		}
 	}
 }

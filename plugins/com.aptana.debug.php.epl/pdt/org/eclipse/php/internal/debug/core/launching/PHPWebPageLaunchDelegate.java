@@ -54,7 +54,7 @@ import com.aptana.debug.php.core.launch.ScriptLocator;
 import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.core.tunneling.SSHTunnel;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * A launch configuration delegate class for launching a PHP web page script.
@@ -104,7 +104,7 @@ public class PHPWebPageLaunchDelegate extends LaunchConfigurationDelegate {
 		}
 		// PHPLaunchUtilities.showDebugViews();
 		this.launch = launch;
-		AbstractWebServerConfiguration server = PHPServersManager.getServer(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""));
+		IServer server = PHPServersManager.getServer(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""));
 		if (server == null) {
 			Logger.log(Logger.ERROR, "Launch configuration could not find server (server name = " + configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "") + ')');
 			displayErrorMessage("Could not launch the session.\nThe application could not find the server that was defined for this launch.\nPlease modify your launch settings through the 'Debug Configurations' dialog.");
@@ -239,7 +239,7 @@ public class PHPWebPageLaunchDelegate extends LaunchConfigurationDelegate {
 	public boolean preLaunchCheck(final ILaunchConfiguration configuration, final String mode, IProgressMonitor monitor) throws CoreException {
 		// Check if the server exists
 		final String serverName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "");
-		AbstractWebServerConfiguration server = PHPServersManager.getServer(serverName);
+		IServer server = PHPServersManager.getServer(serverName);
 		if (server == null) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {

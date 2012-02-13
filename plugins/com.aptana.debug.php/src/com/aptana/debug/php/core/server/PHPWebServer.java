@@ -39,12 +39,12 @@ import java.net.URL;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.debug.php.PHPDebugPlugin;
-import com.aptana.webserver.core.EFSWebServerConfiguration;
+import com.aptana.webserver.core.ExternalWebServer;
 
 /**
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPWebServerConfiguration extends EFSWebServerConfiguration
+public class PHPWebServer extends ExternalWebServer
 {
 	/**
 	 * Server name attribute.
@@ -57,16 +57,16 @@ public class PHPWebServerConfiguration extends EFSWebServerConfiguration
 	private boolean persistent;
 
 	/**
-	 * Constructs a new PHPWebServerConfiguration.<br>
+	 * Constructs a new PHPWebServer.<br>
 	 * By default, the server is persistent.
 	 */
-	public PHPWebServerConfiguration()
+	public PHPWebServer()
 	{
 		this.persistent = true;
 	}
 
 	/**
-	 * Constructs a new PHPWebServerConfiguration.
+	 * Constructs a new PHPWebServer.
 	 * 
 	 * @param host
 	 * @param port
@@ -74,7 +74,7 @@ public class PHPWebServerConfiguration extends EFSWebServerConfiguration
 	 * @param persistent
 	 *            Mark this server as persistent or not.
 	 */
-	public PHPWebServerConfiguration(String host, int port, boolean isSecure, boolean persistent)
+	public PHPWebServer(String host, int port, boolean isSecure, boolean persistent)
 	{
 		this.persistent = persistent;
 		try
@@ -99,9 +99,9 @@ public class PHPWebServerConfiguration extends EFSWebServerConfiguration
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof PHPWebServerConfiguration)
+		if (obj instanceof PHPWebServer)
 		{
-			PHPWebServerConfiguration other = (PHPWebServerConfiguration) obj;
+			PHPWebServer other = (PHPWebServer) obj;
 			return this.getBaseURL().equals(other.getBaseURL());
 		}
 		return false;

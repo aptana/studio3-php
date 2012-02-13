@@ -30,7 +30,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org2.eclipse.php.internal.core.util.ScrolledCompositeImpl;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * @author michael
@@ -108,7 +108,7 @@ public class PathMapperCompositeFragment extends CompositeFragment {
 		if (pathMapperComposite == null || pathMapperComposite.isDisposed()) {
 			return;
 		}
-		AbstractWebServerConfiguration server = getServer();
+		IServer server = getServer();
 		pathMapperComposite.setServerIsValid(server != null);
 		if (server != null) {
 			PathMapper pathMapper = PathMapperRegistry.getByServer(server);
@@ -132,7 +132,7 @@ public class PathMapperCompositeFragment extends CompositeFragment {
 	}
 
 	public boolean performOk() {
-		AbstractWebServerConfiguration server = getServer();
+		IServer server = getServer();
 		if (server != null) {
 			PathMapper pathMapper = PathMapperRegistry.getByServer(server);
 			pathMapper.setMapping(pathMapperComposite.getMappings());
@@ -144,10 +144,10 @@ public class PathMapperCompositeFragment extends CompositeFragment {
 	/**
 	 * Override the super setData to handle only Server types.
 	 *
-	 * @throws IllegalArgumentException if the given object is not a {@link AbstractWebServerConfiguration}
+	 * @throws IllegalArgumentException if the given object is not a {@link IServer}
 	 */
 	public void setData(Object server) {
-		if (server != null && !(server instanceof AbstractWebServerConfiguration)) {
+		if (server != null && !(server instanceof IServer)) {
 			throw new IllegalArgumentException("The given object is not a Server");
 		}
 		super.setData(server);
@@ -164,7 +164,7 @@ public class PathMapperCompositeFragment extends CompositeFragment {
 	 *
 	 * @return The attached Server.
 	 */
-	public AbstractWebServerConfiguration getServer() {
-		return (AbstractWebServerConfiguration) getData();
+	public IServer getServer() {
+		return (IServer) getData();
 	}
 }

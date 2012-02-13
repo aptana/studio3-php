@@ -8,7 +8,8 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.AbstractWebServer;
+import com.aptana.webserver.core.IServer;
 import com.aptana.webserver.core.WebServerCorePlugin;
 
 /**
@@ -22,7 +23,7 @@ public class PHPServersManager
 	// TODO: SG - Hook the PathMapper (see the addManagerListener)
 	// Maybe also needs a server manager event??
 
-	private static ArrayList<AbstractWebServerConfiguration> tempServers = new ArrayList<AbstractWebServerConfiguration>();
+	private static List<IServer> tempServers = new ArrayList<IServer>();
 
 	/**
 	 * DEFAULT_SERVER_PREFERENCES_KEY
@@ -32,35 +33,14 @@ public class PHPServersManager
 	private static final int DEFAULT_PORT = 80;
 
 	/**
-	 * Returns all the registered servers.
-	 * 
-	 * @return all servers
-	 */
-	public static AbstractWebServerConfiguration[] getServers()
-	{
-		List<AbstractWebServerConfiguration> servers = WebServerCorePlugin.getDefault().getServerConfigurationManager().getServerConfigurations();
-		ArrayList<AbstractWebServerConfiguration> rs = new ArrayList<AbstractWebServerConfiguration>();
-		for (AbstractWebServerConfiguration s : servers)
-		{
-			// if (s.isExternal() && s.isWebServer())
-			// {
-			rs.add(s);
-			// }
-		}
-		AbstractWebServerConfiguration[] ps = new AbstractWebServerConfiguration[rs.size()];
-		rs.toArray(ps);
-		return ps;
-	}
-
-	/**
 	 * Returns all the registered temporary servers. Temporary servers are not cached, and reset for every Studio
 	 * session.
 	 * 
 	 * @return The temporary servers.
 	 */
-	public static AbstractWebServerConfiguration[] getTemporaryServers()
+	public static IServer[] getTemporaryServers()
 	{
-		return tempServers.toArray(new AbstractWebServerConfiguration[tempServers.size()]);
+		return tempServers.toArray(new IServer[tempServers.size()]);
 	}
 
 	/**
@@ -70,9 +50,9 @@ public class PHPServersManager
 	 * @param baseUrl
 	 * @return
 	 */
-	public static AbstractWebServerConfiguration createServer(String default_Server_Name, String baseUrl)
+	public static IServer createServer(String default_Server_Name, String baseUrl)
 	{
-		return null;// new AbstractWebServerConfiguration(default_Server_Name, baseUrl);
+		return null;// new IServer(default_Server_Name, baseUrl);
 	}
 
 	/**
@@ -81,11 +61,11 @@ public class PHPServersManager
 	 * @param host
 	 * @param port
 	 * @param isSecure
-	 * @return a new AbstractWebServerConfiguration
+	 * @return a new IServer
 	 */
-	public static AbstractWebServerConfiguration createTemporaryServer(String host, int port, boolean isSecure)
+	public static AbstractWebServer createTemporaryServer(String host, int port, boolean isSecure)
 	{
-		return new PHPWebServerConfiguration(host, port, isSecure, false);
+		return new PHPWebServer(host, port, isSecure, false);
 	}
 
 	/**
@@ -94,12 +74,12 @@ public class PHPServersManager
 	 * 
 	 * @param server
 	 */
-	public static void addTemporaryServer(AbstractWebServerConfiguration server)
+	public static void addTemporaryServer(IServer server)
 	{
 		tempServers.add(server);
 	}
 
-	public void removeTemporaryServer(AbstractWebServerConfiguration server)
+	public void removeTemporaryServer(AbstractWebServer server)
 	{
 		if (!tempServers.remove(server))
 		{
@@ -111,7 +91,7 @@ public class PHPServersManager
 			{
 				port = DEFAULT_PORT;
 			}
-			AbstractWebServerConfiguration temporaryServer = getTemporaryServer(host, port);
+			IServer temporaryServer = getTemporaryServer(host, port);
 			tempServers.remove(temporaryServer);
 		}
 	}
@@ -121,13 +101,13 @@ public class PHPServersManager
 	 * 
 	 * @param host
 	 * @param port
-	 * @return A temporary AbstractWebServerConfiguration; Null if no such server was registered.
+	 * @return A temporary IServer; Null if no such server was registered.
 	 */
-	public static AbstractWebServerConfiguration getTemporaryServer(String host, int port)
+	public static IServer getTemporaryServer(String host, int port)
 	{
 		synchronized (tempServers)
 		{
-			for (AbstractWebServerConfiguration configuration : tempServers)
+			for (IServer configuration : tempServers)
 			{
 				URL url = configuration.getBaseURL();
 				if (url.getHost().equals(host) && url.getPort() == port)
@@ -152,7 +132,7 @@ public class PHPServersManager
 	 * @param object
 	 * @param server
 	 */
-	public static void setDefaultServer(Object object, AbstractWebServerConfiguration server)
+	public static void setDefaultServer(Object object, IServer server)
 	{
 	}
 
@@ -160,12 +140,12 @@ public class PHPServersManager
 	 * Returns a registered server with the given name.
 	 * 
 	 * @param name
-	 * @return AbstractWebServerConfiguration
+	 * @return IServer
 	 */
-	public static AbstractWebServerConfiguration getServer(String name)
+	public static IServer getServer(String name)
 	{
-		AbstractWebServerConfiguration[] servers = getServers();
-		for (AbstractWebServerConfiguration p : servers)
+		List<IServer> servers = getServers();
+		for (IServer p : servers)
 		{
 			if (p.getName().equals(name))
 			{
@@ -182,10 +162,10 @@ public class PHPServersManager
 	 *            An {@link InetAddress}
 	 * @return The registered server with the same address, or null.
 	 */
-	public static AbstractWebServerConfiguration getServer(InetAddress address)
+	public static IServer getServer(InetAddress address)
 	{
-		AbstractWebServerConfiguration[] servers = getServers();
-		for (AbstractWebServerConfiguration p : servers)
+		List<IServer> servers = getServers();
+		for (IServer p : servers)
 		{
 			URL url = p.getBaseURL();
 			String hostname = url.getHost();
@@ -241,13 +221,24 @@ public class PHPServersManager
 	 *            (not in use)
 	 * @return The first server in the list of registered servers.
 	 */
-	public static AbstractWebServerConfiguration getDefaultServer(IProject project)
+	public static IServer getDefaultServer(IProject project)
 	{
-		AbstractWebServerConfiguration[] servers = getServers();
-		if (servers.length == 0)
+		List<IServer> servers = getServers();
+		if (servers.isEmpty())
 		{
 			return null;
 		}
-		return servers[0];
+		return servers.get(0);
+	}
+
+	/**
+	 * Return all registered compatible servers.
+	 * 
+	 * @return
+	 */
+	public static List<IServer> getServers()
+	{
+		// FIXME - Filter only the compatible servers.
+		return WebServerCorePlugin.getDefault().getServerManager().getServers();
 	}
 }

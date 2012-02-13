@@ -63,7 +63,7 @@ import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.core.tunneling.SSHTunnel;
 import com.aptana.debug.php.core.util.NameValuePair;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
 
@@ -86,7 +86,7 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 		}
 		// PHPLaunchUtilities.showDebugViews();
 		// Resolve the Server
-		AbstractWebServerConfiguration server = PHPServersManager.getServer(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""));//$NON-NLS-1$
+		IServer server = PHPServersManager.getServer(configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""));//$NON-NLS-1$
 		if (server == null) {
 			Logger.log(Logger.ERROR, "Launch configuration could not find server (server name = " + configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "") + ')');//$NON-NLS-1$ //$NON-NLS-2$
 			displayErrorMessage(PHPDebugCoreMessages.XDebug_WebLaunchConfigurationDelegate_1);

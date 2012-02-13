@@ -12,6 +12,7 @@ package org.eclipse.php.internal.debug.ui.preferences;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -58,7 +59,7 @@ import com.aptana.debug.php.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.php.util.ScrolledPageContent;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * PHP debug options preferences add-on. This add-on specifies the default debugger, executable and server for the
@@ -96,9 +97,10 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 		this.propertyPage = propertyPage;
 		IScopeContext[] preferenceScopes = this.createPreferenceScopes(propertyPage);
 
-		boolean stopAtFirstLine = PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, true);
-		String debuggerName = PHPDebuggersRegistry.getDebuggerName(PHPDebugPreferencesUtil
-				.getString(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID));
+		boolean stopAtFirstLine = PHPDebugPreferencesUtil.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE,
+				true);
+		String debuggerName = PHPDebuggersRegistry.getDebuggerName(PHPDebugPreferencesUtil.getString(
+				IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID));
 		String serverName = PHPServersManager.getDefaultServer(null).getName();
 		PHPexes exes = PHPexes.getInstance();
 		String phpExeName = PHPDebugUIMessages.PhpDebugPreferencePage_noExeDefined;
@@ -106,7 +108,8 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 		{
 			phpExeName = exes.getDefaultItem(PHPDebugEPLPlugin.getCurrentDebuggerId()).getName();
 		}
-		String transferEncoding = PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, "UTF-8"); //$NON-NLS-1$
+		String transferEncoding = PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.TRANSFER_ENCODING,
+				"UTF-8"); //$NON-NLS-1$
 		String outputEncoding = PHPDebugPreferencesUtil.getString(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, "UTF-8"); //$NON-NLS-1$
 		this.loadDebuggers(this.fDefaultDebugger);
 		this.loadServers(this.fDefaultServer);
@@ -119,8 +122,8 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 			{
 				String projectServerName = PHPServersManager.getDefaultServer(this.getProject(propertyPage)).getName();
 				if (!projectServerName.equals("")) { //$NON-NLS-1$
-					String debuggerId = node.get(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, PHPDebugEPLPlugin
-							.getCurrentDebuggerId());
+					String debuggerId = node.get(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID,
+							PHPDebugEPLPlugin.getCurrentDebuggerId());
 					debuggerName = PHPDebuggersRegistry.getDebuggerName(debuggerId);
 					serverName = projectServerName;
 					stopAtFirstLine = node.getBoolean(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE, stopAtFirstLine);
@@ -144,8 +147,10 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 							}
 						}
 					}
-					loadPHPExes(this.fDefaultPHPExe, exes.getItems(node.get(
-							IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, PHPDebugEPLPlugin.getCurrentDebuggerId())));
+					loadPHPExes(
+							this.fDefaultPHPExe,
+							exes.getItems(node.get(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID,
+									PHPDebugEPLPlugin.getCurrentDebuggerId())));
 					exeLoaded = true;
 				}
 			}
@@ -340,10 +345,10 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 	private void loadServers(Combo combo)
 	{
 		combo.removeAll();
-		AbstractWebServerConfiguration[] servers = PHPServersManager.getServers();
+		List<IServer> servers = PHPServersManager.getServers();
 		if (servers != null)
 		{
-			for (AbstractWebServerConfiguration element : servers)
+			for (IServer element : servers)
 			{
 				combo.add(element.getName());
 			}
@@ -577,7 +582,7 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 					debugUINode.remove(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE);
 					// debugUINode.remove(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT); // No need
 					debugUINode.remove(PHPDebugCorePreferenceNames.DEFAULT_PHP);
-					PHPServersManager.setDefaultServer(project, (AbstractWebServerConfiguration) null);
+					PHPServersManager.setDefaultServer(project, (IServer) null);
 					debugUINode.remove(PHPDebugCorePreferenceNames.TRANSFER_ENCODING);
 					debugUINode.remove(PHPDebugCorePreferenceNames.OUTPUT_ENCODING);
 					debugUINode.remove(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID);

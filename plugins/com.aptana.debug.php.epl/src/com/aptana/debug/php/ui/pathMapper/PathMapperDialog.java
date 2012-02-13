@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPropertyListener;
 
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * A path mapper dialog that is presented when a path mapping setup is needeed for a single server.
@@ -34,7 +34,7 @@ import com.aptana.webserver.core.AbstractWebServerConfiguration;
  */
 public class PathMapperDialog extends TitleAreaDialog implements IControlHandler, IPropertyListener
 {
-	private AbstractWebServerConfiguration server;
+	private IServer server;
 	private Image image;
 	private PathMapperCompositeFragment pathMapperCompositeFragment;
 
@@ -42,7 +42,7 @@ public class PathMapperDialog extends TitleAreaDialog implements IControlHandler
 	 * @param parent
 	 * @param style
 	 */
-	public PathMapperDialog(Shell shell, AbstractWebServerConfiguration server)
+	public PathMapperDialog(Shell shell, IServer server)
 	{
 		super(shell);
 		this.server = server;

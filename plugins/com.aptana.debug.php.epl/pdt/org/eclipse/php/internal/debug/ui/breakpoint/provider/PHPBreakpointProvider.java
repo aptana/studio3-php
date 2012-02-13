@@ -45,7 +45,7 @@ import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionType
 
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.common.AbstractThemeableEditor;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
@@ -296,7 +296,7 @@ public class PHPBreakpointProvider implements IExecutableExtension
 			}
 			if (foundPHPPartition)
 			{
-				LexemeProvider lexemeProvider = ParsingUtils.createLexemeProvider(document);
+				ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document);
 				for (int line = editorLineNumber; line < document.getNumberOfLines(); line++)
 				{
 					lineInformation = document.getLineInformation(line);
@@ -346,7 +346,7 @@ public class PHPBreakpointProvider implements IExecutableExtension
 	 * @return
 	 * @throws BadLocationException
 	 */
-	private static int checkLine(int editorLineNumber, IDocument document, LexemeProvider lexemeProvider)
+	private static int checkLine(int editorLineNumber, IDocument document, ILexemeProvider<PHPTokenType> lexemeProvider)
 			throws BadLocationException
 	{
 		IRegion lineInformation = document.getLineInformation(editorLineNumber);
@@ -355,19 +355,14 @@ public class PHPBreakpointProvider implements IExecutableExtension
 				.getLexemeFloorIndex(lineInformation.getOffset() + lineInformation.getLength() - 1);
 		for (int a = startIndex; a < endIndex; a++)
 		{
-			Lexeme lexeme = lexemeProvider.getLexeme(a);
-			Object type = lexeme.getType();
-			if (type instanceof PHPTokenType)
+			Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexeme(a);
+			PHPTokenType phpToken = lexeme.getType();
+			String tokenType = phpToken.getType();
+			if (tokenType != PHPRegionTypes.PHP_COMMENT && tokenType != PHPRegionTypes.PHP_LINE_COMMENT
+					&& tokenType != PHPRegionTypes.PHPDOC_COMMENT && phpToken.getType() != PHPRegionTypes.WHITESPACE)
 			{
-				PHPTokenType phpToken = (PHPTokenType) type;
-				String tokenType = phpToken.getType();
-				if (tokenType != PHPRegionTypes.PHP_COMMENT && tokenType != PHPRegionTypes.PHP_LINE_COMMENT
-						&& tokenType != PHPRegionTypes.PHPDOC_COMMENT
-						&& phpToken.getType() != PHPRegionTypes.WHITESPACE)
-				{
-					int lineOffset = lineInformation.getOffset();
-					return lineOffset;
-				}
+				int lineOffset = lineInformation.getOffset();
+				return lineOffset;
 			}
 		}
 		return -1;

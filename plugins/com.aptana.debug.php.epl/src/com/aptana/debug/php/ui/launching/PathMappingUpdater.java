@@ -19,7 +19,7 @@ import org2.eclipse.php.util.SWTUtil;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * This class is responsible of updating the Server definition for all the PHP Web Page launch configurations. This
@@ -36,7 +36,7 @@ public class PathMappingUpdater
 	 * 
 	 * @param server The server that was updated with a new Path Mapping settings.
 	 */
-	public void updatePaths(AbstractWebServerConfiguration server)
+	public void updatePaths(IServer server)
 	{
 		updatePaths(server, null);
 	}
@@ -49,7 +49,7 @@ public class PathMappingUpdater
 	 * @param excludedLaunches A list of launches names to exclude from the list (usually, we'll exclude the current active launch, so the
 	 * user will need to apply to change the current setting)
 	 */
-	public void updatePaths(AbstractWebServerConfiguration server, String[] excludedLaunches)
+	public void updatePaths(IServer server, String[] excludedLaunches)
 	{
 		try
 		{
@@ -96,7 +96,7 @@ public class PathMappingUpdater
 	 * Filter out any launch configuration that does not use this the affected server, does not use a specific file
 	 * or does not auto-generate the script when using a specific file.
 	 */
-	private void filterByLaunchAttributes(List<ILaunchConfiguration> launchConfigurations, AbstractWebServerConfiguration server) throws CoreException
+	private void filterByLaunchAttributes(List<ILaunchConfiguration> launchConfigurations, IServer server) throws CoreException
 	{
 		for (int i = launchConfigurations.size() - 1; i >= 0; i--)
 		{
@@ -142,7 +142,7 @@ public class PathMappingUpdater
 	 * @param server
 	 * @throws CoreException 
 	 */
-	public static void updateConfigurations(List<ILaunchConfiguration> configurations, AbstractWebServerConfiguration server) throws CoreException
+	public static void updateConfigurations(List<ILaunchConfiguration> configurations, IServer server) throws CoreException
 	{
 		for (ILaunchConfiguration configuration : configurations)
 		{

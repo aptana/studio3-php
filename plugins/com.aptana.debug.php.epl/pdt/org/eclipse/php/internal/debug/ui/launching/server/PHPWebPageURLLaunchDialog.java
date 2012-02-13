@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Group;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * The PHPWebPageURLLaunchDialog is a dialog that will be displayed for the user when a server launch
@@ -45,7 +45,7 @@ public class PHPWebPageURLLaunchDialog extends MessageDialog {
 	private static Set previousURLs = new TreeSet();
 	private ILaunchConfigurationWorkingCopy launchConfiguration;
 	private Combo combo;
-	private final AbstractWebServerConfiguration server;
+	private final IServer server;
 
 	/**
 	 * Constructs a new ServerURLLaunchDialog.
@@ -59,7 +59,7 @@ public class PHPWebPageURLLaunchDialog extends MessageDialog {
 	 * @param dialogButtonLabels
 	 * @param defaultIndex
 	 */
-	public PHPWebPageURLLaunchDialog(ILaunchConfigurationWorkingCopy launchConfiguration, AbstractWebServerConfiguration server, String title) {
+	public PHPWebPageURLLaunchDialog(ILaunchConfigurationWorkingCopy launchConfiguration, IServer server, String title) {
 		super(PHPDebugEPLPlugin.getActiveWorkbenchShell(), title, null, "", INFORMATION, new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
 		this.launchConfiguration = launchConfiguration;
 		this.server = server;

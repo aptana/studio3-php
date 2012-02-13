@@ -1127,13 +1127,12 @@ ntribution>
      </provider>
   </extension>
   <extension
-        point="com.aptana.editor.php.phpTextHovers">
-     <textHover
-           activatePlugin="false"
+        point="com.aptana.editor.common.textHovers">
+     <hover
            class="com.aptana.debug.php.ui.hover.PHPDebugHover"
            id="com.aptana.debug.php.debugHover"
-           name="PHP Debug Hover">
-     </textHover>
+           label="PHP Debug Hover">
+     </hover>
   </extension>
    
 </plugin>

@@ -45,7 +45,7 @@ import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.core.server.PHPServersManager;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
-import com.aptana.webserver.core.AbstractWebServerConfiguration;
+import com.aptana.webserver.core.IServer;
 
 /**
  * A PHP web page launch shortcut.
@@ -99,7 +99,7 @@ public class PHPWebPageLaunchShortcut implements ILaunchShortcut {
 					throw new CoreException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IStatus.OK, PHPDebugUIMessages.launch_failure_no_target, null));
 				}
 
-				AbstractWebServerConfiguration defaultServer = PHPServersManager.getDefaultServer(project);
+				IServer defaultServer = PHPServersManager.getDefaultServer(project);
 				if (defaultServer == null) {
 					PHPDebugEPLPlugin.createDefaultPHPServer();
 					defaultServer = PHPServersManager.getDefaultServer(project);
@@ -133,7 +133,7 @@ public class PHPWebPageLaunchShortcut implements ILaunchShortcut {
 	 *
 	 * @return a re-useable config or <code>null</code> if none
 	 */
-	static ILaunchConfiguration findLaunchConfiguration(IProject project, String fileName, AbstractWebServerConfiguration server, String mode, ILaunchConfigurationType configType) {
+	static ILaunchConfiguration findLaunchConfiguration(IProject project, String fileName, IServer server, String mode, ILaunchConfigurationType configType) {
 		ILaunchConfiguration config = null;
 
 		try {
@@ -159,7 +159,7 @@ public class PHPWebPageLaunchShortcut implements ILaunchShortcut {
 		return config;
 	}
 
-	static String computeContextRoot(String url, String fileName, AbstractWebServerConfiguration server) {
+	static String computeContextRoot(String url, String fileName, IServer server) {
 		String serverBaseURL = server.getBaseURL().toString();
 		if (url.length() > serverBaseURL.length() + 1) {
 			url = url.substring(serverBaseURL.length() + 1);
@@ -187,7 +187,7 @@ public class PHPWebPageLaunchShortcut implements ILaunchShortcut {
 	/**
 	 * Create & return a new configuration
 	 */
-	static ILaunchConfiguration createConfiguration(IProject project, String fileName, AbstractWebServerConfiguration server, ILaunchConfigurationType configType, String mode) throws CoreException {
+	static ILaunchConfiguration createConfiguration(IProject project, String fileName, IServer server, ILaunchConfigurationType configType, String mode) throws CoreException {
 		ILaunchConfiguration config = null;
 		if (!FileUtils.resourceExists(fileName)) {
 			return null;
