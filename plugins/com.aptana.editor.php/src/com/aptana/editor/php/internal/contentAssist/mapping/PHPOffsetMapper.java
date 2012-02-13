@@ -14,13 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.ui.IEditorInput;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
@@ -40,6 +42,7 @@ import com.aptana.editor.php.internal.indexer.ModuleSubstitutionIndex;
 import com.aptana.editor.php.internal.indexer.PDTPHPModuleIndexer;
 import com.aptana.editor.php.internal.indexer.UnpackedElementIndex;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
+import com.aptana.ide.ui.io.internal.UniformFileStoreEditorInput;
 import com.aptana.parsing.lexer.Lexeme;
 
 /**
@@ -81,9 +84,10 @@ public class PHPOffsetMapper
 	 * @param lexemeProvider
 	 * @return An {@link IElementEntry} matching the lexeme origin, or null if none was found.
 	 */
-	public IElementEntry findEntry(Lexeme<PHPTokenType> lexeme, LexemeProvider<PHPTokenType> lexemeProvider)
+	public IElementEntry findEntry(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
-		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
+		IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
+		String source = document.get();
 		Set<IElementEntry> entries = collectEntries(source, lexeme);
 		if (entries.isEmpty())
 		{
@@ -101,13 +105,15 @@ public class PHPOffsetMapper
 	 * @param lexemeProvider
 	 *            The lexeme provider, for cases that require lexeme inspection
 	 */
-	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, LexemeProvider<PHPTokenType> lexemeProvider)
+	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
-		String source = new String(phpSourceEditor.getFileService().getParseState().getSource());
+		String source = null;
+		IEditorInput editorInput = phpSourceEditor.getEditorInput();
 		try
 		{
 			// Check if we are in an 'include' or 'require'
 			IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
+			source = document.get();
 			ITypedRegion partition = document.getPartition(lexeme.getStartingOffset());
 			int previousPartitionEnd = (partition != null) ? partition.getOffset() - 1 : -1;
 			if (previousPartitionEnd > 0
@@ -117,7 +123,7 @@ public class PHPOffsetMapper
 				// Because we have a different partition type for strings, we have to check the previous partition for
 				// any include or require lexemes.
 				// We also have to create a new lexeme provider just for this region check
-				LexemeProvider<PHPTokenType> newLexemeProvider = ParsingUtils.createLexemeProvider(document,
+				ILexemeProvider<PHPTokenType> newLexemeProvider = ParsingUtils.createLexemeProvider(document,
 						previousPartitionEnd);
 				int lexemePosition = newLexemeProvider.getLexemeFloorIndex(previousPartitionEnd - 1);
 				Lexeme<PHPTokenType> importLexeme = PHPContextCalculator.findLexemeBackward(newLexemeProvider,
@@ -136,6 +142,7 @@ public class PHPOffsetMapper
 		}
 
 		String fullPath = null;
+		IFileStore remoteFileStore = null;
 		int startOffset = 0;
 
 		List<IElementEntry> sortedEntries = sortByModule(collectEntries(source, lexeme));
@@ -148,19 +155,35 @@ public class PHPOffsetMapper
 				if (entry.getModule() != null)
 				{
 					fullPath = entry.getModule().getFullPath();
+					if (editorInput instanceof UniformFileStoreEditorInput)
+					{
+						UniformFileStoreEditorInput uniformInput = (UniformFileStoreEditorInput) editorInput;
+						if (uniformInput.isRemote())
+						{
+							if (uniformInput.getLocalFileStore().toString().equals(fullPath))
+							{
+								remoteFileStore = uniformInput.getFileStore();
+							}
+							fullPath = null;
+						}
+					}
 					AbstractPHPEntryValue phpEntryValue = (AbstractPHPEntryValue) value;
 					startOffset = phpEntryValue.getStartOffset();
 				}
 				break;
 			}
 		}
-		if (fullPath == null)
+		if (fullPath == null && remoteFileStore == null)
 		{
 			return null;
 		}
 
 		Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN),
 				startOffset, startOffset, ""); //$NON-NLS-1$
+		if (remoteFileStore != null)
+		{
+			return new CodeLocation(remoteFileStore, startLexeme);
+		}
 		return new CodeLocation(fullPath, startLexeme);
 	}
 

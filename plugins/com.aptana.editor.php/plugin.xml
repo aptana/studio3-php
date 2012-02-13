@@ -21,7 +21,8 @@
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.text"
-            file-extensions="php, phtml, inc, ctp"
+            default-charset="UTF-8"
+            file-extensions="php, phtml, inc, ctp, module, install"
             id="com.aptana.contenttype.phtml.php"
             name="%content-type.name"
             priority="normal">
@@ -73,9 +74,6 @@
             id="com.aptana.contenttype.jsca">
       </content-type>
       <content-type
-            id="com.aptana.contenttype.jss">
-      </content-type>
-      <content-type
             id="com.aptana.contenttype.markdown">
       </content-type>
       <content-type
@@ -89,6 +87,9 @@
       </content-type>
       <content-type
             id="com.aptana.editor.text.content-type.generic">
+      </content-type>
+      <content-type
+            id="com.appcelerator.titanium.contenttype.jss">
       </content-type>
    </extension>
    <extension
@@ -211,6 +212,48 @@
             id="com.aptana.editor.php.openDeclaration"
             name="%openDeclaration.name">
       </command>
+      <command
+            categoryId="com.aptana.ui.category"
+            description="%command.openType.description"
+            id="com.aptana.editor.php.openType.command"
+            name="%command.openType.name">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="com.aptana.editor.php.openType.command"
+            icon="icons/full/obj16/opentype.gif">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <!-- Open Type -->
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="org.eclipse.search.searchActionSet">
+            <command
+                  commandId="com.aptana.editor.php.openType.command"
+                  style="push">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="com.aptana.editor.php.internal.ui.handler.OpenTypeHandler"
+            commandId="com.aptana.editor.php.openType.command">
+            <enabledWhen>
+	            <with
+	                  variable="activeEditor">
+	               <instanceof
+	                     value="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor">
+	               </instanceof>
+	            </with>
+        	</enabledWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -220,15 +263,20 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="F3">
       </key>
-      <!-- Mark occurrences -->
+      <key
+            commandId="com.aptana.editor.php.openType.command"
+            contextId="com.aptana.editor.php.editorContext"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+T">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="com.aptana.ui.WebPerspective">
-         <actionSet
-               id="com.aptana.editor.php.presentation">
-         </actionSet>
+         <newWizardShortcut
+               id="com.aptana.editor.php.NewPHPProjectWizard">
+         </newWizardShortcut>
       </perspectiveExtension>
    </extension>
    <extension
@@ -329,5 +377,17 @@
             class="com.aptana.preview.handlers.WebServerPreviewHandler"
             contentType="com.aptana.contenttype.phtml.php">
       </handler>
+   </extension>
+   <extension
+         point="org.eclipse.compare.contentMergeViewers">
+      <contentTypeBinding
+            contentMergeViewerId="com.aptana.editor.php.contentMergeViewer"
+            contentTypeId="com.aptana.contenttype.phtml.php">
+      </contentTypeBinding>
+      <viewer
+            class="com.aptana.editor.php.internal.ui.editor.PHPMergeViewerCreator"
+            extensions="php, phtml, inc, ctp"
+            id="com.aptana.editor.php.contentMergeViewer">
+      </viewer>
    </extension>
 </plugin>

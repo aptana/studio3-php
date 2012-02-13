@@ -49,22 +49,42 @@ public class PHPParser implements IParser
 	private PHPVersion phpVersion;
 	private IModule module;
 	private ISourceModule sourceModule;
+	private boolean parseHTML;
 
 	/**
-	 * Constructs a new PHPParser
+	 * Constructs a new PHPParser.<br>
+	 * By default, the node building that is done by the parser will involve HTML parsing as well.
+	 * 
+	 * @see #PHPParser(PHPVersion, boolean)
 	 */
 	public PHPParser()
 	{
+		this(null);
+	}
+
+	/**
+	 * Constructs a new PHPParser with a preset PHPVersion.<br>
+	 * By default, the node building that is done by the parser will involve HTML parsing as well.
+	 * 
+	 * @param phpVersion
+	 * @see #PHPParser(PHPVersion, boolean)
+	 */
+	public PHPParser(PHPVersion phpVersion)
+	{
+		this(phpVersion, true);
 	}
 
 	/**
 	 * Constructs a new PHPParser with a preset PHPVersion
 	 * 
 	 * @param phpVersion
+	 * @param parseHTML
+	 *            - indicate whether the node building that is done by the parser should involve HTML parsing as well.
 	 */
-	public PHPParser(PHPVersion phpVersion)
+	public PHPParser(PHPVersion phpVersion, boolean parseHTML)
 	{
 		this.phpVersion = phpVersion;
+		this.parseHTML = parseHTML;
 	}
 
 	/**
@@ -72,7 +92,7 @@ public class PHPParser implements IParser
 	 */
 	public IParseRootNode parse(IParseState parseState) // $codepro.audit.disable declaredExceptions
 	{
-		String source = new String(parseState.getSource());
+		String source = parseState.getSource();
 		int startingOffset = parseState.getStartingOffset();
 		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, startingOffset,
 				startingOffset + source.length() - 1);
@@ -126,7 +146,7 @@ public class PHPParser implements IParser
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
 				}
 				// Recalculate the type bindings
-				TypeBindingBuilder.buildBindings(program);
+				TypeBindingBuilder.buildBindings(program, source);
 			}
 			catch (Throwable t)
 			{
@@ -232,7 +252,7 @@ public class PHPParser implements IParser
 			commentNodes.add(new PHPCommentNode(c));
 		}
 		root.setCommentNodes(commentNodes.toArray(new IParseNode[commentNodes.size()]));
-		NodeBuilder builderClient = new NodeBuilder(source);
+		NodeBuilder builderClient = new NodeBuilder(source, false, parseHTML);
 		ast.accept(new NodeBuildingVisitor(builderClient, source));
 		PHPBlockNode nodes = builderClient.populateNodes();
 		for (IParseNode child : nodes.getChildren())

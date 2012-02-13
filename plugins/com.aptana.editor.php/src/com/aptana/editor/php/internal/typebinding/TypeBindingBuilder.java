@@ -48,7 +48,6 @@ import org2.eclipse.php.internal.core.ast.nodes.InfixExpression;
 import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
-import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
 import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 import org2.eclipse.php.internal.core.ast.nodes.ReturnStatement;
@@ -65,7 +64,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Variable;
 import org2.eclipse.php.internal.core.ast.nodes.VariableBase;
 import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
-import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
+import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -83,7 +82,6 @@ import com.aptana.editor.php.internal.core.typebinding.MethodBinding;
 import com.aptana.editor.php.internal.core.typebinding.ModuleBinding;
 import com.aptana.editor.php.internal.indexer.CallPath;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
-import com.aptana.editor.php.internal.indexer.CommentsVisitor;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPathReference;
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
@@ -102,7 +100,7 @@ import com.aptana.editor.php.internal.search.PHPSearchEngine;
  * @author Denis Denisenko
  * @author Pavel Petrochenko
  * @author Shalom Gibly <sgibly@aptana.com>
- * @see #buildBindings(Program) for the main entry point of this class.
+ * @see #buildBindings(Program, String) for the main entry point of this class.
  */
 @SuppressWarnings("unused")
 public class TypeBindingBuilder
@@ -130,9 +128,20 @@ public class TypeBindingBuilder
 	 */
 	public static void buildBindings(Program program)
 	{
+		buildBindings(program, null);
+	}
+
+	/**
+	 * Main entry point for building the bindings for a given Program (AST).
+	 * 
+	 * @param program
+	 * @param source
+	 */
+	public static void buildBindings(Program program, String source)
+	{
 		if (program != null)
 		{
-			new TypeBindingBuilder().indexModule(program, new IBindingReporter()
+			new TypeBindingBuilder().indexModule(program, source, new IBindingReporter()
 			{
 
 				public void report(ASTNode node, IBinding binding)
@@ -1091,7 +1100,7 @@ public class TypeBindingBuilder
 				return true;
 			}
 
-			PHPDocBlock comment = findFunctionPHPDocComment(functionDeclaration.getStart());
+			Comment comment = findFunctionPHPDocComment(functionDeclaration.getStart());
 
 			// getting function name
 			Identifier functionNameIdentifier = functionDeclaration.getFunctionName();
@@ -1104,7 +1113,8 @@ public class TypeBindingBuilder
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 			localParametersMap = null;
 			if (parameters != null && parameters.size() > 0)
 			{
@@ -1126,7 +1136,9 @@ public class TypeBindingBuilder
 
 					String parameterType = null;
 					Expression parameterTypeIdentifier = parameter.getParameterType();
-					if (parameterTypeIdentifier != null && parameterTypeIdentifier.getType() == ASTNode.IDENTIFIER)
+					if (parameterTypeIdentifier != null
+							&& (parameterTypeIdentifier.getType() == ASTNode.NAMESPACE_NAME || parameterTypeIdentifier
+									.getType() == ASTNode.IDENTIFIER))
 					{
 						parameterType = ((Identifier) parameterTypeIdentifier).getName();
 					}
@@ -1148,7 +1160,7 @@ public class TypeBindingBuilder
 			String[] returnTypes = null;
 			if (comment != null)
 			{
-				returnTypes = applyComment(comment, localParametersMap);
+				returnTypes = applyFunctionComment(comment, localParametersMap);
 			}
 			boolean[] mandatories = new boolean[mandatoryParams.size()];
 			for (int j = 0; j < mandatoryParams.size(); j++)
@@ -1188,7 +1200,7 @@ public class TypeBindingBuilder
 		@Override
 		public boolean visit(MethodDeclaration methodDeclaration)
 		{
-			PHPDocBlock comment = findFunctionPHPDocComment(methodDeclaration.getStart());
+			Comment comment = findFunctionPHPDocComment(methodDeclaration.getStart());
 
 			FunctionDeclaration functionDeclaration = methodDeclaration.getFunction();
 			if (functionDeclaration == null)
@@ -1207,7 +1219,8 @@ public class TypeBindingBuilder
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 
 			Map<String, Set<Object>> parametersMap = null;
 			if (parameters.size() > 0)
@@ -1231,7 +1244,9 @@ public class TypeBindingBuilder
 
 					String parameterType = null;
 					Expression parameterTypeIdentifier = parameter.getParameterType();
-					if (parameterTypeIdentifier != null && parameterTypeIdentifier.getType() == ASTNode.IDENTIFIER)
+					if (parameterTypeIdentifier != null
+							&& (parameterTypeIdentifier.getType() == ASTNode.NAMESPACE_NAME || parameterTypeIdentifier
+									.getType() == ASTNode.IDENTIFIER))
 					{
 						parameterType = ((Identifier) parameterTypeIdentifier).getName();
 					}
@@ -1252,7 +1267,7 @@ public class TypeBindingBuilder
 			String[] returnTypes = null;
 			if (comment != null)
 			{
-				returnTypes = applyComment(comment, parametersMap);
+				returnTypes = applyFunctionComment(comment, parametersMap);
 			}
 
 			int modifier = methodDeclaration.getModifier();
@@ -1326,7 +1341,7 @@ public class TypeBindingBuilder
 			else if (parent instanceof ExpressionStatement)
 			{
 				String variableName = getVariableName(variable);
-				if (variableName == null)
+				if (variableName == null || !variable.isDollared())
 				{
 					return true;
 				}
@@ -1369,7 +1384,8 @@ public class TypeBindingBuilder
 			}
 
 			Expression className = fieldAccess.getClassName();
-			if (className == null || className.getType() != ASTNode.IDENTIFIER
+			if (className == null
+					|| (className.getType() != ASTNode.IDENTIFIER && className.getType() != ASTNode.NAMESPACE_NAME)
 					|| !SELF.equals(((Identifier) className).getName()))
 			{
 				return true;
@@ -2015,7 +2031,7 @@ public class TypeBindingBuilder
 					// this will get the name from the Variable as an identifier
 					variable = ((Variable) variable).getName();
 				}
-				if (variable.getType() == ASTNode.IDENTIFIER)
+				if (variable.getType() == ASTNode.NAMESPACE_NAME || variable.getType() == ASTNode.IDENTIFIER)
 				{
 					return ((Identifier) variable).getName();
 				}
@@ -2268,14 +2284,7 @@ public class TypeBindingBuilder
 						"Expected an identifier or namespace-name", new Exception("Missing identifier")); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
-			else if (classNameIdentifier.getType() == ASTNode.IDENTIFIER)
-			{
-				className = ((Identifier) classNameIdentifier).getName();
-			}
-			else
-			{
-				className = ((NamespaceName) classNameIdentifier).getName();
-			}
+			className = ((Identifier) classNameIdentifier).getName();
 			result.setClassEntry(className);
 
 			// counting second entry
@@ -2548,12 +2557,12 @@ public class TypeBindingBuilder
 				return null;
 			}
 			Expression classNameExpr = className.getName();
-			if (classNameExpr == null || classNameExpr.getType() != ASTNode.IDENTIFIER)
+			String clName = null;
+			if (classNameExpr != null
+					&& (classNameExpr.getType() == ASTNode.NAMESPACE_NAME || classNameExpr.getType() == ASTNode.IDENTIFIER))
 			{
-				return null;
+				clName = ((Identifier) classNameExpr).getName();
 			}
-
-			String clName = ((Identifier) classNameExpr).getName();
 			if (clName == null)
 			{
 				return null;
@@ -2770,7 +2779,7 @@ public class TypeBindingBuilder
 				Set<String> currentGlobalImports = currentScope.getGlobalImports();
 				if (currentGlobalImports != null)
 				{
-					_overallGlobalImports.addAll(currentGlobalImports);
+					overallGlobalImports.addAll(currentGlobalImports);
 				}
 			}
 
@@ -2929,11 +2938,11 @@ public class TypeBindingBuilder
 		 * @param parametersMap
 		 * @return possible return types.
 		 */
-		private String[] applyComment(PHPDocBlock comment, Map<String, Set<Object>> parametersMap)
+		private String[] applyFunctionComment(Comment comment, Map<String, Set<Object>> parametersMap)
 		{
 			try
 			{
-				FunctionDocumentation doc = PHPDocUtils.getFunctionDocumentation(comment);
+				FunctionDocumentation doc = PHPDocUtils.getFunctionDocumentation((IPHPDoc) comment);
 				if (doc == null)
 				{
 					return null;
@@ -3155,19 +3164,19 @@ public class TypeBindingBuilder
 	private int currentOffset = 0;
 
 	/**
-	 * Contents to index.
-	 */
-	private String _contents;
-
-	/**
 	 * Comments.
 	 */
-	private List<Comment> _comments;
+	private List<Comment> comments;
+
+	/**
+	 * Source
+	 */
+	private String source;
 
 	/**
 	 * Overall global imports in the reported stack.
 	 */
-	private Set<String> _overallGlobalImports = new HashSet<String>();
+	private Set<String> overallGlobalImports = new HashSet<String>();
 
 	/**
 	 * Whether reported stack is global one.
@@ -3201,15 +3210,13 @@ public class TypeBindingBuilder
 	/**
 	 * {@inheritDoc}
 	 */
-	public synchronized void indexModule(Program program, IBindingReporter reporter)
+	public synchronized void indexModule(Program program, String source, IBindingReporter reporter)
 	{
 		try
 		{
-			// collecting comments
-			CommentsVisitor commentsVisitor = new CommentsVisitor();
-			commentsVisitor.visit(program);
-			_comments = commentsVisitor.getComments();
-
+			// grab the comments from the AST
+			this.comments = program.comments();
+			this.source = source;
 			// indexing
 			PHPASTVisitor visitor = new PHPASTVisitor(reporter, program);
 			program.accept(visitor);
@@ -3228,7 +3235,7 @@ public class TypeBindingBuilder
 	 */
 	public Set<String> getGlobalImports()
 	{
-		return _overallGlobalImports;
+		return overallGlobalImports;
 	}
 
 	/**
@@ -3284,15 +3291,26 @@ public class TypeBindingBuilder
 	 *            - offset to start search from.
 	 * @return comment contents or null.
 	 */
-	private PHPDocBlock findFunctionPHPDocComment(int offset)
+	private Comment findFunctionPHPDocComment(int offset)
 	{
-		if (_comments == null || _comments.isEmpty())
+		return findComment(offset, Comment.TYPE_PHPDOC);
+	}
+
+	/**
+	 * @param offset
+	 * @param type
+	 *            - The comment type
+	 * @return
+	 */
+	private Comment findComment(int offset, int type)
+	{
+		if (comments == null || comments.isEmpty())
 		{
 			return null;
 		}
 
 		Comment nearestComment = null;
-		for (Comment comment : _comments)
+		for (Comment comment : comments)
 		{
 			if (comment.getStart() > offset)
 			{
@@ -3307,17 +3325,17 @@ public class TypeBindingBuilder
 			return null;
 		}
 
-		if (nearestComment.getCommentType() != Comment.TYPE_PHPDOC)
+		if (nearestComment.getCommentType() != type)
 		{
 			return null;
 		}
-		if (_contents != null)
+		if (source != null)
 		{
 			// checking if we have anything but whitespaces between comment end and
 			// offset
 			for (int i = nearestComment.getEnd() + 1; i < offset - 1; i++)
 			{
-				char ch = _contents.charAt(i);
+				char ch = source.charAt(i);
 				if (!Character.isWhitespace(ch))
 				{
 					return null;
@@ -3325,7 +3343,7 @@ public class TypeBindingBuilder
 			}
 
 			// return _contents.substring(nearestComment.getStart(), nearestComment.getEnd());
-			return (PHPDocBlock) nearestComment;
+			return nearestComment;
 		}
 		else
 		{

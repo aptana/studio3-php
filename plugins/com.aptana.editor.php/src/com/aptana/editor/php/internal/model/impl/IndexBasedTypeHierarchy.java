@@ -27,7 +27,6 @@ import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.core.builder.IDirectory;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.ITypeHierarchy;
-import com.aptana.editor.php.internal.model.ModelException;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.model.utils.TypeHierarchyUtils;
 
@@ -97,9 +96,10 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	 */
 	public List<IType> getAllSubtypes(IType type)
 	{
+		// TODO - Shalom: add namespace and aliases support into IType
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classDescendants = TypeHierarchyUtils.getClassDescendants(typeEntry.getModule(), typeEntry
-				.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classDescendants = TypeHierarchyUtils.getClassDescendants(typeEntry.getModule(),
+				typeEntry.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex(), null, null);
 		return ModelUtils.convertTypes(classDescendants);
 	}
 
@@ -108,9 +108,10 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	 */
 	public List<IType> getAllSuperclasses(IType type)
 	{
+		// TODO - Shalom: add namespace and aliases support into IType
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classAncestors = TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(), typeEntry
-				.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classAncestors = TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(),
+				typeEntry.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex(), null, null);
 		return ModelUtils.convertClasses(classAncestors);
 	}
 
@@ -119,9 +120,10 @@ public class IndexBasedTypeHierarchy implements ITypeHierarchy
 	 */
 	public List<IType> getAllSupertypes(IType type)
 	{
+		// TODO - Shalom: add namespace and aliases support into IType
 		IElementEntry typeEntry = getTypeEntry(type);
-		List<IElementEntry> classAncestors = TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(), typeEntry
-				.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex());
+		List<IElementEntry> classAncestors = TypeHierarchyUtils.getClassAncestors(typeEntry.getModule(),
+				typeEntry.getEntryPath(), PHPGlobalIndexer.getInstance().getIndex(), null, null);
 		return ModelUtils.convertTypes(classAncestors);
 	}
 

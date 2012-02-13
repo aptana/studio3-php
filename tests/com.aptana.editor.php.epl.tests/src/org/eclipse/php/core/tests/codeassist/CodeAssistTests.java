@@ -30,6 +30,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -112,6 +116,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 		super(description);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Test suite()
 	{
 		Logger.global.entering("Test", "suite");
@@ -218,6 +223,23 @@ public class CodeAssistTests extends AbstractPDTTTest
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 		TestUtils.waitForAutoBuild();
 		TestUtils.waitForIndexer();
+		Job j = new Job("delay")
+		{
+			protected IStatus run(IProgressMonitor monitor)
+			{
+				try
+				{
+					Thread.sleep(600L);
+				}
+				catch (Exception e)
+				{
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		j.setSystem(true);
+		j.schedule();
+		j.join();
 		return offset;
 	}
 

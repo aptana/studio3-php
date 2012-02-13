@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.projects.templates.IProjectTemplate;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.preferences.Messages;
 import com.aptana.editor.php.internal.ui.preferences.PHPVersionConfigurationBlock;
@@ -32,9 +33,9 @@ public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreat
 	private Combo fPHPVersions;
 	private String selectedAlias;
 
-	public PHPWizardNewProjectCreationPage(String pageName)
+	public PHPWizardNewProjectCreationPage(String pageName, IProjectTemplate projectTemplate)
 	{
-		super(pageName);
+		super(pageName, projectTemplate);
 	}
 
 	/*
@@ -46,8 +47,6 @@ public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreat
 	{
 		super.createControl(parent);
 		Composite control = (Composite) getControl();
-		GridLayout layout = new GridLayout();
-		control.setLayout(layout);
 
 		Group group = new Group(control, SWT.NONE);
 		group.setLayout(new GridLayout(2, false));
@@ -123,5 +122,11 @@ public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreat
 			index = 0;
 		}
 		fPHPVersions.select(index);
+	}
+
+	@Override
+	public String getStepName()
+	{
+		return com.aptana.editor.php.internal.ui.wizard.Messages.NewPHPProjectWizard_projectWizardStepLbl;
 	}
 }

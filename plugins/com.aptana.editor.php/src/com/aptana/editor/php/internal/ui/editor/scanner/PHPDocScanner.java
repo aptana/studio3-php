@@ -18,6 +18,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
 
 import com.aptana.editor.common.text.rules.CommentScanner;
+import com.aptana.editor.php.internal.parser.PHPTokenType;
 
 @SuppressWarnings("nls")
 public class PHPDocScanner extends CommentScanner
@@ -62,7 +63,7 @@ public class PHPDocScanner extends CommentScanner
 
 	public PHPDocScanner()
 	{
-		super(new Token("comment.block.documentation.phpdoc.php")); //$NON-NLS-1$
+		super(new Token(PHPTokenType.COMMENT_PHPDOC.toString()));
 	}
 
 	protected List<IRule> createRules()
@@ -70,7 +71,7 @@ public class PHPDocScanner extends CommentScanner
 		List<IRule> rules = super.createRules();
 
 		WordRule wordRule = new WordRule(new PHPTagDetector(), Token.UNDEFINED, true);
-		IToken tagToken = new Token("keyword.other.phpdoc.php");
+		IToken tagToken = new Token(PHPTokenType.KEYWORD_OTHER.toString());
 		for (String tag : TAGS)
 		{
 			wordRule.addWord(tag, tagToken);

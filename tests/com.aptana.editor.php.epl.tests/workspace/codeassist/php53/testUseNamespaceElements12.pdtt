@@ -1,25 +1,21 @@
 --TEST--
 Use statement test.
-Test the CA when source variable is defined at a different namespace and is referenced 
+Test the CA when using a type from a global NS
 using the 'as' keyword
 --FILE--
 <?php
+namespace Second\NS;
 
-namespace Test\NamespaceTest;
+use PDO;
 
-class Test
-{
-    public function testMe()
-    {
-        return $this;
-    }
+class AAA extends PDO {
+	function foo() {
+		$this -> e|
+	}
+
 }
-
-namespace Test2\Namespace2Test;
-use Test\NamespaceTest\Test as SomeTest;
-
-$t = new SomeTest();
-$t->|
 ?>
 --EXPECT--
-method(testMe)
+method(errorCode)
+method(errorInfo)
+method(exec)

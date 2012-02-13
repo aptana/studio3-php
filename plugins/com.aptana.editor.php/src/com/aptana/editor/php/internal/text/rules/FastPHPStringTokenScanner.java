@@ -17,6 +17,7 @@ import org.eclipse.jface.text.rules.Token;
 import com.aptana.editor.common.text.rules.QueuedTokenScanner;
 import com.aptana.editor.epl.BufferedDocumentScanner;
 import com.aptana.editor.php.internal.parser.PHPTokenType;
+import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.PHPTokenMapperFactory;
 
 /**
  * @author Max Stepanov
@@ -24,16 +25,24 @@ import com.aptana.editor.php.internal.parser.PHPTokenType;
  */
 public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
-	private static final IToken TOKEN_ESCAPE_CHARACTER = getToken(PHPTokenType.CHARACTER_ESCAPE);
-	private static final IToken TOKEN_VARIABLE = getToken(PHPTokenType.VARIABLE);
-	private static final IToken TOKEN_NUMERIC = getToken(PHPTokenType.NUMERIC);
-	private static final IToken TOKEN_CLASS_OPERATOR = getToken(PHPTokenType.CLASS_OPERATOR);
-	private static final IToken TOKEN_ARRAY_BEGIN = getToken(PHPTokenType.ARRAY_BEGIN);
-	private static final IToken TOKEN_ARRAY_END = getToken(PHPTokenType.ARRAY_END);
-	private static final IToken TOKEN_VARIABLE_PUNCTUATION = getToken(PHPTokenType.VARIABLE_PUNCTUATION);
-	private static final IToken TOKEN_FUNCTION_PUNCTUATION = getToken(PHPTokenType.FUNCTION_PUNCTUATION);
-	private static final IToken TOKEN_STATIC_PUNCTUATION = getToken(PHPTokenType.STATIC_PUNCTUATION);
-	private static final IToken TOKEN_SINGLE_QUOTED = new Token("string.quoted.single.php"); //$NON-NLS-1$
+	private static final IToken TOKEN_BEGIN_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_BEGIN);
+	private static final IToken TOKEN_END_QUOTE = getToken(PHPTokenType.PUNCTUATION_STRING_END);
+	private static final IToken TOKEN_ESCAPE_CHARACTER = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.CHARACTER_ESCAPE);
+	private static final IToken TOKEN_VARIABLE_OTHER = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_OTHER);
+	private static final IToken TOKEN_VARIABLE_GLOBAL = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_OTHER_GLOBAL);
+	private static final IToken TOKEN_VARIABLE_OTHER_PUNCTUATION = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION);
+	private static final IToken TOKEN_VARIABLE_GLOBAL_PUNCTUATION = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_OTHER_GLOBAL, PHPTokenType.VARIABLE_PUNCTUATION);
+	private static final IToken TOKEN_NUMERIC = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.NUMERIC);
+	private static final IToken TOKEN_CLASS_OPERATOR = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.CLASS_OPERATOR);
+	private static final IToken TOKEN_ARRAY_BEGIN = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.PUNCTUATION_LBRACKET);
+	private static final IToken TOKEN_ARRAY_END = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.PUNCTUATION_RBRACKET);
+	private static final IToken TOKEN_VARIABLE_PUNCTUATION = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_PUNCTUATION);
+	private static final IToken TOKEN_FUNCTION_PUNCTUATION = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.FUNCTION_PUNCTUATION);
+	private static final IToken TOKEN_STATIC_PUNCTUATION = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.STATIC_PUNCTUATION);
+	private static final IToken TOKEN_SINGLE_QUOTED = getToken(PHPTokenType.STRING_SINGLE);
+	private static final IToken TOKEN_BEGIN_QUOTE_INNER = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE, PHPTokenType.PUNCTUATION_STRING_BEGIN);
+	private static final IToken TOKEN_END_QUOTE_INNER = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE,  PHPTokenType.PUNCTUATION_STRING_END);
+	private static final IToken TOKEN_DOUBLE_QUOTED_INNER = getToken(PHPTokenType.META_STRING_CONTENTS_DOUBLE, PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE, PHPTokenType.META_STRING_CONTENTS_DOUBLE);
 
 	private final IToken fDefaultToken;
 	private final BufferedDocumentScanner fScanner = new BufferedDocumentScanner(100);
@@ -47,19 +56,20 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.text.rules.ITokenScanner#setRange(org.eclipse.jface
-	 * .text.IDocument, int, int)
+	 * @see org.eclipse.jface.text.rules.ITokenScanner#setRange(org.eclipse.jface .text.IDocument, int, int)
 	 */
 	public void setRange(IDocument document, int offset, int length) {
 		super.setRange(document, offset, length);
 		fScanner.setRange(document, offset, length);
+		if (fScanner.read() == '"') {
+			queueToken(TOKEN_BEGIN_QUOTE, fScanner.getOffset()-1, 1);
+		} else {
+			fScanner.unread();
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.jface.text.rules.ITokenScanner#nextToken()
 	 */
 	public IToken nextToken() {
@@ -75,33 +85,42 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		int startOffset = fScanner.getOffset();
 		int ch = fScanner.read();
 		switch (ch) {
-		case '\\':
-			readEscape(startOffset);
-			break;
-		case '$':
-			readSimpleVariable(startOffset);
-			break;
-		case '{':
-			ch = fScanner.read();
-			if (ch == '$') {
+			case '\\':
+				readEscape(startOffset);
+				break;
+			case '$':
 				fScanner.unread();
-				readComplexVariable(startOffset);
-			} else if (ch != ICharacterScanner.EOF) {
-				fScanner.unread();
+				readSimpleVariable(startOffset);
+				break;
+			case '{':
+				ch = fScanner.read();
+				if (ch == '$') {
+					fScanner.unread();
+					readComplexVariable(startOffset);
+				} else if (ch != ICharacterScanner.EOF) {
+					fScanner.unread();
+					readDefault(startOffset);
+				}
+				break;
+			case '"':
+				if (fScanner.read() == ICharacterScanner.EOF) {
+					queueToken(TOKEN_END_QUOTE, startOffset, 1);
+				} else {
+					fScanner.unread();
+					readDefault(startOffset);
+				}
+				break;
+			case ICharacterScanner.EOF:
+				break;
+			default:
 				readDefault(startOffset);
-			}
-			break;
-		case ICharacterScanner.EOF:
-			break;
-		default:
-			readDefault(startOffset);
-			break;
+				break;
 		}
 	}
 
 	private void readDefault(int offset) {
 		int ch = fScanner.read();
-		while (ch != '\\' && ch != '$' && ch != '{' && ch != ICharacterScanner.EOF) {
+		while (ch != '\\' && ch != '$' && ch != '{' && ch != '"' && ch != ICharacterScanner.EOF) {
 			ch = fScanner.read();
 		}
 		if (ch != ICharacterScanner.EOF) {
@@ -142,31 +161,42 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 
 	private void readSimpleVariable(int offset) {
 		int ch = fScanner.read();
-		int unread = 1;
+		int unread = 0;
 		if (ch == '$') {
 			ch = fScanner.read();
-			++unread;
+			if (ch != ICharacterScanner.EOF) {
+				++unread;
+			}
 		}
 		if (Character.isLetter(ch) || ch == '_') {
+			StringBuilder name = new StringBuilder();
+			name.append('$').append((char)ch);
 			ch = fScanner.read();
 			while (Character.isLetterOrDigit(ch) || ch == '_') {
+				name.append((char)ch);
 				ch = fScanner.read();
 			}
 			if (ch != ICharacterScanner.EOF) {
 				fScanner.unread();
 			}
-			queueToken(TOKEN_VARIABLE, offset, fScanner.getOffset() - offset);
+			IToken token = PHPTokenMapperFactory.GLOBALS.contains(name.toString()) ? TOKEN_VARIABLE_GLOBAL : TOKEN_VARIABLE_OTHER;
+			if (unread != 0) {
+				queueToken(token == TOKEN_VARIABLE_GLOBAL ? TOKEN_VARIABLE_GLOBAL_PUNCTUATION : TOKEN_VARIABLE_OTHER_PUNCTUATION, offset, 1);
+				++offset;
+			}
+			queueToken(token, offset, fScanner.getOffset() - offset);
 			readVariableOperator(fScanner.getOffset());
-			unread = 0;
+			return;
 		} else if (ch == '{') { // we have ${
 			queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);
 			readLiteral(fScanner.getOffset());
 			readDefaultUntil('}', TOKEN_VARIABLE_PUNCTUATION, fScanner.getOffset());
-			unread = 0;
+			return;
 		}
-		while (ch != ICharacterScanner.EOF && unread-- > 0) {
+		while (unread-- > 0) {
 			fScanner.unread();
 		}
+		readDefault(offset);
 	}
 
 	private void readComplexVariable(int offset) {
@@ -175,14 +205,20 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		Assert.isTrue(fScanner.read() == '$');
 		int ch = fScanner.read();
 		if (Character.isLetter(ch) || ch == '_') {
+			StringBuilder name = new StringBuilder();
+			name.append('$').append((char)ch);
 			ch = fScanner.read();
 			while (Character.isLetterOrDigit(ch) || ch == '_') {
+				name.append((char)ch);
 				ch = fScanner.read();
 			}
 			if (ch != ICharacterScanner.EOF) {
 				fScanner.unread();
 			}
-			queueToken(TOKEN_VARIABLE, offset, fScanner.getOffset() - offset);
+			// FIXME We really need to delegate to PHPCodeScanner to properly get the correct tokens here...
+			IToken token = PHPTokenMapperFactory.GLOBALS.contains(name.toString()) ? TOKEN_VARIABLE_GLOBAL : TOKEN_VARIABLE_OTHER;
+			queueToken(token == TOKEN_VARIABLE_GLOBAL ? TOKEN_VARIABLE_GLOBAL_PUNCTUATION : TOKEN_VARIABLE_OTHER_PUNCTUATION, offset, 1);
+			queueToken(token, offset + 1, fScanner.getOffset() - offset - 1);
 			readVariableOperator(fScanner.getOffset());
 		} else if (ch == '{') { // we have ${
 			queueToken(TOKEN_VARIABLE_PUNCTUATION, offset, fScanner.getOffset() - offset);
@@ -216,6 +252,8 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 				readLiteral(offset);
 			} else if (ch == '\'') {
 				readSingleQuotedString(offset);
+			} else if (ch == '"') {
+				readDoubleQuotedString(offset);
 			}
 			offset = fScanner.getOffset();
 			ch = fScanner.read();
@@ -292,7 +330,7 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		if (ch == '$') {
 			readSimpleVariable(offset);
 		} else {
-			queueToken(TOKEN_VARIABLE, offset, fScanner.getOffset() - offset);
+			queueToken(TOKEN_VARIABLE_OTHER, offset, fScanner.getOffset() - offset);
 			readVariableOperator(fScanner.getOffset());
 		}
 	}
@@ -305,8 +343,23 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 		queueToken(TOKEN_SINGLE_QUOTED, offset, fScanner.getOffset() - offset);
 	}
 
-	private static IToken getToken(PHPTokenType type) {
-		return new Token(type.toString());
+	private void readDoubleQuotedString(int offset) {
+		queueToken(TOKEN_BEGIN_QUOTE_INNER, offset, fScanner.getOffset() - offset);
+		offset = fScanner.getOffset();
+		int ch = fScanner.read();
+		while (ch != '"' && ch != ICharacterScanner.EOF) {
+			ch = fScanner.read();
+		}
+		queueToken(TOKEN_DOUBLE_QUOTED_INNER, offset, fScanner.getOffset() - 1 - offset);
+		queueToken(TOKEN_END_QUOTE_INNER, fScanner.getOffset() - 1, 1);
+	}
+
+	private static IToken getToken(PHPTokenType... type) {
+		StringBuilder sb = new StringBuilder();
+		for (PHPTokenType i : type) {
+			sb.append(i.toString()).append(' ');
+		}
+		return new Token(sb.toString().trim());
 	}
 
 }

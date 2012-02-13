@@ -16,15 +16,4 @@ public class PHTMLOutlineLabelProvider extends HTMLOutlineLabelProvider
 	{
 		addSubLanguage(IPHPConstants.CONTENT_TYPE_PHP, new PHPOutlineLabelProvider());
 	}
-
-	/**
-	 * Constructs a new PHP - HTML outline label provider with a given parse state.<br>
-	 * 
-	 * @param parseState
-	 */
-	public PHTMLOutlineLabelProvider(IParseState parseState)
-	{
-		this();
-		this.parseState = parseState;
-	}
 }

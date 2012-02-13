@@ -6,7 +6,6 @@ Test Commented Variable With Class Type Methods
 		public function nonsense(){} 
 	} 
 	/* @var $obj Foobar */ 
-	$obj = null; 
 	$obj->|
  ?>
 --EXPECT--

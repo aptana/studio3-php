@@ -191,4 +191,11 @@
 		    </enablement>
 	    </decorator -->
 	</extension>
+   <extension
+         point="com.aptana.editor.common.validator">
+      <content-type
+            id="com.aptana.contenttype.phtml.php"
+            name="%validator.contentype.php">
+      </content-type>
+   </extension>
 </plugin>

@@ -30,7 +30,7 @@ public class PHTMLParser extends CompositeParser
 	protected IParseNode processEmbeddedlanguage(IParseState parseState) throws Exception // $codepro.audit.disable
 																							// declaredExceptions
 	{
-		String source = new String(parseState.getSource());
+		String source = parseState.getSource();
 		int startingOffset = parseState.getStartingOffset();
 		IParseNode root = null;
 

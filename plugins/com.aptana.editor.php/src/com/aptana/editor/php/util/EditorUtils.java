@@ -11,7 +11,13 @@ import java.io.File;
 import java.net.URI;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorDescriptor;
@@ -22,10 +28,15 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.progress.UIJob;
+import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
+import com.aptana.theme.Theme;
+import com.aptana.theme.ThemePlugin;
 
 public class EditorUtils
 {
@@ -81,6 +92,36 @@ public class EditorUtils
 			return null;
 		IPath path = new Path(uri.getPath());
 		return editorReg.getDefaultEditor(path.lastSegment());
+	}
+
+	/**
+	 * Update the PHP Occurrences colors to match the Theme's colors.
+	 */
+	public static void setOccurrenceColors()
+	{
+		Job job = new UIJob("Setting occurrence colors") //$NON-NLS-1$
+		{
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor)
+			{
+				IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
+				Theme theme = ThemePlugin.getDefault().getThemeManager().getCurrentTheme();
+				prefs.put("PHPReadOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
+				prefs.put("PHPWriteOccurrenceIndicationColor", StringConverter.asString(theme.getSearchResultColor())); //$NON-NLS-1$
+				try
+				{
+					prefs.flush();
+				}
+				catch (BackingStoreException e) // $codepro.audit.disable emptyCatchClause
+				{
+					// ignore
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		job.setSystem(!EclipseUtil.showSystemJobs());
+		job.setPriority(Job.LONG);
+		job.schedule();
 	}
 
 	/**

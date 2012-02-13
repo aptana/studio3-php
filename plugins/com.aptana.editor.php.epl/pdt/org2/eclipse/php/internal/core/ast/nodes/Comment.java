@@ -27,9 +27,9 @@ import org2.eclipse.php.internal.core.ast.visitor.Visitor;
  */
 public class Comment extends ASTNode {
 
-	public final static int TYPE_SINGLE_LINE = 0;
-	public final static int TYPE_MULTILINE = 1;
-	public final static int TYPE_PHPDOC = 2;
+	public final static int TYPE_SINGLE_LINE = 1 << 1;
+	public final static int TYPE_MULTILINE = 1 << 2;
+	public final static int TYPE_PHPDOC = 1 << 3;
 
 	private int commentType;
 	

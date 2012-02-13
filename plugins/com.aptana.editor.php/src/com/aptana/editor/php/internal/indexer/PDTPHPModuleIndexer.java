@@ -75,6 +75,7 @@ import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org2.eclipse.php.internal.core.ast.scanner.php53.ParserConstants;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -1151,7 +1152,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
 
 			Map<String, Set<Object>> parametersMap = null;
-			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 
 			if (parameters.size() > 0)
 			{
@@ -1258,7 +1260,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			List<FormalParameter> parameters = lambdaFunctionDeclaration.formalParameters();
 
 			Map<String, Set<Object>> parametersMap = null;
-			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 
 			if (parameters.size() > 0)
 			{
@@ -1387,7 +1390,8 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			// getting function parameters
 			List<FormalParameter> parameters = functionDeclaration.formalParameters();
-			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters.size()];
+			int[] parameterPositions = (parameters == null || parameters.size() == 0) ? null : new int[parameters
+					.size()];
 
 			Map<String, Set<Object>> parametersMap = null;
 			if (parameters.size() > 0)
@@ -2215,6 +2219,22 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			Scope scope = new Scope(node, parent, currentEntry);
 
 			scopes.push(scope);
+
+			// report any @var comment variables that exists under that node
+			if (_resolvedVarComments != null && _resolvedVarComments.get(node) != null)
+			{
+				for (VarComment comment : _resolvedVarComments.get(node))
+				{
+					String variableName = comment.getVariableReference().getName();
+					if (variableName.startsWith(DOLLAR_SIGN))
+					{
+						variableName = variableName.substring(1);
+					}
+					VariableInfo variableInfo = new VariableInfo(variableName, comment.getTypeReferencesNames(), scope,
+							comment.getStart(), 0);
+					getCurrentScope().addVariable(variableInfo);
+				}
+			}
 		}
 
 		/**
@@ -2421,7 +2441,23 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			// counting first path entry
 			Expression classNameIdentifier = dispatch.getClassName();
-			String className = ((Identifier) classNameIdentifier).getName();
+			if (classNameIdentifier == null
+					|| (classNameIdentifier.getType() != ASTNode.IDENTIFIER
+							&& classNameIdentifier.getType() != ASTNode.NAMESPACE_NAME && classNameIdentifier.getType() != ASTNode.VARIABLE))
+			{
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Expected an identifier, variable or namespace-name", new Exception("Missing identifier")); //$NON-NLS-1$ //$NON-NLS-2$
+				return null;
+			}
+			String className = null;
+			if (classNameIdentifier.getType() == ASTNode.VARIABLE)
+			{
+				className = getVariableName(((Variable) classNameIdentifier));
+			}
+			else
+			{
+				className = ((Identifier) classNameIdentifier).getName();
+			}
 			result.setClassEntry(className);
 
 			// counting second entry
@@ -3079,15 +3115,14 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 						: IPHPIndexConstants.VAR_CATEGORY;
 				reporter.reportEntry(category, entryPath, value, module);
 			}
-
 			// reporting function/method parameters if needed, going up in the
 			// stack searching for the function
 			for (int i = stack.size() - 1; i >= 0; i--)
 			{
 				Scope scope = stack.get(i);
-				if (scope.getEntry() != null)
+				IElementEntry entry = scope.getEntry();
+				if (entry != null)
 				{
-					IElementEntry entry = scope.getEntry();
 					if (entry.getCategory() == IPHPIndexConstants.FUNCTION_CATEGORY
 							&& entry.getValue() instanceof FunctionPHPEntryValue
 							|| entry.getCategory() == IPHPIndexConstants.LAMBDA_FUNCTION_CATEGORY
@@ -3103,9 +3138,9 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							{
 								String entryPath = parEntry.getKey();
 								VariablePHPEntryValue value = new VariablePHPEntryValue(0, true, false, false,
-										parEntry.getValue(), (parameterStartPositions == null
-												|| parameterStartPositions.length == 0) ? val.getStartOffset()
-												: parameterStartPositions[parCount], currentNamespace);
+										parEntry.getValue(),
+										(parameterStartPositions == null || parameterStartPositions.length == 0) ? val
+												.getStartOffset() : parameterStartPositions[parCount], currentNamespace);
 								reporter.reportEntry(IPHPIndexConstants.VAR_CATEGORY, entryPath, value, module);
 								parCount++;
 							}
@@ -3540,6 +3575,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 	private boolean updateTaskTags = true;
 
 	private String _namespace;
+	private Map<ASTNode, List<VarComment>> _resolvedVarComments;
 
 	/**
 	 * @return is update task tags turned on
@@ -3748,9 +3784,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			}
 
 			// collecting comments
-			CommentsVisitor commentsVisitor = new CommentsVisitor();
+			CommentsVisitor commentsVisitor = new CommentsVisitor(true);
 			program.accept(commentsVisitor);
 			_comments = commentsVisitor.getComments();
+			_resolvedVarComments = commentsVisitor.getResolvedVarComments();
 			try
 			{
 				if (isUpdateTaskTags())

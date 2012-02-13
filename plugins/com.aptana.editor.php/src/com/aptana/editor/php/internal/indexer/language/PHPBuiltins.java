@@ -472,7 +472,7 @@ public final class PHPBuiltins
 			});
 			Map<Object, Object> builtins = new HashMap<Object, Object>(INITIAL_CAPACITY);
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp4);
-			PHPParser parser = new PHPParser(PHPVersion.PHP4);
+			PHPParser parser = new PHPParser(PHPVersion.PHP4, false);
 			long timeMillis = System.currentTimeMillis();
 			initPHP4Builtins(parser, builtins);
 			if (PHPEditorPlugin.INDEXER_DEBUG)
@@ -482,7 +482,7 @@ public final class PHPBuiltins
 				timeMillis = System.currentTimeMillis();
 			}
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp5);
-			parser = new PHPParser(PHPVersion.PHP5);
+			parser = new PHPParser(PHPVersion.PHP5, false);
 			initPHP5Builtins(parser, builtins);
 			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{
@@ -491,7 +491,7 @@ public final class PHPBuiltins
 				timeMillis = System.currentTimeMillis();
 			}
 			monitor.setTaskName(Messages.PHPBuiltins_addingPhp53);
-			parser = new PHPParser(PHPVersion.PHP5_3);
+			parser = new PHPParser(PHPVersion.PHP5_3, false);
 			initPHP53Builtins(parser, builtins);
 			if (PHPEditorPlugin.INDEXER_DEBUG)
 			{

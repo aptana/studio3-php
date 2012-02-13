@@ -6,6 +6,7 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: Aptana Inc.
 Fragment-Host: com.aptana.editor.php
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.junit
+Require-Bundle: org.junit,
+ com.aptana.ui
 Export-Package: com.aptana.editor.php.core,
  com.aptana.editor.php.tests

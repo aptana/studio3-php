@@ -3,12 +3,16 @@
  */
 package com.aptana.editor.php.indexer;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.aptana.core.CorePlugin;
+import com.aptana.core.IDebugScopes;
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
 
 /**
@@ -27,9 +31,20 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 	@Override
 	protected void clean(IProgressMonitor monitor)
 	{
-		PHPGlobalIndexer.getInstance().clean(getProject(), monitor);
+		IProject project = getProject();
+		PHPGlobalIndexer.getInstance().clean(project, monitor);
 		PHPGlobalIndexer.getInstance().cleanLibraries(monitor);
 		ContentAssistUtils.cleanIndex();
+		if (IdeLog.isInfoEnabled(CorePlugin.getDefault(), IDebugScopes.BUILDER))
+		{
+			// @formatter:off 
+			String message = MessageFormat.format(
+				"Cleaning the PHP project {0}", //$NON-NLS-1$
+				(project != null) ? project.getName() : "null" //$NON-NLS-1$
+			);
+			// @formatter:on
+			IdeLog.logInfo(CorePlugin.getDefault(), message, IDebugScopes.BUILDER);
+		}
 	}
 
 	/**
@@ -54,6 +69,16 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 		{
 			PHPGlobalIndexer.getInstance().clean(project, monitor);
 			PHPGlobalIndexer.getInstance().build(project, monitor);
+			if (IdeLog.isInfoEnabled(CorePlugin.getDefault(), IDebugScopes.BUILDER))
+			{
+				// @formatter:off
+				String message = MessageFormat.format(
+					"Building the PHP project {0}", //$NON-NLS-1$
+					project.getName()
+				);
+				// @formatter:on
+				IdeLog.logInfo(CorePlugin.getDefault(), message, IDebugScopes.BUILDER);
+			}
 		}
 		return null;
 	}

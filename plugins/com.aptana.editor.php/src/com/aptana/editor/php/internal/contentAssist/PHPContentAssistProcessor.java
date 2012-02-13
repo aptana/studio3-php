@@ -50,7 +50,7 @@ import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
 import com.aptana.editor.common.contentassist.ICommonCompletionProposal;
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -140,6 +140,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static final String SELF_ACTIVATION_SEQUENCE = "self"; //$NON-NLS-1$
 
 	/**
+	 * "static" activation sequence.
+	 */
+	private static final String STATIC_ACTIVATION_SEQUENCE = "static"; //$NON-NLS-1$
+
+	/**
 	 * "parent" activation sequence.
 	 */
 	private static final String PARENT_ACTIVATION_SEQUENCE = "parent"; //$NON-NLS-1$
@@ -226,7 +231,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			String openPhp = document.get(Math.max(0, offset - 4),
 					Math.min(Math.min(offset, 4), document.getLength() - 1));
-			if (openPhp.endsWith("<?p") || openPhp.endsWith("<?ph")) //$NON-NLS-1$ //$NON-NLS-2$
+			if (openPhp.endsWith("<?") || openPhp.endsWith("<?p") || openPhp.endsWith("<?ph")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			{
 				return false;
 			}
@@ -235,7 +240,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			// ignore it and just use the lexemeProvider
 		}
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c);
 		if (!currentContext.acceptModelsElements() && !currentContext.isAutoActivateCAAfterApply())
 		{
@@ -339,7 +344,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			phpVersion = PHPVersionProvider.getDefaultPHPVersion();
 		}
 
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		// Calculates and sets completion context
 		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
 
@@ -815,7 +820,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return null;
 		}
 
-		boolean innerCompletion = SELF_ACTIVATION_SEQUENCE.equals(callPath.get(0));
+		boolean selfCompletion = SELF_ACTIVATION_SEQUENCE.equals(callPath.get(0));
+		boolean staticCompletion = STATIC_ACTIVATION_SEQUENCE.equals(callPath.get(0));
 		boolean parentCompletion = PARENT_ACTIVATION_SEQUENCE.equals(callPath.get(0));
 
 		boolean currentExactMatch = true;
@@ -824,8 +830,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			currentExactMatch = exactMatch;
 		}
 		Set<IElementEntry> result = computeStaticDereferenceRightEntries(index, leftDereferenceEntries,
-				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, innerCompletion,
-				parentCompletion, aliases, namespace);
+				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, selfCompletion
+						|| staticCompletion, parentCompletion, aliases, namespace);
 		if (result == null || result.isEmpty())
 		{
 			return null;
@@ -848,7 +854,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					applyAccessRestriction = true;
 				}
 				result = computeDereferenceRightEntries(leftDereferenceEntries, index, pathEntryName(callPath.get(i)),
-						offset, module, currentExactMatch, applyAccessRestriction, innerCompletion, aliases, namespace);
+						offset, module, currentExactMatch, applyAccessRestriction, selfCompletion, aliases, namespace);
 				if (result == null || result.isEmpty())
 				{
 					return null;
@@ -927,7 +933,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 
-		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace);
+		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace, aliases);
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// now searching for the possible right parts
@@ -1083,7 +1089,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 
-		if (SELF_ACTIVATION_SEQUENCE.equals(left))
+		if (SELF_ACTIVATION_SEQUENCE.equals(left) || STATIC_ACTIVATION_SEQUENCE.equals(left))
 		{
 			IElementEntry currentClass = getCurrentClass(index, module, offset);
 			if (currentClass == null)
@@ -1212,7 +1218,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (isStaticDereferencing || module == null || module.equals(entry.getModule()))
 			{
 				ClassPHPEntryValue value = (ClassPHPEntryValue) entry.getValue();
-				if (ContentAssistUtils.isInNamespace(value, namespace))
+				if (TypeHierarchyUtils.isInNamespace(value, namespace))
 				{
 					result.add(entry);
 				}
@@ -1306,7 +1312,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		// FIXME - Shalom (???) - Have the ancestors look at the current module and remove any other ancestor from a
 		// different module and a similar name
-		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace);
+
+		// Determine the type and its ancestors. Use the namespace and the aliases (the 'use' statements within this
+		// namespace) when detecting the ancestors.
+		Set<String> typesWithAncestors = TypeHierarchyUtils.addAllAncestors(customLeftTypes, index, namespace, aliases);
 
 		Set<IElementEntry> result = new LinkedHashSet<IElementEntry>();
 		// now searching for the possible right parts
@@ -1453,7 +1462,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		for (IElementEntry entry : leftEntries)
 		{
 			VariablePHPEntryValue value = (VariablePHPEntryValue) entry.getValue();
-			if (ContentAssistUtils.isInNamespace(value, namespace))
+			if (TypeHierarchyUtils.isInNamespace(value, namespace))
 			{
 				result.add(entry);
 			}
@@ -3238,7 +3247,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return EMPTY_CONTEXT_INFO;
 		}
 		String content = document.get();
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		CallInfo info = PHPContextCalculator.calculateCallInfo(lexemeProvider, offset);
 		if (info == null)
 		{

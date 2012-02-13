@@ -4,18 +4,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
-import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
 import com.aptana.editor.php.internal.contentAssist.mapping.ICodeLocation;
@@ -59,7 +61,7 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 	 */
 	public IHyperlink[] detectHyperlinks(PHPSourceEditor editor, IRegion region, boolean canShowMultipleHyperlinks)
 	{
-		LexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(editor.getDocumentProvider()
 				.getDocument(editor.getEditorInput()), region.getOffset());
 
 		Lexeme<PHPTokenType> lexeme = lexemeProvider.getLexemeFromOffset(region.getOffset());
@@ -127,7 +129,17 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 			{
 				return;
 			}
-			openInEditor(codeLocation.getFullPath(), codeLocation.getStartLexeme());
+			IFileStore remoteFileStore = codeLocation.getRemoteFileStore();
+			Lexeme<PHPTokenType> startLexeme = codeLocation.getStartLexeme();
+			if (remoteFileStore != null)
+			{
+				com.aptana.ide.ui.io.navigator.actions.EditorUtils.openFileInEditor(remoteFileStore, null,
+						new TextSelection(startLexeme.getStartingOffset(), startLexeme.getLength()));
+			}
+			else
+			{
+				openInEditor(codeLocation.getFullPath(), startLexeme);
+			}
 		}
 
 		private void openInEditor(String fileName, Lexeme<PHPTokenType> lexeme)
@@ -146,7 +158,7 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 					part = EditorUtils.openInEditor(new File(((IFile) findMember).getLocationURI()));
 				}
 			}
-			if (part instanceof PHPSourceEditor)
+			if (part instanceof AbstractTextEditor)
 			{
 				AbstractTextEditor editor = (AbstractTextEditor) part;
 				editor.selectAndReveal(lexeme.getStartingOffset(), lexeme.getLength());

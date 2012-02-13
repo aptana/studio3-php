@@ -1,0 +1,18 @@
+--TEST--
+'static' keyword CA completion
+--FILE--
+
+<?php
+class Dummy {
+	const PI = 3.14159;
+	private static $MagicNumber = 9;
+
+	public static function GetNumber() {
+		return static::|
+	}
+}
+?>
+--EXPECT--
+field($MagicNumber)
+field(PI)
+method(GetNumber)

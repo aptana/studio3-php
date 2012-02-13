@@ -23,6 +23,8 @@ import org2.eclipse.php.internal.core.ast.nodes.AST;
 import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
 import org2.eclipse.php.internal.core.ast.scanner.StateStack;
+import org2.eclipse.php.internal.core.ast.util.ASTUtils;
+import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
 import org2.eclipse.php.internal.core.compiler.ast.parser.DocumentorLexer;
 
 
@@ -1082,11 +1084,17 @@ public class PhpAstLexer implements org2.eclipse.php.internal.core.ast.scanner.A
     private void handlePHPDocEnd() {
 		addComment(Comment.TYPE_PHPDOC);
     }
-    
-    protected void handleVarComment() {
-    	commentStartPosition = zzStartRead;
-    	addComment(Comment.TYPE_MULTILINE);
-    }
+
+	protected void handleVarComment() {
+		// [Appcelerator Mod]
+		String content = yytext();
+		int start = getTokenStartPosition();
+		int end = start + getTokenLength();
+		VarComment varComment = ASTUtils.parseVarComment(ast, content, start, end);
+		if (varComment != null) {
+			getCommentList().add(varComment);
+		}
+	}
 
     private Symbol createFullSymbol(int symbolNumber) {
         Symbol symbol = createSymbol(symbolNumber);

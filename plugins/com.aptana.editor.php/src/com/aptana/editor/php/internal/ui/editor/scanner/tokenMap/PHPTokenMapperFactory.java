@@ -17,6 +17,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.util.StringUtil;
+import com.aptana.editor.php.internal.parser.PHPTokenType;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 
 /**
@@ -32,7 +33,32 @@ public class PHPTokenMapperFactory
 	private static PHP5TokenMapper php5TokenMapper;
 	private static PHP53TokenMapper php53TokenMapper;
 
-	private static final Pattern CONSTANT_PATTERN = Pattern.compile("[A-Z_][\\dA-Z_]*");
+	private static final Pattern CONSTANT_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
+
+	public static Set<String> GLOBALS = new HashSet<String>();
+	static
+	{
+		GLOBALS.add(IPHPTokenMapper.COOKIE);
+		GLOBALS.add(IPHPTokenMapper.FILES);
+		GLOBALS.add(IPHPTokenMapper.POST);
+		GLOBALS.add(IPHPTokenMapper.GET);
+		GLOBALS.add(IPHPTokenMapper.REQUEST);
+		GLOBALS.add(IPHPTokenMapper.PHP_SELF);
+		GLOBALS.add(IPHPTokenMapper.HTTP_POST_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_GET_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_ENV_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_SERVER_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_COOKIE_VARS);
+
+	}
+	public static Set<String> SAFER_GLOBALS = new HashSet<String>();
+	static
+	{
+		SAFER_GLOBALS.add(IPHPTokenMapper.GLOBALS);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SESSION);
+		SAFER_GLOBALS.add(IPHPTokenMapper.SERVER);
+		SAFER_GLOBALS.add(IPHPTokenMapper.ENV);
+	}
 
 	private static Set<String> ASSIGNMENTS = new HashSet<String>();
 	static
@@ -147,53 +173,53 @@ public class PHPTokenMapperFactory
 		String tokenContent = scanner.getSymbolValue(sym);
 		if (";".equals(tokenContent))
 		{
-			return scanner.getToken("punctuation.terminator.expression.php");
+			return scanner.getToken(PHPTokenType.PUNCTUATION_TERMINATOR.toString());
 		}
 		if ("(".equals(tokenContent))
 		{
-			return scanner.getToken("punctuation.definition.parameters.begin.php"); //$NON-NLS-1$
+			return scanner.getToken(PHPTokenType.PUNCTUATION_PARAM_LEFT.toString());
 		}
 		if (")".equals(tokenContent))
 		{
-			return scanner.getToken("punctuation.definition.parameters.end.php"); //$NON-NLS-1$
+			return scanner.getToken(PHPTokenType.PUNCTUATION_PARAM_RIGHT.toString());
 		}
 		if ("[".equals(tokenContent))
 		{
-			return scanner.getToken("variable.other.php keyword.operator.index-start.php"); //$NON-NLS-1$
+			return scanner.getToken(PHPTokenType.PUNCTUATION_LBRACKET.toString());
 		}
 		if ("]".equals(tokenContent))
 		{
-			return scanner.getToken("variable.other.php keyword.operator.index-end.php"); //$NON-NLS-1$
+			return scanner.getToken(PHPTokenType.PUNCTUATION_RBRACKET.toString());
 		}
 		// Operators
 		if (ASSIGNMENTS.contains(tokenContent))
 		{
-			return scanner.getToken("keyword.operator.assignment.php");
+			return scanner.getToken(PHPTokenType.KEYWORD_OP_ASSIGN.toString());
 		}
 		if (LOGICAL_OPERATORS.contains(tokenContent))
 		{
-			return scanner.getToken("keyword.operator.logical.php");
+			return scanner.getToken(PHPTokenType.KEYWORD_OP_LOGICAL.toString());
 		}
 		if (COMPARISON_OPERATORS.contains(tokenContent))
 		{
-			return scanner.getToken("keyword.operator.comparison.php");
+			return scanner.getToken(PHPTokenType.KEYWORD_OP_COMPARISON.toString());
 		}
 		if (ARITHMETIC_OPERATORS.contains(tokenContent))
 		{
-			return scanner.getToken("keyword.operator.arithmetic.php");
+			return scanner.getToken(PHPTokenType.KEYWORD_OP_ARITHMETIC.toString());
 		}
 		if (BITWISE_OPERATORS.contains(tokenContent))
 		{
-			return scanner.getToken("keyword.operator.bitwise.php");
+			return scanner.getToken(PHPTokenType.KEYWORD_OP_BITWISE.toString());
 		}
 		if (INC_DEC_OPERATORS.contains(tokenContent))
 		{
-			return scanner.getToken("keyword.operator.increment-decrement.php");
+			return scanner.getToken(PHPTokenType.KEYWORD_OP_INC_DEC.toString());
 		}
 		// All uppercase is constant
 		if (CONSTANT_PATTERN.matcher(tokenContent).matches())
 		{
-			return scanner.getToken("constant.other.php");
+			return scanner.getToken(PHPTokenType.CONSTANT_OTHER.toString());
 		}
 
 		return scanner.getToken(StringUtil.EMPTY);

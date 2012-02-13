@@ -13,7 +13,13 @@ package com.aptana.editor.php.internal.core.builder;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org2.eclipse.dltk.compiler.problem.CategorizedProblem;
 import org2.eclipse.dltk.compiler.problem.DefaultProblem;
 import org2.eclipse.dltk.compiler.problem.IProblem;
@@ -58,7 +64,39 @@ public class BuildProblemReporter extends ProblemCollector
 		}
 	}
 
+	private static ISchedulingRule getMarkerRule(Object resource)
+	{
+		if (resource instanceof IResource)
+		{
+			return ResourcesPlugin.getWorkspace().getRuleFactory().markerRule((IResource) resource);
+		}
+		return null;
+	}
+
 	public void flush()
+	{
+		// Performance fix: schedules the error handling as a single workspace update so that we don't trigger a
+		// bunch of resource updated events while problem markers are being added to the file.
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable()
+		{
+			public void run(IProgressMonitor monitor)
+			{
+				updateMarkers();
+			}
+		};
+		try
+		{
+			ResourcesPlugin.getWorkspace().run(runnable, getMarkerRule(resource), IWorkspace.AVOID_UPDATE,
+					new NullProgressMonitor());
+		}
+		catch (CoreException e)
+		{
+			IdeLog.logError(PHPEplPlugin.getDefault(), Messages.BuildProblemReporter_UpdateMarkersError, e);
+		}
+
+	}
+
+	private void updateMarkers()
 	{
 		try
 		{

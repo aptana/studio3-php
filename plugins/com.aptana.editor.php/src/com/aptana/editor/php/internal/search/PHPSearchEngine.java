@@ -13,12 +13,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org2.eclipse.php.core.compiler.PHPFlags;
 import org2.eclipse.php.internal.core.PHPVersion;
@@ -41,6 +44,7 @@ import com.aptana.editor.php.indexer.IIndexChangeListener;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.builder.BuildPathManager;
+import com.aptana.editor.php.internal.builder.FileSystemModule;
 import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.contentAssist.ContentAssistFilters;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
@@ -60,7 +64,7 @@ import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.lexer.Range;
 
 /**
- * @author Pavel Petrochenko
+ * @author Pavel Petrochenko, Shalom Gibly
  */
 public final class PHPSearchEngine
 {
@@ -70,16 +74,8 @@ public final class PHPSearchEngine
 	private static class ElementNode implements IElementNode
 	{
 
-		/**
-		 * 
-		 */
 		protected final IElementEntry e;
-
-		/**
-		 * 
-		 */
 		protected final AbstractPHPEntryValue value;
-
 		private int kind;
 
 		/**
@@ -102,19 +98,7 @@ public final class PHPSearchEngine
 		{
 			IModule module = e.getModule();
 			Range range = new Range(value.getStartOffset(), value.getStartOffset());
-			if (module instanceof LocalModule)
-			{
-				LocalModule lmodule = (LocalModule) module;
-				FileEditorInput fileEditorInput = new FileEditorInput(lmodule.getFile());
-				return new ExternalReference(fileEditorInput, range);
-			}
-			// FIXME: Shalom - Have an equivalent for the CoreUIUtils.createJavaFileEditorInput
-			// if (module instanceof FileSystemModule)
-			// {
-			// FileSystemModule ms = (FileSystemModule) module;
-			// return new ExternalReference(CoreUIUtils.createJavaFileEditorInput(new File(ms.getFullPath())), range);
-			// }
-			return null;
+			return PHPSearchEngine.getInstance().getModuleReference(module, range);
 		}
 
 		/**
@@ -276,7 +260,7 @@ public final class PHPSearchEngine
 					try
 					{
 						// FIXME: Shalom - Perhaps get the real PHP version from the module.
-						PHPParser parser = new PHPParser(PHPVersion.PHP5_3);
+						PHPParser parser = new PHPParser(PHPVersion.PHP5_3, false);
 						IParseNode parseNode = parser.parse(module.getContents());
 						IParseNode findClassNode = findClassNode(parseNode, name);
 						return (IPHPParseNode) findClassNode;
@@ -389,7 +373,7 @@ public final class PHPSearchEngine
 			try
 			{
 				// FIXME: Shalom - Parhaps get the real PHP version from the module.
-				PHPParser parser = new PHPParser(PHPVersion.PHP5_3);
+				PHPParser parser = new PHPParser(PHPVersion.PHP5_3, false);
 				IParseNode parseNode = parser.parse(module.getContents());
 				IParseNode findClassNode = findClassNode(parseNode, e.getEntryPath());
 				return (PHPClassParseNode) findClassNode;
@@ -535,20 +519,7 @@ public final class PHPSearchEngine
 							{
 								IModule module = ea.getModule();
 								Range range = new Range(mvalue.getStartOffset(), mvalue.getStartOffset());
-								if (module instanceof LocalModule)
-								{
-									LocalModule lmodule = (LocalModule) module;
-									FileEditorInput fileEditorInput = new FileEditorInput(lmodule.getFile());
-									return new ExternalReference(fileEditorInput, range);
-								}
-								// FIXME: Shalom - Have an equivalent for the CoreUIUtils.createJavaFileEditorInput
-								// if (module instanceof FileSystemModule)
-								// {
-								// FileSystemModule ms = (FileSystemModule) module;
-								// return new ExternalReference(CoreUIUtils.createJavaFileEditorInput(new File(ms
-								// .getFullPath())), range);
-								// }
-								return null;
+								return getModuleReference(module, range);
 							}
 
 							public boolean isAbstract()
@@ -582,6 +553,33 @@ public final class PHPSearchEngine
 						}
 					}
 				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param module
+	 * @param range
+	 */
+	protected ExternalReference getModuleReference(IModule module, Range range)
+	{
+		if (module instanceof LocalModule)
+		{
+			LocalModule lmodule = (LocalModule) module;
+			FileEditorInput fileEditorInput = new FileEditorInput(lmodule.getFile());
+			return new ExternalReference(fileEditorInput, range);
+		}
+		if (module instanceof FileSystemModule)
+		{
+			try
+			{
+				return new ExternalReference(new FileStoreEditorInput(EFS.getStore(((FileSystemModule) module)
+						.getExternalFile().getURI())), range);
+			}
+			catch (CoreException ce)
+			{
+				IdeLog.logError(PHPEditorPlugin.getDefault(), "Error computing the external reference", ce); //$NON-NLS-1$
 			}
 		}
 		return null;

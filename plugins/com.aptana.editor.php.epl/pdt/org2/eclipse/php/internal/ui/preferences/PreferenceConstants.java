@@ -416,7 +416,7 @@ public class PreferenceConstants
 		store.setDefault(IPreferenceConstants.EDITOR_AUTO_INDENT, true);
 
 		// mark occurrences
-		store.setDefault(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, true);
+		store.setDefault(com.aptana.editor.common.preferences.IPreferenceConstants.EDITOR_MARK_OCCURRENCES, false);
 		store.setDefault(PreferenceConstants.EDITOR_STICKY_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_MARK_METHOD_OCCURRENCES, true);

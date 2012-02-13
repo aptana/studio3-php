@@ -1,0 +1,28 @@
+--TEST--
+Test Commented Variable completion when the CA is nested
+--FILE--
+<?php
+    class Foobar {
+		public function nonsense1(){} 
+	} 
+	
+	function __construct($z_argument) {
+		/* @var $z_obj  Foobar */
+		$obj ->nonsense1();
+		while ($z_a <= 10) {
+			/* @var $z_aaaa  Foobar */
+			$z_klm = 4;
+			for ($z_i = 0; $z_i < 3; $z_i++) {
+				$z_|
+			}
+
+		}
+	}
+?>
+--EXPECT--
+field($z_argument)
+field($z_obj)
+field($z_a)
+field($z_klm)
+field($z_i)
+field($z_aaaa)
