@@ -327,7 +327,7 @@ public class PHPExeLaunchShortcut implements ILaunchShortcut {
 		// Set the delegate class according to selected executable.
 		wc.setAttribute(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, defaultEXE.getDebuggerID());
 		AbstractDebuggerConfiguration debuggerConfiguration = PHPDebuggersRegistry.getDebuggerConfiguration(defaultEXE.getDebuggerID());
-		wc.setAttribute(PHPDebugCorePreferenceNames.CONFIGURATION_DELEGATE_CLASS, debuggerConfiguration.getScriptLaunchDelegateClass());
+		wc.setAttribute(IPHPDebugCorePreferenceKeys.CONFIGURATION_DELEGATE_CLASS, debuggerConfiguration.getScriptLaunchDelegateClass());
 		wc.setAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, phpPathString);
 		wc.setAttribute(IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, true);
 		wc.setAttribute(IPHPDebugConstants.ATTR_FILE_FULL_PATH, phpFileFullLocation);

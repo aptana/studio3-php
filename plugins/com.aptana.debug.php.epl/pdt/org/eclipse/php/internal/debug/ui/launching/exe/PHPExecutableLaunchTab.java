@@ -32,7 +32,6 @@ import org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguratio
 import org.eclipse.php.internal.debug.core.debugger.IDebuggerConfiguration;
 import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org.eclipse.php.internal.debug.core.launching.PHPLaunchDelegateProxy;
-import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 import org.eclipse.php.internal.debug.core.preferences.PHPDebuggersRegistry;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 import org.eclipse.php.internal.debug.core.resources.ExternalFileWrapper;
@@ -507,7 +506,7 @@ public class PHPExecutableLaunchTab extends AbstractLaunchConfigurationTab {
 		try {
 			debuggerID = configuration.getAttribute(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, PHPDebugEPLPlugin.getCurrentDebuggerId());
 			AbstractDebuggerConfiguration debuggerConfiguration = PHPDebuggersRegistry.getDebuggerConfiguration(debuggerID);
-			configuration.setAttribute(PHPDebugCorePreferenceNames.CONFIGURATION_DELEGATE_CLASS, debuggerConfiguration.getScriptLaunchDelegateClass());
+			configuration.setAttribute(IPHPDebugCorePreferenceKeys.CONFIGURATION_DELEGATE_CLASS, debuggerConfiguration.getScriptLaunchDelegateClass());
 		} catch (Exception e) {
 			PHPDebugEPLPlugin.logError(e);
 		}

@@ -20,8 +20,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
-import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 
+import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
 
 /**
@@ -84,7 +84,7 @@ public class PHPLaunchDelegateProxy implements ILaunchConfigurationDelegate2 {
 	protected ILaunchConfigurationDelegate2 getConfigurationDelegate(ILaunchConfiguration configuration) throws CoreException {
 		if (launchConfigurationDelegate == null) {
 			try {
-				String className = configuration.getAttribute(PHPDebugCorePreferenceNames.CONFIGURATION_DELEGATE_CLASS, ""); //$NON-NLS-1$
+				String className = configuration.getAttribute(IPHPDebugCorePreferenceKeys.CONFIGURATION_DELEGATE_CLASS, ""); //$NON-NLS-1$
 				if (className.length() == 0) {
 					throw new IllegalArgumentException();
 				}

@@ -23,41 +23,48 @@ import com.aptana.debug.php.epl.PHPDebugEPLPlugin;
  * 
  * @author Robert G., Shalom G.
  */
-public class PHPWebPageLaunchConfigurationTab extends ServerLaunchConfigurationTab 
+public class PHPWebPageLaunchConfigurationTab extends ServerLaunchConfigurationTab
 {
 	/**
 	 * PHP extension.
 	 */
 	private static final String PHP_EXTENSION = "php";
 
-	public PHPWebPageLaunchConfigurationTab() {
+	public PHPWebPageLaunchConfigurationTab()
+	{
 		super();
 	}
 
-	public void createExtensionControls(Composite parent) {
+	public void createExtensionControls(Composite parent)
+	{
 	}
 
-	protected void applyExtension(ILaunchConfigurationWorkingCopy configuration) {
+	protected void applyExtension(ILaunchConfigurationWorkingCopy configuration)
+	{
 		configuration.setAttribute(IPHPDebugConstants.RUN_WITH_DEBUG_INFO, true); // Always run with debug info
 	}
 
-	protected boolean isValidExtension(ILaunchConfiguration launchConfig) {
+	protected boolean isValidExtension(ILaunchConfiguration launchConfig)
+	{
 		return true;
 	}
 
-	protected void createServerSelectionControl(Composite parent) {
+	protected void createServerSelectionControl(Composite parent)
+	{
 		PHPDebugEPLPlugin.createDefaultPHPServer();
 		super.createServerSelectionControl(parent);
 	}
 
-	public String[] getRequiredNatures() {
+	public String[] getRequiredNatures()
+	{
 		return LaunchUtil.getRequiredNatures();
 	}
 
-	public String[] getFileExtensions() {
+	public String[] getFileExtensions()
+	{
 		return LaunchUtil.getFileExtensions();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

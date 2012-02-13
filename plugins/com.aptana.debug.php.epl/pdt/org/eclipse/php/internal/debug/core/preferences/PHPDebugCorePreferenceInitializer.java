@@ -42,7 +42,7 @@ public class PHPDebugCorePreferenceInitializer extends AbstractPreferenceInitial
 		preferences.putInt(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT, 10000);
 		preferences.put(PHPDebugCorePreferenceNames.TRANSFER_ENCODING, "UTF-8"); //$NON-NLS-1$
 		preferences.put(PHPDebugCorePreferenceNames.OUTPUT_ENCODING, "UTF-8"); //$NON-NLS-1$
-		preferences.put(PHPDebugCorePreferenceNames.CONFIGURATION_DELEGATE_CLASS, PHPExecutableLaunchDelegate.class.getName());
+		preferences.put(IPHPDebugCorePreferenceKeys.CONFIGURATION_DELEGATE_CLASS, PHPExecutableLaunchDelegate.class.getName());
 		preferences.put(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID, XDebugCommunicationDaemon.XDEBUG_DEBUGGER_ID); // The default is Zend's debugger
 		preferences.put(IPHPDebugConstants.PHP_DEBUG_PARAMETERS_INITIALIZER, "org.eclipse.php.debug.core.defaultInitializer"); //$NON-NLS-1$
 		preferences.put(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT, MessageDialogWithToggle.ALWAYS);
