@@ -54,7 +54,7 @@ public class ContentAssistUtils
 		index = null;
 	}
 
-	// Patterns used for stripping HTML in case there is no support for a BrowserInformationControl on the system
+	// Patterns used for stripping HTML in case there is no support for a CustomBrowserInformationControl on the system
 	private static final Map<Pattern, String> htmlStrippingMap;
 	static
 	{

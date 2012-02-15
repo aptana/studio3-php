@@ -390,4 +390,15 @@
             id="com.aptana.editor.php.contentMergeViewer">
       </viewer>
    </extension>
+   <extension
+         point="com.aptana.editor.common.textHovers">
+      <hover
+            class="com.aptana.editor.php.internal.ui.hover.PHPDocHover"
+            id="com.aptana.editor.php.docHover"
+            label="PHP Documentation Hover">
+         <contentType
+               type="com.aptana.contenttype.phtml.php">
+         </contentType>
+      </hover>
+   </extension>
 </plugin>
