@@ -393,7 +393,7 @@
    <extension
          point="com.aptana.editor.common.textHovers">
       <hover
-            class="com.aptana.editor.php.internal.ui.hover.PHPDocHover"
+            class="com.aptana.editor.php.internal.ui.hover.PHPTextHover"
             id="com.aptana.editor.php.docHover"
             label="PHP Documentation Hover">
          <contentType

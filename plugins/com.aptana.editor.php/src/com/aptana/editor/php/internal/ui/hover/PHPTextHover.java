@@ -1,17 +1,30 @@
-// $codepro.audit.disable platformSpecificLineSeparator
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.ui.hover;
 
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.internal.text.html.BrowserInformationControlInput;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IInputChangedListener;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.IEditorPart;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.ILexemeProvider;
+import com.aptana.editor.common.hover.CustomBrowserInformationControl;
+import com.aptana.editor.common.hover.DocumentationBrowserInformationControlInput;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
@@ -23,15 +36,17 @@ import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
+import com.aptana.editor.php.internal.ui.editor.hyperlink.PHPHyperlinkDetector;
 import com.aptana.ide.ui.io.internal.UniformFileStoreEditorInput;
 import com.aptana.parsing.lexer.Lexeme;
+import com.aptana.ui.epl.UIEplPlugin;
 
 /**
  * Provides PHPDoc as hover info for PHP elements.
  */
-public class PHPDocHover extends AbstractPHPTextHover
+@SuppressWarnings("restriction")
+public class PHPTextHover extends AbstractPHPTextHover
 {
-
 	/*
 	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#getHeader(java.lang.Object,
@@ -92,6 +107,29 @@ public class PHPDocHover extends AbstractPHPTextHover
 			computedDocumentation = ContentAssistUtils.getDocumentation(node, node.getNodeName());
 		}
 		return computedDocumentation;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#populateToolbarActions(org.eclipse.jface.action.
+	 * ToolBarManager, com.aptana.editor.common.hover.CustomBrowserInformationControl)
+	 */
+	@Override
+	protected void populateToolbarActions(ToolBarManager tbm, CustomBrowserInformationControl iControl)
+	{
+		final OpenDeclarationAction openDeclarationAction = new OpenDeclarationAction(iControl);
+		tbm.add(openDeclarationAction);
+		IInputChangedListener inputChangeListener = new IInputChangedListener()
+		{
+			public void inputChanged(Object newInput)
+			{
+				if (newInput instanceof BrowserInformationControlInput)
+				{
+					openDeclarationAction.update();
+				}
+			}
+		};
+		iControl.addInputChangeListener(inputChangeListener);
 	}
 
 	/*
@@ -163,5 +201,61 @@ public class PHPDocHover extends AbstractPHPTextHover
 			return new Object[] { entry };
 		}
 		return null;
+	}
+
+	/**
+	 * Open declaration action.
+	 */
+	public class OpenDeclarationAction extends Action
+	{
+		private static final String IMG_OPEN_DECLARATION = "icons/full/elcl16/goto_input.gif"; //$NON-NLS-1$
+		private static final String IMG_OPEN_DECLARATION_DISABLED = "icons/full/dlcl16/goto_input.gif"; //$NON-NLS-1$
+		private CustomBrowserInformationControl iControl;
+		private IHyperlink[] hyperlinks;
+
+		/**
+		 * @param iControl
+		 */
+		public OpenDeclarationAction(CustomBrowserInformationControl iControl)
+		{
+			setText(Messages.PHPTextHover_openDeclarationTooltip);
+			setImageDescriptor(UIEplPlugin.imageDescriptorFromPlugin(UIEplPlugin.PLUGIN_ID, IMG_OPEN_DECLARATION));
+			setDisabledImageDescriptor(UIEplPlugin.imageDescriptorFromPlugin(UIEplPlugin.PLUGIN_ID,
+					IMG_OPEN_DECLARATION_DISABLED));
+			this.iControl = iControl;
+		}
+
+		/**
+		 * Update the action
+		 */
+		void update()
+		{
+			BrowserInformationControlInput input = iControl.getInput();
+			if (input instanceof DocumentationBrowserInformationControlInput)
+			{
+				PHPHyperlinkDetector detector = new PHPHyperlinkDetector();
+				IRegion hoverRegion = ((DocumentationBrowserInformationControlInput) input).getHoverRegion();
+				if (hoverRegion != null)
+				{
+					hyperlinks = detector.detectHyperlinks((PHPSourceEditor) getEditor(), hoverRegion, false);
+					setEnabled(hyperlinks != null && hyperlinks.length > 0 && hyperlinks[0] != null);
+					return;
+				}
+
+			}
+			setEnabled(false);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see org.eclipse.jface.action.Action#run()
+		 */
+		@Override
+		public void run()
+		{
+			// We already know that this hyperlink is valid. A check was made at the update call.
+			iControl.dispose();
+			hyperlinks[0].open();
+		}
 	}
 }
