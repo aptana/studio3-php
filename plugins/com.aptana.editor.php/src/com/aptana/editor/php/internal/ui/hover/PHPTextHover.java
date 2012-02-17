@@ -21,6 +21,8 @@ import org.eclipse.ui.IEditorPart;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.ArrayUtil;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.common.hover.CustomBrowserInformationControl;
@@ -142,7 +144,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 		if (isHoverEnabled())
 		{
 			Object[] elements = getPHPElementsAt(textViewer, hoverRegion);
-			if (elements == null || elements.length == 0 || elements[0] == null)
+			if (ArrayUtil.isEmpty(elements) || elements[0] == null)
 			{
 				return null;
 			}
@@ -182,7 +184,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 				if (!StringUtil.EMPTY.equals(name))
 				{
 					List<Object> elements = ContentAssistUtils.selectModelElements(name, true);
-					if (elements != null && !elements.isEmpty())
+					if (!CollectionsUtil.isEmpty(elements))
 					{
 						// return the first element only
 						entry = elements.get(0);
@@ -238,7 +240,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 				if (hoverRegion != null)
 				{
 					hyperlinks = detector.detectHyperlinks((PHPSourceEditor) getEditor(), hoverRegion, false);
-					setEnabled(hyperlinks != null && hyperlinks.length > 0 && hyperlinks[0] != null);
+					setEnabled(!ArrayUtil.isEmpty(hyperlinks) && hyperlinks[0] != null);
 					return;
 				}
 
