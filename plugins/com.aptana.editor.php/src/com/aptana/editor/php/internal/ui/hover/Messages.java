@@ -17,6 +17,7 @@ public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "com.aptana.editor.php.internal.ui.hover.messages"; //$NON-NLS-1$
 	public static String PHPTextHover_openDeclarationTooltip;
+	public static String PHPTextHover_phpAPIHeader;
 	static
 	{
 		// initialize resource bundle

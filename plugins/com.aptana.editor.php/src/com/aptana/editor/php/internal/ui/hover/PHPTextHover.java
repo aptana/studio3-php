@@ -80,7 +80,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 		}
 		else if (element instanceof PHPBaseParseNode)
 		{
-			return "PHP API"; //$NON-NLS-1$
+			return Messages.PHPTextHover_phpAPIHeader;
 		}
 		return null;
 	}
@@ -181,7 +181,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 			try
 			{
 				String name = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
-				if (!StringUtil.EMPTY.equals(name))
+				if (!StringUtil.isEmpty(name))
 				{
 					List<Object> elements = ContentAssistUtils.selectModelElements(name, true);
 					if (!CollectionsUtil.isEmpty(elements))
