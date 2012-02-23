@@ -42,6 +42,7 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugModelPresentation;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -52,10 +53,12 @@ import org.eclipse.php.internal.debug.core.zend.debugger.DefaultExpressionsManag
 import org.eclipse.php.internal.debug.core.zend.debugger.Expression;
 import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
 import org.eclipse.php.internal.debug.core.zend.model.PHPStackFrame;
+import org.eclipse.ui.IEditorPart;
 import org.w3c.dom.Node;
 import org2.eclipse.php.util.StringUtils;
 
 import com.aptana.debug.php.core.IPHPDebugCorePreferenceKeys;
+import com.aptana.editor.common.hover.CustomBrowserInformationControl;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
@@ -149,20 +152,20 @@ public class PHPDebugHover extends AbstractPHPTextHover
 								strippedVarName = strippedVarName.substring(0, strippedVarName.length() - 1);
 							}
 						}
-						List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex().getEntries(
-								IPHPIndexConstants.CONST_CATEGORY, variableName);
+						List<IElementEntry> entries = PHPGlobalIndexer.getInstance().getIndex()
+								.getEntries(IPHPIndexConstants.CONST_CATEGORY, variableName);
 						if (entries.isEmpty())
 						{
 							if (!strippedVarName.equals(variableName))
 							{
-								entries = PHPGlobalIndexer.getInstance().getIndex().getEntries(
-										IPHPIndexConstants.CONST_CATEGORY, strippedVarName);
+								entries = PHPGlobalIndexer.getInstance().getIndex()
+										.getEntries(IPHPIndexConstants.CONST_CATEGORY, strippedVarName);
 							}
 							else
 							{
 								// Try to search for it by appending the quotes to the var
-								entries = PHPGlobalIndexer.getInstance().getIndex().getEntries(
-										IPHPIndexConstants.CONST_CATEGORY, '\'' + variableName + '\'');
+								entries = PHPGlobalIndexer.getInstance().getIndex()
+										.getEntries(IPHPIndexConstants.CONST_CATEGORY, '\'' + variableName + '\'');
 							}
 						}
 						shouldResolveConst = !entries.isEmpty();
@@ -266,5 +269,37 @@ public class PHPDebugHover extends AbstractPHPTextHover
 			modelPresentation.setAttribute(IDebugModelPresentation.DISPLAY_VARIABLE_TYPE_NAMES, Boolean.TRUE);
 		}
 		return modelPresentation;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#getHeader(java.lang.Object,
+	 * org.eclipse.ui.IEditorPart, org.eclipse.jface.text.IRegion)
+	 */
+	@Override
+	protected String getHeader(Object element, IEditorPart editorPart, IRegion hoverRegion)
+	{
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#getDocumentation(java.lang.Object,
+	 * org.eclipse.ui.IEditorPart, org.eclipse.jface.text.IRegion)
+	 */
+	@Override
+	protected String getDocumentation(Object element, IEditorPart editorPart, IRegion hoverRegion)
+	{
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#populateToolbarActions(org.eclipse.jface.action.
+	 * ToolBarManager, com.aptana.editor.common.hover.CustomBrowserInformationControl)
+	 */
+	@Override
+	protected void populateToolbarActions(ToolBarManager tbm, CustomBrowserInformationControl iControl)
+	{
 	}
 }
