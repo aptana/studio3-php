@@ -35,15 +35,14 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 		PHPGlobalIndexer.getInstance().clean(project, monitor);
 		PHPGlobalIndexer.getInstance().cleanLibraries(monitor);
 		ContentAssistUtils.cleanIndex();
-		if (IdeLog.isInfoEnabled(CorePlugin.getDefault(), IDebugScopes.BUILDER))
+		if (IdeLog.isTraceEnabled(CorePlugin.getDefault(), IDebugScopes.BUILDER))
 		{
-			// @formatter:off 
-			String message = MessageFormat.format(
-				"Cleaning the PHP project {0}", //$NON-NLS-1$
-				(project != null) ? project.getName() : "null" //$NON-NLS-1$
+			// @formatter:off
+			String message = MessageFormat.format("Cleaning the PHP project {0}", //$NON-NLS-1$
+					(project != null) ? project.getName() : "null" //$NON-NLS-1$
 			);
 			// @formatter:on
-			IdeLog.logInfo(CorePlugin.getDefault(), message, IDebugScopes.BUILDER);
+			IdeLog.logTrace(CorePlugin.getDefault(), message, IDebugScopes.BUILDER);
 		}
 	}
 
@@ -69,15 +68,13 @@ public class IncrementalPHPProjectBuilder extends IncrementalProjectBuilder
 		{
 			PHPGlobalIndexer.getInstance().clean(project, monitor);
 			PHPGlobalIndexer.getInstance().build(project, monitor);
-			if (IdeLog.isInfoEnabled(CorePlugin.getDefault(), IDebugScopes.BUILDER))
+			if (IdeLog.isTraceEnabled(CorePlugin.getDefault(), IDebugScopes.BUILDER))
 			{
 				// @formatter:off
-				String message = MessageFormat.format(
-					"Building the PHP project {0}", //$NON-NLS-1$
-					project.getName()
-				);
+				String message = MessageFormat.format("Building the PHP project {0}", //$NON-NLS-1$
+						project.getName());
 				// @formatter:on
-				IdeLog.logInfo(CorePlugin.getDefault(), message, IDebugScopes.BUILDER);
+				IdeLog.logTrace(CorePlugin.getDefault(), message, IDebugScopes.BUILDER);
 			}
 		}
 		return null;
