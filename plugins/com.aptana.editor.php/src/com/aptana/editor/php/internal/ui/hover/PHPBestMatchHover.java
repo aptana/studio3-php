@@ -37,12 +37,16 @@ package com.aptana.editor.php.internal.ui.hover;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.information.IInformationProviderExtension2;
+import org.eclipse.ui.IEditorPart;
 
+import com.aptana.editor.common.hover.AbstractDocumentationHover;
+import com.aptana.editor.common.hover.CustomBrowserInformationControl;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
@@ -53,7 +57,7 @@ import com.aptana.editor.php.PHPEditorPlugin;
  */
 public class PHPBestMatchHover extends AbstractPHPTextHover
 {
-	private static final String DEBUG_HOVER_ID = "com.aptana.debug.php.debugHover"; //$NON-NLS-1$
+	private static final String DEBUG_HOVER_ID = "com.aptana.php.debug.debugHover"; //$NON-NLS-1$
 	private List<PHPTextHoverDescriptor> textHoverDescriptors;
 	private List<AbstractPHPTextHover> instantiatedTextHovers;
 	private AbstractPHPTextHover bestHover;
@@ -128,7 +132,7 @@ public class PHPBestMatchHover extends AbstractPHPTextHover
 			return ((IInformationProviderExtension2) bestHover).getInformationPresenterControlCreator();
 		}
 
-		return super.getHoverControlCreator();
+		return super.getInformationPresenterControlCreator();
 	}
 
 	/**
@@ -161,6 +165,50 @@ public class PHPBestMatchHover extends AbstractPHPTextHover
 			{
 				PHPEditorPlugin.logError(e);
 			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#getHeader(java.lang.Object,
+	 * org.eclipse.ui.IEditorPart, org.eclipse.jface.text.IRegion)
+	 */
+	@Override
+	public String getHeader(Object element, IEditorPart editorPart, IRegion hoverRegion)
+	{
+		if (bestHover instanceof AbstractDocumentationHover)
+		{
+			return ((AbstractDocumentationHover) bestHover).getHeader(element, editorPart, hoverRegion);
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#getDocumentation(java.lang.Object,
+	 * org.eclipse.ui.IEditorPart, org.eclipse.jface.text.IRegion)
+	 */
+	@Override
+	public String getDocumentation(Object element, IEditorPart editorPart, IRegion hoverRegion)
+	{
+		if (bestHover instanceof AbstractDocumentationHover)
+		{
+			return ((AbstractDocumentationHover) bestHover).getDocumentation(element, editorPart, hoverRegion);
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.hover.AbstractDocumentationHover#populateToolbarActions(org.eclipse.jface.action.
+	 * ToolBarManager, com.aptana.editor.common.hover.CustomBrowserInformationControl)
+	 */
+	@Override
+	public void populateToolbarActions(ToolBarManager tbm, CustomBrowserInformationControl iControl)
+	{
+		if (bestHover instanceof AbstractDocumentationHover)
+		{
+			((AbstractDocumentationHover) bestHover).populateToolbarActions(tbm, iControl);
 		}
 	}
 }

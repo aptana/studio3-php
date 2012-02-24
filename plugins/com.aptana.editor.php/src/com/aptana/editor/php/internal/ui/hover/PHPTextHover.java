@@ -55,7 +55,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 	 * org.eclipse.ui.IEditorPart, org.eclipse.jface.text.IRegion)
 	 */
 	@Override
-	protected String getHeader(Object element, IEditorPart editorPart, IRegion hoverRegion)
+	public String getHeader(Object element, IEditorPart editorPart, IRegion hoverRegion)
 	{
 		// Set the header to display the file location
 		if (element instanceof IElementEntry)
@@ -91,7 +91,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 	 * org.eclipse.ui.IEditorPart, org.eclipse.jface.text.IRegion)
 	 */
 	@Override
-	protected String getDocumentation(Object element, IEditorPart editorPart, IRegion hoverRegion)
+	public String getDocumentation(Object element, IEditorPart editorPart, IRegion hoverRegion)
 	{
 		String computedDocumentation = null;
 		if (element instanceof IElementEntry)
@@ -117,7 +117,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 	 * ToolBarManager, com.aptana.editor.common.hover.CustomBrowserInformationControl)
 	 */
 	@Override
-	protected void populateToolbarActions(ToolBarManager tbm, CustomBrowserInformationControl iControl)
+	public void populateToolbarActions(ToolBarManager tbm, CustomBrowserInformationControl iControl)
 	{
 		final OpenDeclarationAction openDeclarationAction = new OpenDeclarationAction(iControl);
 		tbm.add(openDeclarationAction);

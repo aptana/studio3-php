@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="com.aptana.php.debug.epl" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="com.aptana.php.debug.epl" id="pathEntryFilters" name="PHP Path Entry Filters"/>
+      </appinfo>
+      <documentation>
+         This extension point allows to filter local files found by Debug Search Engine.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="filter" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="filter">
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Id of Path Entry Filter
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Name of Path Entry Filter
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Class of Path Entry Filter
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.php.internal.debug.core.pathmapper.IPathEntryFilter"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="overridesId" type="string">
+            <annotation>
+               <documentation>
+                  Comma-separated Id of Path Entry Filters to override
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         0.7
+      </documentation>
+   </annotation>
+
+
+
+
+
+</schema>
