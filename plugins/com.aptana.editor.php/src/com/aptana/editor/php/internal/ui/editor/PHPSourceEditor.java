@@ -156,6 +156,16 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.aptana.editor.html.HTMLEditor#getContentType()
+	 */
+	@Override
+	public String getContentType()
+	{
+		return IPHPConstants.CONTENT_TYPE_PHP;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.AbstractThemeableEditor#installOccurrencesUpdater()
 	 */
 	@Override
