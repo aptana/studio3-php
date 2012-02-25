@@ -121,6 +121,10 @@
 				</dirset>
 			</path>
 			<sequential>
+				<!-- WINDOWS 64
+				<exec executable="C:/Windows/SysWOW64/cmd.exe" dir="@{file}" outputproperty="@{file}.committed.max">
+					<arg value="/c" />
+				-->
 				<exec executable="/bin/bash" dir="@{file}" outputproperty="@{file}.committed.max">
 					<arg value="-c" />
 					<arg value="${git.executable} log --max-count=1 --pretty=format:'%ct' ." />
