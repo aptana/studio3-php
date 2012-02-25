@@ -51,6 +51,7 @@ import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
 import com.aptana.editor.common.contentassist.ICommonCompletionProposal;
 import com.aptana.editor.common.contentassist.ILexemeProvider;
+import com.aptana.editor.common.text.rules.CompositePartitionScanner;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -100,6 +101,10 @@ import com.aptana.parsing.lexer.Range;
  */
 public class PHPContentAssistProcessor extends CommonContentAssistProcessor implements IContentAssistProcessor
 {
+	/**
+	 * Max look-behind chars when computing the lexemes for the context-info detection.
+	 */
+	private static final int CONTEXT_INFO_MAX_LOOK_BEHIND = 100;
 	private static final IContextInformation[] EMPTY_CONTEXT_INFO = new IContextInformation[0];
 	private static final int EXTERNAL_CLASS_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 10;
 	private static final int EXTERNAL_FUNCTION_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 15;
@@ -3247,7 +3252,30 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return EMPTY_CONTEXT_INFO;
 		}
 		String content = document.get();
-		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
+		// We traverse back the partitions until we are 'far enough' for the context information calculation.
+		// We need to do that because the ParsingUtils.createLexemeProvider(offset) call only computes the default-PHP
+		// partition, and stops on PHP-strings partitions etc. (see https://jira.appcelerator.org/browse/APSTUD-3595)
+		int start = offset;
+		try
+		{
+			ITypedRegion partition = document.getPartition(offset);
+			while (partition != null && partition.getOffset() > 0
+					&& !CompositePartitionScanner.START_SWITCH_TAG.equals(partition.getType()))
+			{
+				partition = document.getPartition(partition.getOffset() - 1);
+				if (offset - partition.getOffset() > CONTEXT_INFO_MAX_LOOK_BEHIND)
+				{
+					break;
+				}
+			}
+			start = partition.getOffset();
+		}
+		catch (Exception e)
+		{
+			IdeLog.logError(PHPEditorPlugin.getDefault(), e);
+		}
+
+		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, start, offset);
 		CallInfo info = PHPContextCalculator.calculateCallInfo(lexemeProvider, offset);
 		if (info == null)
 		{
