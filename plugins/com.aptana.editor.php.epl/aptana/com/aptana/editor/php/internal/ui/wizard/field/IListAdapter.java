@@ -11,30 +11,32 @@ package com.aptana.editor.php.internal.ui.wizard.field;
 
 import org.eclipse.php.internal.ui.wizard.field.ListDialogField;
 
-
 /**
  * Change listener used by <code>ListDialogField</code> and <code>CheckedListDialogField</code>
  */
-@SuppressWarnings("unchecked")
-public interface IListAdapter {
-	
+public interface IListAdapter
+{
+
 	/**
 	 * A button from the button bar has been pressed.
-	 * @param field 
-	 * @param index 
+	 * 
+	 * @param field
+	 * @param index
 	 */
-	void customButtonPressed(ListDialogField field, int index);
-	
+	void customButtonPressed(ListDialogField<?> field, int index);
+
 	/**
 	 * The selection of the list has changed.
-	 * @param field 
-	 */	
-	void selectionChanged(ListDialogField field);
-	
+	 * 
+	 * @param field
+	 */
+	void selectionChanged(ListDialogField<?> field);
+
 	/**
 	 * En entry in the list has been double clicked
-	 * @param field 
+	 * 
+	 * @param field
 	 */
-	void doubleClicked(ListDialogField field);	
+	void doubleClicked(ListDialogField<?> field);
 
 }
