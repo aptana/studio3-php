@@ -731,12 +731,24 @@ public final class PHPBuiltins
 	private static URL[] getBuiltinsURLs(String libraryPath)
 	{
 		List<URL> urls = new ArrayList<URL>();
-		Enumeration entries = PHPEplPlugin.getDefault().getBundle().findEntries(libraryPath, "*.php", true); //$NON-NLS-1$
-		while (entries.hasMoreElements())
+		PHPEplPlugin plugin = PHPEplPlugin.getDefault();
+		if (plugin != null)
 		{
-			urls.add((URL) entries.nextElement());
+			try
+			{
+				Enumeration entries = plugin.getBundle().findEntries(libraryPath, "*.php", true); //$NON-NLS-1$
+				while (entries.hasMoreElements())
+				{
+					urls.add((URL) entries.nextElement());
+				}
+				return urls.toArray(new URL[urls.size()]);
+			}
+			catch (IllegalStateException ise)
+			{
+				// Ignore those, the bundle is probably shutting down.
+			}
 		}
-		return urls.toArray(new URL[urls.size()]);
+		return new URL[0];
 	}
 
 	/*
