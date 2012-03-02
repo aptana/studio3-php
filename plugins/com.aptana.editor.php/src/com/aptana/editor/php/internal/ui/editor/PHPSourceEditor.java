@@ -63,8 +63,10 @@ import com.aptana.editor.php.internal.ui.editor.outline.PHPDecoratingLabelProvid
 import com.aptana.editor.php.internal.ui.editor.outline.PHPOutlineItem;
 import com.aptana.editor.php.internal.ui.editor.outline.PHTMLOutlineContentProvider;
 import com.aptana.editor.php.util.EditorUtils;
+import com.aptana.parsing.ParserPoolFactory;
 import com.aptana.parsing.ast.ILanguageNode;
 import com.aptana.parsing.ast.IParseNode;
+import com.aptana.parsing.ast.IParseRootNode;
 
 /**
  * The PHP editor central class.
@@ -162,6 +164,24 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	public String getContentType()
 	{
 		return IPHPConstants.CONTENT_TYPE_PHP;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.common.AbstractThemeableEditor#getAST()
+	 */
+	public IParseRootNode getAST()
+	{
+		try
+		{
+			return ParserPoolFactory.parse(getContentType(), phpParseState);
+		}
+		catch (Exception e)
+		{
+			IdeLog.logTrace(PHPEditorPlugin.getDefault(), "Failed to parse PHP editor contents", e, //$NON-NLS-1$
+					com.aptana.parsing.IDebugScopes.PARSING);
+		}
+		return null;
 	}
 
 	/*

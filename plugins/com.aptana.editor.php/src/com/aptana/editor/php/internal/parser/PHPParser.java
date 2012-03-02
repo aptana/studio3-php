@@ -140,13 +140,13 @@ public class PHPParser implements IParser
 				{
 					parseState.setParseResult(null);
 				}
-				ast.flushErrors();
 				if (module != null)
 				{
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
 				}
 				// Recalculate the type bindings
 				TypeBindingBuilder.buildBindings(program, source);
+				ast.flushErrors();
 			}
 			catch (Throwable t)
 			{

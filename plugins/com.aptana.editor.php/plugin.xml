@@ -401,4 +401,12 @@
          </contentType>
       </hover>
    </extension>
+   <extension
+         point="com.aptana.buildpath.core.buildParticipants">
+      <participant
+            class="com.aptana.editor.php.internal.indexer.PHPBuildParticipant"
+            id="com.aptana.editor.php.buildParticipant"
+            priority="50">
+      </participant>
+   </extension>
 </plugin>

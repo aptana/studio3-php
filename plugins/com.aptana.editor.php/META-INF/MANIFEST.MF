@@ -33,7 +33,8 @@ Require-Bundle: org.eclipse.ui,
  com.aptana.usage,
  com.aptana.buildpath.core,
  org.eclipse.compare,
- com.aptana.ui.io
+ com.aptana.ui.io,
+ com.aptana.index.core
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.editor.php,
