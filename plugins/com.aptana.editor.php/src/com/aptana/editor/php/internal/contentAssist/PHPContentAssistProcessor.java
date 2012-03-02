@@ -201,6 +201,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private PHPContextCalculator contextCalculator;
 	private IPreferenceStore preferenceStore;
 	private boolean isOutOfWorkspace;
+	private IDocument document;
 
 	/**
 	 * Constructs a new PHP content assist processor.
@@ -301,7 +302,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset)
 	{
 		this.viewer = viewer;
-		IDocument document = viewer.getDocument();
+		this.document = viewer.getDocument();
 		return computeCompletionProposals(document, offset);
 	}
 
@@ -2256,7 +2257,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		Image image = null;
 		final IModule module = entry.getModule();
 		final Object val = entry.getValue();
-		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, module, entry);
+		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, document, entry);
 		// if (entry.getValue() instanceof NamespacePHPEntryValue)
 		// {
 		image = labelProvider.getImage(val);
