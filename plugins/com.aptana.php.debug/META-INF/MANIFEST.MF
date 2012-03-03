@@ -28,7 +28,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.php.debug,
  com.aptana.php.debug.core,
- com.aptana.php.debug.core.includepath,
+ com.aptana.php.debug.core.include_path,
  com.aptana.php.debug.core.interpreter,
  com.aptana.php.debug.core.launch,
  com.aptana.php.debug.core.launch.remote,
@@ -36,4 +36,4 @@ Export-Package: com.aptana.php.debug,
  com.aptana.php.debug.core.tunneling,
  com.aptana.php.debug.core.util,
  com.aptana.php.debug.ui.launching,
- com.aptana.php.debug.ui.phpini
+ com.aptana.php.debug.ui.php_ini

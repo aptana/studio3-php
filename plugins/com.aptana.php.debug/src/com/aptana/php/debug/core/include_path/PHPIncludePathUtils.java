@@ -5,7 +5,7 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.core.includepath;
+package com.aptana.php.debug.core.include_path;
 
 import java.io.File;
 import java.util.ArrayList;

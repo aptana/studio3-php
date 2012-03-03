@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 import com.aptana.editor.php.util.StringUtils;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
-import com.aptana.php.debug.ui.phpini.PHPIniEntry;
+import com.aptana.php.debug.ui.php_ini.PHPIniEntry;
 
 public class PHPINIUtil {
 

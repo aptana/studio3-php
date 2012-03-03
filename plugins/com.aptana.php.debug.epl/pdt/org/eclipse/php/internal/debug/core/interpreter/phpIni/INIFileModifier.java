@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.aptana.php.debug.ui.phpini.INIFileSection;
-import com.aptana.php.debug.ui.phpini.IPhpIniFileModifier;
-import com.aptana.php.debug.ui.phpini.PHPIniEntry;
+import com.aptana.php.debug.ui.php_ini.INIFileSection;
+import com.aptana.php.debug.ui.php_ini.IPhpIniFileModifier;
+import com.aptana.php.debug.ui.php_ini.PHPIniEntry;
 
 /**
  * This class is used for modifying INI file.

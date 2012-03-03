@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIDebuggerUtil;
 
-import com.aptana.php.debug.ui.phpini.IPhpIniFileModifier;
+import com.aptana.php.debug.ui.php_ini.IPhpIniFileModifier;
 
 /**
  * An implementation of the {@link IPHPDebugLaunchSupport} that provides EPL classes support to the non-EPL debugger
