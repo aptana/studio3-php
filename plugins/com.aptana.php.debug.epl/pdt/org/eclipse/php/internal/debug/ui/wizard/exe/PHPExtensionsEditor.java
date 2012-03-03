@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.builder.preferences.PHPExtension;
-import com.aptana.php.debug.ui.php_ini.Messages;
+import com.aptana.php.debug.ui.phpini.Messages;
 import com.aptana.ui.util.SWTUtils;
 
 /**
