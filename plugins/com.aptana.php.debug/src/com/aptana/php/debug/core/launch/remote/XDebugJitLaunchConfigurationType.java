@@ -7,7 +7,6 @@
  */
 package com.aptana.php.debug.core.launch.remote;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -30,30 +29,26 @@ public class XDebugJitLaunchConfigurationType implements ILaunchConfigurationDel
 	 * java.lang.String, org.eclipse.debug.core.ILaunch, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
-			throws CoreException
 	{
 	}
 
 	public boolean buildForLaunch(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
-			throws CoreException
 	{
 		PHPGlobalIndexer.getInstance();
 		return false;
 	}
 
 	public boolean finalLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
-			throws CoreException
 	{
 		return true;
 	}
 
-	public ILaunch getLaunch(ILaunchConfiguration configuration, String mode) throws CoreException
+	public ILaunch getLaunch(ILaunchConfiguration configuration, String mode)
 	{
 		return null;
 	}
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
-			throws CoreException
 	{
 		return true;
 	}

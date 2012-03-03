@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.browser.IWebBrowser;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.FileUtil;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.util.NameValuePair;
 
@@ -37,6 +39,7 @@ import com.aptana.php.debug.core.util.NameValuePair;
  */
 public class RemoteDebugRedirector
 {
+	private static final String LINE_TERMINATOR = FileUtil.NEW_LINE;
 	public static String URL_ENCODING = "UTF-8"; //$NON-NLS-1$
 	private ServerSocket server;
 	private String response;
@@ -112,21 +115,36 @@ public class RemoteDebugRedirector
 				try
 				{
 					// Accept and send the response
-					Socket socket = server.accept();
-					DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
-					writer.writeBytes("HTTP/1.1 200 OK\r\n"); //$NON-NLS-1$
-					writer.writeBytes("Server: PHP Debug Proxy Server"); //$NON-NLS-1$
-					writer.writeBytes("Content-Type: text/html\r\n"); //$NON-NLS-1$
-					writer.writeBytes("Content-Length: " + response.length() + "\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
-					writer.writeBytes("Connection: close\r\n"); //$NON-NLS-1$
-					writer.writeBytes("\r\n"); //$NON-NLS-1$
-					writer.writeBytes(response);
-					writer.flush();
+					Socket socket = null;
+					DataOutputStream writer = null;
+					try
+					{
+						socket = server.accept();
+						writer = new DataOutputStream(socket.getOutputStream());
+						writer.writeBytes("HTTP/1.1 200 OK" + LINE_TERMINATOR); //$NON-NLS-1$
+						writer.writeBytes("Server: PHP Debug Proxy Server"); //$NON-NLS-1$
+						writer.writeBytes("Content-Type: text/html" + LINE_TERMINATOR); //$NON-NLS-1$
+						writer.writeBytes("Content-Length: " + response.length() + LINE_TERMINATOR); //$NON-NLS-1$ 
+						writer.writeBytes("Connection: close" + LINE_TERMINATOR); //$NON-NLS-1$
+						writer.writeBytes(LINE_TERMINATOR);
+						writer.writeBytes(response);
+						writer.flush();
+					}
+					finally
+					{
+						if (writer != null)
+						{
+							writer.close();
+						}
+						if (socket != null)
+						{
+							socket.close();
+						}
+					}
 				}
 				catch (IOException e)
 				{
-					e.printStackTrace();
-					PHPDebugPlugin.logError("PHP Debug Proxy error", e); //$NON-NLS-1$
+					IdeLog.logError(PHPDebugPlugin.getDefault(), "PHP Debug Proxy error", e); //$NON-NLS-1$
 				}
 				finally
 				{
@@ -152,11 +170,11 @@ public class RemoteDebugRedirector
 				{
 					try
 					{
-						server.close();
+						server.close(); // $codepro.audit.disable closeInFinally
 					}
 					catch (IOException e)
 					{
-						e.printStackTrace();
+						IdeLog.logError(PHPDebugPlugin.getDefault(), "Error closing a server redirector", e); //$NON-NLS-1$
 					}
 					server = null;
 				}

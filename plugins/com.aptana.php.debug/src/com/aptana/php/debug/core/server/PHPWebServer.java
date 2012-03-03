@@ -72,6 +72,10 @@ public class PHPWebServer extends ExternalWebServer
 	@Override
 	public boolean equals(Object obj)
 	{
+		if (this == obj)
+		{
+			return true;
+		}
 		if (obj instanceof PHPWebServer)
 		{
 			PHPWebServer other = (PHPWebServer) obj;
@@ -89,6 +93,6 @@ public class PHPWebServer extends ExternalWebServer
 	{
 		int hash = super.hashCode();
 		URL baseURL = getBaseURL();
-		return hash * 31 + (baseURL == null ? 0 : baseURL.hashCode());
+		return hash * 31 + ((baseURL == null) ? 0 : baseURL.hashCode());
 	}
 }

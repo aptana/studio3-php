@@ -13,6 +13,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.aptana.core.logging.IdeLog;
+import com.aptana.php.debug.IDebugScopes;
+import com.aptana.php.debug.PHPDebugPlugin;
 
 /**
  * A SSH tunnels (port forwarding) factory class, which also caches the generated factories and act as SSHTunnels
@@ -22,7 +27,7 @@ import java.util.List;
  */
 public class SSHTunnelFactory
 {
-	private static HashMap<SSHTunnel, SSHTunnel> tunnels = new HashMap<SSHTunnel, SSHTunnel>();
+	private static Map<SSHTunnel, SSHTunnel> tunnels = new HashMap<SSHTunnel, SSHTunnel>();
 
 	/**
 	 * Returns a {@link SSHTunnel} for port-forwarding between a remote host to this localhost. The returned tunnel may
@@ -111,6 +116,7 @@ public class SSHTunnelFactory
 		}
 		catch (UnknownHostException e)
 		{
+			IdeLog.logError(PHPDebugPlugin.getDefault(), "Unknown host", e, IDebugScopes.DEBUG); //$NON-NLS-1$
 		}
 		SSHTunnel tunnel = new SSHTunnel(localHost, remoteHost, userName, password, localPort, remotePort);
 		return tunnel;

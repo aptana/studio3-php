@@ -85,7 +85,7 @@ public class SSHTunnelSession
 		{
 			pool.remove(key);
 			if (e.toString().indexOf("Auth cancel") != -1) { //$NON-NLS-1$
-				throw new OperationCanceledException();
+				throw new OperationCanceledException("SSH Tunnel Session: Authentication Canceled"); //$NON-NLS-1$
 			}
 			throw e;
 		}
@@ -129,7 +129,7 @@ public class SSHTunnelSession
 				{
 					session.getSession().disconnect();
 				}
-				catch (Exception ee)
+				catch (Exception ee) // $codepro.audit.disable emptyCatchClause
 				{
 					// Ignore
 				}

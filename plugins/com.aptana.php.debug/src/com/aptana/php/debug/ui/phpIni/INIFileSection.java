@@ -5,7 +5,7 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.ui.phpIni;
+package com.aptana.php.debug.ui.phpini;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -91,6 +91,8 @@ public class INIFileSection
 	/**
 	 * {@inheritDoc}
 	 */
+	// $codepro.audit.disable
+	// com.instantiations.assist.eclipse.analysis.audit.rule.effectivejava.obeyEqualsContract.obeyGeneralContractOfEquals
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
@@ -101,7 +103,7 @@ public class INIFileSection
 		{
 			return false;
 		}
-		if (getClass() != obj.getClass())
+		if (getClass() != obj.getClass()) // $codepro.audit.disable useEquals
 		{
 			return false;
 		}

@@ -42,7 +42,7 @@ public class MD5
 			MessageDigest md5 = MessageDigest.getInstance("MD5"); //$NON-NLS-1$
 			md5.reset();
 			md5.update(str.getBytes());
-			byte digest[] = md5.digest();
+			byte[] digest = md5.digest();
 			StringBuffer buffer = new StringBuffer();
 			for (int i = 0; i < digest.length; i++)
 			{

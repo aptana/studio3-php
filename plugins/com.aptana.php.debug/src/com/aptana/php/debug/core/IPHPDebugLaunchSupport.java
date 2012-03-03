@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
 
-import com.aptana.php.debug.ui.phpIni.IPhpIniFileModifier;
+import com.aptana.php.debug.ui.phpini.IPhpIniFileModifier;
 
 /**
  * PHP debug launch support interface.

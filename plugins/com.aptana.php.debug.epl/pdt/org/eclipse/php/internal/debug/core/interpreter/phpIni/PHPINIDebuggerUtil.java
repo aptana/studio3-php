@@ -16,9 +16,9 @@ import org.eclipse.php.internal.core.project.options.includepath.IncludePathVari
 import org.eclipse.php.internal.core.util.PHPSearchEngine;
 import org.eclipse.php.internal.debug.core.preferences.PHPexes;
 
-import com.aptana.php.debug.core.includePath.PHPIncludePathUtils;
+import com.aptana.php.debug.core.includepath.PHPIncludePathUtils;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
-import com.aptana.php.debug.ui.phpIni.IPhpIniFileModifier;
+import com.aptana.php.debug.ui.phpini.IPhpIniFileModifier;
 
 public class PHPINIDebuggerUtil {
 

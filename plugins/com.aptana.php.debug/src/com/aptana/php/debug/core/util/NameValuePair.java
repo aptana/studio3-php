@@ -7,6 +7,7 @@
  */
 package com.aptana.php.debug.core.util;
 
+import com.aptana.core.util.ObjectUtil;
 import com.aptana.core.util.StringUtil;
 
 /**
@@ -79,11 +80,7 @@ public class NameValuePair
 			return false;
 		}
 		NameValuePair other = (NameValuePair) obj;
-		if (other.name.equals(this.name))
-		{
-			return other.value == this.value || (other.value != null && other.value.equals(this.value));
-		}
-		return false;
+		return ObjectUtil.areEqual(other.name, this.name) && ObjectUtil.areEqual(this.value, other.value);
 	}
 
 	/*

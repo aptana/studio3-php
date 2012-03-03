@@ -5,7 +5,7 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.ui.phpIni;
+package com.aptana.php.debug.ui.phpini;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,6 +29,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.FileUtil;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.PHPDebugSupportManager;
 import com.aptana.php.debug.core.util.FileUtils;
@@ -40,6 +41,7 @@ import com.aptana.php.debug.core.util.FileUtils;
  * 
  * @author Shalom G
  */
+// $codepro.audit.disable assignmentInCondition
 public class PHPIniValidator
 {
 	private static final String LOADING_ERROR = "unable to load"; //$NON-NLS-1$
@@ -137,7 +139,7 @@ public class PHPIniValidator
 			PHPDebugPlugin.logError("Error while validating the PHP extensions", e); //$NON-NLS-1$
 
 		}
-		catch (InterruptedException e)
+		catch (InterruptedException e) // $codepro.audit.disable emptyCatchClause
 		{
 			// handle cancellation in the finally block
 
@@ -182,12 +184,12 @@ public class PHPIniValidator
 
 		private final List<PHPIniEntry> extensions;
 
-		public ExtensionsValidatorRunnable(List<PHPIniEntry> extensions)
+		ExtensionsValidatorRunnable(List<PHPIniEntry> extensions)
 		{
 			this.extensions = extensions;
 		}
 
-		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+		public void run(IProgressMonitor monitor)
 		{
 			monitor.beginTask(Messages.PHPIniValidator_validatingExtensionTaskName, extensions.size());
 
@@ -349,10 +351,11 @@ public class PHPIniValidator
 				{
 					try
 					{
-						Thread.sleep(1000);
+						Thread.sleep(1000); // $codepro.audit.disable disallowSleepInsideWhile
 					}
-					catch (InterruptedException e)
+					catch (InterruptedException e) // $codepro.audit.disable emptyCatchClause
 					{
+						// ignore
 					}
 					if (validationCompleted)
 					{
@@ -379,13 +382,25 @@ public class PHPIniValidator
 		monitorCancelListener.setProgressGroup(monitor, IProgressMonitor.UNKNOWN);
 		monitorCancelListener.schedule();
 		// Important - First read the output, then read the errors.
-		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String line = null;
-		while (!monitor.isCanceled() && (line = reader.readLine()) != null)
+		BufferedReader reader = null;
+		try
 		{
-			if (PHPDebugPlugin.DEBUG)
+			reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = null;
+			while (!monitor.isCanceled() && (line = reader.readLine()) != null)
 			{
-				System.out.println(line);
+				if (PHPDebugPlugin.DEBUG)
+				{
+					// $codepro.audit.disable debuggingCode
+					System.out.println(line);
+				}
+			}
+		}
+		finally
+		{
+			if (reader != null)
+			{
+				reader.close();
 			}
 		}
 		if (monitor.isCanceled())
@@ -406,41 +421,54 @@ public class PHPIniValidator
 	public static List<String> getProcessErrorLines(InputStream errorStream) throws IOException
 	{
 		List<String> lines = new ArrayList<String>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
-		String line = null;
-		while ((line = reader.readLine()) != null)
+		BufferedReader reader = null;
+		try
 		{
-			if (PHPDebugPlugin.DEBUG)
+			reader = new BufferedReader(new InputStreamReader(errorStream));
+			String line = null;
+			while ((line = reader.readLine()) != null)
 			{
-				System.err.println(line);
-			}
-			if (line.startsWith("PHP")) //$NON-NLS-1$
-			{
-				lines.add(line);
-			}
-			else if (line.startsWith("dyld:") && line.indexOf("error", 4) > -1) //$NON-NLS-1$ //$NON-NLS-2$
-			{
-				StringBuilder stringBuilder = new StringBuilder();
-				// read the next 3 lines
-				int linesCount = 3;
-				while ((line = reader.readLine()) != null && linesCount-- > 0)
+				if (PHPDebugPlugin.DEBUG)
 				{
-					if (PHPDebugPlugin.DEBUG)
-					{
-						System.err.println(line);
-					}
-					// just to make sure
-					if (line.startsWith("PHP")) //$NON-NLS-1$
-					{
-						lines.add(line);
-						break;
-					}
-					stringBuilder.append('\n');
-					stringBuilder.append(line);
-					if (line.toLowerCase().startsWith("reason")) //$NON-NLS-1$
-						break; // just to make sure
+					// $codepro.audit.disable debuggingCode
+					System.err.println(line);
 				}
-				lines.add(stringBuilder.toString());
+				if (line.startsWith("PHP")) //$NON-NLS-1$
+				{
+					lines.add(line);
+				}
+				else if (line.startsWith("dyld:") && line.indexOf("error", 4) > -1) //$NON-NLS-1$ //$NON-NLS-2$
+				{
+					StringBuilder stringBuilder = new StringBuilder();
+					// read the next 3 lines
+					int linesCount = 3;
+					while ((line = reader.readLine()) != null && linesCount-- > 0)
+					{
+						if (PHPDebugPlugin.DEBUG)
+						{
+							// $codepro.audit.disable debuggingCode
+							System.err.println(line);
+						}
+						// just to make sure
+						if (line.startsWith("PHP")) //$NON-NLS-1$
+						{
+							lines.add(line);
+							break;
+						}
+						stringBuilder.append(FileUtil.NEW_LINE);
+						stringBuilder.append(line);
+						if (line.toLowerCase().startsWith("reason")) //$NON-NLS-1$
+							break; // just to make sure
+					}
+					lines.add(stringBuilder.toString());
+				}
+			}
+		}
+		finally
+		{
+			if (reader != null)
+			{
+				reader.close();
 			}
 		}
 		return lines;

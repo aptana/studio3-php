@@ -15,6 +15,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.php.debug.IDebugScopes;
+import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.webserver.core.AbstractWebServer;
 import com.aptana.webserver.core.IServer;
 import com.aptana.webserver.core.WebServerCorePlugin;
@@ -192,6 +195,7 @@ public class PHPServersManager
 			}
 			catch (UnknownHostException e)
 			{
+				IdeLog.logError(PHPDebugPlugin.getDefault(), "Unknown host", e, IDebugScopes.DEBUG); //$NON-NLS-1$
 			}
 		}
 		return null;

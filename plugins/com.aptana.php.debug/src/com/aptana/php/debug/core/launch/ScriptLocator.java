@@ -42,20 +42,13 @@ public final class ScriptLocator
 		{
 			return configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
 		}
-		try
+		IResource currentEditorResource = new ScriptLocator().getCurrentEditorResource();
+		if (currentEditorResource == null)
 		{
-			IResource currentEditorResource = new ScriptLocator().getCurrentEditorResource();
-			if (currentEditorResource == null)
-			{
-				return null;
-			}
-			String string = currentEditorResource.getFullPath().toOSString();
-			return string;
+			return null;
 		}
-		catch (MalformedURLException e)
-		{
-			throw new RuntimeException();
-		}
+		String string = currentEditorResource.getFullPath().toOSString();
+		return string;
 	}
 
 	/**
@@ -76,27 +69,20 @@ public final class ScriptLocator
 		{
 			return configuration.getAttribute(fileConfKey, (String) null);
 		}
-		try
+		IResource currentEditorResource = new ScriptLocator().getCurrentEditorResource();
+		if (currentEditorResource == null)
 		{
-			IResource currentEditorResource = new ScriptLocator().getCurrentEditorResource();
-			if (currentEditorResource == null)
-			{
-				return null;
-			}
-			String string = currentEditorResource.getFullPath().toOSString();
-			return string;
+			return null;
 		}
-		catch (MalformedURLException e)
-		{
-			throw new RuntimeException();
-		}
+		String string = currentEditorResource.getFullPath().toOSString();
+		return string;
 	}
 
 	/**
 	 * @return
 	 * @throws MalformedURLException
 	 */
-	protected IResource getCurrentEditorResource() throws MalformedURLException
+	public IResource getCurrentEditorResource()
 	{
 		IActiveResourcePathGetterAdapter adapter = (IActiveResourcePathGetterAdapter) getContributedAdapter(IActiveResourcePathGetterAdapter.class);
 		if (adapter != null)
@@ -110,7 +96,7 @@ public final class ScriptLocator
 	 * @return
 	 * @throws MalformedURLException
 	 */
-	protected IPath getCurrentEditorPath() throws MalformedURLException
+	public IPath getCurrentEditorPath()
 	{
 		IActiveResourcePathGetterAdapter adapter = (IActiveResourcePathGetterAdapter) getContributedAdapter(IActiveResourcePathGetterAdapter.class);
 		if (adapter != null)
@@ -125,7 +111,7 @@ public final class ScriptLocator
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	protected Object getContributedAdapter(Class clazz)
+	public Object getContributedAdapter(Class clazz)
 	{
 		return new ActiveResourcePathGetterAdapter();
 	}

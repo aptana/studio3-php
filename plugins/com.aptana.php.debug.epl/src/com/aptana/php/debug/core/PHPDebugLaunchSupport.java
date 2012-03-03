@@ -8,7 +8,7 @@ import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIDebuggerUtil;
 
 import com.aptana.php.debug.core.IPHPDebugLaunchSupport;
-import com.aptana.php.debug.ui.phpIni.IPhpIniFileModifier;
+import com.aptana.php.debug.ui.phpini.IPhpIniFileModifier;
 
 /**
  * An implementation of the {@link IPHPDebugLaunchSupport} that provides EPL classes support to the non-EPL debugger

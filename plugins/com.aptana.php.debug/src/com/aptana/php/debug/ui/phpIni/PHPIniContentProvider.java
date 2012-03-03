@@ -5,7 +5,7 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.ui.phpIni;
+package com.aptana.php.debug.ui.phpini;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+import com.aptana.core.util.ArrayUtil;
 import com.aptana.php.debug.core.PHPDebugSupportManager;
 
 /**
@@ -92,7 +93,7 @@ public class PHPIniContentProvider implements ITreeContentProvider
 		}
 		else
 		{
-			return new Object[0];
+			return ArrayUtil.NO_OBJECTS;
 		}
 	}
 

@@ -145,7 +145,7 @@ public class NameValuePairInputDialog extends StatusDialog
 						hasErrorOrWarning = true;
 					}
 				}
-				catch (UnsupportedEncodingException e)
+				catch (UnsupportedEncodingException e) // $codepro.audit.disable emptyCatchClause
 				{
 					// ignore
 				}
@@ -167,7 +167,7 @@ public class NameValuePairInputDialog extends StatusDialog
 						newText, encoded));
 			}
 		}
-		catch (UnsupportedEncodingException e)
+		catch (UnsupportedEncodingException e) // $codepro.audit.disable emptyCatchClause
 		{
 			// ignore
 		}

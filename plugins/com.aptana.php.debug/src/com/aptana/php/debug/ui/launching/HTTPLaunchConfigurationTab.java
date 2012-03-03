@@ -129,7 +129,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			List<String> POST = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_HTTP_POST,
 					Collections.EMPTY_LIST);
 			// Convert to name-value pairs
-			ArrayList<NameValuePair> pairsGET = new ArrayList<NameValuePair>();
+			List<NameValuePair> pairsGET = new ArrayList<NameValuePair>();
 			for (String pair : GET)
 			{
 				NameValuePair nameValuePair = NameValuePair.fromPairString(pair);
@@ -139,7 +139,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 				}
 			}
 
-			ArrayList<NameValuePair> pairsPOST = new ArrayList<NameValuePair>();
+			List<NameValuePair> pairsPOST = new ArrayList<NameValuePair>();
 			for (String pair : POST)
 			{
 				NameValuePair nameValuePair = NameValuePair.fromPairString(pair);
@@ -161,7 +161,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	{
 		// save the settings
 		List<NameValuePair> elementsGET = listGET.getElements();
-		ArrayList<String> GET = new ArrayList<String>();
+		List<String> GET = new ArrayList<String>();
 		for (NameValuePair nvp : elementsGET)
 		{
 			String pair = nvp.toString();
@@ -169,7 +169,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		}
 
 		List<NameValuePair> elementsPOST = listPOST.getElements();
-		ArrayList<String> POST = new ArrayList<String>();
+		List<String> POST = new ArrayList<String>();
 		for (NameValuePair nvp : elementsPOST)
 		{
 			String pair = nvp.toString();
@@ -185,7 +185,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		// DO NOTHING
 	}
 
-	private class NameValueLabelProvider extends LabelProvider implements ITableLabelProvider
+	private static class NameValueLabelProvider extends LabelProvider implements ITableLabelProvider
 	{
 		/*
 		 * (non-Javadoc)
@@ -273,7 +273,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	 */
 	private class EnhancedListDialogField<E> extends ListDialogField<E>
 	{
-		public EnhancedListDialogField(IListAdapter adapter, String[] buttonLabels, ILabelProvider lprovider)
+		EnhancedListDialogField(IListAdapter adapter, String[] buttonLabels, ILabelProvider lprovider)
 		{
 			super(adapter, buttonLabels, lprovider);
 		}

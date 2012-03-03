@@ -5,7 +5,7 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.core.includePath;
+package com.aptana.php.debug.core.includepath;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -58,7 +59,7 @@ public final class PHPIncludePathUtils
 			result.add(directory.getAbsolutePath());
 		}
 		IPHPLibrary[] allLibraries = LibraryManager.getInstance().getAllLibraries();
-		HashSet<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays.asList(allLibraries));
+		Set<IPHPLibrary> usedLibraries = new HashSet<IPHPLibrary>(Arrays.asList(allLibraries));
 		if (dependencies.isUsesCustomLibs())
 		{
 			List<String> notUsedLibrariesIds = dependencies.getNotUsedLibrariesIds();

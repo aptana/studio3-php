@@ -47,7 +47,7 @@ import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 import org2.eclipse.php.internal.ui.wizard.field.IDialogFieldListener;
 
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
-import com.aptana.php.debug.ui.phpIni.PHPIniEditor;
+import com.aptana.php.debug.ui.phpini.PHPIniEditor;
 
 public class PHPExeCompositeFragment extends CompositeFragment implements IPHPExeCompositeFragment
 {

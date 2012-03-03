@@ -128,9 +128,10 @@ public class SSHTunnel
 					Object[] values = new Object[] { new Integer(remotePort), localHost, new Integer(localPort) };
 					java.lang.reflect.Method mSetPortForwarding = sessionClass.getMethod("setPortForwardingR", //$NON-NLS-1$
 							parameterTypes);
-					mSetPortForwarding.invoke(session, values);
+					mSetPortForwarding.invoke(session, values); // $codepro.audit.disable
+																// com.instantiations.assist.eclipse.analysis.audit.rule.preferInterfacesToReflection
 				}
-				catch (NoSuchMethodException nsme)
+				catch (NoSuchMethodException nsme) // $codepro.audit.disable emptyCatchClause
 				{
 					// it will not be thrown.
 				}
@@ -297,6 +298,10 @@ public class SSHTunnel
 	 */
 	public boolean equals(Object o)
 	{
+		if (this == o)
+		{
+			return true;
+		}
 		if (o instanceof SSHTunnel)
 		{
 			SSHTunnel other = (SSHTunnel) o;

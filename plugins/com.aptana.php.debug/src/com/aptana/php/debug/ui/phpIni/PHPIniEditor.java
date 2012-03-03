@@ -5,7 +5,7 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.ui.phpIni;
+package com.aptana.php.debug.ui.phpini;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -701,7 +701,7 @@ public class PHPIniEditor
 	private class PHPExtensionsTooltip extends ToolTip
 	{
 
-		public PHPExtensionsTooltip(Control control)
+		PHPExtensionsTooltip(Control control)
 		{
 			super(control);
 		}
@@ -1232,10 +1232,6 @@ public class PHPIniEditor
 						commentButton.setToolTipText(Messages.PHPIniEditor_19);
 						commentButton.setEnabled(true);
 					}
-				}
-				else
-				{
-
 				}
 				return;
 			}
