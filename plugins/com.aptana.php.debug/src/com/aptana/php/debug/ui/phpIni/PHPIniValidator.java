@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.ui.phpIni;
 
 import java.io.BufferedReader;
@@ -21,6 +28,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.PHPDebugSupportManager;
 import com.aptana.php.debug.core.util.FileUtils;
@@ -34,7 +42,7 @@ import com.aptana.php.debug.core.util.FileUtils;
  */
 public class PHPIniValidator
 {
-
+	private static final String LOADING_ERROR = "unable to load"; //$NON-NLS-1$
 	private final PHPIniContentProvider provider;
 	private final String phpExePath;
 	private String libraryPath;
@@ -81,11 +89,11 @@ public class PHPIniValidator
 				if (entry.isExtensionEntry())
 				{
 					String extensionValue = entry.getValue();
-					if (extensionValue.endsWith(".so"))
+					if (extensionValue.endsWith(".so")) //$NON-NLS-1$
 					{
 						extensionValue = extensionValue.substring(0, extensionValue.length() - 3);
 					}
-					else if (extensionValue.endsWith(".dll"))
+					else if (extensionValue.endsWith(".dll")) //$NON-NLS-1$
 					{
 						extensionValue = extensionValue.substring(0, extensionValue.length() - 4);
 					}
@@ -160,7 +168,7 @@ public class PHPIniValidator
 			}
 			catch (IOException e)
 			{
-				PHPDebugPlugin.logError("Error while saving the php.ini configuration.", e);
+				IdeLog.logError(PHPDebugPlugin.getDefault(), "Error while saving the php.ini configuration.", e); //$NON-NLS-1$
 			}
 			synchronized (lock)
 			{
@@ -181,7 +189,7 @@ public class PHPIniValidator
 
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 		{
-			monitor.beginTask("Validating PHP extensions...", extensions.size());
+			monitor.beginTask(Messages.PHPIniValidator_validatingExtensionTaskName, extensions.size());
 
 			try
 			{
@@ -191,8 +199,8 @@ public class PHPIniValidator
 			{
 				monitor.done();
 				PHPDebugPlugin.logError("Error while validating the PHP extensions", e); //$NON-NLS-1$
-				MessageDialog.openError(null, "Error",
-						"Error while validating the PHP extensions.\nSee the error log for more information.");
+				MessageDialog.openError(null, Messages.PHPIniValidator_errorTitle,
+						Messages.PHPIniValidator_extensionValidationErrorMessage);
 			}
 			finally
 			{
@@ -292,7 +300,7 @@ public class PHPIniValidator
 					{
 						// Some of the warnings can also indicate errors which are not fatal to the process.
 						// Mark these warnings as errors.
-						if (line.toLowerCase().indexOf("unable to load") > -1)
+						if (line.toLowerCase().indexOf(LOADING_ERROR) > -1)
 						{
 							iniEntry.setValidationState(PHPIniEntry.PHP_EXTENSION_VALIDATION_ERROR, line);
 						}
@@ -410,7 +418,7 @@ public class PHPIniValidator
 			{
 				lines.add(line);
 			}
-			else if (line.startsWith("dyld:") && line.indexOf("error", 4) > -1) //$NON-NLS-1$
+			else if (line.startsWith("dyld:") && line.indexOf("error", 4) > -1) //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				StringBuilder stringBuilder = new StringBuilder();
 				// read the next 3 lines
@@ -422,14 +430,14 @@ public class PHPIniValidator
 						System.err.println(line);
 					}
 					// just to make sure
-					if (line.startsWith("PHP"))
+					if (line.startsWith("PHP")) //$NON-NLS-1$
 					{
 						lines.add(line);
 						break;
 					}
 					stringBuilder.append('\n');
 					stringBuilder.append(line);
-					if (line.toLowerCase().startsWith("reason"))
+					if (line.toLowerCase().startsWith("reason")) //$NON-NLS-1$
 						break; // just to make sure
 				}
 				lines.add(stringBuilder.toString());
@@ -453,7 +461,7 @@ public class PHPIniValidator
 		for (String str : processExecutionResults)
 		{
 			String lowerCaseStr = str.toLowerCase();
-			if (lowerCaseStr.indexOf(" fatal ") > -1 || lowerCaseStr.indexOf("dyld:") > -1) //$NON-NLS-1$ $NON-NLS-2$
+			if (lowerCaseStr.indexOf(" fatal ") > -1 || lowerCaseStr.indexOf("dyld:") > -1) //$NON-NLS-1$ //$NON-NLS-2$ $NON-NLS-2$
 			{
 				errors.add(str);
 			}

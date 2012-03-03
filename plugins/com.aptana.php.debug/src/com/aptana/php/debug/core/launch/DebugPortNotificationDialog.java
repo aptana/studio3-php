@@ -1,5 +1,9 @@
 /**
- * 
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.php.debug.core.launch;
 
@@ -111,7 +115,7 @@ public class DebugPortNotificationDialog extends MessageDialogWithToggle
 		if (detailedInformation != null)
 		{
 			Group supportArea = new Group(parent, SWT.NONE);
-			supportArea.setText("Details");
+			supportArea.setText(Messages.DebugPortNotificationDialog_detailsGroupText);
 			GridData supportData = new GridData(SWT.FILL, SWT.FILL, true, true);
 			supportArea.setLayoutData(supportData);
 			GridLayout layout = new GridLayout();

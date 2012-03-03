@@ -1,35 +1,8 @@
 /**
- * This file Copyright (c) 2005-2008 Aptana, Inc. This program is
- * dual-licensed under both the Aptana Public License and the GNU General
- * Public license. You may elect to use one or the other of these licenses.
- * 
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT. Redistribution, except as permitted by whichever of
- * the GPL or APL you select, is prohibited.
- *
- * 1. For the GPL license (GPL), you can redistribute and/or modify this
- * program under the terms of the GNU General Public License,
- * Version 3, as published by the Free Software Foundation.  You should
- * have received a copy of the GNU General Public License, Version 3 along
- * with this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
- * Aptana provides a special exception to allow redistribution of this file
- * with certain other free and open source software ("FOSS") code and certain additional terms
- * pursuant to Section 7 of the GPL. You may view the exception and these
- * terms on the web at http://www.aptana.com/legal/gpl/.
- * 
- * 2. For the Aptana Public License (APL), this program and the
- * accompanying materials are made available under the terms of the APL
- * v1.0 which accompanies this distribution, and is available at
- * http://www.aptana.com/legal/apl/.
- * 
- * You may view the GPL, Aptana's exception and additional terms, and the
- * APL in the file titled license.html at the root of the corresponding
- * plugin containing this source file.
- * 
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.php.debug.ui.phpIni;
@@ -115,15 +88,15 @@ public class PHPIniEditor
 	/*
 	 * Validation tool-tips constants
 	 */
-	private static final String VALIDATION_OK_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>"
-			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension is functional</li></form>";
-	private static final String VALIDATION_ERROR_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>"
-			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension is non functional<BR/><BR/>PHP reports:<BR/>{1}</li></form>";
-	private static final String VALIDATION_WARNING_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>"
-			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension is functional but with a warning<BR/><BR/>PHP reports:<BR/>{1}</li></form>";
-	private static final String VALIDATION_UNKNOWN_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>"
-			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension state is unknown.<br/><br/>"
-			+ "Please click the 'Validate Extensions' button to resolve its state</li></form>";
+	private static final String VALIDATION_OK_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>" //$NON-NLS-1$
+			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension is functional</li></form>"; //$NON-NLS-1$
+	private static final String VALIDATION_ERROR_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>" //$NON-NLS-1$
+			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension is non functional<BR/><BR/>PHP reports:<BR/>{1}</li></form>"; //$NON-NLS-1$
+	private static final String VALIDATION_WARNING_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>" //$NON-NLS-1$
+			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension is functional but with a warning<BR/><BR/>PHP reports:<BR/>{1}</li></form>"; //$NON-NLS-1$
+	private static final String VALIDATION_UNKNOWN_TOOLTIP = "<form><p><span font=\"header\">{0}:</span></p><BR/>" //$NON-NLS-1$
+			+ "<li style=\"text\" bindent=\"5\" indent=\"5\">The extension state is unknown.<br/><br/>" //$NON-NLS-1$
+			+ "Please click the 'Validate Extensions' button to resolve its state</li></form>"; //$NON-NLS-1$
 
 	/**
 	 * Entry name column index.
@@ -602,7 +575,7 @@ public class PHPIniEditor
 
 		// Add the extensions filter check-box
 		final Button onlyExtensionsCheck = new Button(mainComposite, SWT.CHECK);
-		onlyExtensionsCheck.setText("Show PHP extensions only");
+		onlyExtensionsCheck.setText(Messages.PHPIniEditor_showExtensionOnlyButton);
 		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
 		layoutData.horizontalIndent = 5;
 		onlyExtensionsCheck.setLayoutData(layoutData);
@@ -760,7 +733,7 @@ public class PHPIniEditor
 			FormText ts = new FormText(sm, SWT.NONE);
 			// ts.setImage("entry", getEntryValidationTooltipImage(entry)); //$NON-NLS-1$  
 			ts.setWhitespaceNormalized(true);
-			ts.setFont("header", JFaceResources.getHeaderFont());
+			ts.setFont("header", JFaceResources.getHeaderFont()); //$NON-NLS-1$
 			ts.setText(getEntryTooltipInfo(entry), true, false);
 			Point size = sm.computeSize(-1, -1);
 			if (size != null && size.x > 0 && size.y > 0)
@@ -1132,8 +1105,8 @@ public class PHPIniEditor
 		if (provider.isDirtyINI())
 		{
 			// Inform the user that the ini should be saved before the validation starts
-			if (!MessageDialog.openQuestion(viewer.getTree().getShell(), "PHP Extensions Validator",
-					"The php.ini must be saved before validating the extensions.\nWould you like to save it now?"))
+			if (!MessageDialog.openQuestion(viewer.getTree().getShell(), Messages.PHPIniEditor_extensionValidatorTitle,
+					Messages.PHPIniEditor_extensionValidatorQuestion))
 			{
 				return false;
 			}
@@ -1145,8 +1118,8 @@ public class PHPIniEditor
 				}
 				catch (IOException e)
 				{
-					MessageDialog.openError(viewer.getTree().getShell(), "Error",
-							"Error saving the php.ini. \nPlease see error log for more information.");
+					MessageDialog.openError(viewer.getTree().getShell(), Messages.PHPIniEditor_errorTitle,
+							Messages.PHPIniEditor_errorSavingIniMessage);
 					PHPDebugPlugin.logError("Error saving the php.ini", e); //$NON-NLS-1$
 
 				}

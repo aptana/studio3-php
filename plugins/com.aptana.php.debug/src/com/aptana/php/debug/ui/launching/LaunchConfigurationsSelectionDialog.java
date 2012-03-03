@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.ui.launching;
 
 import java.util.Arrays;
@@ -30,6 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.dialogs.SelectionDialog;
 
+@SuppressWarnings("restriction")
 public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 {
 
@@ -54,8 +62,8 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 		this.configurations = configurations;
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		setShowSelectAllButtons(true);
-		setMessage("The latest change affects these launch configurations.\nSelect the ones that you wish to update automatically.");
-		setTitle("Confirm Update");
+		setMessage(Messages.LaunchConfigurationsSelectionDialog_confirmUpdateMessage);
+		setTitle(Messages.LaunchConfigurationsSelectionDialog_confirmUpdateTitle);
 		setHelpAvailable(false);
 	}
 
@@ -96,17 +104,18 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
 	 */
+	@SuppressWarnings("rawtypes")
 	protected Control createDialogArea(Composite parent)
 	{
 		initializeDialogUnits(parent);
 		Composite comp = (Composite) super.createDialogArea(parent);
 		String label = getMessage();
-		if (label != null && !"".equals(label))
+		if (label != null && !"".equals(label)) //$NON-NLS-1$
 		{
 			SWTFactory.createWrapLabel(comp, label, 1);
 		}
 		label = getViewerLabel();
-		if (label != null && !"".equals(label))
+		if (label != null && !"".equals(label)) //$NON-NLS-1$
 		{
 			SWTFactory.createLabel(comp, label, 1);
 		}
@@ -238,7 +247,8 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 			Composite comp = SWTFactory.createComposite(parent, 2, 1, GridData.FILL_HORIZONTAL);
 			GridData gd = (GridData) comp.getLayoutData();
 			gd.horizontalAlignment = SWT.END;
-			Button button = SWTFactory.createPushButton(comp, "&Select All", null);
+			Button button = SWTFactory.createPushButton(comp, Messages.LaunchConfigurationsSelectionDialog_selectAll,
+					null);
 			button.addSelectionListener(new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)
@@ -247,7 +257,7 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 					getButton(IDialogConstants.OK_ID).setEnabled(isValid());
 				}
 			});
-			button = SWTFactory.createPushButton(comp, "&Deselecty All", null);
+			button = SWTFactory.createPushButton(comp, Messages.LaunchConfigurationsSelectionDialog_deselectAll, null);
 			button.addSelectionListener(new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)

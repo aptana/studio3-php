@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="debuggerSupport" name="PHP Debugger Support" schema="schema/debuggerSupport.exsd"/>
-   <extension-point id="interpreterProvider" name="interpreterProvider" schema="schema/interpreterProvider.exsd"/>
+   <extension-point id="debuggerSupport" name="%phpDebuggerSupport.name" schema="schema/debuggerSupport.exsd"/>
+   <extension-point id="interpreterProvider" name="%interpreterProvider.name" schema="schema/interpreterProvider.exsd"/>
    <extension
          point="org.eclipse.ui.editorActions">
       <editorContribution
@@ -12,7 +12,7 @@
                actionID="RulerDoubleClick"
                class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
                id="com.aptana.php.debug.toggleBreakpointAction"
-               label="Toggle Breakpoint"
+               label="%toggleBreakpoint.action.label"
                style="push">
          </action>
       </editorContribution>
@@ -23,7 +23,7 @@
             id="com.aptana.php.debug.breakpoints"
             targetID="com.aptana.editor.php.RulerContext">
 		       <action
-		         label="Disable Breakpoint"
+		         label="%disableBreakpoint.action.label"
 		         class="org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
 		         menubarPath="debug"
 		         id="com.aptana.php.debug.breakpoints.toggleBreakpointAction">

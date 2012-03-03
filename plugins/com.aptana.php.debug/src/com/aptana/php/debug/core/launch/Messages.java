@@ -5,17 +5,18 @@
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.core.tunneling;
+package com.aptana.php.debug.core.launch;
 
 import org.eclipse.osgi.util.NLS;
 
 /**
- * @author Shalom Gibly <sgibly@aptana.com>
+ * @author Shalom
+ *
  */
 public class Messages extends NLS
 {
-	private static final String BUNDLE_NAME = "com.aptana.php.debug.core.tunneling.messages"; //$NON-NLS-1$
-	public static String TunnelTester_testMessage;
+	private static final String BUNDLE_NAME = "com.aptana.php.debug.core.launch.messages"; //$NON-NLS-1$
+	public static String DebugPortNotificationDialog_detailsGroupText;
 	static
 	{
 		// initialize resource bundle

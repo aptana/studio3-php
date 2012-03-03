@@ -1,10 +1,15 @@
 /**
- * 
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.php.debug.ui.launching;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +25,8 @@ import org2.eclipse.php.internal.ui.wizard.field.IDialogFieldListener;
 import org2.eclipse.php.internal.ui.wizard.field.LayoutUtil;
 import org2.eclipse.php.util.StatusInfo;
 
+import com.aptana.core.util.IOUtil;
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.core.util.NameValuePair;
 
 /**
@@ -43,6 +50,7 @@ public class NameValuePairInputDialog extends StatusDialog
 
 	private List<String> fExistingNames;
 
+	@SuppressWarnings("rawtypes")
 	public NameValuePairInputDialog(Shell parent, NameValuePair pair, List existingEntries)
 	{
 		super(parent);
@@ -58,25 +66,25 @@ public class NameValuePairInputDialog extends StatusDialog
 
 		if (pair == null)
 		{
-			setTitle("Add");
+			setTitle(Messages.NameValuePairInputDialog_addTitle);
 		}
 		else
 		{
-			setTitle("Edit");
+			setTitle(Messages.NameValuePairInputDialog_editTitle);
 		}
 
 		CompilerTodoTaskInputAdapter adapter = new CompilerTodoTaskInputAdapter();
 
 		fNameDialogField = new StringDialogField();
-		fNameDialogField.setLabelText("Name");
+		fNameDialogField.setLabelText(Messages.NameValuePairInputDialog_nameLabel);
 		fNameDialogField.setDialogFieldListener(adapter);
 
 		fValueDialogField = new StringDialogField();
-		fValueDialogField.setLabelText("Value");
+		fValueDialogField.setLabelText(Messages.NameValuePairInputDialog_valueLabel);
 		fValueDialogField.setDialogFieldListener(adapter);
 
-		fNameDialogField.setText((pair != null) ? pair.name : ""); //$NON-NLS-1$
-		fValueDialogField.setText((pair != null && pair.value != null) ? pair.value : ""); //$NON-NLS-1$
+		fNameDialogField.setText((pair != null) ? pair.name : StringUtil.EMPTY);
+		fValueDialogField.setText((pair != null && pair.value != null) ? pair.value : StringUtil.EMPTY);
 	}
 
 	public NameValuePair getResult()
@@ -116,24 +124,24 @@ public class NameValuePairInputDialog extends StatusDialog
 		boolean hasErrorOrWarning = false;
 		if (newText.length() == 0)
 		{
-			status.setError("Please enter the field name");
+			status.setError(Messages.NameValuePairInputDialog_enterFiledNameStatus);
 		}
 		else
 		{
 			if (fExistingNames.contains(newText))
 			{
-				status.setWarning("The given name already exists in the parameters list");
+				status.setWarning(Messages.NameValuePairInputDialog_nameInUseWarning);
 				hasErrorOrWarning = true;
 			}
 			else
 			{
 				try
 				{
-					String encoded = URLEncoder.encode(newText, "UTF-8");
+					String encoded = URLEncoder.encode(newText, IOUtil.UTF_8);
 					if (!newText.equals(encoded))
 					{
-						status.setWarning("The given string '" + newText + "' will be encoded to '" + encoded
-								+ "' during the session");
+						status.setWarning(MessageFormat.format(Messages.NameValuePairInputDialog_encodingStatusWarning,
+								newText, encoded));
 						hasErrorOrWarning = true;
 					}
 				}
@@ -152,11 +160,11 @@ public class NameValuePairInputDialog extends StatusDialog
 		newText = fValueDialogField.getText();
 		try
 		{
-			String encoded = URLEncoder.encode(newText, "UTF-8");
+			String encoded = URLEncoder.encode(newText, IOUtil.UTF_8);
 			if (!newText.equals(encoded))
 			{
-				status.setWarning("The string '" + newText + "' will be encoded to '" + encoded
-						+ "' during the session");
+				status.setWarning(MessageFormat.format(Messages.NameValuePairInputDialog_decodingStatusWarning,
+						newText, encoded));
 			}
 		}
 		catch (UnsupportedEncodingException e)

@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.ui.launching;
 
 import java.util.ArrayList;
@@ -31,25 +38,31 @@ import com.aptana.ui.util.SWTUtils;
 
 public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 {
-
+	private static final String IMG_LAUNCH_HTTP = "/icons/full/obj16/launch-http.gif"; //$NON-NLS-1$
 	private static final int IDX_ADD = 0;
 	private static final int IDX_EDIT = 1;
 	private static final int IDX_REMOVE = 2;
 	private static final int IDX_UP = 4;
 	private static final int IDX_DOWN = 5;
 
-	private static final String NAME = "GET/POST";
+	private static final String NAME = Messages.HTTPLaunchConfigurationTab_httpLaunchTabName;
 	private ListDialogField<NameValuePair> listGET;
 	private ListDialogField<NameValuePair> listPOST;
 
 	public HTTPLaunchConfigurationTab()
 	{
-		listGET = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] { "&Add", "&Edit",
-				"&Remove", null, "&Up", "&Down" }, new NameValueLabelProvider());
-		listPOST = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] { "A&dd", "Ed&it",
-				"Re&move", null, "U&p", "D&own" }, new NameValueLabelProvider());
+		listGET = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] {
+				Messages.HTTPLaunchConfigurationTab_getAddLabel, Messages.HTTPLaunchConfigurationTab_getEditLabel,
+				Messages.HTTPLaunchConfigurationTab_getRemoveLabel, null,
+				Messages.HTTPLaunchConfigurationTab_getUpLabel, Messages.HTTPLaunchConfigurationTab_getDownLabel },
+				new NameValueLabelProvider());
+		listPOST = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] {
+				Messages.HTTPLaunchConfigurationTab_postAddLabel, Messages.HTTPLaunchConfigurationTab_postEditLabel,
+				Messages.HTTPLaunchConfigurationTab_postRemoveLabel, null,
+				Messages.HTTPLaunchConfigurationTab_postUpLabel, Messages.HTTPLaunchConfigurationTab_postDownLabel },
+				new NameValueLabelProvider());
 		ListDialogField.ColumnsDescription columnsDescription = new ListDialogField.ColumnsDescription(new String[] {
-				"Name", "Value" }, true);
+				Messages.HTTPLaunchConfigurationTab_nameColumn, Messages.HTTPLaunchConfigurationTab_valueColumn }, true);
 		listGET.setTableColumns(columnsDescription);
 		listPOST.setTableColumns(columnsDescription);
 
@@ -70,14 +83,14 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Group groupGET = new Group(composite, SWT.NONE);
-		groupGET.setText("HTTP GET");
+		groupGET.setText(Messages.HTTPLaunchConfigurationTab_getGroupText);
 		groupGET.setLayout(new GridLayout(2, false));
 		groupGET.setLayoutData(new GridData(GridData.FILL_BOTH));
 		Control listControlGET = listGET.getListControl(groupGET);
 		Control buttonsControlGET = listGET.getButtonBox(groupGET);
 
 		Group groupPOST = new Group(composite, SWT.NONE);
-		groupPOST.setText("HTTP POST");
+		groupPOST.setText(Messages.HTTPLaunchConfigurationTab_postGroupText);
 		groupPOST.setLayout(new GridLayout(2, false));
 		groupPOST.setLayoutData(new GridData(GridData.FILL_BOTH));
 		Control listControlPOST = listPOST.getListControl(groupPOST);
@@ -98,7 +111,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 	public Image getImage()
 	{
-		return SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/launch-http.gif");
+		return SWTUtils.getImage(PHPEplPlugin.getDefault(), IMG_LAUNCH_HTTP);
 	}
 
 	public String getName()
@@ -140,7 +153,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		}
 		catch (CoreException e)
 		{
-			PHPDebugPlugin.logError("Error initializing the HTTP GET/POST configuration dialog", e);
+			PHPDebugPlugin.logError("Error initializing the HTTP GET/POST configuration dialog", e); //$NON-NLS-1$
 		}
 	}
 
@@ -210,6 +223,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	/*
 	 * List adapter for the GET and POST lists
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private class ListAdapter implements IListAdapter
 	{
 
@@ -249,7 +263,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		public void selectionChanged(ListDialogField field)
 		{
-			// TODO - update the buttons
+			// TODO - update the buttons?
 		}
 	}
 
