@@ -35,6 +35,6 @@ public class PHPReconcilingStrategy extends CommonReconcilingStrategy
 	@Override
 	protected ReconcileContext createContext()
 	{
-		return new PHPReconcileContext(fEditor, getFile(), fDocument.get());
+		return new PHPReconcileContext(getEditor(), getFile(), getDocument().get());
 	}
 }

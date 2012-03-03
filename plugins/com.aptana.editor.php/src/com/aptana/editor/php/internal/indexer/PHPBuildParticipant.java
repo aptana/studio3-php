@@ -35,7 +35,7 @@ public class PHPBuildParticipant extends RequiredBuildParticipant
 			catch (CoreException e)
 			{
 				IdeLog.logWarning(PHPEditorPlugin.getDefault(), "Error creating a PHP AST for " //$NON-NLS-1$
-						+ context.getFile().getName(), com.aptana.parsing.IDebugScopes.PARSING);
+						+ context.getURI(), com.aptana.parsing.IDebugScopes.PARSING);
 			}
 		}
 	}
