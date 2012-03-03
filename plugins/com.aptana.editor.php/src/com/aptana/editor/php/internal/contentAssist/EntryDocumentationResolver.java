@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.text.IDocument;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
-import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
@@ -23,16 +23,16 @@ class EntryDocumentationResolver implements IDocumentationResolver
 	private final String proposalContent;
 	private final IElementsIndex index;
 	private final Object val;
-	private final IModule module;
+	private final IDocument document;
 	private final IElementEntry entry;
 
-	protected EntryDocumentationResolver(String proposalContent, IElementsIndex index, Object val, IModule module,
+	protected EntryDocumentationResolver(String proposalContent, IElementsIndex index, Object val, IDocument document,
 			IElementEntry entry)
 	{
 		this.proposalContent = proposalContent;
 		this.index = index;
 		this.val = val;
-		this.module = module;
+		this.document = document;
 		this.entry = entry;
 	}
 
@@ -41,7 +41,8 @@ class EntryDocumentationResolver implements IDocumentationResolver
 		if (val instanceof FunctionPHPEntryValue)
 		{
 			FunctionPHPEntryValue pl = (FunctionPHPEntryValue) val;
-			PHPDocBlock findFunctionPHPDocComment = PHPDocUtils.findFunctionPHPDocComment(entry, pl.getStartOffset());
+			PHPDocBlock findFunctionPHPDocComment = PHPDocUtils.findFunctionPHPDocComment(entry, document,
+					pl.getStartOffset());
 			StringBuffer bf = new StringBuffer();
 			bf.append(proposalContent);
 			bf.append('(');
@@ -59,7 +60,7 @@ class EntryDocumentationResolver implements IDocumentationResolver
 			String sig = bf.toString();
 			FunctionDocumentation parseFunctionPHPDoc = (findFunctionPHPDocComment != null) ? PHPDocUtils
 					.getFunctionDocumentation(findFunctionPHPDocComment) : null;
-			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, sig);
+			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, document, sig);
 
 			String typesString = computeEntryTypesDisplayString(entry, index);
 			if (typesString != null && typesString.length() > 0)
@@ -73,13 +74,14 @@ class EntryDocumentationResolver implements IDocumentationResolver
 		else if (val instanceof ClassPHPEntryValue)
 		{
 			ClassPHPEntryValue pl = (ClassPHPEntryValue) val;
-			PHPDocBlock findFunctionPHPDocComment = PHPDocUtils.findFunctionPHPDocComment(module, pl.getStartOffset());
+			PHPDocBlock findFunctionPHPDocComment = PHPDocUtils.findFunctionPHPDocComment(entry, document,
+					pl.getStartOffset());
 			StringBuffer bf = new StringBuffer();
 			bf.append(proposalContent);
 			String sig = bf.toString();
 			FunctionDocumentation parseFunctionPHPDoc = (findFunctionPHPDocComment != null) ? PHPDocUtils
 					.getFunctionDocumentation(findFunctionPHPDocComment) : null;
-			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, sig);
+			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, document, sig);
 
 			/*
 			 * String typesString = computeEntryTypesDisplayString(entry, index); if (typesString != null &&
@@ -92,7 +94,7 @@ class EntryDocumentationResolver implements IDocumentationResolver
 		{
 			VariablePHPEntryValue pl = (VariablePHPEntryValue) val;
 			int startOffset = pl.getStartOffset();
-			PHPDocBlock findFunctionPHPDocComment = PHPDocUtils.findFunctionPHPDocComment(module, startOffset);
+			PHPDocBlock findFunctionPHPDocComment = PHPDocUtils.findFunctionPHPDocComment(entry, document, startOffset);
 			StringBuffer bf = new StringBuffer();
 			bf.append(proposalContent);
 			String sig = bf.toString();
@@ -102,7 +104,7 @@ class EntryDocumentationResolver implements IDocumentationResolver
 			{
 				parseFunctionPHPDoc = null;
 			}
-			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, sig);
+			String docString = PHPDocUtils.computeDocumentation(parseFunctionPHPDoc, document, sig);
 
 			String typesString = computeEntryTypesDisplayString(entry, index);
 			if (typesString != null && typesString.length() > 0)

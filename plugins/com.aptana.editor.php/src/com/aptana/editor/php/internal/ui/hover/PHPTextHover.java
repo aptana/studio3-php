@@ -13,10 +13,12 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.internal.text.html.BrowserInformationControlInput;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInputChangedListener;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.IEditorPart;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
@@ -99,9 +101,16 @@ public class PHPTextHover extends AbstractPHPTextHover
 			IElementEntry entry = (IElementEntry) element;
 			AbstractPHPEntryValue phpValue = (AbstractPHPEntryValue) entry.getValue();
 			int startOffset = phpValue.getStartOffset();
-			PHPDocBlock comment = PHPDocUtils.findFunctionPHPDocComment(entry, startOffset);
+			// Locate the IDocument and pass it along to the PHPDocUtils
+			ISourceViewer sourceViewer = (ISourceViewer) editorPart.getAdapter(ISourceViewer.class);
+			IDocument document = null;
+			if (sourceViewer != null)
+			{
+				document = sourceViewer.getDocument();
+			}
+			PHPDocBlock comment = PHPDocUtils.findFunctionPHPDocComment(entry, document, startOffset);
 			FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
-			computedDocumentation = PHPDocUtils.computeDocumentation(documentation, entry.getEntryPath());
+			computedDocumentation = PHPDocUtils.computeDocumentation(documentation, document, entry.getEntryPath());
 		}
 		else if (element instanceof PHPBaseParseNode)
 		{

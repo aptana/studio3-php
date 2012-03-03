@@ -5,12 +5,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jface.text.IDocument;
 import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org2.eclipse.php.internal.core.ast.nodes.Comment;
@@ -46,11 +48,11 @@ public final class PHPDocUtils
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private static final Pattern INPUT_TAG_PATTERN = Pattern.compile("<input[^>]*/>|<input\\s*>"); //$NON-NLS-1$
 
-	public static PHPDocBlock findFunctionPHPDocComment(IElementEntry entry, int offset)
+	public static PHPDocBlock findFunctionPHPDocComment(IElementEntry entry, IDocument document, int offset)
 	{
 		if (entry.getModule() != null)
 		{
-			return findFunctionPHPDocComment(entry.getModule(), offset);
+			return findFunctionPHPDocComment(entry.getModule(), document, offset);
 		}
 		// In case that the entry module is null, it's probably a PHP API documentation item, so
 		// parse the right item.
@@ -85,13 +87,21 @@ public final class PHPDocUtils
 	 *            - offset.
 	 * @return comment contents or null if not found.
 	 */
-	public static PHPDocBlock findFunctionPHPDocComment(IModule module, int offset)
+	public static PHPDocBlock findFunctionPHPDocComment(IModule module, IDocument document, int offset)
 	{
 		try
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(), // $codepro.audit.disable
-																									// closeWhereCreated
-					EncodingUtils.getModuleEncoding(module)));
+			Reader innerReader;
+			if (document != null)
+			{
+				innerReader = new StringReader(document.get());// $codepro.audit.disable closeWhereCreated
+			}
+			else
+			{
+				innerReader = new InputStreamReader(module.getContents(), EncodingUtils.getModuleEncoding(module));// $codepro.audit.disable
+																													// closeWhereCreated
+			}
+			BufferedReader reader = new BufferedReader(innerReader);
 			return innerParsePHPDoc(offset, reader);
 		}
 		catch (Exception ex)
@@ -564,7 +574,7 @@ public final class PHPDocUtils
 		return in;
 	}
 
-	public static String computeDocumentation(FunctionDocumentation documentation, String name)
+	public static String computeDocumentation(FunctionDocumentation documentation, IDocument document, String name)
 	{
 		String additionalInfo = Messages.PHPDocUtils_noAvailableDocs;
 		StringBuilder bld = new StringBuilder();
