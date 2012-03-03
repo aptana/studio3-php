@@ -312,8 +312,9 @@ public class PHPIniValidator
 	 */
 	private List<String> getProcessExecutionResults(final IProgressMonitor monitor) throws IOException
 	{
-		File tempIniFile = PHPDebugSupportManager.getLaunchSupport().generatePhpIni(this.iniFile, phpExePath, null, debuggerID);
-		
+		File tempIniFile = PHPDebugSupportManager.getLaunchSupport().generatePhpIni(this.iniFile, phpExePath, null,
+				debuggerID);
+
 		ProcessBuilder builder = new ProcessBuilder(phpExePath, "-c", tempIniFile.getAbsolutePath(), "-i"); //$NON-NLS-1$ //$NON-NLS-2$
 		// builder.environment().put("PHPRC", tempIniFile.getParent()); //$NON-NLS-1$
 		if (!Platform.OS_WIN32.equals(Platform.getOS()))

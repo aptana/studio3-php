@@ -13,9 +13,9 @@ public class PHPIniEntry implements Map.Entry<String, String>
 	public static final int PHP_EXTENSION_VALIDATION_OK = 1;
 	public static final int PHP_EXTENSION_VALIDATION_ERROR = 2;
 	public static final int PHP_EXTENSION_VALIDATION_WARNING = 3;
-	
-	private static final String[] EXTENSION_ENTRIES = {"extension", "zend_extension", "zend_extension_ts"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	
+
+	private static final String[] EXTENSION_ENTRIES = { "extension", "zend_extension", "zend_extension_ts" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
 	/**
 	 * Key.
 	 */

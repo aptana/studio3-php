@@ -38,6 +38,7 @@ import org.eclipse.osgi.util.NLS;
 
 /**
  * Messages
+ * 
  * @author Denis Denisenko
  */
 public class Messages extends NLS

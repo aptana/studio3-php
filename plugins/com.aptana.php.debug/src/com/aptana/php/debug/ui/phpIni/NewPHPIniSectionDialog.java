@@ -56,7 +56,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Denis Denisenko
  */
 public class NewPHPIniSectionDialog extends TitleAreaDialog
-{    
+{
 	/**
 	 * Name edit.
 	 */
@@ -70,27 +70,28 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 	/**
 	 * Forbidden names.
 	 */
-    private List<String> forbiddenNames = null;
+	private List<String> forbiddenNames = null;
 
 	/**
 	 * NewsectionDialog constructor.
 	 * 
-	 * @param parentShell - parent shell.
+	 * @param parentShell
+	 *            - parent shell.
 	 */
 	public NewPHPIniSectionDialog(Shell parentShell)
 	{
 		super(parentShell);
 	}
 
-    /**
+	/**
 	 * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent)
 	{
 		super.createButtonsForButtonBar(parent);
-		//validating
-        validate();
+		// validating
+		validate();
 	}
 
 	/**
@@ -102,14 +103,16 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 	{
 		return name;
 	}
-	
+
 	/**
 	 * Sets forbidden names.
-	 * @param names - forbidden names list.
+	 * 
+	 * @param names
+	 *            - forbidden names list.
 	 */
 	public void setForbiddenNames(List<String> names)
 	{
-	    this.forbiddenNames = names;
+		this.forbiddenNames = names;
 	}
 
 	/**
@@ -118,81 +121,82 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 	@Override
 	protected void okPressed()
 	{
-	    if (nameEdit != null)
-	    {
-	        name = nameEdit.getText();
-	    }
+		if (nameEdit != null)
+		{
+			name = nameEdit.getText();
+		}
 		super.okPressed();
 	}
-	
+
 	/**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Control createDialogArea(Composite parent)
-    {
-        Composite returned = (Composite) super.createDialogArea(parent);
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Control createDialogArea(Composite parent)
+	{
+		Composite returned = (Composite) super.createDialogArea(parent);
 
-        Composite par = new Composite(returned, SWT.NONE);
-        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        data.widthHint = 200;
-        par.setLayoutData(data);
+		Composite par = new Composite(returned, SWT.NONE);
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.widthHint = 200;
+		par.setLayoutData(data);
 
-        //setting titles
-        
-        this.getShell().setText(Messages.NewPHPIniSectionDialog_0);
-        this.setTitle(Messages.NewPHPIniSectionDialog_1); 
-        this.setMessage(Messages.NewPHPIniSectionDialog_2); 
-        
+		// setting titles
 
-        par.setLayout(new GridLayout(4, false));
+		this.getShell().setText(Messages.NewPHPIniSectionDialog_0);
+		this.setTitle(Messages.NewPHPIniSectionDialog_1);
+		this.setMessage(Messages.NewPHPIniSectionDialog_2);
 
-        createNameEdit(par);
-        
-        setTooltipText();
-        
-        return par;
-    }
+		par.setLayout(new GridLayout(4, false));
 
-    /**
-     * Create section name edit.
-     * @param par - parent.
-     */
-    private void createNameEdit(Composite par)
-    {
-        Label nameLabel = new Label(par, SWT.NONE);
-        nameLabel.setText(Messages.NewPHPIniSectionDialog_3 + ":");  //$NON-NLS-2$
-        nameLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        nameEdit = new Text(par, SWT.BORDER);
-        nameEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        nameEdit.addModifyListener(new ModifyListener()
-        {
+		createNameEdit(par);
 
-            public void modifyText(ModifyEvent e)
-            {
-                validate();
-            }
-        });
-        if (name != null)
-        {
-            nameEdit.setText(name);
-        }
-    }
+		setTooltipText();
 
-    /**
-     * Sets tooltip text.
-     */
-    protected void setTooltipText()
-    {
-        nameEdit.setToolTipText(Messages.NewPHPIniSectionDialog_5);
-    }
+		return par;
+	}
+
+	/**
+	 * Create section name edit.
+	 * 
+	 * @param par
+	 *            - parent.
+	 */
+	private void createNameEdit(Composite par)
+	{
+		Label nameLabel = new Label(par, SWT.NONE);
+		nameLabel.setText(Messages.NewPHPIniSectionDialog_3 + ":"); //$NON-NLS-2$
+		nameLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		nameEdit = new Text(par, SWT.BORDER);
+		nameEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+		nameEdit.addModifyListener(new ModifyListener()
+		{
+
+			public void modifyText(ModifyEvent e)
+			{
+				validate();
+			}
+		});
+		if (name != null)
+		{
+			nameEdit.setText(name);
+		}
+	}
+
+	/**
+	 * Sets tooltip text.
+	 */
+	protected void setTooltipText()
+	{
+		nameEdit.setToolTipText(Messages.NewPHPIniSectionDialog_5);
+	}
 
 	/**
 	 * Validates values.
 	 */
 	private void validate()
 	{
-        String nameText = nameEdit.getText();
+		String nameText = nameEdit.getText();
 		if (nameText.length() == 0)
 		{
 			disableOKButton();
@@ -201,34 +205,36 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 		}
 		String trimmedName = nameText.trim();
 		if (forbiddenNames != null)
-				
+
 		{
 			for (String forbiddenName : forbiddenNames)
 			{
 				if (forbiddenName.equalsIgnoreCase(trimmedName))
 				{
 					disableOKButton();
-				    setErrorMessage(Messages.NewPHPIniSectionDialog_7);
-				    return;
+					setErrorMessage(Messages.NewPHPIniSectionDialog_7);
+					return;
 				}
 			}
 		}
 
-        setErrorMessage(null);
-        Button button = getButton(IDialogConstants.OK_ID);
-        if (button != null){
-            button.setEnabled(true);
-        }
+		setErrorMessage(null);
+		Button button = getButton(IDialogConstants.OK_ID);
+		if (button != null)
+		{
+			button.setEnabled(true);
+		}
 	}
 
-    /**
-     * Disables OK button.
-     */
-    private void disableOKButton()
-    {
-        Button button = getButton(IDialogConstants.OK_ID);
-        if (button != null){
-        	button.setEnabled(false);
-        }
-    }
+	/**
+	 * Disables OK button.
+	 */
+	private void disableOKButton()
+	{
+		Button button = getButton(IDialogConstants.OK_ID);
+		if (button != null)
+		{
+			button.setEnabled(false);
+		}
+	}
 }

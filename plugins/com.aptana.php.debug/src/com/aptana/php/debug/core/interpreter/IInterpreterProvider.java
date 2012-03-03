@@ -38,18 +38,21 @@ import java.util.List;
 
 /**
  * Provider of interpreters.
+ * 
  * @author Denis Denisenko
  */
 public interface IInterpreterProvider
-{	
+{
 	/**
 	 * Gets interpreters.
+	 * 
 	 * @return interpreters.
 	 */
 	List<IInterpreter> getInterpreters();
-	
+
 	/**
 	 * Gets default interpreter.
+	 * 
 	 * @return default interpreter, might be null if no default interpreter is configured.
 	 */
 	IInterpreter getDefaultInterpreter();

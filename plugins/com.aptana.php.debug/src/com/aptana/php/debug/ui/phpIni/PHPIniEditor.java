@@ -350,7 +350,8 @@ public class PHPIniEditor
 	/**
 	 * Get an <code>Image</code> from the provide SWT image constant.
 	 * 
-	 * @param imageID the SWT image constant
+	 * @param imageID
+	 *            the SWT image constant
 	 * @return image the image
 	 */
 	private Image getSWTImage(final int imageID)
@@ -510,12 +511,14 @@ public class PHPIniEditor
 	{
 		this.debuggerID = debuggerID;
 	}
-	
+
 	/**
 	 * Opens ini file.
 	 * 
-	 * @param fileName - file name.
-	 * @throws IOException IF IO error occurs.
+	 * @param fileName
+	 *            - file name.
+	 * @throws IOException
+	 *             IF IO error occurs.
 	 */
 	public void openFile(String fileName) throws IOException
 	{
@@ -531,7 +534,8 @@ public class PHPIniEditor
 	/**
 	 * Saves current ini file.
 	 * 
-	 * @throws IO exception IF IO error occurs
+	 * @throws IO
+	 *             exception IF IO error occurs
 	 */
 	public void save() throws IOException
 	{
@@ -579,7 +583,8 @@ public class PHPIniEditor
 	/**
 	 * Creates editor control.
 	 * 
-	 * @param parent - parent.
+	 * @param parent
+	 *            - parent.
 	 * @return control.
 	 */
 	public Control createControl(Composite parent)
@@ -601,13 +606,14 @@ public class PHPIniEditor
 		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
 		layoutData.horizontalIndent = 5;
 		onlyExtensionsCheck.setLayoutData(layoutData);
-		onlyExtensionsCheck.addSelectionListener(new SelectionAdapter() {
+		onlyExtensionsCheck.addSelectionListener(new SelectionAdapter()
+		{
 			public void widgetSelected(SelectionEvent e)
 			{
 				showExtensionsOnly(onlyExtensionsCheck.getSelection());
 			}
 		});
-		
+
 		// creating entries viewer
 		Control viewerContainer = createViewer(mainComposite);
 		GridData viewerContainerData = new GridData(GridData.FILL_BOTH);
@@ -625,7 +631,8 @@ public class PHPIniEditor
 	/**
 	 * Creates entries viewer.
 	 * 
-	 * @param parent - parent.
+	 * @param parent
+	 *            - parent.
 	 * @return viewer parent control.
 	 */
 	private Control createViewer(Composite parent)
@@ -701,13 +708,13 @@ public class PHPIniEditor
 			}
 
 		});
-		
+
 		// Set the viewer filter, if needed
 		if (isShowingExtensionsOnly)
 		{
 			viewer.addFilter(extensionsOnlyFilter);
 		}
-		
+
 		// refreshing
 		viewer.getTree().setLayout(columnLayout);
 		viewer.getTree().getParent().layout(true, true);
@@ -1165,7 +1172,8 @@ public class PHPIniEditor
 	/**
 	 * Disables the control and all it's children recursively.
 	 * 
-	 * @param control - control to disable.
+	 * @param control
+	 *            - control to disable.
 	 */
 	private void disableAll(Control control)
 	{
@@ -1187,7 +1195,8 @@ public class PHPIniEditor
 	/**
 	 * Enables the control and all it's children recursively.
 	 * 
-	 * @param control - control to disable.
+	 * @param control
+	 *            - control to disable.
 	 */
 	private void enableAll(Control control)
 	{
@@ -1266,7 +1275,8 @@ public class PHPIniEditor
 	/**
 	 * Checks whether all entries in this section are commented.
 	 * 
-	 * @param section - section to check.
+	 * @param section
+	 *            - section to check.
 	 * @return true if all entries are commentedm false otherwise.
 	 */
 	private boolean allEntriesAreCommented(INIFileSection section)
@@ -1290,7 +1300,8 @@ public class PHPIniEditor
 	/**
 	 * Checks whether all entries in this section are uncommented.
 	 * 
-	 * @param section - section to check.
+	 * @param section
+	 *            - section to check.
 	 * @return true if all entries are commented false otherwise.
 	 */
 	private boolean allEntriesAreUnCommented(INIFileSection section)
@@ -1324,7 +1335,7 @@ public class PHPIniEditor
 		{
 			if (element instanceof INIFileSection)
 			{
-				return containsExtensionData((INIFileSection)element);
+				return containsExtensionData((INIFileSection) element);
 			}
 			if (element instanceof PHPIniEntry)
 			{
@@ -1344,7 +1355,8 @@ public class PHPIniEditor
 			List<PHPIniEntry> entries = section.getEntries();
 			for (PHPIniEntry entry : entries)
 			{
-				if (containsExtensionData(entry)) {
+				if (containsExtensionData(entry))
+				{
 					return true;
 				}
 			}

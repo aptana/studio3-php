@@ -38,24 +38,28 @@ import java.io.File;
 
 /**
  * Abstract interpreter.
+ * 
  * @author Denis Denisenko
  */
 public interface IInterpreter
 {
 	/**
 	 * Gets interpreter executable.
+	 * 
 	 * @return interpreter executable.
 	 */
 	File getExecutable();
-	
+
 	/**
 	 * Gets interpreter debugger ID.
+	 * 
 	 * @return interpreter debugger ID.
 	 */
 	String getDebuggerID();
-	
+
 	/**
 	 * Gets INI file location.
+	 * 
 	 * @return INI file location.
 	 */
 	File getINILocation();

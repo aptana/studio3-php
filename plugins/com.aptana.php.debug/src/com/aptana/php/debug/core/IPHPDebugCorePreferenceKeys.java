@@ -51,7 +51,7 @@ public interface IPHPDebugCorePreferenceKeys
 	public static final String ALLOW_MULTIPLE_LAUNCHES = DEBUGGER_ID + ".allowMultipleLaunches"; //$NON-NLS-1$
 	public static final String SWITCH_BACK_TO_PREVIOUS_PERSPECTIVE = DEBUGGER_ID + ".switchBackToPreviousPerspective"; //$NON-NLS-1$
 	public static final String CONFIGURATION_DELEGATE_CLASS = DEBUGGER_ID + ".configurationDelegateClass"; //$NON-NLS-1$
-	
+
 	public static final String ATTR_USE_SPECIFIC_FILE = "ATTR_USE_SPECIFIC_FILE"; //$NON-NLS-1$
 	public static final String ATTR_FILE = "ATTR_FILE"; //$NON-NLS-1$
 	public static final String ATTR_AUTO_GENERATED_URL = "ATTR_AUTO_GENERATED_URL"; //$NON-NLS-1$

@@ -34,7 +34,7 @@ public interface IPHPDebugLaunchSupport
 	 * @param configurationFile
 	 *            A file reference for the PHP INI to configure.
 	 * @return an {@link IPhpIniFileModifier}
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	IPhpIniFileModifier getPhpIniFileModifier(File configurationFile) throws IOException;
 }

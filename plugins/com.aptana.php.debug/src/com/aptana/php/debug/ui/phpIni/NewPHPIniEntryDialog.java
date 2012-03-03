@@ -56,7 +56,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Denis Denisenko
  */
 public class NewPHPIniEntryDialog extends TitleAreaDialog
-{    
+{
 	/**
 	 * Name edit.
 	 */
@@ -80,27 +80,28 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 	/**
 	 * Forbidden names.
 	 */
-    private List<String> forbiddenNames = null;
+	private List<String> forbiddenNames = null;
 
 	/**
 	 * NewentryDialog constructor.
 	 * 
-	 * @param parentShell - parent shell.
+	 * @param parentShell
+	 *            - parent shell.
 	 */
 	public NewPHPIniEntryDialog(Shell parentShell)
 	{
 		super(parentShell);
 	}
 
-    /**
+	/**
 	 * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent)
 	{
 		super.createButtonsForButtonBar(parent);
-		//validating
-        validate();
+		// validating
+		validate();
 	}
 
 	/**
@@ -122,14 +123,16 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 	{
 		return value;
 	}
-	
+
 	/**
 	 * Sets forbidden names.
-	 * @param names - forbidden names list.
+	 * 
+	 * @param names
+	 *            - forbidden names list.
 	 */
 	public void setForbiddenNames(List<String> names)
 	{
-	    this.forbiddenNames = names;
+		this.forbiddenNames = names;
 	}
 
 	/**
@@ -138,112 +141,114 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 	@Override
 	protected void okPressed()
 	{
-	    if (nameEdit != null)
-	    {
-	        name = nameEdit.getText();
-	    }
+		if (nameEdit != null)
+		{
+			name = nameEdit.getText();
+		}
 		value = contentEdit.getText();
 		super.okPressed();
 	}
-	
+
 	/**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Control createDialogArea(Composite parent)
-    {
-        Composite returned = (Composite) super.createDialogArea(parent);
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Control createDialogArea(Composite parent)
+	{
+		Composite returned = (Composite) super.createDialogArea(parent);
 
-        Composite par = new Composite(returned, SWT.NONE);
-        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        data.widthHint = 200;
-        par.setLayoutData(data);
+		Composite par = new Composite(returned, SWT.NONE);
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.widthHint = 200;
+		par.setLayoutData(data);
 
-        //setting titles
-        
-        this.getShell().setText(Messages.NewPHPIniEntryDialog_0);
-        this.setTitle(Messages.NewPHPIniEntryDialog_1); 
-        this.setMessage(Messages.NewPHPIniEntryDialog_2); 
-        
+		// setting titles
 
-        par.setLayout(new GridLayout(4, false));
+		this.getShell().setText(Messages.NewPHPIniEntryDialog_0);
+		this.setTitle(Messages.NewPHPIniEntryDialog_1);
+		this.setMessage(Messages.NewPHPIniEntryDialog_2);
 
-        createNameEdit(par);
+		par.setLayout(new GridLayout(4, false));
 
-        createContentEdit(par);
-        
-        setTooltipText();
-        
-        return par;
-    }
+		createNameEdit(par);
 
+		createContentEdit(par);
 
-    /**
-     * Creates entry content edit.
-     * @param par - parent.
-     */
-    private void createContentEdit(Composite par)
-    {
-        Label contentLabel = new Label(par, SWT.NONE);
-        contentLabel.setText(Messages.NewPHPIniEntryDialog_3 + ":");  //$NON-NLS-2$
-        contentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        contentEdit = new Text(par, SWT.BORDER);
-        contentEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        if (value != null)
-        {
-            contentEdit.setText(value);
-        }
-        contentEdit.addModifyListener(new ModifyListener()
-        {
+		setTooltipText();
 
-            public void modifyText(ModifyEvent e)
-            {
-                validate();
-            }
-        });
-    }
+		return par;
+	}
 
-    /**
-     * Create entry name edit.
-     * @param par - parent.
-     */
-    private void createNameEdit(Composite par)
-    {
-        Label nameLabel = new Label(par, SWT.NONE);
-        nameLabel.setText(Messages.NewPHPIniEntryDialog_4 + ":");  //$NON-NLS-2$
-        nameLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        nameEdit = new Text(par, SWT.BORDER);
-        nameEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        nameEdit.addModifyListener(new ModifyListener()
-        {
+	/**
+	 * Creates entry content edit.
+	 * 
+	 * @param par
+	 *            - parent.
+	 */
+	private void createContentEdit(Composite par)
+	{
+		Label contentLabel = new Label(par, SWT.NONE);
+		contentLabel.setText(Messages.NewPHPIniEntryDialog_3 + ":"); //$NON-NLS-2$
+		contentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		contentEdit = new Text(par, SWT.BORDER);
+		contentEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		if (value != null)
+		{
+			contentEdit.setText(value);
+		}
+		contentEdit.addModifyListener(new ModifyListener()
+		{
 
-            public void modifyText(ModifyEvent e)
-            {
-                validate();
-            }
-        });
-        if (name != null)
-        {
-            nameEdit.setText(name);
-        }
-    }
+			public void modifyText(ModifyEvent e)
+			{
+				validate();
+			}
+		});
+	}
 
-    /**
-     * Sets tooltip text.
-     */
-    protected void setTooltipText()
-    {
-        contentEdit.setToolTipText(Messages.NewPHPIniEntryDialog_6);
-    }
+	/**
+	 * Create entry name edit.
+	 * 
+	 * @param par
+	 *            - parent.
+	 */
+	private void createNameEdit(Composite par)
+	{
+		Label nameLabel = new Label(par, SWT.NONE);
+		nameLabel.setText(Messages.NewPHPIniEntryDialog_4 + ":"); //$NON-NLS-2$
+		nameLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		nameEdit = new Text(par, SWT.BORDER);
+		nameEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+		nameEdit.addModifyListener(new ModifyListener()
+		{
+
+			public void modifyText(ModifyEvent e)
+			{
+				validate();
+			}
+		});
+		if (name != null)
+		{
+			nameEdit.setText(name);
+		}
+	}
+
+	/**
+	 * Sets tooltip text.
+	 */
+	protected void setTooltipText()
+	{
+		contentEdit.setToolTipText(Messages.NewPHPIniEntryDialog_6);
+	}
 
 	/**
 	 * Validates values.
 	 */
 	private void validate()
 	{
-	    String contentText = contentEdit.getText();
-	    
-        String nameText = nameEdit.getText();
+		String contentText = contentEdit.getText();
+
+		String nameText = nameEdit.getText();
 		if (nameText.length() == 0)
 		{
 			disableOKButton();
@@ -253,35 +258,36 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 		String trimmedName = nameText.trim();
 		if (forbiddenNames != null && forbiddenNames.contains(trimmedName))
 		{
-		    disableOKButton();
-		    setErrorMessage(Messages.NewPHPIniEntryDialog_8);
-		    return;
+			disableOKButton();
+			setErrorMessage(Messages.NewPHPIniEntryDialog_8);
+			return;
 		}
-	    
-		
+
 		if (contentText.length() == 0)
 		{
-		    setErrorMessage(Messages.NewPHPIniEntryDialog_9); 
-		
+			setErrorMessage(Messages.NewPHPIniEntryDialog_9);
+
 			disableOKButton();
 			return;
 		}
-		
-        setErrorMessage(null);
-        Button button = getButton(IDialogConstants.OK_ID);
-        if (button != null){
-            button.setEnabled(true);
-        }
+
+		setErrorMessage(null);
+		Button button = getButton(IDialogConstants.OK_ID);
+		if (button != null)
+		{
+			button.setEnabled(true);
+		}
 	}
 
-    /**
-     * Disables OK button.
-     */
-    private void disableOKButton()
-    {
-        Button button = getButton(IDialogConstants.OK_ID);
-        if (button != null){
-        	button.setEnabled(false);
-        }
-    }
+	/**
+	 * Disables OK button.
+	 */
+	private void disableOKButton()
+	{
+		Button button = getButton(IDialogConstants.OK_ID);
+		if (button != null)
+		{
+			button.setEnabled(false);
+		}
+	}
 }

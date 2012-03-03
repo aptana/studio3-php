@@ -208,10 +208,12 @@ public class Interpreters
 							}
 							catch (NumberFormatException ex)
 							{
-								PHPDebugPlugin.logError(Messages
-										.getString("Interpreters.ERR_WrongPriorityFormatPrefix") //$NON-NLS-1$
-										+ elementName
-										+ Messages.getString("Interpreters.ERR_WrongPriorityFormatSuffix"), null); //$NON-NLS-1$
+								PHPDebugPlugin
+										.logError(
+												Messages.getString("Interpreters.ERR_WrongPriorityFormatPrefix") //$NON-NLS-1$
+														+ elementName
+														+ Messages
+																.getString("Interpreters.ERR_WrongPriorityFormatSuffix"), null); //$NON-NLS-1$
 							}
 						}
 						try
@@ -246,8 +248,8 @@ public class Interpreters
 							}
 							catch (Throwable th)
 							{
-								PHPDebugPlugin.logError(Messages
-										.getString("Interpreters.ERR_UnableToGetInterpretersFromProvider"), th); //$NON-NLS-1$
+								PHPDebugPlugin.logError(
+										Messages.getString("Interpreters.ERR_UnableToGetInterpretersFromProvider"), th); //$NON-NLS-1$
 							}
 						}
 						catch (CoreException e)

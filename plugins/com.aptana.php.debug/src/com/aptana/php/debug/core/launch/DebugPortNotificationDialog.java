@@ -133,7 +133,7 @@ public class DebugPortNotificationDialog extends MessageDialogWithToggle
 				switch (s.getSeverity())
 				{
 					case IStatus.ERROR:
-						
+
 						image = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/error.png"); //$NON-NLS-1$
 						break;
 					case IStatus.INFO:
