@@ -25,7 +25,7 @@ import com.aptana.webserver.core.WebServerCorePlugin;
 /**
  * PHP servers manager.
  * 
- * @author Pavel Petrochenko, Shalom Giblys
+ * @author Pavel Petrochenko, Shalom Gibly
  */
 public class PHPServersManager
 {

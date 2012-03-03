@@ -39,6 +39,7 @@ import com.aptana.php.debug.core.util.NameValuePair;
  */
 public class RemoteDebugRedirector
 {
+	private static final int REDIRECTION_SERVER_DELAY = 3000;
 	private static final String LINE_TERMINATOR = FileUtil.NEW_LINE;
 	public static String URL_ENCODING = "UTF-8"; //$NON-NLS-1$
 	private ServerSocket server;
@@ -154,7 +155,7 @@ public class RemoteDebugRedirector
 			}
 		};
 		job.setSystem(true);
-		job.schedule();
+		job.schedule(REDIRECTION_SERVER_DELAY);
 	}
 
 	/**
@@ -182,6 +183,6 @@ public class RemoteDebugRedirector
 			}
 		};
 		stoppingServerJob.setSystem(true);
-		stoppingServerJob.schedule(3000);
+		stoppingServerJob.schedule(REDIRECTION_SERVER_DELAY);
 	}
 }
