@@ -9,7 +9,6 @@ package com.aptana.php.debug.epl;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -34,6 +33,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.daemon.DebugDaemon;
 import com.aptana.php.debug.core.tunneling.SSHTunnelFactory;
@@ -331,7 +332,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static void logError(String msg, Throwable t)
 	{
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, msg, t));
+		IdeLog.logError(getDefault(), msg, t, IDebugScopes.DEBUG);
 	}
 
 	/**
@@ -339,7 +340,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static void logError(String msg)
 	{
-		logError(msg, null);
+		IdeLog.logError(getDefault(), msg, IDebugScopes.DEBUG);
 	}
 
 	/**
@@ -349,7 +350,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static void logWarning(String msg)
 	{
-		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, msg));
+		IdeLog.logWarning(getDefault(), msg, IDebugScopes.DEBUG);
 	}
 
 	/**
@@ -359,7 +360,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static void log(IStatus status)
 	{
-		getDefault().getLog().log(status);
+		IdeLog.log(getDefault(), status, IDebugScopes.DEBUG);
 	}
 
 	/**
