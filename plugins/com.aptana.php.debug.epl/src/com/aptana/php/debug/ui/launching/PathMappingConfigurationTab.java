@@ -66,11 +66,11 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label msg1 = new Label(composite, SWT.WRAP);
-		msg1.setText("This table displays the path mappings that were defined for the server assigned to this launch.");
+		msg1.setText(PathMappingMessages.PathMappingConfigurationTab_mappingTableDescription);
 		msg1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		Link link = new Link(composite, SWT.NONE);
-		link.setText("<a>Click here to change the mapping...</a>");
+		link.setText(PathMappingMessages.PathMappingConfigurationTab_changeMappingLink);
 		link.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		link.addSelectionListener(new SelectionAdapter()
 		{
@@ -113,15 +113,15 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 						}
 						catch (CoreException ce)
 						{
-							PHPDebugEPLPlugin.logError("Error updating the configurations", ce);
+							PHPDebugEPLPlugin.logError("Error updating the configurations", ce); //$NON-NLS-1$
 						}
 					}
 				}
 				else
 				{
-					MessageDialog
-							.openInformation(getShell(), "Path Mapping",
-									"There are no PHP servers defined. \nYou will need to define one in the 'Server' tab before changing the path mapping.");
+					MessageDialog.openInformation(getShell(),
+							PathMappingMessages.PathMappingConfigurationTab_noServersDialogTitle,
+							PathMappingMessages.PathMappingConfigurationTab_noServersDialogMessage);
 				}
 			}
 		});
@@ -152,7 +152,7 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 	 */
 	public String getName()
 	{
-		return "Path Mapping";
+		return PathMappingMessages.PathMappingConfigurationTab_tabName;
 	}
 
 	/**

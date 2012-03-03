@@ -39,7 +39,7 @@ public class PHPBreakpointPropertiesRulerAction extends RulerBreakpointAction im
 	public PHPBreakpointPropertiesRulerAction(final ITextEditor editor, final IVerticalRulerInfo info)
 	{
 		super(editor, info);
-		setText("Breakpoint P&roperties...");
+		setText(Messages.PHPBreakpointPropertiesRulerAction_actionText);
 	}
 
 	/**

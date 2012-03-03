@@ -1,8 +1,6 @@
-/**
- * 
- */
 package com.aptana.php.debug.ui.pathMapper;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -58,9 +56,9 @@ public class PathMapperDialog extends TitleAreaDialog implements IControlHandler
 		if (newShell != null)
 		{
 			if (server != null)
-				newShell.setText("Path Mapping for '" + server.getName() + '\'');
+				newShell.setText(MessageFormat.format(Messages.PathMapperDialog_titleTextForServer, server.getName()));
 			else
-				newShell.setText("Path Mapping");
+				newShell.setText(Messages.PathMapperDialog_titleText);
 		}
 		super.configureShell(newShell);
 	}

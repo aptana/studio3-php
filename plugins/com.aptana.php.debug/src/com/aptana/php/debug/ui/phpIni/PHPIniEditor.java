@@ -57,7 +57,9 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.widgets.FormText;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.ui.util.SWTUtils;
 import com.jcraft.jsch.IO;
@@ -1120,7 +1122,7 @@ public class PHPIniEditor
 				{
 					MessageDialog.openError(viewer.getTree().getShell(), Messages.PHPIniEditor_errorTitle,
 							Messages.PHPIniEditor_errorSavingIniMessage);
-					PHPDebugPlugin.logError("Error saving the php.ini", e); //$NON-NLS-1$
+					IdeLog.logError(PHPDebugPlugin.getDefault(), "Error saving the php.ini", e, IDebugScopes.DEBUG); //$NON-NLS-1$
 
 				}
 			}

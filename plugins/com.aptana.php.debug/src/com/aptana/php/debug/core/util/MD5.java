@@ -9,6 +9,8 @@ package com.aptana.php.debug.core.util;
 
 import java.security.MessageDigest;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 
 /**
@@ -57,7 +59,7 @@ public class MD5
 		}
 		catch (Exception e)
 		{
-			PHPDebugPlugin.logError("Message digest error", e); //$NON-NLS-1$
+			IdeLog.logError(PHPDebugPlugin.getDefault(), "Message digest error", e, IDebugScopes.DEBUG); //$NON-NLS-1$
 		}
 		if (passwordDigest == null)
 		{

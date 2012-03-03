@@ -1,6 +1,12 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.ui.actions.breakpoints;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -12,7 +18,6 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.php.internal.debug.ui.breakpoint.provider.PHPBreakpointProvider;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.EditorPart;
 
@@ -29,7 +34,7 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 	 */
 	public void toggleLineBreakpoints(final IWorkbenchPart part, final ISelection selection) throws CoreException
 	{
-		Job job = new Job("Toggle Breakpoint")
+		Job job = new Job(Messages.ToggleBreakpointAdapter_toggleBreakpointJobName)
 		{
 			protected IStatus run(IProgressMonitor monitor)
 			{
@@ -48,7 +53,8 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 					try
 					{
 						AbstractThemeableEditor unifiedEditor = (AbstractThemeableEditor) editorPart;
-						new PHPBreakpointProvider().addBreakpoint(unifiedEditor, editorInput, rs.getStartLine(), rs.getOffset());
+						new PHPBreakpointProvider().addBreakpoint(unifiedEditor, editorInput, rs.getStartLine(),
+								rs.getOffset());
 					}
 					catch (CoreException e)
 					{
@@ -70,18 +76,6 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 	public boolean canToggleLineBreakpoints(IWorkbenchPart part, ISelection selection)
 	{
 		return (selection instanceof ITextSelection);
-	}
-
-	private boolean canToggleLineBreakpoint(IWorkbenchPart part, ISelection selection)
-	{
-		if (selection instanceof ITextSelection)
-		{
-			IEditorInput editorInput = ((IEditorPart) part).getEditorInput();
-			IFile rl = (IFile) editorInput.getAdapter(IFile.class);
-
-			return true;
-		}
-		return false;
 	}
 
 	/**

@@ -17,9 +17,9 @@ import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
 import org2.eclipse.php.util.SWTUtil;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
-import com.aptana.php.debug.ui.launching.LaunchConfigurationsSelectionDialog;
 import com.aptana.webserver.core.IServer;
 
 /**
@@ -35,7 +35,8 @@ public class PathMappingUpdater
 	 * Update the paths by providing the user with a list of the configurations that will be updated and giving the
 	 * option to select the ones that will not get the update.
 	 * 
-	 * @param server The server that was updated with a new Path Mapping settings.
+	 * @param server
+	 *            The server that was updated with a new Path Mapping settings.
 	 */
 	public void updatePaths(IServer server)
 	{
@@ -46,16 +47,19 @@ public class PathMappingUpdater
 	 * Update the paths by providing the user with a list of the configurations that will be updated and giving the
 	 * option to select the ones that will not get the update.
 	 * 
-	 * @param server The server that was updated with a new Path Mapping settings.
-	 * @param excludedLaunches A list of launches names to exclude from the list (usually, we'll exclude the current active launch, so the
-	 * user will need to apply to change the current setting)
+	 * @param server
+	 *            The server that was updated with a new Path Mapping settings.
+	 * @param excludedLaunches
+	 *            A list of launches names to exclude from the list (usually, we'll exclude the current active launch,
+	 *            so the user will need to apply to change the current setting)
 	 */
 	public void updatePaths(IServer server, String[] excludedLaunches)
 	{
 		try
 		{
 			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-			ILaunchConfigurationType configurationType = launchManager.getLaunchConfigurationType(IPHPDebugConstants.PHP_WEB_LAUNCH_TYPE_ID);
+			ILaunchConfigurationType configurationType = launchManager
+					.getLaunchConfigurationType(IPHPDebugConstants.PHP_WEB_LAUNCH_TYPE_ID);
 			ILaunchConfiguration[] configs = launchManager.getLaunchConfigurations(configurationType);
 			List<ILaunchConfiguration> launchConfigurations = new ArrayList<ILaunchConfiguration>();
 			Collections.addAll(launchConfigurations, configs);
@@ -89,23 +93,29 @@ public class PathMappingUpdater
 		}
 		catch (CoreException ce)
 		{
-			PHPDebugEPLPlugin.logError("Error while trying to propogate the PHP Server path mapping to the PHP web launch configurations", ce); //$NON-NLS-1$
+			PHPDebugEPLPlugin
+					.logError(
+							"Error while trying to propogate the PHP Server path mapping to the PHP web launch configurations", ce); //$NON-NLS-1$
 		}
 	}
 
 	/*
-	 * Filter out any launch configuration that does not use this the affected server, does not use a specific file
-	 * or does not auto-generate the script when using a specific file.
+	 * Filter out any launch configuration that does not use this the affected server, does not use a specific file or
+	 * does not auto-generate the script when using a specific file.
 	 */
-	private void filterByLaunchAttributes(List<ILaunchConfiguration> launchConfigurations, IServer server) throws CoreException
+	private void filterByLaunchAttributes(List<ILaunchConfiguration> launchConfigurations, IServer server)
+			throws CoreException
 	{
 		for (int i = launchConfigurations.size() - 1; i >= 0; i--)
 		{
 			ILaunchConfiguration launchConfiguration = launchConfigurations.get(i);
-			boolean usesSpecifiedScript = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, false);
-			if (!server.getName().equals(launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "")) ||
-					!usesSpecifiedScript ||
-					usesSpecifiedScript && !launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_AUTO_GENERATED_URL, false))
+			boolean usesSpecifiedScript = launchConfiguration.getAttribute(
+					IPHPDebugCorePreferenceKeys.ATTR_USE_SPECIFIC_FILE, false);
+			if (!server.getName().equals(
+					launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, StringUtil.EMPTY))
+					|| !usesSpecifiedScript
+					|| usesSpecifiedScript
+					&& !launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_AUTO_GENERATED_URL, false))
 			{
 				launchConfigurations.remove(i);
 			}
@@ -117,7 +127,8 @@ public class PathMappingUpdater
 	 */
 	private void filterBySelection(List<ILaunchConfiguration> launchConfigurations)
 	{
-		LaunchConfigurationsSelectionDialog dialog = new LaunchConfigurationsSelectionDialog(SWTUtil.getStandardDisplay().getActiveShell(), launchConfigurations);
+		LaunchConfigurationsSelectionDialog dialog = new LaunchConfigurationsSelectionDialog(SWTUtil
+				.getStandardDisplay().getActiveShell(), launchConfigurations);
 		if (dialog.open() == Window.OK)
 		{
 			Object[] result = dialog.getResult();
@@ -125,7 +136,8 @@ public class PathMappingUpdater
 			{
 				launchConfigurations.clear();
 				// Add the confirmed configurations
-				for (Object o : result) {
+				for (Object o : result)
+				{
 					launchConfigurations.add((ILaunchConfiguration) o);
 				}
 				return;
@@ -135,19 +147,21 @@ public class PathMappingUpdater
 	}
 
 	/**
-	 * Update the launch configurations in the list with the new path mapper settings that were assigned to the specified server.
-	 * The update process assumes that the given configurations are assigned with the given server, has a selected workspace script settings,
-	 * and set the URL generation to 'auto'. 
+	 * Update the launch configurations in the list with the new path mapper settings that were assigned to the
+	 * specified server. The update process assumes that the given configurations are assigned with the given server,
+	 * has a selected workspace script settings, and set the URL generation to 'auto'.
 	 * 
 	 * @param configurations
 	 * @param server
-	 * @throws CoreException 
+	 * @throws CoreException
 	 */
-	public static void updateConfigurations(List<ILaunchConfiguration> configurations, IServer server) throws CoreException
+	public static void updateConfigurations(List<ILaunchConfiguration> configurations, IServer server)
+			throws CoreException
 	{
 		for (ILaunchConfiguration configuration : configurations)
 		{
-			String fileName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_FILE_NAME, "");
+			String fileName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_FILE_NAME,
+					StringUtil.EMPTY);
 			if (fileName == null || fileName.trim().length() == 0)
 			{
 				continue;
@@ -155,9 +169,9 @@ public class PathMappingUpdater
 			fileName = fileName.replace('\\', '/');
 			URL newURL = server.getBaseURL();
 			PathMapper pathMapper = PathMapperRegistry.getByServer(server);
-			String remoteFile = pathMapper.getRemoteFile(fileName); 
+			String remoteFile = pathMapper.getRemoteFile(fileName);
 			ILaunchConfigurationWorkingCopy workingCopy = configuration.getWorkingCopy();
-			if (remoteFile != null && !"".equals(remoteFile) && !remoteFile.equals(fileName))
+			if (remoteFile != null && !StringUtil.EMPTY.equals(remoteFile) && !remoteFile.equals(fileName))
 			{
 				workingCopy.setAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_BASE_URL, newURL + remoteFile);
 			}

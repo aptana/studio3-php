@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.epl;
 
 import org.eclipse.core.runtime.IStatus;
@@ -88,8 +95,8 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		// DaemonPlugin.getDefault().stopDaemons(null); // TODO: SG - Check if the daemons are shutting down
 		super.stop(context);
 		plugin = null;
-		DebugUIPlugin.getDefault().getPreferenceStore().setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES,
-				fInitialAutoRemoveLaunches);
+		DebugUIPlugin.getDefault().getPreferenceStore()
+				.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES, fInitialAutoRemoveLaunches);
 
 		// close all the tunnel connections
 		SSHTunnelFactory.closeAllConnections();
@@ -245,8 +252,8 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		if (DebugUIPlugin.getDefault().getPreferenceStore().getBoolean(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES) == disableAutoRemoveLaunches)
 		{
 			fLaunchChangedAutoRemoveLaunches = true;
-			DebugUIPlugin.getDefault().getPreferenceStore().setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES,
-					!disableAutoRemoveLaunches);
+			DebugUIPlugin.getDefault().getPreferenceStore()
+					.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES, !disableAutoRemoveLaunches);
 		}
 	}
 

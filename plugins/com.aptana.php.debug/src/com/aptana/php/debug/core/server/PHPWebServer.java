@@ -10,7 +10,9 @@ package com.aptana.php.debug.core.server;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.webserver.core.ExternalWebServer;
 
@@ -56,7 +58,8 @@ public class PHPWebServer extends ExternalWebServer
 		}
 		catch (MalformedURLException e)
 		{
-			PHPDebugPlugin.logError(e);
+			IdeLog.logError(PHPDebugPlugin.getDefault(), "Error while initializing a PHP web server", e, //$NON-NLS-1$
+					IDebugScopes.DEBUG);
 		}
 	}
 

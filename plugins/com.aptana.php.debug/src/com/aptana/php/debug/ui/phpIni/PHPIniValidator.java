@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.FileUtil;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.PHPDebugSupportManager;
 import com.aptana.php.debug.core.util.FileUtils;
@@ -136,8 +137,8 @@ public class PHPIniValidator
 		catch (InvocationTargetException e)
 		{
 			// handle exception
-			PHPDebugPlugin.logError("Error while validating the PHP extensions", e); //$NON-NLS-1$
-
+			IdeLog.logError(PHPDebugPlugin.getDefault(),
+					"Error while validating the PHP extensions", e, IDebugScopes.DEBUG); //$NON-NLS-1$
 		}
 		catch (InterruptedException e) // $codepro.audit.disable emptyCatchClause
 		{
@@ -200,7 +201,8 @@ public class PHPIniValidator
 			catch (IOException e)
 			{
 				monitor.done();
-				PHPDebugPlugin.logError("Error while validating the PHP extensions", e); //$NON-NLS-1$
+				IdeLog.logError(PHPDebugPlugin.getDefault(),
+						"Error while validating the PHP extensions", e, IDebugScopes.DEBUG); //$NON-NLS-1$
 				MessageDialog.openError(null, Messages.PHPIniValidator_errorTitle,
 						Messages.PHPIniValidator_extensionValidationErrorMessage);
 			}

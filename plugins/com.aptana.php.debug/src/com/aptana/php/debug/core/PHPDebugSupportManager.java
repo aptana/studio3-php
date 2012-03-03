@@ -11,6 +11,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 
 /**
@@ -74,7 +76,8 @@ public class PHPDebugSupportManager
 					}
 					catch (CoreException e)
 					{
-						PHPDebugPlugin.logError(e);
+						IdeLog.logError(PHPDebugPlugin.getDefault(), e, IDebugScopes.DEBUG);
+
 					}
 				}
 			}

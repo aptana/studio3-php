@@ -25,6 +25,7 @@ import org.eclipse.ui.browser.IWebBrowser;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.FileUtil;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.util.NameValuePair;
 
@@ -68,7 +69,8 @@ public class RemoteDebugRedirector
 		}
 		catch (Exception e)
 		{
-			PHPDebugPlugin.logError("Error while redirecting the PHP Debug session", e); //$NON-NLS-1$
+			IdeLog.logError(PHPDebugPlugin.getDefault(), "Error while redirecting the PHP Debug session", e, //$NON-NLS-1$
+					IDebugScopes.DEBUG);
 			stopServer();
 			return new Status(IStatus.ERROR, PHPDebugPlugin.PLUGIN_ID, Messages.RemoteDebugRedirector_redirectingError);
 		}

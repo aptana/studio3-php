@@ -29,8 +29,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.ui.wizard.field.IListAdapter;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.util.NameValuePair;
@@ -153,7 +155,8 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		}
 		catch (CoreException e)
 		{
-			PHPDebugPlugin.logError("Error initializing the HTTP GET/POST configuration dialog", e); //$NON-NLS-1$
+			IdeLog.logError(PHPDebugPlugin.getDefault(),
+					"Error initializing the HTTP GET/POST configuration dialog", e, IDebugScopes.DEBUG); //$NON-NLS-1$
 		}
 	}
 

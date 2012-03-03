@@ -7,9 +7,7 @@
  */
 package com.aptana.php.debug;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jsch.core.IJSchService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -22,7 +20,6 @@ import com.aptana.php.debug.core.tunneling.SSHTunnelSession;
  */
 public class PHPDebugPlugin extends AbstractUIPlugin
 {
-
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.php.debug"; //$NON-NLS-1$
 	public static final boolean DEBUG = Boolean.valueOf(Platform.getDebugOption(PLUGIN_ID + "/debug")).booleanValue(); //$NON-NLS-1$
@@ -76,40 +73,4 @@ public class PHPDebugPlugin extends AbstractUIPlugin
 	{
 		return (IJSchService) tracker.getService();
 	}
-
-	/**
-	 * Logs a {@link Throwable} error.
-	 * 
-	 * @param t
-	 *            - A {@link Throwable}
-	 */
-	public static void logError(Throwable t)
-	{
-		logError(t.getLocalizedMessage(), t);
-	}
-
-	/**
-	 * Logs an error.
-	 * 
-	 * @param msg
-	 *            - A String message to log
-	 * @param t
-	 *            - The {@link Throwable} to log
-	 */
-	public static void logError(String msg, Throwable t)
-	{
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, msg, t));
-	}
-
-	/**
-	 * Logs an {@link IStatus}.
-	 * 
-	 * @param status
-	 *            - An {@link IStatus} to log.
-	 */
-	public static void log(IStatus status)
-	{
-		getDefault().getLog().log(status);
-	}
-
 }

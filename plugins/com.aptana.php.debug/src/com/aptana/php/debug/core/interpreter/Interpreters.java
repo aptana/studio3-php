@@ -7,6 +7,7 @@
  */
 package com.aptana.php.debug.core.interpreter;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 
 /**
@@ -181,12 +184,10 @@ public class Interpreters
 							}
 							catch (NumberFormatException ex)
 							{
-								PHPDebugPlugin
-										.logError(
-												Messages.getString("Interpreters.ERR_WrongPriorityFormatPrefix") //$NON-NLS-1$
-														+ elementName
-														+ Messages
-																.getString("Interpreters.ERR_WrongPriorityFormatSuffix"), null); //$NON-NLS-1$
+								IdeLog.logError(
+										PHPDebugPlugin.getDefault(),
+										MessageFormat.format(
+												Messages.getString("Interpreters.ERR_WrongPriorityFormat"), elementName), ex, IDebugScopes.DEBUG); //$NON-NLS-1$
 							}
 						}
 						try
@@ -221,13 +222,16 @@ public class Interpreters
 							}
 							catch (Throwable th)
 							{
-								PHPDebugPlugin.logError(
-										Messages.getString("Interpreters.ERR_UnableToGetInterpretersFromProvider"), th); //$NON-NLS-1$
+								IdeLog.logError(PHPDebugPlugin.getDefault(),
+										Messages.getString("Interpreters.ERR_UnableToGetInterpretersFromProvider"), th, //$NON-NLS-1$
+										IDebugScopes.DEBUG);
 							}
 						}
 						catch (CoreException e)
 						{
-							PHPDebugPlugin.logError(Messages.getString("Interpreters.ERR_UnableCreatingProvider"), e); //$NON-NLS-1$
+							IdeLog.logError(PHPDebugPlugin.getDefault(),
+									Messages.getString("Interpreters.ERR_UnableCreatingProvider"), e, //$NON-NLS-1$
+									IDebugScopes.DEBUG);
 						}
 					}
 				}

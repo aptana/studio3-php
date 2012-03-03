@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.core;
 
 import java.io.File;
@@ -7,7 +14,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
 import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIDebuggerUtil;
 
-import com.aptana.php.debug.core.IPHPDebugLaunchSupport;
 import com.aptana.php.debug.ui.phpini.IPhpIniFileModifier;
 
 /**

@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 
 /**
@@ -50,7 +52,8 @@ public class FileUtils
 					}
 					catch (CoreException e)
 					{
-						PHPDebugPlugin.logError(e);
+						IdeLog.logError(PHPDebugPlugin.getDefault(), "Error while changing execution permissions", e, //$NON-NLS-1$
+								IDebugScopes.DEBUG);
 					}
 				}
 			}
