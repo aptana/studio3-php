@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -29,7 +30,6 @@ public class SSHTunnel
 	public static final int CONNECTION_PASSWORD_CHANGED_CODE = 300;
 
 	private static final int SSH_DEFAULT_PORT = 22;
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private String remoteHost;
 	private String localHost;
 	private String userName;
@@ -62,7 +62,7 @@ public class SSHTunnel
 		this.remotePort = remotePort;
 		if (userName == null)
 		{
-			this.userName = EMPTY_STRING;
+			this.userName = StringUtil.EMPTY;
 		}
 		else
 		{
@@ -70,7 +70,7 @@ public class SSHTunnel
 		}
 		if (password == null)
 		{
-			this.password = EMPTY_STRING;
+			this.password = StringUtil.EMPTY;
 		}
 		else
 		{

@@ -154,14 +154,11 @@ public class Interpreters
 		{
 			IExtension[] extensions = ep.getExtensions();
 
-			for (int i = 0; i < extensions.length; i++)
+			for (IExtension extension : extensions)
 			{
-				IExtension extension = extensions[i];
 				IConfigurationElement[] elements = extension.getConfigurationElements();
-
-				for (int j = 0; j < elements.length; j++)
+				for (IConfigurationElement element : elements)
 				{
-					IConfigurationElement element = elements[j];
 					String elementName = element.getName();
 
 					if (elementName.equals(PROVIDER_ELEMENT_NAME))

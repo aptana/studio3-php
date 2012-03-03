@@ -10,6 +10,7 @@ package com.aptana.php.debug.core.util;
 import java.security.MessageDigest;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 
@@ -36,7 +37,7 @@ public class MD5
 		}
 		if (str.length() == 0)
 		{
-			return ""; //$NON-NLS-1$
+			return StringUtil.EMPTY;
 		}
 		String passwordDigest = null;
 		try

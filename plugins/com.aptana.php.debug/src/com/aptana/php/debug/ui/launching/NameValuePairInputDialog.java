@@ -50,14 +50,12 @@ public class NameValuePairInputDialog extends StatusDialog
 
 	private List<String> fExistingNames;
 
-	@SuppressWarnings("rawtypes")
-	public NameValuePairInputDialog(Shell parent, NameValuePair pair, List existingEntries)
+	public NameValuePairInputDialog(Shell parent, NameValuePair pair, List<NameValuePair> existingEntries)
 	{
 		super(parent);
 		fExistingNames = new ArrayList<String>(existingEntries.size());
-		for (int i = 0; i < existingEntries.size(); i++)
+		for (NameValuePair curr : existingEntries)
 		{
-			NameValuePair curr = (NameValuePair) existingEntries.get(i);
 			if (!curr.equals(pair))
 			{
 				fExistingNames.add(curr.name);

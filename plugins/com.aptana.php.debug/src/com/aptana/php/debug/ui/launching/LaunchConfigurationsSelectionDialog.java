@@ -37,6 +37,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.dialogs.SelectionDialog;
 
+import com.aptana.core.util.StringUtil;
+
 @SuppressWarnings("restriction")
 public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 {
@@ -110,12 +112,12 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 		initializeDialogUnits(parent);
 		Composite comp = (Composite) super.createDialogArea(parent);
 		String label = getMessage();
-		if (label != null && !"".equals(label)) //$NON-NLS-1$
+		if (!StringUtil.isEmpty(label))
 		{
 			SWTFactory.createWrapLabel(comp, label, 1);
 		}
 		label = getViewerLabel();
-		if (label != null && !"".equals(label)) //$NON-NLS-1$
+		if (!StringUtil.isEmpty(label))
 		{
 			SWTFactory.createLabel(comp, label, 1);
 		}
