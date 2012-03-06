@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2006 Zend Corporation and IBM Corporation.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Zend and IBM - Initial implementation
+ *******************************************************************************/
 package org.eclipse.php.internal.core.util.preferences;
 
 import java.io.ByteArrayInputStream;
@@ -21,10 +31,11 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.util.Key;
 
 /**
- * XML preferences reader for reading XML structures from the prefernces store.
- * This class works in combination with IXMLPreferencesStorable.
+ * XML preferences reader for reading XML structures from the prefernces store. This class works in combination with
+ * IXMLPreferencesStorable.
  */
-public class XMLPreferencesReader {
+public class XMLPreferencesReader
+{
 
 	public static final char DELIMITER = (char) 5;
 	private static final Pattern LT_PATTERN = Pattern.compile("&lt;"); //$NON-NLS-1$
@@ -34,7 +45,8 @@ public class XMLPreferencesReader {
 	private static final Pattern AMP_PATTERN = Pattern.compile("&amp;"); //$NON-NLS-1$
 	public static final String STRING_DEFAULT = ""; //$NON-NLS-1$
 
-	public static String getUnEscaped(String s) {
+	public static String getUnEscaped(String s)
+	{
 		s = LT_PATTERN.matcher(s).replaceAll("<"); //$NON-NLS-1$
 		s = GT_PATTERN.matcher(s).replaceAll(">"); //$NON-NLS-1$
 		s = QUOT_PATTERN.matcher(s).replaceAll("\""); //$NON-NLS-1$
@@ -43,14 +55,20 @@ public class XMLPreferencesReader {
 		return s;
 	}
 
-	private static HashMap read(NodeList nl) {
+	private static HashMap read(NodeList nl)
+	{
 		HashMap map = new HashMap(nl.getLength());
-		for (int i = 0; i < nl.getLength(); ++i) {
+		for (int i = 0; i < nl.getLength(); ++i)
+		{
 			Node n = nl.item(i);
-			if (n.hasChildNodes()) {
-				if (n.getFirstChild().getNodeType() == Node.TEXT_NODE) {
+			if (n.hasChildNodes())
+			{
+				if (n.getFirstChild().getNodeType() == Node.TEXT_NODE)
+				{
 					map.put(n.getNodeName(), getUnEscaped(n.getFirstChild().getNodeValue()));
-				} else {
+				}
+				else
+				{
 					map.put(n.getNodeName(), read(n.getChildNodes()));
 				}
 			}
@@ -58,8 +76,10 @@ public class XMLPreferencesReader {
 		return map;
 	}
 
-	private static HashMap read(String str) {
-		try {
+	private static HashMap read(String str)
+	{
+		try
+		{
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			// docBuilderFactory.setValidating(true);
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -67,7 +87,9 @@ public class XMLPreferencesReader {
 
 			return read(doc.getChildNodes());
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			PHPEplPlugin.logError("Unexpected exception", e);
 		}
 		return null;
@@ -78,52 +100,59 @@ public class XMLPreferencesReader {
 	 * 
 	 * @param store
 	 * @param prefsKey
-	 * @return 
+	 * @return
 	 */
-	public static HashMap[] read(IPreferenceStore store, String prefsKey) {
+	public static HashMap[] read(IPreferenceStore store, String prefsKey)
+	{
 		ArrayList maps = new ArrayList();
 		StringTokenizer st = new StringTokenizer(store.getString(prefsKey), new String(new char[] { DELIMITER }));
-		while (st.hasMoreTokens()) {
+		while (st.hasMoreTokens())
+		{
 			maps.add(read(st.nextToken()));
 		}
 		return (HashMap[]) maps.toArray(new HashMap[maps.size()]);
 	}
-	
+
 	/**
 	 * Reads a map of elements from the Preferences by a given key.
 	 * 
 	 * @param store
 	 * @param prefsKey
-	 * @return 
+	 * @return
 	 */
-	public static HashMap[] read(Preferences store, String prefsKey) {
+	public static HashMap[] read(Preferences store, String prefsKey)
+	{
 		String storedValue = store.getString(prefsKey);
 		return getHashFromStoredValue(storedValue);
 	}
-	
+
 	/**
 	 * Reads a map of elements from the project Properties by a given key.
 	 * 
-	 * @param prefsKey The key to store by.
-	 * @param projectScope The context for the project Scope
+	 * @param prefsKey
+	 *            The key to store by.
+	 * @param projectScope
+	 *            The context for the project Scope
 	 * @param workingCopyManager
-	 * @return 
+	 * @return
 	 */
-	public static HashMap[] read(Key prefKey, ProjectScope projectScope, IWorkingCopyManager workingCopyManager){
+	public static HashMap[] read(Key prefKey, ProjectScope projectScope, IWorkingCopyManager workingCopyManager)
+	{
 
 		String storedValue = prefKey.getStoredValue(projectScope, workingCopyManager);
 		if (storedValue == null)
-			storedValue = STRING_DEFAULT;		
+			storedValue = STRING_DEFAULT;
 		return getHashFromStoredValue(storedValue);
-	
+
 	}
-	
-	
-	public static HashMap[] getHashFromStoredValue(String storedValue){
-		
+
+	public static HashMap[] getHashFromStoredValue(String storedValue)
+	{
+
 		ArrayList maps = new ArrayList();
 		StringTokenizer st = new StringTokenizer(storedValue, new String(new char[] { DELIMITER }));
-		while (st.hasMoreTokens()) {
+		while (st.hasMoreTokens())
+		{
 			maps.add(read(st.nextToken()));
 		}
 		return (HashMap[]) maps.toArray(new HashMap[maps.size()]);

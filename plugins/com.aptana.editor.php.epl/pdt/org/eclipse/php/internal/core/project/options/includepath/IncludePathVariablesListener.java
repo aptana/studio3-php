@@ -6,7 +6,8 @@ package org.eclipse.php.internal.core.project.options.includepath;
 
 import org.eclipse.core.runtime.IPath;
 
-public interface IncludePathVariablesListener {
+public interface IncludePathVariablesListener
+{
 
 	void includePathVariablesChanged(String[] names, IPath[] paths);
 

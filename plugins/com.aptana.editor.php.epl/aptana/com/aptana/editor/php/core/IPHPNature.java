@@ -43,14 +43,9 @@ import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
 public interface IPHPNature extends IProjectNature
 {
 	/**
-	 * The PHP Nature ID.
-	 */
-	public static final String NATURE_ID = "com.aptana.editor.php.phpNature"; //$NON-NLS-1$
-
-	/**
 	 * Returns the {@link PHPProjectOptions} for the project of this nature.
 	 * 
 	 * @return {@link PHPProjectOptions}
 	 */
-	public PHPProjectOptions getOptions();
+	PHPProjectOptions getOptions();
 }

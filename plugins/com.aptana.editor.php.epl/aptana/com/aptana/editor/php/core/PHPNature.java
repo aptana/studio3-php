@@ -8,8 +8,8 @@
 package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
 
 import com.aptana.core.build.UnifiedBuilder;
 import com.aptana.core.util.ResourceUtil;
@@ -19,7 +19,7 @@ import com.aptana.core.util.ResourceUtil;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public final class PHPNature implements IProjectNature
+public final class PHPNature implements IPHPNature
 {
 
 	/**
@@ -88,5 +88,15 @@ public final class PHPNature implements IProjectNature
 	{
 		this.fProject = project;
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.IPHPNature#getOptions()
+	 */
+	public PHPProjectOptions getOptions()
+	{
+		// TODO - Implement that later on.
+		return null;
 	}
 }

@@ -26,12 +26,15 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import com.aptana.editor.php.core.IPHPCoreEPLConstants;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
-public class IncludePathVariableManager {
+public class IncludePathVariableManager
+{
 
 	private static IncludePathVariableManager instance;
 
-	public static IncludePathVariableManager instance() {
-		if (instance == null) {
+	public static IncludePathVariableManager instance()
+	{
+		if (instance == null)
+		{
 			instance = new IncludePathVariableManager();
 		}
 		return instance;
@@ -43,31 +46,41 @@ public class IncludePathVariableManager {
 	HashMap reservedVariables = new HashMap();
 	private ArrayList listeners;
 
-	private IncludePathVariableManager() {
+	private IncludePathVariableManager()
+	{
 	}
 
-	public IPath getIncludePathVariable(String variableName) {
+	public IPath getIncludePathVariable(String variableName)
+	{
 		IPath varPath = null;
 		IPath path = new Path(variableName);
-		if (path.segmentCount() == 1) {
+		if (path.segmentCount() == 1)
+		{
 			varPath = (IPath) variables.get(variableName);
-		} else {
+		}
+		else
+		{
 			varPath = (IPath) variables.get(path.segment(0));
-			if (varPath != null) {
+			if (varPath != null)
+			{
 				varPath = varPath.append(path.removeFirstSegments(1));
 			}
 		}
 		return varPath;
 	}
 
-	public void setIncludePathVariables(String[] names, IPath[] paths, SubProgressMonitor monitor) {
+	public void setIncludePathVariables(String[] names, IPath[] paths, SubProgressMonitor monitor)
+	{
 		variables.clear();
 		StringBuffer namesString = new StringBuffer();
 		StringBuffer pathsString = new StringBuffer();
-		for (int i = 0; i < names.length; i++) {
-			if (paths[i] != null) {
+		for (int i = 0; i < names.length; i++)
+		{
+			if (paths[i] != null)
+			{
 				variables.put(names[i], paths[i]);
-				if (i > 0) {
+				if (i > 0)
+				{
 					namesString.append(","); //$NON-NLS-1$
 					pathsString.append(","); //$NON-NLS-1$
 				}
@@ -80,40 +93,49 @@ public class IncludePathVariableManager {
 		fireIncludePathVariablesChanged(names, paths);
 	}
 
-	private void fireIncludePathVariablesChanged(String[] names, IPath[] paths) {
+	private void fireIncludePathVariablesChanged(String[] names, IPath[] paths)
+	{
 		if (listeners == null || listeners.size() == 0)
 			return;
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
+		for (Iterator i = listeners.iterator(); i.hasNext();)
+		{
 			((IncludePathVariablesListener) i.next()).includePathVariablesChanged(names, paths);
 		}
 
 	}
 
-	public void addListener(IncludePathVariablesListener listener) {
-		if (listeners == null) {
+	public void addListener(IncludePathVariablesListener listener)
+	{
+		if (listeners == null)
+		{
 			listeners = new ArrayList(1);
 		}
-		if (!listeners.contains(listener)) {
+		if (!listeners.contains(listener))
+		{
 			listeners.add(listener);
 		}
 	}
 
-	public void removeListener(IncludePathVariablesListener listener) {
+	public void removeListener(IncludePathVariablesListener listener)
+	{
 		if (listeners == null || listeners.size() == 0)
 			return;
-		if (listeners.contains(listener)) {
+		if (listeners.contains(listener))
+		{
 			listeners.remove(listener);
 		}
 	}
 
-	public String[] getIncludePathVariableNames() {
+	public String[] getIncludePathVariableNames()
+	{
 		ArrayList list = new ArrayList();
 		list.addAll(variables.keySet());
 		return (String[]) list.toArray(new String[list.size()]);
 
 	}
 
-	public void startUp() {
+	public void startUp()
+	{
 		String namesString = preferenceStore.getString(IPHPCoreEPLConstants.INCLUDE_PATH_VARIABLE_NAMES);
 		String pathsString = preferenceStore.getString(IPHPCoreEPLConstants.INCLUDE_PATH_VARIABLE_PATHS);
 		String[] names = {};
@@ -124,11 +146,15 @@ public class IncludePathVariableManager {
 			paths = pathsString.split(","); //$NON-NLS-1$
 		// Not good since empty paths are allowed!!!
 		// assert (names.length == paths.length);
-		for (int i = 0; i < names.length; i++) {
+		for (int i = 0; i < names.length; i++)
+		{
 			String path;
-			if (i < paths.length) {
+			if (i < paths.length)
+			{
 				path = paths[i];
-			} else {
+			}
+			else
+			{
 				path = ""; //$NON-NLS-1$
 			}
 			variables.put(names[i], new Path(path));
@@ -137,26 +163,30 @@ public class IncludePathVariableManager {
 		initExtensionPoints();
 	}
 
-	private void initExtensionPoints() {
+	private void initExtensionPoints()
+	{
 		Plugin phpCorePlugin = PHPEplPlugin.getDefault();
 		if (phpCorePlugin == null)
 			return;
 
-		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(IPHPCoreEPLConstants.PLUGIN_ID, IPHPCoreEPLConstants.IP_VARIABLE_INITIALIZER_EXTPOINT_ID);
-		for (IConfigurationElement element : elements) {
+		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				IPHPCoreEPLConstants.PLUGIN_ID, IPHPCoreEPLConstants.IP_VARIABLE_INITIALIZER_EXTPOINT_ID);
+		for (IConfigurationElement element : elements)
+		{
 			if ("variable".equals(element.getName())) { //$NON-NLS-1$
 				String name = element.getAttribute("name"); //$NON-NLS-1$
 				String value = element.getAttribute("value"); //$NON-NLS-1$
-//				if (element.getAttribute("initializer") != null) { //$NON-NLS-1$
-//					try {
-//						IIncludePathVariableInitializer initializer = (IIncludePathVariableInitializer) element.createExecutableExtension("initializer"); //$NON-NLS-1$
-//						value = initializer.initialize(name);
-//					} catch (CoreException e) {
-//						Logger.logException(e);
-//					}
-//				}
-				//FIXME
-				if (value != null) {
+				//				if (element.getAttribute("initializer") != null) { //$NON-NLS-1$
+				// try {
+				//						IIncludePathVariableInitializer initializer = (IIncludePathVariableInitializer) element.createExecutableExtension("initializer"); //$NON-NLS-1$
+				// value = initializer.initialize(name);
+				// } catch (CoreException e) {
+				// Logger.logException(e);
+				// }
+				// }
+				// FIXME
+				if (value != null)
+				{
 					putVariable(name, new Path(value));
 					reservedVariables.put(name, null);
 				}
@@ -164,34 +194,44 @@ public class IncludePathVariableManager {
 		}
 	}
 
-	public synchronized void putVariable(String name, IPath path) {
+	public synchronized void putVariable(String name, IPath path)
+	{
 		this.variables.put(name, path);
 	}
 
 	/**
 	 * Returns <code>true</code> if the specified variable is reserved
-	 * @param variableName Variable name
+	 * 
+	 * @param variableName
+	 *            Variable name
 	 */
-	public boolean isReserved(String variableName) {
+	public boolean isReserved(String variableName)
+	{
 		return reservedVariables.containsKey(variableName);
 	}
 
-	public String[] getReservedVariables() {
+	public String[] getReservedVariables()
+	{
 		Set reservedVariables = this.reservedVariables.keySet();
 		return (String[]) reservedVariables.toArray(new String[reservedVariables.size()]);
 	}
 
 	/**
 	 * Returns resolved IPath from the given path string that starts from include path variable
-	 * @param path Path string
+	 * 
+	 * @param path
+	 *            Path string
 	 * @return resolved IPath or <code>null</code> if it couldn't be resolved
 	 */
-	public IPath resolveVariablePath (String path) {
+	public IPath resolveVariablePath(String path)
+	{
 		int index = path.indexOf('/');
-		if (index != -1) {
+		if (index != -1)
+		{
 			String var = path.substring(0, index);
 			IPath varPath = getIncludePathVariable(var);
-			if (varPath != null && index + 1 < path.length()) {
+			if (varPath != null && index + 1 < path.length())
+			{
 				varPath = varPath.append(path.substring(index + 1));
 			}
 			return varPath;

@@ -15,7 +15,8 @@ import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 /**
  * Change listener used by <code>StringButtonDialogField</code>
  */
-public interface IStringButtonAdapter {
+public interface IStringButtonAdapter
+{
 
 	/**
 	 * @param field

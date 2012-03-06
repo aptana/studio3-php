@@ -4,7 +4,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -173,7 +172,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	 */
 	public static void logInfo(String string, Throwable e)
 	{
-		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
+		IdeLog.logInfo(getDefault(), string, e, DEBUG_SCOPE);
 	}
 
 	/**
@@ -181,7 +180,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	 */
 	public static void logError(Throwable e)
 	{
-		logError(e.getLocalizedMessage(), e);
+		IdeLog.logError(getDefault(), e);
 	}
 
 	/**
@@ -189,7 +188,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	 */
 	public static void logError(String string, Throwable e)
 	{
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, string, e));
+		IdeLog.logError(getDefault(), string, e);
 	}
 
 	/**
@@ -197,7 +196,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	 */
 	public static void logWarning(String message)
 	{
-		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
+		IdeLog.logWarning(getDefault(), message);
 	}
 
 	/**
@@ -205,7 +204,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	 */
 	public static void log(IStatus status)
 	{
-		getDefault().getLog().log(status);
+		IdeLog.log(getDefault(), status);
 	}
 
 	public static IWorkspace getWorkspace()

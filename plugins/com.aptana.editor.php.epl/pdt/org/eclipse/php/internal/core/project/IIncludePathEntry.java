@@ -13,62 +13,57 @@ package org.eclipse.php.internal.core.project;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
-public interface IIncludePathEntry {
+public interface IIncludePathEntry
+{
 
-	
 	int K_SOURCE = 1;
 	/**
-	 * Kind constant for a binary path root. Indicates this
-	 * root only contains binary files.
+	 * Kind constant for a binary path root. Indicates this root only contains binary files.
 	 */
 	int K_BINARY = 2;
-	
+
 	int IPE_LIBRARY = 1;
 
 	/**
-	 * Entry kind constant describing a includepath entry identifying a
-	 * required project.
+	 * Entry kind constant describing a includepath entry identifying a required project.
 	 */
 	int IPE_PROJECT = 2;
 
 	/**
-	 * Entry kind constant describing a includepath entry identifying a
-	 * folder containing package fragments with source code
-	 * to be compiled.
+	 * Entry kind constant describing a includepath entry identifying a folder containing package fragments with source
+	 * code to be compiled.
 	 */
 	int IPE_SOURCE = 3;
 
 	/**
-	 * Entry kind constant describing a includepath entry defined using
-	 * a path that begins with a includepath variable reference.
+	 * Entry kind constant describing a includepath entry defined using a path that begins with a includepath variable
+	 * reference.
 	 */
 	int IPE_VARIABLE = 4;
 
 	/**
-	 * Entry kind constant describing a includepath entry representing
-	 * a name includepath container.
+	 * Entry kind constant describing a includepath entry representing a name includepath container.
 	 * 
 	 * @since 2.0
 	 */
 	int IPE_CONTAINER = 5;
-	
+
 	/**
-	 * Entry kind constant describing a includepath entry identifying a
-	 * JRE.
+	 * Entry kind constant describing a includepath entry identifying a JRE.
 	 */
 	int IPE_JRE = 6;
-	
+
 	int getContentKind();
-	
+
 	int getEntryKind();
-	
+
 	IPath getPath();
-	
+
 	IResource getResource();
-	
+
 	boolean isExported();
-	
+
 	String validate();
-	
+
 	void setResource(IResource resource);
 }

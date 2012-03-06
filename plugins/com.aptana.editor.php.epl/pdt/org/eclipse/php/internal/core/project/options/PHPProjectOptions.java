@@ -47,10 +47,10 @@ import org.xml.sax.InputSource;
 import org2.eclipse.php.internal.core.CoreMessages;
 
 import com.aptana.editor.php.core.IPHPCoreEPLConstants;
-import com.aptana.editor.php.core.IPHPNature;
+import com.aptana.editor.php.core.PHPNature;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings("restriction")
 public class PHPProjectOptions
 {
 
@@ -77,18 +77,19 @@ public class PHPProjectOptions
 		{
 			return null;
 		}
-		IPHPNature nature = null;
+		PHPNature nature = null;
 		try
 		{
-			nature = (IPHPNature) project.getNature(IPHPNature.NATURE_ID);
+			nature = (PHPNature) project.getNature(PHPNature.NATURE_ID);
 		}
 		catch (final CoreException e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 		if (nature != null)
-
+		{
 			return nature.getOptions();
+		}
 		return null;
 	}
 
@@ -223,7 +224,7 @@ public class PHPProjectOptions
 		}
 		catch (BackingStoreException e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 	}
 
@@ -266,7 +267,7 @@ public class PHPProjectOptions
 		}
 		catch (final Exception e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 	}
 
@@ -293,7 +294,7 @@ public class PHPProjectOptions
 		}
 		catch (final Exception e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 	}
 
@@ -330,7 +331,7 @@ public class PHPProjectOptions
 		}
 		catch (IOException e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 		finally
 		{
@@ -359,7 +360,7 @@ public class PHPProjectOptions
 			}
 			catch (final Exception e)
 			{
-				throw new IOException(CoreMessages.getString("PHPProjectOptions_1"));
+				throw new IOException(CoreMessages.getString("PHPProjectOptions_1")); //$NON-NLS-1$
 			}
 			finally
 			{
@@ -383,7 +384,7 @@ public class PHPProjectOptions
 		}
 		catch (IOException e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 		finally
 		{
@@ -413,7 +414,7 @@ public class PHPProjectOptions
 			}
 			catch (final Exception e)
 			{
-				throw new IOException(CoreMessages.getString("PHPProjectOptions_1"));
+				throw new IOException(CoreMessages.getString("PHPProjectOptions_1")); //$NON-NLS-1$
 			}
 			finally
 			{
@@ -421,7 +422,7 @@ public class PHPProjectOptions
 			}
 
 			if (!cpElement.getNodeName().equalsIgnoreCase(TAG_OPTIONS))
-				throw new IOException(CoreMessages.getString("PHPProjectOptions_1"));
+				throw new IOException(CoreMessages.getString("PHPProjectOptions_1")); //$NON-NLS-1$
 			NodeList list = cpElement.getElementsByTagName(TAG_OPTION);
 			int length = list.getLength();
 			for (int i = 0; i < length; ++i)
@@ -460,11 +461,11 @@ public class PHPProjectOptions
 		}
 		catch (final IOException e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 		catch (final CoreException e)
 		{
-			PHPEplPlugin.logError("Unexpected exception", e);
+			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
 	}
 

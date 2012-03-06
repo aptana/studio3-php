@@ -10,14 +10,12 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.project.options;
 
-
 /**
- * This listener listens to changes for a specific option in a set project
- * 
- * It is invoked when the option is changed and it gets the old and new options - they can be object, but most likely strings. 
- *
+ * This listener listens to changes for a specific option in a set project It is invoked when the option is changed and
+ * it gets the old and new options - they can be object, but most likely strings.
  */
-public interface IPhpProjectOptionChangeListener {
-	
+public interface IPhpProjectOptionChangeListener
+{
+
 	public void notifyOptionChanged(Object oldOption, Object newOption);
 }

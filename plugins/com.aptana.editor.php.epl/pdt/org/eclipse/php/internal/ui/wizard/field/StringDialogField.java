@@ -41,15 +41,15 @@ public class StringDialogField extends DialogField
 	protected IContentProposalProvider fContentAssistProcessor;
 	protected ContentProposalAdapter contentProposalAdapter;
 	protected LabelProvider labelProvider;
-	
 
 	/**
 	 * @param labelProvider
 	 */
 	public void setContentAssistLabelProvider(LabelProvider labelProvider)
 	{
-		this.labelProvider=labelProvider;
+		this.labelProvider = labelProvider;
 	}
+
 	/**
 	 * @return current content proposal provider
 	 */
@@ -76,8 +76,7 @@ public class StringDialogField extends DialogField
 	}
 
 	/**
-	 * @see DialogField#doFillIntoGrid(org.eclipse.swt.widgets.Composite,
-	 *      int)
+	 * @see DialogField#doFillIntoGrid(org.eclipse.swt.widgets.Composite, int)
 	 */
 	// ------- layout helpers
 	/*
@@ -277,7 +276,6 @@ public class StringDialogField extends DialogField
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField#refresh()
 	 */
 	/**

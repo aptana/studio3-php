@@ -1,6 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2006 Zend Corporation and IBM Corporation.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Zend and IBM - Initial implementation
+ *******************************************************************************/
 package com.aptana.editor.php.internal.ui;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,7 +22,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Point;
 import org.osgi.framework.Bundle;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -50,7 +58,7 @@ public class PHPPluginImages
 	public static final String IMG_OBJS_LIBRARY = NAME_PREFIX + "library_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_PHP_PROJECT = NAME_PREFIX + "php_project_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_PHP_FOLDER = NAME_PREFIX + "folder_opened.gif"; //$NON-NLS-1$
-	
+
 	// Descriptors
 	public static final ImageDescriptor DESC_OVR_WARNING = createUnManagedCached(T_OVR, "warning_co.gif"); //$NON-NLS-1$
 	public static final ImageDescriptor DESC_OVR_ERROR = createUnManagedCached(T_OVR, "error_co.gif"); //$NON-NLS-1$
@@ -195,7 +203,6 @@ public class PHPPluginImages
 				if (PHPEplPlugin.DEBUG)
 				{
 					PHPEplPlugin.logError("Image registry already defined", null); //$NON-NLS-1$
-					System.err.println("Image registry already defined"); //$NON-NLS-1$
 				}
 			}
 			return result;
