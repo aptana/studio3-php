@@ -1,11 +1,13 @@
 <html>
-	<head>
-	<?php
-	function nestedFunction() {
-		for(;;) {
-			?><div id="nested-div">This is a text inside a nested div</div><?
-		}
-	}
-	?>
-	</head>
+	<body>
+		<ul>
+			<?php
+        function foo() {
+			  ?>
+			  <li>
+				  Menu Item <?php echo $i;?>
+			  </li>
+			  <?php }?>
+		</ul>
+	</body>
 </html>
