@@ -1,5 +1,6 @@
 package com.aptana.editor.php.epl;
 
+import org.eclipse.core.internal.utils.StringPool;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
@@ -32,6 +33,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	private ASTProvider fASTProvider;
 
 	private ProblemMarkerManager fProblemMarkerManager;
+	private StringPool _pool;
 
 	/**
 	 * The constructor
@@ -48,6 +50,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	{
 		super.start(context);
 		plugin = this;
+		this._pool = new StringPool();
 	}
 
 	/*
@@ -56,6 +59,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	 */
 	public void stop(BundleContext context) throws Exception
 	{
+		this._pool = null;
 		plugin = null;
 		super.stop(context);
 	}
@@ -211,5 +215,10 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public static IWorkspace getWorkspace()
 	{
 		return ResourcesPlugin.getWorkspace();
+	}
+
+	public String sharedString(String value)
+	{
+		return this._pool.add(value);
 	}
 }
