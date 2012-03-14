@@ -1134,7 +1134,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// Instead of calling InfixExpression.getOperator(infixExpression.getOperator()), we grab the operator
 		// from the document as is. This way, we will be able to handle case-insensitive operators, as well as 'synonym'
 		// operators such as <> and !=.
+		// However, in case the length of the original operator is smaller, we use it anyway (see #APSTUD-4356 as a
+		// reason for that)
+		String operatorStr = InfixExpression.getOperator(infixExpression.getOperator());
 		String operatorStringAsIs = document.get(left.getEnd(), right.getStart()).trim();
+		if (operatorStr.length() < operatorStringAsIs.length())
+		{
+			operatorStringAsIs = operatorStr;
+		}
 		visitLeftRightExpression(infixExpression, left, right, operatorStringAsIs);
 		return false;
 	}
