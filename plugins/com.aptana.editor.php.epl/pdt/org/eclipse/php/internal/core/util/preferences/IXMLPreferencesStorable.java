@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.util.preferences;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The IXMLPreferencesStorable should be implemented by any class that should save or load its properties as XML. This
@@ -24,7 +24,7 @@ public interface IXMLPreferencesStorable
 	 * 
 	 * @return HashMap
 	 */
-	public HashMap storeToMap();
+	public Map storeToMap();
 
 	/**
 	 * Restores the object from the map.
@@ -32,5 +32,5 @@ public interface IXMLPreferencesStorable
 	 * @param HashMap
 	 *            map
 	 */
-	public void restoreFromMap(HashMap map);
+	public void restoreFromMap(Map map);
 }

@@ -242,7 +242,7 @@ public class PathMapper implements IXMLPreferencesStorable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized void restoreFromMap(HashMap map) {
+	public synchronized void restoreFromMap(Map map) {
 		if (map == null) {
 			return;
 		}
@@ -272,7 +272,7 @@ public class PathMapper implements IXMLPreferencesStorable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized HashMap storeToMap() {
+	public synchronized Map storeToMap() {
 		HashMap entries = new HashMap();
 		Iterator<VirtualPath> i = localToRemoteMap.keySet().iterator();
 		int c= 1;

@@ -13,6 +13,7 @@ package org.eclipse.php.internal.core.util.preferences;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -136,7 +137,7 @@ public class XMLPreferencesReader
 	 * @param workingCopyManager
 	 * @return
 	 */
-	public static HashMap[] read(Key prefKey, ProjectScope projectScope, IWorkingCopyManager workingCopyManager)
+	public static Map[] read(Key prefKey, ProjectScope projectScope, IWorkingCopyManager workingCopyManager)
 	{
 
 		String storedValue = prefKey.getStoredValue(projectScope, workingCopyManager);

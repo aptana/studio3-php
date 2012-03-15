@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.php.internal.core.util.preferences;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.ProjectScope;
@@ -74,7 +74,7 @@ public class XMLPreferencesWriter
 		return null;
 	}
 
-	private static void write(StringBuffer sb, HashMap map)
+	private static void write(StringBuffer sb, Map map)
 	{
 		Set keys = map.keySet();
 		for (Iterator i = keys.iterator(); i.hasNext();)
@@ -84,9 +84,9 @@ public class XMLPreferencesWriter
 			sb.append(key);
 			sb.append(">"); //$NON-NLS-1$
 			Object object = map.get(key);
-			if (object instanceof HashMap)
+			if (object instanceof Map)
 			{
-				write(sb, (HashMap) object);
+				write(sb, (Map) object);
 			}
 			else
 			{

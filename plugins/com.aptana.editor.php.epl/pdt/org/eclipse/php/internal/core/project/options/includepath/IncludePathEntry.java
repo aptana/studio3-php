@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.internal.resources.XMLWriter;
 import org.eclipse.core.resources.IProject;
@@ -84,10 +85,10 @@ public class IncludePathEntry implements IIncludePathEntry
 			ProjectScope projectScope, IWorkingCopyManager workingCopyManager)
 	{
 
-		final ArrayList entries = new ArrayList();
+		List entries = new ArrayList();
 
-		HashMap[] maps = XMLPreferencesReader.read(preferenceKey, projectScope, workingCopyManager);
-		if (maps.length > 0)
+		Map[] maps = XMLPreferencesReader.read(preferenceKey, projectScope, workingCopyManager);
+		if (maps != null)
 		{
 			for (int entryCount = 0; entryCount < maps.length; ++entryCount)
 			{
@@ -113,8 +114,8 @@ public class IncludePathEntry implements IIncludePathEntry
 
 		final ArrayList entries = new ArrayList();
 
-		HashMap[] maps = XMLPreferencesReader.getHashFromStoredValue(entriesString);
-		if (maps.length > 0)
+		Map[] maps = XMLPreferencesReader.getHashFromStoredValue(entriesString);
+		if (maps != null)
 		{
 			for (int entryCount = 0; entryCount < maps.length; ++entryCount)
 			{
@@ -279,6 +280,7 @@ public class IncludePathEntry implements IIncludePathEntry
 
 	public void elementEncode(XMLWriter writer, IPath projectPath, boolean newLine)
 	{
+		// Keeping this as a HashMap (not a Map) for the XMLWriter
 		HashMap parameters = new HashMap();
 
 		parameters.put(TAG_ENTRY_KIND, IncludePathEntry.entryKindToString(this.entryKind));

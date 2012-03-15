@@ -1,42 +1,50 @@
-/**
- * Copyright (c) 2005-2008 Aptana, Inc.
- *
+/*******************************************************************************
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html. If redistributing this code,
- * this entire header must remain intact.
- */
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package com.aptana.editor.php.internal.ui.wizard.field;
 
 import org.eclipse.php.internal.ui.wizard.field.ListDialogField;
 
 /**
  * Change listener used by <code>ListDialogField</code> and <code>CheckedListDialogField</code>
+ * 
+ * @param <E>
+ *            the type of the list elements
  */
-public interface IListAdapter
+public interface IListAdapter<E>
 {
 
 	/**
 	 * A button from the button bar has been pressed.
 	 * 
 	 * @param field
+	 *            the dialog field
 	 * @param index
+	 *            the button index
 	 */
-	void customButtonPressed(ListDialogField<?> field, int index);
+	void customButtonPressed(ListDialogField<E> field, int index);
 
 	/**
 	 * The selection of the list has changed.
 	 * 
 	 * @param field
+	 *            the dialog field
 	 */
-	void selectionChanged(ListDialogField<?> field);
+	void selectionChanged(ListDialogField<E> field);
 
 	/**
-	 * En entry in the list has been double clicked
+	 * An entry in the list has been double clicked
 	 * 
 	 * @param field
+	 *            the dialog field
 	 */
-	void doubleClicked(ListDialogField<?> field);
+	void doubleClicked(ListDialogField<E> field);
 
 }

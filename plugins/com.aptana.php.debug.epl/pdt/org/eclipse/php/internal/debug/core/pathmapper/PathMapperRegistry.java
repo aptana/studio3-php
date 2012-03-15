@@ -12,6 +12,7 @@ package org.eclipse.php.internal.debug.core.pathmapper;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -168,7 +169,7 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized void restoreFromMap(HashMap map)
+	public synchronized void restoreFromMap(Map map)
 	{
 		if (map == null)
 		{
@@ -216,7 +217,7 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized HashMap storeToMap()
+	public synchronized Map storeToMap()
 	{
 		HashMap elements = new HashMap();
 		Iterator i = serverPathMapper.keySet().iterator();
