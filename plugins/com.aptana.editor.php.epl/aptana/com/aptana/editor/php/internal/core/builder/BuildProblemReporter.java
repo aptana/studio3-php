@@ -156,7 +156,10 @@ public class BuildProblemReporter extends ProblemCollector
 				{
 					m = workspaceResource.createMarker(markerType);
 				}
-
+				if (m == null || !m.exists())
+				{
+					IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating a PHP marker", PHPEplPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+				}
 				if (problem.getSourceLineNumber() >= 0)
 				{
 					m.setAttribute(IMarker.LINE_NUMBER, problem.getSourceLineNumber() + 1);
