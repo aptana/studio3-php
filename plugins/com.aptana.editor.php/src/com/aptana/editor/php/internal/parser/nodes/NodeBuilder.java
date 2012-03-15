@@ -51,7 +51,7 @@ public class NodeBuilder
 	private Stack<Object> stack = new Stack<Object>();
 	private List<Object> phpStarts = new ArrayList<Object>();
 	private List<Object> phpEnds = new ArrayList<Object>();
-	private List<Object> parameters = new ArrayList<Object>();
+	private List<Parameter> parameters = new ArrayList<Parameter>();
 
 	/**
 	 * Whether to collect variables.
@@ -252,7 +252,7 @@ public class NodeBuilder
 		{
 			pn.setDocumentation(docInfo);
 		}
-		parameters = new ArrayList<Object>();
+		parameters = new ArrayList<Parameter>();
 		pushNode(pn);
 	}
 
@@ -315,7 +315,7 @@ public class NodeBuilder
 		try
 		{
 			ParseState parseState = new HTMLParseState();
-			parseState.setEditState(source, null, 0, 0);
+			parseState.setEditState(source, 0);
 			htmlParseResult = ParserPoolFactory.parse(IHTMLConstants.CONTENT_TYPE_HTML, parseState);
 		}
 		catch (Exception e)

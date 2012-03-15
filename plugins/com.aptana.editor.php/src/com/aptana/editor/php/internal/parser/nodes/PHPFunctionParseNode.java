@@ -7,6 +7,7 @@
  */
 package com.aptana.editor.php.internal.parser.nodes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class PHPFunctionParseNode extends PHPBaseParseNode
 {
 
 	boolean isMethod;
-	private List<Object> parameters;
+	private List<Parameter> parameters;
 
 	/**
 	 * @param modifiers
@@ -51,9 +52,9 @@ public class PHPFunctionParseNode extends PHPBaseParseNode
 	/**
 	 * @param parameters
 	 */
-	public void setParameters(List<Object> parameters)
+	public void setParameters(List<Parameter> parameters)
 	{
-		this.parameters = parameters;
+		this.parameters = new ArrayList<Parameter>(parameters);
 	}
 
 	/**
@@ -68,7 +69,7 @@ public class PHPFunctionParseNode extends PHPBaseParseNode
 
 		for (int a = 0; a < size; a++)
 		{
-			Parameter p = (Parameter) parameters.get(a);
+			Parameter p = parameters.get(a);
 			p.addLabel(bf);
 			if (a != size - 1)
 			{

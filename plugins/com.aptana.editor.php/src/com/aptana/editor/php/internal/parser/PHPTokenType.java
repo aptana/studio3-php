@@ -17,7 +17,7 @@ public enum PHPTokenType
 
 	ARRAY_BEGIN("punctuation.section.array.begin.php"),
 	ARRAY_END("punctuation.section.array.end.php"),
-	CHARACTER_ESCAPE("meta.string-contents.quoted.double.php constant.character.escape.php"),
+	CHARACTER_ESCAPE("constant.character.escape.php"),
 	CLASS_OPERATOR("keyword.operator.class.php"),
 	COMMENT_BLOCK("comment.block.php"),
 	COMMENT_HASH("comment.line.number-sign.php"),
@@ -82,7 +82,7 @@ public enum PHPTokenType
 	VARIABLE_OTHER_GLOBAL("variable.other.global.php"),
 	VARIABLE_OTHER_GLOBAL_SAFER("variable.other.global.safer.php"),
 	VARIABLE_OTHER_PROPERTY("variable.other.property.php"),
-	VARIABLE_PUNCTUATION("meta.string-contents.quoted.double.php punctuation.definition.variable.php");
+	VARIABLE_PUNCTUATION("punctuation.definition.variable.php");
 
 	private final String scope;
 

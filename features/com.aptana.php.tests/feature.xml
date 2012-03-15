@@ -19,17 +19,26 @@
 
    <requires>
       <import plugin="org.junit"/>
-      <import plugin="com.aptana.editor.php"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.jface.text"/>
-      <import plugin="com.aptana.editor.php.epl"/>
       <import plugin="com.aptana.editor.common"/>
-      <import plugin="com.aptana.editor.html"/>
       <import plugin="com.aptana.parsing"/>
-      <import plugin="com.aptana.core"/>
+      <import plugin="com.aptana.editor.html"/>
+      <import plugin="com.aptana.editor.php" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.aptana.editor.php.epl" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.aptana.editor.php.epl.tests" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.aptana.editor.php.formatter" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="com.aptana.formatter.epl" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.aptana.formatter.ui.epl" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.aptana.ui" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.aptana.ui.epl"/>
+      <import plugin="com.aptana.core" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="beaver"/>
+      <import plugin="com.aptana.editor.html.formatter" version="3.0.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin

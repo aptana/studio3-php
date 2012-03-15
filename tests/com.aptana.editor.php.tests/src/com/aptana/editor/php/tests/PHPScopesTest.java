@@ -734,23 +734,28 @@ public class PHPScopesTest extends TestCase
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php punctuation.definition.variable.php",
 				source, 9, 1);
 
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php punctuation.definition.variable.php",
 				source, 10, 1);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php",
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.global.php",
 				source, 11, 4);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php variable.other.php keyword.operator.index-start.php",
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php keyword.operator.index-start.php",
 				source, 15, 1);
-		assertScope("text.html.basic source.php.embedded.block.html string.quoted.double.php", source, 16, 1);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php punctuation.definition.string.begin.php",
+				source, 16, 1);
+		assertScope(
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php meta.string-contents.quoted.double.php",
 				source, 17, 3);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php string.quoted.double.php punctuation.definition.string.end.php",
 				source, 20, 1);
 		assertScope(
-				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php",
+				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php variable.other.php keyword.operator.index-end.php",
 				source, 21, 1);
+
 		assertScope(
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php meta.string-contents.quoted.double.php punctuation.definition.variable.php",
 				source, 22, 1);
@@ -758,9 +763,8 @@ public class PHPScopesTest extends TestCase
 				"text.html.basic source.php.embedded.block.html string.quoted.double.php punctuation.definition.string.end.php",
 				source, 23, 1); // "
 		assertScope("text.html.basic source.php.embedded.block.html", source, 24, 1);
-		assertScope(
-				"text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php",
-				source, 25, 2);
+		assertScope("text.html.basic source.php.embedded.block.html punctuation.section.embedded.end.php", source, 25,
+				2);
 	}
 
 	public void testAPSTUD3446()

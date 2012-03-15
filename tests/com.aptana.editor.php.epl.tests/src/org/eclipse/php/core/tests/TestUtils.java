@@ -94,7 +94,7 @@ public class TestUtils
 	 * 
 	 * @throws CoreException
 	 */
-	@SuppressWarnings("nls")
+	@SuppressWarnings({ "nls", "deprecation" })
 	public synchronized static void waitForAutoBuild() throws CoreException
 	{
 		Logger.global.entering("TestUtils", "waitForAutoBuild");

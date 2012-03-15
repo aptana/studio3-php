@@ -116,6 +116,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 		super(description);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Test suite()
 	{
 		Logger.global.entering("Test", "suite");
@@ -226,9 +227,12 @@ public class CodeAssistTests extends AbstractPDTTTest
 		{
 			protected IStatus run(IProgressMonitor monitor)
 			{
-				try {
+				try
+				{
 					Thread.sleep(600L);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 				}
 				return Status.OK_STATUS;
 			}

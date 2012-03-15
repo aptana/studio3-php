@@ -4,12 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.IEditorPart;
@@ -127,7 +129,17 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 			{
 				return;
 			}
-			openInEditor(codeLocation.getFullPath(), codeLocation.getStartLexeme());
+			IFileStore remoteFileStore = codeLocation.getRemoteFileStore();
+			Lexeme<PHPTokenType> startLexeme = codeLocation.getStartLexeme();
+			if (remoteFileStore != null)
+			{
+				com.aptana.ide.ui.io.navigator.actions.EditorUtils.openFileInEditor(remoteFileStore, null,
+						new TextSelection(startLexeme.getStartingOffset(), startLexeme.getLength()));
+			}
+			else
+			{
+				openInEditor(codeLocation.getFullPath(), startLexeme);
+			}
 		}
 
 		private void openInEditor(String fileName, Lexeme<PHPTokenType> lexeme)
@@ -146,7 +158,7 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 					part = EditorUtils.openInEditor(new File(((IFile) findMember).getLocationURI()));
 				}
 			}
-			if (part instanceof PHPSourceEditor)
+			if (part instanceof AbstractTextEditor)
 			{
 				AbstractTextEditor editor = (AbstractTextEditor) part;
 				editor.selectAndReveal(lexeme.getStartingOffset(), lexeme.getLength());

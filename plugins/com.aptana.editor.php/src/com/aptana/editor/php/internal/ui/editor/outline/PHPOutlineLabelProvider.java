@@ -92,7 +92,7 @@ public class PHPOutlineLabelProvider extends LabelProvider
 	 */
 	public static final Image IMPORT_ICON = PHPEditorPlugin.getImage("icons/full/obj16/imp_obj.png"); //$NON-NLS-1$
 
-	private static final Image BLOCK_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php.gif"); //$NON-NLS-1$
+	public static final Image BLOCK_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php.gif"); //$NON-NLS-1$
 
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 

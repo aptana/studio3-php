@@ -919,14 +919,6 @@ public class PHPContextCalculator
 		{
 			Lexeme<PHPTokenType> currentLexeme = lexemeProvider.getLexeme(i);
 			String type = currentLexeme.getType().getType();
-			if (PHPRegionTypes.PHP_NEW.equals(type) && lexemeProvider.size() - 2 > i)
-			{
-				// This is not a function call, but a class instantiation,
-				// however, we return a CallInfo for that too.
-				// Get the lexeme in i+2 position to skip the white-space
-				Lexeme<PHPTokenType> className = lexemeProvider.getLexeme(i + 2);
-				return new CallInfo(className.getText(), className.getEndingOffset());
-			}
 			if (PHPRegionTypes.PHP_TOKEN.equals(type))
 			{
 				if (isLexemeText(currentLexeme, ")")) //$NON-NLS-1$

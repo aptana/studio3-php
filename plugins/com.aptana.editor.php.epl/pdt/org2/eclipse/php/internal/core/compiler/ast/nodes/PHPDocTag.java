@@ -14,6 +14,8 @@ package org2.eclipse.php.internal.core.compiler.ast.nodes;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.aptana.editor.php.epl.PHPEplPlugin;
+
 import org2.eclipse.dltk.ast.references.SimpleReference;
 import org2.eclipse.dltk.ast.references.TypeReference;
 import org2.eclipse.dltk.ast.references.VariableReference;
@@ -69,7 +71,7 @@ public class PHPDocTag extends Comment implements IPHPDocTag {
 	public PHPDocTag(int start, int end, AST ast, int tagKind, String value) {
 		super(start, end, ast, PHPDocTag.TYPE_PHPDOC);
 		this.tagKind = tagKind;
-		this.value = value;
+		this.value = PHPEplPlugin.getDefault().sharedString(value);
 		updateReferences(start, end);
 	}
 

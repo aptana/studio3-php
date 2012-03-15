@@ -138,7 +138,7 @@ public class PHPContentAssistProcessorTests extends TestCase
 
 	public void testComputeContextInformation() throws Exception
 	{
-		IDocument document = new Document("<?php\n$a = new PDO");
+		IDocument document = new Document("<?php\n$a = new PDO(");
 		CompositePartitionScanner partitionScanner = new CompositePartitionScanner(PHPSourceConfiguration.getDefault()
 				.createSubPartitionScanner(), new NullSubPartitionScanner(), new NullPartitionerSwitchStrategy());
 		ExtendedFastPartitioner partitioner = new ExtendedFastPartitioner(partitionScanner, PHPSourceConfiguration
@@ -147,7 +147,7 @@ public class PHPContentAssistProcessorTests extends TestCase
 		partitioner.connect(document);
 		document.setDocumentPartitioner(partitioner);
 		ITextViewer viewer = new TextViewer(document);
-		IContextInformation[] contextInfo = processor.computeContextInformation(viewer, 18);
+		IContextInformation[] contextInfo = processor.computeContextInformation(viewer, 19);
 		assertNotNull("IContextInformation was null", contextInfo);
 		assertTrue("Expected items in the contextInfo list", contextInfo.length > 0);
 	}

@@ -193,7 +193,9 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 
 	// PHP basic prefixes
 	private static final String PHP_SHORT_TAG_OPEN = "<?"; //$NON-NLS-1$
+	private static final String PHP_SHORT_ASSIGN_TAG_OPEN = "<?="; //$NON-NLS-1$
 	private static final String PHP_PREFIX = "<?php "; //$NON-NLS-1$
+	private static final String PHP_CLOSE_TAG = "?>"; //$NON-NLS-1$
 	// Regex patterns
 	private static final Pattern PHP_OPEN_TAG_PATTERNS = Pattern.compile("<\\?php|<\\?=|<\\?"); //$NON-NLS-1$
 	// multi-line comment flattening pattern
@@ -303,22 +305,39 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		// anything in the indexing.
 		try
 		{
+			boolean forcedPHPEndTag = false;
 			if (!input.startsWith(PHP_SHORT_TAG_OPEN))
 			{
 				input = leftTrim(input, 0); // #APSTUD-4027
 				input = PHP_PREFIX + input;
+			}
+			else if (input.startsWith(PHP_SHORT_ASSIGN_TAG_OPEN))
+			{
+				// We have to me sure the input is closed with a semicolon or a close tag (APSTUD-3554)
+				String trimmed = input.trim();
+				if (shouldAppendPHPCloseTag(trimmed))
+				{
+					input += PHP_CLOSE_TAG;
+					forcedPHPEndTag = true;
+				}
 			}
 			PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 			Program ast = parser.parseAST(new StringReader(input));
 			checkinParser(parser);
 			if (ast != null)
 			{
+				String suffix = (beginsWithCloseTag(source, offset + length)) ? " " : StringUtil.EMPTY; //$NON-NLS-1$
+
 				// we wrap the Program with a parser root node to match the API
 				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0],
 						ast.getStart(), ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
-				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection,
+				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection, suffix,
 						indentSufix);
+				if (forcedPHPEndTag)
+				{
+					input = input.substring(0, input.length() - PHP_CLOSE_TAG.length());
+				}
 				if (output != null)
 				{
 					if (!input.equals(output))
@@ -368,6 +387,34 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	}
 
 	/**
+	 * This method is called when the PHP block is a short-assignment (<?=). We need to make sure that the php content
+	 * ends with a valid terminator, or with a closing tag. Otherwise we'll get a parse error (see APSTUD-3554)
+	 * 
+	 * @param content
+	 *            a trimmed content
+	 * @return
+	 */
+	private boolean shouldAppendPHPCloseTag(String content)
+	{
+		return !(content.endsWith(";") || content.endsWith("}") || content.endsWith(PHP_CLOSE_TAG)); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/**
+	 * Returns <code>true</code> if the source contains a PHP close tag string as the first non-whitespace characters
+	 * from the given offset.
+	 * 
+	 * @param source
+	 * @param offset
+	 * @return <code>true</code> in case the string at the offset contains a PHP close-tag; <code>false</code>,
+	 *         otherwise.
+	 */
+	private boolean beginsWithCloseTag(String source, int offset)
+	{
+		int closeTagIndex = source.indexOf(PHP_CLOSE_TAG, offset);
+		return (closeTagIndex > -1 && source.substring(offset, closeTagIndex).trim().length() == 0);
+	}
+
+	/**
 	 * Check if the formatter did not mess with the AST structure of the code.
 	 * 
 	 * @param inputAST
@@ -384,9 +431,22 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		{
 			return false;
 		}
-		// Add a new-line to the end of the output to deal with cases where we have a HEREDOC at the end, which requires
-		// a new-line terminator to avoid a parsing error.
-		outputString = outputString.trim() + '\n';
+		outputString = outputString.trim();
+		if (outputString.startsWith(PHP_SHORT_ASSIGN_TAG_OPEN))
+		{
+			if (shouldAppendPHPCloseTag(outputString))
+			{
+				outputString += PHP_CLOSE_TAG;
+			}
+		}
+		else
+		{
+			// Add a new-line to the end of the output to deal with cases where we have a HEREDOC at the end, which
+			// requires
+			// a new-line terminator to avoid a parsing error.
+			outputString += '\n';
+		}
+
 		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);
 		Program outputAST = parser.parseAST(new StringReader(outputString));
 		checkinParser(parser);
@@ -510,7 +570,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * @throws Exception
 	 */
 	private String format(String input, IParseRootNode parseResult, int indentationLevel, int offset,
-			boolean isSelection, String indentSufix) throws Exception
+			boolean isSelection, String suffix, String indentSufix) throws Exception
 	{
 		final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 		final FormatterDocument document = createFormatterDocument(input, offset);
@@ -546,7 +606,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			indentGenerator.generateIndent(Math.max(1, indentationLevel - 1), indentBuilder);
 			indentSufix = indentBuilder.toString();
 		}
-		output = processNestedOutput(output.trim(), lineSeparator, indentSufix, false, true);
+		output = processNestedOutput(output.trim(), lineSeparator, suffix, indentSufix, false, true);
 		return output;
 	}
 

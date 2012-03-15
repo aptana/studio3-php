@@ -7,34 +7,32 @@
  */
 package com.aptana.editor.php.internal.search;
 
-
 /**
  * @author Pavel Petrochenko
- *
  */
 public interface IElementNode
 {
-	
+
 	/**
 	 * CLASS
 	 */
-	final int CLASS=1;
-	
+	final int CLASS = 1;
+
 	/**
 	 * FUNCTION
 	 */
-	final int FUNCTION=2;
-	
+	final int FUNCTION = 2;
+
 	/**
 	 * CONSTANT
 	 */
-	final int CONSTANT=3;
+	final int CONSTANT = 3;
 
 	/**
 	 * @return name
 	 */
 	String getName();
-	
+
 	/**
 	 * @return modifiers
 	 */
@@ -44,13 +42,12 @@ public interface IElementNode
 	 * @return path
 	 */
 	String getPath();
-	
+
 	/**
 	 * @return reference suitable for opening in editor
 	 */
 	ExternalReference toExternalReference();
 
-	
 	/**
 	 * @return kind of the node
 	 */

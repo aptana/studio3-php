@@ -50,6 +50,7 @@ public class PHPParser implements IParser
 	private IModule module;
 	private ISourceModule sourceModule;
 	private boolean parseHTML;
+	private IParseRootNode latestValidNode;
 
 	/**
 	 * Constructs a new PHPParser.<br>
@@ -92,7 +93,7 @@ public class PHPParser implements IParser
 	 */
 	public IParseRootNode parse(IParseState parseState) // $codepro.audit.disable declaredExceptions
 	{
-		String source = new String(parseState.getSource());
+		String source = parseState.getSource();
 		int startingOffset = parseState.getStartingOffset();
 		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, startingOffset,
 				startingOffset + source.length() - 1);
@@ -107,6 +108,7 @@ public class PHPParser implements IParser
 			{
 				module = newModule;
 				sourceModule = phpParseState.getSourceModule();
+				latestValidNode = null;
 			}
 			aboutToBeReconciled();
 		}
@@ -127,6 +129,8 @@ public class PHPParser implements IParser
 		{
 			processChildren(program, root, source);
 		}
+		// we maintain this value since it's being reset when the errors are flushed.
+		boolean astHasErrors = false;
 		if (program != null)
 		{
 			parseState.setParseResult(root);
@@ -136,17 +140,18 @@ public class PHPParser implements IParser
 				// TODO: Shalom - check for Program errors?
 				// if (!ast.hasSyntaxErrors() && module != null) {
 				AST ast = program.getAST();
-				if (ast.hasErrors())
+				astHasErrors = ast.hasErrors();
+				if (astHasErrors)
 				{
 					parseState.setParseResult(null);
 				}
-				ast.flushErrors();
 				if (module != null)
 				{
 					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module);
 				}
 				// Recalculate the type bindings
 				TypeBindingBuilder.buildBindings(program, source);
+				ast.flushErrors();
 			}
 			catch (Throwable t)
 			{
@@ -161,12 +166,18 @@ public class PHPParser implements IParser
 				AST ast = parser.getAST();
 				if (ast != null)
 				{
+					astHasErrors = ast.hasErrors();
 					ast.flushErrors();
 				}
 			}
 			reconciled(null, false, new NullProgressMonitor());
 		}
-		return root;
+		if (astHasErrors)
+		{
+			return latestValidNode;
+		}
+		latestValidNode = root;
+		return latestValidNode;
 	}
 
 	/**

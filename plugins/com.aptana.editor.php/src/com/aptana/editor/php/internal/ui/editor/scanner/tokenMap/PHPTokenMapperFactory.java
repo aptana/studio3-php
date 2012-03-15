@@ -43,8 +43,14 @@ public class PHPTokenMapperFactory
 		GLOBALS.add(IPHPTokenMapper.POST);
 		GLOBALS.add(IPHPTokenMapper.GET);
 		GLOBALS.add(IPHPTokenMapper.REQUEST);
-	}
+		GLOBALS.add(IPHPTokenMapper.PHP_SELF);
+		GLOBALS.add(IPHPTokenMapper.HTTP_POST_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_GET_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_ENV_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_SERVER_VARS);
+		GLOBALS.add(IPHPTokenMapper.HTTP_COOKIE_VARS);
 
+	}
 	public static Set<String> SAFER_GLOBALS = new HashSet<String>();
 	static
 	{

@@ -7,6 +7,8 @@
  */
 package com.aptana.editor.php.internal.parser.nodes;
 
+import com.aptana.editor.php.epl.PHPEplPlugin;
+
 /**
  * Models function parameter
  * 
@@ -30,9 +32,9 @@ public class Parameter
 	public Parameter(String classType, String variableName, String defaultValue, boolean isReference, boolean isConst)
 	{
 		this.classType = classType;
-		this.variableName = variableName;
+		this.variableName = PHPEplPlugin.getDefault().sharedString(variableName);
 		this.isReference = isReference;
-		this.defaultValue = defaultValue;
+		this.defaultValue = PHPEplPlugin.getDefault().sharedString(defaultValue);
 	}
 
 	/**

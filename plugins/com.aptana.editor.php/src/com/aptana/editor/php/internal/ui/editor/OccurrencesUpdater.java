@@ -33,7 +33,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org2.eclipse.dltk.internal.ui.text.ScriptWordFinder;
 import org2.eclipse.php.internal.core.ast.locator.PhpElementConciliator;
@@ -52,7 +51,6 @@ import org2.eclipse.php.internal.ui.viewsupport.SelectionListenerWithASTManager;
 import org2.eclipse.php.ui.editor.SharedASTProvider;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.editor.common.outline.IParseListener;
 import com.aptana.editor.php.Messages;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.model.IModelElement;
@@ -65,7 +63,7 @@ import com.aptana.parsing.IParseState;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
+class OccurrencesUpdater implements IPropertyChangeListener
 {
 	private PHPSourceEditor editor;
 
@@ -126,7 +124,6 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		if (editor.isMarkingOccurrences())
 		{
 			installOccurrencesFinder(true);
-			editor.getFileService().addListener(this);
 		}
 
 		store.addPropertyChangeListener(this);
@@ -168,7 +165,9 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 			fOccurrencesFinderJobCanceler = new OccurrencesFinderJobCanceler();
 			fOccurrencesFinderJobCanceler.install();
 		}
-		editor.getFileService().addListener(this);
+
+		// TODO Do we need some way to hook into reconciling to force an update? Won't typing changed the "selection"
+		// anyhow?
 	}
 
 	protected void uninstallOccurrencesFinder()
@@ -194,7 +193,6 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 		}
 
 		removeOccurrenceAnnotations();
-		editor.getFileService().removeListener(this);
 	}
 
 	/**
@@ -202,7 +200,6 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 	 */
 	protected void dispose()
 	{
-		editor.getFileService().removeListener(this);
 		if (fActivationListener != null)
 		{
 			PlatformUI.getWorkbench().removeWindowListener(fActivationListener);
@@ -513,46 +510,6 @@ class OccurrencesUpdater implements IPropertyChangeListener, IParseListener
 			fStickyOccurrenceAnnotations = newBooleanValue;
 			return;
 		}
-	}
-
-	/**
-	 * Get notified when the parser is done, so we can update the markers.<br>
-	 * The parser itself should already set the latest AST on the shared AST provider, so we should be fine with the new
-	 * positions on the AST.
-	 */
-	public void parseCompletedSuccessfully()
-	{
-		Job updateOccurrences = new UIJob("Updating occurrences...") //$NON-NLS-1$
-		{
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor)
-			{
-				if (editor.getSelectionProvider() != null)
-				{
-					fForcedMarkOccurrencesSelection = editor.getSelectionProvider().getSelection();
-					IModelElement source = editor.getSourceModule();
-					if (source != null)
-					{
-						try
-						{
-							final Program ast = SharedASTProvider.getAST((ISourceModule) source,
-									SharedASTProvider.WAIT_ACTIVE_ONLY, editor.getProgressMonitor());
-							fPostSelectionListenerWithAST.selectionChanged(editor,
-									(ITextSelection) fForcedMarkOccurrencesSelection, ast);
-						}
-						catch (Exception e)
-						{
-							IdeLog.logError(PHPEditorPlugin.getDefault(),
-									"PHP occurrences updater - Error updating the selection", e); //$NON-NLS-1$
-						}
-					}
-				}
-				return Status.OK_STATUS;
-			}
-		};
-		updateOccurrences.setSystem(true);
-		updateOccurrences.setPriority(Job.DECORATE);
-		updateOccurrences.schedule();
 	}
 
 	/**
