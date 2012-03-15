@@ -8,9 +8,7 @@
 package com.aptana.editor.php.internal.ui.editor;
 
 import org.eclipse.compare.CompareConfiguration;
-import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -20,12 +18,13 @@ import com.aptana.editor.common.ExtendedFastPartitioner;
 import com.aptana.editor.common.IExtendedPartitioner;
 import com.aptana.editor.common.TextUtils;
 import com.aptana.editor.common.text.rules.CompositePartitionScanner;
+import com.aptana.editor.common.viewer.CommonMergeViewer;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 
 /**
  * @author cwilliams
  */
-public class PHPMergeViewer extends TextMergeViewer
+public class PHPMergeViewer extends CommonMergeViewer
 {
 	public PHPMergeViewer(Composite parent, CompareConfiguration configuration)
 	{
@@ -47,14 +46,10 @@ public class PHPMergeViewer extends TextMergeViewer
 	}
 
 	@Override
-	protected String getDocumentPartitioning()
-	{
-		return IDocumentExtension3.DEFAULT_PARTITIONING;
-	}
-
-	@Override
 	protected void configureTextViewer(TextViewer textViewer)
 	{
+		super.configureTextViewer(textViewer);
+
 		if (textViewer instanceof SourceViewer)
 		{
 			SourceViewer sourceViewer = (SourceViewer) textViewer;
