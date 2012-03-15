@@ -1,11 +1,11 @@
 package com.aptana.editor.php.epl;
 
-import org.eclipse.core.internal.utils.StringPool;
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -18,6 +18,7 @@ import org2.eclipse.php.internal.ui.editor.ASTProvider;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.internal.ui.viewsupport.ProblemMarkerManager;
+import com.aptana.ui.util.UIUtils;
 
 public class PHPEplPlugin extends AbstractUIPlugin
 {
@@ -33,7 +34,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	private ASTProvider fASTProvider;
 
 	private ProblemMarkerManager fProblemMarkerManager;
-	private StringPool _pool;
+	private Map<String, String> _pool;
 
 	/**
 	 * The constructor
@@ -50,7 +51,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	{
 		super.start(context);
 		plugin = this;
-		this._pool = new StringPool();
+		this._pool = new Hashtable<String, String>();
 	}
 
 	/*
@@ -83,7 +84,9 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public synchronized ASTProvider getASTProvider()
 	{
 		if (fASTProvider == null)
+		{
 			fASTProvider = new ASTProvider();
+		}
 
 		return fASTProvider;
 	}
@@ -96,7 +99,9 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public synchronized ProblemMarkerManager getProblemMarkerManager()
 	{
 		if (fProblemMarkerManager == null)
+		{
 			fProblemMarkerManager = new ProblemMarkerManager();
+		}
 		return fProblemMarkerManager;
 	}
 
@@ -149,11 +154,19 @@ public class PHPEplPlugin extends AbstractUIPlugin
 		return null;
 	}
 
+	/**
+	 * @deprecated Use {@link UIUtils#getActivePage()}
+	 * @return
+	 */
 	public static IWorkbenchPage getActivePage()
 	{
 		return getDefault().internalGetActivePage();
 	}
 
+	/**
+	 * @deprecated Use {@link UIUtils#getActiveEditor()}
+	 * @return
+	 */
 	public static IEditorPart getActiveEditor()
 	{
 		IWorkbenchPage activePage = getActivePage();
@@ -168,16 +181,10 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	{
 		IWorkbenchWindow window = getWorkbench().getActiveWorkbenchWindow();
 		if (window == null)
+		{
 			return null;
+		}
 		return getWorkbench().getActiveWorkbenchWindow().getActivePage();
-	}
-
-	/**
-	 * @deprecated Use {@link IdeLog}
-	 */
-	public static void logInfo(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, string, e));
 	}
 
 	/**
@@ -185,31 +192,7 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	 */
 	public static void logError(Throwable e)
 	{
-		logError(e.getLocalizedMessage(), e);
-	}
-
-	/**
-	 * @deprecated Use {@link IdeLog}
-	 */
-	public static void logError(String string, Throwable e)
-	{
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, string, e));
-	}
-
-	/**
-	 * @deprecated Use {@link IdeLog}
-	 */
-	public static void logWarning(String message)
-	{
-		getDefault().getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, message));
-	}
-
-	/**
-	 * @deprecated Use {@link IdeLog}
-	 */
-	public static void log(IStatus status)
-	{
-		getDefault().getLog().log(status);
+		IdeLog.logError(getDefault(), e);
 	}
 
 	public static IWorkspace getWorkspace()
@@ -219,6 +202,17 @@ public class PHPEplPlugin extends AbstractUIPlugin
 
 	public String sharedString(String value)
 	{
-		return this._pool.add(value);
+		if (value == null)
+		{
+			return value;
+		}
+
+		String result = _pool.get(value);
+		if (result != null)
+		{
+			return result;
+		}
+		_pool.put(value, value);
+		return value;
 	}
 }
