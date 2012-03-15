@@ -438,8 +438,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 	 * @throws BadLocationException
 	 */
 	protected Lexeme<PHPTokenType> getLastLexemeInLine(IDocument document,
-			ILexemeProvider<PHPTokenType> lexemeProvider,
-			int offset) throws BadLocationException
+			ILexemeProvider<PHPTokenType> lexemeProvider, int offset) throws BadLocationException
 	{
 		IRegion lineRegion = document.getLineInformationOfOffset(offset);
 		int lastCharInLine = lineRegion.getOffset() + lineRegion.getLength();
@@ -680,7 +679,7 @@ public class AbstractPHPAutoEditStrategy implements IAutoEditStrategy
 		}
 
 		int indentSize = 0;
-		int tabWidth = this.configuration.getTabWidth(sourceViewer);
+		int tabWidth = Math.max(1, this.configuration.getTabWidth(sourceViewer));
 		char[] indentChars = lineIndent.toCharArray();
 		for (int i = 0; i < indentChars.length; i++)
 		{
