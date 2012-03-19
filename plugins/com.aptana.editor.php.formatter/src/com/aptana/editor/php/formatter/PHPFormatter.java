@@ -518,7 +518,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public int getIndentSize()
 	{
-		return getInt(FORMATTER_INDENTATION_SIZE);
+		return getInt(FORMATTER_INDENTATION_SIZE, 1);
 	}
 
 	/*
@@ -536,7 +536,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 */
 	public int getTabSize()
 	{
-		return getInt(FORMATTER_TAB_SIZE);
+		return getInt(FORMATTER_TAB_SIZE, getEditorSpecificTabWidth());
 	}
 
 	/*
