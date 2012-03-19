@@ -40,7 +40,7 @@ public class PHPHoverRegistry
 		return instance;
 	}
 
-	private ArrayList<PHPTextHoverDescriptor> hovers;
+	private List<PHPTextHoverDescriptor> hovers;
 
 	/**
 	 * Returns the registered PHP text hovers descriptors.<br>
@@ -65,7 +65,7 @@ public class PHPHoverRegistry
 				}
 			}
 		}
-		return (List<PHPTextHoverDescriptor>) hovers.clone();
+		return (List<PHPTextHoverDescriptor>) ((ArrayList<PHPTextHoverDescriptor>) hovers).clone();
 	}
 
 }

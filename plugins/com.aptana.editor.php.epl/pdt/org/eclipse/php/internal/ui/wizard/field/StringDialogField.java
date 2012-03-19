@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 
+import com.aptana.core.util.StringUtil;
+
 /**
  * Dialog field containing a label and a text control.
  */
@@ -72,7 +74,7 @@ public class StringDialogField extends DialogField
 	public StringDialogField()
 	{
 		super();
-		fText = ""; //$NON-NLS-1$
+		fText = StringUtil.EMPTY;
 	}
 
 	/**
@@ -195,10 +197,10 @@ public class StringDialogField extends DialogField
 			fTextControl.addModifyListener(fModifyListener);
 
 			fTextControl.setEnabled(isEnabled());
-			if (fContentAssistProcessor != null)
-			{
-
-			}
+			// if (fContentAssistProcessor != null)
+			// {
+			//
+			// }
 		}
 	}
 

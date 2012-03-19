@@ -12,7 +12,9 @@ package org.eclipse.php.internal.core.project.options.includepath;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -23,12 +25,15 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.aptana.core.util.CollectionsUtil;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.core.IPHPCoreEPLConstants;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 public class IncludePathVariableManager
 {
 
+	private static final String COMMA = ","; //$NON-NLS-1$
 	private static IncludePathVariableManager instance;
 
 	public static IncludePathVariableManager instance()
@@ -42,12 +47,14 @@ public class IncludePathVariableManager
 
 	IPreferenceStore preferenceStore = PHPEplPlugin.getDefault().getPreferenceStore();
 
-	HashMap variables = new HashMap();
-	HashMap reservedVariables = new HashMap();
-	private ArrayList listeners;
+	private Map<String, IPath> variables;
+	private Set<String> reservedVariables;
+	private List<IncludePathVariablesListener> listeners;
 
 	private IncludePathVariableManager()
 	{
+		variables = new HashMap<String, IPath>();
+		reservedVariables = new HashSet<String>();
 	}
 
 	public IPath getIncludePathVariable(String variableName)
@@ -81,8 +88,8 @@ public class IncludePathVariableManager
 				variables.put(names[i], paths[i]);
 				if (i > 0)
 				{
-					namesString.append(","); //$NON-NLS-1$
-					pathsString.append(","); //$NON-NLS-1$
+					namesString.append(COMMA);
+					pathsString.append(COMMA);
 				}
 				namesString.append(names[i]);
 				pathsString.append(paths[i].toOSString());
@@ -95,11 +102,13 @@ public class IncludePathVariableManager
 
 	private void fireIncludePathVariablesChanged(String[] names, IPath[] paths)
 	{
-		if (listeners == null || listeners.size() == 0)
-			return;
-		for (Iterator i = listeners.iterator(); i.hasNext();)
+		if (CollectionsUtil.isEmpty(listeners))
 		{
-			((IncludePathVariablesListener) i.next()).includePathVariablesChanged(names, paths);
+			return;
+		}
+		for (IncludePathVariablesListener listener : listeners)
+		{
+			listener.includePathVariablesChanged(names, paths);
 		}
 
 	}
@@ -108,7 +117,7 @@ public class IncludePathVariableManager
 	{
 		if (listeners == null)
 		{
-			listeners = new ArrayList(1);
+			listeners = new ArrayList<IncludePathVariablesListener>(1);
 		}
 		if (!listeners.contains(listener))
 		{
@@ -118,19 +127,16 @@ public class IncludePathVariableManager
 
 	public void removeListener(IncludePathVariablesListener listener)
 	{
-		if (listeners == null || listeners.size() == 0)
-			return;
-		if (listeners.contains(listener))
+		if (CollectionsUtil.isEmpty(listeners))
 		{
-			listeners.remove(listener);
+			return;
 		}
+		listeners.remove(listener);
 	}
 
 	public String[] getIncludePathVariableNames()
 	{
-		ArrayList list = new ArrayList();
-		list.addAll(variables.keySet());
-		return (String[]) list.toArray(new String[list.size()]);
+		return (String[]) variables.keySet().toArray(new String[variables.size()]);
 
 	}
 
@@ -140,10 +146,14 @@ public class IncludePathVariableManager
 		String pathsString = preferenceStore.getString(IPHPCoreEPLConstants.INCLUDE_PATH_VARIABLE_PATHS);
 		String[] names = {};
 		if (namesString.length() > 0)
-			names = namesString.split(","); //$NON-NLS-1$
+		{
+			names = namesString.split(COMMA);
+		}
 		String[] paths = {};
 		if (pathsString.length() > 0)
-			paths = pathsString.split(","); //$NON-NLS-1$
+		{
+			paths = pathsString.split(COMMA);
+		}
 		// Not good since empty paths are allowed!!!
 		// assert (names.length == paths.length);
 		for (int i = 0; i < names.length; i++)
@@ -155,7 +165,7 @@ public class IncludePathVariableManager
 			}
 			else
 			{
-				path = ""; //$NON-NLS-1$
+				path = StringUtil.EMPTY;
 			}
 			variables.put(names[i], new Path(path));
 		}
@@ -167,7 +177,9 @@ public class IncludePathVariableManager
 	{
 		Plugin phpCorePlugin = PHPEplPlugin.getDefault();
 		if (phpCorePlugin == null)
+		{
 			return;
+		}
 
 		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
 				IPHPCoreEPLConstants.PLUGIN_ID, IPHPCoreEPLConstants.IP_VARIABLE_INITIALIZER_EXTPOINT_ID);
@@ -188,7 +200,7 @@ public class IncludePathVariableManager
 				if (value != null)
 				{
 					putVariable(name, new Path(value));
-					reservedVariables.put(name, null);
+					reservedVariables.add(name);
 				}
 			}
 		}
@@ -207,12 +219,11 @@ public class IncludePathVariableManager
 	 */
 	public boolean isReserved(String variableName)
 	{
-		return reservedVariables.containsKey(variableName);
+		return reservedVariables.contains(variableName);
 	}
 
 	public String[] getReservedVariables()
 	{
-		Set reservedVariables = this.reservedVariables.keySet();
 		return (String[]) reservedVariables.toArray(new String[reservedVariables.size()]);
 	}
 

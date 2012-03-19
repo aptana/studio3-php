@@ -38,21 +38,14 @@ import org.eclipse.core.runtime.IPath;
 
 public interface IIncludePathContainer
 {
-
 	/**
-	 * Kind for a container mapping to an application library
+	 * Kind for a container mapping (application library, system library or default system library, implicitly
+	 * contributed by the runtime)
 	 */
-	int K_APPLICATION = 1;
-
-	/**
-	 * Kind for a container mapping to a system library
-	 */
-	int K_SYSTEM = 2;
-
-	/**
-	 * Kind for a container mapping to a default system library, implicitly contributed by the runtime
-	 */
-	int K_DEFAULT_SYSTEM = 3;
+	public static enum KIND
+	{
+		K_APPLICATION, K_SYSTEM, K_DEFAULT_SYSTEM
+	};
 
 	IIncludePathEntry[] getIncludePathEntries();
 

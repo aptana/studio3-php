@@ -12,6 +12,7 @@ package org.eclipse.php.internal.ui.wizard.field;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,12 +50,16 @@ import org.eclipse.swt.widgets.TableColumn;
 import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 import org2.eclipse.php.util.SWTUtil;
 
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.editor.php.internal.ui.wizard.TableLayoutComposite;
 import com.aptana.editor.php.internal.ui.wizard.field.IListAdapter;
 
 /**
  * A list with a button bar. Typical buttons are 'Add', 'Remove', 'Up' and 'Down'. List model is independent of widget
  * creation. DialogFields controls are: Label, List and Composite containing buttons.
+ * 
+ * @param <E>
+ *            the type of the list elements
  */
 public class ListDialogField<E> extends DialogField
 {
@@ -932,7 +937,7 @@ public class ListDialogField<E> extends DialogField
 
 	private void moveUp(List<E> toMoveUp)
 	{
-		if (toMoveUp.size() > 0)
+		if (!CollectionsUtil.isEmpty(toMoveUp))
 		{
 			setElements(moveUp(fElements, toMoveUp));
 			fTable.reveal(toMoveUp.get(0));
@@ -941,7 +946,7 @@ public class ListDialogField<E> extends DialogField
 
 	private void moveDown(List<E> toMoveDown)
 	{
-		if (toMoveDown.size() > 0)
+		if (!CollectionsUtil.isEmpty(toMoveDown))
 		{
 			setElements(reverse(moveUp(reverse(fElements), toMoveDown)));
 			fTable.reveal(toMoveDown.get(toMoveDown.size() - 1));
@@ -950,11 +955,8 @@ public class ListDialogField<E> extends DialogField
 
 	private List<E> reverse(List<E> p)
 	{
-		List<E> reverse = new ArrayList<E>(p.size());
-		for (int i = p.size() - 1; i >= 0; i--)
-		{
-			reverse.add(p.get(i));
-		}
+		List<E> reverse = new ArrayList<E>(p);
+		Collections.reverse(reverse);
 		return reverse;
 	}
 

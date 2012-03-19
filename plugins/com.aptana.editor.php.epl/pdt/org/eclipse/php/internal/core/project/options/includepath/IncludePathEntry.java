@@ -38,6 +38,8 @@ import org.eclipse.ui.preferences.IWorkingCopyManager;
 import org.w3c.dom.Element;
 import org2.eclipse.php.internal.core.CoreMessages;
 
+import com.aptana.core.util.StringUtil;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.util.Key;
 
 public class IncludePathEntry implements IIncludePathEntry
@@ -81,19 +83,22 @@ public class IncludePathEntry implements IIncludePathEntry
 	 * @param workingCopyManager
 	 * @return List of IIncludePathEntrys for a given project
 	 */
-	public static List getIncludePathEntriesFromPreferences(Key preferenceKey, IProject project,
+	public static List<IIncludePathEntry> getIncludePathEntriesFromPreferences(Key preferenceKey, IProject project,
 			ProjectScope projectScope, IWorkingCopyManager workingCopyManager)
 	{
-
-		List entries = new ArrayList();
+		if (preferenceKey == null || project == null || projectScope == null)
+		{
+			throw new IllegalArgumentException("Null arguments are not allowed"); //$NON-NLS-1$
+		}
+		List<IIncludePathEntry> entries = new ArrayList<IIncludePathEntry>();
 
 		Map[] maps = XMLPreferencesReader.read(preferenceKey, projectScope, workingCopyManager);
 		if (maps != null)
 		{
-			for (int entryCount = 0; entryCount < maps.length; ++entryCount)
+			for (Map map : maps)
 			{
 				IncludePathEntryDescriptor descriptor = new IncludePathEntryDescriptor();
-				descriptor.restoreFromMap(maps[entryCount]);
+				descriptor.restoreFromMap(map);
 				entries.add(IncludePathEntry.elementDecode(descriptor, project.getFullPath()));
 			}
 		}
@@ -109,18 +114,21 @@ public class IncludePathEntry implements IIncludePathEntry
 	 * @param project
 	 * @return List of IIncludePathEntrys for a given project
 	 */
-	public static List getIncludePathEntriesFromPreferences(String entriesString, IProject project)
+	public static List<IIncludePathEntry> getIncludePathEntriesFromPreferences(String entriesString, IProject project)
 	{
-
-		final ArrayList entries = new ArrayList();
+		if (entriesString == null || project == null)
+		{
+			throw new IllegalArgumentException("Null arguments are not allowed"); //$NON-NLS-1$
+		}
+		List<IIncludePathEntry> entries = new ArrayList<IIncludePathEntry>();
 
 		Map[] maps = XMLPreferencesReader.getHashFromStoredValue(entriesString);
 		if (maps != null)
 		{
-			for (int entryCount = 0; entryCount < maps.length; ++entryCount)
+			for (Map map : maps)
 			{
 				IncludePathEntryDescriptor descriptor = new IncludePathEntryDescriptor();
-				descriptor.restoreFromMap(maps[entryCount]);
+				descriptor.restoreFromMap(map);
 				entries.add(IncludePathEntry.elementDecode(descriptor, project.getFullPath()));
 			}
 		}
@@ -154,7 +162,10 @@ public class IncludePathEntry implements IIncludePathEntry
 
 	public static IIncludePathEntry elementDecode(Element element, PHPProjectOptions options)
 	{
-
+		if (element == null || options == null)
+		{
+			throw new IllegalArgumentException("Null arguments are not allowed"); //$NON-NLS-1$
+		}
 		IPath projectPath = options.getProject().getFullPath();
 		String entryKindAttr = element.getAttribute(TAG_ENTRY_KIND);
 		String contentKindAttr = element.getAttribute(TAG_CONTENT_KIND);
@@ -171,7 +182,10 @@ public class IncludePathEntry implements IIncludePathEntry
 
 	public static IIncludePathEntry elementDecode(IncludePathEntryDescriptor descriptor, IPath projectPath)
 	{
-
+		if (descriptor == null || projectPath == null)
+		{
+			throw new IllegalArgumentException("Null arguments are not allowed"); //$NON-NLS-1$
+		}
 		IIncludePathEntry entry = getEntry(descriptor.getPath(), descriptor.getEntryKind(),
 				descriptor.getContentKind(), descriptor.getResourceName(), descriptor.isExported(), projectPath);
 		return entry;
@@ -180,6 +194,10 @@ public class IncludePathEntry implements IIncludePathEntry
 	public static IIncludePathEntry getEntry(String sPath, String sEntryKind, String sContentKind, String sResource,
 			boolean isExported, IPath projectPath)
 	{
+		if (sPath == null || sEntryKind == null || sContentKind == null || sResource == null || projectPath == null)
+		{
+			throw new IllegalArgumentException("Null arguments are not allowed"); //$NON-NLS-1$
+		}
 		// ensure path is absolute
 		IPath path = new Path(sPath);
 		int entryKind = entryKindFromString(sEntryKind);
@@ -229,10 +247,14 @@ public class IncludePathEntry implements IIncludePathEntry
 
 	public static IIncludePathEntry newProjectEntry(IPath path, IResource resource, boolean isExported)
 	{
-
+		if (path == null || resource == null)
+		{
+			throw new IllegalArgumentException("Null arguments are not allowed"); //$NON-NLS-1$
+		}
 		if (!path.isAbsolute())
+		{
 			throw new IllegalArgumentException("Path for IIncludePathEntry must be absolute"); //$NON-NLS-1$
-
+		}
 		return new IncludePathEntry(K_SOURCE, IIncludePathEntry.IPE_PROJECT, path, resource, isExported);
 
 	}
@@ -242,7 +264,9 @@ public class IncludePathEntry implements IIncludePathEntry
 	{
 
 		if (containerPath == null)
+		{
 			throw new IllegalArgumentException("Container path cannot be null"); //$NON-NLS-1$
+		}
 		if (containerPath.segmentCount() < 1)
 		{
 			throw new IllegalArgumentException(
@@ -256,7 +280,9 @@ public class IncludePathEntry implements IIncludePathEntry
 	{
 
 		if (variablePath == null)
+		{
 			throw new IllegalArgumentException("Variable path cannot be null"); //$NON-NLS-1$
+		}
 		if (variablePath.segmentCount() < 1)
 		{
 			throw new IllegalArgumentException(
@@ -271,10 +297,13 @@ public class IncludePathEntry implements IIncludePathEntry
 	{
 
 		if (path == null)
+		{
 			throw new IllegalArgumentException("Source path cannot be null"); //$NON-NLS-1$
+		}
 		if (!path.isAbsolute())
+		{
 			throw new IllegalArgumentException("Path for IIncludePathEntry must be absolute"); //$NON-NLS-1$
-
+		}
 		return new IncludePathEntry(K_SOURCE, IIncludePathEntry.IPE_SOURCE, path, resource, false);
 	}
 
@@ -331,23 +360,23 @@ public class IncludePathEntry implements IIncludePathEntry
 		{
 			boolean changedReferences = false;
 			final IProjectDescription projectDescription = project.getDescription();
-			ArrayList referenced = new ArrayList();
-			ArrayList referencedNames = new ArrayList();
+			List<IProject> referenced = new ArrayList<IProject>();
+			List<String> referencedNames = new ArrayList<String>();
 			IProject[] referencedProjects = projectDescription.getReferencedProjects();
-			for (int i = 0; i < referencedProjects.length; i++)
+			for (IProject refProject : referencedProjects)
 			{
-				referenced.add(referencedProjects[i]);
-				referencedNames.add(referencedProjects[i].getName());
+				referenced.add(refProject);
+				referencedNames.add(refProject.getName());
 			}
 
-			for (int i = 0; i < oldEntries.length; i++)
+			for (IIncludePathEntry oldEntry : oldEntries)
 			{
-				if (oldEntries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT)
+				if (oldEntry.getEntryKind() == IIncludePathEntry.IPE_PROJECT)
 				{
-					String projectName = oldEntries[i].getPath().lastSegment();
+					String projectName = oldEntry.getPath().lastSegment();
 					if (!containsProject(newEntries, projectName))
 					{
-						if (((IncludePathEntry) oldEntries[i]).createdReference)
+						if (((IncludePathEntry) oldEntry).createdReference)
 						{
 							int index = referencedNames.indexOf(projectName);
 							if (index >= 0)
@@ -361,17 +390,17 @@ public class IncludePathEntry implements IIncludePathEntry
 				}
 			}
 
-			for (int i = 0; i < newEntries.length; i++)
+			for (IIncludePathEntry newEntry : newEntries)
 			{
-				if (newEntries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT)
+				if (newEntry.getEntryKind() == IIncludePathEntry.IPE_PROJECT)
 				{
-					String projectName = newEntries[i].getPath().lastSegment();
+					String projectName = newEntry.getPath().lastSegment();
 					if (!containsProject(oldEntries, projectName))
 					{
 						if (!referencedNames.contains(projectName))
 						{
 							changedReferences = true;
-							((IncludePathEntry) newEntries[i]).createdReference = true;
+							((IncludePathEntry) newEntry).createdReference = true;
 							referenced.add(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName));
 							referencedNames.add(projectName);
 						}
@@ -382,7 +411,7 @@ public class IncludePathEntry implements IIncludePathEntry
 			{
 				IProject[] referenceProjects = (IProject[]) referenced.toArray(new IProject[referenced.size()]);
 				projectDescription.setReferencedProjects(referenceProjects);
-				WorkspaceJob job = new WorkspaceJob(CoreMessages.getString("IncludePathEntry_2"))
+				WorkspaceJob job = new WorkspaceJob(CoreMessages.getString("IncludePathEntry_2")) //$NON-NLS-1$
 				{
 					public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException
 					{
@@ -396,19 +425,20 @@ public class IncludePathEntry implements IIncludePathEntry
 		}
 		catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			PHPEplPlugin.logError(e);
 		}
 	}
 
 	private static boolean containsProject(IIncludePathEntry[] entries, String projectName)
 	{
-		for (int i = 0; i < entries.length; i++)
+		for (IIncludePathEntry entry : entries)
 		{
-			if (entries[i].getEntryKind() == IIncludePathEntry.IPE_PROJECT)
+			if (entry.getEntryKind() == IIncludePathEntry.IPE_PROJECT)
 			{
-				if (entries[i].getPath().lastSegment().equals(projectName))
+				if (entry.getPath().lastSegment().equals(projectName))
+				{
 					return true;
+				}
 			}
 		}
 		return false;
@@ -421,17 +451,29 @@ public class IncludePathEntry implements IIncludePathEntry
 	{
 
 		if (kindStr.equalsIgnoreCase("prj")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.IPE_PROJECT;
+		}
 		if (kindStr.equalsIgnoreCase("var")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.IPE_VARIABLE;
+		}
 		if (kindStr.equalsIgnoreCase("con")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.IPE_CONTAINER;
+		}
 		if (kindStr.equalsIgnoreCase("src")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.IPE_SOURCE;
+		}
 		if (kindStr.equalsIgnoreCase("lib")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.IPE_LIBRARY;
+		}
 		if (kindStr.equalsIgnoreCase("jre")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.IPE_JRE;
+		}
 		return -1;
 	}
 
@@ -467,9 +509,13 @@ public class IncludePathEntry implements IIncludePathEntry
 	{
 
 		if (kindStr.equalsIgnoreCase("binary")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.K_BINARY;
+		}
 		if (kindStr.equalsIgnoreCase("source")) //$NON-NLS-1$
+		{
 			return IIncludePathEntry.K_SOURCE;
+		}
 		return -1;
 	}
 
@@ -499,7 +545,9 @@ public class IncludePathEntry implements IIncludePathEntry
 
 			case IIncludePathEntry.IPE_PROJECT:
 				if (resource == null || !resource.exists())
-					message = CoreMessages.getString("IncludePathEntry_4") + path.toOSString();
+				{
+					message = CoreMessages.getString("IncludePathEntry_4") + path.toOSString(); //$NON-NLS-1$
+				}
 				break;
 			case IIncludePathEntry.IPE_LIBRARY:
 			case IIncludePathEntry.IPE_JRE:
@@ -507,12 +555,16 @@ public class IncludePathEntry implements IIncludePathEntry
 				{
 					File file = new File(path.toOSString());
 					if (!file.exists())
-						message = CoreMessages.getString("IncludePathEntry_5") + path.toOSString();
+					{
+						message = CoreMessages.getString("IncludePathEntry_5") + path.toOSString(); //$NON-NLS-1$
+					}
 				}
 				break;
 			case IIncludePathEntry.IPE_SOURCE:
 				if (resource == null || !resource.exists())
-					message = CoreMessages.getString("IncludePathEntry_6") + path.toOSString();
+				{
+					message = CoreMessages.getString("IncludePathEntry_6") + path.toOSString(); //$NON-NLS-1$
+				}
 				break;
 			case IIncludePathEntry.IPE_VARIABLE:
 				// if (resource == null || !resource.exists())
@@ -521,7 +573,7 @@ public class IncludePathEntry implements IIncludePathEntry
 			case IIncludePathEntry.IPE_CONTAINER:
 				break;
 			default:
-				throw new AssertionError(NLS.bind(CoreMessages.getString("includePath_unknownKind"), "")); //$NON-NLS-1$
+				throw new AssertionError(NLS.bind(CoreMessages.getString("includePath_unknownKind"), StringUtil.EMPTY)); //$NON-NLS-1$
 		}
 		return message;
 	}
@@ -549,23 +601,37 @@ public class IncludePathEntry implements IIncludePathEntry
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
+		{
 			return true;
+		}
 		if (obj == null)
+		{
 			return false;
+		}
 		if (getClass() != obj.getClass())
+		{
 			return false;
-		final IncludePathEntry other = (IncludePathEntry) obj;
+		}
+		IncludePathEntry other = (IncludePathEntry) obj;
 		if (contentKind != other.contentKind)
+		{
 			return false;
+		}
 		if (entryKind != other.entryKind)
+		{
 			return false;
+		}
 		if (path == null)
 		{
 			if (other.path != null)
+			{
 				return false;
+			}
 		}
 		else if (!path.equals(other.path))
+		{
 			return false;
+		}
 		return true;
 	}
 

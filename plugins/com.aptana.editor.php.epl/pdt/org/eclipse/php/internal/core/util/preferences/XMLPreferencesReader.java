@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,6 +28,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.aptana.core.util.StringUtil;
+import com.aptana.core.util.replace.SimpleTextPatternReplacer;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.util.Key;
 
@@ -40,21 +41,20 @@ public class XMLPreferencesReader
 {
 
 	public static final char DELIMITER = (char) 5;
-	private static final Pattern LT_PATTERN = Pattern.compile("&lt;"); //$NON-NLS-1$
-	private static final Pattern GT_PATTERN = Pattern.compile("&gt;"); //$NON-NLS-1$
-	private static final Pattern QUOT_PATTERN = Pattern.compile("&quot;"); //$NON-NLS-1$
-	private static final Pattern APOS_PATTERN = Pattern.compile("&apos;"); //$NON-NLS-1$
-	private static final Pattern AMP_PATTERN = Pattern.compile("&amp;"); //$NON-NLS-1$
-	public static final String STRING_DEFAULT = ""; //$NON-NLS-1$
+	private static final SimpleTextPatternReplacer TAG_REPLACER = new SimpleTextPatternReplacer();
+	static
+	{
+		TAG_REPLACER.addPattern("&amp;", "&"); //$NON-NLS-1$ //$NON-NLS-2$
+		TAG_REPLACER.addPattern("&apos;", "'"); //$NON-NLS-1$ //$NON-NLS-2$
+		TAG_REPLACER.addPattern("&quot;", "\""); //$NON-NLS-1$ //$NON-NLS-2$
+		TAG_REPLACER.addPattern("&lt;", "<"); //$NON-NLS-1$ //$NON-NLS-2$
+		TAG_REPLACER.addPattern("&gt;", ">"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	public static final String STRING_DEFAULT = StringUtil.EMPTY;
 
 	public static String getUnEscaped(String s)
 	{
-		s = LT_PATTERN.matcher(s).replaceAll("<"); //$NON-NLS-1$
-		s = GT_PATTERN.matcher(s).replaceAll(">"); //$NON-NLS-1$
-		s = QUOT_PATTERN.matcher(s).replaceAll("\""); //$NON-NLS-1$
-		s = APOS_PATTERN.matcher(s).replaceAll("'"); //$NON-NLS-1$
-		s = AMP_PATTERN.matcher(s).replaceAll("&"); //$NON-NLS-1$
-		return s;
+		return TAG_REPLACER.searchAndReplace(s);
 	}
 
 	private static Map read(NodeList nl)
@@ -106,13 +106,13 @@ public class XMLPreferencesReader
 	 */
 	public static Map[] read(IPreferenceStore store, String prefsKey)
 	{
-		List<Map> maps = new ArrayList<Map>();
+		List<Map<?, ?>> maps = new ArrayList<Map<?, ?>>();
 		StringTokenizer st = new StringTokenizer(store.getString(prefsKey), new String(new char[] { DELIMITER }));
 		while (st.hasMoreTokens())
 		{
 			maps.add(read(st.nextToken()));
 		}
-		return (HashMap[]) maps.toArray(new HashMap[maps.size()]);
+		return maps.toArray(new HashMap[maps.size()]);
 	}
 
 	/**
@@ -143,7 +143,9 @@ public class XMLPreferencesReader
 
 		String storedValue = prefKey.getStoredValue(projectScope, workingCopyManager);
 		if (storedValue == null)
+		{
 			storedValue = STRING_DEFAULT;
+		}
 		return getHashFromStoredValue(storedValue);
 
 	}

@@ -50,11 +50,18 @@ public class TableLayoutComposite extends Composite
 	{
 		String platform = SWT.getPlatform();
 		if ("win32".equals(platform)) //$NON-NLS-1$
+		{
 			COLUMN_TRIM = 4;
+		}
 		else if ("carbon".equals(platform)) //$NON-NLS-1$
+		{
 			COLUMN_TRIM = 24;
+		}
 		else
+		{
 			COLUMN_TRIM = 3;
+		}
+
 	}
 
 	private List<ColumnLayoutData> columns = new ArrayList<ColumnLayoutData>();
@@ -108,10 +115,8 @@ public class TableLayoutComposite extends Composite
 		Point result = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 
 		int width = 0;
-		int size = columns.size();
-		for (int i = 0; i < size; ++i)
+		for (ColumnLayoutData layoutData : columns)
 		{
-			ColumnLayoutData layoutData = (ColumnLayoutData) columns.get(i);
 			if (layoutData instanceof ColumnPixelData)
 			{
 				ColumnPixelData col = (ColumnPixelData) layoutData;
@@ -132,7 +137,9 @@ public class TableLayoutComposite extends Composite
 			}
 		}
 		if (width > result.x)
+		{
 			result.x = width;
+		}
 		return result;
 	}
 
@@ -143,7 +150,9 @@ public class TableLayoutComposite extends Composite
 		// Layout to null so we make sure we run it only when
 		// the value is OK.
 		if (width <= 1)
+		{
 			return;
+		}
 
 		TableColumn[] tableColumns = table.getColumns();
 		int size = Math.min(columns.size(), tableColumns.length);
@@ -199,7 +208,9 @@ public class TableLayoutComposite extends Composite
 					int weight = cw.weight;
 					int pixels = totalWeight == 0 ? 0 : weight * rest / totalWeight;
 					if (pixels < cw.minimumWidth)
+					{
 						pixels = cw.minimumWidth;
+					}
 					totalDistributed += pixels;
 					widths[i] = pixels;
 				}
@@ -210,7 +221,9 @@ public class TableLayoutComposite extends Composite
 			for (int i = 0; diff > 0; ++i)
 			{
 				if (i == size)
+				{
 					i = 0;
+				}
 				ColumnLayoutData col = (ColumnLayoutData) columns.get(i);
 				if (col instanceof ColumnWeightData)
 				{

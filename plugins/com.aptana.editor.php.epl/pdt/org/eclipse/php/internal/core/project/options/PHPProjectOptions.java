@@ -86,11 +86,7 @@ public class PHPProjectOptions
 		{
 			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
-		if (nature != null)
-		{
-			return nature.getOptions();
-		}
-		return null;
+		return (nature != null) ? nature.getOptions() : null;
 	}
 
 	public static IIncludePathContainer getIncludePathContainer(final IPath path, final IProject project2)
@@ -152,7 +148,9 @@ public class PHPProjectOptions
 			optionsChangeListenersMap.put(optionKey, optionChangeListeners);
 		}
 		if (!optionChangeListeners.contains(optionChangeListener))
+		{
 			optionChangeListeners.add(optionChangeListener);
+		}
 	}
 
 	public void removeOptionChangeListener(final String optionKey,
@@ -169,7 +167,9 @@ public class PHPProjectOptions
 	{
 		List<IPhpProjectOptionChangeListener> optionChangeListeners = optionsChangeListenersMap.get(key);
 		if (optionChangeListeners == null)
+		{
 			return;
+		}
 		for (IPhpProjectOptionChangeListener phpProjectOptionChangeListener : optionChangeListeners)
 		{
 			phpProjectOptionChangeListener.notifyOptionChanged(oldValue, newValue);
@@ -250,15 +250,17 @@ public class PHPProjectOptions
 	public void removeResourceFromIncludePath(final IResource resource)
 	{
 		if (includePathEntries.length == 0)
-			return;
-		List<IIncludePathEntry> newIncludePathEntries = new ArrayList<IIncludePathEntry>(includePathEntries.length);
-		for (int i = 0; i < includePathEntries.length; ++i)
 		{
-			if (includePathEntries[i].getResource() == resource)
+			return;
+		}
+		List<IIncludePathEntry> newIncludePathEntries = new ArrayList<IIncludePathEntry>(includePathEntries.length);
+		for (IIncludePathEntry entry : includePathEntries)
+		{
+			if (entry.getResource() == resource)
 			{
 				continue;
 			}
-			newIncludePathEntries.add(includePathEntries[i]);
+			newIncludePathEntries.add(entry);
 		}
 		try
 		{
@@ -274,18 +276,20 @@ public class PHPProjectOptions
 	public void renameResourceAtIncludePath(final IResource from, final IResource to)
 	{
 		if (includePathEntries.length == 0)
-			return;
-		List<IIncludePathEntry> newIncludePathEntries = new ArrayList<IIncludePathEntry>(includePathEntries.length);
-		for (int i = 0; i < includePathEntries.length; ++i)
 		{
-			if (includePathEntries[i].getResource() == from)
+			return;
+		}
+		List<IIncludePathEntry> newIncludePathEntries = new ArrayList<IIncludePathEntry>(includePathEntries.length);
+		for (IIncludePathEntry entry : includePathEntries)
+		{
+			if (entry.getResource() == from)
 			{
 				IIncludePathEntry newSourceEntry = IncludePathEntry.newProjectEntry(to.getFullPath(), to, false);
 				newIncludePathEntries.add(newSourceEntry);
 			}
 			else
 			{
-				newIncludePathEntries.add(includePathEntries[i]);
+				newIncludePathEntries.add(entry);
 			}
 		}
 		try
@@ -317,9 +321,9 @@ public class PHPProjectOptions
 			final XMLWriter xmlWriter = new XMLWriter(s);
 
 			xmlWriter.startTag(IncludePathEntry.TAG_INCLUDEPATH, null);
-			for (int i = 0; i < includePathEntries.length; ++i)
+			for (IIncludePathEntry entry : includePathEntries)
 			{
-				((IncludePathEntry) includePathEntries[i]).elementEncode(xmlWriter, project.getFullPath(), true);
+				((IncludePathEntry) entry).elementEncode(xmlWriter, project.getFullPath(), true);
 			}
 			xmlWriter.endTag(IncludePathEntry.TAG_INCLUDEPATH);
 			xmlWriter.flush();
@@ -400,12 +404,12 @@ public class PHPProjectOptions
 			return;
 		}
 
-		final List<IIncludePathEntry> paths = new ArrayList<IIncludePathEntry>();
+		List<IIncludePathEntry> paths = new ArrayList<IIncludePathEntry>();
 		includePathEntries = EMPTY_INCLUDEPATH;
 		try
 		{
 			Element cpElement;
-			final Reader reader = new InputStreamReader(optionsFile.getContents());
+			Reader reader = new InputStreamReader(optionsFile.getContents());
 
 			try
 			{
@@ -422,35 +426,41 @@ public class PHPProjectOptions
 			}
 
 			if (!cpElement.getNodeName().equalsIgnoreCase(TAG_OPTIONS))
+			{
 				throw new IOException(CoreMessages.getString("PHPProjectOptions_1")); //$NON-NLS-1$
+			}
 			NodeList list = cpElement.getElementsByTagName(TAG_OPTION);
 			int length = list.getLength();
 			for (int i = 0; i < length; ++i)
 			{
-				final Element element = (Element) list.item(i);
-				final String key = element.getAttribute("name"); //$NON-NLS-1$
-				final String value = element.getFirstChild().getNodeValue().trim();
-				preferences.put(key, value);
+				Element element = (Element) list.item(i);
+				String key = element.getAttribute("name"); //$NON-NLS-1$
+				Node firstChild = element.getFirstChild();
+				if (firstChild != null)
+				{
+					String value = firstChild.getNodeValue().trim();
+					preferences.put(key, value);
+				}
 			}
 
 			list = cpElement.getElementsByTagName(IncludePathEntry.TAG_INCLUDEPATH);
 			if (list.getLength() > 0)
 			{
-				final Element includePathElement = (Element) list.item(0);
+				Element includePathElement = (Element) list.item(0);
 				list = includePathElement.getElementsByTagName(IncludePathEntry.TAG_INCLUDEPATHENTRY);
 				length = list.getLength();
 
 				for (int i = 0; i < length; ++i)
 				{
-					final Node node = list.item(i);
+					Node node = list.item(i);
 					if (node.getNodeType() == Node.ELEMENT_NODE)
 					{
-						final IIncludePathEntry entry = IncludePathEntry.elementDecode((Element) node, this);
+						IIncludePathEntry entry = IncludePathEntry.elementDecode((Element) node, this);
 						paths.add(entry);
 					}
 				}
 
-				final int pathSize = paths.size();
+				int pathSize = paths.size();
 				includePathEntries = new IIncludePathEntry[pathSize];
 				paths.toArray(includePathEntries);
 			}
@@ -459,11 +469,11 @@ public class PHPProjectOptions
 
 			optionsFile.delete(true, new NullProgressMonitor());
 		}
-		catch (final IOException e)
+		catch (IOException e)
 		{
 			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
-		catch (final CoreException e)
+		catch (CoreException e)
 		{
 			PHPEplPlugin.logError("Unexpected exception", e); //$NON-NLS-1$
 		}
