@@ -35,6 +35,7 @@ import com.aptana.webserver.core.IServer;
 import com.aptana.webserver.core.IServerChangeListener;
 import com.aptana.webserver.core.ServerChangeEvent;
 
+@SuppressWarnings("rawtypes")
 public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesListener, IServerChangeListener
 {
 
@@ -151,10 +152,9 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		return pathMapper;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void loadFromPreferences()
 	{
-		HashMap[] elements = XMLPreferencesReader.read(PHPDebugEPLPlugin.getDefault().getPluginPreferences(),
+		Map[] elements = XMLPreferencesReader.read(PHPDebugEPLPlugin.getDefault().getPluginPreferences(),
 				PATH_MAPPER_PREF_KEY);
 		if (elements.length == 1)
 		{
@@ -168,7 +168,6 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 				getInstance());
 	}
 
-	@SuppressWarnings("unchecked")
 	public synchronized void restoreFromMap(Map map)
 	{
 		if (map == null)
@@ -305,8 +304,10 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		return pathMapper;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.aptana.webserver.core.IServerChangeListener#configurationChanged(com.aptana.webserver.core.ServerChangeEvent)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.webserver.core.IServerChangeListener#configurationChanged(com.aptana.webserver.core.ServerChangeEvent)
 	 */
 	public void configurationChanged(ServerChangeEvent event)
 	{
@@ -335,6 +336,6 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 				break;
 			// Changed is ignored, as we don't really need to do anything.
 		}
-		
+
 	}
 }

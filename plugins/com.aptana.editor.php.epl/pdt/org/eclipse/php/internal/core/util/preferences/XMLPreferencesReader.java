@@ -13,6 +13,7 @@ package org.eclipse.php.internal.core.util.preferences;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -32,7 +33,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.util.Key;
 
 /**
- * XML preferences reader for reading XML structures from the prefernces store. This class works in combination with
+ * XML preferences reader for reading XML structures from the preferences store. This class works in combination with
  * IXMLPreferencesStorable.
  */
 public class XMLPreferencesReader
@@ -56,9 +57,9 @@ public class XMLPreferencesReader
 		return s;
 	}
 
-	private static HashMap read(NodeList nl)
+	private static Map read(NodeList nl)
 	{
-		HashMap map = new HashMap(nl.getLength());
+		Map map = new HashMap(nl.getLength());
 		for (int i = 0; i < nl.getLength(); ++i)
 		{
 			Node n = nl.item(i);
@@ -77,7 +78,7 @@ public class XMLPreferencesReader
 		return map;
 	}
 
-	private static HashMap read(String str)
+	private static Map read(String str)
 	{
 		try
 		{
@@ -103,9 +104,9 @@ public class XMLPreferencesReader
 	 * @param prefsKey
 	 * @return
 	 */
-	public static HashMap[] read(IPreferenceStore store, String prefsKey)
+	public static Map[] read(IPreferenceStore store, String prefsKey)
 	{
-		ArrayList maps = new ArrayList();
+		List<Map> maps = new ArrayList<Map>();
 		StringTokenizer st = new StringTokenizer(store.getString(prefsKey), new String(new char[] { DELIMITER }));
 		while (st.hasMoreTokens())
 		{
@@ -121,7 +122,7 @@ public class XMLPreferencesReader
 	 * @param prefsKey
 	 * @return
 	 */
-	public static HashMap[] read(Preferences store, String prefsKey)
+	public static Map[] read(Preferences store, String prefsKey)
 	{
 		String storedValue = store.getString(prefsKey);
 		return getHashFromStoredValue(storedValue);
@@ -147,16 +148,16 @@ public class XMLPreferencesReader
 
 	}
 
-	public static HashMap[] getHashFromStoredValue(String storedValue)
+	public static Map[] getHashFromStoredValue(String storedValue)
 	{
 
-		ArrayList maps = new ArrayList();
+		List<Map> maps = new ArrayList<Map>();
 		StringTokenizer st = new StringTokenizer(storedValue, new String(new char[] { DELIMITER }));
 		while (st.hasMoreTokens())
 		{
 			maps.add(read(st.nextToken()));
 		}
-		return (HashMap[]) maps.toArray(new HashMap[maps.size()]);
+		return maps.toArray(new HashMap[maps.size()]);
 
 	}
 }

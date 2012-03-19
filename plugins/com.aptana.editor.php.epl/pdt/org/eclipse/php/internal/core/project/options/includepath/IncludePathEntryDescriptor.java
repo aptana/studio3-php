@@ -17,13 +17,15 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.php.internal.core.project.IIncludePathEntry;
 import org.eclipse.php.internal.core.util.preferences.IXMLPreferencesStorable;
 
+import com.aptana.core.util.StringUtil;
+
 public class IncludePathEntryDescriptor implements IXMLPreferencesStorable
 {
 
-	private String entryKind = ""; //$NON-NLS-1$
-	private String contentKind = ""; //$NON-NLS-1$
-	private String path = ""; //$NON-NLS-1$
-	private String resourceName = ""; //$NON-NLS-1$
+	private String entryKind = StringUtil.EMPTY;
+	private String contentKind = StringUtil.EMPTY;
+	private String path = StringUtil.EMPTY;
+	private String resourceName = StringUtil.EMPTY;
 	private boolean isExported = false;
 	private boolean createdReference = false;
 
@@ -123,6 +125,7 @@ public class IncludePathEntryDescriptor implements IXMLPreferencesStorable
 		this.path = String.valueOf(entryPath);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void restoreFromMap(Map map)
 	{
 		Map entry = (Map) map.get("javabridge_entry"); //$NON-NLS-1$
@@ -137,9 +140,10 @@ public class IncludePathEntryDescriptor implements IXMLPreferencesStorable
 		}
 	}
 
-	public HashMap storeToMap()
+	@SuppressWarnings("rawtypes")
+	public Map storeToMap()
 	{
-		HashMap map = new HashMap(6);
+		Map<String, Comparable> map = new HashMap<String, Comparable>(6);
 		map.put("entryKind", entryKind); //$NON-NLS-1$
 		map.put("contentKind", contentKind); //$NON-NLS-1$
 		map.put("path", path); //$NON-NLS-1$
@@ -147,7 +151,7 @@ public class IncludePathEntryDescriptor implements IXMLPreferencesStorable
 		map.put("isExported", new Boolean(isExported)); //$NON-NLS-1$
 		map.put("referenceWasCreated", new Boolean(createdReference)); //$NON-NLS-1$
 
-		HashMap entry = new HashMap(1);
+		Map<String, Map> entry = new HashMap<String, Map>(1);
 		entry.put("javabridge_entry", map); //$NON-NLS-1$
 
 		return entry;
