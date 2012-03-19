@@ -31,6 +31,7 @@ public class PHTMLParser extends CompositeParser
 																							// declaredExceptions
 	{
 		String source = parseState.getSource();
+		int sourceLength = source.length();
 		int startingOffset = parseState.getStartingOffset();
 		IParseNode root = null;
 
@@ -38,16 +39,16 @@ public class PHTMLParser extends CompositeParser
 		short id = getCurrentSymbol().getId();
 		while (id != PHTMLTokens.EOF)
 		{
-			// only cares about ruby tokens
+			// only cares about PHP tokens
 			switch (id)
 			{
 				case PHTMLTokens.PHP:
 					if (root == null)
 					{
 						root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, PHPParser.NO_CHILDREN, startingOffset,
-								startingOffset + source.length() - 1);
+								startingOffset + sourceLength - 1);
 					}
-					processPHPBlock(root);
+					processPHPBlock(root, sourceLength);
 					break;
 			}
 			advance();
@@ -56,7 +57,7 @@ public class PHTMLParser extends CompositeParser
 		return root;
 	}
 
-	private void processPHPBlock(IParseNode root) throws IOException, Exception // $codepro.audit.disable
+	private void processPHPBlock(IParseNode root, int sourceLength) throws IOException, Exception // $codepro.audit.disable
 	{
 		Symbol startTag = getCurrentSymbol();
 		advance();
@@ -86,7 +87,7 @@ public class PHTMLParser extends CompositeParser
 			{
 				endOffset = endTag.getEnd();
 			}
-			phpNode.setLocation(startTag.getStart(), endOffset);
+			phpNode.setLocation(startTag.getStart(), Math.min(endOffset, sourceLength - 1));
 			root.addChild(phpNode);
 		}
 	}

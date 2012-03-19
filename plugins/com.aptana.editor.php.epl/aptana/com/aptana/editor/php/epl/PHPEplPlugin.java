@@ -24,6 +24,7 @@ import org2.eclipse.php.internal.ui.editor.ASTProvider;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.internal.ui.viewsupport.ProblemMarkerManager;
+import com.aptana.ui.util.UIUtils;
 
 @SuppressWarnings("restriction")
 public class PHPEplPlugin extends AbstractUIPlugin
@@ -90,7 +91,9 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public synchronized ASTProvider getASTProvider()
 	{
 		if (fASTProvider == null)
+		{
 			fASTProvider = new ASTProvider();
+		}
 
 		return fASTProvider;
 	}
@@ -103,7 +106,9 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	public synchronized ProblemMarkerManager getProblemMarkerManager()
 	{
 		if (fProblemMarkerManager == null)
+		{
 			fProblemMarkerManager = new ProblemMarkerManager();
+		}
 		return fProblemMarkerManager;
 	}
 
@@ -156,11 +161,19 @@ public class PHPEplPlugin extends AbstractUIPlugin
 		return null;
 	}
 
+	/**
+	 * @deprecated Use {@link UIUtils#getActivePage()}
+	 * @return
+	 */
 	public static IWorkbenchPage getActivePage()
 	{
 		return getDefault().internalGetActivePage();
 	}
 
+	/**
+	 * @deprecated Use {@link UIUtils#getActiveEditor()}
+	 * @return
+	 */
 	public static IEditorPart getActiveEditor()
 	{
 		IWorkbenchPage activePage = getActivePage();
@@ -175,7 +188,9 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	{
 		IWorkbenchWindow window = getWorkbench().getActiveWorkbenchWindow();
 		if (window == null)
+		{
 			return null;
+		}
 		return getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 

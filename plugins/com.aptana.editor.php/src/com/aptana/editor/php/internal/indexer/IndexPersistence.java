@@ -92,10 +92,17 @@ public final class IndexPersistence
 		int pos = 0;
 		for (IModule m : array)
 		{
-
+			if (m == null)
+			{
+				IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+						"Could not write a module to the PHP index. Module was null.", PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+				continue;
+			}
 			List<UnpackedEntry> list = index.entries.get(m);
 			if (list == null)
+			{
 				list = Collections.emptyList();
+			}
 			writeModule(da, m, pb);
 
 			da.writeInt(list.size());
