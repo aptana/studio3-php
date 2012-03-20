@@ -53,7 +53,7 @@
             <annotation>
                <documentation>
                   A unique id for this launch tab.
-(Note that an external, non org.eclipse.php,  plugin can override this id and by that replace the UI container for the launch tab)
+(Note that an external, non org2.eclipse.php,  plugin can override this id and by that replace the UI container for the launch tab)
                </documentation>
             </annotation>
          </attribute>

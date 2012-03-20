@@ -6,11 +6,6 @@ import java.util.Arrays;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
-import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
-import org.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
-import org.eclipse.php.internal.debug.ui.wizard.IControlHandler;
-import org.eclipse.php.internal.debug.ui.wizard.web.PathMapperCompositeFragment;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -22,6 +17,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPropertyListener;
+import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
+import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
+import org2.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
+import org2.eclipse.php.internal.debug.ui.wizard.IControlHandler;
+import org2.eclipse.php.internal.debug.ui.wizard.web.PathMapperCompositeFragment;
 
 import com.aptana.webserver.core.IServer;
 
@@ -135,7 +135,7 @@ public class PathMapperDialog extends TitleAreaDialog implements IControlHandler
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.php.internal.ui.wizards.IControlHandler#setDescription(java.lang.String)
+	 * @see org2.eclipse.php.internal.ui.wizards.IControlHandler#setDescription(java.lang.String)
 	 */
 	public void setDescription(String desc)
 	{
@@ -145,7 +145,7 @@ public class PathMapperDialog extends TitleAreaDialog implements IControlHandler
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.eclipse.php.internal.ui.wizards.IControlHandler#setImageDescriptor(org.eclipse.jface.resource.ImageDescriptor
+	 * org2.eclipse.php.internal.ui.wizards.IControlHandler#setImageDescriptor(org.eclipse.jface.resource.ImageDescriptor
 	 * )
 	 */
 	public void setImageDescriptor(ImageDescriptor image)
@@ -159,7 +159,7 @@ public class PathMapperDialog extends TitleAreaDialog implements IControlHandler
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.php.internal.ui.wizards.IControlHandler#update()
+	 * @see org2.eclipse.php.internal.ui.wizards.IControlHandler#update()
 	 */
 	public void update()
 	{

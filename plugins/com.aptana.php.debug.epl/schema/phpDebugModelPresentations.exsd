@@ -92,10 +92,10 @@
       <documentation>
          &lt;p&gt;
 &lt;pre&gt;
-&lt;extension point=&quot;org.eclipse.php.debug.ui.phpDebugModelPresentations&quot;&gt;
+&lt;extension point=&quot;org2.eclipse.php.debug.ui.phpDebugModelPresentations&quot;&gt;
     &lt;phpDebugModelPresentation
-        class=&quot;org.eclipse.php.debug.ui.presentation.PHPModelPresentation&quot;
-        id=&quot;org.eclipse.php.debug.ui.presentation.phpModelPresentation&quot;/&gt;
+        class=&quot;org2.eclipse.php.debug.ui.presentation.PHPModelPresentation&quot;
+        id=&quot;org2.eclipse.php.debug.ui.presentation.phpModelPresentation&quot;/&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
 &lt;/p&gt;
@@ -116,7 +116,7 @@
          <meta.section type="implementation"/>
       </appinfo>
       <documentation>
-         &lt;code&gt;org.eclipse.php.debug.ui.presentation.PHPModelPresentation&lt;/code&gt;
+         &lt;code&gt;org2.eclipse.php.debug.ui.presentation.PHPModelPresentation&lt;/code&gt;
       </documentation>
    </annotation>
 

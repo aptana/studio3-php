@@ -12,9 +12,10 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.window.Window;
-import org.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
-import org.eclipse.php.internal.debug.core.IPHPDebugConstants;
-import org.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
+
+import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
+import org2.eclipse.php.internal.debug.core.IPHPDebugConstants;
+import org2.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
 import org2.eclipse.php.util.SWTUtil;
 
 import com.aptana.core.util.StringUtil;

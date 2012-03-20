@@ -69,7 +69,7 @@
                   Class of Path Entry Filter
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.php.internal.debug.core.pathmapper.IPathEntryFilter"/>
+                  <meta.attribute kind="java" basedOn=":org2.eclipse.php.internal.debug.core.pathmapper.IPathEntryFilter"/>
                </appinfo>
             </annotation>
          </attribute>

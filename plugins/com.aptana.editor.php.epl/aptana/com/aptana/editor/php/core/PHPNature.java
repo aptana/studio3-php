@@ -9,7 +9,7 @@ package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
+import org2.eclipse.php.internal.core.project.options.PHPProjectOptions;
 
 import com.aptana.core.build.UnifiedBuilder;
 import com.aptana.core.util.ResourceUtil;

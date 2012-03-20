@@ -69,7 +69,7 @@
                   PHP console listener class
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.php.internal.debug.core.IPHPConsoleEventListener"/>
+                  <meta.attribute kind="java" basedOn=":org2.eclipse.php.internal.debug.core.IPHPConsoleEventListener"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -97,7 +97,7 @@
          <meta.section type="apiInfo"/>
       </appinfo>
       <documentation>
-         PHP Console Listener class must implement &lt;code&gt;org.eclipse.php.internal.debug.core.IPHPConsoleEventListener&lt;/code&gt;.
+         PHP Console Listener class must implement &lt;code&gt;org2.eclipse.php.internal.debug.core.IPHPConsoleEventListener&lt;/code&gt;.
       </documentation>
    </annotation>
 

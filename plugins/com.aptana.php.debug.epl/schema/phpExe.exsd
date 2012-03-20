@@ -114,7 +114,7 @@ This field is optional, and if not given, the php executable will be assigned to
       <documentation>
          &lt;p&gt;
 &lt;pre&gt;
-&lt;extension point=&quot;org.eclipse.php.internal.debug.core.phpExe&quot;&gt;
+&lt;extension point=&quot;org2.eclipse.php.internal.debug.core.phpExe&quot;&gt;
     &lt;phpExe
         location=&quot;/resources/php4/php&quot;
         name=&quot;PHP4&quot;

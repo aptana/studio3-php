@@ -84,7 +84,7 @@ public class InspectAction implements IWatchExpressionListener, IInformationProv
 	/**
 	 * Override the superclass behavior to
 	 * 
-	 * @see org.eclipse.php.internal.debug.ui.actions.PHPWatchAction#createExpression(org.eclipse.debug.core.IExpressionManager,
+	 * @see org2.eclipse.php.internal.debug.ui.actions.PHPWatchAction#createExpression(org.eclipse.debug.core.IExpressionManager,
 	 *      java.lang.String)
 	 */
 	protected void createExpression(IExpressionManager expressionManager, String expression)

@@ -71,7 +71,7 @@
                   Class of this message that implements &lt;samp&gt;IDebugMesssage&lt;/samp&gt;.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.php.debug.core.debugger.messages.IDebugRequestMessage"/>
+                  <meta.attribute kind="java" basedOn=":org2.eclipse.php.debug.core.debugger.messages.IDebugRequestMessage"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -81,7 +81,7 @@
                   Handler class for this message, that implements &lt;samp&gt;IDebugMessageHandler&lt;/samp&gt;.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.php.debug.core.debugger.handlers.IDebugMessageHandler"/>
+                  <meta.attribute kind="java" basedOn=":org2.eclipse.php.debug.core.debugger.handlers.IDebugMessageHandler"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -111,10 +111,10 @@
       <documentation>
          &lt;p&gt;
 &lt;pre&gt;
-&lt;extension point=&quot;org.eclipse.php.internal.debug.core.phpDebugMessages&quot;&gt;
+&lt;extension point=&quot;org2.eclipse.php.internal.debug.core.phpDebugMessages&quot;&gt;
     &lt;message
-        class=&quot;org.eclipse.php.internal.debug.core.zend.debugger.messages.AddBreakpointRequest&quot;
-        id=&quot;org.eclipse.php.internal.debug.core.zend.debugger.messages.AddBreakpointRequest&quot;
+        class=&quot;org2.eclipse.php.internal.debug.core.zend.debugger.messages.AddBreakpointRequest&quot;
+        id=&quot;org2.eclipse.php.internal.debug.core.zend.debugger.messages.AddBreakpointRequest&quot;
         name=&quot;Add Breakpoint Request&quot;/&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
@@ -128,7 +128,7 @@
       </appinfo>
       <documentation>
          &lt;p&gt;
-Plugins that want to extend this extension point must implement this interface: &lt;samp&gt;org.eclipse.php.debug.core.debugger.messages.IDebugMessage&lt;/samp&gt;.
+Plugins that want to extend this extension point must implement this interface: &lt;samp&gt;org2.eclipse.php.debug.core.debugger.messages.IDebugMessage&lt;/samp&gt;.
 &lt;/p&gt;
       </documentation>
    </annotation>
@@ -138,7 +138,7 @@ Plugins that want to extend this extension point must implement this interface: 
          <meta.section type="implementation"/>
       </appinfo>
       <documentation>
-         See &lt;code&gt;org.eclipse.php.internal.debug.core&lt;/code&gt; plug-in&apos;s plugin.xml.
+         See &lt;code&gt;org2.eclipse.php.internal.debug.core&lt;/code&gt; plug-in&apos;s plugin.xml.
       </documentation>
    </annotation>
 

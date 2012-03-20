@@ -88,7 +88,7 @@ public class CommunicationDaemonRegistry
 	/**
 	 * Return best matching ICommunicationDaemons array. The returned ICommunicationDaemons are always new instances. In
 	 * case of an error, null is returned. The basic PDT returned array of communication daemons contains all the
-	 * daemons that were registered in the org.eclipse.php.debug.core plug-in name-space. In case that a different
+	 * daemons that were registered in the org2.eclipse.php.debug.core plug-in name-space. In case that a different
 	 * plug-in added another daemon, we add the new daemon to the list and in case that the daemon extends the PDT
 	 * daemon class, the PDT daemon will be removed from the list. This way we can make sure that enhanced daemons will
 	 * be loaded on top of the daemons they enhance. Note that this method simply returns all the registered valid debug

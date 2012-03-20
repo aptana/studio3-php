@@ -12,10 +12,10 @@ import java.util.List;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
-import org.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 import org.eclipse.ui.IPluginContribution;
 import org.eclipse.ui.activities.WorkbenchActivityHelper;
+import org2.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
+import org2.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.core.interpreter.IInterpreter;

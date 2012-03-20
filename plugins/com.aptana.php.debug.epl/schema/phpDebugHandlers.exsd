@@ -6,7 +6,7 @@
          <meta.schema plugin="com.aptana.php.debug.epl" id="phpDebugHandlers" name="PHP Debug Handler"/>
       </appinfo>
       <documentation>
-         This extension point is used for contributing PHP debug handlers. Each debug handler provides methods for handling various debug messages recieved from PHP Debug Server. See &lt;code&gt;org.eclipse.php.debug.core.debugger.IDebugHandler&lt;/code&gt;.
+         This extension point is used for contributing PHP debug handlers. Each debug handler provides methods for handling various debug messages recieved from PHP Debug Server. See &lt;code&gt;org2.eclipse.php.debug.core.debugger.IDebugHandler&lt;/code&gt;.
       </documentation>
    </annotation>
 
@@ -66,10 +66,10 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  Debug handler class, which implements &lt;samp&gt;org.eclipse.php.debug.core.debugger.IDebugHandler&lt;/samp&gt;.
+                  Debug handler class, which implements &lt;samp&gt;org2.eclipse.php.debug.core.debugger.IDebugHandler&lt;/samp&gt;.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.php.debug.core.debugger.IDebugHandler"/>
+                  <meta.attribute kind="java" basedOn=":org2.eclipse.php.debug.core.debugger.IDebugHandler"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -93,7 +93,7 @@
          This debug handler adds functionality of PHP profiler to the basic PHP debug handler:
 &lt;p&gt;
 &lt;pre&gt;
-   &lt;extension point=&quot;org.eclipse.php.internal.debug.core.phpDebugHandlers&quot;&gt;
+   &lt;extension point=&quot;org2.eclipse.php.internal.debug.core.phpDebugHandlers&quot;&gt;
       &lt;message class=&quot;test.PHPProfiler&quot; id=&quot;test.PHPProfiler&quot; name=&quot;PHP Profiler&quot;/&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
@@ -107,7 +107,7 @@
       </appinfo>
       <documentation>
          &lt;p&gt;
-Plugins that want to extend this extension point must implement this interface: &lt;samp&gt;org.eclipse.php.debug.core.debugger.IDebugHandler&lt;/samp&gt;.
+Plugins that want to extend this extension point must implement this interface: &lt;samp&gt;org2.eclipse.php.debug.core.debugger.IDebugHandler&lt;/samp&gt;.
 &lt;/p&gt;
       </documentation>
    </annotation>

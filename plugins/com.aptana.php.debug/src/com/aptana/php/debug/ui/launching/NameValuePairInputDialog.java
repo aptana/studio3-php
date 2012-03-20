@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.StatusDialog;
-import org.eclipse.php.internal.ui.wizard.field.StringDialogField;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 import org2.eclipse.php.internal.ui.wizard.field.IDialogFieldListener;
 import org2.eclipse.php.internal.ui.wizard.field.LayoutUtil;
+import org2.eclipse.php.internal.ui.wizard.field.StringDialogField;
 import org2.eclipse.php.util.StatusInfo;
 
 import com.aptana.core.util.IOUtil;

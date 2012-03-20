@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
-import org.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIDebuggerUtil;
+import org2.eclipse.php.internal.debug.core.interpreter.phpIni.INIFileModifier;
+import org2.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIDebuggerUtil;
 
 import com.aptana.php.debug.ui.phpini.IPhpIniFileModifier;
 

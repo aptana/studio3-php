@@ -18,10 +18,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.php.internal.debug.core.model.PHPLineBreakpoint;
 import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
+import org2.eclipse.php.internal.debug.core.model.PHPLineBreakpoint;
 
 /**
  * Presents the standard properties dialog to configure the attibutes of a PHP Breakpoint from the ruler popup menu of a

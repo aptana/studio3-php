@@ -56,7 +56,7 @@ The motivation is to enable users to check whether PDT can work with their remot
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.php.internal.debug.ui.IDebugServerConnectionTest"/>
+                  <meta.attribute kind="java" basedOn=":org2.eclipse.php.internal.debug.ui.IDebugServerConnectionTest"/>
                </appinfo>
             </annotation>
          </attribute>

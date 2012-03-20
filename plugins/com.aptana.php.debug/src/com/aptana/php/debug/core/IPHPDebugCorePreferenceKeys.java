@@ -16,7 +16,7 @@ public interface IPHPDebugCorePreferenceKeys
 {
 	public static final String DEBUGGER_ID = PHPDebugPlugin.PLUGIN_ID;
 
-	public static final String PHP_DEBUG_MODEL_PRESENTATION_ID = "org.eclipse.php.debug.core"; //$NON-NLS-1$
+	public static final String PHP_DEBUG_MODEL_PRESENTATION_ID = "org2.eclipse.php.debug.core"; //$NON-NLS-1$
 
 	public static final String PHP_DEBUGGER_ID = DEBUGGER_ID + ".php_debugger_id";//$NON-NLS-1$
 	public static final String NOTIFY_NON_STANDARD_PORT = DEBUGGER_ID + ".notifyNonStandardPort"; //$NON-NLS-1$

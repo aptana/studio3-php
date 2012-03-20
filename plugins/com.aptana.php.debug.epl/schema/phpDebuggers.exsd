@@ -71,10 +71,10 @@
          <attribute name="debuggerConfiguration" type="string" use="required">
             <annotation>
                <documentation>
-                  A debugger configuration class which extends org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration
+                  A debugger configuration class which extends org2.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration:"/>
+                  <meta.attribute kind="java" basedOn="org2.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration:"/>
                </appinfo>
             </annotation>
          </attribute>

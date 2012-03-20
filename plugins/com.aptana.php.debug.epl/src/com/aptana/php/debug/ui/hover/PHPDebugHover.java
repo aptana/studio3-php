@@ -20,14 +20,15 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpTarget;
-import org.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpVariable;
-import org.eclipse.php.internal.debug.core.zend.debugger.DefaultExpressionsManager;
-import org.eclipse.php.internal.debug.core.zend.debugger.Expression;
-import org.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
-import org.eclipse.php.internal.debug.core.zend.model.PHPStackFrame;
 import org.eclipse.ui.IEditorPart;
 import org.w3c.dom.Node;
+
+import org2.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpTarget;
+import org2.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpVariable;
+import org2.eclipse.php.internal.debug.core.zend.debugger.DefaultExpressionsManager;
+import org2.eclipse.php.internal.debug.core.zend.debugger.Expression;
+import org2.eclipse.php.internal.debug.core.zend.model.PHPDebugTarget;
+import org2.eclipse.php.internal.debug.core.zend.model.PHPStackFrame;
 import org2.eclipse.php.util.StringUtils;
 
 import com.aptana.editor.common.hover.CustomBrowserInformationControl;

@@ -97,7 +97,7 @@
       <documentation>
          &lt;p&gt;
 &lt;pre&gt;
-&lt;extension point=&quot;org.eclipse.php.debug.daemon.debugCommunicationDaemon&quot;&gt;
+&lt;extension point=&quot;org2.eclipse.php.debug.daemon.debugCommunicationDaemon&quot;&gt;
     &lt;daemon
         class=&quot;test.MyDebuggerCommunicationDaemon&quot;
         id=&quot;test.MyDebuggerCommunicationDaemon&quot;
@@ -113,7 +113,7 @@
          <meta.section type="apiInfo"/>
       </appinfo>
       <documentation>
-         Debug Communication Daemon class must implement &lt;code&gt;org.eclipse.php.debug.daemon.communication.ICommunicationDaemon&lt;/code&gt;.
+         Debug Communication Daemon class must implement &lt;code&gt;org2.eclipse.php.debug.daemon.communication.ICommunicationDaemon&lt;/code&gt;.
       </documentation>
    </annotation>
 
@@ -122,7 +122,7 @@
          <meta.section type="implementation"/>
       </appinfo>
       <documentation>
-         &lt;code&gt;org.eclipse.php.debug.core.communication.DebuggerCommunicationDaemon&lt;/code&gt;
+         &lt;code&gt;org2.eclipse.php.debug.core.communication.DebuggerCommunicationDaemon&lt;/code&gt;
       </documentation>
    </annotation>
 

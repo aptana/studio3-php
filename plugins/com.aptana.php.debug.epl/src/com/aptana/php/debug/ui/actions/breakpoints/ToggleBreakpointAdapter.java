@@ -16,10 +16,10 @@ import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.php.internal.debug.ui.breakpoint.provider.PHPBreakpointProvider;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.EditorPart;
+import org2.eclipse.php.internal.debug.ui.breakpoint.provider.PHPBreakpointProvider;
 
 import com.aptana.editor.common.AbstractThemeableEditor;
 

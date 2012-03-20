@@ -62,7 +62,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.php.debug.core.debugger.pathmapper.PathMapper:"/>
+                  <meta.attribute kind="java" basedOn="org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper:"/>
                </appinfo>
             </annotation>
          </attribute>
