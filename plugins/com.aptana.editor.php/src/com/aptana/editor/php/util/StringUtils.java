@@ -152,4 +152,29 @@ public class StringUtils
 		return text.replaceAll("\n", StringUtils.EMPTY); //$NON-NLS-1$
 	}
 
+	/**
+	 * Trim a start and end quotes from a given string.<br>
+	 * We trim only if the string's length is larger then one, and the string has a matching quotes of either <code>'</code> or
+	 * <code>"</code>.
+	 * 
+	 * @param iniIncludes
+	 * @return
+	 */
+	public static String trimStringQuotes(String str)
+	{
+		if (str == null || str.length() < 2)
+		{
+			return str;
+		}
+		int stringStart = 0;
+		int end = str.length() - 1;
+		char startChar = str.charAt(stringStart);
+		char endChar = str.charAt(end);
+		if (startChar == endChar && startChar == '\'' || startChar == '\"')
+		{
+			return str.substring(1, end - 1);
+		}
+		return str;
+	}
+
 }

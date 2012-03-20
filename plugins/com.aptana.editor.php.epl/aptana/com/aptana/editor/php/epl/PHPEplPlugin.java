@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -190,9 +191,41 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	/**
 	 * @deprecated Use {@link IdeLog}
 	 */
+	public static void logInfo(String string, Throwable e)
+	{
+		IdeLog.logInfo(getDefault(), string, e, DEBUG_SCOPE);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
 	public static void logError(Throwable e)
 	{
 		IdeLog.logError(getDefault(), e);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
+	public static void logError(String string, Throwable e)
+	{
+		IdeLog.logError(getDefault(), string, e);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
+	public static void logWarning(String message)
+	{
+		IdeLog.logWarning(getDefault(), message);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
+	public static void log(IStatus status)
+	{
+		IdeLog.log(getDefault(), status);
 	}
 
 	public static IWorkspace getWorkspace()

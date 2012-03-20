@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org2.eclipse.php.internal.core.PHPVersion;
-import org2.eclipse.php.internal.ui.util.StatusInfo;
+import org2.eclipse.php.util.StatusInfo;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;

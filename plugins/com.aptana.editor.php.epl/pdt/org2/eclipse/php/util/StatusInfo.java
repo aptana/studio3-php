@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2009 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Zend Technologies
+ *******************************************************************************/
 package org2.eclipse.php.util;
 
 import org.eclipse.core.runtime.Assert;
@@ -6,10 +17,11 @@ import org.eclipse.core.runtime.IStatus;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
- * A settable IStatus. Can be an error, warning, info or ok. For error, info and
- * warning states, a message describes the problem.
+ * A settable IStatus. Can be an error, warning, info or ok. For error, info and warning states, a message describes the
+ * problem.
  */
-public class StatusInfo implements IStatus {
+public class StatusInfo implements IStatus
+{
 
 	public static final IStatus OK_STATUS = new StatusInfo();
 
@@ -19,7 +31,8 @@ public class StatusInfo implements IStatus {
 	/**
 	 * Creates a status set to OK (no message)
 	 */
-	public StatusInfo() {
+	public StatusInfo()
+	{
 		this(OK, null);
 	}
 
@@ -29,10 +42,10 @@ public class StatusInfo implements IStatus {
 	 * @param severity
 	 *            The status severity: ERROR, WARNING, INFO and OK.
 	 * @param message
-	 *            The message of the status. Applies only for ERROR, WARNING and
-	 *            INFO.
+	 *            The message of the status. Applies only for ERROR, WARNING and INFO.
 	 */
-	public StatusInfo(int severity, String message) {
+	public StatusInfo(int severity, String message)
+	{
 		fStatusMessage = message;
 		fSeverity = severity;
 	}
@@ -40,35 +53,40 @@ public class StatusInfo implements IStatus {
 	/**
 	 * Returns if the status' severity is OK.
 	 */
-	public boolean isOK() {
+	public boolean isOK()
+	{
 		return fSeverity == IStatus.OK;
 	}
 
 	/**
 	 * Returns if the status' severity is WARNING.
 	 */
-	public boolean isWarning() {
+	public boolean isWarning()
+	{
 		return fSeverity == IStatus.WARNING;
 	}
 
 	/**
 	 * Returns if the status' severity is INFO.
 	 */
-	public boolean isInfo() {
+	public boolean isInfo()
+	{
 		return fSeverity == IStatus.INFO;
 	}
 
 	/**
 	 * Returns if the status' severity is ERROR.
 	 */
-	public boolean isError() {
+	public boolean isError()
+	{
 		return fSeverity == IStatus.ERROR;
 	}
 
 	/**
 	 * @see IStatus#getMessage
 	 */
-	public String getMessage() {
+	public String getMessage()
+	{
 		return fStatusMessage;
 	}
 
@@ -78,7 +96,8 @@ public class StatusInfo implements IStatus {
 	 * @param errorMessage
 	 *            The error message (can be empty, but not null)
 	 */
-	public void setError(String errorMessage) {
+	public void setError(String errorMessage)
+	{
 		Assert.isNotNull(errorMessage);
 		fStatusMessage = errorMessage;
 		fSeverity = IStatus.ERROR;
@@ -90,7 +109,8 @@ public class StatusInfo implements IStatus {
 	 * @param warningMessage
 	 *            The warning message (can be empty, but not null)
 	 */
-	public void setWarning(String warningMessage) {
+	public void setWarning(String warningMessage)
+	{
 		Assert.isNotNull(warningMessage);
 		fStatusMessage = warningMessage;
 		fSeverity = IStatus.WARNING;
@@ -102,7 +122,8 @@ public class StatusInfo implements IStatus {
 	 * @param infoMessage
 	 *            The info message (can be empty, but not null)
 	 */
-	public void setInfo(String infoMessage) {
+	public void setInfo(String infoMessage)
+	{
 		Assert.isNotNull(infoMessage);
 		fStatusMessage = infoMessage;
 		fSeverity = IStatus.INFO;
@@ -111,7 +132,8 @@ public class StatusInfo implements IStatus {
 	/**
 	 * Sets the status to OK.
 	 */
-	public void setOK() {
+	public void setOK()
+	{
 		fStatusMessage = null;
 		fSeverity = IStatus.OK;
 	}
@@ -119,7 +141,8 @@ public class StatusInfo implements IStatus {
 	/*
 	 * @see IStatus#matches(int)
 	 */
-	public boolean matches(int severityMask) {
+	public boolean matches(int severityMask)
+	{
 		return (fSeverity & severityMask) != 0;
 	}
 
@@ -128,21 +151,24 @@ public class StatusInfo implements IStatus {
 	 * 
 	 * @see IStatus#isMultiStatus()
 	 */
-	public boolean isMultiStatus() {
+	public boolean isMultiStatus()
+	{
 		return false;
 	}
 
 	/*
 	 * @see IStatus#getSeverity()
 	 */
-	public int getSeverity() {
+	public int getSeverity()
+	{
 		return fSeverity;
 	}
 
 	/*
 	 * @see IStatus#getPlugin()
 	 */
-	public String getPlugin() {
+	public String getPlugin()
+	{
 		return PHPEplPlugin.PLUGIN_ID;
 	}
 
@@ -151,7 +177,8 @@ public class StatusInfo implements IStatus {
 	 * 
 	 * @see IStatus#getException()
 	 */
-	public Throwable getException() {
+	public Throwable getException()
+	{
 		return null;
 	}
 
@@ -160,7 +187,8 @@ public class StatusInfo implements IStatus {
 	 * 
 	 * @see IStatus#getCode()
 	 */
-	public int getCode() {
+	public int getCode()
+	{
 		return fSeverity;
 	}
 
@@ -169,7 +197,8 @@ public class StatusInfo implements IStatus {
 	 * 
 	 * @see IStatus#getChildren()
 	 */
-	public IStatus[] getChildren() {
+	public IStatus[] getChildren()
+	{
 		return new IStatus[0];
 	}
 
