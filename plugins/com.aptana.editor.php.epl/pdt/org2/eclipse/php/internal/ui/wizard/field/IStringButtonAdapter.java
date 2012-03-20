@@ -8,14 +8,18 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.core.project.options;
+package org2.eclipse.php.internal.ui.wizard.field;
+
 
 /**
- * This listener listens to changes for a specific option in a set project It is invoked when the option is changed and
- * it gets the old and new options - they can be object, but most likely strings.
+ * Change listener used by <code>StringButtonDialogField</code>
  */
-public interface IPhpProjectOptionChangeListener
+public interface IStringButtonAdapter
 {
 
-	public void notifyOptionChanged(Object oldOption, Object newOption);
+	/**
+	 * @param field
+	 */
+	void changeControlPressed(DialogField field);
+
 }

@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.core.project.options;
+package org2.eclipse.php.internal.core.project.options;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,16 +35,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.php.internal.core.project.IIncludePathContainer;
-import org.eclipse.php.internal.core.project.IIncludePathEntry;
-import org.eclipse.php.internal.core.project.options.includepath.IncludePathEntry;
-import org.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
 import org.osgi.service.prefs.BackingStoreException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org2.eclipse.php.internal.core.CoreMessages;
+import org2.eclipse.php.internal.core.project.IIncludePathContainer;
+import org2.eclipse.php.internal.core.project.IIncludePathEntry;
+import org2.eclipse.php.internal.core.project.options.includepath.IncludePathEntry;
+import org2.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
 
 import com.aptana.editor.php.core.IPHPCoreEPLConstants;
 import com.aptana.editor.php.core.PHPNature;
@@ -69,7 +69,7 @@ public class PHPProjectOptions
 	/**
 	 * Name of the User Library Container id.
 	 */
-	public static final String USER_LIBRARY_CONTAINER_ID = "org.eclipse.php.USER_LIBRARY"; //$NON-NLS-1$
+	public static final String USER_LIBRARY_CONTAINER_ID = "org2.eclipse.php.USER_LIBRARY"; //$NON-NLS-1$
 
 	public static PHPProjectOptions forProject(final IProject project)
 	{

@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.core.project;
+package org2.eclipse.php.internal.core.project;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;

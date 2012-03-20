@@ -2,7 +2,7 @@
  * Copyright (c) 2006 Zend Technologies
  * 
  */
-package org.eclipse.php.internal.core.project.options.includepath;
+package org2.eclipse.php.internal.core.project.options.includepath;
 
 import org.eclipse.core.runtime.IPath;
 

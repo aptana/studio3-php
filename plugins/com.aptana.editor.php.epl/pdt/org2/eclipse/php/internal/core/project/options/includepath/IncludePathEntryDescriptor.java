@@ -8,14 +8,14 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.core.project.options.includepath;
+package org2.eclipse.php.internal.core.project.options.includepath;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.php.internal.core.project.IIncludePathEntry;
-import org.eclipse.php.internal.core.util.preferences.IXMLPreferencesStorable;
+import org2.eclipse.php.internal.core.project.IIncludePathEntry;
+import org2.eclipse.php.internal.core.util.preferences.IXMLPreferencesStorable;
 
 import com.aptana.core.util.StringUtil;
 

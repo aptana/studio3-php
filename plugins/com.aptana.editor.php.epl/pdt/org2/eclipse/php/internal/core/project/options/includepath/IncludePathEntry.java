@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.core.project.options.includepath;
+package org2.eclipse.php.internal.core.project.options.includepath;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,12 +31,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.php.internal.core.project.IIncludePathEntry;
-import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
-import org.eclipse.php.internal.core.util.preferences.XMLPreferencesReader;
 import org.eclipse.ui.preferences.IWorkingCopyManager;
 import org.w3c.dom.Element;
 import org2.eclipse.php.internal.core.CoreMessages;
+import org2.eclipse.php.internal.core.project.IIncludePathEntry;
+import org2.eclipse.php.internal.core.project.options.PHPProjectOptions;
+import org2.eclipse.php.internal.core.util.preferences.XMLPreferencesReader;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -580,7 +580,7 @@ public class IncludePathEntry implements IIncludePathEntry
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.php.internal.core.project.IIncludePathEntry#setResource(org.eclipse.core.resources.IResource)
+	 * @see org2.eclipse.php.internal.core.project.IIncludePathEntry#setResource(org.eclipse.core.resources.IResource)
 	 */
 	public void setResource(IResource resource)
 	{

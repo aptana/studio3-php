@@ -8,7 +8,7 @@
 package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.IProjectNature;
-import org.eclipse.php.internal.core.project.options.PHPProjectOptions;
+import org2.eclipse.php.internal.core.project.options.PHPProjectOptions;
 
 /**
  * @author Shalom Gibly <sgibly@aptana.com>

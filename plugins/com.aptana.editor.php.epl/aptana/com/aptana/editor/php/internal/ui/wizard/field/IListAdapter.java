@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.aptana.editor.php.internal.ui.wizard.field;
 
-import org.eclipse.php.internal.ui.wizard.field.ListDialogField;
+import org2.eclipse.php.internal.ui.wizard.field.ListDialogField;
 
 /**
  * Change listener used by <code>ListDialogField</code> and <code>CheckedListDialogField</code>

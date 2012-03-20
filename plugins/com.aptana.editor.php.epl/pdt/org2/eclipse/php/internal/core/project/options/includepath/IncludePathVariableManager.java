@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.core.project.options.includepath;
+package org2.eclipse.php.internal.core.project.options.includepath;
 
 import java.util.ArrayList;
 import java.util.HashMap;

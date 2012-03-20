@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.core.util.preferences;
+package org2.eclipse.php.internal.core.util.preferences;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;

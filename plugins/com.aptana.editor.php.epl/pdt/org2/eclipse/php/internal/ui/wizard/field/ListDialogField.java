@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package org.eclipse.php.internal.ui.wizard.field;
+package org2.eclipse.php.internal.ui.wizard.field;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 import org2.eclipse.php.util.SWTUtil;
 
 import com.aptana.core.util.CollectionsUtil;
