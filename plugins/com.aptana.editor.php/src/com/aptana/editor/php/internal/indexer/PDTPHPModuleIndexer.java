@@ -1231,7 +1231,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				entryValue.setReturnTypes(returnTypesSet);
 			}
 			String entryPath = EMPTY_STRING;
-			if (currentClass != null)
+			if (currentClass != null && currentClass.getClassEntry() != null)
 			{
 				entryPath = currentClass.getClassEntry().getEntryPath() + IElementsIndex.DELIMITER;
 			}
