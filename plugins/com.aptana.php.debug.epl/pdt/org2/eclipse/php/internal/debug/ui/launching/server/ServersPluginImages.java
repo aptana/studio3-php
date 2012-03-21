@@ -11,13 +11,13 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
-import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
 /**
  * Bundle of most images used by the PHP Debug UI plug-in.
  */
-public class ServersPluginImages {
+public class ServersPluginImages
+{
 
 	// private static final String NAME_PREFIX = "org2.eclipse.php.server.ui."; //$NON-NLS-1$
 	private static final String NAME_PREFIX = "com.aptana.php.debug.epl."; //$NON-NLS-1$
@@ -27,8 +27,9 @@ public class ServersPluginImages {
 
 	// Determine display depth. If depth > 4 then we use high color images. Otherwise low color
 	// images are used
-	static {
-		fgIconBaseURL = PHPEplPlugin.getDefault().getBundle().getEntry("/icons/full/"); //$NON-NLS-1$
+	static
+	{
+		fgIconBaseURL = PHPDebugEPLPlugin.getDefault().getBundle().getEntry("/icons/full/"); //$NON-NLS-1$
 	}
 
 	// The plug-in registry
@@ -38,7 +39,7 @@ public class ServersPluginImages {
 	private static final String T_OBJ = "obj16"; //$NON-NLS-1$
 	private static final String T_WIZBAN = "wizban"; //$NON-NLS-1$
 
-	public static final String IMG_SERVER = NAME_PREFIX + "server.gif"; //$NON-NLS-1$
+	public static final String IMG_SERVER = NAME_PREFIX + "server_run.gif"; //$NON-NLS-1$
 	public static final String IMG_CONFIG_SERVER = NAME_PREFIX + "configure.gif"; //$NON-NLS-1$
 	public static final String IMG_HTTP_GET_POST = NAME_PREFIX + "launch-http.gif"; //$NON-NLS-1$
 	public static final String IMG_PATH_MAPPING = NAME_PREFIX + "path_mapping.gif"; //$NON-NLS-1$
@@ -46,7 +47,7 @@ public class ServersPluginImages {
 	public static final String IMG_PATH_MAPPING_NOTICE = NAME_PREFIX + "mapping_notice.gif"; //$NON-NLS-1$
 	public static final String IMG_WIZ_SERVER = NAME_PREFIX + "server_wiz.gif"; //$NON-NLS-1$
 	public static final String IMG_SECURITY = NAME_PREFIX + "security.png"; //$NON-NLS-1$
-	
+
 	public static final ImageDescriptor DESC_SERVER = createManaged(T_OBJ, IMG_SERVER);
 	public static final ImageDescriptor DESC_CONFIG_SERVER = createManaged(T_OBJ, IMG_CONFIG_SERVER);
 	public static final ImageDescriptor DESC_HTTP_GET_POST = createManaged(T_OBJ, IMG_HTTP_GET_POST);
@@ -55,46 +56,57 @@ public class ServersPluginImages {
 	public static final ImageDescriptor DESC_PATH_MAPPING_NOTICE = createManaged(T_OBJ, IMG_PATH_MAPPING_NOTICE);
 	public static final ImageDescriptor DESC_WIZ_SERVER = createManaged(T_WIZBAN, IMG_WIZ_SERVER);
 	public static final ImageDescriptor DESC_SECURITY = createManaged(T_OBJ, IMG_SECURITY);
-	
+
 	/**
 	 * Returns the image managed under the given key in this registry.
-	 *
-	 * @param key the image's key
+	 * 
+	 * @param key
+	 *            the image's key
 	 * @return the image managed under the given key
 	 */
-	public static Image get(String key) {
+	public static Image get(String key)
+	{
 		return getImageRegistry().get(key);
 	}
 
 	/**
-	 * Sets the three image descriptors for enabled, disabled, and hovered to an action. The actions
-	 * are retrieved from the *tool16 folders.
-	 *
-	 * @param action	the action
-	 * @param iconName	the icon name
+	 * Sets the three image descriptors for enabled, disabled, and hovered to an action. The actions are retrieved from
+	 * the *tool16 folders.
+	 * 
+	 * @param action
+	 *            the action
+	 * @param iconName
+	 *            the icon name
 	 */
-	public static void setToolImageDescriptors(IAction action, String iconName) {
+	public static void setToolImageDescriptors(IAction action, String iconName)
+	{
 		setImageDescriptors(action, "tool16", iconName); //$NON-NLS-1$
 	}
 
 	/**
-	 * Sets the three image descriptors for enabled, disabled, and hovered to an action. The actions
-	 * are retrieved from the *lcl16 folders.
-	 *
-	 * @param action	the action
-	 * @param iconName	the icon name
+	 * Sets the three image descriptors for enabled, disabled, and hovered to an action. The actions are retrieved from
+	 * the *lcl16 folders.
+	 * 
+	 * @param action
+	 *            the action
+	 * @param iconName
+	 *            the icon name
 	 */
-	public static void setLocalImageDescriptors(IAction action, String iconName) {
+	public static void setLocalImageDescriptors(IAction action, String iconName)
+	{
 		setImageDescriptors(action, "lcl16", iconName); //$NON-NLS-1$
 	}
 
 	/*
 	 * Helper method to access the image registry from the PHPPlugin class.
 	 */
-	static ImageRegistry getImageRegistry() {
-		if (fgImageRegistry == null) {
+	static ImageRegistry getImageRegistry()
+	{
+		if (fgImageRegistry == null)
+		{
 			fgImageRegistry = new ImageRegistry();
-			for (Iterator iter = fgAvoidSWTErrorMap.keySet().iterator(); iter.hasNext();) {
+			for (Iterator iter = fgAvoidSWTErrorMap.keySet().iterator(); iter.hasNext();)
+			{
 				String key = (String) iter.next();
 				fgImageRegistry.put(key, (ImageDescriptor) fgAvoidSWTErrorMap.get(key));
 			}
@@ -103,47 +115,63 @@ public class ServersPluginImages {
 		return fgImageRegistry;
 	}
 
-	//---- Helper methods to access icons on the file system --------------------------------------
+	// ---- Helper methods to access icons on the file system --------------------------------------
 
-	private static void setImageDescriptors(IAction action, String type, String relPath) {
+	private static void setImageDescriptors(IAction action, String type, String relPath)
+	{
 
-		try {
+		try
+		{
 			ImageDescriptor id = ImageDescriptor.createFromURL(makeIconFileURL("d" + type, relPath)); //$NON-NLS-1$
 			if (id != null)
 				action.setDisabledImageDescriptor(id);
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e)
+		{
 		}
 		ImageDescriptor descriptor = create("e" + type, relPath); //$NON-NLS-1$
 		action.setHoverImageDescriptor(descriptor);
 		action.setImageDescriptor(descriptor);
 	}
 
-	private static ImageDescriptor createManaged(String prefix, String name) {
+	private static ImageDescriptor createManaged(String prefix, String name)
+	{
 		return createManaged(prefix, name, 0, null);
 	}
 
-	private static ImageDescriptor createManaged(String prefix, String name, int flags, Point size) {
-		try {
-			ImageDescriptor result = ImageDescriptor.createFromURL(makeIconFileURL(prefix, name.substring(NAME_PREFIX_LENGTH)));
+	private static ImageDescriptor createManaged(String prefix, String name, int flags, Point size)
+	{
+		try
+		{
+			ImageDescriptor result = ImageDescriptor.createFromURL(makeIconFileURL(prefix,
+					name.substring(NAME_PREFIX_LENGTH)));
 			fgAvoidSWTErrorMap.put(name, result);
-			if (fgImageRegistry != null) {
+			if (fgImageRegistry != null)
+			{
 				PHPDebugEPLPlugin.logError("Image registry already defined"); //$NON-NLS-1$
 			}
 			return result;
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e)
+		{
 			return ImageDescriptor.getMissingImageDescriptor();
 		}
 	}
 
-	private static ImageDescriptor create(String prefix, String name) {
-		try {
+	private static ImageDescriptor create(String prefix, String name)
+	{
+		try
+		{
 			return ImageDescriptor.createFromURL(makeIconFileURL(prefix, name));
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e)
+		{
 			return ImageDescriptor.getMissingImageDescriptor();
 		}
 	}
 
-	private static URL makeIconFileURL(String prefix, String name) throws MalformedURLException {
+	private static URL makeIconFileURL(String prefix, String name) throws MalformedURLException
+	{
 		if (fgIconBaseURL == null)
 			throw new MalformedURLException();
 
