@@ -146,7 +146,7 @@ public class XDebugPreferenceMgr {
 	
 	// provide easy access to the preferences which are not DBGp Session preferences.
 	public static int getPort() {
-		return PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, getDepthDefault());
+		return PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, getPortDefault());
 	}
 
 	public static void setPort(int port) {

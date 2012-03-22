@@ -65,23 +65,30 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	{
 		super.start(context);
 		plugin = this;
-		// Set the AutoRemoveOldLaunchesListener
-		IPreferenceStore preferenceStore = DebugUIPlugin.getDefault().getPreferenceStore();
-		fInitialAutoRemoveLaunches = preferenceStore.getBoolean(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES);
-		preferenceStore.addPropertyChangeListener(new AutoRemoveOldLaunchesListener());
-		// check for default server
-		createDefaultPHPServer();
+		try
+		{
+			// Set the AutoRemoveOldLaunchesListener
+			IPreferenceStore preferenceStore = DebugUIPlugin.getDefault().getPreferenceStore();
+			fInitialAutoRemoveLaunches = preferenceStore.getBoolean(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES);
+			preferenceStore.addPropertyChangeListener(new AutoRemoveOldLaunchesListener());
+			// check for default server
+			createDefaultPHPServer();
 
-		// TODO - XDebug - See if this can be removed and use a preferences initializer.
-		// It's important the the default setting will occur before loading the daemons.
-		XDebugPreferenceMgr.setDefaults();
+			// TODO - XDebug - See if this can be removed and use a preferences initializer.
+			// It's important the the default setting will occur before loading the daemons.
+			XDebugPreferenceMgr.setDefaults();
 
-		// Start all the daemons
-		DebugDaemon.getDefault().startDaemons(null);
+			// Start all the daemons
+			DebugDaemon.getDefault().startDaemons(null);
 
-		// TODO - XDebug - See if this can be removed
-		XDebugLaunchListener.getInstance();
-		DBGpProxyHandler.instance.configure();
+			// TODO - XDebug - See if this can be removed
+			XDebugLaunchListener.getInstance();
+			DBGpProxyHandler.instance.configure();
+		}
+		catch (Exception e)
+		{
+			IdeLog.logError(this, "Error while initiating the PHP debug (EPL) plugin", e); //$NON-NLS-1$
+		}
 	}
 
 	/*

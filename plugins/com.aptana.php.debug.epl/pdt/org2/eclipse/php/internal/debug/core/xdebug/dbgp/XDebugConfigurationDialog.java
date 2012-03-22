@@ -93,7 +93,7 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		
 		// main
 		Composite mainSubSection = subsections[0];		
-		addLabelControl(mainSubSection, PHPDebugCoreMessages.DebuggerConfigurationDialog_debugPort, XDebugPreferenceMgr.XDEBUG_PREF_PORT); //$NON-NLS-1$
+		addLabelControl(mainSubSection, PHPDebugCoreMessages.DebuggerConfigurationDialog_debugPort, XDebugPreferenceMgr.XDEBUG_PREF_PORT);
 		portTextBox = addNumTextField(mainSubSection, XDebugPreferenceMgr.XDEBUG_PREF_PORT, 5, 2, false);
 		showGlobals = addCheckBox(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_showSuperGlobals, XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, 0);
 		
@@ -125,9 +125,9 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 			toggleProxyFields(useProxy.getSelection());
 		}	
 		});
-		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_idekey, XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY); //$NON-NLS-1$
+		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_idekey, XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY);
 		idekeyTextBox = addATextField(proxySubSection, XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, 100, 2);
-		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_proxy, XDebugPreferenceMgr.XDEBUG_PREF_PROXY); //$NON-NLS-1$
+		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_proxy, XDebugPreferenceMgr.XDEBUG_PREF_PROXY);
 		proxyTextBox = addATextField(proxySubSection, XDebugPreferenceMgr.XDEBUG_PREF_PROXY, 100, 2);
 		
 		GridData gridData = (GridData)proxyTextBox.getLayoutData();
