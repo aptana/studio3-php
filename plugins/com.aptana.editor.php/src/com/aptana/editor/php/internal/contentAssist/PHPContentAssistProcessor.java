@@ -272,7 +272,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	 *      int)
 	 */
 	@Override
-	protected Collection<? extends ICompletionProposal> addSnippetProposals(ITextViewer viewer, int offset)
+	protected Collection<ICompletionProposal> addSnippetProposals(ITextViewer viewer, int offset)
 	{
 		if (currentContext != null && !currentContext.acceptExternalProposals())
 		{
