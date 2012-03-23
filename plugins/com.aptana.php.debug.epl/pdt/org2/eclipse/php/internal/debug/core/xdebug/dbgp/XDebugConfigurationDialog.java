@@ -34,6 +34,7 @@ import org2.eclipse.php.internal.debug.core.daemon.AbstractDebuggerCommunication
 import org2.eclipse.php.internal.debug.core.xdebug.XDebugPreferenceMgr;
 import org2.eclipse.php.internal.debug.ui.preferences.AbstractDebuggerConfigurationDialog;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
@@ -42,22 +43,23 @@ import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
  * 
  * @author Shalom Gibly, Dave Kelsey
  */
-public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDialog {
-	
+public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDialog
+{
+
 	private ComboListener comboListener;
 
-	//general options
+	// general options
 	private Text portTextBox;
 	private Button showGlobals;
 	private Spinner variableDepth;
 	private Spinner maxChildren;
 	private Button useMultiSession;
-	private Combo acceptRemoteSession;  
-	
-	//output capture options
+	private Combo acceptRemoteSession;
+
+	// output capture options
 	private Combo captureStdout;
 	private Combo captureStderr;
-	
+
 	// proxy options
 	private Button useProxy;
 	private Text idekeyTextBox;
@@ -67,85 +69,104 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 	private int originalPort;
 
 	/**
-	 * Constructs a new XDebug configuration dialog. 
-	 * @param xdebugDebuggerConfiguration 
+	 * Constructs a new XDebug configuration dialog.
 	 * 
+	 * @param xdebugDebuggerConfiguration
 	 * @param parentShell
 	 */
-	public XDebugConfigurationDialog(XDebugDebuggerConfiguration xdebugDebuggerConfiguration, Shell parentShell) {
+	public XDebugConfigurationDialog(XDebugDebuggerConfiguration xdebugDebuggerConfiguration, Shell parentShell)
+	{
 		super(parentShell);
-		setShellStyle(getShellStyle() | SWT.RESIZE);		
+		setShellStyle(getShellStyle() | SWT.RESIZE);
 		this.xdebugDebuggerConfiguration = xdebugDebuggerConfiguration;
 	}
 
-	private void toggleProxyFields(boolean selection) {
+	private void toggleProxyFields(boolean selection)
+	{
 		idekeyTextBox.setEnabled(selection);
-		proxyTextBox.setEnabled(selection);	
+		proxyTextBox.setEnabled(selection);
 	}
 
-	protected Control createDialogArea(Composite parent) {
+	protected Control createDialogArea(Composite parent)
+	{
 		comboListener = new ComboListener();
 		parent = (Composite) super.createDialogArea(parent);
 		setTitle(PHPDebugCoreMessages.XDebugConfigurationDialog_mainTitle);
-		Composite[] subsections = createSubsections(parent, PHPDebugCoreMessages.XDebugConfigurationDialog_generalGroup,
-													PHPDebugCoreMessages.XDebugConfigurationDialog_captureGroup,
-													PHPDebugCoreMessages.XDebugConfigurationDialog_proxyGroup); 
-		
+		Composite[] subsections = createSubsections(parent,
+				PHPDebugCoreMessages.XDebugConfigurationDialog_generalGroup,
+				PHPDebugCoreMessages.XDebugConfigurationDialog_captureGroup,
+				PHPDebugCoreMessages.XDebugConfigurationDialog_proxyGroup);
+
 		// main
-		Composite mainSubSection = subsections[0];		
-		addLabelControl(mainSubSection, PHPDebugCoreMessages.DebuggerConfigurationDialog_debugPort, XDebugPreferenceMgr.XDEBUG_PREF_PORT);
+		Composite mainSubSection = subsections[0];
+		addLabelControl(mainSubSection, PHPDebugCoreMessages.DebuggerConfigurationDialog_debugPort,
+				XDebugPreferenceMgr.XDEBUG_PREF_PORT);
 		portTextBox = addNumTextField(mainSubSection, XDebugPreferenceMgr.XDEBUG_PREF_PORT, 5, 2, false);
-		showGlobals = addCheckBox(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_showSuperGlobals, XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, 0);
-		
-		addLabelControl(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_maxArrayDepth, XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH);
+		showGlobals = addCheckBox(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_showSuperGlobals,
+				XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, 0);
+
+		addLabelControl(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_maxArrayDepth,
+				XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH);
 		variableDepth = addVariableLevel(mainSubSection, XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH, 1, 150, 2);
-		
-		addLabelControl(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_maxChildren, XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN);
+
+		addLabelControl(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_maxChildren,
+				XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN);
 		maxChildren = addVariableLevel(mainSubSection, XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, 1, 500, 2);
-		
-		useMultiSession = addCheckBox(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_useMultisession, XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, 0);
-	
-		acceptRemoteSession = addComboField(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSession, XDebugPreferenceMgr.remoteSessionOptions);
-				
+
+		useMultiSession = addCheckBox(mainSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_useMultisession,
+				XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, 0);
+
+		acceptRemoteSession = addComboField(mainSubSection,
+				PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSession, XDebugPreferenceMgr.remoteSessionOptions);
+
 		// output capture
 		Composite captureSubSection = subsections[1];
-		captureStdout = addComboField(captureSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_captureStdout, XDebugPreferenceMgr.captureOutputOptions); 
-		captureStderr = addComboField(captureSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_captureStderr, XDebugPreferenceMgr.captureOutputOptions); 
-		
-		//proxy
+		captureStdout = addComboField(captureSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_captureStdout,
+				XDebugPreferenceMgr.captureOutputOptions);
+		captureStderr = addComboField(captureSubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_captureStderr,
+				XDebugPreferenceMgr.captureOutputOptions);
+
+		// proxy
 		Composite proxySubSection = subsections[2];
-		useProxy = addCheckBox(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_useProxy, XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, 0);
-		useProxy.addSelectionListener(new SelectionListener() {
-		public void widgetSelected(SelectionEvent e) {
+		useProxy = addCheckBox(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_useProxy,
+				XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, 0);
+		useProxy.addSelectionListener(new SelectionListener()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
 				toggleProxyFields(useProxy.getSelection());
-				
+
 			}
 
-		public void widgetDefaultSelected(SelectionEvent e) {
-			toggleProxyFields(useProxy.getSelection());
-		}	
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+				toggleProxyFields(useProxy.getSelection());
+			}
 		});
-		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_idekey, XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY);
+		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_idekey,
+				XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY);
 		idekeyTextBox = addATextField(proxySubSection, XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, 100, 2);
-		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_proxy, XDebugPreferenceMgr.XDEBUG_PREF_PROXY);
+		addLabelControl(proxySubSection, PHPDebugCoreMessages.XDebugConfigurationDialog_proxy,
+				XDebugPreferenceMgr.XDEBUG_PREF_PROXY);
 		proxyTextBox = addATextField(proxySubSection, XDebugPreferenceMgr.XDEBUG_PREF_PROXY, 100, 2);
-		
-		GridData gridData = (GridData)proxyTextBox.getLayoutData();
+
+		GridData gridData = (GridData) proxyTextBox.getLayoutData();
 		gridData.widthHint = convertWidthInCharsToPixels(90);
 
-		
 		internalInitializeValues(); // Initialize the dialog's values.
-		
+
 		return parent;
 	}
 
-	private Text addNumTextField(Composite parent, String key, int textLimit, int horizontalIndent, boolean isTimeout) {
+	private Text addNumTextField(Composite parent, String key, int textLimit, int horizontalIndent, boolean isTimeout)
+	{
 		Text text = super.addTextField(parent, key, textLimit, horizontalIndent);
 		text.addModifyListener(new NumFieldValidateListener(isTimeout));
 		return text;
 	}
-	
-	private Text addATextField(Composite parent, String key, int minWidth, int horizontalIndent) {
+
+	private Text addATextField(Composite parent, String key, int minWidth, int horizontalIndent)
+	{
 		Text textBox = new Text(parent, SWT.BORDER | SWT.SINGLE);
 		textBox.setData(key);
 
@@ -156,10 +177,11 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		data.minimumWidth = minWidth;
 		textBox.setLayoutData(data);
 		return textBox;
-	}	
-	
-	private Combo addComboField(Composite parent, String text, String[] options) {
-		addLabelControl(parent, text, null);		
+	}
+
+	private Combo addComboField(Composite parent, String text, String[] options)
+	{
+		addLabelControl(parent, text, null);
 		Combo comboBox = new Combo(parent, SWT.DROP_DOWN | SWT.READ_ONLY);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.horizontalIndent = 1;
@@ -170,7 +192,7 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		comboBox.addSelectionListener(comboListener);
 		return comboBox;
 	}
-	
+
 	/**
 	 * Creates a subsection group.
 	 * 
@@ -178,7 +200,8 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 	 * @param label
 	 * @return
 	 */
-	protected Composite[] createSubsections(Composite parent, String label, String label2, String label3) {
+	protected Composite[] createSubsections(Composite parent, String label, String label2, String label3)
+	{
 		// A cosmetic composite that will add a basic indent
 		parent = new Composite(parent, SWT.NONE);
 		parent.setLayout(new GridLayout(1, true));
@@ -194,7 +217,7 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		layout.numColumns = 3;
 		group.setLayout(layout);
 
-		// subsection 2		
+		// subsection 2
 		Group group2 = new Group(parent, SWT.SHADOW_NONE);
 		group2.setText(label2);
 		data = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -202,8 +225,8 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		GridLayout layout2 = new GridLayout();
 		layout2.numColumns = 3;
 		group2.setLayout(layout2);
-		
-		// subsection 3		
+
+		// subsection 3
 		Group group3 = new Group(parent, SWT.SHADOW_NONE);
 		group3.setText(label3);
 		data = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -211,35 +234,37 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		GridLayout layout3 = new GridLayout();
 		layout3.numColumns = 2;
 		group3.setLayout(layout3);
-		
-		return new Group[] {group, group2, group3};
-	}	
 
-	/* (non-Javadoc)
+		return new Group[] { group, group2, group3 };
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
 	 */
-	protected void okPressed() {
-		//TODO: move to preference manager
+	protected void okPressed()
+	{
+		// TODO: move to preference manager
 		IEclipsePreferences prefs = new InstanceScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
 
 		// general
 		prefs.put(XDebugPreferenceMgr.XDEBUG_PREF_PORT, portTextBox.getText());
 		prefs.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, showGlobals.getSelection());
 		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH, variableDepth.getSelection());
-		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, maxChildren.getSelection());		
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, maxChildren.getSelection());
 		prefs.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, useMultiSession.getSelection());
-		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION, acceptRemoteSession.getSelectionIndex());		
-		
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION, acceptRemoteSession.getSelectionIndex());
+
 		// capture output
-		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT, captureStdout.getSelectionIndex());		
-		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, captureStderr.getSelectionIndex());		
-				
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT, captureStdout.getSelectionIndex());
+		prefs.putInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, captureStderr.getSelectionIndex());
+
 		// proxy
 		prefs.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, useProxy.getSelection());
 		prefs.put(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, idekeyTextBox.getText());
 		prefs.put(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, proxyTextBox.getText());
 		DBGpProxyHandler.instance.configure();
-		
+
 		try
 		{
 			prefs.flush();
@@ -252,40 +277,46 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 	}
 
 	// Initialize the dialog's values.
-	private void internalInitializeValues() {
-		//TODO: move to preference manager
-		
+	private void internalInitializeValues()
+	{
+		// TODO: move to preference manager
+
 		originalPort = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, 0);
-		if (originalPort == 0) {
+		if (originalPort == 0)
+		{
 			XDebugPreferenceMgr.setDefaults();
 			originalPort = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, 0);
 		}
 		portTextBox.setText(Integer.toString(originalPort));
-		showGlobals.setSelection(PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, true));
-		useMultiSession.setSelection(PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, true));
+		showGlobals.setSelection(PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS,
+				true));
+		useMultiSession.setSelection(PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION,
+				true));
 		variableDepth.setSelection(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_ARRAYDEPTH, 0));
-		maxChildren.setSelection(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, 0)); 
+		maxChildren.setSelection(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, 0));
 		acceptRemoteSession.select(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION, 0));
 
 		// capture output
 		captureStdout.select(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT, 0));
 		captureStderr.select(PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, 0));
-		
-		//proxy defaults
+
+		// proxy defaults
 		boolean useProxyState = PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, false);
 		useProxy.setSelection(useProxyState);
 		String ideKey = PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, null);
-		if (ideKey == null || ideKey.length() == 0) {
+		if (StringUtil.isEmpty(ideKey))
+		{
 			ideKey = DBGpProxyHandler.instance.generateIDEKey();
 		}
 		idekeyTextBox.setText(ideKey);
-		proxyTextBox.setText(PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, null));
+		proxyTextBox
+				.setText(PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, StringUtil.EMPTY));
 		toggleProxyFields(useProxyState);
 	}
-	
 
 	/**
 	 * add a spinner control
+	 * 
 	 * @param parent
 	 * @param key
 	 * @param min
@@ -293,7 +324,8 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 	 * @param horizontalIndent
 	 * @return
 	 */
-	private Spinner addVariableLevel(Composite parent, String key, int min, int max, int horizontalIndent) {
+	private Spinner addVariableLevel(Composite parent, String key, int min, int max, int horizontalIndent)
+	{
 		Spinner spin = new Spinner(parent, SWT.VERTICAL | SWT.BORDER);
 		spin.setData(key);
 		spin.setMinimum(min);
@@ -306,80 +338,100 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 		spin.setPageIncrement(3);
 		return spin;
 	}
-	
-	
-	class ComboListener implements SelectionListener {
 
-		public void widgetDefaultSelected(SelectionEvent e) {
+	class ComboListener implements SelectionListener
+	{
+
+		public void widgetDefaultSelected(SelectionEvent e)
+		{
 			// TODO Auto-generated method stub
-			
+
 			Object source = e.getSource();
-			if (source == acceptRemoteSession) {
-				
-			} 
-			else if (source == captureStdout) {
-				
+			if (source == acceptRemoteSession)
+			{
+
 			}
-			else if (source == captureStderr) {
-				
+			else if (source == captureStdout)
+			{
+
 			}
-			
+			else if (source == captureStderr)
+			{
+
+			}
+
 		}
 
-		public void widgetSelected(SelectionEvent e) {
-			// TODO Auto-generated method stub			
+		public void widgetSelected(SelectionEvent e)
+		{
+			// TODO Auto-generated method stub
 			Object source = e.getSource();
-			if (source == acceptRemoteSession) {
-				
-			} 
-			else if (source == captureStdout) {
-				
+			if (source == acceptRemoteSession)
+			{
+
 			}
-			else if (source == captureStderr) {
-				
+			else if (source == captureStdout)
+			{
+
 			}
-			
-			
+			else if (source == captureStderr)
+			{
+
+			}
+
 		}
-		
+
 	}
 
 	/**
 	 * numeric field validator class
-	 *
 	 */
-	class NumFieldValidateListener implements ModifyListener {
+	class NumFieldValidateListener implements ModifyListener
+	{
 
 		private boolean timeoutField;
 
-		NumFieldValidateListener(boolean isTimeout) {
+		NumFieldValidateListener(boolean isTimeout)
+		{
 			timeoutField = isTimeout;
 		}
 
-		public void modifyText(ModifyEvent e) {
+		public void modifyText(ModifyEvent e)
+		{
 			String errorMessage = null;
 			boolean valid = true;
 			String value = ((Text) e.widget).getText();
-			try {
+			try
+			{
 				Integer iValue = new Integer(value);
 				int i = iValue.intValue();
-				if (!timeoutField) {
+				if (!timeoutField)
+				{
 
-					if (i <= 0 || i > 65535) {
+					if (i <= 0 || i > 65535)
+					{
 						valid = false;
 						errorMessage = PHPDebugCoreMessages.XDebugConfigurationDialog_invalidPortRange;
 					}
-				} else {
-					if (i < 10 || i > 100000) {
+				}
+				else
+				{
+					if (i < 10 || i > 100000)
+					{
 						valid = false;
 						errorMessage = PHPDebugCoreMessages.XDebugConfigurationDialog_invalidTimeout;
 					}
 				}
-			} catch (NumberFormatException e1) {
+			}
+			catch (NumberFormatException e1)
+			{
 				valid = false;
-				if (!timeoutField) {
+				if (!timeoutField)
+				{
 					errorMessage = PHPDebugCoreMessages.DebuggerConfigurationDialog_invalidPort;
-				} else {
+				}
+				else
+				{
 					errorMessage = PHPDebugCoreMessages.XDebugConfigurationDialog_invalidTimeoutValue;
 				}
 			}
@@ -397,7 +449,8 @@ public class XDebugConfigurationDialog extends AbstractDebuggerConfigurationDial
 			}
 			setErrorMessage(errorMessage);
 			Button bt = getButton(IDialogConstants.OK_ID);
-			if (bt != null) {
+			if (bt != null)
+			{
 				bt.setEnabled(valid);
 			}
 		}

@@ -38,7 +38,7 @@ public class CommunicationDaemonRegistry
 	private static final String ID_ATTRIBUTE = "id"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
 
-	private static final String DEFAULT_DEBUG_DAEMONS_NAMESPACE = "com.aptana.php.debug.core"; //$NON-NLS-1$
+	private static final String DEFAULT_DEBUG_DAEMONS_NAMESPACE = "com.aptana.php.debug.epl"; //$NON-NLS-1$
 
 	/** Actions stored by ID */
 	private Dictionary<String, CommunicationDaemonFactory> daemons = new Hashtable<String, CommunicationDaemonFactory>();
