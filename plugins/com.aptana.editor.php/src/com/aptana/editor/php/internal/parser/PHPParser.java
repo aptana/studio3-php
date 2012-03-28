@@ -50,7 +50,7 @@ public class PHPParser implements IParser
 	private IModule module;
 	private ISourceModule sourceModule;
 	private boolean parseHTML;
-	private IParseRootNode latestValidNode;
+	private PHPParseRootNode latestValidNode;
 
 	/**
 	 * Constructs a new PHPParser.<br>
@@ -95,8 +95,7 @@ public class PHPParser implements IParser
 	{
 		String source = parseState.getSource();
 		int startingOffset = parseState.getStartingOffset();
-		ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, startingOffset,
-				startingOffset + source.length() - 1);
+		PHPParseRootNode root = new PHPParseRootNode(NO_CHILDREN, startingOffset, startingOffset + source.length() - 1);
 		Program program = null;
 		if (parseState instanceof IPHPParseState)
 		{
@@ -174,6 +173,10 @@ public class PHPParser implements IParser
 		}
 		if (astHasErrors)
 		{
+			if (latestValidNode != null)
+			{
+				latestValidNode.setIsCached(true);
+			}
 			return latestValidNode;
 		}
 		latestValidNode = root;
