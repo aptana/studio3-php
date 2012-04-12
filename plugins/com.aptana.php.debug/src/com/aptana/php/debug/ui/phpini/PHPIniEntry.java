@@ -16,10 +16,10 @@ import java.util.Map;
  */
 public class PHPIniEntry implements Map.Entry<String, String>
 {
-	public static final int PHP_EXTENSION_VALIDATION_UNKNOWN = 0;
-	public static final int PHP_EXTENSION_VALIDATION_OK = 1;
-	public static final int PHP_EXTENSION_VALIDATION_ERROR = 2;
-	public static final int PHP_EXTENSION_VALIDATION_WARNING = 3;
+	public static enum VALIDATION
+	{
+		UNKNOWN, OK, ERROR, WARNING
+	};
 
 	private static final String[] EXTENSION_ENTRIES = { "extension", "zend_extension", "zend_extension_ts" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -41,12 +41,9 @@ public class PHPIniEntry implements Map.Entry<String, String>
 	/**
 	 * Holds the validity state of this element.
 	 * 
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_OK
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_ERROR
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_WARNING
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_UNKNOWN
+	 * @see VALIDATION
 	 */
-	private int validity;
+	private VALIDATION validity;
 
 	/**
 	 * Holds the validation note (if exists). A validation note is either an error note or a warning note that was
@@ -74,7 +71,7 @@ public class PHPIniEntry implements Map.Entry<String, String>
 		this.key = key;
 		this.value = value;
 		this.parent = parent;
-		this.validity = PHP_EXTENSION_VALIDATION_UNKNOWN;
+		this.validity = VALIDATION.UNKNOWN;
 	}
 
 	/**
@@ -117,12 +114,9 @@ public class PHPIniEntry implements Map.Entry<String, String>
 	 * invoked.
 	 * 
 	 * @return the validation state of this entry.
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_OK
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_ERROR
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_WARNING
-	 * @see INIFileModifier#PHP_EXTENSION_VALIDATION_UNKNOWN
+	 * @see VALIDATION
 	 */
-	public int getValidationState()
+	public VALIDATION getValidationState()
 	{
 		return validity;
 	}
@@ -133,7 +127,7 @@ public class PHPIniEntry implements Map.Entry<String, String>
 	 * @param state
 	 * @param validationNote
 	 */
-	public void setValidationState(int state, String validationNote)
+	public void setValidationState(VALIDATION state, String validationNote)
 	{
 		this.validity = state;
 		this.validationNote = validationNote;

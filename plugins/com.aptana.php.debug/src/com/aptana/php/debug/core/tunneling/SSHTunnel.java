@@ -154,12 +154,12 @@ public class SSHTunnel
 					if (isConnected())
 					{
 						status = new Status(IStatus.WARNING, PHPDebugPlugin.PLUGIN_ID, CONNECTION_WARNING_CODE,
-								"The debugger tunnel might not have been initialized", ex); //$NON-NLS-1$
+								Messages.SSHTunnel_nonInitializedTunnelWarning, ex);
 					}
 					else
 					{
 						status = new Status(IStatus.ERROR, PHPDebugPlugin.PLUGIN_ID, CONNECTION_ERROR_CODE,
-								"The debugger tunnel connection could not be established", ex); //$NON-NLS-1$
+								Messages.SSHTunnel_tunnelConnectionFailError, ex);
 					}
 				}
 			}
@@ -169,7 +169,7 @@ public class SSHTunnel
 				if (retry < 0)
 				{
 					status = new Status(IStatus.ERROR, PHPDebugPlugin.PLUGIN_ID, CONNECTION_ERROR_CODE,
-							"Could not establish a tunnel connection to " + remoteHost, ee); //$NON-NLS-1$
+							Messages.SSHTunnel_tunnelFailRetryError + remoteHost, ee);
 					break;
 				}
 				if (session != null && session.isConnected())

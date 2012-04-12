@@ -10,7 +10,7 @@ package com.aptana.php.debug.core.launch.remote;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * @author Shalom Gibly <sgibly@aptana.com>
+ * @author Shalom Gibly <sgibly@appcelerator.com>
  */
 public class Messages extends NLS
 {

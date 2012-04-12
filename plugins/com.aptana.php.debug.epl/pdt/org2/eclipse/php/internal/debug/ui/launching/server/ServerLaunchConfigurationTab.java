@@ -58,7 +58,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org2.eclipse.php.debug.core.debugger.parameters.IDebugParametersKeys;
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org2.eclipse.php.internal.core.util.ElementCreationProxy;
@@ -320,7 +319,7 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		createNewServer = createPushButton(phpServerComp, null,
 				SWTUtils.getImage(UIPlugin.getDefault(), "/icons/add.gif")); //$NON-NLS-1$
-		createNewServer.setToolTipText(PHPServerUIMessages.getString("ServerTab.new"));
+		createNewServer.setToolTipText(PHPServerUIMessages.getString("ServerTab.new")); //$NON-NLS-1$
 		createNewServer.addSelectionListener(fListener);
 		Object gd = createNewServer.getLayoutData();
 		if (gd instanceof GridData)
@@ -329,8 +328,8 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		}
 
 		configureServers = createPushButton(phpServerComp, null,
-				ServersPluginImages.get(ServersPluginImages.IMG_CONFIG_SERVER)); //$NON-NLS-1$
-		configureServers.setToolTipText(PHPServerUIMessages.getString("ServerTab.configure"));
+				ServersPluginImages.get(ServersPluginImages.IMG_CONFIG_SERVER));
+		configureServers.setToolTipText(PHPServerUIMessages.getString("ServerTab.configure")); //$NON-NLS-1$
 		configureServers.addSelectionListener(fListener);
 		gd = configureServers.getLayoutData();
 		if (gd instanceof GridData)
@@ -338,8 +337,8 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			((GridData) gd).widthHint = -1;
 		}
 
-		mapPaths = createPushButton(phpServerComp, null, ServersPluginImages.get(ServersPluginImages.IMG_PATH_MAPPING)); //$NON-NLS-1$
-		mapPaths.setToolTipText(PHPServerUIMessages.getString("ServerTab.mapPaths"));
+		mapPaths = createPushButton(phpServerComp, null, ServersPluginImages.get(ServersPluginImages.IMG_PATH_MAPPING));
+		mapPaths.setToolTipText(PHPServerUIMessages.getString("ServerTab.mapPaths")); //$NON-NLS-1$
 		mapPaths.addSelectionListener(fListener);
 		gd = mapPaths.getLayoutData();
 		if (gd instanceof GridData)
@@ -349,7 +348,7 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 		validateDebuggerBtn = createPushButton(phpServerComp, null,
 				ServersPluginImages.get(ServersPluginImages.IMG_DEBUGGER_TEST));
-		validateDebuggerBtn.setToolTipText(PHPServerUIMessages.getString("ServerTab.debuggerTest"));
+		validateDebuggerBtn.setToolTipText(PHPServerUIMessages.getString("ServerTab.debuggerTest")); //$NON-NLS-1$
 		gd = validateDebuggerBtn.getLayoutData();
 		if (gd instanceof GridData)
 		{
@@ -414,8 +413,8 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 			IConfigurationElement element = elements[i];
 			if ("debugServerTest".equals(element.getName())) { //$NON-NLS-1$
 				ElementCreationProxy ecProxy = new ElementCreationProxy(element, debugServerTestExtensionName);
-				String debuggerTypeName = elements[i].getAttribute("debuggerTypeName");
-				String overridesIds = elements[i].getAttribute("overridesId");
+				String debuggerTypeName = elements[i].getAttribute("debuggerTypeName"); //$NON-NLS-1$
+				String overridesIds = elements[i].getAttribute("overridesId"); //$NON-NLS-1$
 				if (debuggerTypeName.equals(currentDebuggerType))
 				{// must be equal to the current selected type
 					String id = element.getAttribute("id"); //$NON-NLS-1$
@@ -573,7 +572,6 @@ public class ServerLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 				}
 				if (dlg.open() == Window.OK)
 				{
-					PHPServersManager.save();
 					String newName = server.getName();
 					if (!newName.equals(serverName))
 					{

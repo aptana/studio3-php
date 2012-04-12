@@ -25,15 +25,17 @@ import org.eclipse.ui.browser.IWebBrowser;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.FileUtil;
+import com.aptana.core.util.IOUtil;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.util.NameValuePair;
 
 /**
- * Provides a HTTP redirect for a debug session initialization. This redirector should be called when there is a need to
- * pass POST data. A debug session that is configured to start with pre-defined POST data should call this
- * redirecting-server with the target URL and the POST data {@link Map}. This server, in turn, will redirect to the
- * final URL destination with the POST data by responding with a JavaScript post redirection to the target URL.
+ * Provides a HTTP redirect for a debug session initialization.<br>
+ * This redirector should be called when there is a need to pass <code><b>POST</b></code> data. A debug session that is
+ * configured to start with pre-defined <code>POST</code> data should call this redirecting-server with the target URL
+ * and the <code>POST</code> data {@link Map}. This server, in turn, will redirect to the final URL destination with the
+ * <code>POST</code> data by responding with a <code>JavaScript</code> post redirection to the target URL.
  * 
  * @author Shalom Gibly
  * @since PHP 1.1.1
@@ -42,7 +44,6 @@ public class RemoteDebugRedirector
 {
 	private static final int REDIRECTION_SERVER_DELAY = 3000;
 	private static final String LINE_TERMINATOR = FileUtil.NEW_LINE;
-	public static String URL_ENCODING = "UTF-8"; //$NON-NLS-1$
 	private ServerSocket server;
 	private String response;
 
@@ -93,7 +94,7 @@ public class RemoteDebugRedirector
 					responseBuilder.append("<input type=\"hidden\" name=\""); //$NON-NLS-1$
 					responseBuilder.append(nameValuePair.name);
 					responseBuilder.append("\" value=\""); //$NON-NLS-1$
-					responseBuilder.append(URLEncoder.encode(nameValuePair.value, URL_ENCODING));
+					responseBuilder.append(URLEncoder.encode(nameValuePair.value, IOUtil.UTF_8));
 					responseBuilder.append("\">"); //$NON-NLS-1$
 				}
 			}
@@ -111,7 +112,7 @@ public class RemoteDebugRedirector
 	protected void startServer() throws IOException
 	{
 		server = new ServerSocket(0);
-		Job job = new Job("PHP Debug Server Redirector") //$NON-NLS-1$
+		Job job = new Job("PHP Debug Server Redirector") //$NON-NLS-1$ (system job)
 		{
 			protected IStatus run(IProgressMonitor monitor)
 			{
@@ -165,7 +166,7 @@ public class RemoteDebugRedirector
 	 */
 	protected void stopServer()
 	{
-		Job stoppingServerJob = new Job("PHP Debug Server Redirector Shutdown") //$NON-NLS-1$
+		Job stoppingServerJob = new Job("PHP Debug Server Redirector Shutdown") //$NON-NLS-1$ (system job)
 		{
 			protected IStatus run(IProgressMonitor monitor)
 			{

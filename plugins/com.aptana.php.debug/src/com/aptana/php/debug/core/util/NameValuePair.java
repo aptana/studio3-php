@@ -7,6 +7,8 @@
  */
 package com.aptana.php.debug.core.util;
 
+import java.text.MessageFormat;
+
 import com.aptana.core.util.ObjectUtil;
 import com.aptana.core.util.StringUtil;
 
@@ -102,7 +104,6 @@ public class NameValuePair
 	 */
 	public String toString()
 	{
-		return name + '=' + ((value != null) ? value : StringUtil.EMPTY);
+		return MessageFormat.format("{0}={1}", name, ((value != null) ? value : StringUtil.EMPTY)); //$NON-NLS-1$
 	}
-
 }

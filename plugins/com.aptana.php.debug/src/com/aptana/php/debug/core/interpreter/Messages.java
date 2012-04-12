@@ -7,6 +7,7 @@
  */
 package com.aptana.php.debug.core.interpreter;
 
+import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -28,7 +29,7 @@ public class Messages
 		}
 		catch (MissingResourceException e)
 		{
-			return '!' + key + '!';
+			return MessageFormat.format("!{0}!", key); //$NON-NLS-1$
 		}
 	}
 }

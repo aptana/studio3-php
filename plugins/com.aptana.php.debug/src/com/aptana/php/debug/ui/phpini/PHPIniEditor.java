@@ -75,17 +75,20 @@ public class PHPIniEditor
 	/**
 	 * Comment icon.
 	 */
-	private static final Image COMMENT_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/comment.gif"); //$NON-NLS-1$
+	private static final Image COMMENT_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
+			"/icons/full/obj16/comment.gif"); //$NON-NLS-1$
 
 	/**
 	 * Uncomment icon.
 	 */
-	private static final Image UNCOMMENT_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/uncomment.gif"); //$NON-NLS-1$
+	private static final Image UNCOMMENT_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
+			"/icons/full/obj16/uncomment.gif"); //$NON-NLS-1$
 
 	/**
 	 * Extensions validation icon.
 	 */
-	private static final Image VALIDATE_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/validate.gif"); //$NON-NLS-1$
+	private static final Image VALIDATE_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
+			"/icons/full/obj16/validate.gif"); //$NON-NLS-1$
 
 	/*
 	 * Validation tool-tips constants
@@ -115,19 +118,20 @@ public class PHPIniEditor
 	 */
 	private static final int ENTRY_VALID_INDEX = 2;
 
-	private final static Image TREE_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/tree_mode.gif"); //$NON-NLS-1$
+	private final static Image TREE_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
+			"/icons/full/obj16/tree_mode.gif"); //$NON-NLS-1$
 
 	private final static Image VALIDATION_OK_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
-			"/icons/validation_ok.gif"); //$NON-NLS-1$
+			"/icons/full/obj16/validation_ok.gif"); //$NON-NLS-1$
 
 	private final static Image VALIDATION_ERROR_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
-			"/icons/validation_err.gif"); //$NON-NLS-1$
+			"/icons/full/obj16/validation_err.gif"); //$NON-NLS-1$
 
 	private final static Image VALIDATION_WARNING_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
-			"/icons/validation_warn.gif"); //$NON-NLS-1$
+			"/icons/full/obj16/validation_warn.gif"); //$NON-NLS-1$
 
 	private final static Image VALIDATION_UNKNOWN_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
-			"/icons/validation_unknown.gif"); //$NON-NLS-1$
+			"/icons/full/obj16/validation_unknown.gif"); //$NON-NLS-1$
 
 	/**
 	 * Comment foreground color.
@@ -287,11 +291,11 @@ public class PHPIniEditor
 		{
 			switch (entry.getValidationState())
 			{
-				case PHPIniEntry.PHP_EXTENSION_VALIDATION_OK:
+				case OK:
 					return VALIDATION_OK_ICON;
-				case PHPIniEntry.PHP_EXTENSION_VALIDATION_ERROR:
+				case ERROR:
 					return VALIDATION_ERROR_ICON;
-				case PHPIniEntry.PHP_EXTENSION_VALIDATION_WARNING:
+				case WARNING:
 					return VALIDATION_WARNING_ICON;
 				default:
 					return VALIDATION_UNKNOWN_ICON;
@@ -309,11 +313,11 @@ public class PHPIniEditor
 		{
 			switch (entry.getValidationState())
 			{
-				case PHPIniEntry.PHP_EXTENSION_VALIDATION_OK:
+				case OK:
 					return getSWTImage(SWT.ICON_INFORMATION);
-				case PHPIniEntry.PHP_EXTENSION_VALIDATION_ERROR:
+				case ERROR:
 					return getSWTImage(SWT.ICON_ERROR);
-				case PHPIniEntry.PHP_EXTENSION_VALIDATION_WARNING:
+				case WARNING:
 					return getSWTImage(SWT.ICON_WARNING);
 				default:
 					return getSWTImage(SWT.ICON_QUESTION);
@@ -757,11 +761,11 @@ public class PHPIniEditor
 	{
 		switch (entry.getValidationState())
 		{
-			case PHPIniEntry.PHP_EXTENSION_VALIDATION_OK:
+			case OK:
 				return MessageFormat.format(VALIDATION_OK_TOOLTIP, entry.getValue());
-			case PHPIniEntry.PHP_EXTENSION_VALIDATION_ERROR:
+			case ERROR:
 				return MessageFormat.format(VALIDATION_ERROR_TOOLTIP, entry.getValue(), entry.getValidationNote());
-			case PHPIniEntry.PHP_EXTENSION_VALIDATION_WARNING:
+			case WARNING:
 				return MessageFormat.format(VALIDATION_WARNING_TOOLTIP, entry.getValue(), entry.getValidationNote());
 			default:
 				return MessageFormat.format(VALIDATION_UNKNOWN_TOOLTIP, entry.getValue());
@@ -783,7 +787,7 @@ public class PHPIniEditor
 		addEntryButton.setText(Messages.PHPIniEditor_Entry);
 		addEntryButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		addEntryButton.setToolTipText(Messages.PHPIniEditor_7);
-		addEntryButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/add.gif")); //$NON-NLS-1$
+		addEntryButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/add.gif")); //$NON-NLS-1$
 		addEntryButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)
@@ -800,7 +804,7 @@ public class PHPIniEditor
 		removeButton.setText(Messages.PHPIniEditor_Delete);
 		removeButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		removeButton.setToolTipText(Messages.PHPIniEditor_8);
-		removeButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/delete.gif")); //$NON-NLS-1$
+		removeButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/delete.gif")); //$NON-NLS-1$
 		removeButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)
@@ -817,7 +821,7 @@ public class PHPIniEditor
 		addSectionButton.setText(Messages.PHPIniEditor_Section);
 		addSectionButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		addSectionButton.setToolTipText(Messages.PHPIniEditor_9);
-		addSectionButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/add_section.gif")); //$NON-NLS-1$
+		addSectionButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/add_section.gif")); //$NON-NLS-1$
 		addSectionButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)
@@ -878,10 +882,18 @@ public class PHPIniEditor
 		{
 			provider.dispose();
 		}
-
-		COMMENT_FOREGROUND.dispose();
-		SECTION_BACKGROUND.dispose();
-		COMMENT_FONT.dispose();
+		if (COMMENT_FOREGROUND != null)
+		{
+			COMMENT_FOREGROUND.dispose();
+		}
+		if (SECTION_BACKGROUND != null)
+		{
+			SECTION_BACKGROUND.dispose();
+		}
+		if (COMMENT_FONT != null)
+		{
+			COMMENT_FONT.dispose();
+		}
 	}
 
 	public void modifyEntry(PHPIniEntry entry, String value)

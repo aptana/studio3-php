@@ -37,6 +37,7 @@ public class PHPDebugPlugin extends AbstractUIPlugin
 	{
 		super.start(context);
 		plugin = this;
+		// Need this for the SSH tunnel support.
 		tracker = new ServiceTracker(getBundle().getBundleContext(), IJSchService.class.getName(), null);
 		tracker.open();
 	}

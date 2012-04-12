@@ -120,7 +120,7 @@ public class NameValuePairInputDialog extends StatusDialog
 		StatusInfo status = new StatusInfo();
 		String newText = fNameDialogField.getText();
 		boolean hasErrorOrWarning = false;
-		if (newText.length() == 0)
+		if (StringUtil.isEmpty(newText))
 		{
 			status.setError(Messages.NameValuePairInputDialog_enterFiledNameStatus);
 		}

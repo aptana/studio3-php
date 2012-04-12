@@ -77,7 +77,6 @@ public class PHPDebugSupportManager
 					catch (CoreException e)
 					{
 						IdeLog.logError(PHPDebugPlugin.getDefault(), e, IDebugScopes.DEBUG);
-
 					}
 				}
 			}

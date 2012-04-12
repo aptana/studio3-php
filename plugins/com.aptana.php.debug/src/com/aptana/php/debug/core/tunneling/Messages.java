@@ -15,6 +15,9 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "com.aptana.php.debug.core.tunneling.messages"; //$NON-NLS-1$
+	public static String SSHTunnel_nonInitializedTunnelWarning;
+	public static String SSHTunnel_tunnelConnectionFailError;
+	public static String SSHTunnel_tunnelFailRetryError;
 	public static String TunnelTester_testMessage;
 	static
 	{

@@ -22,6 +22,7 @@ import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org2.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
 import org2.eclipse.php.internal.debug.ui.pathmapper.PathMappingComposite;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.server.PHPServersManager;
@@ -201,8 +202,10 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			try
 			{
-				String serverName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, ""); //$NON-NLS-1$
-				if (serverName != null && !serverName.equals("")) { //$NON-NLS-1$
+				String serverName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME,
+						StringUtil.EMPTY);
+				if (!StringUtil.isEmpty(serverName))
+				{
 					IServer server = PHPServersManager.getServer(serverName);
 					if (server != null)
 					{

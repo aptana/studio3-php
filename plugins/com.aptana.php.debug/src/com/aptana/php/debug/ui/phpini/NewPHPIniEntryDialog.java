@@ -173,7 +173,6 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 		}
 		contentEdit.addModifyListener(new ModifyListener()
 		{
-
 			public void modifyText(ModifyEvent e)
 			{
 				validate();
@@ -196,7 +195,6 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 		nameEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		nameEdit.addModifyListener(new ModifyListener()
 		{
-
 			public void modifyText(ModifyEvent e)
 			{
 				validate();
@@ -241,7 +239,6 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 		if (contentText.length() == 0)
 		{
 			setErrorMessage(Messages.NewPHPIniEntryDialog_9);
-
 			disableOKButton();
 			return;
 		}

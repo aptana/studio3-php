@@ -29,17 +29,14 @@ import com.aptana.webserver.core.WebServerCorePlugin;
  */
 public class PHPServersManager
 {
-
-	// TODO: SG - Hook the PathMapper (see the addManagerListener)
-	// Maybe also needs a server manager event??
-
-	private static List<IServer> tempServers = new ArrayList<IServer>();
-
 	/**
 	 * DEFAULT_SERVER_PREFERENCES_KEY
 	 */
 	public static final String DEFAULT_SERVER_PREFERENCES_KEY = "server_preferences"; //$NON-NLS-1$
 
+	// TODO: SG - We may need to hook the PathMapper (see the addManagerListener)
+	// Maybe also needs a server manager event
+	private static List<IServer> tempServers = new ArrayList<IServer>();
 	private static final int DEFAULT_PORT = 80;
 
 	/**
@@ -51,18 +48,6 @@ public class PHPServersManager
 	public static IServer[] getTemporaryServers()
 	{
 		return tempServers.toArray(new IServer[tempServers.size()]);
-	}
-
-	/**
-	 * Not implemented.
-	 * 
-	 * @param default_Server_Name
-	 * @param baseUrl
-	 * @return
-	 */
-	public static IServer createServer(String default_Server_Name, String baseUrl)
-	{
-		return null;// new IServer(default_Server_Name, baseUrl);
 	}
 
 	/**
@@ -130,23 +115,6 @@ public class PHPServersManager
 	}
 
 	/**
-	 * Not implemented
-	 */
-	public static void save()
-	{
-	}
-
-	/**
-	 * Not implemented
-	 * 
-	 * @param object
-	 * @param server
-	 */
-	public static void setDefaultServer(Object object, IServer server)
-	{
-	}
-
-	/**
 	 * Returns a registered server with the given name.
 	 * 
 	 * @param name
@@ -189,7 +157,7 @@ public class PHPServersManager
 				InetAddress serverInetAddress = InetAddress.getByName(hostname);
 				if (address.equals(serverInetAddress))
 				{
-					// FIXME: SG - check by port (somehow...)
+					// TODO: SG - maybe add a check by port? (somehow...)
 					return p;
 				}
 			}
@@ -200,30 +168,6 @@ public class PHPServersManager
 		}
 		return null;
 	}
-
-	/**
-	 * Add an {@link IServerManagerListener} that will be informed when a server is added, changed or removed.
-	 * 
-	 * @param listener
-	 *            An {@link IServerManagerListener}
-	 */
-	// public static void addManagerListener(IServerManagerListener listener)
-	// {
-	// TODO - Wait for Max's implementation
-	// ServerCore.getServerManager().addServerManagerListener(listener);
-	// }
-
-	/**
-	 * Removes an {@link IServerManagerListener}.
-	 * 
-	 * @param listener
-	 *            An {@link IServerManagerListener}
-	 */
-	// public static void removeManagerListener(IServerManagerListener listener)
-	// {
-	// TODO - Wait for Max's implementation
-	// ServerCore.getServerManager().removeServerManagerListener(listener);
-	// }
 
 	/**
 	 * Returns the default server. This implementation just returns the first server in the list of registered servers.
@@ -249,7 +193,7 @@ public class PHPServersManager
 	 */
 	public static List<IServer> getServers()
 	{
-		// FIXME - Filter only the compatible servers.
+		// TODO - Filter only the compatible servers?
 		return WebServerCorePlugin.getDefault().getServerManager().getServers();
 	}
 }

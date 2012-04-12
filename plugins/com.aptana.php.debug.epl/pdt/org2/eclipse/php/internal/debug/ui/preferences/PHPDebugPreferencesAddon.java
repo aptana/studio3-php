@@ -582,7 +582,7 @@ public class PHPDebugPreferencesAddon extends AbstractPHPPreferencePageBlock
 					debugUINode.remove(PHPDebugCorePreferenceNames.STOP_AT_FIRST_LINE);
 					// debugUINode.remove(PHPDebugCorePreferenceNames.ZEND_DEBUG_PORT); // No need
 					debugUINode.remove(PHPDebugCorePreferenceNames.DEFAULT_PHP);
-					PHPServersManager.setDefaultServer(project, (IServer) null);
+					// PHPServersManager.setDefaultServer(project, (IServer) null);
 					debugUINode.remove(PHPDebugCorePreferenceNames.TRANSFER_ENCODING);
 					debugUINode.remove(PHPDebugCorePreferenceNames.OUTPUT_ENCODING);
 					debugUINode.remove(IPHPDebugCorePreferenceKeys.PHP_DEBUGGER_ID);

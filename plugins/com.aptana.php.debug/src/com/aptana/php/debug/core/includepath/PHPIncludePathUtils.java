@@ -46,11 +46,6 @@ public final class PHPIncludePathUtils
 			return Collections.emptyList();
 		}
 
-		// if (dependencies.getDirectories().size() == 0
-		// && dependencies.getWorkspaceResources().size() == 0) {
-		// return Collections.emptyList();
-		// }
-
 		List<String> result = new ArrayList<String>();
 
 		// appending directories

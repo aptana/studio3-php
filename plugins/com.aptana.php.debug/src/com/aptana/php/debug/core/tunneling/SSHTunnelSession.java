@@ -7,6 +7,7 @@
  */
 package com.aptana.php.debug.core.tunneling;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -63,18 +64,16 @@ public class SSHTunnelSession
 				IJSchService service = getJSchService();
 				IJSchLocation jlocation = service.getLocation(username, hostname, port);
 				Session session = null;
-				try
-				{
-					session = createSession(service, jlocation, password, monitor);
-				}
-				catch (JSchException e)
-				{
-					throw e;
-				}
+				// may throw a JSchException
+				session = createSession(service, jlocation, password, monitor);
 				if (session == null)
+				{
 					throw new JSchException("Could not create a debug tunneling session to " + hostname); //$NON-NLS-1$
+				}
 				if (session.getTimeout() != DEFAULT_TIMEOUT)
+				{
 					session.setTimeout(DEFAULT_TIMEOUT);
+				}
 				SSHTunnelSession schSession = new SSHTunnelSession(session);
 				pool.put(key, schSession);
 				return schSession;
@@ -100,7 +99,9 @@ public class SSHTunnelSession
 		Session session = service.createSession(location, null);
 		session.setTimeout(DEFAULT_TIMEOUT);
 		if (password != null)
+		{
 			session.setPassword(password);
+		}
 		service.connect(session, DEFAULT_TIMEOUT, monitor);
 		return session;
 	}
@@ -112,7 +113,7 @@ public class SSHTunnelSession
 
 	private static String getPoolKey(String username, String hostname, int port)
 	{
-		return username + "@" + hostname + ":" + port; //$NON-NLS-1$ //$NON-NLS-2$
+		return MessageFormat.format("{0}@{1}:{2}", username, hostname, port); //$NON-NLS-1$
 	}
 
 	/**
@@ -174,5 +175,4 @@ public class SSHTunnelSession
 			session.disconnect();
 		}
 	}
-
 }

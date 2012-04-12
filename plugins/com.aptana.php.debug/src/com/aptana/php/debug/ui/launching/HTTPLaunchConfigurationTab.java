@@ -38,6 +38,12 @@ import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.util.NameValuePair;
 import com.aptana.ui.util.SWTUtils;
 
+/**
+ * HTML launch configuration tab that provides <code>GET</code> and <code>POST</code> parameter tables to be passed into
+ * a PHP session.
+ * 
+ * @author Shalom Gibly
+ */
 public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 {
 	private static final String IMG_LAUNCH_HTTP = "/icons/full/obj16/launch-http.gif"; //$NON-NLS-1$
@@ -53,12 +59,12 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 
 	public HTTPLaunchConfigurationTab()
 	{
-		listGET = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] {
+		listGET = new EnhancedListDialogField<NameValuePair>(new ListAdapter<NameValuePair>(), new String[] {
 				Messages.HTTPLaunchConfigurationTab_getAddLabel, Messages.HTTPLaunchConfigurationTab_getEditLabel,
 				Messages.HTTPLaunchConfigurationTab_getRemoveLabel, null,
 				Messages.HTTPLaunchConfigurationTab_getUpLabel, Messages.HTTPLaunchConfigurationTab_getDownLabel },
 				new NameValueLabelProvider());
-		listPOST = new EnhancedListDialogField<NameValuePair>(new ListAdapter(), new String[] {
+		listPOST = new EnhancedListDialogField<NameValuePair>(new ListAdapter<NameValuePair>(), new String[] {
 				Messages.HTTPLaunchConfigurationTab_postAddLabel, Messages.HTTPLaunchConfigurationTab_postEditLabel,
 				Messages.HTTPLaunchConfigurationTab_postRemoveLabel, null,
 				Messages.HTTPLaunchConfigurationTab_postUpLabel, Messages.HTTPLaunchConfigurationTab_postDownLabel },
@@ -74,7 +80,6 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 		listPOST.setRemoveButtonIndex(IDX_REMOVE);
 		listPOST.setUpButtonIndex(IDX_UP);
 		listPOST.setDownButtonIndex(IDX_DOWN);
-
 	}
 
 	public void createControl(Composite parent)
@@ -227,7 +232,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	 * List adapter for the GET and POST lists
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private class ListAdapter implements IListAdapter
+	private class ListAdapter<E> implements IListAdapter<E>
 	{
 
 		public void customButtonPressed(ListDialogField field, int index)
@@ -276,7 +281,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	 */
 	private class EnhancedListDialogField<E> extends ListDialogField<E>
 	{
-		EnhancedListDialogField(IListAdapter adapter, String[] buttonLabels, ILabelProvider lprovider)
+		EnhancedListDialogField(IListAdapter<E> adapter, String[] buttonLabels, ILabelProvider lprovider)
 		{
 			super(adapter, buttonLabels, lprovider);
 		}

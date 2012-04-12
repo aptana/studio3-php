@@ -20,11 +20,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
-import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
-import com.aptana.ui.util.SWTUtils;
 
 /**
  * The port notification dialog is designed to appear in case the debug session is initialized and the debug-client port
@@ -134,17 +134,17 @@ public class DebugPortNotificationDialog extends MessageDialogWithToggle
 			for (IStatus s : status)
 			{
 				Image image = null;
+				ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
 				switch (s.getSeverity())
 				{
 					case IStatus.ERROR:
-
-						image = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/error.png"); //$NON-NLS-1$
+						image = sharedImages.getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 						break;
 					case IStatus.INFO:
-						image = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/information.png"); //$NON-NLS-1$
+						image = sharedImages.getImage(ISharedImages.IMG_OBJS_INFO_TSK);
 						break;
 					case IStatus.WARNING:
-						image = SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/warning.png"); //$NON-NLS-1$
+						image = sharedImages.getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 						break;
 				}
 				if (image != null) // we have a valid status

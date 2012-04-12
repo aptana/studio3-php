@@ -27,6 +27,7 @@ import com.aptana.php.debug.PHPDebugPlugin;
  */
 public class SSHTunnelFactory
 {
+	private static final String LOCALHOST = "localhost"; //$NON-NLS-1$
 	private static Map<SSHTunnel, SSHTunnel> tunnels = new HashMap<SSHTunnel, SSHTunnel>();
 
 	/**
@@ -109,7 +110,7 @@ public class SSHTunnelFactory
 	private static SSHTunnel createSSHTunnel(String remoteHost, String userName, String password, int localPort,
 			int remotePort)
 	{
-		String localHost = "localhost"; //$NON-NLS-1$
+		String localHost = LOCALHOST;
 		try
 		{
 			localHost = InetAddress.getLocalHost().getHostName();

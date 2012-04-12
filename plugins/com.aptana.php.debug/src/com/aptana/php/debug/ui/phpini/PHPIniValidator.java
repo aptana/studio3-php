@@ -34,6 +34,7 @@ import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.PHPDebugSupportManager;
 import com.aptana.php.debug.core.util.FileUtils;
+import com.aptana.php.debug.ui.phpini.PHPIniEntry.VALIDATION;
 
 /**
  * A class that is used to validate the extensions directives in the php.ini. The class executes the PHP process and
@@ -104,7 +105,6 @@ public class PHPIniValidator
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class PHPIniValidator
 		// Mark all entries as unknown.
 		for (PHPIniEntry entry : extensions)
 		{
-			entry.setValidationState(PHPIniEntry.PHP_EXTENSION_VALIDATION_UNKNOWN, null);
+			entry.setValidationState(VALIDATION.UNKNOWN, null);
 		}
 		Shell activeShell = PHPDebugPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 		try
@@ -158,11 +158,11 @@ public class PHPIniValidator
 			{
 				if (validationCanceled)
 				{
-					entry.setValidationState(PHPIniEntry.PHP_EXTENSION_VALIDATION_UNKNOWN, null);
+					entry.setValidationState(VALIDATION.UNKNOWN, null);
 				}
-				else if (entry.getValidationState() == PHPIniEntry.PHP_EXTENSION_VALIDATION_UNKNOWN)
+				else if (entry.getValidationState() == VALIDATION.UNKNOWN)
 				{
-					entry.setValidationState(PHPIniEntry.PHP_EXTENSION_VALIDATION_OK, null);
+					entry.setValidationState(VALIDATION.OK, null);
 				}
 			}
 			try
@@ -295,7 +295,7 @@ public class PHPIniValidator
 					PHPIniEntry iniEntry = mappedEntries.get(entryValue);
 					if (isError)
 					{
-						iniEntry.setValidationState(PHPIniEntry.PHP_EXTENSION_VALIDATION_ERROR, line);
+						iniEntry.setValidationState(VALIDATION.ERROR, line);
 						faultingExtensions.add(iniEntry);
 						extensions.remove(iniEntry);
 						provider.commentEntry(iniEntry);
@@ -306,11 +306,11 @@ public class PHPIniValidator
 						// Mark these warnings as errors.
 						if (line.toLowerCase().indexOf(LOADING_ERROR) > -1)
 						{
-							iniEntry.setValidationState(PHPIniEntry.PHP_EXTENSION_VALIDATION_ERROR, line);
+							iniEntry.setValidationState(VALIDATION.ERROR, line);
 						}
 						else
 						{
-							iniEntry.setValidationState(PHPIniEntry.PHP_EXTENSION_VALIDATION_WARNING, line);
+							iniEntry.setValidationState(VALIDATION.WARNING, line);
 						}
 					}
 					break;

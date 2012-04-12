@@ -143,7 +143,7 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 
 	protected String getViewerLabel()
 	{
-		// TODO Auto-generated method stub
+		// default implementation returns null for this one.
 		return null;
 	}
 
