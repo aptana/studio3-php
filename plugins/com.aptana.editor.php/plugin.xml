@@ -420,6 +420,9 @@
          <contentTypeBinding
                contentTypeId="com.aptana.contenttype.phtml.php">
          </contentTypeBinding>
+         <projectNatureBinding
+               natureId="com.aptana.editor.php.phpNature">
+         </projectNatureBinding>
       </participant>
    </extension>
 </plugin>

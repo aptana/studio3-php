@@ -303,7 +303,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	}
 
 	@Override
-	protected char[] getPairMatchingCharacters()
+	public char[] getPairMatchingCharacters()
 	{
 		return PAIR_MATCHING_CHARS;
 	}

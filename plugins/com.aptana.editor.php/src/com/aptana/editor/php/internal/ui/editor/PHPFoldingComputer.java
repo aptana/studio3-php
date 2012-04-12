@@ -7,8 +7,13 @@
  */
 package com.aptana.editor.php.internal.ui.editor;
 
+import java.util.Map;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org2.eclipse.php.internal.ui.preferences.PreferenceConstants;
 
 import com.aptana.editor.common.AbstractThemeableEditor;
@@ -16,6 +21,7 @@ import com.aptana.editor.common.text.AbstractFoldingComputer;
 import com.aptana.editor.html.HTMLFoldingComputer;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
+import com.aptana.editor.php.internal.parser.PHPParseRootNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPClassParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPCommentNode;
@@ -99,4 +105,22 @@ public class PHPFoldingComputer extends AbstractFoldingComputer
 		return htmlFoldingComputer().isCollapsed(child);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.common.text.AbstractFoldingComputer#getPositions(org.eclipse.core.runtime.IProgressMonitor,
+	 * com.aptana.parsing.ast.IParseNode)
+	 */
+	@Override
+	protected Map<ProjectionAnnotation, Position> getPositions(IProgressMonitor monitor, IParseNode parseNode)
+	{
+		if (parseNode instanceof PHPParseRootNode)
+		{
+			if (((PHPParseRootNode) parseNode).isCached())
+			{
+				monitor.setCanceled(true);
+			}
+		}
+		return super.getPositions(monitor, parseNode);
+	}
 }
