@@ -520,7 +520,7 @@ ntribution>
          <action
                class="org2.eclipse.php.internal.debug.ui.actions.PHPWatchAction"
                enablesFor="+"
-               icon="platform:/plugin/com.aptana.editor.php.epl/icons/full/etool16/watch_exp.gif"
+               icon="icons/full/etool16/watch_exp.gif"
                id="org2.eclipse.php.debug.ui.popup.ruler.WatchAction"
                label="Watch"
                menubarPath="additions">
@@ -551,7 +551,7 @@ ntribution>
          <action
                class="org2.eclipse.php.internal.debug.ui.actions.PHPWatchAction"
                enablesFor="+"
-               icon="platform:/plugin/com.aptana.editor.php.epl/icons/full/etool16/watch_exp.gif"
+               icon="icons/full/etool16/watch_exp.gif"
                id="org2.eclipse.php.debug.ui.popup.WatchAction"
                label="Watch"
                menubarPath="additions">
@@ -560,6 +560,7 @@ ntribution>
                class="com.aptana.php.debug.ui.actions.InspectAction"
                definitionId="com.aptana.php.debug.ui.command.Inspect"
                enablesFor="+"
+               icon="icons/full/etool16/inspect.gif"
                id="com.aptana.php.debug.ui.actions.inspect"
                label="Inspect"
                menubarPath="debug">
@@ -838,7 +839,7 @@ ntribution>
             commandId="com.aptana.php.debug.ui.command.Inspect"
             contextId="com.aptana.editor.php.editorContext"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M2+M2+I"/>         
+            sequence="M3+M2+I"/>         
     </extension>   
    
 <!-- Editor -->
@@ -925,11 +926,11 @@ ntribution>
           </menu>
        <action
              class="org2.eclipse.php.internal.debug.ui.actions.PHPWatchAction"
-             disabledIcon="platform:/plugin/com.aptana.editor.php.epl/icons/full/dtool16/watch_exp.gif"
+             disabledIcon="icons/full/dtool16/watch_exp.gif"
              enablesFor="+"
              helpContextId="watch_action_context"
-             hoverIcon="platform:/plugin/com.aptana.editor.php.epl/icons/full/etool16/watch_exp.gif"
-             icon="platform:/plugin/com.aptana.editor.php.epl/icons/full/etool16/watch_exp.gif"
+             hoverIcon="icons/full/etool16/watch_exp.gif"
+             icon="icons/full/etool16/watch_exp.gif"
              id="org2.eclipse.php.debug.ui.WatchAction"
              label="Watch"
              menubarPath="org.eclipse.ui.run/phpGroup"
