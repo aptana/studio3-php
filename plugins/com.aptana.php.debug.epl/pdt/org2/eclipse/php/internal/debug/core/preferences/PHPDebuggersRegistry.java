@@ -22,12 +22,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IPluginContribution;
 import org.eclipse.ui.activities.WorkbenchActivityHelper;
 import org2.eclipse.php.internal.debug.core.Logger;
+import org2.eclipse.php.internal.debug.core.daemon.CommunicationDaemonRegistry;
+import org2.eclipse.php.internal.debug.core.daemon.ICommunicationDaemon;
 import org2.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration;
 import org2.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.php.debug.core.daemon.CommunicationDaemonRegistry;
-import com.aptana.php.debug.core.daemon.ICommunicationDaemon;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
 /**

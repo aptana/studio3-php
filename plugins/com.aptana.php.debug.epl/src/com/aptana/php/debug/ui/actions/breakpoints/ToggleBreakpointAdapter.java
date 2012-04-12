@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Eclipse Public License (EPL).
  * Please see the license-epl.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -84,8 +84,6 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 	 */
 	public void toggleMethodBreakpoints(IWorkbenchPart part, ISelection selection) throws CoreException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -94,7 +92,6 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 	 */
 	public boolean canToggleMethodBreakpoints(IWorkbenchPart part, ISelection selection)
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -104,8 +101,6 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 	 */
 	public void toggleWatchpoints(IWorkbenchPart part, ISelection selection) throws CoreException
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -114,7 +109,6 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 	 */
 	public boolean canToggleWatchpoints(IWorkbenchPart part, ISelection selection)
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Eclipse Public License (EPL).
  * Please see the license-epl.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -24,6 +24,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org2.eclipse.php.internal.debug.core.daemon.DebugDaemon;
 import org2.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration;
 import org2.eclipse.php.internal.debug.core.launching.XDebugLaunchListener;
 import org2.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
@@ -36,7 +37,6 @@ import org2.eclipse.php.internal.debug.ui.util.ImageDescriptorRegistry;
 import com.aptana.core.logging.IdeLog;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
-import com.aptana.php.debug.core.daemon.DebugDaemon;
 import com.aptana.php.debug.core.tunneling.SSHTunnelFactory;
 
 /**
@@ -71,6 +71,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 			IPreferenceStore preferenceStore = DebugUIPlugin.getDefault().getPreferenceStore();
 			fInitialAutoRemoveLaunches = preferenceStore.getBoolean(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES);
 			preferenceStore.addPropertyChangeListener(new AutoRemoveOldLaunchesListener());
+
 			// check for default server
 			createDefaultPHPServer();
 

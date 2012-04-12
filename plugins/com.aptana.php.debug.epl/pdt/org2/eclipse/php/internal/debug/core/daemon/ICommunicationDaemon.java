@@ -8,7 +8,7 @@
  * Contributors:
  *   Zend and IBM - Initial implementation
  *******************************************************************************/
-package com.aptana.php.debug.core.daemon;
+package org2.eclipse.php.internal.debug.core.daemon;
 
 /**
  * A communication daemon interface.

@@ -98,7 +98,7 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 											false))
 							{
 								// Update the current launch config
-								pathMappingUpdater.updateConfigurations(Arrays.asList(workingCopy), server);
+								PathMappingUpdater.updateConfigurations(Arrays.asList(workingCopy), server);
 								// Update the preview table and the other tabs
 								ILaunchConfigurationTab[] tabs = getLaunchConfigurationDialog().getTabs();
 								for (ILaunchConfigurationTab tab : tabs)
@@ -167,8 +167,10 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 		{
 			try
 			{
-				String serverName = workingCopy.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, "");//$NON-NLS-1$
-				if (serverName != null && !serverName.equals("")) { //$NON-NLS-1$
+				String serverName = workingCopy.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME,
+						StringUtil.EMPTY);
+				if (!StringUtil.isEmpty(serverName))
+				{
 					return PHPServersManager.getServer(serverName);
 				}
 			}

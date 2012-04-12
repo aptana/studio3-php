@@ -42,6 +42,7 @@ import org2.eclipse.php.debug.core.debugger.parameters.IDebugParametersKeys;
 import org2.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org2.eclipse.php.internal.debug.core.Logger;
 import org2.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
+import org2.eclipse.php.internal.debug.core.daemon.DebugDaemon;
 import org2.eclipse.php.internal.debug.core.preferences.PHPProjectPreferences;
 import org2.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon;
 import org2.eclipse.php.internal.debug.core.zend.debugger.IDebuggerInitializer;
@@ -49,7 +50,6 @@ import org2.eclipse.php.internal.debug.core.zend.debugger.PHPSessionLaunchMapper
 import org2.eclipse.php.internal.debug.core.zend.debugger.PHPWebServerDebuggerInitializer;
 
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
-import com.aptana.php.debug.core.daemon.DebugDaemon;
 import com.aptana.php.debug.core.launch.ScriptLocator;
 import com.aptana.php.debug.core.server.PHPServersManager;
 import com.aptana.php.debug.core.tunneling.SSHTunnel;

@@ -25,7 +25,6 @@ import org2.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
 import org2.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration;
 import org2.eclipse.php.internal.debug.core.preferences.PHPDebuggersRegistry;
 
-import com.aptana.php.debug.core.daemon.ICommunicationDaemon;
 
 /**
  * The debugger communication receiver holds a ServerSocket that remains open for the entire

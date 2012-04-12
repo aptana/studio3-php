@@ -43,6 +43,7 @@ import org2.eclipse.php.debug.core.debugger.parameters.IDebugParametersKeys;
 import org2.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org2.eclipse.php.internal.debug.core.Logger;
 import org2.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
+import org2.eclipse.php.internal.debug.core.daemon.DebugDaemon;
 import org2.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIDebuggerUtil;
 import org2.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
 import org2.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
@@ -55,7 +56,6 @@ import org2.eclipse.php.internal.debug.core.zend.debugger.PHPSessionLaunchMapper
 import org2.eclipse.php.internal.debug.core.zend.debugger.ProcessCrashDetector;
 
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
-import com.aptana.php.debug.core.daemon.DebugDaemon;
 import com.aptana.php.debug.core.launch.ScriptLocator;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 

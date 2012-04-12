@@ -30,7 +30,6 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.aptana.php.debug.core,
- com.aptana.php.debug.core.daemon;uses:="org.eclipse.core.runtime,org.eclipse.ui",
  com.aptana.php.debug.core.preferences,
  com.aptana.php.debug.epl;uses:="org.eclipse.core.runtime,org.eclipse.ui.plugin,org.osgi.framework",
  com.aptana.php.debug.ui.actions,

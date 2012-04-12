@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.ui.launching;
 
 import java.net.URL;
@@ -11,8 +18,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.jface.window.Window;
-
+import org.eclipse.jface.dialogs.Dialog;
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org2.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org2.eclipse.php.internal.debug.core.pathmapper.PathMapperRegistry;
@@ -130,7 +136,7 @@ public class PathMappingUpdater
 	{
 		LaunchConfigurationsSelectionDialog dialog = new LaunchConfigurationsSelectionDialog(SWTUtil
 				.getStandardDisplay().getActiveShell(), launchConfigurations);
-		if (dialog.open() == Window.OK)
+		if (dialog.open() == Dialog.OK)
 		{
 			Object[] result = dialog.getResult();
 			if (result != null)

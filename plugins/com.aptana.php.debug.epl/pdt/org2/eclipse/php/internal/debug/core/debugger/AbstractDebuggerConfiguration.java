@@ -18,9 +18,9 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
+import org2.eclipse.php.internal.debug.core.daemon.ICommunicationDaemon;
 
 import com.aptana.core.util.StringUtil;
-import com.aptana.php.debug.core.daemon.ICommunicationDaemon;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
 /**

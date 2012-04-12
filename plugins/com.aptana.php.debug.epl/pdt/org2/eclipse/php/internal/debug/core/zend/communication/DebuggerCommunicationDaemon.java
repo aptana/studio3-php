@@ -16,9 +16,9 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org2.eclipse.php.internal.debug.core.daemon.AbstractDebuggerCommunicationDaemon;
+import org2.eclipse.php.internal.debug.core.daemon.ICommunicationDaemon;
 import org2.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 
-import com.aptana.php.debug.core.daemon.ICommunicationDaemon;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
 /**
