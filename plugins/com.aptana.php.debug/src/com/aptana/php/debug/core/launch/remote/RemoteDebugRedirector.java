@@ -26,6 +26,7 @@ import org.eclipse.ui.browser.IWebBrowser;
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.FileUtil;
 import com.aptana.core.util.IOUtil;
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.php.debug.core.util.NameValuePair;
@@ -66,7 +67,7 @@ public class RemoteDebugRedirector
 			startServer();
 			buildResponse(target, postData);
 			Thread.sleep(1000L);
-			browser.openURL(new URL("http://127.0.0.1:" + server.getLocalPort())); //$NON-NLS-1$
+			browser.openURL(new URL("http", "127.0.0.1", server.getLocalPort(), StringUtil.EMPTY)); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch (Exception e)
 		{

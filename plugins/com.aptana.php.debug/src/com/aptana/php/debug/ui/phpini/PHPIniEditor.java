@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -44,6 +45,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -58,6 +60,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.widgets.FormText;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.ArrayUtil;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
@@ -71,6 +75,7 @@ import com.jcraft.jsch.IO;
  */
 public class PHPIniEditor
 {
+	private static final String ADD_SECTION_ICON_PATH = "/icons/full/obj16/add_section.gif"; //$NON-NLS-1$
 
 	/**
 	 * Comment icon.
@@ -133,6 +138,8 @@ public class PHPIniEditor
 	private final static Image VALIDATION_UNKNOWN_ICON = SWTUtils.getImage(PHPEplPlugin.getDefault(),
 			"/icons/full/obj16/validation_unknown.gif"); //$NON-NLS-1$
 
+	private static final RGB COMMENT_FOREGROUND_RGB = new RGB(0, 128, 0);
+	private static final RGB SECTION_BACKGROUND_RGB = new RGB(203, 243, 243);
 	/**
 	 * Comment foreground color.
 	 */
@@ -462,8 +469,8 @@ public class PHPIniEditor
 
 	public PHPIniEditor()
 	{
-		COMMENT_FOREGROUND = new Color(Display.getCurrent(), 0, 128, 0);
-		SECTION_BACKGROUND = new Color(Display.getCurrent(), 203, 243, 243);
+		COMMENT_FOREGROUND = new Color(Display.getCurrent(), COMMENT_FOREGROUND_RGB);
+		SECTION_BACKGROUND = new Color(Display.getCurrent(), SECTION_BACKGROUND_RGB);
 		Font defaultFont = JFaceResources.getDefaultFont();
 		FontData data = new FontData(defaultFont.getFontData()[0].getName(), defaultFont.getFontData()[0].getHeight(),
 				SWT.ITALIC);
@@ -737,7 +744,6 @@ public class PHPIniEditor
 			Composite sm = new Composite(parent, SWT.NONE);
 			sm.setLayout(GridLayoutFactory.fillDefaults().margins(10, 10).create());
 			FormText ts = new FormText(sm, SWT.NONE);
-			// ts.setImage("entry", getEntryValidationTooltipImage(entry)); //$NON-NLS-1$  
 			ts.setWhitespaceNormalized(true);
 			ts.setFont("header", JFaceResources.getHeaderFont()); //$NON-NLS-1$
 			ts.setText(getEntryTooltipInfo(entry), true, false);
@@ -821,7 +827,7 @@ public class PHPIniEditor
 		addSectionButton.setText(Messages.PHPIniEditor_Section);
 		addSectionButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		addSectionButton.setToolTipText(Messages.PHPIniEditor_9);
-		addSectionButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/add_section.gif")); //$NON-NLS-1$
+		addSectionButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), ADD_SECTION_ICON_PATH));
 		addSectionButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)
@@ -1048,10 +1054,6 @@ public class PHPIniEditor
 					viewer.getTree().getParent().layout(true, true);
 				}
 			}
-			else
-			{
-				return;
-			}
 		}
 	}
 
@@ -1167,7 +1169,7 @@ public class PHPIniEditor
 		if (control instanceof Composite)
 		{
 			Control[] children = ((Composite) control).getChildren();
-			if (children != null && children.length > 0)
+			if (!ArrayUtil.isEmpty(children))
 			{
 				for (Control child : children)
 				{
@@ -1190,7 +1192,7 @@ public class PHPIniEditor
 		if (control instanceof Composite)
 		{
 			Control[] children = ((Composite) control).getChildren();
-			if (children != null && children.length > 0)
+			if (!ArrayUtil.isEmpty(children))
 			{
 				for (Control child : children)
 				{
@@ -1314,6 +1316,14 @@ public class PHPIniEditor
 	 */
 	private static class ExtensionsOnlyFilter extends ViewerFilter
 	{
+		//@formatter:off
+		private static final Set<String> EXTENSION_DATA_KEYS = CollectionsUtil.newSet(
+				"extension",//$NON-NLS-1$
+				"extension_dir", //$NON-NLS-1$
+				"zend_extension",//$NON-NLS-1$
+				"zend_extension_ts");//$NON-NLS-1$
+		//@formatter:on
+
 		public boolean select(Viewer viewer, Object parentElement, Object element)
 		{
 			if (element instanceof INIFileSection)
@@ -1329,8 +1339,7 @@ public class PHPIniEditor
 
 		private boolean containsExtensionData(PHPIniEntry entry)
 		{
-			return "extension".equals(entry.getKey()) || "extension_dir".equals(entry.getKey()) //$NON-NLS-1$ //$NON-NLS-2$
-					|| "zend_extension".equals(entry.getKey()) || "zend_extension_ts".equals(entry.getKey());//$NON-NLS-1$ //$NON-NLS-2$
+			return EXTENSION_DATA_KEYS.contains(entry.getKey());
 		}
 
 		private boolean containsExtensionData(INIFileSection section)

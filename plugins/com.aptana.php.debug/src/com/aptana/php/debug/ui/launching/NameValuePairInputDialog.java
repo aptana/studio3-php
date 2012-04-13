@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.StatusDialog;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -98,11 +98,7 @@ public class NameValuePairInputDialog extends StatusDialog
 		Composite composite = (Composite) super.createDialogArea(parent);
 
 		Composite inner = new Composite(composite, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		layout.numColumns = 2;
-		inner.setLayout(layout);
+		inner.setLayout(GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).create());
 
 		fNameDialogField.doFillIntoGrid(inner, 2);
 		fValueDialogField.doFillIntoGrid(inner, 2);

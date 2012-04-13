@@ -118,9 +118,9 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 
 		// setting titles
 
-		this.getShell().setText(Messages.NewPHPIniSectionDialog_0);
-		this.setTitle(Messages.NewPHPIniSectionDialog_1);
-		this.setMessage(Messages.NewPHPIniSectionDialog_2);
+		this.getShell().setText(Messages.NewPHPIniSectionDialog_createSection);
+		this.setTitle(Messages.NewPHPIniSectionDialog_createSection);
+		this.setMessage(Messages.NewPHPIniSectionDialog_enterSectionNameMessage);
 
 		par.setLayout(new GridLayout(4, false));
 
@@ -140,7 +140,7 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 	private void createNameEdit(Composite par)
 	{
 		Label nameLabel = new Label(par, SWT.NONE);
-		nameLabel.setText(StringUtil.makeFormLabel(Messages.NewPHPIniSectionDialog_3));
+		nameLabel.setText(StringUtil.makeFormLabel(Messages.NewPHPIniSectionDialog_nameLabel));
 		nameLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		nameEdit = new Text(par, SWT.BORDER);
 		nameEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -163,7 +163,7 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 	 */
 	protected void setTooltipText()
 	{
-		nameEdit.setToolTipText(Messages.NewPHPIniSectionDialog_5);
+		nameEdit.setToolTipText(Messages.NewPHPIniSectionDialog_enterSectionNameTooltip);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 		if (nameText.length() == 0)
 		{
 			disableOKButton();
-			setErrorMessage(Messages.NewPHPIniSectionDialog_6);
+			setErrorMessage(Messages.NewPHPIniSectionDialog_sectionNameMissingError);
 			return;
 		}
 		String trimmedName = nameText.trim();
@@ -187,7 +187,7 @@ public class NewPHPIniSectionDialog extends TitleAreaDialog
 				if (forbiddenName.equalsIgnoreCase(trimmedName))
 				{
 					disableOKButton();
-					setErrorMessage(Messages.NewPHPIniSectionDialog_7);
+					setErrorMessage(Messages.NewPHPIniSectionDialog_sectionDuplicateError);
 					return;
 				}
 			}

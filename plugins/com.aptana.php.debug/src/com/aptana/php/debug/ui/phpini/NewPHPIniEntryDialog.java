@@ -120,7 +120,10 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 		{
 			name = nameEdit.getText();
 		}
-		value = contentEdit.getText();
+		if (contentEdit != null)
+		{
+			value = contentEdit.getText();
+		}
 		super.okPressed();
 	}
 
@@ -139,9 +142,9 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 
 		// setting titles
 
-		this.getShell().setText(Messages.NewPHPIniEntryDialog_0);
-		this.setTitle(Messages.NewPHPIniEntryDialog_1);
-		this.setMessage(Messages.NewPHPIniEntryDialog_2);
+		this.getShell().setText(Messages.NewPHPIniEntryDialog_createEntry);
+		this.setTitle(Messages.NewPHPIniEntryDialog_createEntry);
+		this.setMessage(Messages.NewPHPIniEntryDialog_inputNameValue);
 
 		par.setLayout(new GridLayout(4, false));
 
@@ -163,7 +166,7 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 	private void createContentEdit(Composite par)
 	{
 		Label contentLabel = new Label(par, SWT.NONE);
-		contentLabel.setText(StringUtil.makeFormLabel(Messages.NewPHPIniEntryDialog_3));
+		contentLabel.setText(StringUtil.makeFormLabel(Messages.NewPHPIniEntryDialog_value));
 		contentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		contentEdit = new Text(par, SWT.BORDER);
 		contentEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -189,7 +192,7 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 	private void createNameEdit(Composite par)
 	{
 		Label nameLabel = new Label(par, SWT.NONE);
-		nameLabel.setText(StringUtil.makeFormLabel(Messages.NewPHPIniEntryDialog_4));
+		nameLabel.setText(StringUtil.makeFormLabel(Messages.NewPHPIniEntryDialog_name));
 		nameLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		nameEdit = new Text(par, SWT.BORDER);
 		nameEdit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -211,7 +214,7 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 	 */
 	protected void setTooltipText()
 	{
-		contentEdit.setToolTipText(Messages.NewPHPIniEntryDialog_6);
+		contentEdit.setToolTipText(Messages.NewPHPIniEntryDialog_enterEntryValueTooltip);
 	}
 
 	/**
@@ -224,42 +227,38 @@ public class NewPHPIniEntryDialog extends TitleAreaDialog
 		String nameText = nameEdit.getText();
 		if (nameText.length() == 0)
 		{
-			disableOKButton();
-			setErrorMessage(Messages.NewPHPIniEntryDialog_7);
+			setOKButtonEnabled(false);
+			setErrorMessage(Messages.NewPHPIniEntryDialog_entryNameMissingError);
 			return;
 		}
 		String trimmedName = nameText.trim();
 		if (forbiddenNames != null && forbiddenNames.contains(trimmedName))
 		{
-			disableOKButton();
-			setErrorMessage(Messages.NewPHPIniEntryDialog_8);
+			setOKButtonEnabled(false);
+			setErrorMessage(Messages.NewPHPIniEntryDialog_entryNameDuplicateError);
 			return;
 		}
 
 		if (contentText.length() == 0)
 		{
-			setErrorMessage(Messages.NewPHPIniEntryDialog_9);
-			disableOKButton();
+			setErrorMessage(Messages.NewPHPIniEntryDialog_missingEntryValueError);
+			setOKButtonEnabled(false);
 			return;
 		}
 
 		setErrorMessage(null);
-		Button button = getButton(IDialogConstants.OK_ID);
-		if (button != null)
-		{
-			button.setEnabled(true);
-		}
+		setOKButtonEnabled(true);
 	}
 
 	/**
-	 * Disables OK button.
+	 * Disables or enables the OK button.
 	 */
-	private void disableOKButton()
+	private void setOKButtonEnabled(boolean enabled)
 	{
 		Button button = getButton(IDialogConstants.OK_ID);
 		if (button != null)
 		{
-			button.setEnabled(false);
+			button.setEnabled(enabled);
 		}
 	}
 }

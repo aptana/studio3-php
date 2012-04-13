@@ -17,22 +17,20 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "com.aptana.php.debug.ui.phpini.messages"; //$NON-NLS-1$
-	public static String NewPHPIniEntryDialog_0;
-	public static String NewPHPIniEntryDialog_1;
-	public static String NewPHPIniEntryDialog_2;
-	public static String NewPHPIniEntryDialog_3;
-	public static String NewPHPIniEntryDialog_4;
-	public static String NewPHPIniEntryDialog_6;
-	public static String NewPHPIniEntryDialog_7;
-	public static String NewPHPIniEntryDialog_8;
-	public static String NewPHPIniEntryDialog_9;
-	public static String NewPHPIniSectionDialog_0;
-	public static String NewPHPIniSectionDialog_1;
-	public static String NewPHPIniSectionDialog_2;
-	public static String NewPHPIniSectionDialog_3;
-	public static String NewPHPIniSectionDialog_5;
-	public static String NewPHPIniSectionDialog_6;
-	public static String NewPHPIniSectionDialog_7;
+	public static String NewPHPIniEntryDialog_createEntry;
+	public static String NewPHPIniEntryDialog_inputNameValue;
+	public static String NewPHPIniEntryDialog_value;
+	public static String NewPHPIniEntryDialog_name;
+	public static String NewPHPIniEntryDialog_enterEntryValueTooltip;
+	public static String NewPHPIniEntryDialog_entryNameMissingError;
+	public static String NewPHPIniEntryDialog_entryNameDuplicateError;
+	public static String NewPHPIniEntryDialog_missingEntryValueError;
+	public static String NewPHPIniSectionDialog_createSection;
+	public static String NewPHPIniSectionDialog_enterSectionNameMessage;
+	public static String NewPHPIniSectionDialog_nameLabel;
+	public static String NewPHPIniSectionDialog_enterSectionNameTooltip;
+	public static String NewPHPIniSectionDialog_sectionNameMissingError;
+	public static String NewPHPIniSectionDialog_sectionDuplicateError;
 	public static String PHPExtensionsEditor_NAME;
 	public static String PHPExtensionsEditor_PATH;
 	public static String PHPIniEditor_10;

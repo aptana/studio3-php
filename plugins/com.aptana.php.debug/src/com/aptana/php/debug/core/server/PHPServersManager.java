@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.aptana.webserver.core.AbstractWebServer;
@@ -179,7 +180,7 @@ public class PHPServersManager
 	public static IServer getDefaultServer(IProject project)
 	{
 		List<IServer> servers = getServers();
-		if (servers.isEmpty())
+		if (CollectionsUtil.isEmpty(servers))
 		{
 			return null;
 		}

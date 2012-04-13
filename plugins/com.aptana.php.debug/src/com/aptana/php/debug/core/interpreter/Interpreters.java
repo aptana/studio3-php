@@ -77,7 +77,7 @@ public class Interpreters
 	/**
 	 * Singleton instance.
 	 */
-	private static Interpreters instance = new Interpreters();
+	private static Interpreters instance;
 
 	/**
 	 * Cached interpreters.
@@ -96,6 +96,10 @@ public class Interpreters
 	 */
 	public static Interpreters getDefault()
 	{
+		if (instance == null)
+		{
+			instance = new Interpreters();
+		}
 		return instance;
 	}
 
@@ -165,8 +169,7 @@ public class Interpreters
 					{
 						String language = element.getAttribute(LANGUAGE_ATTRIBUTE_NAME);
 						String os = element.getAttribute(OS_ATTRIBUTE_NAME);
-						String currentOS = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-						if (os != null && os.length() != 0 && !currentOS.startsWith(os))
+						if (!Platform.getOS().equals(os))
 						{
 							continue;
 						}
@@ -181,10 +184,9 @@ public class Interpreters
 							}
 							catch (NumberFormatException ex)
 							{
-								IdeLog.logError(
-										PHPDebugPlugin.getDefault(),
-										MessageFormat.format(
-												Messages.getString("Interpreters.ERR_WrongPriorityFormat"), elementName), ex, IDebugScopes.DEBUG); //$NON-NLS-1$
+								IdeLog.logError(PHPDebugPlugin.getDefault(),
+										MessageFormat.format(Messages.Interpreters_priorityFormatError, elementName),
+										ex, IDebugScopes.DEBUG);
 							}
 						}
 						try
@@ -220,15 +222,13 @@ public class Interpreters
 							catch (Throwable th)
 							{
 								IdeLog.logError(PHPDebugPlugin.getDefault(),
-										Messages.getString("Interpreters.ERR_UnableToGetInterpretersFromProvider"), th, //$NON-NLS-1$
-										IDebugScopes.DEBUG);
+										Messages.Interpreters_cannotGetInterpretersError, th, IDebugScopes.DEBUG);
 							}
 						}
 						catch (CoreException e)
 						{
-							IdeLog.logError(PHPDebugPlugin.getDefault(),
-									Messages.getString("Interpreters.ERR_UnableCreatingProvider"), e, //$NON-NLS-1$
-									IDebugScopes.DEBUG);
+							IdeLog.logError(PHPDebugPlugin.getDefault(), Messages.Interpreters_providerCreationError,
+									e, IDebugScopes.DEBUG);
 						}
 					}
 				}

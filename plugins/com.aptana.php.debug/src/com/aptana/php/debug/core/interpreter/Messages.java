@@ -7,29 +7,24 @@
  */
 package com.aptana.php.debug.core.interpreter;
 
-import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
-public class Messages
+/**
+ * @author Shalom Gibly <sgibly@appcelerator.com>
+ */
+public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "com.aptana.php.debug.core.interpreter.messages"; //$NON-NLS-1$
-
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+	public static String Interpreters_cannotGetInterpretersError;
+	public static String Interpreters_priorityFormatError;
+	public static String Interpreters_providerCreationError;
+	static
+	{
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
 
 	private Messages()
 	{
-	}
-
-	public static String getString(String key)
-	{
-		try
-		{
-			return RESOURCE_BUNDLE.getString(key);
-		}
-		catch (MissingResourceException e)
-		{
-			return MessageFormat.format("!{0}!", key); //$NON-NLS-1$
-		}
 	}
 }

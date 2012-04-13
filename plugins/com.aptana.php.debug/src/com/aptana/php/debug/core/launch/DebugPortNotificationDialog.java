@@ -10,11 +10,12 @@ package com.aptana.php.debug.core.launch;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -85,9 +86,7 @@ public class DebugPortNotificationDialog extends MessageDialogWithToggle
 	{
 		createInformationArea(parent);
 		Label buffer = new Label(parent, SWT.NONE);
-		GridData data = new GridData(SWT.NONE);
-		data.horizontalSpan = 2;
-		buffer.setLayoutData(data);
+		buffer.setLayoutData(GridDataFactory.swtDefaults().span(2, 1).create());
 		return super.createToggleButton(parent);
 	}
 
@@ -118,10 +117,7 @@ public class DebugPortNotificationDialog extends MessageDialogWithToggle
 			supportArea.setText(Messages.DebugPortNotificationDialog_detailsGroupText);
 			GridData supportData = new GridData(SWT.FILL, SWT.FILL, true, true);
 			supportArea.setLayoutData(supportData);
-			GridLayout layout = new GridLayout();
-			layout.marginWidth = 0;
-			layout.marginHeight = 0;
-			supportArea.setLayout(layout);
+			supportArea.setLayout(GridLayoutFactory.swtDefaults().margins(0, 0).create());
 			IStatus[] status = null;
 			if (detailedInformation.isMultiStatus())
 			{

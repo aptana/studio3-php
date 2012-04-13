@@ -8,13 +8,15 @@
 package com.aptana.php.debug.core.tunneling;
 
 import java.text.MessageFormat;
-import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jsch.core.IJSchLocation;
 import org.eclipse.jsch.core.IJSchService;
 
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.php.debug.PHPDebugPlugin;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -23,12 +25,14 @@ import com.jcraft.jsch.Session;
 /**
  * A SSH Tunnel session is the actual class that interacts with jcraft JSch sessions. A new session is be created as
  * needed when the {@link #getSession()} method is called.
+ * 
+ * @author Shalom Gibly
  */
 public class SSHTunnelSession
 {
 	private static final int DEFAULT_TIMEOUT = 45000;
 
-	private static java.util.Hashtable<String, SSHTunnelSession> pool = new java.util.Hashtable<String, SSHTunnelSession>();
+	private static Map<String, SSHTunnelSession> pool = new HashMap<String, SSHTunnelSession>();
 
 	private Session session;
 
@@ -121,11 +125,10 @@ public class SSHTunnelSession
 	 */
 	public static void shutdown()
 	{
-		if (getJSch() != null && pool.size() > 0)
+		if (getJSch() != null && !CollectionsUtil.isEmpty(pool))
 		{
-			for (Enumeration<SSHTunnelSession> e = pool.elements(); e.hasMoreElements();)
+			for (SSHTunnelSession session : pool.values())
 			{
-				SSHTunnelSession session = e.nextElement();
 				try
 				{
 					session.getSession().disconnect();

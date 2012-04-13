@@ -47,8 +47,7 @@ public final class ScriptLocator
 		{
 			return null;
 		}
-		String string = currentEditorResource.getFullPath().toOSString();
-		return string;
+		return currentEditorResource.getFullPath().toOSString();
 	}
 
 	/**
@@ -74,8 +73,7 @@ public final class ScriptLocator
 		{
 			return null;
 		}
-		String string = currentEditorResource.getFullPath().toOSString();
-		return string;
+		return currentEditorResource.getFullPath().toOSString();
 	}
 
 	/**

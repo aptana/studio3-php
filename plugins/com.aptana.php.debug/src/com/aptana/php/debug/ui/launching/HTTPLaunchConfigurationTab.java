@@ -85,8 +85,7 @@ public class HTTPLaunchConfigurationTab extends AbstractLaunchConfigurationTab
 	public void createControl(Composite parent)
 	{
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(1, true);
-		composite.setLayout(layout);
+		composite.setLayout(new GridLayout(1, true));
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Group groupGET = new Group(composite, SWT.NONE);

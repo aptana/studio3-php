@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.dialogs.SelectionDialog;
 import org2.eclipse.php.internal.ui.util.SWTFactory;
 
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.core.util.StringUtil;
 
 @SuppressWarnings("restriction")
@@ -106,7 +107,7 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected Control createDialogArea(Composite parent)
 	{
 		initializeDialogUnits(parent);
@@ -126,7 +127,7 @@ public class LaunchConfigurationsSelectionDialog extends SelectionDialog
 		fViewer.setContentProvider(getContentProvider());
 		fViewer.setInput(getViewerInput());
 		List selectedElements = getInitialElementSelections();
-		if (selectedElements != null && !selectedElements.isEmpty())
+		if (!CollectionsUtil.isEmpty(selectedElements))
 		{
 			fViewer.setSelection(new StructuredSelection(selectedElements));
 		}
