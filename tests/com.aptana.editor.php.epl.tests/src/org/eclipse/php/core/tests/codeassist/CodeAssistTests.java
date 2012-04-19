@@ -72,6 +72,7 @@ public class CodeAssistTests extends AbstractPDTTTest
 		TESTS.put(PHPVersion.PHP5,
 				new String[] { "/workspace/codeassist/php5/exclusive", "/workspace/codeassist/php5" });
 		TESTS.put(PHPVersion.PHP5_3, new String[] { "/workspace/codeassist/php5", "/workspace/codeassist/php53" });
+		// FIXME - SG: Add tests for 5.4
 	};
 
 	protected static IProject project;

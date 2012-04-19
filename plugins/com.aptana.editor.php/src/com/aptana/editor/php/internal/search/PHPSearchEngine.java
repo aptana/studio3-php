@@ -260,7 +260,7 @@ public final class PHPSearchEngine
 					try
 					{
 						// FIXME: Shalom - Perhaps get the real PHP version from the module.
-						PHPParser parser = new PHPParser(PHPVersion.PHP5_3, false);
+						PHPParser parser = new PHPParser(PHPVersion.getLatest(), false);
 						IParseNode parseNode = parser.parse(module.getContents());
 						IParseNode findClassNode = findClassNode(parseNode, name);
 						return (IPHPParseNode) findClassNode;
@@ -373,7 +373,7 @@ public final class PHPSearchEngine
 			try
 			{
 				// FIXME: Shalom - Parhaps get the real PHP version from the module.
-				PHPParser parser = new PHPParser(PHPVersion.PHP5_3, false);
+				PHPParser parser = new PHPParser(PHPVersion.getLatest(), false);
 				IParseNode parseNode = parser.parse(module.getContents());
 				IParseNode findClassNode = findClassNode(parseNode, e.getEntryPath());
 				return (PHPClassParseNode) findClassNode;

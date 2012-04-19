@@ -36,6 +36,7 @@ public class DomParserTests extends AbstractPDTTTest {
 				new String[] { "/workspace/dom_parser/php5" }); //$NON-NLS-1$
 		TESTS.put(PHPVersion.PHP5_3,
 				new String[] { "/workspace/dom_parser/php53" }); //$NON-NLS-1$
+		// FIXME - SG: Add tests for 5.4 dom_parser
 	};
 
 	public static void setUpSuite() throws Exception {

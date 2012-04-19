@@ -102,6 +102,7 @@ import org2.eclipse.php.internal.core.ast.scanner.AbstractASTParser;
 /** CUP v0.10k generated parser.
   * @version Wed Apr 18 00:09:07 PDT 2012
   */
+@SuppressWarnings("nls")
 public class PhpAstParser extends AbstractASTParser {
 
   /** Default constructor. */
@@ -111,7 +112,7 @@ public class PhpAstParser extends AbstractASTParser {
   public PhpAstParser(java_cup.runtime.Scanner s) {super(s);}
 
   /** Production table. */
-  protected static final short _production_table[][] = 
+protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
     "\000\u01c0\000\002\003\003\000\002\002\004\000\002\004" +
     "\003\000\002\004\005\000\002\004\003\000\002\007\004" +

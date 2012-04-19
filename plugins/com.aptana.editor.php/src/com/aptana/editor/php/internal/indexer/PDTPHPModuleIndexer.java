@@ -3673,7 +3673,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							Reader reader = new StringReader(bld.toString()); // $codepro.audit.disable
 																				// closeWhereCreated
 							// TODO - Shalom: Get the right version from the module
-							AstLexer lexer = ASTFactory.getAstLexer(PHPVersion.PHP5_3, reader);
+							AstLexer lexer = ASTFactory.getAstLexer(PHPVersion.getLatest(), reader);
 
 							// IsInCommentChecker isInCommentChecker = new
 							// IsInCommentChecker(offset);
