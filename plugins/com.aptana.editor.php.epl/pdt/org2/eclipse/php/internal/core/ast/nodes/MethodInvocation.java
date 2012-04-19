@@ -186,7 +186,8 @@ public class MethodInvocation extends Dispatch {
 	 *    resolved
 	 */
 	public IMethodBinding resolveConstructorBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveConstructor(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveConstructor(this);
 		return null;
 	}
 	
@@ -198,7 +199,8 @@ public class MethodInvocation extends Dispatch {
 	 *    resolved
 	 */	
 	public IMethodBinding resolveMethodBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveMethod(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveMethod(this);
 		return null;
 	}
 	

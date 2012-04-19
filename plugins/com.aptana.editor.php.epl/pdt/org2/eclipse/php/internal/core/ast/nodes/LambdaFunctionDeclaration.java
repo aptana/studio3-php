@@ -29,10 +29,11 @@ import org2.eclipse.php.internal.core.ast.visitor.Visitor;
  * 
  * @see http://wiki.php.net/rfc/closures
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class LambdaFunctionDeclaration extends Expression {
 
 	private boolean isReference;
+	private boolean isStatic;
+	private int staticStart;
 	private final ASTNode.NodeList<FormalParameter> formalParameters = new ASTNode.NodeList<FormalParameter>(
 			FORMAL_PARAMETERS_PROPERTY);
 	private final ASTNode.NodeList<Expression> lexicalVariables = new ASTNode.NodeList<Expression>(
@@ -45,6 +46,9 @@ public class LambdaFunctionDeclaration extends Expression {
 	public static final SimplePropertyDescriptor IS_REFERENCE_PROPERTY = new SimplePropertyDescriptor(
 			LambdaFunctionDeclaration.class,
 			"isReference", Boolean.class, OPTIONAL); //$NON-NLS-1$
+	public static final SimplePropertyDescriptor IS_STATIC = new SimplePropertyDescriptor(
+			LambdaFunctionDeclaration.class,
+			"isStatic", Boolean.class, OPTIONAL); //$NON-NLS-1$
 	public static final ChildListPropertyDescriptor FORMAL_PARAMETERS_PROPERTY = new ChildListPropertyDescriptor(
 			LambdaFunctionDeclaration.class,
 			"formalParameters", FormalParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
@@ -64,6 +68,7 @@ public class LambdaFunctionDeclaration extends Expression {
 		List<StructuralPropertyDescriptor> propertyList = new ArrayList<StructuralPropertyDescriptor>(
 				4);
 		propertyList.add(IS_REFERENCE_PROPERTY);
+		propertyList.add(IS_STATIC);
 		propertyList.add(FORMAL_PARAMETERS_PROPERTY);
 		propertyList.add(LEXICAL_VARIABLES_PROPERTY);
 		propertyList.add(BODY_PROPERTY);
@@ -73,6 +78,13 @@ public class LambdaFunctionDeclaration extends Expression {
 	public LambdaFunctionDeclaration(int start, int end, AST ast,
 			List formalParameters, List lexicalVars, Block body,
 			final boolean isReference) {
+		this(start, end, ast, formalParameters, lexicalVars, body, isReference,
+				false, -1);
+	}
+
+	public LambdaFunctionDeclaration(int start, int end, AST ast,
+			List formalParameters, List lexicalVars, Block body,
+			final boolean isReference, final boolean isStatic, int staticStart) {
 		super(start, end, ast);
 
 		if (formalParameters == null) {
@@ -94,6 +106,8 @@ public class LambdaFunctionDeclaration extends Expression {
 		if (body != null) {
 			setBody(body);
 		}
+		setStatic(isStatic);
+		this.staticStart = staticStart;
 	}
 
 	public LambdaFunctionDeclaration(AST ast) {
@@ -149,8 +163,11 @@ public class LambdaFunctionDeclaration extends Expression {
 	public void toString(StringBuffer buffer, String tab) {
 		buffer.append(tab).append("<LambdaFunctionDeclaration"); //$NON-NLS-1$
 		appendInterval(buffer);
-		buffer.append(" isReference='").append(isReference).append("'>\n"); //$NON-NLS-1$ //$NON-NLS-2$
-
+		buffer.append(" isReference='").append(isReference); //$NON-NLS-1$ //$NON-NLS-2$
+		if (isStatic) {
+			buffer.append(" isStatic='").append(isStatic); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		buffer.append("'>\n");
 		buffer.append(TAB).append(tab).append("<FormalParameters>\n"); //$NON-NLS-1$
 		for (ASTNode node : this.formalParameters) {
 			node.toString(buffer, TAB + TAB + tab);
@@ -257,6 +274,16 @@ public class LambdaFunctionDeclaration extends Expression {
 		postValueChange(IS_REFERENCE_PROPERTY);
 	}
 
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	public void setStatic(boolean isStatic) {
+		preValueChange(IS_STATIC);
+		this.isStatic = isStatic;
+		postValueChange(IS_STATIC);
+	}
+
 	/*
 	 * (omit javadoc for this method) Method declared on ASTNode.
 	 */
@@ -267,6 +294,13 @@ public class LambdaFunctionDeclaration extends Expression {
 				return isReference();
 			} else {
 				setIsReference(value);
+				return false;
+			}
+		} else if (property == IS_STATIC) {
+			if (get) {
+				return isStatic();
+			} else {
+				setStatic(value);
 				return false;
 			}
 		}
@@ -318,7 +352,7 @@ public class LambdaFunctionDeclaration extends Expression {
 
 		final LambdaFunctionDeclaration result = new LambdaFunctionDeclaration(
 				getStart(), getEnd(), target, formalParams, lexicalVars, body,
-				isRef);
+				isRef, isStatic(), this.staticStart);
 		return result;
 	}
 

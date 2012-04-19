@@ -162,6 +162,8 @@ public class Identifier extends Expression {
 	 *    resolved
 	 */
 	public final IBinding resolveBinding() {
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveName(this);
 		return getBinding();
 	}
 }

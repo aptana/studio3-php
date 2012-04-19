@@ -19,8 +19,6 @@ import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org2.eclipse.php.internal.core.ast.visitor.Visitor;
 
-import com.aptana.editor.php.core.typebinding.IBinding;
-
 /**
  * Represents include, include_once, require and require_once expressions
  * <pre>e.g.<pre> include('myFile.php'),
@@ -245,6 +243,9 @@ public class Include extends Expression {
 	 *    resolved
 	 */	
 	public IBinding resolveBinding() {
-		return (IBinding) getBinding();
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveInclude(this);
+		return getBinding();
 	}
+
 }

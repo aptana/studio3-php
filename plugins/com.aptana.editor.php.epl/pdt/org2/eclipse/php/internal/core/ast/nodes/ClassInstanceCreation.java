@@ -20,40 +20,52 @@ import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org2.eclipse.php.internal.core.ast.visitor.Visitor;
 
 /**
- * Represents a class instantiation.
- * This class holds the class name as an expression and
- * array of constructor parameters
- * <pre>e.g.<pre> new MyClass(),
+ * Represents a class instantiation. This class holds the class name as an
+ * expression and array of constructor parameters
+ * 
+ * <pre>e.g.
+ * 
+ * <pre>
+ * new MyClass(),
  * new $a('start'),
  * new foo()(1, $a)
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
-public class ClassInstanceCreation extends Expression {
+public class ClassInstanceCreation extends VariableBase {
 
 	private ClassName className;
-	private ASTNode.NodeList<Expression> ctorParams = new ASTNode.NodeList<Expression>(CTOR_PARAMS_PROPERTY);
-
+	private ASTNode.NodeList<Expression> ctorParams = new ASTNode.NodeList<Expression>(
+			CTOR_PARAMS_PROPERTY);
+	private ChainingInstanceCall chainingInstanceCall;
 	/**
 	 * The structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor CLASSNAME_PROPERTY = new ChildPropertyDescriptor(ClassInstanceCreation.class, "className", ClassName.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-	public static final ChildListPropertyDescriptor CTOR_PARAMS_PROPERTY = new ChildListPropertyDescriptor(ClassInstanceCreation.class, "ctorParams", Expression.class, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor CLASSNAME_PROPERTY = new ChildPropertyDescriptor(
+			ClassInstanceCreation.class,
+			"className", ClassName.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor CTOR_PARAMS_PROPERTY = new ChildListPropertyDescriptor(
+			ClassInstanceCreation.class,
+			"ctorParams", Expression.class, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor CHAINING_INSTANCE_CALL_PROPERTY = new ChildPropertyDescriptor(
+			ClassInstanceCreation.class,
+			"className", ClassName.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * A list of property descriptors (element type: 
-	 * {@link StructuralPropertyDescriptor}),
-	 * or null if uninitialized.
+	 * A list of property descriptors (element type:
+	 * {@link StructuralPropertyDescriptor}), or null if uninitialized.
 	 */
 	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS;
 
 	static {
-		List<StructuralPropertyDescriptor> propertyList = new ArrayList<StructuralPropertyDescriptor>(2);
+		List<StructuralPropertyDescriptor> propertyList = new ArrayList<StructuralPropertyDescriptor>(
+				2);
 		propertyList.add(CLASSNAME_PROPERTY);
 		propertyList.add(CTOR_PARAMS_PROPERTY);
+		propertyList.add(CHAINING_INSTANCE_CALL_PROPERTY);
 		PROPERTY_DESCRIPTORS = Collections.unmodifiableList(propertyList);
 	}
 
-	public ClassInstanceCreation(int start, int end, AST ast, ClassName className, Expression[] ctorParams) {
+	public ClassInstanceCreation(int start, int end, AST ast,
+			ClassName className, Expression[] ctorParams) {
 		super(start, end, ast);
 		if (className == null || ctorParams == null) {
 			throw new IllegalArgumentException();
@@ -77,8 +89,11 @@ public class ClassInstanceCreation extends Expression {
 		visitor.endVisit(this);
 	}
 
-	public ClassInstanceCreation(int start, int end, AST ast, ClassName className, List ctorParams) {
-		this(start, end, ast, className, ctorParams == null ? null : (Expression[]) ctorParams.toArray(new Expression[ctorParams.size()]));
+	public ClassInstanceCreation(int start, int end, AST ast,
+			ClassName className, List ctorParams) {
+		this(start, end, ast, className, ctorParams == null ? null
+				: (Expression[]) ctorParams.toArray(new Expression[ctorParams
+						.size()]));
 	}
 
 	public void childrenAccept(Visitor visitor) {
@@ -86,6 +101,9 @@ public class ClassInstanceCreation extends Expression {
 		for (ASTNode node : this.ctorParams) {
 			node.accept(visitor);
 		}
+		// if (chainingInstanceCall != null) {
+		// chainingInstanceCall.accept(visitor);
+		// }
 	}
 
 	public void traverseTopDown(Visitor visitor) {
@@ -94,6 +112,9 @@ public class ClassInstanceCreation extends Expression {
 		for (ASTNode node : this.ctorParams) {
 			node.traverseTopDown(visitor);
 		}
+		// if (chainingInstanceCall != null) {
+		// chainingInstanceCall.traverseTopDown(visitor);
+		// }
 	}
 
 	public void traverseBottomUp(Visitor visitor) {
@@ -101,6 +122,9 @@ public class ClassInstanceCreation extends Expression {
 		for (ASTNode node : this.ctorParams) {
 			node.traverseBottomUp(visitor);
 		}
+		// if (chainingInstanceCall != null) {
+		// chainingInstanceCall.traverseBottomUp(visitor);
+		// }
 		accept(visitor);
 	}
 
@@ -115,6 +139,10 @@ public class ClassInstanceCreation extends Expression {
 			buffer.append("\n"); //$NON-NLS-1$
 		}
 		buffer.append(TAB).append(tab).append("</ConstructorParameters>\n"); //$NON-NLS-1$
+		// if (chainingInstanceCall != null) {
+		// chainingInstanceCall.toString(buffer, TAB + tab);
+		//			buffer.append("\n"); //$NON-NLS-1$
+		// }
 		buffer.append(tab).append("</ClassInstanceCreation>"); //$NON-NLS-1$
 	}
 
@@ -134,13 +162,15 @@ public class ClassInstanceCreation extends Expression {
 	/**
 	 * Sets the class name of this instansiation.
 	 * 
-	 * @param classname the new class name
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
+	 * @param classname
+	 *            the new class name
+	 * @exception IllegalArgumentException
+	 *                if:
+	 *                <ul>
+	 *                <li>the node belongs to a different AST</li>
+	 *                <li>the node already has a parent</li>
+	 *                <li>a cycle in would be created</li>
+	 *                </ul>
 	 */
 	public void setClassName(ClassName classname) {
 		if (classname == null) {
@@ -152,7 +182,17 @@ public class ClassInstanceCreation extends Expression {
 		postReplaceChild(oldChild, classname, CLASSNAME_PROPERTY);
 	}
 
-	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+	public ChainingInstanceCall getChainingInstanceCall() {
+		return chainingInstanceCall;
+	}
+
+	public void setChainingInstanceCall(
+			ChainingInstanceCall chainingInstanceCall) {
+		this.chainingInstanceCall = chainingInstanceCall;
+	}
+
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property,
+			boolean get, ASTNode child) {
 		if (property == CLASSNAME_PROPERTY) {
 			if (get) {
 				return getClassName();
@@ -160,12 +200,20 @@ public class ClassInstanceCreation extends Expression {
 				setClassName((ClassName) child);
 				return null;
 			}
+		} else if (property == CHAINING_INSTANCE_CALL_PROPERTY) {
+			if (get) {
+				return getChainingInstanceCall();
+			} else {
+				setChainingInstanceCall((ChainingInstanceCall) child);
+				return null;
+			}
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
-	public List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+	public List internalGetChildListProperty(
+			ChildListPropertyDescriptor property) {
 		if (property == CTOR_PARAMS_PROPERTY) {
 			return ctorParams();
 		}
@@ -181,14 +229,14 @@ public class ClassInstanceCreation extends Expression {
 
 	/**
 	 * List of expressions that were given to the the constructor
-	 *     
-	 * @return list of expressions that were given to the the constructor 
+	 * 
+	 * @return list of expressions that were given to the the constructor
 	 */
 	public List<Expression> ctorParams() {
 		return this.ctorParams;
 	}
 
-	/* 
+	/*
 	 * Method declared on ASTNode.
 	 */
 	public boolean subtreeMatch(ASTMatcher matcher, Object other) {
@@ -200,24 +248,26 @@ public class ClassInstanceCreation extends Expression {
 	ASTNode clone0(AST target) {
 		final List params = ASTNode.copySubtrees(target, ctorParams());
 		final ClassName cn = ASTNode.copySubtree(target, getClassName());
-		final ClassInstanceCreation result = new ClassInstanceCreation(this.getStart(), this.getEnd(), target, cn, params);
+		final ClassInstanceCreation result = new ClassInstanceCreation(
+				this.getStart(), this.getEnd(), target, cn, params);
 		return result;
 	}
 
 	@Override
-	List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(PHPVersion apiLevel) {
+	List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(
+			PHPVersion apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
+
 	/**
 	 * Resolves and returns the binding for the constructor invoked by this
 	 * expression.
-	 *
-	 * @return the binding, or <code>null</code> if the binding cannot be 
-	 *    resolved
-	 */	
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be
+	 *         resolved
+	 */
 	public IMethodBinding resolveConstructorBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveConstructor(this);
+		// TODO? Shalom - return this.ast.getBindingResolver().resolveConstructor(this);
 		return null;
 	}
 
