@@ -25,6 +25,7 @@ import org2.eclipse.php.internal.core.ast.nodes.IDocumentorLexer;
 import org2.eclipse.php.internal.core.ast.scanner.StateStack;
 import org2.eclipse.php.internal.core.ast.util.ASTUtils;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
+import org2.eclipse.php.internal.core.compiler.ast.parser.DocumentorLexer;
 
 
 /**
@@ -1277,9 +1278,9 @@ public class PhpAstLexer implements org2.eclipse.php.internal.core.ast.scanner.A
 		return true;
 	}
 	
-	
 	protected IDocumentorLexer getDocumentorLexer(java.io.Reader  reader) {
-		return null;
+		// Aptana Mod.
+		return new DocumentorLexer(reader, ast);
 	}
 	
 	public void reset(java.io.Reader  reader, char[] buffer, int[] parameters){
