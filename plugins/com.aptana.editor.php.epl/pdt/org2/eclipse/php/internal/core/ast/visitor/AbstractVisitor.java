@@ -11,7 +11,88 @@
  *******************************************************************************/
 package org2.eclipse.php.internal.core.ast.visitor;
 
-import org2.eclipse.php.internal.core.ast.nodes.*;
+import org2.eclipse.php.internal.core.ast.nodes.ASTError;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayCreation;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayElement;
+import org2.eclipse.php.internal.core.ast.nodes.Assignment;
+import org2.eclipse.php.internal.core.ast.nodes.BackTickExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Block;
+import org2.eclipse.php.internal.core.ast.nodes.BreakStatement;
+import org2.eclipse.php.internal.core.ast.nodes.CastExpression;
+import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall;
+import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
+import org2.eclipse.php.internal.core.ast.nodes.ClassName;
+import org2.eclipse.php.internal.core.ast.nodes.CloneExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
+import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DereferenceNode;
+import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.EchoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.EmptyStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ExpressionStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
+import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
+import org2.eclipse.php.internal.core.ast.nodes.GlobalStatement;
+import org2.eclipse.php.internal.core.ast.nodes.GotoLabel;
+import org2.eclipse.php.internal.core.ast.nodes.GotoStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.IfStatement;
+import org2.eclipse.php.internal.core.ast.nodes.IgnoreError;
+import org2.eclipse.php.internal.core.ast.nodes.InLineHtml;
+import org2.eclipse.php.internal.core.ast.nodes.Include;
+import org2.eclipse.php.internal.core.ast.nodes.InfixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.InstanceOfExpression;
+import org2.eclipse.php.internal.core.ast.nodes.InterfaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.LambdaFunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.ListVariable;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList;
+import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
+import org2.eclipse.php.internal.core.ast.nodes.PostfixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.PrefixExpression;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.Quote;
+import org2.eclipse.php.internal.core.ast.nodes.Reference;
+import org2.eclipse.php.internal.core.ast.nodes.ReflectionVariable;
+import org2.eclipse.php.internal.core.ast.nodes.ReturnStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Scalar;
+import org2.eclipse.php.internal.core.ast.nodes.SingleFieldDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.StaticConstantAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.StaticMethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
+import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAlias;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAliasStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
+import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
+import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
+import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
 
 /**
  * Trivial (empty) implementation of {@link Visitor} This visitor traverses over
@@ -22,14 +103,14 @@ import org2.eclipse.php.internal.core.ast.nodes.*;
 public abstract class AbstractVisitor implements Visitor {
 
 	/**
-	 *@see Visitor#preVisit(ASTNode)
+	 * @see Visitor#preVisit(ASTNode)
 	 */
 	public void preVisit(ASTNode node) {
 		// default implementation: do nothing
 	}
 
 	/**
-	 *@see Visitor#postVisit(ASTNode)
+	 * @see Visitor#postVisit(ASTNode)
 	 */
 	public void postVisit(ASTNode node) {
 		// default implementation: do nothing
@@ -538,4 +619,77 @@ public abstract class AbstractVisitor implements Visitor {
 
 	public void endVisit(ASTNode node) {
 	}
+
+	// php5.4 starts
+
+	public boolean visit(ChainingInstanceCall node) {
+		return true;
+	}
+
+	public void endVisit(ChainingInstanceCall node) {
+	}
+
+	public boolean visit(DereferenceNode node) {
+		return true;
+	}
+
+	public void endVisit(DereferenceNode node) {
+	}
+
+	public boolean visit(FullyQualifiedTraitMethodReference node) {
+		return true;
+	}
+
+	public void endVisit(FullyQualifiedTraitMethodReference node) {
+	}
+
+	public boolean visit(PHPArrayDereferenceList node) {
+		return true;
+	}
+
+	public void endVisit(PHPArrayDereferenceList node) {
+	}
+
+	public boolean visit(TraitAlias node) {
+		return true;
+	}
+
+	public void endVisit(TraitAlias node) {
+	}
+
+	public boolean visit(TraitAliasStatement node) {
+		return true;
+	}
+
+	public void endVisit(TraitAliasStatement node) {
+	}
+
+	public boolean visit(TraitDeclaration node) {
+		return true;
+	}
+
+	public void endVisit(TraitDeclaration node) {
+	}
+
+	public boolean visit(TraitPrecedence node) {
+		return true;
+	}
+
+	public void endVisit(TraitPrecedence node) {
+	}
+
+	public boolean visit(TraitPrecedenceStatement node) {
+		return true;
+	}
+
+	public void endVisit(TraitPrecedenceStatement node) {
+	}
+
+	public boolean visit(TraitUseStatement node) {
+		return true;
+	}
+
+	public void endVisit(TraitUseStatement node) {
+	}
+	// php5.4 ends
 }

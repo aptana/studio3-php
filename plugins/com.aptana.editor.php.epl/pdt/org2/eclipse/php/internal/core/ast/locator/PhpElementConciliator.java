@@ -14,7 +14,23 @@ package org2.eclipse.php.internal.core.ast.locator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org2.eclipse.php.internal.core.ast.nodes.*;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
+import org2.eclipse.php.internal.core.ast.nodes.Dispatch;
+import org2.eclipse.php.internal.core.ast.nodes.Expression;
+import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.GlobalStatement;
+import org2.eclipse.php.internal.core.ast.nodes.Identifier;
+import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.Program;
+import org2.eclipse.php.internal.core.ast.nodes.Scalar;
+import org2.eclipse.php.internal.core.ast.nodes.StaticDispatch;
+import org2.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
+import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.Variable;
 import org2.eclipse.php.internal.core.ast.visitor.ApplyAll;
 
 /**
@@ -35,6 +51,7 @@ public class PhpElementConciliator {
 	public static final int CONCILIATOR_CONSTANT = 5;
 	public static final int CONCILIATOR_CLASS_MEMBER = 6;
 	public static final int CONCILIATOR_PROGRAM = 7;
+	public static final int CONCILIATOR_TRAITNAME = 8;
 
 	public static int concile(ASTNode locateNode) {
 		if (locateNode == null || isProgram(locateNode)) {
@@ -45,6 +62,8 @@ public class PhpElementConciliator {
 			return CONCILIATOR_FUNCTION;
 		} else if (isClassName(locateNode)) {
 			return CONCILIATOR_CLASSNAME;
+		} else if (isTraitName(locateNode)) {
+			return CONCILIATOR_TRAITNAME;
 		} else if (isConstant(locateNode)) {
 			return CONCILIATOR_CONSTANT;
 		} else if (isLocalVariable(locateNode)) {
@@ -75,7 +94,8 @@ public class PhpElementConciliator {
 		if (parent.getType() == ASTNode.FUNCTION_NAME
 				|| parent.getType() == ASTNode.CLASS_NAME
 				|| parent.getType() == ASTNode.NAMESPACE
-				|| parent.getType() == ASTNode.USE_STATEMENT_PART) {
+				|| parent.getType() == ASTNode.USE_STATEMENT_PART
+				|| parent.getType() == ASTNode.TRAIT_USE_STATEMENT) {
 			return false;
 		}
 
@@ -114,6 +134,14 @@ public class PhpElementConciliator {
 				if (parent.getType() == ASTNode.METHOD_DECLARATION) {
 					return true;
 				}
+			}
+			return false;
+		}
+
+		if (parent.getType() == ASTNode.FULLY_QUALIFIED_TRAIT_METHOD_REFERENCE) {
+			FullyQualifiedTraitMethodReference reference = (FullyQualifiedTraitMethodReference) parent;
+			if (reference.getFunctionName() == locateNode) {
+				return true;
 			}
 			return false;
 		}
@@ -271,6 +299,44 @@ public class PhpElementConciliator {
 		return false;
 	}
 
+	/**
+	 * @param locateNode
+	 * @return true if the given path indicates a trait
+	 */
+	private static boolean isTraitName(ASTNode locateNode) {
+		assert locateNode != null;
+
+		ASTNode parent = null;
+		if (locateNode.getType() == ASTNode.CLASS_DECLARATION) {
+			parent = locateNode;
+		} else if (locateNode.getType() == ASTNode.IDENTIFIER) {
+			parent = locateNode.getParent();
+		} else {
+			return false;
+		}
+
+		if (parent.getType() == ASTNode.NAMESPACE_NAME) {
+			locateNode = parent;
+			parent = parent.getParent();
+		}
+
+		final int parentType = parent.getType();
+		if (parentType == ASTNode.CLASS_DECLARATION
+				|| parentType == ASTNode.TRAIT_USE_STATEMENT
+				|| parentType == ASTNode.FULLY_QUALIFIED_TRAIT_METHOD_REFERENCE) {
+			if (parentType == ASTNode.FULLY_QUALIFIED_TRAIT_METHOD_REFERENCE) {
+				FullyQualifiedTraitMethodReference reference = (FullyQualifiedTraitMethodReference) parent;
+				if (reference.getFunctionName() == locateNode) {
+					return false;
+				}
+
+			}
+			return true;
+		}
+
+		return false;
+	}
+
 	private static boolean isLocalVariable(ASTNode locateNode) {
 		assert locateNode != null;
 		Variable parent = null;
@@ -318,7 +384,8 @@ public class PhpElementConciliator {
 	private final static boolean isThisVariable(Variable variable) {
 		return (variable.isDollared()
 				&& variable.getName() instanceof Identifier && THIS
-				.equalsIgnoreCase(((Identifier) variable.getName()).getName()));
+					.equalsIgnoreCase(((Identifier) variable.getName())
+							.getName()));
 	}
 
 	/**
@@ -353,7 +420,7 @@ public class PhpElementConciliator {
 		final Identifier targetIdentifier = ((Identifier) locateNode);
 
 		ASTNode parent = locateNode.getParent();
-		if (parent.getType() != ASTNode.VARIABLE) {
+		if (parent == null || parent.getType() != ASTNode.VARIABLE) {
 			return false;
 		}
 
@@ -510,7 +577,7 @@ public class PhpElementConciliator {
 				&& !"define".equals(((Identifier) locateNode).getName())) { //$NON-NLS-1$
 			targetIdentifier = (Identifier) locateNode;
 			parent = targetIdentifier.getParent();
-			if (parent.getType() == ASTNode.NAMESPACE_NAME) {
+			if (parent != null && parent.getType() == ASTNode.NAMESPACE_NAME) {
 				parent = targetIdentifier.getParent().getParent();
 			}
 		} else {
@@ -518,9 +585,11 @@ public class PhpElementConciliator {
 		}
 
 		// check if it is a function
-		if (parent.getType() != ASTNode.FUNCTION_DECLARATION
+		if (parent == null
+				|| parent.getType() != ASTNode.FUNCTION_DECLARATION
 				&& parent.getType() != ASTNode.FUNCTION_NAME
-				|| parent.getParent().getType() == ASTNode.METHOD_DECLARATION) {
+				|| parent.getParent().getType() == ASTNode.METHOD_DECLARATION
+				|| parent.getType() == ASTNode.FULLY_QUALIFIED_TRAIT_METHOD_REFERENCE) {
 			return false;
 		}
 
@@ -684,7 +753,7 @@ public class PhpElementConciliator {
 				FunctionInvocation functionInvocation = (FunctionInvocation) node;
 				final Expression functionName = functionInvocation
 						.getFunctionName().getName();
-				if (functionName.getType() != ASTNode.IDENTIFIER) {
+				if (!(functionName instanceof Identifier)) {
 					return false;
 				}
 
@@ -705,8 +774,8 @@ public class PhpElementConciliator {
 				if (stringValue.length() < 2 || stringValue.charAt(0) != '"') {
 					return false;
 				}
-				exists = name.equals(stringValue.substring(1, stringValue
-						.length() - 1));
+				exists = name.equals(stringValue.substring(1,
+						stringValue.length() - 1));
 			}
 			return true;
 		}
