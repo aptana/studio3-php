@@ -163,9 +163,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 	private static final IRange EMPTY_RANGE = new Range(0, 0);
 
+	private static Image fIcon54 = PHPEditorPlugin.getImage("icons/full/obj16/v54.png"); //$NON-NLS-1$
 	private static Image fIcon53 = PHPEditorPlugin.getImage("icons/full/obj16/v53.png"); //$NON-NLS-1$
 	private static Image fIcon5 = PHPEditorPlugin.getImage("icons/full/obj16/v5.png"); //$NON-NLS-1$
 	private static Image fIcon4 = PHPEditorPlugin.getImage("icons/full/obj16/v4.png"); //$NON-NLS-1$
+	private static Image fIcon54off = PHPEditorPlugin.getImage("icons/full/obj16/v54_off.png"); //$NON-NLS-1$
 	private static Image fIcon53off = PHPEditorPlugin.getImage("icons/full/obj16/v53_off.png"); //$NON-NLS-1$
 	private static Image fIcon5off = PHPEditorPlugin.getImage("icons/full/obj16/v5_off.png"); //$NON-NLS-1$
 	private static Image fIcon4off = PHPEditorPlugin.getImage("icons/full/obj16/v4_off.png"); //$NON-NLS-1$
@@ -2417,8 +2419,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		};
 		int objType = 0;
 		String fileOloc = EMPTY_STRING;
-		Image[] images = new Image[3];
-		if (PHPBuiltins.getInstance().existsInPHP4(node))
+		Image[] images = new Image[4];
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP4, node))
 		{
 			images[0] = fIcon4;
 		}
@@ -2426,7 +2428,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			images[0] = fIcon4off;
 		}
-		if (PHPBuiltins.getInstance().existsInPHP5(node))
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP5, node))
 		{
 			images[1] = fIcon5;
 		}
@@ -2434,13 +2436,21 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			images[1] = fIcon5off;
 		}
-		if (PHPBuiltins.getInstance().existsInPHP53(node))
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP5_3, node))
 		{
 			images[2] = fIcon53;
 		}
 		else
 		{
 			images[2] = fIcon53off;
+		}
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP5_4, node))
+		{
+			images[3] = fIcon54;
+		}
+		else
+		{
+			images[3] = fIcon54off;
 		}
 		PHPCompletionProposal cp = null;
 		if ((currentContext != null && currentContext.isAutoActivateCAAfterApply()) || autoActivateAfterProposal(node))

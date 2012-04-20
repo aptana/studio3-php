@@ -44,6 +44,8 @@ public final class Messages extends NLS
 
 	public static String PHPBuiltins_indexingLibraries;
 
+	public static String PHPBuiltins_languageSupportTaskName;
+
 	/**
 	 * PREDEFINED_CONSTANT_LABEL
 	 */

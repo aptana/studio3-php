@@ -36,6 +36,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -64,6 +65,8 @@ public final class PHPBuiltins
 	private static final int INITIAL_CAPACITY = 5000;
 	private static final IPHPDocTag[] NO_TAGS = new IPHPDocTag[0];
 	private static final PHPBuiltins instance = new PHPBuiltins();
+	@SuppressWarnings("nls")
+	private static final Set<String> PHP4_RESTRICTED = CollectionsUtil.newSet("namespace", "using", "goto", "use");
 
 	private Object mutex = new Object();
 
@@ -191,6 +194,10 @@ public final class PHPBuiltins
 		addKeyword("namespace", "namespace", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("goto", "goto", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("use", "use", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("trait", "trait", PHPVersion.PHP5_4); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("callable", "callable", PHPVersion.PHP5_4); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("insteadof", "insteadof", PHPVersion.PHP5_4); //$NON-NLS-1$ //$NON-NLS-2$
+
 		// not in Zend's lexer grammar
 		addKeyword("false", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 		//addKeyword("from", "from"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -342,46 +349,28 @@ public final class PHPBuiltins
 	}
 
 	/**
-	 * @param func
-	 * @return is this function exists in php4 built ins
+	 * Returns <code>true</code> in case the given parse-node name exists in the built-in PHP name elements for the
+	 * given version.
+	 * 
+	 * @param version
+	 * @param node
+	 * @return <code>true</code> in case the given parse-node name exists in the built-ins; <code>false</code>
+	 *         otherwise.
 	 */
-	public boolean existsInPHP4(IPHPParseNode func)
+	public boolean existsIn(PHPVersion version, IPHPParseNode node)
 	{
-		if (func.getClass() == PHPBaseParseNode.class)
+		if (node == null || version == null)
 		{
-			if (func.getNodeName().equals("namespace") || func.getNodeName().equals("using") || func.getNodeName().equals("goto")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return false;
+		}
+		if (version.equals(PHPVersion.PHP4) && node.getClass() == PHPBaseParseNode.class)
+		{
+			if (PHP4_RESTRICTED.contains(node.getNodeName()))
 			{
 				return false;
 			}
 		}
-		return phpNames.get(PHPVersion.PHP4).contains(func.getNodeName());
-	}
-
-	/**
-	 * @param func
-	 * @return is this function exists in php5 built ins
-	 */
-	public boolean existsInPHP5(IPHPParseNode func)
-	{
-		return phpNames.get(PHPVersion.PHP5).contains(func.getNodeName());
-	}
-
-	/**
-	 * @param func
-	 * @return is this function exists in php5.3 built ins
-	 */
-	public boolean existsInPHP53(IPHPParseNode func)
-	{
-		return phpNames.get(PHPVersion.PHP5_3).contains(func.getNodeName());
-	}
-
-	/**
-	 * @param func
-	 * @return is this function exists in php5.4 built ins
-	 */
-	public boolean existsInPHP54(IPHPParseNode func)
-	{
-		return phpNames.get(PHPVersion.PHP5_4).contains(func.getNodeName());
+		return phpNames.get(version).contains(node.getNodeName());
 	}
 
 	public boolean isBuiltinFunction(String name)
@@ -476,7 +465,8 @@ public final class PHPBuiltins
 			for (PHPVersion version : EnumSet.allOf(PHPVersion.class))
 			{
 				long timeMillis = System.currentTimeMillis();
-				monitor.setTaskName(MessageFormat.format("Adding {0} Language Support...", version.getAlias())); //$NON-NLS-1$
+				monitor.setTaskName(MessageFormat.format(Messages.PHPBuiltins_languageSupportTaskName,
+						version.getAlias()));
 				initPHPBuiltins(version, builtins);
 				if (PHPEditorPlugin.INDEXER_DEBUG)
 				{
@@ -489,8 +479,9 @@ public final class PHPBuiltins
 			this.builtins.addAll(builtins.values());
 			addKeywords();
 
-			IdeLog.logInfo(PHPEditorPlugin.getDefault(),
-					MessageFormat.format("Loaded all built-ins ({0}ms)", (System.currentTimeMillis() - start)), null, //$NON-NLS-1$
+			IdeLog.logInfo(
+					PHPEditorPlugin.getDefault(),
+					MessageFormat.format("Loaded all PHP built-ins ({0}ms)", (System.currentTimeMillis() - start)), null, //$NON-NLS-1$
 					PHPEditorPlugin.INDEXER_SCOPE);
 		}
 		catch (Throwable t)
