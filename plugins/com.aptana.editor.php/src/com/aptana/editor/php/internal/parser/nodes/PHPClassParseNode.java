@@ -27,6 +27,21 @@ public class PHPClassParseNode extends PHPBaseParseNode
 	private List<String> interfaces;
 
 	/**
+	 * A constructor that allows passing a node-type. Note that this constructor should be used by subclasses only when
+	 * needed.
+	 * 
+	 * @param nodeType
+	 * @param modifiers
+	 * @param startOffset
+	 * @param endOffset
+	 * @param className
+	 */
+	protected PHPClassParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String className)
+	{
+		super(nodeType, modifiers, startOffset, endOffset, className);
+	}
+
+	/**
 	 * @param modifiers
 	 * @param startOffset
 	 * @param endOffset

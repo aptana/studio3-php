@@ -64,6 +64,7 @@ import org2.eclipse.php.internal.core.ast.nodes.StaticDispatch;
 import org2.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
 import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
@@ -979,12 +980,54 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			return super.visit(node);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes
+		 * .TraitDeclaration)
+		 */
+		@Override
+		public boolean visit(TraitDeclaration traitDeclaration)
+		{
+			List<Identifier> interfaces = traitDeclaration.interfaces();
+			List<String> interfaceNames = new ArrayList<String>(interfaces.size());
+			for (Identifier interfaceName : interfaces)
+			{
+				interfaceNames.add(interfaceName.getName());
+			}
+
+			Expression superClassIdentifier = traitDeclaration.getSuperClass();
+			String superClassName = null;
+			if (superClassIdentifier != null
+					&& (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
+			{
+				superClassName = ((Identifier) superClassIdentifier).getName();
+			}
+
+			TraitPHPEntryValue value = new TraitPHPEntryValue(traitDeclaration.getModifier(), superClassName,
+					interfaceNames, currentNamespace);
+
+			value.setStartOffset(traitDeclaration.getStart());
+			value.setEndOffset(traitDeclaration.getEnd());
+
+			String className = traitDeclaration.getName().getName();
+			// We keep this Trait as a CLASS_CATEGORY
+			IElementEntry currentClassEntry = reporter.reportEntry(IPHPIndexConstants.CLASS_CATEGORY, className, value,
+					module);
+			currentClass = new ClassScopeInfo(currentClassEntry);
+			return true;
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public boolean visit(ClassDeclaration classDeclaration)
 		{
+			if (classDeclaration instanceof TraitDeclaration)
+			{
+				return visit((TraitDeclaration)classDeclaration);
+			}
 			List<Identifier> interfaces = classDeclaration.interfaces();
 			List<String> interfaceNames = new ArrayList<String>(interfaces.size());
 			for (Identifier interfaceName : interfaces)

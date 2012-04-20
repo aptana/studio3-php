@@ -53,6 +53,7 @@ import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
+import com.aptana.editor.php.internal.indexer.TraitPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.PHPParser;
@@ -138,12 +139,17 @@ public final class PHPSearchEngine
 		}
 	}
 
-	private final class ClassNode extends ElementNode implements ITypeNode
+	private class ClassNode extends ElementNode implements ITypeNode
 	{
+
+		protected ClassNode(IElementEntry e, ClassPHPEntryValue ea, int kind)
+		{
+			super(e, ea, kind);
+		}
 
 		private ClassNode(IElementEntry e, ClassPHPEntryValue ea)
 		{
-			super(e, ea, IElementNode.CLASS);
+			this(e, ea, IElementNode.CLASS);
 		}
 
 		public boolean isOnBuildPath(IProject project)
@@ -164,9 +170,6 @@ public final class PHPSearchEngine
 			return getClassNode(e);
 		}
 
-		/**
-		 * 
-		 */
 		public String getIncludePath(IFile from)
 		{
 			String constructPathFromRoot = RefactoringUtils.constructPathFromRoot(e.getModule().getPath());
@@ -197,6 +200,15 @@ public final class PHPSearchEngine
 				result.append(typePath.toPortableString());
 			}
 			return result.toString();
+		}
+	}
+
+	private class TraitNode extends ClassNode
+	{
+
+		protected TraitNode(IElementEntry e, ClassPHPEntryValue ea)
+		{
+			super(e, ea, ElementNode.TRAIT);
 		}
 	}
 
@@ -347,9 +359,15 @@ public final class PHPSearchEngine
 	private void processValue(List nodes, final IElementEntry e)
 	{
 		Object value = e.getValue();
-		if (value instanceof ClassPHPEntryValue)
+		if (value instanceof TraitPHPEntryValue)
 		{
-			final ClassPHPEntryValue ea = (ClassPHPEntryValue) value;
+			TraitPHPEntryValue tv = (TraitPHPEntryValue) value;
+			TraitNode node = new TraitNode(e, tv);
+			nodes.add(node);
+		}
+		else if (value instanceof ClassPHPEntryValue)
+		{
+			ClassPHPEntryValue ea = (ClassPHPEntryValue) value;
 			ITypeNode node = new ClassNode(e, ea);
 			nodes.add(node);
 		}

@@ -30,6 +30,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Scalar;
 import org2.eclipse.php.internal.core.ast.nodes.Statement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
@@ -96,16 +97,33 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
 				classDeclaration.getProgramRoot().comments(), classDeclaration.getStart(), source);
 		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
-		nodeBuilder.handleClassDeclaration(name, classDeclaration.getModifier(), docBlock, classDeclaration.getStart(),
-				classDeclaration.getEnd() - 1, -1);
+		boolean isTrait = (classDeclaration instanceof TraitDeclaration);
+		if (isTrait)
+		{
+			nodeBuilder.handleTraitDeclaration(name, classDeclaration.getModifier(), docBlock,
+					classDeclaration.getStart(), classDeclaration.getEnd() - 1, -1);
+		}
+		else
+		{
+			nodeBuilder.handleClassDeclaration(name, classDeclaration.getModifier(), docBlock,
+					classDeclaration.getStart(), classDeclaration.getEnd() - 1, -1);
+		}
 		// Handle class inheritance elements (extends and implements)
 		// TODO - Shalom - Take a look at the PDT ClassHighlighting (handle namespaces)
 		Expression superClass = classDeclaration.getSuperClass();
 		if (superClass != null && superClass.getType() == ASTNode.IDENTIFIER)
 		{
 			Identifier superClassName = (Identifier) superClass;
-			nodeBuilder.handleSuperclass(superClassName.getName(), superClassName.getStart(),
-					superClassName.getEnd() - 1);
+			if (isTrait)
+			{
+				nodeBuilder.handleTraitSuperclass(superClassName.getName(), superClassName.getStart(),
+						superClassName.getEnd() - 1);
+			}
+			else
+			{
+				nodeBuilder.handleSuperclass(superClassName.getName(), superClassName.getStart(),
+						superClassName.getEnd() - 1);
+			}
 		}
 		List<Identifier> interfaces = classDeclaration.interfaces();
 		handleInterfaces(interfaces);
@@ -548,7 +566,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public void endVisit(IfStatement ifStatement)
 	{
-		if (ifStatement.getTrueStatement() != null && ifStatement.getTrueStatement() .getType() != ASTNode.IF_STATEMENT)
+		if (ifStatement.getTrueStatement() != null && ifStatement.getTrueStatement().getType() != ASTNode.IF_STATEMENT)
 		{
 			nodeBuilder.handleCommonDeclarationEnd();
 		}

@@ -29,6 +29,11 @@ public interface IElementNode
 	final int CONSTANT = 3;
 
 	/**
+	 * TRAIT
+	 */
+	final int TRAIT = 4;
+
+	/**
 	 * @return name
 	 */
 	String getName();
