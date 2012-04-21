@@ -661,8 +661,10 @@ public class ASTMatcher {
 		}
 		FunctionInvocation o = (FunctionInvocation) other;
 
-		return (safeSubtreeMatch(node.getFunctionName(), o.getFunctionName()) && safeSubtreeListMatch(
-				node.parameters(), o.parameters()));
+		// Aptana Mod - Added a matching for the PHPArrayDereferenceList
+		return (safeSubtreeMatch(node.getFunctionName(), o.getFunctionName())
+				&& safeSubtreeListMatch(node.parameters(), o.parameters()) && safeSubtreeMatch(
+				node.getArrayDereferenceList(), o.getArrayDereferenceList()));
 	}
 
 	public boolean match(FunctionName node, Object other) {

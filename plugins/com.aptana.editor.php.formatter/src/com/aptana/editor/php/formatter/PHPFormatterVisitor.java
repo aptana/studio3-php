@@ -28,6 +28,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Block;
 import org2.eclipse.php.internal.core.ast.nodes.BreakStatement;
 import org2.eclipse.php.internal.core.ast.nodes.CastExpression;
 import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall;
 import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org2.eclipse.php.internal.core.ast.nodes.ClassName;
@@ -37,6 +38,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
 import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
 import org2.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DereferenceNode;
 import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EchoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EmptyStatement;
@@ -47,6 +49,7 @@ import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
 import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
@@ -67,6 +70,7 @@ import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList;
 import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PostfixExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PrefixExpression;
@@ -83,6 +87,12 @@ import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAlias;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAliasStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
@@ -362,17 +372,25 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ArrayCreation arrayCreation)
 	{
+		// PHP 5.4 introduced a short-syntax for array creations.
+		// for example: $args = ['superman', 'foo' => 'bar', 'batman', 'spiderman'];
+		boolean isShortSyntax = !arrayCreation.isHasArrayKey();
 		// we need to make sure we do not add a new line in front of the 'array' in some cases,
 		// therefore, we push a common declaration. We set the 'hasBlockedBody' to true to avoid
 		// indentation.
-		int declarationEndOffset = arrayCreation.getStart() + 5;
-		visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
+		int declarationEndOffset = arrayCreation.getStart();
+		if (!isShortSyntax)
+		{
+			declarationEndOffset += 5;
+			visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
+		}
 		List<ArrayElement> elements = arrayCreation.elements();
 		// It's possible to have an extra comma at the end of the array creation. This comma is not
 		// included in the elements given to us by the arrayCreation so we have to look for it by passing 'true'
 		// as the value of 'lookForExtraComma'.
+		TypeBracket bracketType = isShortSyntax ? TypeBracket.ARRAY_SQUARE : TypeBracket.ARRAY_PARENTHESIS;
 		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements,
-				TypePunctuation.ARRAY_COMMA, true, TypeBracket.ARRAY_PARENTHESIS);
+				TypePunctuation.ARRAY_COMMA, true, bracketType);
 		return false;
 	}
 
@@ -1821,6 +1839,134 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		return false;
 	}
 
+	// ### PHP 5.4 nodes ### //
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * ChainingInstanceCall)
+	 */
+	@Override
+	public boolean visit(ChainingInstanceCall node)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * FullyQualifiedTraitMethodReference)
+	 */
+	@Override
+	public boolean visit(FullyQualifiedTraitMethodReference node)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * PHPArrayDereferenceList)
+	 */
+	@Override
+	public boolean visit(PHPArrayDereferenceList dereferenceList)
+	{
+		// Drill down to the DereferenceNode visit...
+		return super.visit(dereferenceList);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * DereferenceNode)
+	 */
+	@Override
+	public boolean visit(DereferenceNode dereferenceNode)
+	{
+		pushNodeInParentheses('[', ']', dereferenceNode.getStart(), dereferenceNode.getEnd(),
+				dereferenceNode.getName(), TypeBracket.ARRAY_SQUARE);
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.TraitAlias
+	 * )
+	 */
+	@Override
+	public boolean visit(TraitAlias node)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitAliasStatement)
+	 */
+	@Override
+	public boolean visit(TraitAliasStatement node)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitDeclaration)
+	 */
+	@Override
+	public boolean visit(TraitDeclaration traitDeclaration)
+	{
+		visitTypeDeclaration(traitDeclaration);
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitPrecedence)
+	 */
+	@Override
+	public boolean visit(TraitPrecedence node)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitPrecedenceStatement)
+	 */
+	@Override
+	public boolean visit(TraitPrecedenceStatement node)
+	{
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitUseStatement)
+	 */
+	@Override
+	public boolean visit(TraitUseStatement traitUse)
+	{
+		pushKeyword(traitUse.getStart(), 3, true, false);
+		// Push the trait list
+		List<NamespaceName> traitList = traitUse.getTraitList();
+		visitNodeLists(traitList, null, null, TypePunctuation.COMMA);
+		// This will visit the NamespaceName nodes that exist as the TraitUseStatement children.
+		return false;
+	}
+
 	// ###################### Helper Methods ###################### //
 
 	/**
@@ -1878,6 +2024,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<Expression> invocationParameters = functionInvocation.parameters();
 		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters,
 				TypePunctuation.COMMA, false, TypeBracket.INVOCATION_PARENTHESIS);
+		// PHP 5.4
+		PHPArrayDereferenceList arrayDereferenceList = functionInvocation.getArrayDereferenceList();
+		if (arrayDereferenceList != null)
+		{
+			arrayDereferenceList.accept(this);
+		}
 	}
 
 	/**
@@ -1925,7 +2077,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (pushParenthesisNode)
 		{
 			int openParen = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
-			if (document.charAt(openParen) == '(')
+			if (bracketsType.getLeft().charAt(0) == document.charAt(openParen))
 			{
 				parenthesesNode = new FormatterPHPParenthesesNode(document, false, parameters.size(), bracketsType);
 				parenthesesNode.setBegin(builder.createTextNode(document, openParen, openParen + 1));
@@ -1958,7 +2110,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int closeParenEnd = expressionEndOffset;
 			if (!parenthesesNode.isAsWrapper())
 			{
-				closeParenStart = builder.locateCharBackward(document, ')', expressionEndOffset - 1);
+				closeParenStart = builder.locateCharBackward(document, bracketsType.getRight().charAt(0),
+						expressionEndOffset - 1);
 				closeParenEnd = closeParenStart + 1;
 			}
 			if (hasCommentBefore(closeParenStart))
