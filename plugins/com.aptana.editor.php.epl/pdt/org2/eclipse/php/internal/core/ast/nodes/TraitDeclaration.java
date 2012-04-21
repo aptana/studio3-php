@@ -3,6 +3,7 @@ package org2.eclipse.php.internal.core.ast.nodes;
 import java.util.List;
 
 import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
+import org2.eclipse.php.internal.core.ast.visitor.Visitor;
 
 public class TraitDeclaration extends ClassDeclaration {
 
@@ -27,6 +28,16 @@ public class TraitDeclaration extends ClassDeclaration {
 		return super.subtreeMatch(matcher, other);
 	}
 
+	// Aptana Mod (Add this accept0 here to have the visiting working correctly. Otherwise, visiting TraitDeclaration
+	// goes to the ClassDeclaration visit method).
+	public void accept0(Visitor visitor) {
+		final boolean visit = visitor.visit(this);
+		if (visit) {
+			childrenAccept(visitor);
+		}
+		visitor.endVisit(this);
+	}
+
 	@Override
 	ASTNode clone0(AST target) {
 		final Block body = ASTNode.copySubtree(target, getBody());
@@ -37,11 +48,11 @@ public class TraitDeclaration extends ClassDeclaration {
 				getEnd(), target, modifier, name, getName(), interfaces(), body);
 		return result;
 	}
-
+	
 	public void toString(StringBuffer buffer, String tab) {
 		buffer.append(tab).append("<TraitDeclaration"); //$NON-NLS-1$
 		appendInterval(buffer);
-		buffer.append("'>\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		buffer.append("'>\n"); //$NON-NLS-1$
 		buffer.append(tab).append(TAB).append("<TraitName>\n"); //$NON-NLS-1$
 		getName().toString(buffer, TAB + TAB + tab);
 		buffer.append("\n"); //$NON-NLS-1$

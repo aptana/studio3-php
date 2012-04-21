@@ -1024,10 +1024,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		@Override
 		public boolean visit(ClassDeclaration classDeclaration)
 		{
-			if (classDeclaration instanceof TraitDeclaration)
-			{
-				return visit((TraitDeclaration)classDeclaration);
-			}
 			List<Identifier> interfaces = classDeclaration.interfaces();
 			List<String> interfaceNames = new ArrayList<String>(interfaces.size());
 			for (Identifier interfaceName : interfaces)
