@@ -10,6 +10,8 @@ package com.aptana.editor.php.internal.text.reconciler;
 import com.aptana.core.build.ReconcileContext;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.text.reconciler.CommonReconcilingStrategy;
+import com.aptana.editor.common.text.reconciler.IFoldingComputer;
+import com.aptana.editor.php.internal.ui.editor.PHPFoldingComputer;
 
 /**
  * PHP reconciling strategy.
@@ -36,5 +38,21 @@ public class PHPReconcilingStrategy extends CommonReconcilingStrategy
 	protected ReconcileContext createContext()
 	{
 		return new PHPReconcileContext(getEditor(), getFile(), getDocument().get());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * com.aptana.editor.common.text.reconciler.CommonReconcilingStrategy#shouldUpdatePositions(com.aptana.editor.common
+	 * .text.reconciler.IFoldingComputer)
+	 */
+	@Override
+	protected boolean shouldUpdatePositions(IFoldingComputer folder)
+	{
+		if (folder instanceof PHPFoldingComputer)
+		{
+			return !((PHPFoldingComputer) folder).hasCachedAST();
+		}
+		return super.shouldUpdatePositions(folder);
 	}
 }
