@@ -103,6 +103,7 @@ import org2.eclipse.php.internal.core.ast.nodes.VariableBase;
 import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPArrayElementNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPBlockNode;
@@ -600,8 +601,12 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams,
 					TypePunctuation.COMMA, false, TypeBracket.DECLARATION_PARENTHESIS);
 		}
-		// check and push a semicolon (if appears after the end of this instance creation)
-		// pushSemicolon(creationEnd, false, true);
+		// PHP 5.4 - chainingInstanceCall
+		ChainingInstanceCall chainingInstanceCall = classInstanceCreation.getChainingInstanceCall();
+		if (chainingInstanceCall != null)
+		{
+			chainingInstanceCall.accept(this);
+		}
 		return false;
 	}
 
@@ -1850,6 +1855,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(ChainingInstanceCall node)
 	{
 		// TODO Auto-generated method stub
+		//node.getArrayDereferenceList();
 		return super.visit(node);
 	}
 
