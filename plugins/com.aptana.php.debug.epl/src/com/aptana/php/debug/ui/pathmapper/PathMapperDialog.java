@@ -5,7 +5,7 @@
  * Please see the license-epl.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.ui.pathMapper2;
+package com.aptana.php.debug.ui.pathmapper;
 
 import java.text.MessageFormat;
 import java.util.Arrays;

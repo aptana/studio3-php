@@ -27,7 +27,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.server.PHPServersManager;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
-import com.aptana.php.debug.ui.pathMapper2.PathMapperDialog;
+import com.aptana.php.debug.ui.pathmapper.PathMapperDialog;
 import com.aptana.ui.util.SWTUtils;
 import com.aptana.webserver.core.IServer;
 
