@@ -62,8 +62,7 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 	public void createControl(Composite parent)
 	{
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(1, false);
-		composite.setLayout(layout);
+		composite.setLayout(new GridLayout(1, false));
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label msg1 = new Label(composite, SWT.WRAP);
