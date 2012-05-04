@@ -79,7 +79,7 @@ import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.server.PHPServersManager;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 import com.aptana.php.debug.ui.launching.PathMappingUpdater;
-import com.aptana.php.debug.ui.pathMapper.PathMapperDialog;
+import com.aptana.php.debug.ui.pathMapper2.PathMapperDialog;
 import com.aptana.ui.IPropertyDialog;
 import com.aptana.ui.PropertyDialogsRegistry;
 import com.aptana.ui.UIPlugin;

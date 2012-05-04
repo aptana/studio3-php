@@ -7,8 +7,11 @@
  */
 package com.aptana.php.debug.epl;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -65,31 +68,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	{
 		super.start(context);
 		plugin = this;
-		try
-		{
-			// Set the AutoRemoveOldLaunchesListener
-			IPreferenceStore preferenceStore = DebugUIPlugin.getDefault().getPreferenceStore();
-			fInitialAutoRemoveLaunches = preferenceStore.getBoolean(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES);
-			preferenceStore.addPropertyChangeListener(new AutoRemoveOldLaunchesListener());
-
-			// check for default server
-			createDefaultPHPServer();
-
-			// TODO - XDebug - See if this can be removed and use a preferences initializer.
-			// It's important the the default setting will occur before loading the daemons.
-			XDebugPreferenceMgr.setDefaults();
-
-			// Start all the daemons
-			DebugDaemon.getDefault().startDaemons(null);
-
-			// TODO - XDebug - See if this can be removed
-			XDebugLaunchListener.getInstance();
-			DBGpProxyHandler.instance.configure();
-		}
-		catch (Exception e)
-		{
-			IdeLog.logError(this, "Error while initiating the PHP debug (EPL) plugin", e); //$NON-NLS-1$
-		}
+		init();
 	}
 
 	/*
@@ -106,9 +85,51 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		plugin = null;
 		DebugUIPlugin.getDefault().getPreferenceStore()
 				.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES, fInitialAutoRemoveLaunches);
-
 		// close all the tunnel connections
 		SSHTunnelFactory.closeAllConnections();
+	}
+
+	/**
+	 * Initialize the debugger plugin in a job.
+	 */
+	private void init()
+	{
+		Job debuggerStartJob = new Job("PHP debugger initialization") //$NON-NLS-1$ (system job)
+		{
+			@Override
+			protected IStatus run(IProgressMonitor monitor)
+			{
+				try
+				{
+					// Set the AutoRemoveOldLaunchesListener
+					IPreferenceStore preferenceStore = DebugUIPlugin.getDefault().getPreferenceStore();
+					fInitialAutoRemoveLaunches = preferenceStore
+							.getBoolean(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES);
+					preferenceStore.addPropertyChangeListener(new AutoRemoveOldLaunchesListener());
+
+					// check for default server
+					createDefaultPHPServer();
+
+					// TODO - XDebug - See if this can be removed and use a preferences initializer.
+					// It's important the the default setting will occur before loading the daemons.
+					XDebugPreferenceMgr.setDefaults();
+
+					// Start all the daemons
+					DebugDaemon.getDefault().startDaemons(null);
+
+					// TODO - XDebug - See if this can be removed
+					XDebugLaunchListener.getInstance();
+					DBGpProxyHandler.instance.configure();
+				}
+				catch (Exception e)
+				{
+					IdeLog.logError(plugin, "Error while initiating the PHP debug (EPL) plugin", e); //$NON-NLS-1$
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		debuggerStartJob.setSystem(true);
+		debuggerStartJob.schedule();
 	}
 
 	/**

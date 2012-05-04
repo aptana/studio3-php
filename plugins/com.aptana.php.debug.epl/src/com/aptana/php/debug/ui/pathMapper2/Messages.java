@@ -5,7 +5,7 @@
  * Please see the license-epl.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
-package com.aptana.php.debug.ui.pathMapper;
+package com.aptana.php.debug.ui.pathMapper2;
 
 import org.eclipse.osgi.util.NLS;
 
@@ -14,7 +14,7 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS
 {
-	private static final String BUNDLE_NAME = "com.aptana.php.debug.ui.pathMapper.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.aptana.php.debug.ui.pathMapper2.messages"; //$NON-NLS-1$
 	public static String PathMapperDialog_titleText;
 	public static String PathMapperDialog_titleTextForServer;
 	static
