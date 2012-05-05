@@ -19,6 +19,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -126,7 +127,11 @@ public class PathMapperDialog extends TitleAreaDialog implements IControlHandler
 	protected Control createContents(Composite parent)
 	{
 		Control c = super.createContents(parent);
-		getButton(IDialogConstants.OK_ID).setEnabled(false);
+		Button button = getButton(IDialogConstants.OK_ID);
+		if (button != null)
+		{
+			button.setEnabled(false);
+		}
 		return c;
 	}
 
@@ -180,18 +185,22 @@ public class PathMapperDialog extends TitleAreaDialog implements IControlHandler
 		// Make sure that we enable the ok button only when something is really changed in the path mapping.
 		// We sort and compare the old mappings and the new ones before we enable the button.
 		PathMapper currentServerMapping = PathMapperRegistry.getByServer(server);
-		if (currentServerMapping != null)
+		Button button = getButton(IDialogConstants.OK_ID);
+		if (button != null)
 		{
-			Mapping[] currentMappings = currentServerMapping.getMapping();
-			Mapping[] newMappings = pathMapperCompositeFragment.getMappings();
-			Arrays.sort(currentMappings);
-			Arrays.sort(newMappings);
-			if (!Arrays.equals(currentMappings, newMappings))
+			if (currentServerMapping != null)
 			{
-				getButton(IDialogConstants.OK_ID).setEnabled(true);
-				return;
+				Mapping[] currentMappings = currentServerMapping.getMapping();
+				Mapping[] newMappings = pathMapperCompositeFragment.getMappings();
+				Arrays.sort(currentMappings);
+				Arrays.sort(newMappings);
+				if (!Arrays.equals(currentMappings, newMappings))
+				{
+					button.setEnabled(true);
+					return;
+				}
 			}
+			button.setEnabled(false);
 		}
-		getButton(IDialogConstants.OK_ID).setEnabled(false);
 	}
 }

@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.php.debug.ui.launching;
 
 import java.util.Arrays;
@@ -38,6 +45,7 @@ import com.aptana.webserver.core.IServer;
  */
 public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 {
+	private static final String PATH_MAPPING_ICON = "/icons/full/obj16/path_mapping.gif"; //$NON-NLS-1$
 	/*
 	 * TODO: 1. Add a link at the bottom of this tab that presents the actual path to the first page 2. Notify the
 	 * ServerLaunchConfigurationTab about the change, and in case needed, make the configuration tab change the path.
@@ -143,7 +151,7 @@ public class PathMappingConfigurationTab extends AbstractLaunchConfigurationTab
 	 */
 	public Image getImage()
 	{
-		return SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/path_mapping.gif"); //$NON-NLS-1$
+		return SWTUtils.getImage(PHPEplPlugin.getDefault(), PATH_MAPPING_ICON);
 	}
 
 	/*

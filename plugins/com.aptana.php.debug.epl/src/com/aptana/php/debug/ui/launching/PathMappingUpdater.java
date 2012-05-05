@@ -121,8 +121,7 @@ public class PathMappingUpdater
 			if (!server.getName().equals(
 					launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, StringUtil.EMPTY))
 					|| !usesSpecifiedScript
-					|| usesSpecifiedScript
-					&& !launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_AUTO_GENERATED_URL, false))
+					|| !launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_AUTO_GENERATED_URL, false))
 			{
 				launchConfigurations.remove(i);
 			}
@@ -169,7 +168,7 @@ public class PathMappingUpdater
 		{
 			String fileName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_FILE_NAME,
 					StringUtil.EMPTY);
-			if (fileName == null || fileName.trim().length() == 0)
+			if (StringUtil.isEmpty(fileName))
 			{
 				continue;
 			}
@@ -178,7 +177,7 @@ public class PathMappingUpdater
 			PathMapper pathMapper = PathMapperRegistry.getByServer(server);
 			String remoteFile = pathMapper.getRemoteFile(fileName);
 			ILaunchConfigurationWorkingCopy workingCopy = configuration.getWorkingCopy();
-			if (remoteFile != null && !StringUtil.EMPTY.equals(remoteFile) && !remoteFile.equals(fileName))
+			if (!StringUtil.isEmpty(remoteFile) && !remoteFile.equals(fileName))
 			{
 				workingCopy.setAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_BASE_URL, newURL + remoteFile);
 			}

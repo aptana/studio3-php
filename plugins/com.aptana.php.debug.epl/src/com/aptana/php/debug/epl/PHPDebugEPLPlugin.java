@@ -38,9 +38,11 @@ import org2.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpProxyHandler;
 import org2.eclipse.php.internal.debug.ui.util.ImageDescriptorRegistry;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.tunneling.SSHTunnelFactory;
+import com.aptana.ui.util.UIUtils;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -204,10 +206,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		{
 			return -1;
 		}
-		int port = debuggerConfiguration.getPort();
-
-		return port;
-
+		return debuggerConfiguration.getPort();
 	}
 
 	/**
@@ -218,7 +217,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		// Preferences serverPrefs = Activator.getDefault().getPluginPreferences();
 		// return serverPrefs.getString(PHPServersManager.DEFAULT_SERVER_PREFERENCES_KEY);
 		// TODO
-		return ""; //$NON-NLS-1$
+		return StringUtil.EMPTY;
 	}
 
 	/**
@@ -334,7 +333,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 				{
 					fLaunchChangedAutoRemoveLaunches = false;// We got the event, so reset the flag.
 				}
-				else
+				else if (event.getNewValue() instanceof Boolean)
 				{
 					// The event was triggered from some other source - e.g. The user changed the preferences manually.
 					fInitialAutoRemoveLaunches = ((Boolean) event.getNewValue()).booleanValue();
@@ -399,17 +398,12 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static IWorkbenchWindow getActiveWorkbenchWindow()
 	{
-		return getDefault().getWorkbench().getActiveWorkbenchWindow();
+		return UIUtils.getActiveWorkbenchWindow();
 	}
 
 	public static IWorkbenchPage getActivePage()
 	{
-		IWorkbenchWindow w = getActiveWorkbenchWindow();
-		if (w != null)
-		{
-			return w.getActivePage();
-		}
-		return null;
+		return UIUtils.getActivePage();
 	}
 
 	/**
@@ -419,12 +413,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static Shell getActiveWorkbenchShell()
 	{
-		IWorkbenchWindow window = getActiveWorkbenchWindow();
-		if (window != null)
-		{
-			return window.getShell();
-		}
-		return null;
+		return UIUtils.getActiveShell();
 	}
 
 	/**
@@ -432,11 +421,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static Display getStandardDisplay()
 	{
-		Display display;
-		display = Display.getCurrent();
-		if (display == null)
-			display = Display.getDefault();
-		return display;
+		return UIUtils.getDisplay();
 	}
 
 	/**

@@ -128,9 +128,8 @@ public class PHPInspectExpression extends PlatformObject implements IErrorReport
 	 */
 	public void handleDebugEvents(DebugEvent[] events)
 	{
-		for (int i = 0; i < events.length; i++)
+		for (DebugEvent event : events)
 		{
-			DebugEvent event = events[i];
 			switch (event.getKind())
 			{
 				case DebugEvent.TERMINATE:

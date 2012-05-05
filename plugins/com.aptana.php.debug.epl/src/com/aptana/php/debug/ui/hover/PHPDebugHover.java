@@ -22,7 +22,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.ui.IEditorPart;
 import org.w3c.dom.Node;
-
 import org2.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpTarget;
 import org2.eclipse.php.internal.debug.core.xdebug.dbgp.model.DBGpVariable;
 import org2.eclipse.php.internal.debug.core.zend.debugger.DefaultExpressionsManager;
@@ -81,7 +80,6 @@ public class PHPDebugHover extends AbstractPHPTextHover
 		if (value != null && value.length() == 0)
 		{
 			value = "Empty"; //$NON-NLS-1$
-			return value;
 		}
 
 		return value;
@@ -132,7 +130,7 @@ public class PHPDebugHover extends AbstractPHPTextHover
 	 */
 	private String getVariableText(IVariable variable)
 	{
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		IDebugModelPresentation modelPresentation = getModelPresentation();
 		buffer.append("<p>"); //$NON-NLS-1$
 		String variableText = modelPresentation.getText(variable);

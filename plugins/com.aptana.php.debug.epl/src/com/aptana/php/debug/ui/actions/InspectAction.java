@@ -49,7 +49,7 @@ import com.aptana.php.debug.ui.display.PHPInspectExpression;
 /**
  * Inspect action for inspecting a selected text in the PHP editor while debugging.
  * 
- * @author Shalom
+ * @author Shalom Gibly <sgibly@appcelerator.com>
  */
 @SuppressWarnings("restriction")
 public class InspectAction implements IWatchExpressionListener, IInformationProvider, IWorkbenchWindowActionDelegate,

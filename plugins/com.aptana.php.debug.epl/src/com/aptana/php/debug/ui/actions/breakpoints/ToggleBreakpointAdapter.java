@@ -21,7 +21,9 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.EditorPart;
 import org2.eclipse.php.internal.debug.ui.breakpoint.provider.PHPBreakpointProvider;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.AbstractThemeableEditor;
+import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
 /**
  * @author Pavel Petrochenko
@@ -58,7 +60,7 @@ public class ToggleBreakpointAdapter implements IToggleBreakpointsTarget
 					}
 					catch (CoreException e)
 					{
-						e.printStackTrace();
+						IdeLog.logError(PHPDebugEPLPlugin.getDefault(), e);
 					}
 				}
 				return Status.OK_STATUS;

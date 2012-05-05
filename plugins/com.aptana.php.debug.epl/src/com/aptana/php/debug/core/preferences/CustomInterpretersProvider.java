@@ -17,6 +17,7 @@ import org.eclipse.ui.activities.WorkbenchActivityHelper;
 import org2.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org2.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceNames;
 
+import com.aptana.core.util.ArrayUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.core.interpreter.IInterpreter;
 import com.aptana.php.debug.core.interpreter.IInterpreterProvider;
@@ -85,7 +86,7 @@ public class CustomInterpretersProvider implements IInterpreterProvider
 		{
 			namesString = StringUtil.EMPTY;
 		}
-		final String[] names = namesString.length() > 0 ? namesString.split(SEPARATOR) : new String[0];
+		final String[] names = !StringUtil.isEmpty(namesString) ? namesString.split(SEPARATOR) : ArrayUtil.NO_STRINGS;
 
 		// Load the item executable locations array
 		String locationsString = prefs.get(PHPDebugCorePreferenceNames.INSTALLED_PHP_LOCATIONS, null);
@@ -93,8 +94,8 @@ public class CustomInterpretersProvider implements IInterpreterProvider
 		{
 			locationsString = StringUtil.EMPTY;
 		}
-		final String[] phpExecutablesLocations = locationsString.length() > 0 ? locationsString.split(SEPARATOR)
-				: new String[0];
+		final String[] phpExecutablesLocations = !StringUtil.isEmpty(locationsString) ? locationsString
+				.split(SEPARATOR) : ArrayUtil.NO_STRINGS;
 
 		// Load the item executable ini's array
 		String inisString = prefs.get(PHPDebugCorePreferenceNames.INSTALLED_PHP_INIS, null);
@@ -113,7 +114,8 @@ public class CustomInterpretersProvider implements IInterpreterProvider
 		{
 			debuggersString = StringUtil.EMPTY;
 		}
-		final String[] debuggers = debuggersString.length() > 0 ? debuggersString.split(SEPARATOR) : new String[0];
+		final String[] debuggers = !StringUtil.isEmpty(debuggersString) ? debuggersString.split(SEPARATOR)
+				: ArrayUtil.NO_STRINGS;
 
 		// Add the executable items
 		assert names.length == phpExecutablesLocations.length;
@@ -149,7 +151,8 @@ public class CustomInterpretersProvider implements IInterpreterProvider
 			defaultsString = StringUtil.EMPTY;
 		}
 		// Apply the default items
-		final String[] defaults = defaultsString.length() > 0 ? defaultsString.split(SEPARATOR) : new String[0];
+		final String[] defaults = !StringUtil.isEmpty(defaultsString) ? defaultsString.split(SEPARATOR)
+				: ArrayUtil.NO_STRINGS;
 		for (String defaultExe : defaults)
 		{
 			// Get a pair of a debugger id and its default executable
