@@ -27,7 +27,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 import org2.eclipse.php.internal.debug.core.model.DebugOutput;
@@ -70,20 +73,20 @@ public class DebugBrowserView extends ViewPart implements ISelectionListener{
 		gridData.horizontalAlignment=SWT.FILL;
 		gridData.verticalAlignment=SWT.FILL;
 
-	    try {
-	    	swtBrowser = new Browser(container,SWT.NONE);
-	    	swtBrowser.setLayoutData(gridData);
-	    } catch (SWTError error) {
-	    	swtBrowser = null;
-	    	Label label = new Label(container, SWT.WRAP);
-	    	label.setText(PHPDebugUIMessages.DebugBrowserView_swtBrowserNotAvailable0);
-	    	label.setLayoutData(gridData);
-	    }
+		try {
+			swtBrowser = new Browser(container,SWT.NONE);
+			swtBrowser.setLayoutData(gridData);
+		} catch (SWTError error) {
+			swtBrowser = null;
+			Label label = new Label(container, SWT.WRAP);
+			label.setText(PHPDebugUIMessages.DebugBrowserView_swtBrowserNotAvailable0);
+			label.setLayoutData(gridData);
+		}
 
 		debugViewHelper = new DebugViewHelper();
 
-        terminateListener = new IDebugEventSetListener() {
-        	IPHPDebugTarget target;
+		terminateListener = new IDebugEventSetListener() {
+    		IPHPDebugTarget target;
 			public void handleDebugEvents(DebugEvent[] events) {
 				if (events != null) {
 					int size = events.length;
@@ -130,7 +133,7 @@ public class DebugBrowserView extends ViewPart implements ISelectionListener{
         DebugPlugin.getDefault().removeDebugEventListener(terminateListener);
 
         if (swtBrowser != null && !swtBrowser.isDisposed()) {
-        	swtBrowser.dispose();
+            swtBrowser.dispose();
         }
         super.dispose();
     }
@@ -147,48 +150,48 @@ public class DebugBrowserView extends ViewPart implements ISelectionListener{
      * @see org.eclipse.ui.ISelectionListener#selectionChanged(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
      */
     public void update(IPHPDebugTarget target) {
-    	if (swtBrowser != null && !swtBrowser.isDisposed() && swtBrowser.isVisible()) {
-	        IPHPDebugTarget oldTarget = fTarget;
-	        int oldcount = fUpdateCount;
-	        fTarget = target;
-	        
-	        DebugOutput debugOutput = null;
-	        if (fTarget != null ) {
-	           	if ((fTarget.isSuspended()) || (fTarget.isTerminated())) {
-	           		debugOutput = fTarget.getOutputBuffer();
-	           		fUpdateCount = debugOutput.getUpdateCount();
+        if (swtBrowser != null && !swtBrowser.isDisposed() && swtBrowser.isVisible()) {
+            IPHPDebugTarget oldTarget = fTarget;
+            int oldcount = fUpdateCount;
+            fTarget = target;
 
-	           		// check if output hasn't been updated
-	           		if (fTarget == oldTarget && fUpdateCount == oldcount) {
-	           			return;
-	           		}
-	           	} else {
-	           		// Not Suspended or Terminated
+            DebugOutput debugOutput = null;
+            if (fTarget != null ) {
+                if ((fTarget.isSuspended()) || (fTarget.isTerminated())) {
+                    debugOutput = fTarget.getOutputBuffer();
+                    fUpdateCount = debugOutput.getUpdateCount();
 
-	        		//the following is a fix for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=205688
-	        		//if the target is not suspended or terminated fTarget should get back its old value
-	        		//so that in the next time the function is called it will not consider this target
-	        		//as it was already set to the view
-	           		fTarget = oldTarget;
-	           		return;
-	           	}
+                    // check if output hasn't been updated
+                    if (fTarget == oldTarget && fUpdateCount == oldcount) {
+                        return;
+                    }
+                } else {
+                    // Not Suspended or Terminated
+
+                    //the following is a fix for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=205688
+                    //if the target is not suspended or terminated fTarget should get back its old value
+                    //so that in the next time the function is called it will not consider this target
+                    //as it was already set to the view
+                    fTarget = oldTarget;
+                    return;
+                }
 	        }
-	        
-	        if (debugOutput != null) {
-	        	String contentType = debugOutput.getContentType();
-	        	if (contentType != null && !contentType.startsWith("text")) {
-	        		return; // we don't show garbage anymore
-	        	}
-	        	String output = debugOutput.toString();
-		        // Skip headers
-		        int startIdx = output.indexOf("\r\n\r\n"); //$NON-NLS-1$
-		        if (startIdx == -1) {
-		        	startIdx = output.indexOf("\r\n"); //$NON-NLS-1$
-		        }
-		        if (startIdx != -1) {
-		        	output = output.substring(startIdx + 2);
-		        }
-		        swtBrowser.setText(output);
+
+            if (debugOutput != null) {
+                String contentType = debugOutput.getContentType();
+                if (contentType != null && !contentType.startsWith("text")) {
+                    return; // we don't show garbage anymore
+                }
+                String output = debugOutput.toString();
+                // Skip headers
+                int startIdx = output.indexOf("\r\n\r\n"); //$NON-NLS-1$
+                if (startIdx == -1) {
+                    startIdx = output.indexOf("\r\n"); //$NON-NLS-1$
+                }
+                if (startIdx != -1) {
+                    output = output.substring(startIdx + 2);
+                }
+                swtBrowser.setText(output);
 	        }
         }
     }

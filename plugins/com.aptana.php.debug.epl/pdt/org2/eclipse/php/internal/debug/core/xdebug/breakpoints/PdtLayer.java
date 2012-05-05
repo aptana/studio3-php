@@ -104,7 +104,7 @@ public class PdtLayer implements IDELayer, DBGpBreakpointFacade {
 		}
 		return fileName.replaceAll("\\\\", "/"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	
+
 	public boolean supportsBreakpoint(IBreakpoint bp) {
 		if (bp.getModelIdentifier().equals(getBreakpointModelID())) {
 			//TODO: Improvement: Breakpoint: better support for breakpoint rejection

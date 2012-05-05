@@ -93,7 +93,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 		}
 
 		URL requestURL = parametersInitializer.getRequestURL(launch);
-		
+
 		// First, build the basic GET query that will be used
 		List getData = Collections.EMPTY_LIST;
 		try
@@ -131,7 +131,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e));
 			}
 		}
-		
+
 		// In case we are in a Debug/Profile mode, attache the additional query string to the GET request
 		try {
 			if (runWithDebug && !ILaunchManager.RUN_MODE.equals(launch.getLaunchMode())) {
@@ -158,7 +158,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 		}
 		final DebugException[] exception = new DebugException[1];
 		final URL debugURL = requestURL;
-		
+
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try
@@ -171,7 +171,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 						StringBuilder browserTitle = new StringBuilder(debugURL.getProtocol())
 							.append("://")
 							.append(debugURL.getHost());
-						
+
 						if (debugURL.getPort() != -1)
 						{
 							browserTitle.append(':').append(debugURL.getPort());
@@ -193,7 +193,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 					}
 					else
 					{
-						
+
 						browser.openURL(debugURL);
 					}
 					if (PHPDebugEPLPlugin.DEBUG)
@@ -228,7 +228,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				IWebDebugParametersInitializer webParametersInitializer = (IWebDebugParametersInitializer) parametersInitializer;
 
 				StringBuilder getParams = new StringBuilder();
-				
+
 				// Initialize with additional GET parameters
 				// Aptana Mod - SG: Replace PDT's implementation. This one will not work with existing GET parameters that were manually entered into the target URL
 				// Also, add the debug parameter AFTER the script parameters to allow a normal flow of the PHP application.
@@ -241,7 +241,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 				}
 				fillParams(getRequestParameters, getParams);
 				getParams.append('&');
-				
+
 				// Add the Zend debug parameters
 				Hashtable<String, String> debugParameters = parametersInitializer.getDebugParameters(launch);
 				if (debugParameters != null && !debugParameters.isEmpty()) {
@@ -265,7 +265,7 @@ public class PHPWebServerDebuggerInitializer implements IDebuggerInitializer {
 					paramsString = paramsString.substring(0, paramsString.length() - 1);
 				}
 				requestURL = new URL(requestURL.getProtocol(), requestURL.getHost(), requestURL.getPort(), requestURL.getPath() + paramsString);
-				
+
 				// Open the connection:
 				if (PHPDebugEPLPlugin.DEBUG) {
 					System.out.println("Opening URL connection: " + requestURL.toString());

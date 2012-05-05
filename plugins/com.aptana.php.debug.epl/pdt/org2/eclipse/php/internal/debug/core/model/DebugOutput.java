@@ -11,13 +11,13 @@
 package org2.eclipse.php.internal.debug.core.model;
 
 public class DebugOutput {
-	
+
 	private static final String CONTENT_TYPE_HEADER = "Content-Type:"; //$NON-NLS-1$
-	
+
     private StringBuffer fOutput = new StringBuffer(); 
     private int fUpdateCount = 0;
     private String contentType;
-    
+
     /**
      * Append debug output data
      * @param data
@@ -26,18 +26,18 @@ public class DebugOutput {
     	fOutput.append(data);
     	fUpdateCount++;
     }
-    
+
     /**
      * Adds debug output header
      * @param header String
      */
-    public void appendHeader(String header) {
-    	if (header != null) {
-    		if (header.startsWith(CONTENT_TYPE_HEADER)) {
-    			String contentType = header.substring(CONTENT_TYPE_HEADER.length()).trim().toLowerCase();
-    			int i = contentType.indexOf(';');
-    			if (i > 0) {
-    				this.contentType = contentType.substring(0, i).trim();
+	public void appendHeader(String header) {
+		if (header != null) {
+			if (header.startsWith(CONTENT_TYPE_HEADER)) {
+				String contentType = header.substring(CONTENT_TYPE_HEADER.length()).trim().toLowerCase();
+				int i = contentType.indexOf(';');
+				if (i > 0) {
+					this.contentType = contentType.substring(0, i).trim();
 //    				String[] parameters = contentType.substring(i+1).split(";");
 //    				for (String param : parameters) {
 //    					int k = param.indexOf('=');
@@ -46,21 +46,21 @@ public class DebugOutput {
 //    						String value = param.substring(k+1).trim();
 //    					}
 //    				}
-    			} else {
-    				this.contentType = contentType;
-    			}
-    		}
-    	}
-    	fOutput.append(header);
-    	fUpdateCount++;
-    }
+				} else {
+					this.contentType = contentType;
+				}
+			}
+		}
+		fOutput.append(header);
+		fUpdateCount++;
+	}
 
     /**
      * Returns how many times this debug output was updated with additional data.
      * @return
      */
-    public int getUpdateCount () {
-    	return fUpdateCount;
+	public int getUpdateCount () {
+		return fUpdateCount;
     }
 
     /**
@@ -70,11 +70,11 @@ public class DebugOutput {
      * @see #appendHeader(String) 
      * @return
      */
-    public String getContentType() {
+	public String getContentType() {
 		return contentType;
 	}
 
 	public String toString (){
-    	return fOutput.toString();
+		return fOutput.toString();
     }
 }

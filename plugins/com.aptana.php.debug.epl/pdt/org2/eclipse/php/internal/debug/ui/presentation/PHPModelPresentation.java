@@ -56,7 +56,7 @@ import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
  */
 public class PHPModelPresentation extends LabelProvider implements IDebugModelPresentation {
 	protected final static String UNTITLED_FOLDER_PATH = "Untitled_Documents"; //$NON-NLS-1$
-	
+
 	private ImageDescriptorRegistry fDebugImageRegistry;
 
 	/*
@@ -252,23 +252,23 @@ public class PHPModelPresentation extends LabelProvider implements IDebugModelPr
 			if (resource instanceof IFile) {
 				return new FileEditorInput((IFile) resource);
 			}
-			
+
 			if (element instanceof PHPSourceNotFoundInput) {
 				return new PHPSourceNotFoundEditorInput((PHPSourceNotFoundInput) element);
 			}
-			
+
 			// Breakpoints for external files are stored in workspace root:
 //			else if (resource instanceof IWorkspaceRoot) {
 //				try {
 //					String filename = (String) marker.getAttribute(IPHPConstants.STORAGE_FILE);
 //					String type = (String) marker.getAttribute(IPHPConstants.STORAGE_TYPE);
-//					
+//
 //					if (IPHPConstants.STORAGE_TYPE_INCLUDE.equals(type)) {
 //						String projectName = (String) marker.getAttribute(IPHPConstants.STORAGE_PROJECT, "");
 //						IProject project = PHPDebugUIPlugin.getProject(projectName);
 //						String includeBaseDir = (String) marker.getAttribute(IPHPConstants.STORAGE_INC_BASEDIR, "");
 //						filename = marker.getAttribute(Constants.SECONDARY_ID_KEY, filename);
-//						
+//
 //						File file = new File(filename);
 //						LocalFileStorage lfs = new LocalFileStorage(file);
 //						lfs.setProject(project);
@@ -326,7 +326,7 @@ public class PHPModelPresentation extends LabelProvider implements IDebugModelPr
 			return null;
 		}
 	}
-	
+
 	protected boolean isUntitled(Object element) {
 		if (element instanceof IFileStore) {
 			final IFileStore localFile = (IFileStore)element;

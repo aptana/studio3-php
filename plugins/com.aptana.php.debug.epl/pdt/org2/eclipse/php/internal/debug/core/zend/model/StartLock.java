@@ -24,7 +24,7 @@ public class StartLock {
 	public void setRunStart(boolean runStart) {
 		fRunStart = runStart;
 	}
-    
+
     public boolean isStarted() {
         return fStarted;
     }

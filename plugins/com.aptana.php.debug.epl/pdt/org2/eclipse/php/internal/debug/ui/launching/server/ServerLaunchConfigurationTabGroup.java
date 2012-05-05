@@ -15,7 +15,7 @@ import org2.eclipse.php.internal.debug.ui.launching.LaunchConfigurationsTabsRegi
 public class ServerLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 
 	protected final String CONFIGURATION_TAB_GROUP_ID = "org2.eclipse.php.server.ui.launchConfigurationTabGroup";
-	
+
 	public ServerLaunchConfigurationTabGroup() {
 		super();
 

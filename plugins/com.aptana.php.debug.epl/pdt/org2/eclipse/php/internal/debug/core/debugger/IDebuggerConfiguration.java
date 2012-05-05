@@ -50,14 +50,14 @@ public interface IDebuggerConfiguration {
 	 * Attribute key for the debugger's delegate for executing PHP using a web server.
 	 */
 	public String WEB_LAUNCH_DELEGATE_CLASS = "webDelegateClass";
-	
+
 	/**
 	 * Opens a dialog for editing/displaying the debugger's configuration.
 	 * 
 	 * @param parentShell A parent Shell, or null (use the default display Shell).
 	 */
 	public void openConfigurationDialog(Shell parentShell);
-	
+
 	/**
 	 * Returns the attribute value for the given id.
 	 * 
@@ -65,45 +65,45 @@ public interface IDebuggerConfiguration {
 	 * @return The attribute's value. Null, if non exists.
 	 */
 	public String getAttribute(String id);
-	
+
 	/**
 	 * Returns the debugger's port number.
 	 * 
 	 * @return The debugger's port number. -1, if none is defined.
 	 */
 	public int getPort();
-	
+
 	/**
 	 * Returns the debugger's display name.
 	 * 
 	 * @return The name of the debugger.
 	 */
 	public String getName();
-	
+
 	/**
 	 * Returns the name of the delegate class for PHP script launching.
 	 *  
 	 * @return The delegate class name for PHP script launching.
 	 */
 	public String getScriptLaunchDelegateClass();
-	
+
 	/**
 	 * Returns the name of the delegate class for PHP web page launching.
 	 *  
 	 * @return The delegate class name for PHP web page launching.
 	 */
 	public String getWebLaunchDelegateClass();
-	
+
 	/**
 	 * Returns the debugger's identification string.
 	 * 
 	 * @return The debugger's id.
 	 */
 	public String getDebuggerId();
-	
+
 	/**
 	 * Save any changes that were made to this configuration.
 	 */
 	public void save();
-	
+
 }

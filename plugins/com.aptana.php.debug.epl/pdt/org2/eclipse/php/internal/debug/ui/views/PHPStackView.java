@@ -65,7 +65,7 @@ public class PHPStackView extends AbstractDebugView implements ISelectionListene
                 } else if (element instanceof PHPThread) {
                     return ((PHPThread) element).getStackVariables();
                 } else if (element instanceof PHPStackFrame) {
-                	return ((PHPStackFrame) element).getStackVariables();
+                    return ((PHPStackFrame) element).getStackVariables();
                 } else if (element instanceof Expression) {
                     Expression eExp = (Expression) element;
                     ExpressionValue value = eExp.getValue();
@@ -127,7 +127,7 @@ public class PHPStackView extends AbstractDebugView implements ISelectionListene
         /* (non-Javadoc)
          * @see org.eclipse.jface.viewers.IContentProvider#dispose()
          */
-        public void dispose() {     	
+        public void dispose() {
         }
 
         /* (non-Javadoc)
@@ -183,7 +183,7 @@ public class PHPStackView extends AbstractDebugView implements ISelectionListene
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
         update();
     }
-    
+
 	protected void becomesHidden() {
 		isVisible = false;
 		super.becomesHidden();
@@ -199,9 +199,9 @@ public class PHPStackView extends AbstractDebugView implements ISelectionListene
      * Updates the view for the selected target (if suspended)
      */
     private synchronized void update() {
-    	if (!isVisible) {
-    		return;
-    	}
+        if (!isVisible) {
+            return;
+        }
         IAdaptable adaptable = DebugUITools.getDebugContext();
         fTarget = null;
         IDebugElement element = null;

@@ -49,7 +49,7 @@ public class XDebugVariableValueEditor implements IVariableValueEditor {
 			String title = PHPDebugUIMessages.PHPPrimitiveValueEditor_0;
 			String message = MessageFormat.format(PHPDebugUIMessages.PHPPrimitiveValueEditor_1, new Object[] { name }); //$NON-NLS-1$
 			String initialValue = getValueString(variable);
-			
+
 			PrimitiveValidator validator = new PrimitiveValidator(variable);
 			ChangeVariableValueInputDialog dialog = new ChangeVariableValueInputDialog(shell, title, message, initialValue, validator);
 			if (dialog.open() == Window.OK) {
@@ -66,7 +66,7 @@ public class XDebugVariableValueEditor implements IVariableValueEditor {
 	private String getValueString(IVariable variable) throws DebugException {
 		IValue value = variable.getValue();
 		String initialValue = value.getValueString();
-		
+
 		if (value instanceof DBGpStringValue) {
 			DBGpStringValue strValue = (DBGpStringValue)value;
 			if (strValue.isComplete() == false) {

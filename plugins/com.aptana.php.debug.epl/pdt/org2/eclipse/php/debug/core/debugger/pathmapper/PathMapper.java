@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-
 import org2.eclipse.php.internal.core.util.preferences.IXMLPreferencesStorable;
 import org2.eclipse.php.internal.debug.core.pathmapper.PathEntry;
 import org2.eclipse.php.internal.debug.core.pathmapper.PathEntry.Type;
@@ -32,7 +31,7 @@ public class PathMapper implements IXMLPreferencesStorable {
 	private Map<VirtualPath, VirtualPath> remoteToLocalMap;
 	private Map<VirtualPath, VirtualPath> localToRemoteMap;
 	private Map<VirtualPath, Type> localToPathEntryType;
-	
+
 	public PathMapper() {
 		remoteToLocalMap = new HashMap<VirtualPath, VirtualPath>();
 		localToRemoteMap = new HashMap<VirtualPath, VirtualPath>();
@@ -250,7 +249,7 @@ public class PathMapper implements IXMLPreferencesStorable {
 		remoteToLocalMap.clear();
 		localToRemoteMap.clear();
 		localToPathEntryType.clear();
-		
+
 		Iterator i = map.keySet().iterator();
 		while (i.hasNext()) {
 			Object next = i.next();

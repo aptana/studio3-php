@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
-
 import org2.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
 import org2.eclipse.php.internal.core.util.FileUtils;
 import org2.eclipse.php.internal.debug.core.IPHPDebugConstants;
@@ -95,7 +94,7 @@ public class DebugStepFilterController implements IDebugStepFilterPrefListener {
 				}
 				//check if the given path is inside an include path variable container
 				else if ((currentFilter.getType() == IStepFilterTypes.PHP_INCLUDE_PATH_VAR) || currentFilter.getType() == IStepFilterTypes.PHP_INCLUDE_PATH_VAR_FOLDER) {
-					
+
 					// String includePathVarPath = DLTKCore.getResolvedVariablePath(new Path(currentFilter.getPath())).toOSString();
 					// SG: Modified from the PDT code (TODO: SG - Test step filters)
 					IPath resolvedPath = IncludePathVariableManager.instance().resolveVariablePath(currentFilter.getPath());

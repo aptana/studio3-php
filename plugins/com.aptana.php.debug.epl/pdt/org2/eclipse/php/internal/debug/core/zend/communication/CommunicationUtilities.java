@@ -23,7 +23,7 @@ public class CommunicationUtilities {
 		out.writeInt(byteArray.length);
 		out.write(byteArray);
 	}
-	
+
 	public static void writeStringAsBytes(DataOutputStream out, byte[] byteArray) throws IOException {
 		out.writeInt(byteArray.length);
 		out.write(byteArray);
@@ -54,7 +54,7 @@ public class CommunicationUtilities {
 		String rv = getTextFromBytes(byteArray, encoding);
 		return rv;
 	}
-	
+
     public static void writeEncodedString(DataOutputStream out, String line, String encoding) throws IOException {
         byte[] byteArray = getBytesFromText(line, encoding);
         out.writeInt(byteArray.length);

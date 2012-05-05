@@ -52,13 +52,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-
 import org2.eclipse.php.internal.core.project.IIncludePathEntry;
 import org2.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
 import org2.eclipse.php.internal.debug.core.pathmapper.BestMatchPathComparator;
 import org2.eclipse.php.internal.debug.core.pathmapper.PathEntry;
-import org2.eclipse.php.internal.debug.core.pathmapper.VirtualPath;
 import org2.eclipse.php.internal.debug.core.pathmapper.PathEntry.Type;
+import org2.eclipse.php.internal.debug.core.pathmapper.VirtualPath;
 import org2.eclipse.php.internal.debug.ui.PHPDebugUIImages;
 
 import com.aptana.editor.php.PHPEditorPlugin;
@@ -425,7 +424,7 @@ public class PathEntrySelectionDialog extends TrayDialog {
 	 */
 	class LabelProvider  implements ILabelProvider {
 		private WorkbenchLabelProvider workbenchLabelProvider;
-		
+
 		public LabelProvider() {
 			workbenchLabelProvider = new WorkbenchLabelProvider();
 		}
@@ -493,7 +492,7 @@ public class PathEntrySelectionDialog extends TrayDialog {
 			}
 			return path;
 		}
-		
+
 		public void addListener(ILabelProviderListener listener)
 		{
 			workbenchLabelProvider.addListener(listener);

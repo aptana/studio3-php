@@ -18,13 +18,13 @@ import java.io.IOException;
 import org2.eclipse.php.debug.core.debugger.messages.IDebugRequestMessage;
 
 public class SetProtocolRequest extends DebugMessageRequestImpl implements IDebugRequestMessage {
-	
+
 	private int fProtocolID;
-	
+
 	public void setProtocolID (int protocolID) {
 		fProtocolID = protocolID;
 	}
-	
+
 	public int getProtocolID() {
 		return fProtocolID;
 	}

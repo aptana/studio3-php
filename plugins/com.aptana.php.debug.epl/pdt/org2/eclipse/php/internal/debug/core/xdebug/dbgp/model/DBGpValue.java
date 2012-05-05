@@ -135,9 +135,6 @@ public abstract class DBGpValue extends DBGpElement implements IValue {
 
 	// override this definitely
 	abstract void genValueString(String data);
-	
-
-	
 
 	/*
 	// override these to enhance the way variables are displayed
@@ -163,5 +160,4 @@ public abstract class DBGpValue extends DBGpElement implements IValue {
 		return getClass().hashCode() + valueString.hashCode();
 	}
 	*/
-	
 }

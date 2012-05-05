@@ -84,7 +84,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 	private String ideKey;
 
 	private boolean webLaunch = false;
-	
+
 	private boolean multiSessionManaged = false;
 
 	// required for EXE target support
@@ -119,7 +119,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 
 	// the script being run, or initial web script
 	private String projectScript;
-	
+
 	//The name to return for this debug target.
 	private String name;
 
@@ -164,7 +164,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 	//private int maxChildren = 0;
 
 	private PathMapper pathMapper = null;
-	
+
 	private DebugOutput debugOutput = new DebugOutput();
 
 	/**
@@ -257,12 +257,12 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 			terminateDebugTarget(true);
 		}
 	}
-	
+
 	public void sessionReceived(DBGpBreakpointFacade facade, DBGpPreferences sessionPrefs) {
 		bpFacade = facade;
 		sessionPreferences = sessionPrefs;
 		setState(STATE_INIT_SESSION_WAIT);
-		sessionReceived(null);		
+		sessionReceived(null);
 	}
 
 
@@ -281,7 +281,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 
 				//Determine something about the initial script and path mapping
 				testInitialScriptLocating();
-				
+
 				//the pathmapper dialog allows a user to terminate the debug session.
 				//so check to see if the session has gone away. Could also check the 
 				//state of the target as well
@@ -361,7 +361,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 	 * handle a Remotely Initiated launch debug session
 	 * @param initScript the initial script being executed
 	 */
-	
+
 	private void handleRemoteSessionInitiation(String initScript) {
 		try {
 			PathEntry pe = DebugSearchEngine.find(pathMapper, initScript, null, this);
@@ -372,12 +372,12 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 					IProject prj = res.getProject();
 					PHPSourceLookupDirector dir = (PHPSourceLookupDirector)getLaunch().getSourceLocator();
 					//ISourceContainer[] containers = new ISourceContainer[] {new ProjectSourceContainer(prj, false)};
-					ISourceContainer[] containers = new ISourceContainer[] {new PHPCompositeSourceContainer(prj, null)};									
+					ISourceContainer[] containers = new ISourceContainer[] {new PHPCompositeSourceContainer(prj, null)};
 					dir.setSourceContainers(containers);
 				}
 			}
 			else {
-				//either no file was found, or the user pressed the stop debugger 
+				//either no file was found, or the user pressed the stop debugger
 				if (isTerminated() == false) {
 					// stop wasn't pressed
 					PHPDebugEPLPlugin.logError(PHPDebugCoreMessages.XDebug_DBGpTarget_0);
@@ -403,7 +403,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		currentVariables = null;
 		superGlobalVars = null;
 		session.startSession();
-		
+
 		// we are effectively suspended once the session has handshaked until we run
 		setState(STATE_STARTED_SUSPENDED);
 		negotiateDBGpFeatures();
@@ -1068,7 +1068,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		DBGpUtils.isGoodDBGpResponse(this, resp);
 		resp = session.sendSyncCmd(DBGpCommand.featureSet, "-n max_children -v " + getMaxChildren()); //$NON-NLS-1$
 		DBGpUtils.isGoodDBGpResponse(this, resp);
-		
+
 		/*
 		resp = session.sendSyncCmd(DBGpCommand.featureGet, "-n max_children");
 		if (DBGpUtils.isGoodDBGpResponse(this, resp)) {
@@ -1083,7 +1083,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 			}
 		}
 		*/
-		
+
 		resp = session.sendSyncCmd(DBGpCommand.featureGet, "-n encoding"); //$NON-NLS-1$
 		if (DBGpUtils.isGoodDBGpResponse(this, resp)) {
 			Node child = resp.getParentNode().getFirstChild();
@@ -1111,7 +1111,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		resp = session.sendSyncCmd(DBGpCommand.stdout, "-c " + getCaptureStdout()); //$NON-NLS-1$
 		DBGpUtils.isGoodDBGpResponse(this, resp);
 		resp = session.sendSyncCmd(DBGpCommand.stderr, "-c " + getCaptureStderr()); //$NON-NLS-1$
-		DBGpUtils.isGoodDBGpResponse(this, resp);		
+		DBGpUtils.isGoodDBGpResponse(this, resp);
 	}
 
 	/**
@@ -1340,8 +1340,8 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		// which we cannot get the results from.
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * get a variable at a particular stack level and page number
 	 * 
@@ -1376,8 +1376,8 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		// expression
 		// which we cannot get the results from.
 		return null;
-	}	
-	
+	}
+
 
 	/**
 	 * perform an eval request
@@ -1473,14 +1473,14 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 	private String mapToExternalFileIfRequired(DBGpBreakpoint bp) {
 		String internalFile = ""; //$NON-NLS-1$
 		String mappedFileName = null;
-		
+
 		if (pathMapper != null) {
 			if (bp.getIFile() != null) {
 				// file is defined in the workspace so attempt to map it using the workspace definition
 				internalFile = bp.getIFile().getFullPath().toString();
 				mappedFileName = pathMapper.getRemoteFile(internalFile);
 			}
-			
+
 			if (mappedFileName == null) {
 				// file is not defined in the workspace or no mapping for workspace file exists
 				// so try to map the fully qualified file.
@@ -1491,7 +1491,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 
 		if (mappedFileName == null) {
 			DBGpLogger.debug("outbound File '" + internalFile + "' Not remapped"); //$NON-NLS-1$ //$NON-NLS-2$
-			mappedFileName = bp.getFileName(); // use the fully qualified location of the file		
+			mappedFileName = bp.getFileName(); // use the fully qualified location of the file
 		} else {
 			if (DBGpLogger.debugBP()) {
 				String mapMsg = "remapped eclipse file: '" + internalFile + "' to '" + mappedFileName + "'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -1575,10 +1575,10 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		// 1. breakpoint manager enabled
 		// 2. the breakpoint is valid for the environment
 		// 3. the breakpoint is enabled
-		// 4. the debugee is suspended or running and async is supported (send immediately) 
+		// 4. the debugee is suspended or running and async is supported (send immediately)
 		// 5. the debugee is running and async not supported (defer and send later)
 		// otherwise do not send or defer the breakpoint
-		
+
 		if (!DebugPlugin.getDefault().getBreakpointManager().isEnabled()) {
 			return;
 		}
@@ -1646,7 +1646,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 			if (debugMsg != null) {
 				debugMsg += " with expression:" + condition.getExpression(); //$NON-NLS-1$
 			}
-			
+
 			//we use session encoding before converting to Base64.
 			args += " -- " + Base64.encode(getSessionEncodingBytes(condition.getExpression())); //$NON-NLS-1$
 		} else if (condition.getType() == DBGpBreakpointCondition.HIT) {
@@ -2141,14 +2141,14 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 			return DBGpSession.DEFAULT_SESSION_ENCODING;
 		}
 	}
-	
+
 	public String getBinaryEncoding() {
 		if (session != null) {
 			return session.getBinaryEncoding();
 		} else {
 			return DBGpSession.DEFAULT_BINARY_ENCODING;
 		}
-		
+
 	}
 
 	private int getMaxDepth() {
@@ -2157,15 +2157,15 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		}
 		return DBGpPreferences.DBGP_MAX_DEPTH_DEFAULT;
 	}
-	
-	
+
+
 	public int getMaxChildren() {
 		if (sessionPreferences != null) {
 			return sessionPreferences.getInt(DBGpPreferences.DBGP_MAX_CHILDREN_PROPERTY, DBGpPreferences.DBGP_MAX_CHILDREN_DEFAULT);
 		}
 		return DBGpPreferences.DBGP_MAX_CHILDREN_DEFAULT;
 	}
-	
+
 	private int getCaptureStdout() {
 		if (sessionPreferences != null) {
 			return sessionPreferences.getInt(DBGpPreferences.DBGP_CAPTURE_STDOUT_PROPERTY, DBGpPreferences.DBGP_CAPTURE_DEFAULT);
@@ -2179,7 +2179,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 		}
 		return DBGpPreferences.DBGP_CAPTURE_DEFAULT;
 	}
-	
+
 
 	private boolean showGLobals() {
 		if (sessionPreferences != null) {
@@ -2191,7 +2191,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 	public void setPathMapper(PathMapper pathMapper) {
 		this.pathMapper = pathMapper;
 	}
-	
+
 	/**
 	 * Returns the assigned path mapper.
 	 * 
@@ -2201,7 +2201,7 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 	{
 		return this.pathMapper;
 	}
-	
+
 	/**
 	 * Returns true if this target is designed to stop at the first line; False otherwise.
 	 * 
@@ -2242,8 +2242,8 @@ public class DBGpTarget extends DBGpElement implements IPHPDebugTarget, IDBGpDeb
 
 	public DebugOutput getOutputBuffer() {
 		return this.debugOutput;
-	}	
-	
+	}
+
 	private byte[] getSessionEncodingBytes(String toConvert) {
 		byte[] result = null;
 		try {

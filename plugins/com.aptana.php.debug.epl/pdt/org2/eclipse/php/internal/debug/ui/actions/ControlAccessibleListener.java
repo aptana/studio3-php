@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Control;
 
 public class ControlAccessibleListener extends AccessibleAdapter {
 	private String controlName;
-	
+
 	public ControlAccessibleListener(String name) {
 		controlName = name;
 	}

@@ -260,7 +260,7 @@ public abstract class AbstractDebuggerCommunicationDaemon implements ICommunicat
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	/**
 	 * Test and return if the given port is available. This test will return true
 	 * 

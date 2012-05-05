@@ -83,7 +83,7 @@ public class PHPValue extends PHPDebugElement implements IValue {
 		String rString = string.toString();
 		return rString;
 	}
-	
+
 	public String getValue() throws DebugException {
 		return (String) (fValue.getValue());
 	}

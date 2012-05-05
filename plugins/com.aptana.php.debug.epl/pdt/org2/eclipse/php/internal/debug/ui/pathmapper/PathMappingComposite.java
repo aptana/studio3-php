@@ -36,7 +36,6 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
 import org2.eclipse.php.internal.core.util.ScrolledCompositeImpl;
@@ -71,7 +70,7 @@ public class PathMappingComposite extends Composite {
 	public PathMappingComposite(Composite parent, int style) {
 		this(parent, style, true);
 	}
-	
+
 	/**
 	 * PathMappingComposite constructor.
 	 * 
@@ -150,7 +149,7 @@ public class PathMappingComposite extends Composite {
 			listeners.add(listener);
 		}
 	}
-	
+
 	/**
 	 * Remove a property change listener.
 	 * @param listener
@@ -158,7 +157,7 @@ public class PathMappingComposite extends Composite {
 	public void removePropertyChangeListener(IPropertyListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	/**
 	 * Notifies a propertyChange for all the listener.
 	 */
@@ -168,7 +167,7 @@ public class PathMappingComposite extends Composite {
 			listener.propertyChanged(this, propertyID);
 		}
 	}
-	
+
 	protected void handleAdd() {
 		PathMapperEntryDialog dialog = new PathMapperEntryDialog(getShell());
 		if (dialog.open() == Window.OK) {
@@ -231,7 +230,7 @@ public class PathMappingComposite extends Composite {
 	public void setServerIsValid(boolean serverIsValid) {
 		this.serverIsValid = serverIsValid;
 	}
-	
+
 	protected void updateButtonsEnablement() {
 		List<?> selectedElements = fMapList.getSelectedElements();
 		// SG: Aptana modification

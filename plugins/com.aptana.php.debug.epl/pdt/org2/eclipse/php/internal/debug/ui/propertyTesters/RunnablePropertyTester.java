@@ -26,7 +26,7 @@ public class RunnablePropertyTester extends PropertyTester{
         if (name.equals("org2.eclipse.php.internal.core.phpModel.parser.PHPCodeDataFactory$PHPFileDataImp")){
            return false; 
         }
-        
+
         IProject project = null;
         if (receiver instanceof IFolder){
            IFolder folder = (IFolder)receiver;
@@ -35,9 +35,9 @@ public class RunnablePropertyTester extends PropertyTester{
         if (receiver instanceof IProject){
            project = (IProject)receiver;
         }
-        
+
         if (project == null || !project.isOpen()) {
-        	return true;
+            return true;
         }
         try {
             if (project.isNatureEnabled(PHPNature.NATURE_ID)){
@@ -46,7 +46,7 @@ public class RunnablePropertyTester extends PropertyTester{
         } catch (CoreException e) {
            PHPDebugEPLPlugin.logError(e);
         }
-                
+
         return true;
     }
 

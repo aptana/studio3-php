@@ -20,11 +20,11 @@ import org2.eclipse.php.internal.debug.core.zend.debugger.Expression;
 public class PHPStackLabelProvider implements ILabelProvider {
 
     private Image image = null;
-    
+
     public PHPStackLabelProvider() {
         super();
         image = DebugPluginImages.getImage(IDebugUIConstants.IMG_OBJS_VARIABLE);
-        
+
     }
 
     public Image getImage(Object element) {
@@ -35,7 +35,7 @@ public class PHPStackLabelProvider implements ILabelProvider {
     public String getText(Object element) {
         if (element instanceof Expression) {
             return "$" + ((Expression)element).toString();
-            
+
         }
         return null;
     }

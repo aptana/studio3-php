@@ -120,7 +120,7 @@ public class PHPLaunchingPreferencePage extends PreferencePage implements IWorkb
 				{ PHPDebugUIMessages.PHPLaunchingPreferencePage_Prompt, MessageDialogWithToggle.PROMPT }},
 				comp, true);
 		this.fFieldEditors.add(edit);
-		
+
 		// Notify the user when a non-standard debug port is in use
 		edit = new RadioGroupFieldEditor(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT,
 				PHPDebugUIMessages.PHPLaunchingPreferencePage_nofityNonStandardPortMessage, 2, new String[][] {
@@ -128,7 +128,7 @@ public class PHPLaunchingPreferencePage extends PreferencePage implements IWorkb
 				{ PHPDebugUIMessages.PHPLaunchingPreferencePage_Never, MessageDialogWithToggle.NEVER }},
 				comp, true);
 		this.fFieldEditors.add(edit);
-		
+
 		this.initFieldEditors();
 		return comp;
 	}

@@ -127,14 +127,14 @@ public class StartProcessFileNotificationHandler implements IDebugMessageHandler
 			}
 			if (localPath != null) {
 				IBreakpoint[] breakPoints = findBreakpoints(localPath, debugTarget);
-	
+
 				for (IBreakpoint bp : breakPoints) {
 					try {
 						if (bp.isEnabled()) {
-							
+
 							PHPConditionalBreakpoint phpBP = (PHPConditionalBreakpoint) bp;
 							Breakpoint runtimeBreakpoint = phpBP.getRuntimeBreakpoint();
-							
+
 							int lineNumber = (Integer) bp.getMarker().getAttribute(IMarker.LINE_NUMBER);
 							int bpID = runtimeBreakpoint.getID();
 							int bpType = runtimeBreakpoint.getType();
@@ -145,7 +145,7 @@ public class StartProcessFileNotificationHandler implements IDebugMessageHandler
 							bpToSend.setLifeTime(bpLifeTime);
 							bpToSend.setConditionalFlag(runtimeBreakpoint.getConditionalFlag());
 							bpToSend.setExpression(runtimeBreakpoint.getExpression());
-							
+
 							debugTarget.getRemoteDebugger().addBreakpoint(bpToSend);
 							runtimeBreakpoint.setID(bpToSend.getID());
 						}

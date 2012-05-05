@@ -49,7 +49,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
-
 import org2.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org2.eclipse.php.internal.debug.core.launching.PHPLaunchUtilities;
 import org2.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon;
@@ -146,7 +145,7 @@ public class PHPServerAdvancedTab extends AbstractLaunchConfigurationTab
 		tunnelGroup.setLayout(layout);
 		tunnelGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		tunnelGroup.setText("SSH Tunnel");
-		
+
 		Group browserGroup = new Group(composite, SWT.NONE);
 		layout = new GridLayout(1, false);
 		layout.marginWidth = 5;
@@ -225,7 +224,7 @@ public class PHPServerAdvancedTab extends AbstractLaunchConfigurationTab
 				updateLaunchConfigurationDialog();
 			}
 		});
-		
+
 		// Add the Browser group controls
 		openBrowser = new Button(browserGroup, SWT.CHECK);
 		openBrowser.setText("Open in Browser");
@@ -332,7 +331,7 @@ public class PHPServerAdvancedTab extends AbstractLaunchConfigurationTab
 		debugThroughTunnel.addSelectionListener(listener);
 		userName.addModifyListener(listener);
 		password.addModifyListener(listener);
-		
+
 		KeyListener userInputListener = new KeyListener()
 		{
 			public void keyReleased(KeyEvent e)
@@ -340,7 +339,7 @@ public class PHPServerAdvancedTab extends AbstractLaunchConfigurationTab
 				testResultLabel.setText("");
 				testButton.setEnabled((userName.getText().trim().length() > 0));
 			}
-			
+
 			public void keyPressed(KeyEvent e)
 			{
 				testResultLabel.setText("");
@@ -425,8 +424,8 @@ public class PHPServerAdvancedTab extends AbstractLaunchConfigurationTab
 							testResultLabel.setData("info", "Could not determin the port to tunnel. \nPlease 'Apply' the dialog and try again.");
 						}
 					}
-					
-					
+
+
 					testResultLabel.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_WAIT));
 					IStatus connectionStatus = TunnelTester.test(remoteHost, userName.getText().trim(), password.getText().trim(), port, port);
 					testButton.setEnabled(true);
@@ -494,7 +493,7 @@ public class PHPServerAdvancedTab extends AbstractLaunchConfigurationTab
 		connectionTest.setPriority(Job.LONG);
 		connectionTest.schedule();
 	}
-	
+
 	/**
 	 * Override this method to add more widgets to this tab.
 	 * 
@@ -662,7 +661,7 @@ public class PHPServerAdvancedTab extends AbstractLaunchConfigurationTab
 				passwordDigest = String.valueOf(password.getText().trim().hashCode());
 			}
 			configuration.setAttribute(IPHPDebugConstants.SSH_TUNNEL_PASSWORD, passwordDigest);
-			
+
 			// Save to secured storage
 			try
 			{

@@ -82,11 +82,11 @@ public class PHPLineBreakpoint extends LineBreakpoint {
         return IPHPDebugConstants.ID_PHP_DEBUG_CORE;
     }
 
-    protected void createRuntimeBreakpoint(IMarker marker) throws CoreException {       
-        IResource resource = marker.getResource();       
+    protected void createRuntimeBreakpoint(IMarker marker) throws CoreException {  
+        IResource resource = marker.getResource();
         String fileName = "";
         if (resource instanceof IWorkspaceRoot) {
-            fileName = (String)marker.getAttribute(IPHPDebugConstants.STORAGE_FILE); 
+            fileName = (String)marker.getAttribute(IPHPDebugConstants.STORAGE_FILE);
         }else {
             IFile file = (IFile) resource;
             IPath path = file.getFullPath();

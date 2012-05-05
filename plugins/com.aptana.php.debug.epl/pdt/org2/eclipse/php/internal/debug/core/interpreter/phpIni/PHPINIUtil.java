@@ -30,7 +30,7 @@ public class PHPINIUtil {
 	// The rest of the files should be deleted.
 	private static LinkedList<String> sessionsTempDirs = new LinkedList<String>();
 	private static final int MAX_SESSIONS_TO_HOLD = 5;
-	
+
 	private static final String PHP_INI_FILE = "php.ini"; //$NON-NLS-1$
 	private static final String INCLUDE_PATH = "include_path"; //$NON-NLS-1$
 
@@ -188,11 +188,11 @@ public class PHPINIUtil {
 			} catch (IOException e) {
 			}
 		}
-		
+
 		if (phpIniFile.exists() && phpIniFile.canRead()) {
 			return phpIniFile;
 		}
-		
+
 		return null;
 	}
 }

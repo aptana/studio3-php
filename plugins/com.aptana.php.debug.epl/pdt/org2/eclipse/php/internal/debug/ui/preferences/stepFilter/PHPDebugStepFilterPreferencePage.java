@@ -52,7 +52,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.ISelectionValidator;
-
 import org2.eclipse.php.internal.core.project.IIncludePathEntry;
 import org2.eclipse.php.internal.debug.core.IPHPDebugConstants;
 import org2.eclipse.php.internal.debug.core.preferences.stepFilters.DebugStepFilter;
@@ -75,7 +74,7 @@ public class PHPDebugStepFilterPreferencePage extends PreferencePage implements 
 	// public static final String PREFIX = PHPDebugPlugin.ID + '.';
 	public static final String PAGE_ID = "org2.eclipse.php.internal.debug.ui.preferences.stepFilter.PHPDebugStepFilterPreferencePage"; //$NON-NLS-1$
 	private static char SEPARATOR = '/';
-	
+
 	/**
 	 * Content provider for the table.  Content consists of instances of StepFilter.
 	 */
@@ -159,7 +158,7 @@ public class PHPDebugStepFilterPreferencePage extends PreferencePage implements 
 		noticeImageLabel.setImage(PHPPluginImages.get(PHPPluginImages.IMG_OBJS_WARNING));
 		Label noticeLabel = new Label(notice, SWT.LEFT);
 		noticeLabel.setText(PHPDebugUIMessages.PHPDebugStepFilterPreferencePage_stepFiltersNotice);
-		
+
 		fUseStepFiltersButton = SWTFactory.createCheckButton(container, PHPDebugUIMessages.PHPDebugStepFilterPreferencePage_useStepFilters, null, DebugUITools.isUseStepFilters(), 2);
 		fUseStepFiltersButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -380,13 +379,13 @@ public class PHPDebugStepFilterPreferencePage extends PreferencePage implements 
 
 		return path.setDevice(device);
 	}
-	
+
 	// SG: Taken from org.eclipse.dltk.core.environment.EnvironmentPathUtils
 	protected static boolean isFull(IPath path) {
 		String device = path.getDevice();
 		return device != null && device.indexOf(SEPARATOR) >= 0;
 	}
-	
+
 	/**
 	 * Removes the currently selected filters.
 	 */

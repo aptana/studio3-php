@@ -73,7 +73,7 @@ public class FileSelectionDialog extends MessageDialog {
 		root = rootElement;
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 	}
-	
+
 	/**
 	 * Limits the files displayed in this dialog to files matching the given
 	 * pattern. The string can be a filename or a regular expression containing
@@ -99,7 +99,7 @@ public class FileSelectionDialog extends MessageDialog {
 	        fPattern = null;
 	    }
 	}
-	
+
 	/*
 	 * (non-Javadoc) Method declared in Window.
 	 */
@@ -112,7 +112,7 @@ public class FileSelectionDialog extends MessageDialog {
 		super.createButtonsForButtonBar(parent);
 		initializeDialog();
 	}
-	
+
 	/*
 	 * (non-Javadoc) Method declared on Dialog.
 	 */
@@ -137,7 +137,7 @@ public class FileSelectionDialog extends MessageDialog {
 				// size, otherwise it will open too small
 				SIZING_SELECTION_WIDGET_WIDTH, SIZING_SELECTION_WIDGET_HEIGHT,
 				allowMultiselection);
-		
+
 		composite.addControlListener(new ControlListener() {
 			public void controlMoved(ControlEvent e) {
 			}
@@ -195,7 +195,7 @@ public class FileSelectionDialog extends MessageDialog {
 					}
 					return results.toArray();
 				}
-				
+
 				return new Object[0];
 			}
 		};

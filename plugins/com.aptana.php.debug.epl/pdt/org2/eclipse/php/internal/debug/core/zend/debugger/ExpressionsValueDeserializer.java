@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
 public class ExpressionsValueDeserializer {
 
 	private String fEncoding;
-	
+
 	public ExpressionsValueDeserializer(String encoding) {
 		fEncoding = encoding;
 	}
@@ -28,7 +28,7 @@ public class ExpressionsValueDeserializer {
 		}
 		return build(expression, new VariableReader(value));
 	}
-	
+
 //    private byte[] getBytes(String text) {
 //    	try {
 //    		return text.getBytes(fEncoding);
@@ -37,13 +37,13 @@ public class ExpressionsValueDeserializer {
 //    	return text.getBytes();
 //    }
     
-    private String getText(byte[] buf) {
-    	try {
-    		return new String(buf, fEncoding);
-    	} catch (UnsupportedEncodingException e) {
-    	}
-    	return new String(buf);
-    }
+	private String getText(byte[] buf) {
+		try {
+			return new String(buf, fEncoding);
+		} catch (UnsupportedEncodingException e) {
+		}
+		return new String(buf);
+	}
 
 	private ExpressionValue build(Expression expression, VariableReader reader) {
 		char type = reader.readType();

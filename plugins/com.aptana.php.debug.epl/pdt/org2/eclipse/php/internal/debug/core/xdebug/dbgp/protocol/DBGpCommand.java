@@ -23,14 +23,14 @@ public class DBGpCommand {
 
 	//-------------------------------------------------------------------------
 	// status and feature management commands
-	//-------------------------------------------------------------------------      
+	//-------------------------------------------------------------------------
 	public static final String status = "status";
 	public static final String featureGet = "feature_get";
 	public static final String featureSet = "feature_set";
 
 	//-------------------------------------------------------------------------
 	// execution commands   "cmd -i id"
-	//-------------------------------------------------------------------------   
+	//-------------------------------------------------------------------------
 	public static final String run = "run";
 	public static final String stepInto = "step_into";
 	public static final String stepOver = "step_over";
@@ -38,9 +38,9 @@ public class DBGpCommand {
 	public static final String stop = "stop";
 	public static final String detach = "detach";
 
-	//-------------------------------------------------------------------------   
+	//-------------------------------------------------------------------------
 	// breakpoint cmds
-	//-------------------------------------------------------------------------   
+	//-------------------------------------------------------------------------
 	// breakpoint_set -i id [arguments] -- base64(expression)
 	// arguments are:
 	//   -t type: line/call/return/conditional/exception/watch
@@ -73,7 +73,7 @@ public class DBGpCommand {
 
 	//-------------------------------------------------------------------------
 	// stack commands
-	//-------------------------------------------------------------------------   
+	//-------------------------------------------------------------------------
 	// stack-depth -i id
 	public static final String stackDepth = "stack-depth";
 
@@ -90,8 +90,8 @@ public class DBGpCommand {
 	public static final String propGet = "property_get";
 
 	// property_value -i id -n property_long_name
-	public static final String propValue = "property_value";	
-	
+	public static final String propValue = "property_value";
+
 	// context_get -i id -d depth
 	public static final String contextGet = "context_get";
 
@@ -130,7 +130,7 @@ public class DBGpCommand {
 		}
 		catch (IOException e) {
 		   DBGpLogger.logException(null, this, e);
-		   // do nothing until we actually try to send a command         
+		   // do nothing until we actually try to send a command
 		}
 		*/
 	}
@@ -165,7 +165,7 @@ public class DBGpCommand {
 
 		synchronized (socket) {
 			OutputStream os = socket.getOutputStream();
-			// Bug: 226860			
+			// Bug: 226860
 			// Want to avoid 2 writes as some tcpip implementations
 			// may delay waiting for a response from the 1st write
 			// we could set the tcpNoDelay option on the socket
@@ -189,7 +189,7 @@ public class DBGpCommand {
 			System.out.write(0);
 			System.out.flush();
 			System.out.println();
-			
+
 			outStream.write(command);
 			outStream.write(id);
 			outStream.write(Integer.toString(cmdId));
@@ -207,7 +207,7 @@ public class DBGpCommand {
 		int id;
 		// we need to synchronise on the socket to ensure that if we get called
 		// on a different thread, lastIdSent is at the latest value which occurs
-		// after the last part of the write and the update takes place and is 
+		// after the last part of the write and the update takes place and is
 		// controlled by the syncing of the socket.
 		synchronized (socket) {
 			id = lastIdSent;

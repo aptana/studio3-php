@@ -26,7 +26,7 @@ import org.eclipse.ui.IEditorInput;
 public class PHPModelPresentationDelegate implements IDebugModelPresentation {
 
 	private IDebugModelPresentation bestMatchPresentation;
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.debug.ui.IDebugModelPresentation#computeDetail(org.eclipse.debug.core.model.IValue, org.eclipse.debug.ui.IValueDetailListener)

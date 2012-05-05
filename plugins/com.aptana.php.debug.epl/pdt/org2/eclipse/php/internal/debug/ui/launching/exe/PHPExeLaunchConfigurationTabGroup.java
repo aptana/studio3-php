@@ -62,11 +62,11 @@ public class PHPExeLaunchConfigurationTabGroup extends AbstractLaunchConfigurati
 		EnvironmentTab environmentTab = new EnvironmentTab();
 		environmentTab.setLaunchConfigurationDialog(dialog);
 		list.add(environmentTab);
-		
+
 		CommonTab newTab = new CommonTab();
 		newTab.setLaunchConfigurationDialog(dialog);
 		list.add(newTab);
-		
+
 		ILaunchConfigurationTab[] allTabs = list.toArray(new ILaunchConfigurationTab[list.size()]);
 		setTabs(allTabs);
 	}

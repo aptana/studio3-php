@@ -67,7 +67,7 @@ public class ZendDebuggerConfigurationDialog extends AbstractDebuggerConfigurati
 	//		p.y -= 50;
 	//		return p;
 	//	}
-	
+
 	protected Control createDialogArea(Composite parent) {
 		initializeDialogUnits(parent);
 

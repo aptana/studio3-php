@@ -125,7 +125,7 @@ public abstract class AbstractPHPPropertyPreferencePage extends PropertyPage imp
 		} else {
 			fProjectSettingsLink.setText("<a>" + PHPUIMessages.getString("AbstractPHPPropertyPreferencePage.2") + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
 		}
-		
+
 		updateLinkEnablement();
 
 		fProjectSettingsLink.addSelectionListener(new SelectionListener() {

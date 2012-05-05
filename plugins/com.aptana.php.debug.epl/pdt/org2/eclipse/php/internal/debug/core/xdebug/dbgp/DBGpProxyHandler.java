@@ -23,13 +23,8 @@ import java.net.UnknownHostException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.DefaultScope;
-import org.eclipse.core.runtime.preferences.IPreferencesService;
-import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org2.eclipse.php.internal.debug.core.PHPDebugCoreMessages;
@@ -40,7 +35,6 @@ import org2.eclipse.php.internal.debug.core.xdebug.dbgp.session.DBGpSessionHandl
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.core.preferences.PHPDebugPreferencesUtil;
-import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
 /**
  * This class handles the management of DBGp proxy interaction.
@@ -55,30 +49,26 @@ public class DBGpProxyHandler {
 	private int errorCode = 0;
 	private String errorMsg = ""; //$NON-NLS-1$
 	private boolean multisession = false;
-	
+
 	private static final int DEFAULT_PROXY_PORT = 9001;
 	private static final int PROXY_CONNECT_TIMEOUT = 3000; //3 seconds
-	
+
 	public static DBGpProxyHandler instance = new DBGpProxyHandler();
-	
-	private DBGpProxyHandler() {	
+
+	private DBGpProxyHandler() {
 	}
-	
-	
 
 	/**
-	 * Register with the proxy if we are not already registered. 
+	 * Register with the proxy if we are not already registered.
 	 * @return true if registration successful
 	 */
 	public boolean registerWithProxy() {
-		
-		
 		//proxyinit -a ip:port -k ide_key -m [0|1]
 		//
 		//-p 	the port that the IDE listens for debugging on. The address is retrieved from the connection information.
 		//-k 	a IDE key, which the debugger engine will also use in it's debugging init command. this allows the proxy to match request to IDE. Typically the user will provide the session key as a configuration item.
 		//		-m 	this tells the demon that the IDE supports (or doesn't) multiple debugger sessions. if -m is missing, zero or no support is default.
-		
+
 		//		response
 		//	<proxyinit success="[0|1]"
 		//	           idekey="{ID}"
@@ -102,9 +92,9 @@ public class DBGpProxyHandler {
 		}
 		return registered;
 	}
-	
+
 	/**
-	 * unregister from the proxy. 
+	 * unregister from the proxy.
 	 */
 	public void unregister() {
 		//	IDE command
@@ -143,7 +133,7 @@ public class DBGpProxyHandler {
 	public String getErrorMsg() {
 		return errorMsg;
 	}
-	
+
 	/**
 	 * configure the Proxy Handler from the preferences.
 	 */
@@ -153,9 +143,9 @@ public class DBGpProxyHandler {
 			unregister();
 		}
 		else {
-			int idePort = XDebugPreferenceMgr.getPort();			
+			int idePort = XDebugPreferenceMgr.getPort();
 			String ideKey = PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_IDEKEY, StringUtil.EMPTY);
-			boolean multisession = XDebugPreferenceMgr.useMultiSession(); 
+			boolean multisession = XDebugPreferenceMgr.useMultiSession();
 			String proxy = PHPDebugPreferencesUtil.getString(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, StringUtil.EMPTY);
 			String proxyHost = proxy;
 			int proxyPort = DEFAULT_PROXY_PORT;
@@ -170,7 +160,7 @@ public class DBGpProxyHandler {
 					}
 				}
 			}
-			
+
 			if (proxyPort == XDebugPreferenceMgr.getPort()) {
 				displayErrorMessage(PHPDebugCoreMessages.XDebug_DBGpProxyHandler_0); //$NON-NLS-1$
 				XDebugPreferenceMgr.setUseProxy(false);
@@ -180,7 +170,7 @@ public class DBGpProxyHandler {
 				if (XDebugPreferenceMgr.getAcceptRemoteSession() != AcceptRemoteSession.off) {
 					// if jit we must register with the proxy straight away rather than wait
 					// for the first launch
-					
+
 					Job job = new Job("register with proxy") { //$NON-NLS-1$
 
 						@Override
@@ -198,7 +188,7 @@ public class DBGpProxyHandler {
 			}
 		}
 	}
-	
+
 	/**
 	 * store the proxy information.
 	 * @param host
@@ -218,7 +208,7 @@ public class DBGpProxyHandler {
 			this.multisession = multisession;
 		}
 	}
-	
+
 	/**
 	 * returns true a proxy should be used.
 	 * @return
@@ -242,7 +232,7 @@ public class DBGpProxyHandler {
 			InetSocketAddress local = new InetSocketAddress(0);
 			s.bind(local);
 			s.connect(server, PROXY_CONNECT_TIMEOUT);
-			
+
 			InputStream is = s.getInputStream();
 			OutputStream os = s.getOutputStream();
 			if (DBGpLogger.debugCmd()) {
@@ -273,7 +263,7 @@ public class DBGpProxyHandler {
 			}
 		}
 		return dbgpResp;
-		
+
 	}
 
 	/**
@@ -295,7 +285,7 @@ public class DBGpProxyHandler {
 		}
 		return byteArray;
 	}	
-	
+
 	/**
 	 * generate an IDE Key for this system.
 	 * @return a generated ide key.
@@ -306,7 +296,6 @@ public class DBGpProxyHandler {
 			toAppend = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			toAppend = java.util.UUID.randomUUID().toString();
-			
 		}
 		return DBGpSessionHandler.IDEKEY_PREFIX + "_" + toAppend; //$NON-NLS-1$
 	}
@@ -320,13 +309,12 @@ public class DBGpProxyHandler {
 	public String getCurrentIdeKey() {
 		return currentIdeKey;
 	}
-	
+
 	private void displayErrorMessage(final String message) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessageDialog.openError(Display.getDefault().getActiveShell(), PHPDebugCoreMessages.XDebug_DBGpProxyHandler_3, message); //$NON-NLS-1$
+				MessageDialog.openError(Display.getDefault().getActiveShell(), PHPDebugCoreMessages.XDebug_DBGpProxyHandler_3, message);
 			}
 		});
-	}	
-	
+	}
 }

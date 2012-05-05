@@ -44,11 +44,11 @@ public class ServerWizard extends FragmentedWizard implements INewWizard {
 		super(title, null);
 		setRootFragment(createRootFragment());
 	}
-	
+
 	private WizardFragment createRootFragment() {
 		WizardFragment fragment = new WizardFragment() {
 			private WizardFragment[] children;
-			
+
 			protected void createChildFragments(List list) {
 				if (children != null) {
 					loadChildren(children, list);
@@ -64,13 +64,13 @@ public class ServerWizard extends FragmentedWizard implements INewWizard {
 		};
 		return fragment;
 	}
-	
+
 	private void loadChildren(WizardFragment[] children, List list) {
 		for (int i = 0; i < children.length; i++) {
 			list.add(children[i]);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)

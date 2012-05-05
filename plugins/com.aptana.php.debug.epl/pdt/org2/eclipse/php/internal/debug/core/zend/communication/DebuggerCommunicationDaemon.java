@@ -108,7 +108,7 @@ public class DebuggerCommunicationDaemon extends AbstractDebuggerCommunicationDa
 	public boolean isDebuggerDaemon() {
 		return true;
 	}
-	
+
 	/**
 	 * Returns true if the given port is defined as one of the default ports for this debugger daemon.
 	 * 

@@ -19,9 +19,9 @@ import org2.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpPreferences;
 public interface IDBGpDebugTarget extends IDebugTarget {
 
 	public void waitForInitialSession(DBGpBreakpointFacade facade,
-			DBGpPreferences sessionPrefs, IProgressMonitor launchMonitor);	
-	
+			DBGpPreferences sessionPrefs, IProgressMonitor launchMonitor);
+
 	public void setPathMapper(PathMapper mapper);
-	
+
 	public boolean isWebLaunch();
 }

@@ -39,7 +39,7 @@ public class DebugSessionIdGenerator {
 	public static int generateSessionID() {
 		return getInstance().safeGenerateID();
 	}
-	
+
 	/**
 	 * Returns the last generated session id.
 	 * 
@@ -49,7 +49,7 @@ public class DebugSessionIdGenerator {
 	public static int getLastGenerated() {
 		return getInstance().safeGetLastGenerated();
 	}
-	
+
 	private synchronized int safeGenerateID() {
 		int id = sessionID++;
 		return id;

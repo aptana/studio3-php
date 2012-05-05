@@ -30,7 +30,7 @@ public class HyperlinkEntry {
     public String getMessage() {
         return fMessage;
     }
-    
+
     public int getHyperLength() {
         return fHyperLength;
     }

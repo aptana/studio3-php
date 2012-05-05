@@ -28,7 +28,7 @@ public class DBGpStackFrame extends DBGpElement implements IStackFrame {
 
 	private DBGpThread owningThread;
 	private String qualifiedFile = ""; // fully qualified name of the file this stack frame is in //$NON-NLS-1$
-	private String stackLevel; // the level of this stack frame   
+	private String stackLevel; // the level of this stack frame
 	private String fileName; // workspace file relative to project, null if not in workspace
 	private int lineNo; // line within the file of this stack frame
 	private String name = ""; // string to display in debugger for this stack frame //$NON-NLS-1$
@@ -57,7 +57,7 @@ public class DBGpStackFrame extends DBGpElement implements IStackFrame {
 		               filename="..."
 		               lineno="{NUM}"/>
 		    </stack>
-		</response>       
+		</response>
 		       */
 
 		String line = DBGpResponse.getAttribute(stackData, "lineno"); //$NON-NLS-1$

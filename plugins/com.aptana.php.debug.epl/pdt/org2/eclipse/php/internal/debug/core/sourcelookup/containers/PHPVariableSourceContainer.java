@@ -28,7 +28,7 @@ public class PHPVariableSourceContainer extends CompositeSourceContainer {
 
     private IPath fPath;
     private String[] validExtensions;
-    private IProject project;       
+    private IProject project;
 
     public PHPVariableSourceContainer(IPath path, IProject project) {
         fPath = path;

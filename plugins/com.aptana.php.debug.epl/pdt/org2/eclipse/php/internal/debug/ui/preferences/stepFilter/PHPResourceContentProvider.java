@@ -49,9 +49,9 @@ import com.aptana.ui.util.SWTUtils;
  * @author yaronm
  */
 public class PHPResourceContentProvider implements ITreeContentProvider {
-	
+
 	private IContentType phpContentType = Platform.getContentTypeManager().getContentType(IPHPConstants.CONTENT_TYPE_HTML_PHP);
-	
+
 	public Object[] getChildren(Object parentElement) {
 		try {
 			if (parentElement instanceof IContainer) {
@@ -195,7 +195,7 @@ class PHPResLabelProvider extends LabelProvider {
 	public PHPResLabelProvider() {
 		workbenchLabelProvider = new WorkbenchLabelProvider();
 	}
-	
+
 	public Image getImage(Object element) {
 		if (element instanceof IIncludePathEntry) {
 			IIncludePathEntry buildpathEntry = (IIncludePathEntry) element;

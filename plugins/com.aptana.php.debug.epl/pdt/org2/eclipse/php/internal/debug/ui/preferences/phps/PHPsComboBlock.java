@@ -383,8 +383,8 @@ public class PHPsComboBlock implements ISelectionProvider {
 		}
 		return ""; //$NON-NLS-1$
 	}
-	
-	
+
+
 	/**
 	 * Returns the id of the selected debugger.
 	 *  

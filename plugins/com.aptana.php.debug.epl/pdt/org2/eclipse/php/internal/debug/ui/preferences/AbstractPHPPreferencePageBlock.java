@@ -54,7 +54,7 @@ public abstract class AbstractPHPPreferencePageBlock  {
 		group.setLayout(layout);
 		return group;
 	}
-	
+
 	protected Button addCheckBox(Composite parent, String label, String prefKey, int horizontalIndent) {
         Button checkBox = new Button(parent, SWT.CHECK);
         checkBox.setText(label);
@@ -67,7 +67,7 @@ public abstract class AbstractPHPPreferencePageBlock  {
         checkBox.setData(prefKey);
         return checkBox;
     }
-	
+
 
 	protected Label addLabelControl(Composite parent, String label, String key) {
         Label labelControl = new Label(parent, SWT.WRAP);
@@ -76,7 +76,7 @@ public abstract class AbstractPHPPreferencePageBlock  {
         labelControl.setLayoutData(new GridData());
         return labelControl;
     }
-	
+
 
 	protected IScopeContext[] createPreferenceScopes(PreferencePage propertyPage) {
 		IProject project = getProject(propertyPage);
@@ -85,7 +85,7 @@ public abstract class AbstractPHPPreferencePageBlock  {
         }
         return new IScopeContext[] { new InstanceScope(), new DefaultScope() };
 	}
-	
+
 	protected IProject getProject(PreferencePage preferencePage) {
 		if (preferencePage == null) {
 			return null;

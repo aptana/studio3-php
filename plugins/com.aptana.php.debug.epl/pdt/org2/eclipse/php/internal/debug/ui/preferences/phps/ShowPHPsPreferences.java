@@ -28,7 +28,7 @@ import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
  * Quick fix to define a new system library (none were found). 
  */
 public class ShowPHPsPreferences implements IMarkerResolution {
-	
+
 	public ShowPHPsPreferences() {
 		super();
 	}
@@ -40,7 +40,7 @@ public class ShowPHPsPreferences implements IMarkerResolution {
 		IPreferencePage page = new PHPsPreferencePage();
 		showPreferencePage(PHPsPreferencePage.ID, page);
 	}
-	
+
 	/**
 	 * @see org.eclipse.ui.IMarkerResolution#getLabel()
 	 */
@@ -50,7 +50,7 @@ public class ShowPHPsPreferences implements IMarkerResolution {
 
 	protected void showPreferencePage(String id, IPreferencePage page) {
 		final IPreferenceNode targetNode = new PreferenceNode(id, page);
-		
+
 		PreferenceManager manager = new PreferenceManager();
 		manager.addToRoot(targetNode);
 		final PreferenceDialog dialog = new PreferenceDialog(PHPDebugEPLPlugin.getActiveWorkbenchShell(), manager);
@@ -61,6 +61,6 @@ public class ShowPHPsPreferences implements IMarkerResolution {
 				dialog.setMessage(targetNode.getLabelText());
 				result[0]= (dialog.open() == Window.OK);
 			}
-		});		
+		});
 	}
 }

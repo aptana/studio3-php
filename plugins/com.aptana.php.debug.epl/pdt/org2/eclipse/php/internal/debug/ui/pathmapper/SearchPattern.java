@@ -202,7 +202,7 @@ public class SearchPattern {
 			stringPattern = pattern;
 			return;
 		}
-		
+
 		if (last == END_SYMBOL || last == BLANK) {
 			matchRule = RULE_EXACT_MATCH;
 			stringPattern = pattern.substring(0, length - 1);
@@ -428,7 +428,7 @@ public class SearchPattern {
 		}
 
 		int patternLength = patternEnd;
-		
+
 		if (pattern.charAt(patternEnd - 1) == END_SYMBOL || pattern.charAt(patternEnd - 1) == BLANK )
 			patternLength = patternEnd - 1;
 

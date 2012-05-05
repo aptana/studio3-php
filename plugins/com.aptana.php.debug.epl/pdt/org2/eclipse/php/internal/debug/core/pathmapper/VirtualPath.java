@@ -139,7 +139,7 @@ public class VirtualPath implements Cloneable {
 		}
 		return isLocal;
 	}
-	
+
 	public String toString() {
 		StringBuilder buf = new StringBuilder(device);
 		Iterator<String> i = segments.iterator();

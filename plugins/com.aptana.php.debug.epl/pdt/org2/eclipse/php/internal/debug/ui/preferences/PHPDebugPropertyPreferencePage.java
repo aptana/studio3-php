@@ -48,11 +48,7 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 	 * @since 3.2
 	 */
 	private List fFieldEditors=new ArrayList<Object>();
-	
 	protected Label fDefaultURLLabel;
-	
-	
-	
 	protected Text fDefaultURLTextBox;
 
 	private PHPDebuggersTable table;
@@ -91,7 +87,7 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 	{
 		return PHPDebugUIMessages.PhpDebugPreferencePage_8;
 	}
-	
+
 	protected boolean hasLink()
 	{
 		return false;
@@ -106,14 +102,11 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 	protected Control createWorkspaceContents(Composite composite)
 	{
 		ScrolledCompositeImpl scrolledCompositeImpl = new ScrolledCompositeImpl(composite, SWT.V_SCROLL | SWT.H_SCROLL);
-		
-		
-		
 		Composite group = new Composite(scrolledCompositeImpl, SWT.NONE);
 		group.setLayout(new GridLayout());
 
 		Composite cm=new Composite(group,SWT.NONE);
-		
+
 		// Save dirty editors...
 		// Allow multiple debug sessions
 		FieldEditor edit = new RadioGroupFieldEditor(IPHPDebugCorePreferenceKeys.ALLOW_MULTIPLE_LAUNCHES,
@@ -132,7 +125,7 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 						{ PHPDebugUIMessages.PHPLaunchingPreferencePage_Prompt, MessageDialogWithToggle.PROMPT } },
 				cm, true);
 		this.fFieldEditors.add(edit);
-		
+
 		// Break on first line when an unknown remote session (JIT) is requested
 		edit = new RadioGroupFieldEditor(IPHPDebugCorePreferenceKeys.BREAK_ON_FIRST_LINE_FOR_UNKNOWN_JIT,
 				PHPDebugUIMessages.PHPLaunchingPreferencePage_breakOnFirstLineForUnknownJIT, 3, new String[][] {
@@ -141,7 +134,7 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 				{ PHPDebugUIMessages.PHPLaunchingPreferencePage_Prompt, MessageDialogWithToggle.PROMPT }},
 				cm, true);
 		this.fFieldEditors.add(edit);
-		
+
 		// Notify the user when a non-standard debug port is in use
 		edit = new RadioGroupFieldEditor(IPHPDebugCorePreferenceKeys.NOTIFY_NON_STANDARD_PORT,
 				PHPDebugUIMessages.PHPLaunchingPreferencePage_nofityNonStandardPortMessage, 2, new String[][] {
@@ -149,15 +142,14 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 				{ PHPDebugUIMessages.PHPLaunchingPreferencePage_Never, MessageDialogWithToggle.NEVER }},
 				cm, true);
 		this.fFieldEditors.add(edit);
-		
+
 		GridLayout gridLayout = new GridLayout(1,true);
 		gridLayout.marginLeft=3;
 		gridLayout.marginRight=3;
 		cm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		cm.setLayout(gridLayout);
 		this.initFieldEditors();
-		
-		
+
 		// Add the debuggers table
 		this.createDebuggersTable(group);
 		try
@@ -175,7 +167,7 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 		scrolledCompositeImpl.setContent(group);
 		return scrolledCompositeImpl;
 	}
-	
+
 	/**
      * Returns the preference store of this preference page.
      * <p>
@@ -189,7 +181,7 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
     protected IPreferenceStore doGetPreferenceStore() {
         return PHPDebugEPLPlugin.getDefault().getPreferenceStore();
     }
-	
+
 	private void initFieldEditors()
 	{
 		FieldEditor editor;
@@ -214,7 +206,6 @@ public class PHPDebugPropertyPreferencePage extends AbstractPHPPropertyPreferenc
 			((FieldEditor) this.fFieldEditors.get(i)).loadDefault();
 		}
 	}
-	
 
 	/*
 	 * (non-Javadoc)

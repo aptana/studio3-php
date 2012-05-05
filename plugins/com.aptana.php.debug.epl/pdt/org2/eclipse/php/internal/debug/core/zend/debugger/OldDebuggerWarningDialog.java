@@ -47,7 +47,7 @@ public class OldDebuggerWarningDialog extends Dialog {
 			+ "one expected by Zend Studio.  You should update the debugger component\n"
 			+ "on your server or some debugging features may not work properly!"
 		);
-		
+
 		Link link = new Link(composite, SWT.NONE);
 		link.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		link.setText("To download the latest version of Zend Debugger click <a>here</a>.");
@@ -77,7 +77,7 @@ public class OldDebuggerWarningDialog extends Dialog {
 				}
 			}
 		});
-		
+
 		final Button button = new Button(composite, SWT.CHECK);
 		button.setText("Don't show this message again.");
 		button.addSelectionListener(new SelectionAdapter() {

@@ -67,8 +67,8 @@ import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
 
 	public static final String INTERPRETERS_PREF_ID = "org2.eclipse.php.debug.ui.preferencesphps.PHPsPreferencePage"; //$NON-NLS-1$
-	
-	
+
+
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 
 		if (monitor.isCanceled()) {
@@ -77,7 +77,7 @@ public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDel
 		}
 
 		// PHPLaunchUtilities.showDebugViews();
-		
+
 		String phpExeString = configuration.getAttribute(IPHPDebugConstants.ATTR_EXECUTABLE_LOCATION, (String) null);
 		String phpIniString = configuration.getAttribute(IPHPDebugConstants.ATTR_INI_LOCATION, (String) null);
 		// get the exe, project name, file name
@@ -110,7 +110,7 @@ public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDel
 			displayErrorMessage(PHPDebugCoreMessages.XDebug_ExeLaunchConfigurationDelegate_1);
 			return;
 		}
-	
+
 		// resolve php exe location
 		final IPath phpExe = new Path(phpExeString);
 
@@ -134,7 +134,7 @@ public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDel
 			DebugPlugin.getDefault().getLaunchManager().removeLaunch(launch);
 			return;
 		}
-		
+
 		IPath projectLocation = project.getRawLocation();
 		if (projectLocation == null) {
 			projectLocation = project.getLocation();
@@ -148,7 +148,7 @@ public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDel
 //		if (phpScriptString.startsWith("/")) {
 //			phpFile = phpFile.removeFirstSegments(1);
 //		}
-		
+
 		// resolve the script location, but not relative to anything
 		IPath phpFile = scriptRes.getLocation();
 
@@ -202,12 +202,12 @@ public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDel
 				if (DBGpProxyHandler.instance.registerWithProxy() == false) {
 					displayErrorMessage(PHPDebugCoreMessages.XDebug_ExeLaunchConfigurationDelegate_2 + DBGpProxyHandler.instance.getErrorMsg());
 					DebugPlugin.getDefault().getLaunchManager().removeLaunch(launch);
-					return;					
+					return;
 				}
 			}
 			else {
 				ideKey = DBGpSessionHandler.getInstance().getIDEKey();
-			}			
+			}
 			target = new DBGpTarget(launch, phpFile.lastSegment(), ideKey, sessionID, stopAtFirstLine);
 			target.setPathMapper(PathMapperRegistry.getByLaunchConfiguration(configuration));
 			DBGpSessionHandler.getInstance().addSessionListener(target);
@@ -223,7 +223,7 @@ public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDel
 		//determine the working directory. default is the location of the script
 		IPath workingPath = phpFile.removeLastSegments(1);
 		File workingDir = workingPath.makeAbsolute().toFile();
-		
+
 		boolean found = false;
 		for (int i = 0; i < envVarString.length && !found; i++) {
 			String envEntity = envVarString[i];
@@ -239,7 +239,7 @@ public class XDebugExeLaunchConfigurationDelegate extends LaunchConfigurationDel
 		}
 
 		// Detect PHP SAPI type and thus where we need arguments
-		File phpExeFile = new File(phpExeString);		
+		File phpExeFile = new File(phpExeString);
 		String sapiType = null;
 		PHPexeItem[] items = PHPexes.getInstance().getAllItems();
 		for (PHPexeItem item : items) {

@@ -62,7 +62,7 @@ import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 	/** Constant value indicating if the current platform is Windows */
 	private static final boolean WINDOWS = java.io.File.separatorChar == '\\';
-	public static final String SAVE_AUTOMATICALLY = "save_automatically";
+	public static final String SAVE_AUTOMATICALLY = "save_automatically"; //$NON-NLS-1$
 	// private final static String UNTITLED_FOLDER_PATH = "Untitled_Documents";
 
 	protected Map<String, String> envVariables = null;
@@ -90,7 +90,7 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 			debuggerInitializer.initializeDebug(phpExeString, fileName, workingDir, query, envVariables, iniFileLocation);
 
 		} catch (java.io.IOException e1) {
-			Logger.logException("PHPDebugTarget: Debugger didn't find file to debug.", e1);
+			Logger.logException("PHPDebugTarget: Debugger didn't find file to debug.", e1); //$NON-NLS-1$
 			String errorMessage = PHPDebugCoreMessages.DebuggerFileNotFound_1;
 			throw new DebugException(new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, IPHPDebugConstants.INTERNAL_ERROR, errorMessage, e1));
 		}
@@ -110,14 +110,14 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 			monitor.done();
 			return;
 		}
-		
+
 		IProgressMonitor subMonitor; // the total of monitor is 100
 		if (monitor.isCanceled()) {
 			return;
 		}
-		
+
 		// PHPLaunchUtilities.showDebugViews();
-		
+
 		String phpExeString = configuration.getAttribute(IPHPDebugConstants.ATTR_EXECUTABLE_LOCATION, (String) null);
 		String phpIniPath = configuration.getAttribute(IPHPDebugConstants.ATTR_INI_LOCATION, (String) null);
 		String projectName = configuration.getAttribute(IPHPDebugConstants.ATTR_WORKING_DIRECTORY, (String) null);
@@ -125,17 +125,16 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 		String fileName = ScriptLocator.getScriptFile(configuration);
 		// SG: Aptana modification - Check if the script name is null due to external script or non-active script
 		if (fileName == null || fileName.length() == 0) {
-			displayErrorMessage("The script could not be launched. \nPlease make sure that the selected script exists in the workspace. \n" +
-				"In case you have selected to debug/run the current script, make sure that a PHP script is opened in the editor area.");
+			displayErrorMessage(Messages.PHPExecutableLaunchDelegate_invalidFileName);
 			return;
 		}
 		boolean runWithDebugInfo = configuration.getAttribute(IPHPDebugConstants.RUN_WITH_DEBUG_INFO, true);
-		
+
 		IProject project = null;
 		if (fileName == null){
 			fileName = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
 		}
-		if (fileName != null) { 
+		if (fileName != null) {
 			IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(fileName);
 			if (resource != null) {
 				project = resource.getProject();
@@ -147,16 +146,16 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 			return;
 		}
 
-		if (fileName == null || fileName.equals("")) {
+		if (fileName == null || fileName.equals("")) { //$NON-NLS-1$
 			PHPDebugEPLPlugin.logError(
-					"Please set a valid PHP executable for this launch.", 
-					new Exception("\nCould not launch the debug/run session for the given PHP file. \nPlease set a valid PHP file for this launch. \nNote that files external, non project, files are not supported."));
-			displayErrorMessage("Please set a valid PHP file for this launch.\nView the error log for more details.");
+					"Please set a valid PHP executable for this launch.",  //$NON-NLS-1$
+					new Exception("\nCould not launch the debug/run session for the given PHP file. \nPlease set a valid PHP file for this launch. \nNote that files external, non project, files are not supported.")); //$NON-NLS-1$
+			displayErrorMessage(Messages.PHPExecutableLaunchDelegate_launchedFileInvalid);
 			return;
 		}
 
 		if (phpExeString == null) {
-			displayErrorMessage("Please set a valid PHP executable for this launch.");
+			displayErrorMessage(Messages.PHPExecutableLaunchDelegate_phpExeStringMissingError);
 			return;
 		}
 
@@ -215,7 +214,7 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 
 			// Determine PHP configuration file location:
 			String phpConfigDir = phpExeFile.getParent();
-			if (phpIniLocation != null && !phpIniLocation.equals("")) {
+			if (phpIniLocation != null && !phpIniLocation.equals("")) { //$NON-NLS-1$
 				phpConfigDir = new File(phpIniLocation).getParent();
 			}
 
@@ -324,8 +323,8 @@ public class PHPExecutableLaunchDelegate extends LaunchConfigurationDelegate {
 	}
 
 	protected boolean saveBeforeLaunch(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
-		String filePath = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, "");
-		if ("".equals(filePath)) {
+		String filePath = configuration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, ""); //$NON-NLS-1$
+		if ("".equals(filePath)) { //$NON-NLS-1$
 			return super.saveBeforeLaunch(configuration, mode, monitor);
 		}
 //		IPath path = Path.fromOSString(filePath);

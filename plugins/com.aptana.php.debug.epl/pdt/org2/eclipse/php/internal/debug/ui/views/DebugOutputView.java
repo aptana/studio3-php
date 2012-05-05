@@ -113,7 +113,7 @@ public class DebugOutputView extends AbstractDebugView implements ISelectionList
      */
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 
-    	IPHPDebugTarget target = debugViewHelper.getSelectionElement(selection);
+        IPHPDebugTarget target = debugViewHelper.getSelectionElement(selection);
         update(target);
     }
 

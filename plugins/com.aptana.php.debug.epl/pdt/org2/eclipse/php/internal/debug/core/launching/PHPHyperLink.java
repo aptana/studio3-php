@@ -29,7 +29,7 @@ public class PHPHyperLink {
     }
 
     public HyperlinkEntry getHyperlinkEntry(String message) {
-    	if (fLinks != null) {
+        if (fLinks != null) {
 	        Object[] alinks = fLinks.toArray();
 	        for (Object element : alinks) {
 	            String linkMessage = ((HyperlinkEntry) element).getMessage();
@@ -37,7 +37,7 @@ public class PHPHyperLink {
 	                return ((HyperlinkEntry) element);
 	            }
 	        }
-    	}
+        }
         return null;
     }
 

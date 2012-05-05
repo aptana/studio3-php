@@ -51,7 +51,7 @@ public class PHPExeWizard extends FragmentedWizard implements INewWizard {
 	public boolean needsPreviousAndNextButtons() {
 		return false;
 	}
-	
+
 	private WizardFragment createRootFragment() {
 		WizardFragment fragment = new WizardFragment() {
 			WizardFragment[] children;

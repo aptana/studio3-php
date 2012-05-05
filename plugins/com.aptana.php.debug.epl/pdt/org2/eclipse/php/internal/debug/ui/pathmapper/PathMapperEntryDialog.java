@@ -59,13 +59,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
 import org2.eclipse.php.internal.core.project.IIncludePathEntry;
 import org2.eclipse.php.internal.core.project.options.PHPProjectOptions;
 import org2.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
-import org2.eclipse.php.internal.debug.core.pathmapper.VirtualPath;
 import org2.eclipse.php.internal.debug.core.pathmapper.PathEntry.Type;
+import org2.eclipse.php.internal.debug.core.pathmapper.VirtualPath;
 import org2.eclipse.php.internal.debug.ui.pathmapper.PathMapperEntryDialog.WorkspaceBrowseDialog.IPFile;
 import org2.eclipse.php.internal.ui.util.PixelConverter;
 import org2.eclipse.php.util.StatusInfo;
@@ -106,7 +105,7 @@ public class PathMapperEntryDialog extends StatusDialog {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(3, false));
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+
 		// Remote path text field:
 		Label label = new Label(composite, SWT.NONE);
 		label.setText("Path on &Server:");
@@ -164,7 +163,7 @@ public class PathMapperEntryDialog extends StatusDialog {
 			}
 		});
 
-		
+
 		applyDialogFont(composite);
 		initializeValues();
 
@@ -180,7 +179,7 @@ public class PathMapperEntryDialog extends StatusDialog {
 		}
 		setShellStyle(style);
 	}
-	
+
 	/**
 	 * Adds an example text label. 
 	 */
@@ -196,9 +195,9 @@ public class PathMapperEntryDialog extends StatusDialog {
 
 			public void widgetDisposed(DisposeEvent e)
 			{
-				smallFont.dispose();				
+				smallFont.dispose();
 			}
-			
+
 		});
 		GridData gds=new GridData(GridData.FILL_HORIZONTAL);
 		gds.horizontalSpan=2;
@@ -206,7 +205,7 @@ public class PathMapperEntryDialog extends StatusDialog {
 		gds.verticalAlignment=SWT.TOP;
 		banner.setLayoutData(gds);
 	}
-	
+
 	protected void initializeValues() {
 		if (fEditData != null) {
 			fServerPathText.setText(fEditData.remotePath.toString());
@@ -454,11 +453,11 @@ public class PathMapperEntryDialog extends StatusDialog {
 		 */
 		class LabelProvider implements ILabelProvider {
 			private WorkbenchLabelProvider workbenchLabelProvider;
-			
+
 			public LabelProvider() {
 				workbenchLabelProvider = new WorkbenchLabelProvider();
 			}
-			
+
 			public Image getImage(Object element) {
 				if (element instanceof IIncludePathEntry) {
 					IIncludePathEntry includePathEntry = (IIncludePathEntry) element;

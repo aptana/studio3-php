@@ -17,14 +17,14 @@ package org2.eclipse.php.internal.debug.core.resources;
  * @author shalom
  */
 public interface ExternalFilesRegistryListener {
-	
+
 	/**
 	 * Notifies that an external file was added to the external PHP files registry.
 	 * 
 	 * @param localPath	The String representation of the real File's path from file system
 	 */
 	public void externalFileAdded(String localPath);
-	
+
 	/**
 	 * Notifies that an external file was removed from the external PHP files registry.
 	 * 

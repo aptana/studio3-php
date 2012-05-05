@@ -21,12 +21,12 @@ public class ElementCreationProxy {
 	IConfigurationElement element;
 	String extensionPointName;
 	Object elementObject;
-	
+
 	public ElementCreationProxy(IConfigurationElement element, String extensionPointName) {
 		this.element = element;
 		this.extensionPointName = extensionPointName;
 	}
-	
+
 	public Object getObject() {
 		if (elementObject == null) {
 			SafeRunner.run(new SafeRunnable("Error creation " + element.getName() + "for extension-point " + extensionPointName) { //$NON-NLS-1$ //$NON-NLS-2$

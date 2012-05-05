@@ -114,7 +114,7 @@ public class LaunchConfigurationsTabsRegistry {
 				factories.add(tag);
 			}
 		}
-		
+
 		sortFragmentsByPlace();
 	}
 
@@ -132,7 +132,7 @@ public class LaunchConfigurationsTabsRegistry {
 				nonRootFragments.add(factory);
 			}
 		}
-		
+
 		// SG: Aptana modification - Fix the tabs registry sort
 		boolean orderChanged = false;
 		do {
@@ -206,14 +206,14 @@ public class LaunchConfigurationsTabsRegistry {
 		public String getGroupID() {
 			return groupId;
 		}
-		
+
 		public String getModes() {
 			if (modes == null) {
 				modes = "";
 			}
 			return modes;
 		}
-		
+
 		public boolean equals(Object other) {
 			if (other == this) {
 				return true;

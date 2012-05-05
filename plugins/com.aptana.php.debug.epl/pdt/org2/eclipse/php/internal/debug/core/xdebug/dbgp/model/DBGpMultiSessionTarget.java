@@ -93,7 +93,7 @@ public class DBGpMultiSessionTarget extends DBGpElement implements IPHPDebugTarg
 	private ArrayList<DBGpTarget> debugTargets = new ArrayList<DBGpTarget>();
 
 	private PathMapper pathMapper;
-	
+
 	private DebugOutput debugOutput = new DebugOutput();
 
 	/**
@@ -355,7 +355,7 @@ public class DBGpMultiSessionTarget extends DBGpElement implements IPHPDebugTarg
 			terminateMultiSessionDebugTarget();
 		}
 	}
-	
+
 	public void sessionReceived(DBGpBreakpointFacade facade, DBGpPreferences sessionPrefs, DBGpTarget owningTarget, PathMapper globalMapper) {
 		bpFacade = facade;
 		sessionPreferences = sessionPrefs;
@@ -365,7 +365,7 @@ public class DBGpMultiSessionTarget extends DBGpElement implements IPHPDebugTarg
 		launch.addDebugTarget(owningTarget);
 		owningTarget.sessionReceived(facade, sessionPrefs);
 	}
-		
+
 
 	public boolean SessionCreated(DBGpSession session) {
 		synchronized (debugTargets) {
@@ -392,7 +392,7 @@ public class DBGpMultiSessionTarget extends DBGpElement implements IPHPDebugTarg
 		}
 		return true;
 	}
-	
+
 	public void addDebugTarget(DBGpTarget target) {
 		synchronized (debugTargets) {
 			debugTargets.add(target);

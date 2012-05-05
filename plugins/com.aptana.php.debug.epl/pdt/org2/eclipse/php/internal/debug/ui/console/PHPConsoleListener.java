@@ -41,7 +41,7 @@ public class PHPConsoleListener implements IPHPConsoleEventListener {
 		int lineNumber = debugError.getLineNumber();
 		return new PHPFileLink(fileName, -1, -1, lineNumber);
 	}
-	
+
 	/* OLD CODE 
 	 protected IHyperlink createLink(DebugError debugError) {
 		IHyperlink fileLink = null;

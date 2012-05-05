@@ -41,7 +41,6 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.internal.core.LaunchManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-
 import org2.eclipse.php.debug.core.debugger.handlers.IDebugMessageHandler;
 import org2.eclipse.php.debug.core.debugger.handlers.IDebugRequestHandler;
 import org2.eclipse.php.debug.core.debugger.messages.IDebugMessage;
@@ -644,7 +643,7 @@ public class DebugConnectionThread implements Runnable {
 			return;
 		}
 		boolean runWithDebugInfo = launchConfiguration.getAttribute(IPHPDebugConstants.RUN_WITH_DEBUG_INFO, true);
-		
+
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = null;
 		String file = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_FILE, (String) null);
@@ -667,7 +666,7 @@ public class DebugConnectionThread implements Runnable {
 			IFile fileToDebug = (IFile) res;
 			debugFileName = fileToDebug.getName();
 		}
-		
+
 		boolean stopAtFirstLine = PHPProjectPreferences.getStopAtFirstLine(project);
 		int requestPort = PHPDebugEPLPlugin.getDebugPort(DebuggerCommunicationDaemon.ZEND_DEBUGGER_ID);
 
@@ -713,7 +712,7 @@ public class DebugConnectionThread implements Runnable {
 			inWork = true;
 			shouldExit = false;
 		}
-		
+
 		public void start() {
 			theThread = new Thread(this);
 			// This makes the printing much faster.
@@ -858,9 +857,9 @@ public class DebugConnectionThread implements Runnable {
 
 								DebugSessionStartedNotification sessionStartedMessage = (DebugSessionStartedNotification) newInputMessage;
 								isDebugConnectionTest = isDebugConnectionTest(sessionStartedMessage);
-								
+
 								if (isDebugConnectionTest) {// This is a test...
-									
+
 									String sourceHost = DebugConnectionThread.this.socket.getInetAddress().getHostAddress(); //$NON-NLS-1$
 									// Notify succcess
 									if (verifyProtocolID(sessionStartedMessage.getServerProtocolID())) {
@@ -1029,7 +1028,7 @@ public class DebugConnectionThread implements Runnable {
 			inWork = true;
 			isAlive = true;
 		}
-		
+
 		public void start() {
 			theThread = new Thread(this);
 			theThread.start();

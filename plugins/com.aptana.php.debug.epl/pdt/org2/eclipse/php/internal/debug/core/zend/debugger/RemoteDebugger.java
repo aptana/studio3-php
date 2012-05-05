@@ -99,7 +99,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 	 * for doing on-demand path mapping, and for sending breakpoints for the next file.
 	 */
 	public static final int PROTOCOL_ID_2006040703 = 2006040703;
-	
+
 	/**
 	 * New protocol ID from 04/2008 which provides two new message types:
 	 * {@link GetCWDRequest} allows to ask Debugger to return current working directory,
@@ -110,7 +110,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 	 * Latest protocol ID
 	 */
 	public static final int PROTOCOL_ID_LATEST = PROTOCOL_ID_2006040705;
-	
+
 
 	private static final String EVAL_ERROR = "[Error]"; //$NON-NLS-1$
 
@@ -170,7 +170,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 	public void handlePeerResponseTimeout() {
 		debugHandler.connectionTimedout();
 	}
-	
+
 	public boolean canDo(int feature) {
 		switch (feature) {
 			case START_PROCESS_FILE_NOTIFICATION:
@@ -181,7 +181,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Asks Debug server for a current working directory (old way)
 	 * @return current working directory, or <code>null</code> in case of error
@@ -198,7 +198,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Asks Debug server for a current working directory (new way)
 	 * @return current working directory, or <code>null</code> in case of error
@@ -211,7 +211,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		}
 		return null;
 	}
-	
+
 	public String getCWD() {
 		if (cachedCWD == null || !canDo(START_PROCESS_FILE_NOTIFICATION)) {
 			if (canDo(GET_CWD)) {
@@ -222,11 +222,11 @@ public class RemoteDebugger implements IRemoteDebugger {
 		}
 		return cachedCWD;
 	}
-	
+
 	public void removeCWDCache() {
 		cachedCWD = null;
 	}
-	
+
 	/**
 	 * Returns local path corresponding to the current working directory of the PHP script,
 	 * which is currently running.
@@ -235,7 +235,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 	 */
 	public String getCurrentWorkingDirectory() {
 		PHPDebugTarget debugTarget = debugHandler.getDebugTarget();
-		
+
 		String cwd = getCWD();
 		if (cwd != null) {
 			PathMapper pathMapper = PathMapperRegistry.getByLaunchConfiguration(debugTarget.getLaunch().getLaunchConfiguration());
@@ -300,7 +300,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		if (debugTarget.getContextManager().isResolveBlacklisted(remoteFile)) {
 			return remoteFile;
 		}
-		
+
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
 		// check if this file is already local
@@ -310,7 +310,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 
 		// If we are running local debugger, check if "remote" file exists and return it if it does
 		if (debugTarget.isPHPCGI() && new File(remoteFile).exists()) {
-			
+
 			IFile wsFile = null;
 			IPath location = new Path(remoteFile); 
 			IProject[] projects = workspace.getRoot().getProjects();
@@ -337,7 +337,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 					break;
 				}
 			}
-			
+
 			if (wsFile != null) {
 				return wsFile.getFullPath().toString();
 			} else {
@@ -709,7 +709,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		} catch (CoreException ce) {
 			return false;
 		}
-		
+
 		StartRequest request = new StartRequest();
 		try {
 			connection.sendRequest(request, new ThisHandleResponse(responseHandler));
@@ -994,7 +994,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Synchronic getCallStack Returns the Stack layer with no variables information.
 	 */
@@ -1011,7 +1011,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		}
 		return getCallStackHeavy();
 	}
-		
+
 	/**
 	 * Synchronic getCallStack Returns the Stack layer.
 	 */
@@ -1032,7 +1032,7 @@ public class RemoteDebugger implements IRemoteDebugger {
 		convertToSystem(remoteStack);
 		return remoteStack;
 	}
-	
+
 	/**
 	 * Synchronic getCallStack Returns the Stack layer without function parameters.
 	 * @deprecated

@@ -111,7 +111,7 @@ public class PHPExecutableDebuggerInitializer {
 
 			// Make sure that we have executable permissions on the file.
 			FileUtils.setExecutablePermissions(new File(phpCmdArray[0]));
-			
+
 			if (PHPDebugEPLPlugin.DEBUG) {
 				System.out.println ("Executing: " + Arrays.toString(phpCmdArray));
 				System.out.println ("Process environment: " + Arrays.toString(environmetVars));
@@ -153,7 +153,7 @@ public class PHPExecutableDebuggerInitializer {
 			}
 		}
 	}
-	
+
 	class ProcessCrashDetector2 extends ProcessCrashDetector {
 
 		private ILaunch launch;
@@ -162,10 +162,10 @@ public class PHPExecutableDebuggerInitializer {
 			super(p);
 			this.launch = launch;
 		}
-		
+
 		public void run() {
 			super.run();
-			
+
 			// In case this thread ended and we do not have any IDebugTarget (PHPDebugTarget) hooked in the
 			// launch that was created, we can tell that there is something wrong, and probably there is no debugger
 			// installed (e.g. the debugger dll/so is not properly configured in the php.ini).

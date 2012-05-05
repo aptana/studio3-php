@@ -118,7 +118,7 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 	 * @see org.eclipse.debug.core.model.IVariable#hasValueChanged()
 	 */
 	public boolean hasValueChanged() throws DebugException {
-		// this is a GUI facility to show if a variable has changed since the 
+		// this is a GUI facility to show if a variable has changed since the
 		// last suspend. If you always return false, it doesn't highlight in the variables
 		// view. A future facility.
 		return false;
@@ -137,7 +137,7 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 			//setValue called, but verifyValue failed
 			Status stat = new Status(Status.WARNING, PHPDebugEPLPlugin.PLUGIN_ID, 0, PHPDebugCoreMessages.XDebug_DBGpVariable_0, null);
 			throw new DebugException(stat);
-			//DebugUIPlugin.errorDialog(Display.getDefault().getActiveShell(), ActionMessages.AssignValueAction_2, MessageFormat.format(ActionMessages.AssignValueAction_3, new String[] {expression, name}), new StatusInfo(IStatus.ERROR, ActionMessages.AssignValueAction_4));  //           
+			//DebugUIPlugin.errorDialog(Display.getDefault().getActiveShell(), ActionMessages.AssignValueAction_2, MessageFormat.format(ActionMessages.AssignValueAction_3, new String[] {expression, name}), new StatusInfo(IStatus.ERROR, ActionMessages.AssignValueAction_4));  
 		} else {
 			// attempt to set the property
 			if (((DBGpTarget) getDebugTarget()).setProperty(this, expression)) {
@@ -158,7 +158,7 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 		// assume never called unless supportsValueModification is true
 		setValue(xvalue.getValueString());
 	}
-	
+
 	/**
 	 * replaces this variable's underlying value, but does not send it to the application
 	 * this is useful if we have obtained a value containing more data than the original
@@ -199,8 +199,7 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 //	public String getAddress() {
 //		return address;
 //	}
-	
-	
+
 	/*
 	// implement equals and hashcode to all the viewer to determine if a variable has changed.
 	public boolean equals(Object obj) {
@@ -213,20 +212,18 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 		}
 		DBGpVariable variable = (DBGpVariable)obj;
 
-		
-		
+
 		if (!variable.getDebugTarget().equals(getDebugTarget())) {
 			DBGpLogger.debug(obj.getClass().getName() + " not the right DEBUG TARGET");			
 			return false;
 		}
 
 		DBGpLogger.debug("DBGpVariable equals:" + getFullName() + "=" + variable.getFullName());		
-		
+
 		if (!variable.getFullName().equals(this.getFullName())) {
 			return false;
 		}
 
-		
 		IValue myValue = null;
 		IValue otherValue = null;
 		try {
@@ -235,12 +232,12 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 			DBGpLogger.debug("DBGpVariable equals:" + myValue.getValueString() + "=" + otherValue.getValueString());
 		} catch (DebugException e) {
 		}
-				
+
 		if (myValue == otherValue || (myValue != null && myValue.equals(otherValue))) {
-			DBGpLogger.debug("DBGpVariable is EQUAL");			
+			DBGpLogger.debug("DBGpVariable is EQUAL");
 			return true;
 		}
-		DBGpLogger.debug("DBGpVariable is NOT EQUAL");					
+		DBGpLogger.debug("DBGpVariable is NOT EQUAL");
 		return false;
 	}
 
@@ -248,6 +245,6 @@ public class DBGpVariable extends DBGpBaseVariable implements IVariable {
 		int varHash = getDebugTarget().hashCode() + value.hashCode() + getFullName().hashCode();
 		DBGpLogger.debug("DBGpVariable hashcode:" + getFullName() + "=" + varHash);		
 		return varHash;
-	}	
+	}
     */
 }

@@ -151,14 +151,14 @@ public class Base64 {
 	private Base64() {
 
 	}
-	
+
 	//TODO: not a great way to do this, should work with chars not bytes.
 	//We convert utf-16 to ASCII and create conversion tables based on ASCII code points
 	private static final String INTERNAL_ENCODING = "ASCII";
 
 	private static String base64CharSetSequence = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-	// Table to convert a number from 0-64 to an (Base64) ASCII byte equivalent 
+	// Table to convert a number from 0-64 to an (Base64) ASCII byte equivalent
 	private static byte[] valToBase64CharTable;
 
 	// Table to convert an ascii byte to the Base64 number equivalent
@@ -169,7 +169,7 @@ public class Base64 {
 			valToBase64CharTable = base64CharSetSequence.getBytes(INTERNAL_ENCODING);
 		} catch (UnsupportedEncodingException e) {
 		}
-		
+
 		base64ToValTable = new int[256];
 		for (int i = 0; i < 256; i++) {
 			base64ToValTable[i] = -1;
@@ -193,14 +193,14 @@ public class Base64 {
 		return result;
 
 	}
-	
+
 	public static String encode(byte[] input) {
-		byte[] result = encodeToBytes(input);;		
+		byte[] result = encodeToBytes(input);
 		String strResult = null;
 		try {
-			strResult = new String(result, INTERNAL_ENCODING);			
+			strResult = new String(result, INTERNAL_ENCODING);
 		} catch (UnsupportedEncodingException e) {
-			strResult = new String(result);			
+			strResult = new String(result);
 		}
 		return strResult;		
 	}
@@ -215,10 +215,7 @@ public class Base64 {
 		byte[] result = decode(byteInput);		
 		return result;		
 	}
-	
-	
-	
-	
+
 	private static byte[] encodeToBytes(byte[] input) {
 		int outsize = input.length / 3 * 4;
 		if (input.length % 3 != 0) {
@@ -266,7 +263,7 @@ public class Base64 {
 		}
 		return encoded;
 	}
-	
+
 	/**
 	 * decode a base64 stream.
 	 * 
@@ -282,7 +279,7 @@ public class Base64 {
 		// padding) will result in at most an extra 2 decoded
 		// bytes
 		int outsize = input.length / 4 * 3;
-		
+
 		// if we have a dodgy stream (ie not multiples of 4 bytes)
 		// we will attempt to cater for this.
 		if (input.length % 4 != 0) {
@@ -315,7 +312,7 @@ public class Base64 {
 		int decodepos = 0;
 		for (int i = 0; i < input.length; i++) {
 	    	 // Get byte value and mask of any sign bit if byte > 0x7F
-	    	 int byteVal = (int) input[i] & 0xFF;			
+	    	 int byteVal = (int) input[i] & 0xFF;
 			if (base64ToValTable[byteVal] == -1) {
 				continue;
 			} else {
@@ -362,7 +359,7 @@ public class Base64 {
 		}
 
 		return finalDecoded;
-	}	
+	}
 
 //	private static byte[] decode(byte[] input) {
 //		int outsize = input.length;
@@ -394,7 +391,7 @@ public class Base64 {
 //
 //		for (int i = 0; i < input.length; i++) {
 //	    	 // Get byte value and mask of any sign bit if byte > 0x7F
-//	    	 int byteVal = (int) input[i] & 0xFF;						
+//	    	 int byteVal = (int) input[i] & 0xFF;
 //			if (base64ToValTable[byteVal] == -1) {
 //				continue;
 //			} else {

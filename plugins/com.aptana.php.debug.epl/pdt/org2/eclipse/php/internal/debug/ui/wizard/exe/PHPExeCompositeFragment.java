@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-
 import org2.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 import org2.eclipse.php.internal.debug.core.preferences.PHPDebuggersRegistry;
 import org2.eclipse.php.internal.debug.ui.PHPDebugUIImages;
@@ -225,7 +224,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		TabFolder settings=new TabFolder(parent,SWT.NONE);
 		//creating ini editor group
 		TabItem iniEditorTab=new TabItem(settings,SWT.NONE);
-		iniEditorTab.setText("PHP Ini File Editor");		
+		iniEditorTab.setText("PHP Ini File Editor");
 		Composite iniEditorGroup = new Composite(settings, SWT.NONE);
 		iniEditorTab.setControl(iniEditorGroup);
 		GridData grdata = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
@@ -239,7 +238,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		Control iniEditorControl = iniEditor.createControl(iniEditorGroup);
 		iniEditorControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		parent.layout();
-		
+
 		this.init();
 		this.createFieldListeners();
 		this.validate();
@@ -332,7 +331,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 					openError("Error", message, e);
 				}
 			}
-			
+
 			String debuggerID = phpExeItem.getDebuggerID();
 			this.fDebuggers.setEnabled(phpExeItem.isEditable());
 			this.fDebuggersLabel.setEnabled(phpExeItem.isEditable());
@@ -453,7 +452,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		phpExeItem.setDebuggerID(this.debuggersIds.get(this.fDebuggers.getSelectionIndex()));
 		phpExeItem.setINILocation(iniFile);
 		this.setMessage(this.getDescription(), IMessageProvider.NONE);
-		
+
 		if (iniEditor != null)
 		{
 			if (iniLocationName.trim() != null && !"".equals(iniLocationName.trim()))
@@ -481,10 +480,10 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 				iniEditor.disable();
 			}
 		}
-		
+
 		this.controlHandler.update();
 	}
-	
+
 	protected void setMessage(String message, int type)
 	{
 		this.controlHandler.setMessage(message, type);
@@ -509,7 +508,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		}
 		return true;
 	}
-	
+
 	private void openError(final String title, final String error, final Throwable t)
 	{
 		Display.getDefault().asyncExec(new Runnable() {
@@ -521,7 +520,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 			}
 		});
 	}
-	
+
 	private boolean isPermissionProblem(Throwable t)
 	{
 		if (t instanceof FileNotFoundException)

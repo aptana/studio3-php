@@ -19,7 +19,7 @@ public interface XDebugUIAttributeConstants {
 	public static final String XDEBUG_PREF_SHOWSUPERGLOBALS = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_showSuperGlobals";
 	public static final String XDEBUG_PREF_ARRAYDEPTH = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_arrayDepth";
 	public static final String XDEBUG_PREF_MULTISESSION = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_multisession";
-	
+
 
 	// launch id constants
 	/*

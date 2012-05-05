@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper.Mapping;
 import org2.eclipse.php.internal.core.util.ScrolledCompositeImpl;
@@ -65,20 +64,20 @@ public class PathMapperCompositeFragment extends CompositeFragment {
 		ScrolledCompositeImpl scrolledComposite = new ScrolledCompositeImpl(this, SWT.H_SCROLL | SWT.V_SCROLL);
 		GridData data = new GridData(GridData.FILL_BOTH);
 		scrolledComposite.setLayoutData(data);
-		
+
 		pathMapperComposite = new PathMappingComposite(scrolledComposite, SWT.NONE);
 		data = new GridData(GridData.FILL_BOTH);
 		pathMapperComposite.setLayoutData(data);
-		
+
 		scrolledComposite.setContent(pathMapperComposite);
 		scrolledComposite.setLayout(new GridLayout());
 		scrolledComposite.setFont(this.getFont());
-		
+
 		Point size = pathMapperComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		scrolledComposite.setMinSize(size.x, size.y);
 		data = new GridData(GridData.FILL_BOTH);
 		scrolledComposite.setLayoutData(data);
-		
+
 		Dialog.applyDialogFont(this);
 		init();
 		validate();
@@ -94,7 +93,7 @@ public class PathMapperCompositeFragment extends CompositeFragment {
 			pathMapperComposite.addPropertyChangeListener(listener);
 		}
 	}
-	
+
 	/**
 	 * Remove a property change listener.
 	 * @param listener
@@ -104,7 +103,7 @@ public class PathMapperCompositeFragment extends CompositeFragment {
 			pathMapperComposite.removePropertyChangeListener(listener);
 		}
 	}
-	
+
 	protected void init() {
 		if (pathMapperComposite == null || pathMapperComposite.isDisposed()) {
 			return;

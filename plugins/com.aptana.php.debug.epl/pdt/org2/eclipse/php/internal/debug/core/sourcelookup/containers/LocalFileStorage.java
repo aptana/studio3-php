@@ -81,7 +81,7 @@ public class LocalFileStorage extends PlatformObject implements IStorage {
         try {
             return new Path(getFile().getCanonicalPath());
         } catch (IOException e) {
-        	PHPDebugEPLPlugin.logError("IO exception", e);
+            PHPDebugEPLPlugin.logError("IO exception", e);
             return null;
         }
     }
@@ -161,7 +161,7 @@ public class LocalFileStorage extends PlatformObject implements IStorage {
         try {
             fIncBaseDirName = new File(incDirName).getCanonicalPath();
         } catch (IOException e) {
-        	PHPDebugEPLPlugin.logError("IO exception", e);
+            PHPDebugEPLPlugin.logError("IO exception", e);
         }
     }
 

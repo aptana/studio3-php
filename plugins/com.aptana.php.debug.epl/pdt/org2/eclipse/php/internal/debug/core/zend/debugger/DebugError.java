@@ -140,7 +140,7 @@ public class DebugError implements Cloneable {
 		}
 		return fileName;
 	}
-	
+
 	/**
 	 * Returns the full path of the file
 	 * @return

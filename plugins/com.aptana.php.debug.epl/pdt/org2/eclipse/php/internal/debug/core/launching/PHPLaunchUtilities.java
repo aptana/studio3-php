@@ -166,7 +166,7 @@ public class PHPLaunchUtilities
 		ISecurePreferences node = root.node(IPHPDebugConstants.SSH_TUNNEL_SECURE_PREF_NODE + hostPath);
 		return node;
 	}
-	
+
 	/**
 	 * Returns true if the is at least one active PHP debug session.
 	 * 
@@ -1296,7 +1296,7 @@ public class PHPLaunchUtilities
 	{
 		return browserSupport.createBrowser(browserStyle, "PHPDebuggerBrowser", browserTitle, browserTitle);
 	}
-	
+
 	/**
 	 * open the internal browser view if you can
 	 * 
@@ -1373,7 +1373,7 @@ public class PHPLaunchUtilities
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a SSHTunnel instance in case defined in the given launch configuration.
 	 * The returned SSHTunnel may be null in case the given configuration is not defined to use one.

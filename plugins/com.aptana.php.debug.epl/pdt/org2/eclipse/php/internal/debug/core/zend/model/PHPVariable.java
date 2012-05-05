@@ -163,15 +163,15 @@ public class PHPVariable extends PHPDebugElement implements IVariable {
 			return false;
 		}
 		PHPVariable variable = (PHPVariable)obj;
-		
+
 		if (!variable.getDebugTarget().equals(getDebugTarget())) {
 			return false;
 		}
-		
+
 		if (!variable.variable.getFullName().equals(this.variable.getFullName())) {
 			return false;
 		}
-		
+
 		IValue myValue = null;
 		IValue otherValue = null;
 		try {

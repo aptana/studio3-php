@@ -25,7 +25,7 @@ import com.aptana.php.debug.core.preferences.PHPDebugPreferencesUtil;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 @SuppressWarnings("nls")
 public class XDebugPreferenceMgr {
-	
+
 	// general
 	public static final String XDEBUG_PREF_PORT = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_port";
 	public static final String XDEBUG_PREF_SHOWSUPERGLOBALS = PHPDebugEPLPlugin.PLUGIN_ID + ".xdebug_showSuperGlobals";
@@ -44,23 +44,23 @@ public class XDebugPreferenceMgr {
 	public static enum AcceptRemoteSession {
 		off, localhost, any, prompt
 	}
-	
-	public static final String[] remoteSessionOptions = {PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_off, 
-		PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_localhost, 
-		PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_any,
-		PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_prompt};		
 
-	
-	
+	public static final String[] remoteSessionOptions = {PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_off,
+		PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_localhost,
+		PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_any,
+		PHPDebugCoreMessages.XDebugConfigurationDialog_remoteSessionOption_prompt};
+
+
+
 	//just happens to match DBGp values so no conversion to DBGp Preferences required.
 	public static enum CaptureOutput {
 		off, copy, redirect
 	}
-	
+
 	public static final String[] captureOutputOptions =  {PHPDebugCoreMessages.XDebugConfigurationDialog_capture_off,
 		PHPDebugCoreMessages.XDebugConfigurationDialog_capture_copy, 
 		PHPDebugCoreMessages.XDebugConfigurationDialog_capture_redirect};
-	
+
 
 	public static void setDefaults() {
 		IEclipsePreferences prefs = new DefaultScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
@@ -76,11 +76,11 @@ public class XDebugPreferenceMgr {
 
 		//Proxy config doesn't need its default values set here.
 	}
-	
+
 	public static void applyDefaults(IEclipsePreferences preferences) {
 		IPreferencesService service = Platform.getPreferencesService();
 		IScopeContext[] defaultContext = new IScopeContext[] { new DefaultScope() };
-		
+
 		preferences.putInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, service.getInt(PHPDebugEPLPlugin.PLUGIN_ID,
 				XDebugPreferenceMgr.XDEBUG_PREF_PORT, getPortDefault(), defaultContext));
 		preferences.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, service.getBoolean(
@@ -108,7 +108,7 @@ public class XDebugPreferenceMgr {
 		preferences.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_PROXY, service.getBoolean(PHPDebugEPLPlugin.PLUGIN_ID,
 				XDebugPreferenceMgr.XDEBUG_PREF_PROXY, false, defaultContext));
 	}
-	
+
 	/**
 	 * create the DBGp preferences from the UI preferences.
 	 * <ul>
@@ -126,24 +126,24 @@ public class XDebugPreferenceMgr {
 		}
 		sessionPrefs.setValue(DBGpPreferences.DBGP_MAX_DEPTH_PROPERTY, maxDepth);
 
-		int maxChildren = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, getChildrenDefault());		
+		int maxChildren = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CHILDREN, getChildrenDefault());
 		sessionPrefs.setValue(DBGpPreferences.DBGP_MAX_CHILDREN_PROPERTY, maxChildren);
-		
+
 		boolean getSuperGlobals = PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_SHOWSUPERGLOBALS, showSuperGlobalsDefault());
 		sessionPrefs.setValue(DBGpPreferences.DBGP_SHOW_GLOBALS_PROPERTY, getSuperGlobals);
-		
+
 		//ui stored values are identical to DBGp expected values so no need to convert
 		int captureStdout = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDOUT, getCaptureDefault());
 		sessionPrefs.setValue(DBGpPreferences.DBGP_CAPTURE_STDOUT_PROPERTY, captureStdout);
-		
-		int captureStderr = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, getCaptureDefault());		
+
+		int captureStderr = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_CAPTURESTDERR, getCaptureDefault());
 		sessionPrefs.setValue(DBGpPreferences.DBGP_CAPTURE_STDERR_PROPERTY, captureStderr);
-		
+
 		return sessionPrefs;
-		
-		
+
+
 	}
-	
+
 	// provide easy access to the preferences which are not DBGp Session preferences.
 	public static int getPort() {
 		return PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_PORT, getPortDefault());
@@ -161,15 +161,15 @@ public class XDebugPreferenceMgr {
 			PHPDebugEPLPlugin.logError(e);
 		}
 	}	
-	
+
 	public static boolean useMultiSession() {
 		return PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_MULTISESSION, useMultiSessionDefault());
 	}
-	
+
 	public static boolean useProxy() {
 		return PHPDebugPreferencesUtil.getBoolean(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, false);
 	}
-	
+
 	public static void setUseProxy(boolean newState) {
 		IEclipsePreferences prefs = new InstanceScope().getNode(PHPDebugEPLPlugin.PLUGIN_ID);
 		prefs.putBoolean(XDebugPreferenceMgr.XDEBUG_PREF_USEPROXY, newState);
@@ -182,18 +182,18 @@ public class XDebugPreferenceMgr {
 			PHPDebugEPLPlugin.logError(e);
 		}
 	}
-	
+
 	public static AcceptRemoteSession getAcceptRemoteSession() {
 		int rSess = PHPDebugPreferencesUtil.getInt(XDebugPreferenceMgr.XDEBUG_PREF_REMOTESESSION,
 				getAcceptRemoteSessionDefault());
 		return AcceptRemoteSession.values()[rSess];
 	}
-	
+
 	//the defaults for the UI preferences
 	private static int getDepthDefault() {
 		return DBGpPreferences.DBGP_MAX_DEPTH_DEFAULT;
 	}
-	
+
 	private static int getChildrenDefault() {
 		return DBGpPreferences.DBGP_MAX_CHILDREN_DEFAULT;
 	}
@@ -205,24 +205,21 @@ public class XDebugPreferenceMgr {
 	private static boolean showSuperGlobalsDefault() {
 		return DBGpPreferences.DBGP_SHOW_GLOBALS_DEFAULT;
 	}
-	
+
 	private static int getCaptureDefault() {
 		// we use the UI definition here as it would be mapped
 		// if required to the appropriate DBGp Value.
 		return CaptureOutput.copy.ordinal();
 	}
-	
-	
+
+
 	private static boolean useMultiSessionDefault() {
 		// this is not a DBGp property.
 		return false;
 	}
-	
+
 	private static int getAcceptRemoteSessionDefault() {
 		// this is not a DBGp property
 		return AcceptRemoteSession.localhost.ordinal();
 	}
-	
-
-
 }

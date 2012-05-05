@@ -86,7 +86,7 @@ public class DBGpSession {
 			DBGpCmd = new DBGpCommand(DBGpSocket);
 			DBGpReader = new DataInputStream(DBGpSocket.getInputStream());
 			sessionActive = true;
-			
+
 			//TODO: Could look at supporting a timeout here.
 			byte[] response = readResponse();
 			if (response != null) {
@@ -109,12 +109,12 @@ public class DBGpSession {
 					isGood = true;
 				}
 				else {
-					DBGpLogger.logError("Init response not received. XML=" + parsedResponse.getRawXML(), this, null);				
-					//TODO: dialog box up					
+					DBGpLogger.logError("Init response not received. XML=" + parsedResponse.getRawXML(), this, null);
+					//TODO: dialog box up
 				}
 			}
 			else {
-				DBGpLogger.logError("Unexpected null from readResponse waiting for Init", this, null);								
+				DBGpLogger.logError("Unexpected null from readResponse waiting for Init", this, null);
 			}
 			if (!isGood) {
 				endSession();
@@ -187,7 +187,7 @@ public class DBGpSession {
 			Event idev = new Event();
 			Integer idObj = new Integer(id);
 			savedResponses.put(idObj, idev);
-	
+
 			try {
 				DBGpCmd.send(cmd, arguments, id, sessionEncoding);
 				idev.waitForEvent(); // wait forever
@@ -235,21 +235,21 @@ public class DBGpSession {
 			while (sessionActive) {
 				// here we need to block waiting for a response
 				// then process that response
-				
+
 				try {
 					response = readResponse();
 					if (response != null) {
 						DBGpResponse parsedResponse = new DBGpResponse();
 						parsedResponse.parseResponse(response);
 						int respErrorCode = parsedResponse.getErrorCode(); 
-						
+
 						// we have a received something back from the debuggee so first
 						// we try to process a stop or break async response, even if the
 						// response was invalid.
 						if (respErrorCode == DBGpResponse.ERROR_OK || 
 							respErrorCode == DBGpResponse.ERROR_INVALID_RESPONSE) {
 							int respType = parsedResponse.getType(); 
-							
+
 							if ( respType == DBGpResponse.RESPONSE) {
 								if (parsedResponse.getStatus().equals(DBGpResponse.STATUS_STOPPED)) {
 									handleStopStatus(parsedResponse);
@@ -265,7 +265,7 @@ public class DBGpSession {
 								DBGpLogger.logWarning("Unknown type of XML: " + response, DBGpSession.this, null);
 							}
 						}
-						
+
 						// unblock any Sync caller who might be waiting regardless of what we got back
 						unblockSyncCaller(parsedResponse);
 					}
@@ -273,7 +273,7 @@ public class DBGpSession {
 				catch (Throwable t) {
 					DBGpLogger.logException("Unexpected exception. Terminating the debug session", this, t);
 					endSession(); // end the session to exit the response loop.
-					
+
 					// send a dummy response back to unblock the target. It will know that the session has
 					// ended, but the dummy response will allow it to exit its current method.
 					DBGpResponse dummy = new DBGpResponse();
@@ -315,7 +315,7 @@ public class DBGpSession {
 			}
 			if (savedResponses.containsKey(idObj)) {
 				postAndSignalCaller(idObj, parsedResponse);
-				
+
 			} else {
 				// no one waiting for the response, so we need to check the response was
 				// ok and generate log info. This could have been a response to an async
@@ -332,10 +332,10 @@ public class DBGpSession {
 				// been done (maybe from unblockAllCallers)
 				Event idev = (Event) responder;
 				savedResponses.put(idObj, parsedResponse);
-				idev.signalEvent();					
+				idev.signalEvent();
 			}
 		}
-		
+
 		private void unblockAllCallers(DBGpResponse parsedResponse) {
 			Set keys = savedResponses.keySet();
 			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
@@ -361,18 +361,18 @@ public class DBGpSession {
 			String data = parsedResponse.getStreamData();
 			if (data != null) {
 				byte[] streamData = Base64.decode(data);
-				
+
 				String streamStr;
 				try {
 					streamStr = new String(streamData, outputEncoding);
 				} catch (UnsupportedEncodingException e) {
 					DBGpLogger.logException("invalid encoding: " + outputEncoding, this, e);
-					streamStr = new String(streamData);					
+					streamStr = new String(streamData);
 				}
 				debugTarget.getOutputBuffer().append(streamStr);
 			}
 		}
-		
+
 		private void handleStoppingStatus(DBGpResponse parsedResponse) {
 			//For the moment we will ignore the reason and just stop.
 			DBGpResponse stoppedResponse = sendSyncCmdOnResponseThread(DBGpCommand.stop, null);
@@ -381,7 +381,7 @@ public class DBGpSession {
 			}
 			else {
 				// log a problem but still stop
-				handleStopStatus(stoppedResponse);				
+				handleStopStatus(stoppedResponse);
 			}
 		}
 
@@ -397,8 +397,8 @@ public class DBGpSession {
 				e.printStackTrace();
 			}
 			endSession();
-			unblockAllCallers(parsedResponse);		
-			
+			unblockAllCallers(parsedResponse);
+
 		}
 
 		/**
@@ -444,7 +444,7 @@ public class DBGpSession {
 			// an async call. Plus we need to handle the possibility of STATUS_STOPPED
 			// being returned.
 
-			//Todo: Improvement: update DBGpTarget with the latest stack information         
+			//Todo: Improvement: update DBGpTarget with the latest stack information
 			DBGpResponse parsedResponse = sendSyncCmdOnResponseThread(DBGpCommand.stackGet, null);
 			if (parsedResponse != null) {
 
@@ -540,7 +540,7 @@ public class DBGpSession {
 
 	private String getCharset(String encodingKey, ILaunchConfiguration launchConfig) {
 		String charset = null;
-		String outputEncoding = null;		
+		String outputEncoding = null;
 		if (launchConfig != null) {
 			try {
 				outputEncoding = launchConfig.getAttribute(encodingKey, "");
@@ -553,7 +553,7 @@ public class DBGpSession {
 				outputEncoding = PHPProjectPreferences.getOutputEncoding(null);
 			}
 			else {
-				outputEncoding = PHPProjectPreferences.getTransferEncoding(null);				
+				outputEncoding = PHPProjectPreferences.getTransferEncoding(null);
 			}
 		}
 		if (outputEncoding == null || Charset.isSupported(outputEncoding) == false) {
@@ -571,23 +571,23 @@ public class DBGpSession {
 	 */
 	public synchronized void endSession() {
 		if (sessionActive) {
-			sessionActive = false;	   						
+			sessionActive = false;
 			try {
 				DBGpSocket.shutdownInput();
 			}
 			catch (IOException e) {
-				
+
 			}
 			try {
 				DBGpSocket.shutdownOutput();
 			}
 			catch (IOException e) {
-				
+
 			}
-			
+
 	   		try {
 				DBGpSocket.close();
-				
+
 			} catch (IOException e) {
 				// Ignore the exception except for debug purposes
 				DBGpLogger.debugException(e);
@@ -660,7 +660,7 @@ public class DBGpSession {
 	public String getSessionEncoding() {
 		return sessionEncoding;
 	}
-	
+
 	public String getOutputEncoding() {
 		return outputEncoding;
 	}
@@ -668,7 +668,7 @@ public class DBGpSession {
 	public String getBinaryEncoding() {
 		return binaryEncoding;
 	}
-	
+
 
 	/**
 	 * set the session encoding. DBGpTarget determines this when handshaking.
@@ -685,15 +685,15 @@ public class DBGpSession {
 	public String getEngineVersion() {
 		return engineVersion;
 	}
-	
+
 	public int getRemotePort() {
 		return DBGpSocket.getPort();
 	}
-	
+
 	public InetAddress getRemoteAddress() {
 		return DBGpSocket.getInetAddress();
 	}
-	
+
 	public String getRemoteHostname() {
 		return DBGpSocket.getInetAddress().getHostName();
 	}
@@ -706,5 +706,5 @@ public class DBGpSession {
 	 */
 	public boolean isSecure() {
 		return isSSL;
-	}	
+	}
 }

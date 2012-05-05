@@ -50,7 +50,7 @@ public class PHPexeItem implements IInterpreter{
 	private boolean editable = true;
 	private String debuggerID;
 	private boolean isDefault;
-	
+
 	private HashSet<String>extensions=new HashSet<String>();
 
 	/**
@@ -106,7 +106,7 @@ public class PHPexeItem implements IInterpreter{
 	public String[] getExtensions(){
 		return extensions.toArray(new String[extensions.size()]);
 	}
-	
+
 	/**
 	 * @param extensions
 	 */
@@ -116,9 +116,9 @@ public class PHPexeItem implements IInterpreter{
 			exts.add(s);
 		}
 		this.extensions=exts;
-		
+
 	}
-	
+
 	/**
 	 * Returns the debugger ID set for this item.
 	 * @return The debugger ID.
@@ -410,7 +410,7 @@ public class PHPexeItem implements IInterpreter{
 		}
 		return buf.toString();
 	}
-	
+
 	/**
 	 * Executes given command
 	 *
@@ -447,7 +447,7 @@ public class PHPexeItem implements IInterpreter{
 		}
 		return buf.toString();
 	}
-	
+
 	/**
 	 * Change to executable permissions for non-windows machines.
 	 */

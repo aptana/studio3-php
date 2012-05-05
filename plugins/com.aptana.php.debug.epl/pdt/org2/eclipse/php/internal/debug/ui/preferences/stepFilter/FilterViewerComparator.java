@@ -22,7 +22,7 @@ import org2.eclipse.php.internal.debug.core.preferences.stepFilters.IStepFilterT
  * @author yaronm
  */
 public class FilterViewerComparator extends WorkbenchViewerComparator {
-	
+
 	public int compare(Viewer viewer, Object e1, Object e2) {
 		DebugStepFilter f1 = (DebugStepFilter) e1;
 		DebugStepFilter f2 = (DebugStepFilter) e2;

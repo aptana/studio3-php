@@ -153,7 +153,7 @@ public abstract class AbstractDebuggerConfiguration implements IDebuggerConfigur
 	public void save() {
 		PHPDebugEPLPlugin.getDefault().savePluginPreferences();
 	}
-	
+
 	/**
 	 * Apply the default values for this debugger configuration and save them.
 	 * Note that the changes affecting the PDT immediately.

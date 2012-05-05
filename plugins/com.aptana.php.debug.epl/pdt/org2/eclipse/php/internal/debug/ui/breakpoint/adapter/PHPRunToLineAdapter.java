@@ -122,7 +122,7 @@ public class PHPRunToLineAdapter implements IRunToLineTarget {
 								}
 								else if (debugTarget instanceof DBGpTarget) { 
 									DBGpTarget t = (DBGpTarget) debugTarget;
-									t.runToLine(file, lineNumber);									
+									t.runToLine(file, lineNumber);
 								}
 								return;
 							}
@@ -172,7 +172,7 @@ public class PHPRunToLineAdapter implements IRunToLineTarget {
 			return (IFile)((NonExistingFileEditorInput)input).getAdapter(IResource.class);
 		}
 		return null;
-		
+
 	}
 
 	/**

@@ -41,10 +41,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org2.eclipse.php.internal.debug.core.interpreter.preferences.DependenciesManager;
 import org2.eclipse.php.internal.debug.ui.wizard.TextDialogCellEditor;
 
 import com.aptana.editor.php.epl.PHPEplPlugin;
+import com.aptana.editor.php.internal.builder.preferences.DependenciesManager;
 import com.aptana.editor.php.internal.builder.preferences.PHPExtension;
 import com.aptana.php.debug.ui.phpini.Messages;
 import com.aptana.ui.util.SWTUtils;

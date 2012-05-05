@@ -45,8 +45,8 @@ public interface IDebugHandler {
     public void debuggerErrorOccured(DebugError debugError);
 
     public IRemoteDebugger getRemoteDebugger();
-    
+
     public void setDebugTarget (PHPDebugTarget debugTarget);
-    
+
     public PHPDebugTarget getDebugTarget();
 }

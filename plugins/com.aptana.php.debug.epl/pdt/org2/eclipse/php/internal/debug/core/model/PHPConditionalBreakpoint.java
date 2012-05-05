@@ -27,7 +27,7 @@ public class PHPConditionalBreakpoint extends PHPLineBreakpoint {
 
     private boolean fConditionEnabled = false;
 
-    private String fCondition = "";
+    private String fCondition = ""; //$NON-NLS-1$
 
     public PHPConditionalBreakpoint() {
     }
@@ -82,7 +82,7 @@ public class PHPConditionalBreakpoint extends PHPLineBreakpoint {
         if (enabled) {
         	String message = MessageFormat.format(PHPDebugCoreMessages.ConditionalBreakPointMessage_1, new String[] { marker.getResource().getName(), Integer.toString(lineNumber) });
         	message +=  MessageFormat.format(PHPDebugCoreMessages.ConditionalBreakPointMessage_2, new String[] {condition});
-            marker.setAttribute(IMarker.MESSAGE, message);
+        	marker.setAttribute(IMarker.MESSAGE, message);
         } else {
             marker.setAttribute(IMarker.MESSAGE, MessageFormat.format(PHPDebugCoreMessages.LineBreakPointMessage_1, new String[] { marker.getResource().getName(), Integer.toString(lineNumber) }));
         }

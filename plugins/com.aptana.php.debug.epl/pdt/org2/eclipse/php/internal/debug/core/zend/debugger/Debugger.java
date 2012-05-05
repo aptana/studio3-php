@@ -20,7 +20,7 @@ package org2.eclipse.php.internal.debug.core.zend.debugger;
  * @author eran
  */
 public interface Debugger {
-	
+
     /**
      * Asynchronic start
      * Returns true if successed sending the request, false otherwise.
@@ -40,7 +40,7 @@ public interface Debugger {
      * @return True, if the set protocol command was successful; False, otherwise.
      */
     public boolean setProtocol(int protocolID);
-    
+
     /**
      * Asynchronic addBreakpoint Returns true if successed sending the request,
      * false otherwise.
@@ -188,7 +188,7 @@ public interface Debugger {
      * Synchronic getCallStack Returns the PHPstack;
      */
     public PHPstack getCallStack();
-    
+
     /**
      * Synchronic getCallStack Returns the PHPstack;
      */
@@ -223,7 +223,7 @@ public interface Debugger {
         public void started(boolean success);
 
     }
-    
+
     // Interface for an breakpoint added response handler.
     public static interface BreakpointAddedResponseHandler {
 

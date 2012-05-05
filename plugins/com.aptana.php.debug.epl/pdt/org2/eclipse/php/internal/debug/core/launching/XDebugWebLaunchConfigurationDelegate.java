@@ -128,13 +128,13 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 				return;
 			}
 		}
-		
+
 		// save the project name for source lookup
 		ILaunchConfigurationWorkingCopy wc = configuration.getWorkingCopy();
 		String project = proj.getFullPath().toString();
 		wc.setAttribute(IPHPDebugConstants.PHP_Project, project);
 		wc.setAttribute(IDebugParametersKeys.TRANSFER_ENCODING, PHPProjectPreferences.getTransferEncoding(proj));
-		wc.setAttribute(IDebugParametersKeys.OUTPUT_ENCODING, PHPProjectPreferences.getOutputEncoding(proj));		
+		wc.setAttribute(IDebugParametersKeys.OUTPUT_ENCODING, PHPProjectPreferences.getOutputEncoding(proj));
 		wc.doSave();
 
 		// determine stop at first line (first calc the default and then try to extract the configuration attribute).
@@ -189,7 +189,7 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 		// Generate a session id for this launch and start the listener
 		// then create the start and stop debug URLs
 		String[] startStopURLs;
-		
+
 		//If we have a "selected script" option, URL is not ended by file and project name. 
 		// SG: Aptana modification
 		//		if (baseURL.endsWith("/")) //$NON-NLS-1$
@@ -236,27 +236,27 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 		//		}
 		IDBGpDebugTarget target = null;
 		SSHTunnel tunnel = null;
-		
+
 		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
-			String sessionId = DBGpSessionHandler.getInstance().generateSessionId();			
+			String sessionId = DBGpSessionHandler.getInstance().generateSessionId();
 			String ideKey = null;
 			if (DBGpProxyHandler.instance.useProxy()) {
 				ideKey = DBGpProxyHandler.instance.getCurrentIdeKey();
 				if (DBGpProxyHandler.instance.registerWithProxy() == false) {
 					displayErrorMessage(PHPDebugCoreMessages.XDebug_WebLaunchConfigurationDelegate_2 + DBGpProxyHandler.instance.getErrorMsg());
 					DebugPlugin.getDefault().getLaunchManager().removeLaunch(launch);
-					return;					
+					return;
 				}
 			}
 			else {
 				ideKey = DBGpSessionHandler.getInstance().getIDEKey();
-			}			
+			}
 			startStopURLs = generateStartStopDebugURLs(baseURL, sessionId, ideKey, configuration);
 			// String launchScript = configuration.getAttribute(PHPServerProxy.FILE_NAME, (String) null);
 
 			// Check if a tunneled connection is needed and create request for a tunnel if needed.
 			tunnel = PHPLaunchUtilities.getSSHTunnel(configuration);
-			
+
 			// determine if we should use the multisession manager or the single session manager
 			if (XDebugPreferenceMgr.useMultiSession() == true) {
 				target = new DBGpMultiSessionTarget(launch, fileName, startStopURLs[1], ideKey, stopAtFirstLine, browser[0], sessionId);
@@ -265,7 +265,7 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 			}
 			else {
 				target = new DBGpTarget(launch, fileName, startStopURLs[1], ideKey, stopAtFirstLine, browser[0], sessionId);
-				target.setPathMapper(PathMapperRegistry.getByServer(server));				
+				target.setPathMapper(PathMapperRegistry.getByServer(server));
 			}
 			DBGpSessionHandler.getInstance().addSessionListener((IDBGpSessionListener)target);
 		}
@@ -305,7 +305,7 @@ public class XDebugWebLaunchConfigurationDelegate extends LaunchConfigurationDel
 								{
 									sshTunnel.connect();
 								}
-								
+
 								// Check if we have POST data. If so, invoke the redirect through the
 								// RemoteDebugConnectionProxy.
 								if (postData != null && !postData.isEmpty())

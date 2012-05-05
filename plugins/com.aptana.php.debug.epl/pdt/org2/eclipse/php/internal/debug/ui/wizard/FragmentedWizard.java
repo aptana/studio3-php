@@ -202,7 +202,7 @@ public class FragmentedWizard implements IWizard {
 							}
 						});
 					} catch (Exception e) {
-						PHPDebugEPLPlugin.logError(e);						
+						PHPDebugEPLPlugin.logError(e);
 					}
 				}
 
@@ -223,7 +223,7 @@ public class FragmentedWizard implements IWizard {
 									executeTask((WizardFragment) iterator.next(), FINISH, monitor2);
 							} catch (CoreException ce) {
 								PHPDebugEPLPlugin.logError(ce);
-								Status status = new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, 0, ce.getLocalizedMessage(), null);								
+								Status status = new Status(IStatus.ERROR, PHPDebugEPLPlugin.PLUGIN_ID, 0, ce.getLocalizedMessage(), null);
 								return status;
 							}
 							return Status.OK_STATUS;
@@ -250,7 +250,7 @@ public class FragmentedWizard implements IWizard {
 			return true;
 		} catch (InvocationTargetException te) {
 			PHPDebugEPLPlugin.logError(te);
-			
+
 			t = te.getCause();
 		} catch (Exception e) {
 			PHPDebugEPLPlugin.logError(e);
@@ -367,7 +367,7 @@ public class FragmentedWizard implements IWizard {
 				}
 			}
 		} catch (Exception e) {
-			PHPDebugEPLPlugin.logError(e);			
+			PHPDebugEPLPlugin.logError(e);
 		} finally {
 			addingPages = false;
 		}
@@ -388,7 +388,7 @@ public class FragmentedWizard implements IWizard {
 			if (page != null)
 				return page;
 		} catch (Exception e) {
-			PHPDebugEPLPlugin.logError(e);			
+			PHPDebugEPLPlugin.logError(e);
 		}
 
 		return null;

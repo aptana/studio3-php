@@ -101,7 +101,7 @@ public abstract class DBGpBaseVariable extends DBGpElement implements IVariable 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
-	
+
 	public String getAddress() {
 		return address;
 	}
@@ -109,5 +109,5 @@ public abstract class DBGpBaseVariable extends DBGpElement implements IVariable 
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
 }

@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
-
 import org2.eclipse.php.debug.core.debugger.parameters.IDebugParametersKeys;
 import org2.eclipse.php.internal.core.util.FileUtils;
 import org2.eclipse.php.internal.core.util.ScrolledCompositeImpl;
@@ -186,7 +185,7 @@ public class PHPExecutableLaunchTab extends AbstractLaunchConfigurationTab {
 				setDirty(true);
 				updateLaunchConfigurationDialog();
 			}
-			
+
 		});
 		debugFileTextField.setLayoutData(gd);
 		debugFileTextField.addModifyListener(fListener);

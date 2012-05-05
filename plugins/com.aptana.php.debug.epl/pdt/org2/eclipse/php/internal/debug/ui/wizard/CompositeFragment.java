@@ -102,7 +102,7 @@ public abstract class CompositeFragment extends Composite {
 		}
 		return title;
 	}
-	
+
 	/**
 	 * Sets the description for this fragment.
 	 * 
@@ -111,7 +111,7 @@ public abstract class CompositeFragment extends Composite {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	/**
 	 * Returns the fragment's description.
 	 */
@@ -121,7 +121,7 @@ public abstract class CompositeFragment extends Composite {
 		}
 		return description;
 	}
-	
+
 	/**
 	 * Sets the title for this fragment.
 	 * 
@@ -130,7 +130,7 @@ public abstract class CompositeFragment extends Composite {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+
 	/**
 	 * Returns if this runtime composite was designated for editing mode.
 	 * When in editing, the behavior of the composite's creation and validation processes
@@ -163,7 +163,7 @@ public abstract class CompositeFragment extends Composite {
 		performOk();
 	}
 
-	/**	
+	/**
 	 * Performs special processing when this runtime composite when Cancel button has
 	 * been pressed.
 	 * <p>

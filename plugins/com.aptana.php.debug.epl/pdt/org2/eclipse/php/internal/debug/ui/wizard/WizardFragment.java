@@ -182,7 +182,7 @@ public abstract class WizardFragment {
 	 * state and the flow of the wizard will be incorrect. 
 	 * 
 	 * @param list a list to add the child fragments to
-	 */	
+	 */
 	protected void createChildFragments(List list) {
 		// do nothing
 	}

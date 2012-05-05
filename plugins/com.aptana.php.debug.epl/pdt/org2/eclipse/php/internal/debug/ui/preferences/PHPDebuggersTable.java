@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-
 import org2.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration;
 import org2.eclipse.php.internal.debug.core.debugger.IDebuggerConfiguration;
 import org2.eclipse.php.internal.debug.core.preferences.PHPDebuggersRegistry;
@@ -176,7 +175,7 @@ public class PHPDebuggersTable {
 		}
 		fPHPDebuggers.refresh();
 	}
-	
+
 	private void configureTableResizing(final Composite parent, final Composite buttons, final Table table, final TableColumn debuggerTypeColumn, final TableColumn debugPortColumn) {
 		parent.addControlListener(new ControlAdapter() {
 			public void controlResized(final ControlEvent e) {

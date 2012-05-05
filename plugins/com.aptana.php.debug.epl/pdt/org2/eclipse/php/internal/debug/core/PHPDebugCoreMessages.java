@@ -73,7 +73,7 @@ public class PHPDebugCoreMessages extends NLS {
 	public static String XDebugConfigurationDialog_generalGroup;
 	public static String XDebugConfigurationDialog_captureGroup;
 	public static String XDebugConfigurationDialog_proxyGroup;
-	
+
 	//general
 	public static String XDebugConfigurationDialog_invalidTimeout;
 	public static String XDebugConfigurationDialog_invalidTimeoutValue;
@@ -82,34 +82,34 @@ public class PHPDebugCoreMessages extends NLS {
 	public static String XDebugConfigurationDialog_showSuperGlobals;
 	public static String XDebugConfigurationDialog_invalidPortRange;
 	public static String XDebugConfigurationDialog_useMultisession;
-	public static String XDebugConfigurationDialog_remoteSession;	
+	public static String XDebugConfigurationDialog_remoteSession;
 	public static String XDebugConfigurationDialog_remoteSessionOption_off;
 	public static String XDebugConfigurationDialog_remoteSessionOption_localhost;
 	public static String XDebugConfigurationDialog_remoteSessionOption_any;
 	public static String XDebugConfigurationDialog_remoteSessionOption_prompt;
-	
+
 	//capture output
 	public static String XDebugConfigurationDialog_captureStdout;
-	public static String XDebugConfigurationDialog_captureStderr;		
+	public static String XDebugConfigurationDialog_captureStderr;
 	public static String XDebugConfigurationDialog_capture_off;
 	public static String XDebugConfigurationDialog_capture_copy;
 	public static String XDebugConfigurationDialog_capture_redirect;
-	
+
 	//proxy
 	public static String XDebugConfigurationDialog_useProxy;
 	public static String XDebugConfigurationDialog_idekey;
 	public static String XDebugConfigurationDialog_proxy;
 
 	//General XDebug messages
-	
+
 	//DBGpTarget messages
-	public static String XDebugMessage_debugError;	
+	public static String XDebugMessage_debugError;
 	public static String XDebugMessage_unexpectedTermination;
-	
+
 	//XDebug Communication Demon msgs
-	public static String XDebugMessage_remoteSessionTitle;	
+	public static String XDebugMessage_remoteSessionTitle;
 	public static String XDebugMessage_remoteSessionPrompt;
-	
+
 	//proxy Handler
 	public static String XDebug_DBGpProxyHandler_0;
 	public static String XDebug_DBGpProxyHandler_1;
@@ -127,7 +127,7 @@ public class PHPDebugCoreMessages extends NLS {
 	public static String XDebug_WebLaunchConfigurationDelegate_2;
 	public static String XDebug_WebLaunchConfigurationDelegate_3;
 	public static String XDebug_WebLaunchConfigurationDelegate_4;
-	
+
 	public static String XDebug_DBGpTarget_0;
 	public static String XDebug_DBGpTarget_1;
 	public static String XDebug_DBGpTarget_2;
@@ -139,11 +139,11 @@ public class PHPDebugCoreMessages extends NLS {
 	public static String XDebug_DBGpVariable_0;
 	public static String XDebug_DBGpVariable_1;
 	public static String XDebug_IDBGpModelConstants_0;
-	public static String XDebug_IDBGpModelConstants_1;	
-	
-	public static String Debugger_incomingDebuggerJitRequestTitle;	
-	public static String Debugger_incomingDebuggerJitRequest;	
-	
+	public static String XDebug_IDBGpModelConstants_1;
+
+	public static String Debugger_incomingDebuggerJitRequestTitle;
+	public static String Debugger_incomingDebuggerJitRequest;
+
     static {
         // load message values from bundle file
         NLS.initializeMessages(BUNDLE_NAME, PHPDebugCoreMessages.class);

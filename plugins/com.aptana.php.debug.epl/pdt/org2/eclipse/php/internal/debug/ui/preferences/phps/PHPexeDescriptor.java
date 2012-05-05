@@ -12,7 +12,7 @@ package org2.eclipse.php.internal.debug.ui.preferences.phps;
 
 
 /**
- * Used to provide a description for PHP exe selections in the 
+ * Used to provide a description for PHP exe selections in the
  * installed PHP exes block.
  */
 public abstract class PHPexeDescriptor {
@@ -23,5 +23,5 @@ public abstract class PHPexeDescriptor {
 	 * @return description of the PHP exe setting
 	 */
 	public abstract String getDescription();
-	
+
 }

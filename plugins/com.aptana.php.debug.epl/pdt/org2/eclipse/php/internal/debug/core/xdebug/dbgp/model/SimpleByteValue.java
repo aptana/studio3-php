@@ -19,12 +19,12 @@ import org.eclipse.debug.core.model.IVariable;
 
 public class SimpleByteValue extends DBGpElement implements IValue {
 	private byte value;
-	
+
 	public SimpleByteValue(byte value, IDebugTarget debugTarget) {
 		super(debugTarget);
 		this.value = value;
 	}
-	
+
 	public String getReferenceTypeName() throws DebugException {
 		return "byte";
 	}

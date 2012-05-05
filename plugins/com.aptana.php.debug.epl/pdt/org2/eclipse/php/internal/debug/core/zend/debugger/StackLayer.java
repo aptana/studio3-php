@@ -124,20 +124,20 @@ public class StackLayer {
     }
 
     public void addVariable(String variableName, byte[] value) {
-    	unresolvedVariables.put(variableName, value);
+        unresolvedVariables.put(variableName, value);
     }
 
     public Expression[] getVariables() {
-	    if (variables == null) {
-	    	variables = new Expression[unresolvedVariables.size()];
-	    	int i = 0;
-	    	for (String variableName : unresolvedVariables.keySet()) {
-		   		StackVariable variable = new DefaultStackVariable(variableName, depth);
-		   	    variable.setValue(expressionValueDeserializer.deserializer(variable, unresolvedVariables.get(variableName)));
-		   	    variables[i++] = variable;
-	    	}
-	    }
-    	return variables;
+        if (variables == null) {
+            variables = new Expression[unresolvedVariables.size()];
+            int i = 0;
+            for (String variableName : unresolvedVariables.keySet()) {
+                StackVariable variable = new DefaultStackVariable(variableName, depth);
+                variable.setValue(expressionValueDeserializer.deserializer(variable, unresolvedVariables.get(variableName)));
+                variables[i++] = variable;
+            }
+        }
+        return variables;
     }
 
     public String toString() {

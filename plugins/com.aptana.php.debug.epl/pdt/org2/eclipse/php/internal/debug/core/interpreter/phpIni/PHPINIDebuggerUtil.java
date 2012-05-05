@@ -11,7 +11,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
-
 import org2.eclipse.php.internal.core.project.IIncludePathEntry;
 import org2.eclipse.php.internal.core.project.options.includepath.IncludePathVariableManager;
 import org2.eclipse.php.internal.core.util.PHPSearchEngine;
@@ -76,7 +75,7 @@ public class PHPINIDebuggerUtil {
 			PHPDebugEPLPlugin.logError(e);
 		}
 	}
-	
+
 	/**
 	 * Make some preparations before debug session:
 	 * <ul>

@@ -20,11 +20,11 @@ import org2.eclipse.php.internal.debug.core.interpreter.preferences.PHPexeItem;
 public class PHPExesEvent {
 
 	private PHPexeItem phpExeItem;
-	
+
 	public PHPExesEvent(PHPexeItem phpExeItem){
 		this.phpExeItem = phpExeItem;
 	}
-	
+
 	/**
 	 * Returns the PHPExeItem that this event holds
 	 * @return

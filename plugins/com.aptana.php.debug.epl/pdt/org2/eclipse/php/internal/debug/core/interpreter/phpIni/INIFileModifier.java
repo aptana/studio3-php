@@ -33,7 +33,7 @@ import com.aptana.php.debug.ui.phpini.PHPIniEntry;
  * @author michael
  */
 public class INIFileModifier implements IPhpIniFileModifier {
-	
+
 	private static final String GLOBAL_SECTION = "__global__"; //$NON-NLS-1$
 	private static final Pattern SECTION_PATTERN = Pattern.compile("\\[([^\\]]+)\\]"); //$NON-NLS-1$
 	//private static final Pattern NAME_VAL_PATTERN = Pattern.compile("([\\w]+)\\s*=\\s*(.*)"); //$NON-NLS-1$
@@ -77,7 +77,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 	public boolean isDirty() {
 		return isDirty;
 	}
-	
+
 	/**
 	 * Adds new entry to the INI file.
 	 * New entry will be added to the default (unnamed) section
@@ -89,7 +89,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 	public void addEntry(String name, String value, boolean replace) {
 		addEntry(GLOBAL_SECTION, name, value, replace, null);
 	}
-	
+
 	/**
 	 * Adds new entry to the INI file.
 	 * New entry will be added to the default (unnamed) section, no old entries will be replaced
@@ -112,7 +112,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 	public void addEntry(String sectionName, String name, String value) {
 		addEntry(sectionName, name, value, false, null);
 	}
-	
+
 	/**
 	 * Inserts new entry to the INI file before the entry specified.
 	 *
@@ -139,14 +139,14 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		{
 			return;
 		}
-		
+
 		section.getLines().add(lineIndex, name + '=' + value);
 		section.getEntries().add(entryIndex,
 				new PHPIniEntry(name, value, section));
 		isDirty = true;
-		
+
 	}
-	
+
 	/**
 	 * Inserts entry to the beginning of a section.
 	 * @param section - section.
@@ -158,7 +158,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		if (section == null || name == null || value == null) {
 			throw new NullPointerException();
 		}
-		
+
 		section.getLines().add(0, name + '=' + value);
 		section.getEntries().add(0,
 				new PHPIniEntry(name, value, section));
@@ -196,7 +196,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 							}
 						}
 					}
-					
+
 					/**
 					 * Replacing values in the entries list.
 					 */
@@ -209,7 +209,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 							entry.setValue(val);
 						}
 					}
-					
+
 				} else {
 					section.getEntries().add(
 							new PHPIniEntry(name, value, section));
@@ -289,7 +289,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 						}
 					}
 				}
-				
+
 				List<PHPIniEntry> toRemove = new ArrayList<PHPIniEntry>();
 				for (PHPIniEntry entry : section.getEntries())
 				{
@@ -300,7 +300,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 					}
 				}
 				section.getEntries().removeAll(toRemove);
-				
+
 				if (sectionName != null) {
 					break;
 				}
@@ -309,7 +309,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		isDirty = true;
 		return removed;
 	}
-	
+
 	/**
 	 * Gets the sections list.
 	 * @return the sections list.
@@ -374,7 +374,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 						}
 					}
 				}
-				
+
 				for (PHPIniEntry entry : section.getEntries())
 				{
 					if (entry.getKey().equals(name)
@@ -384,7 +384,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 						entry.setCommented(true);
 					}
 				}
-				
+
 				if (sectionName != null) {
 					break;
 				}
@@ -392,7 +392,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		}
 		isDirty = true;
 	}
-	
+
 	/**
 	 * Uncomments entry.
 	 *
@@ -428,7 +428,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 						}
 					}
 				}
-				
+
 				for (PHPIniEntry entry : section.getEntries())
 				{
 					if (entry.getKey().equals(name)
@@ -438,7 +438,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 						entry.setCommented(false);
 					}
 				}
-				
+
 				if (sectionName != null) {
 					break;
 				}
@@ -500,7 +500,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		w.close();
 		isDirty = false;
 	}
-	
+
 	/**
 	 * Gets section by name. 
 	 * @param name - section name.
@@ -515,10 +515,10 @@ public class INIFileModifier implements IPhpIniFileModifier {
 				return section;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Gets global section. 
 	 * @return global section.
@@ -527,7 +527,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 	{
 		return getSectionByName(GLOBAL_SECTION);
 	}
-	
+
 	/**
 	 * Adds section.
 	 * @param sectionName - section name.
@@ -540,7 +540,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		isDirty = true;
 		return currentSection;
 	}
-	
+
 	/**
 	 * Removes section.
 	 * @param section - section to remove.
@@ -550,7 +550,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		sections.remove(section);
 		isDirty = true;
 	}
-	
+
 	/** 
 	 * Performs a lookup in the ini and returns a non-commented entry with the given name or null if none is found.
 	 * 
@@ -577,7 +577,7 @@ public class INIFileModifier implements IPhpIniFileModifier {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets entry line index.
 	 * @param entry - entry.
@@ -603,10 +603,10 @@ public class INIFileModifier implements IPhpIniFileModifier {
 				}
 			}
 		}
-		
+
 		return -1;
 	}
-	
+
 	/**
 	 * Gets entry index.
 	 * @param entry - entry.

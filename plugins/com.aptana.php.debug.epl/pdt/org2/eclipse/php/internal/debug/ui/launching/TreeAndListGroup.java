@@ -100,7 +100,7 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.add(listener);
 	}
-	
+
 	/**
 	 * Add the given listener to the collection of clients that listen to
 	 * double-click events in the list viewer
@@ -121,7 +121,7 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 			 ((ISelectionChangedListener) iter.next()).selectionChanged(event);
 		}
 	}
-	
+
 	/**
 	 * Notify all double click listeners that a double click event has occurred
 	 * in the list viewer
@@ -206,11 +206,11 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 		treeViewer.setSorter(new ResourceSorter(ResourceSorter.NAME));
 		treeViewer.addSelectionChangedListener(this);
 	}
-	
+
 	public Table getListTable() {
 		return listViewer.getTable();
 	}
-	
+
 	public IStructuredSelection getListTableSelection() {
 		ISelection selection=  this.listViewer.getSelection();
 		if (selection instanceof IStructuredSelection) {
@@ -218,18 +218,18 @@ public class TreeAndListGroup implements ISelectionChangedListener {
 		} 
 		return StructuredSelection.EMPTY;
 	}
-	
+
 	protected void initialListItem(Object element) {
 		Object parent = treeContentProvider.getParent(element);
 		selectAndRevealFolder(parent);
 	}
-	
+
 	public void selectAndRevealFolder(Object treeElement) {
 		treeViewer.reveal(treeElement);
 		IStructuredSelection selection = new StructuredSelection(treeElement);
 		treeViewer.setSelection(selection);
 	}
-	
+
 	public void selectAndRevealFile(Object treeElement) {
 		listViewer.reveal(treeElement);
 		IStructuredSelection selection = new StructuredSelection(treeElement);

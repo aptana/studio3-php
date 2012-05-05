@@ -29,19 +29,19 @@ public interface IDebugParametersInitializer {
 	 * @return	The request url (e.g. http://www.eclipse.org/pdt/main.php).
 	 */
 	public URL getRequestURL(ILaunch launch) ;
-	
+
 	/**
 	 * Generate and returns a debug query parameters
 	 * @param ILaunch launch
 	 * @return A hastable containing debug query parameters
 	 */
 	public Hashtable<String, String> getDebugParameters(ILaunch launch);
-	
+
 	/**
 	 * Returns ID of the corresponding Debug handler
 	 */
 	public String getDebugHandler();
-	
+
 	/**
 	 * Sets the ID of the corresponding Debug handler
 	 * @param id

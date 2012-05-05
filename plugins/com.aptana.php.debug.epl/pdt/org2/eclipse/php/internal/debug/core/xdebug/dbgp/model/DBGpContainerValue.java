@@ -110,7 +110,7 @@ public class DBGpContainerValue extends DBGpValue {
 //			for (int i = 1; i < subCount; i++) {
 //				childVariables[i] = new DBGpContainerVariable(getDebugTarget(), page + i, pageSize, numChild, null, getOwner().getStackLevel(), getOwner().getFullName());
 //			}
-			
+
 			for (int i = 0; i < subCount; i++) {
 				if (i == page) {
 					// we have data for this page so pass the property info to the container
@@ -183,7 +183,7 @@ public class DBGpContainerValue extends DBGpValue {
 		}
 		Node property = null;
 		property = target.getProperty(var.getFullName(), var.getStackLevel(), page);
-		
+
 		if (property != null) {
 			parseData(property);
 		}
