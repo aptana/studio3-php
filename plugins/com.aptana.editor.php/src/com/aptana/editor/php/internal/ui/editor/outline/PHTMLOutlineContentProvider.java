@@ -38,6 +38,12 @@ public class PHTMLOutlineContentProvider extends HTMLOutlineContentProvider
 	protected Object[] filter(IParseNode[] nodes)
 	{
 		List<CommonOutlineItem> list = new ArrayList<CommonOutlineItem>();
+		filterRecursively(nodes, list);
+		return list.toArray(new CommonOutlineItem[list.size()]);
+	}
+
+	private void filterRecursively(IParseNode[] nodes, List<CommonOutlineItem> list)
+	{
 		IPHPParseNode element;
 		for (IParseNode node : nodes)
 		{
@@ -49,12 +55,17 @@ public class PHTMLOutlineContentProvider extends HTMLOutlineContentProvider
 				{
 					list.add(getOutlineItem(element));
 				}
+				else
+				{
+					// the node may have children that we don't want to filter (like a function within an 'if'
+					// statement).
+					filterRecursively(node.getChildren(), list);
+				}
 			}
 			else if (!(node instanceof HTMLTextNode))
 			{
 				list.add(getOutlineItem(node));
 			}
 		}
-		return list.toArray(new CommonOutlineItem[list.size()]);
 	}
 }
