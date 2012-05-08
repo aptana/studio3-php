@@ -194,19 +194,12 @@ public class BuildProblemReporter extends ProblemCollector
 						m.setAttribute(IMarker.PRIORITY, ((TaskInfo) problem).getPriority());
 					}
 				}
-				// if (problem.getID() != 0) {
-				// m.setAttribute(IScriptModelMarker.ID, problem.getID());
-				// }
-				// final String[] arguments = problem.getArguments();
-				// if (arguments != null && arguments.length != 0) {
-				// m.setAttribute(IScriptModelMarker.ARGUMENTS, Util
-				// .getProblemArgumentsForMarker(arguments));
-				// }
 			}
 		}
 		catch (CoreException e)
 		{
-			IdeLog.logError(PHPEplPlugin.getDefault(), "Error updating PHP error markers", e); //$NON-NLS-1$
+			IdeLog.logWarning(PHPEplPlugin.getDefault(),
+					"Error updating PHP error markers", e, PHPEplPlugin.DEBUG_SCOPE); //$NON-NLS-1$
 		}
 		finally
 		{
