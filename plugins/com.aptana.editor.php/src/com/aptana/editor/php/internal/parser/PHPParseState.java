@@ -4,7 +4,6 @@ import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.internal.core.builder.IModule;
-import com.aptana.parsing.IParseState;
 import com.aptana.parsing.ParseState;
 
 /**
@@ -56,17 +55,5 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	public ISourceModule getSourceModule()
 	{
 		return this.sourceModule;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.aptana.parsing.ParseState#requiresReparse(com.aptana.parsing.IParseState)
-	 */
-	@Override
-	public boolean requiresReparse(IParseState newState)
-	{
-		// Force a re-parse to avoid the cache.
-		// At the moment, the PHP error markers are flushed independently.
-		return true;
 	}
 }
