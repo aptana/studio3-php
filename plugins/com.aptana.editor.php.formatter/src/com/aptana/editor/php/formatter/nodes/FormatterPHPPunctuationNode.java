@@ -101,7 +101,7 @@ public class FormatterPHPPunctuationNode extends FormatterPHPTextNode
 			case NAMESPACE_SEPARATOR:
 				return getDocument().getInt(PHPFormatterConstants.SPACES_AFTER_NAMESPACE_SEPARATOR);
 			default:
-				return super.getSpacesCountBefore();
+				return super.getSpacesCountAfter();
 		}
 	}
 
