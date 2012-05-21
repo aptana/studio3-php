@@ -1119,7 +1119,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				String superClassname = ((ClassPHPEntryValue) clazz).getSuperClassname();
 				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, aliases, namespace,
-						false);
+						true);
 				if (superClassEntry != null && superClassEntry.size() == 1)
 				{
 					result.addAll(superClassEntry);
