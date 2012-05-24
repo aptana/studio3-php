@@ -19,7 +19,15 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	private PHPVersion phpVersion;
 	private IModule module;
 	private ISourceModule sourceModule;
-	private static IParseStateCacheKey cacheKey = new PHPParseStateCacheKey();
+
+	public PHPParseState(String source, int startingOffset, PHPVersion version, IModule module,
+			ISourceModule sourceModule)
+	{
+		super(source, startingOffset);
+		this.phpVersion = version;
+		this.module = module;
+		this.sourceModule = sourceModule;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -30,29 +38,9 @@ public class PHPParseState extends ParseState implements IPHPParseState
 		return phpVersion;
 	}
 
-	public void phpVersionChanged(PHPVersion newVersion)
-	{
-		setPHPVersion(newVersion);
-	}
-
-	public void setPHPVersion(PHPVersion version)
-	{
-		this.phpVersion = version;
-	}
-
-	public void setModule(IModule module)
-	{
-		this.module = module;
-	}
-
 	public IModule getModule()
 	{
 		return this.module;
-	}
-
-	public void setSourceModule(ISourceModule sourceModule)
-	{
-		this.sourceModule = sourceModule;
 	}
 
 	public ISourceModule getSourceModule()
@@ -67,22 +55,10 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	@Override
 	public IParseStateCacheKey getCacheKey(String contentTypeId)
 	{
-		return cacheKey;
+		// Note: not adding the sourceModule because it's just a wrapper over the module.
+		// As for the module, it should be lightweight enough to be on the cache key (just has
+		// a reference for IFile or File).
+		return new ParseStateCacheKey(super.getCacheKey(contentTypeId), phpVersion, this.module);
 	}
 
-	/**
-	 * PHP ParseStateCacheKey that always return true for requiresReparse()
-	 */
-	public static class PHPParseStateCacheKey extends ParseStateCacheKey
-	{
-		/*
-		 * (non-Javadoc)
-		 * @see com.aptana.parsing.ParseStateCacheKey#requiresReparse(com.aptana.parsing.IParseStateCacheKey)
-		 */
-		@Override
-		public boolean requiresReparse(IParseStateCacheKey newCacheKey)
-		{
-			return true;
-		}
-	}
 }
