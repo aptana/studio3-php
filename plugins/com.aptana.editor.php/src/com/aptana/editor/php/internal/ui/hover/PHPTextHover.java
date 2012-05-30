@@ -178,7 +178,7 @@ public class PHPTextHover extends AbstractPHPTextHover
 				if (resource != null)
 				{
 					final IFile moduleFile = getModuleFile(elements[0]);
-					if (moduleFile != null && !resource.equals(moduleFile))
+					if (moduleFile != null && !moduleFile.equals(resource))
 					{
 						final IEditorPart[] moduleEditorPart = new IEditorPart[1];
 						// The module points to a different file. Try to grab the matching editor.
