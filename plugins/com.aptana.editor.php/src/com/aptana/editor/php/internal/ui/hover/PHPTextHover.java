@@ -9,6 +9,7 @@ package com.aptana.editor.php.internal.ui.hover;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.internal.text.html.BrowserInformationControlInput;
@@ -19,7 +20,10 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.part.FileEditorInput;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.core.logging.IdeLog;
@@ -31,10 +35,12 @@ import com.aptana.editor.common.hover.CustomBrowserInformationControl;
 import com.aptana.editor.common.hover.DocumentationBrowserInformationControlInput;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
+import com.aptana.editor.php.internal.builder.LocalModule;
 import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
 import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
@@ -44,6 +50,7 @@ import com.aptana.editor.php.internal.ui.editor.hyperlink.PHPHyperlinkDetector;
 import com.aptana.ide.ui.io.internal.UniformFileStoreEditorInput;
 import com.aptana.parsing.lexer.Lexeme;
 import com.aptana.ui.epl.UIEplPlugin;
+import com.aptana.ui.util.UIUtils;
 
 /**
  * Provides PHPDoc as hover info for PHP elements.
@@ -102,11 +109,14 @@ public class PHPTextHover extends AbstractPHPTextHover
 			AbstractPHPEntryValue phpValue = (AbstractPHPEntryValue) entry.getValue();
 			int startOffset = phpValue.getStartOffset();
 			// Locate the IDocument and pass it along to the PHPDocUtils
-			ISourceViewer sourceViewer = (ISourceViewer) editorPart.getAdapter(ISourceViewer.class);
 			IDocument document = null;
-			if (sourceViewer != null)
+			if (editorPart != null)
 			{
-				document = sourceViewer.getDocument();
+				ISourceViewer sourceViewer = (ISourceViewer) editorPart.getAdapter(ISourceViewer.class);
+				if (sourceViewer != null)
+				{
+					document = sourceViewer.getDocument();
+				}
 			}
 			PHPDocBlock comment = PHPDocUtils.findFunctionPHPDocComment(entry, document, startOffset);
 			FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
@@ -157,7 +167,59 @@ public class PHPTextHover extends AbstractPHPTextHover
 			{
 				return null;
 			}
-			return getHoverInfo(elements[0], isBrowserControlAvailable(textViewer), null, getEditor(), hoverRegion);
+			IEditorPart editor = getEditor();
+			if (editor != null)
+			{
+				// We need to check if the current editor is matching the resource that the PHP module refers to.
+				// In case it's not, we try to locate the editor that does match. If it's open, we'll pass it along.
+				// If not, the hover will use the cached value for the documentation.
+				IEditorInput editorInput = editor.getEditorInput();
+				IFile resource = (IFile) editorInput.getAdapter(IFile.class);
+				if (resource != null)
+				{
+					final IFile moduleFile = getModuleFile(elements[0]);
+					if (moduleFile != null && !resource.equals(moduleFile))
+					{
+						final IEditorPart[] moduleEditorPart = new IEditorPart[1];
+						// The module points to a different file. Try to grab the matching editor.
+						UIUtils.getDisplay().syncExec(new Runnable()
+						{
+							public void run()
+							{
+								IWorkbenchPage activePage = UIUtils.getActivePage();
+								if (activePage != null)
+								{
+									// locate an open editor.
+									moduleEditorPart[0] = activePage.findEditor(new FileEditorInput(moduleFile));
+								}
+							}
+						});
+						// Assign the editor to the one we found. It can still be null in case the editor is not opened.
+						editor = moduleEditorPart[0];
+					}
+				}
+			}
+			return getHoverInfo(elements[0], isBrowserControlAvailable(textViewer), null, editor, hoverRegion);
+		}
+		return null;
+	}
+
+	/**
+	 * Returns an IFile associated with an IModule.
+	 * 
+	 * @param element
+	 *            An instance of IModule
+	 * @return An {@link IFile}; <code>null</code> if the given element is not a {@link LocalModule}.
+	 */
+	private IFile getModuleFile(Object element)
+	{
+		if (element instanceof IElementEntry)
+		{
+			IModule module = ((IElementEntry) element).getModule();
+			if (module instanceof LocalModule)
+			{
+				return ((LocalModule) module).getFile();
+			}
 		}
 		return null;
 	}
