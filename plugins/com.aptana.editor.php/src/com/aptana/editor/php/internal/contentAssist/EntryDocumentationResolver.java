@@ -5,17 +5,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.part.FileEditorInput;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
+import com.aptana.editor.php.internal.builder.LocalModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.editor.php.internal.indexer.PHPTypeProcessor;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
+import com.aptana.ui.util.UIUtils;
 
 class EntryDocumentationResolver implements IDocumentationResolver
 {
@@ -23,21 +31,19 @@ class EntryDocumentationResolver implements IDocumentationResolver
 	private final String proposalContent;
 	private final IElementsIndex index;
 	private final Object val;
-	private final IDocument document;
 	private final IElementEntry entry;
 
-	protected EntryDocumentationResolver(String proposalContent, IElementsIndex index, Object val, IDocument document,
-			IElementEntry entry)
+	protected EntryDocumentationResolver(String proposalContent, IElementsIndex index, Object val, IElementEntry entry)
 	{
 		this.proposalContent = proposalContent;
 		this.index = index;
 		this.val = val;
-		this.document = document;
 		this.entry = entry;
 	}
 
 	public String resolveDocumentation()
 	{
+		IDocument document = resolveDocument();
 		if (val instanceof FunctionPHPEntryValue)
 		{
 			FunctionPHPEntryValue pl = (FunctionPHPEntryValue) val;
@@ -116,6 +122,43 @@ class EntryDocumentationResolver implements IDocumentationResolver
 			return docString;
 		}
 		return null;
+	}
+
+	/**
+	 * Resolves the right document to be used when computing the documentation out of an IDocument (happens when the
+	 * docs are in an opened editor).<br>
+	 * The method retrieves the entry's {@link IModule}, and in case it's a local module, tries to locate an open editor
+	 * that match the input on that module.
+	 * 
+	 * @return An {@link IDocument} or <code>null</code>
+	 */
+	protected IDocument resolveDocument()
+	{
+		IDocument document = null;
+		if (entry != null)
+		{
+			IModule module = entry.getModule();
+			if (!(module instanceof LocalModule))
+			{
+				return null;
+			}
+			IFile moduleFile = ((LocalModule) module).getFile();
+			IWorkbenchPage activePage = UIUtils.getActivePage();
+			if (activePage != null)
+			{
+				// locate an open editor.
+				IEditorPart editor = activePage.findEditor(new FileEditorInput(moduleFile));
+				if (editor != null)
+				{
+					ISourceViewer sourceViewer = (ISourceViewer) editor.getAdapter(ISourceViewer.class);
+					if (sourceViewer != null)
+					{
+						document = sourceViewer.getDocument();
+					}
+				}
+			}
+		}
+		return document;
 	}
 
 	/**
