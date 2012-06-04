@@ -142,10 +142,10 @@ class EntryDocumentationResolver implements IDocumentationResolver
 			{
 				return null;
 			}
-			IFile moduleFile = ((LocalModule) module).getFile();
 			IWorkbenchPage activePage = UIUtils.getActivePage();
 			if (activePage != null)
 			{
+				IFile moduleFile = ((LocalModule) module).getFile();
 				// locate an open editor.
 				IEditorPart editor = activePage.findEditor(new FileEditorInput(moduleFile));
 				if (editor != null)
