@@ -9,10 +9,13 @@ package com.aptana.editor.php.internal.text.reconciler;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.build.ReconcileContext;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.php.core.PHPVersionProvider;
+import com.aptana.editor.php.core.model.ISourceModule;
+import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.parser.PHPParseState;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
 import com.aptana.parsing.ast.IParseRootNode;
@@ -49,17 +52,20 @@ public class PHPReconcileContext extends ReconcileContext
 	 */
 	public IParseRootNode getAST() throws CoreException
 	{
-		PHPParseState parseState = new PHPParseState();
+		IModule module = null;
+		ISourceModule sourceModule = null;
 		if (editor != null)
 		{
-			parseState.setModule(editor.getModule());
-			parseState.setSourceModule(editor.getSourceModule());
+			module = editor.getModule();
+			sourceModule = editor.getSourceModule();
 		}
 		IFile file = getFile();
+		PHPVersion phpVersion = null;
 		if (file != null)
 		{
-			parseState.setPHPVersion(PHPVersionProvider.getPHPVersion(file.getProject()));
+			phpVersion = PHPVersionProvider.getPHPVersion(file.getProject());
 		}
+		PHPParseState parseState = new PHPParseState(getContents(), 0, phpVersion, module, sourceModule);
 		return getAST(parseState);
 	}
 }

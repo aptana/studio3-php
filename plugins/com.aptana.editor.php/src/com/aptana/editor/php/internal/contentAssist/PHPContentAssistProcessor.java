@@ -1119,7 +1119,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				String superClassname = ((ClassPHPEntryValue) clazz).getSuperClassname();
 				Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, aliases, namespace,
-						false);
+						true);
 				if (superClassEntry != null && superClassEntry.size() == 1)
 				{
 					result.addAll(superClassEntry);
@@ -2257,7 +2257,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		Image image = null;
 		final IModule module = entry.getModule();
 		final Object val = entry.getValue();
-		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, document, entry);
+		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, entry);
 		// if (entry.getValue() instanceof NamespacePHPEntryValue)
 		// {
 		image = labelProvider.getImage(val);

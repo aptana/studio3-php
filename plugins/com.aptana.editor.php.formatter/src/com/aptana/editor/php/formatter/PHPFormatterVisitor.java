@@ -145,7 +145,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 	private FormatterDocument document;
 	private PHPFormatterNodeBuilder builder;
-	private Set<Integer> commentEndOffsets;
+	private Set<Integer> multiLinecommentsEndOffsets;
+	private Set<Integer> singleLinecommentsEndOffsets;
 	private List<IRegion> onOffRegions;
 	private List<Comment> comments;
 
@@ -170,7 +171,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private void processComments(List<Comment> comments)
 	{
 		this.comments = comments;
-		commentEndOffsets = new HashSet<Integer>();
+		multiLinecommentsEndOffsets = new HashSet<Integer>();
+		singleLinecommentsEndOffsets = new HashSet<Integer>();
 		if (comments == null)
 		{
 			return;
@@ -184,11 +186,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int end = comment.getEnd();
 			if (commentType == Comment.TYPE_SINGLE_LINE)
 			{
-				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end));
+				singleLinecommentsEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end));
 			}
 			else if (commentType == Comment.TYPE_MULTILINE || commentType == Comment.TYPE_PHPDOC)
 			{
-				commentEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end + 1));
+				multiLinecommentsEndOffsets.add(builder.getNextNonWhiteCharOffset(document, end));
 			}
 			// Add to the map of comments when the On-Off is enabled.
 			if (onOffEnabled)
@@ -223,15 +225,39 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * Returns true if there is a comment right before the given element.<br>
+	 * Returns true if there is a any type of comment right before the given element.<br>
 	 * There should be only whitespaces between the given offset and the comment.
 	 * 
 	 * @param offset
 	 * @return True, if the given offset is right after a comment.
 	 */
-	private boolean hasCommentBefore(int offset)
+	private boolean hasAnyCommentBefore(int offset)
 	{
-		return commentEndOffsets.contains(offset);
+		return multiLinecommentsEndOffsets.contains(offset) || singleLinecommentsEndOffsets.contains(offset);
+	}
+
+	/**
+	 * Returns true if there is a multi-line comment right before the given element.<br>
+	 * There should be only whitespaces between the given offset and the comment.
+	 * 
+	 * @param offset
+	 * @return True, if the given offset is right after a comment.
+	 */
+	private boolean hasMultiLineCommentBefore(int offset)
+	{
+		return multiLinecommentsEndOffsets.contains(offset);
+	}
+
+	/**
+	 * Returns true if there is a single-line comment right before the given element.<br>
+	 * There should be only whitespaces between the given offset and the comment.
+	 * 
+	 * @param offset
+	 * @return True, if the given offset is right after a comment.
+	 */
+	private boolean hasSingleLineCommentBefore(int offset)
+	{
+		return singleLinecommentsEndOffsets.contains(offset);
 	}
 
 	/*
@@ -291,7 +317,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				int elseBlockStart = elsePos + trueBlockEnd;
 				int elseBlockDeclarationEnd = elseBlockStart + 4; // +4 for the keyword 'else'
 				elseNode = new FormatterPHPElseNode(document, hasFalseBlock, isElseIf, hasTrueBlock,
-						hasCommentBefore(elseBlockStart));
+						hasAnyCommentBefore(elseBlockStart));
 				elseNode.setBegin(builder.createTextNode(document, elseBlockStart, elseBlockDeclarationEnd));
 				builder.push(elseNode);
 			}
@@ -306,7 +332,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 					// Wrap the incoming 'if' with an Else-If node that will allow us later to break it and indent
 					// it.
 					FormatterPHPElseIfNode elseIfNode = new FormatterPHPElseIfNode(document,
-							hasCommentBefore(falseBlockStart));
+							hasAnyCommentBefore(falseBlockStart));
 					elseIfNode.setBegin(builder.createTextNode(document, falseBlockStart, falseBlockStart));
 					builder.push(elseIfNode);
 					falseStatement.accept(this);
@@ -401,7 +427,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		ArrayCreation parent = (ArrayCreation) arrayElement.getParent();
 		boolean hasSingleElement = parent.elements().size() == 1;
 		FormatterPHPArrayElementNode arrayElementNode = new FormatterPHPArrayElementNode(document, hasSingleElement,
-				hasCommentBefore(arrayElement.getStart()));
+				hasAnyCommentBefore(arrayElement.getStart()));
 		arrayElementNode.setBegin(builder.createTextNode(document, arrayElement.getStart(), arrayElement.getStart()));
 		builder.push(arrayElementNode);
 		visitNodeLists(leftNodes, rightNodes, TypeOperator.KEY_VALUE, null);
@@ -1605,7 +1631,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			endingOffset -= 8;
 		}
 		// APSTUD-3382 - Check if we have a comment right before the end of this switch.
-		if (hasCommentBefore(endingOffset))
+		if (hasAnyCommentBefore(endingOffset))
 		{
 			Comment comment = PHPDocUtils.getCommentByType(comments, endingOffset, document.getText(),
 					Comment.TYPE_MULTILINE | Comment.TYPE_PHPDOC | Comment.TYPE_SINGLE_LINE);
@@ -1651,7 +1677,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		builder.checkedPop(caseNode, -1);
 		// push the case/default content
 		FormatterPHPCaseBodyNode caseBodyNode = new FormatterPHPCaseBodyNode(document, hasBlockedChild, hasBlockedChild
-				&& hasCommentBefore(actions.get(0).getStart()));
+				&& hasAnyCommentBefore(actions.get(0).getStart()));
 		if (hasBlockedChild)
 		{
 			Block body = (Block) actions.get(0);
@@ -1669,7 +1695,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			if (!actions.isEmpty())
 			{
 				int start = actions.get(0).getStart();
-				if (hasCommentBefore(start))
+				if (hasAnyCommentBefore(start))
 				{
 					start = caseColonNode.getEndOffset();
 				}
@@ -1854,7 +1880,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 
 		// add the class body
 		FormatterPHPTypeBodyNode typeBodyNode = new FormatterPHPTypeBodyNode(document,
-				hasCommentBefore(body.getStart()));
+				hasAnyCommentBefore(body.getStart()));
 		typeBodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
 		builder.push(typeBodyNode);
 		body.childrenAccept(this);
@@ -1961,17 +1987,20 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				closeParenStart = builder.locateCharBackward(document, ')', expressionEndOffset - 1);
 				closeParenEnd = closeParenStart + 1;
 			}
-			if (hasCommentBefore(closeParenStart))
+			if (hasSingleLineCommentBefore(closeParenStart))
 			{
 				// Make sure that the closing pair will not get pushed up when there is a comment line right before it.
 				parenthesesNode.setNewLineBeforeClosing(true);
+				builder.checkedPop(parenthesesNode, closeParenStart);
+			}
+			else if (hasMultiLineCommentBefore(closeParenStart))
+			{
 				builder.checkedPop(parenthesesNode, closeParenStart);
 			}
 			else
 			{
 				builder.checkedPop(parenthesesNode, -1);
 			}
-
 			parenthesesNode.setEnd(builder.createTextNode(document, closeParenStart, closeParenEnd));
 		}
 	}
@@ -2153,7 +2182,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	private void visitBlockNode(Block block, ASTNode parent, boolean consumeEndingSemicolon)
 	{
 		boolean isAlternativeSyntaxBlock = !block.isCurly();
-		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, hasCommentBefore(block.getStart()));
+		FormatterPHPBlockNode blockNode = new FormatterPHPBlockNode(document, hasAnyCommentBefore(block.getStart()));
 		blockNode.setBegin(builder.createTextNode(document, block.getStart(), block.getStart() + 1));
 		builder.push(blockNode);
 		// visit the children
@@ -2229,7 +2258,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		if (body != null)
 		{
 			FormatterPHPFunctionBodyNode bodyNode = new FormatterPHPFunctionBodyNode(document,
-					hasCommentBefore(body.getStart()));
+					hasAnyCommentBefore(body.getStart()));
 			bodyNode.setBegin(builder.createTextNode(document, body.getStart(), body.getStart() + 1));
 			builder.push(bodyNode);
 			body.childrenAccept(this);

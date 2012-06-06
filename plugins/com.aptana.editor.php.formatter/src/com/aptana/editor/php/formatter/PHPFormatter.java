@@ -361,7 +361,16 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 						}
 						else
 						{
-							logError(input, output);
+							if (ast.getAST().hasErrors())
+							{
+								// Fatal syntax errors prevented a proper formatting.
+								StatusLineMessageTimerManager.setErrorMessage(
+										FormatterMessages.PHPFormatter_fatalSyntaxErrors, ERROR_DISPLAY_TIMEOUT, true);
+							}
+							else
+							{
+								logError(input, output);
+							}
 						}
 					}
 					else
@@ -369,6 +378,12 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 						return new MultiTextEdit(); // NOP
 					}
 				}
+			}
+			else
+			{
+				// Fatal syntax errors
+				StatusLineMessageTimerManager.setErrorMessage(FormatterMessages.PHPFormatter_fatalSyntaxErrors,
+						ERROR_DISPLAY_TIMEOUT, true);
 			}
 		}
 		catch (FormatterException e)
@@ -615,6 +630,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * @see com.aptana.formatter.AbstractScriptFormatter#getOutputOnOffRegions(java.lang.String, java.lang.String,
 	 * java.lang.String)
 	 */
+	@Override
 	protected List<IRegion> getOutputOnOffRegions(String output, String formatterOffPattern, String formatterOnPattern)
 	{
 		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);

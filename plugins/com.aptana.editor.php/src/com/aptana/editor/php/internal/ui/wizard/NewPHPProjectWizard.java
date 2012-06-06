@@ -14,9 +14,8 @@ import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 import com.aptana.core.build.UnifiedBuilder;
 import com.aptana.core.logging.IdeLog;
@@ -151,18 +150,18 @@ public class NewPHPProjectWizard extends AbstractNewProjectWizard implements IEx
 	 */
 	protected void setPhpLangOptions(final IProject project, IProgressMonitor monitor)
 	{
-				Preferences preferences = new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
+		IEclipsePreferences preferences = new ProjectScope(project).getNode(PHPEditorPlugin.PLUGIN_ID);
 		preferences.put(CorePreferenceConstants.Keys.PHP_VERSION, selectedVersion);
-				try
-				{
-					preferences.flush();
-				}
-				catch (BackingStoreException e)
-				{
+		try
+		{
+			preferences.flush();
+		}
+		catch (Exception e)
+		{
 			// TODO Throw the exception up as an InvocationTargetException?
-					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
-				}
-			}
+			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error saving the project's PHP Version settings", e); //$NON-NLS-1$
+		}
+	}
 
 	@Override
 	protected String getProjectCreateEventName()

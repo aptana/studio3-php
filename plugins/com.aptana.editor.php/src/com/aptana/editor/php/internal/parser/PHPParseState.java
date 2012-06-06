@@ -4,8 +4,9 @@ import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.internal.core.builder.IModule;
-import com.aptana.parsing.IParseState;
+import com.aptana.parsing.IParseStateCacheKey;
 import com.aptana.parsing.ParseState;
+import com.aptana.parsing.ParseStateCacheKey;
 
 /**
  * A PHP parse state implementation with the ability to set and get a PHP version.
@@ -19,6 +20,15 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	private IModule module;
 	private ISourceModule sourceModule;
 
+	public PHPParseState(String source, int startingOffset, PHPVersion version, IModule module,
+			ISourceModule sourceModule)
+	{
+		super(source, startingOffset);
+		this.phpVersion = version;
+		this.module = module;
+		this.sourceModule = sourceModule;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.aptana.editor.php.internal.parser.IPHPParseState#getPHPVersion()
@@ -28,29 +38,9 @@ public class PHPParseState extends ParseState implements IPHPParseState
 		return phpVersion;
 	}
 
-	public void phpVersionChanged(PHPVersion newVersion)
-	{
-		setPHPVersion(newVersion);
-	}
-
-	public void setPHPVersion(PHPVersion version)
-	{
-		this.phpVersion = version;
-	}
-
-	public void setModule(IModule module)
-	{
-		this.module = module;
-	}
-
 	public IModule getModule()
 	{
 		return this.module;
-	}
-
-	public void setSourceModule(ISourceModule sourceModule)
-	{
-		this.sourceModule = sourceModule;
 	}
 
 	public ISourceModule getSourceModule()
@@ -60,13 +50,15 @@ public class PHPParseState extends ParseState implements IPHPParseState
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.aptana.parsing.ParseState#requiresReparse(com.aptana.parsing.IParseState)
+	 * @see com.aptana.parsing.ParseState#getCacheKey(java.lang.String)
 	 */
 	@Override
-	public boolean requiresReparse(IParseState newState)
+	public IParseStateCacheKey getCacheKey(String contentTypeId)
 	{
-		// Force a re-parse to avoid the cache.
-		// At the moment, the PHP error markers are flushed independently.
-		return true;
+		// Note: not adding the sourceModule because it's just a wrapper over the module.
+		// As for the module, it should be lightweight enough to be on the cache key (just has
+		// a reference for IFile or File).
+		return new ParseStateCacheKey(super.getCacheKey(contentTypeId), phpVersion, this.module);
 	}
+
 }

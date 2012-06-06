@@ -140,13 +140,19 @@ public class PHTMLOutlineTest extends TestCase
 			else
 			{
 				// grab the output file content and compare to the buffer.
-				assertEquals("Unexpected outline output", readContent(outputFileName), builder.toString());
+				assertEquals("Unexpected outline output", normalizeLineEnding(readContent(outputFileName)),
+						normalizeLineEnding(builder.toString()));
 			}
 		}
 		catch (Exception e)
 		{
 			assertFalse(e.getMessage(), true);
 		}
+	}
+
+	private static String normalizeLineEnding(String str)
+	{
+		return str.replaceAll("\r\n|\r", "\n");
 	}
 
 	/**

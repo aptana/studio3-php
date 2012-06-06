@@ -22,7 +22,6 @@
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.text"
-            default-charset="UTF-8"
             file-extensions="php, phtml, inc, ctp, module, install"
             id="com.aptana.contenttype.phtml.php"
             name="%content-type.name"
@@ -420,6 +419,9 @@
          <contentTypeBinding
                contentTypeId="com.aptana.contenttype.phtml.php">
          </contentTypeBinding>
+         <projectNatureBinding
+               natureId="com.aptana.editor.php.phpNature">
+         </projectNatureBinding>
       </participant>
    </extension>
 </plugin>
