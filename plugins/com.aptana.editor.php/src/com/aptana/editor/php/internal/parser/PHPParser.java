@@ -179,8 +179,11 @@ public class PHPParser extends AbstractParser
 			{
 				latestValidNode.setIsCached(true);
 			}
+			working.setParseResult(latestValidNode);
+			return;
 		}
 		latestValidNode = root;
+		working.setParseResult(root);
 	}
 
 	/**
