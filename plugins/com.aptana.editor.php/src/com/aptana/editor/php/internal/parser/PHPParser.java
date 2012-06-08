@@ -29,8 +29,9 @@ import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPCommentNode;
 import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
+import com.aptana.parsing.AbstractParser;
 import com.aptana.parsing.IParseState;
-import com.aptana.parsing.IParser;
+import com.aptana.parsing.WorkingParseResult;
 import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.ast.IParseRootNode;
 import com.aptana.parsing.ast.ParseNode;
@@ -43,7 +44,7 @@ import com.aptana.parsing.ast.ParseRootNode;
  * @author Shalom Gibly <sgibly@aptana.com>
  * @since Aptana PHP 3.0
  */
-public class PHPParser implements IParser
+public class PHPParser extends AbstractParser
 {
 	protected static final ParseNode[] NO_CHILDREN = new ParseNode[0];
 	private PHPVersion phpVersion;
@@ -91,7 +92,8 @@ public class PHPParser implements IParser
 	/**
 	 * Override the default implementation to provide support for PHP nodes inside JavaScript.
 	 */
-	public IParseRootNode parse(IParseState parseState) // $codepro.audit.disable declaredExceptions
+	protected void parse(IParseState parseState, WorkingParseResult working) // $codepro.audit.disable
+																					// declaredExceptions
 	{
 		String source = parseState.getSource();
 		int startingOffset = parseState.getStartingOffset();
@@ -132,7 +134,7 @@ public class PHPParser implements IParser
 		boolean astHasErrors = false;
 		if (program != null)
 		{
-			parseState.setParseResult(root);
+			working.setParseResult(root);
 			try
 			{
 				program.setSourceModule(ModelUtils.convertModule(module));
@@ -142,7 +144,7 @@ public class PHPParser implements IParser
 				astHasErrors = ast.hasErrors();
 				if (astHasErrors)
 				{
-					parseState.setParseResult(null);
+					working.setParseResult(null);
 				}
 				if (module != null)
 				{
@@ -177,10 +179,8 @@ public class PHPParser implements IParser
 			{
 				latestValidNode.setIsCached(true);
 			}
-			return latestValidNode;
 		}
 		latestValidNode = root;
-		return latestValidNode;
 	}
 
 	/**

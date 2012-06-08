@@ -316,7 +316,7 @@ public class NodeBuilder
 		try
 		{
 			ParseState parseState = new HTMLParseState(source);
-			htmlParseResult = ParserPoolFactory.parse(IHTMLConstants.CONTENT_TYPE_HTML, parseState);
+			htmlParseResult = ParserPoolFactory.parse(IHTMLConstants.CONTENT_TYPE_HTML, parseState).getRootNode();
 		}
 		catch (Exception e)
 		{
