@@ -176,7 +176,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		{
 			PHPParseState phpParseState = new PHPParseState(getDocument().get(), 0, phpVersionCache, getModule(),
 					getSourceModule());
-			return ParserPoolFactory.parse(getContentType(), phpParseState);
+			return ParserPoolFactory.parse(getContentType(), phpParseState).getRootNode();
 		}
 		catch (Exception e)
 		{

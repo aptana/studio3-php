@@ -2,6 +2,7 @@ package com.aptana.editor.php.internal.parser;
 
 import org2.eclipse.php.internal.core.PHPVersion;
 
+import com.aptana.core.util.ImmutableTupleN;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.parsing.IParseStateCacheKey;
@@ -19,6 +20,7 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	private PHPVersion phpVersion;
 	private IModule module;
 	private ISourceModule sourceModule;
+	private final static ImmutableTupleN cacheKey = new ImmutableTupleN();
 
 	public PHPParseState(String source, int startingOffset, PHPVersion version, IModule module,
 			ISourceModule sourceModule)
@@ -27,6 +29,12 @@ public class PHPParseState extends ParseState implements IPHPParseState
 		this.phpVersion = version;
 		this.module = module;
 		this.sourceModule = sourceModule;
+	}
+
+	@Override
+	protected ImmutableTupleN calculateCacheKey()
+	{
+		return cacheKey; // empty immutable tuple
 	}
 
 	/*
@@ -55,10 +63,22 @@ public class PHPParseState extends ParseState implements IPHPParseState
 	@Override
 	public IParseStateCacheKey getCacheKey(String contentTypeId)
 	{
-		// Note: not adding the sourceModule because it's just a wrapper over the module.
-		// As for the module, it should be lightweight enough to be on the cache key (just has
-		// a reference for IFile or File).
-		return new ParseStateCacheKey(super.getCacheKey(contentTypeId), phpVersion, this.module);
+		// TODO: on PHP errors are only reported in a reparse, so, we use the same cache-key all the time just say
+		// that a reparse is required because otherwise errors are not displayed if the ast is in the cache.
+		// This is something that should probably be fixed... instead of using the build collector
+		// to flush errors, the errors should be added to the ParseResult and later applied from that
+		// parse result to actual markers.
+		//
+		// See:
+		// com.aptana.editor.php.internal.parser.PHPParser.parse(IParseState, WorkingParseResult): ast.flushErrors()
+		return new ParseStateCacheKey(super.getCacheKey(contentTypeId))
+		{
+			@Override
+			public boolean requiresReparse(IParseStateCacheKey newCacheKey)
+			{
+				return true;
+			}
+		};
 	}
 
 }
