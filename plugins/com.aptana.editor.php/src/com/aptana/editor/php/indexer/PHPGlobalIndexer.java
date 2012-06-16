@@ -1022,16 +1022,16 @@ public final class PHPGlobalIndexer
 		}
 	}
 
-	public void processUnsavedModuleUpdate(Program program, IModule module)
+	public void processUnsavedModuleUpdate(Program program, IModule savedModule, IModule unsavedModule)
 	{
 
-		mainIndex.removeModuleEntries(module, module.getBuildPath());
-		UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(module.getBuildPath());
+		mainIndex.removeModuleEntries(savedModule, savedModule.getBuildPath());
+		UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(savedModule.getBuildPath());
 		for (IModuleIndexer indexer : moduleIndexers)
 		{
 			if (indexer instanceof IProgramIndexer)
 			{
-				((IProgramIndexer) indexer).indexModule(program, module, new IIndexReporter()
+				((IProgramIndexer) indexer).indexModule(program, unsavedModule, new IIndexReporter()
 				{
 					public IElementEntry reportEntry(int category, String entryPath, IReportable value, IModule module)
 					{
@@ -1044,7 +1044,7 @@ public final class PHPGlobalIndexer
 		if (elementIndex != null)
 		{
 			// reindex it later
-			elementIndex.recordTimeStamp(module, -1);
+			elementIndex.recordTimeStamp(savedModule, -1);
 		}
 		fireChanged(0);
 		fireChangeProcessed();
