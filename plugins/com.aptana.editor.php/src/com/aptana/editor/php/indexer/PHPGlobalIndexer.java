@@ -99,6 +99,31 @@ public final class PHPGlobalIndexer
 
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.aptana.editor.php.indexer.IProgramIndexer#indexModule(org2.eclipse.php.internal.core.ast.nodes.Program,
+		 * com.aptana.editor.php.internal.core.builder.IModule, java.lang.String,
+		 * com.aptana.editor.php.indexer.IIndexReporter)
+		 */
+		public void indexModule(Program program, IModule module, String source, IIndexReporter reporter)
+		{
+			try
+			{
+				initIfNeeded();
+				if (indexer instanceof IProgramIndexer)
+				{
+					IProgramIndexer pi = (IProgramIndexer) indexer;
+					pi.indexModule(program, module, source, reporter);
+				}
+			}
+			catch (CoreException e)
+			{
+				IdeLog.logError(PHPEditorPlugin.getDefault(),
+						"Error indexing a PHP module", e, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+			}
+		}
+
 		private void initIfNeeded() throws CoreException
 		{
 			if (indexer == null)
@@ -1022,16 +1047,16 @@ public final class PHPGlobalIndexer
 		}
 	}
 
-	public void processUnsavedModuleUpdate(Program program, IModule savedModule, IModule unsavedModule)
+	public void processUnsavedModuleUpdate(Program program, IModule module, String source)
 	{
 
-		mainIndex.removeModuleEntries(savedModule, savedModule.getBuildPath());
-		UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(savedModule.getBuildPath());
+		mainIndex.removeModuleEntries(module, module.getBuildPath());
+		UnpackedElementIndex elementIndex = (UnpackedElementIndex) mainIndex.getElementIndex(module.getBuildPath());
 		for (IModuleIndexer indexer : moduleIndexers)
 		{
 			if (indexer instanceof IProgramIndexer)
 			{
-				((IProgramIndexer) indexer).indexModule(program, unsavedModule, new IIndexReporter()
+				((IProgramIndexer) indexer).indexModule(program, module, source, new IIndexReporter()
 				{
 					public IElementEntry reportEntry(int category, String entryPath, IReportable value, IModule module)
 					{
@@ -1044,7 +1069,7 @@ public final class PHPGlobalIndexer
 		if (elementIndex != null)
 		{
 			// reindex it later
-			elementIndex.recordTimeStamp(savedModule, -1);
+			elementIndex.recordTimeStamp(module, -1);
 		}
 		fireChanged(0);
 		fireChangeProcessed();

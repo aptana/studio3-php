@@ -1,14 +1,11 @@
 package com.aptana.editor.php.internal.parser;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tools.ant.filters.StringInputStream;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org2.eclipse.php.internal.core.PHPVersion;
@@ -25,7 +22,6 @@ import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.core.IPHPConstants;
-import com.aptana.editor.php.internal.core.builder.IBuildPath;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
@@ -33,7 +29,6 @@ import com.aptana.editor.php.internal.parser.nodes.NodeBuildingVisitor;
 import com.aptana.editor.php.internal.parser.nodes.PHPBlockNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPCommentNode;
 import com.aptana.editor.php.internal.typebinding.TypeBindingBuilder;
-import com.aptana.editor.php.util.EncodingUtils;
 import com.aptana.parsing.AbstractParser;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.WorkingParseResult;
@@ -58,9 +53,6 @@ public class PHPParser extends AbstractParser
 	private ISourceModule sourceModule;
 	private boolean parseHTML;
 	private PHPParseRootNode latestValidNode;
-
-	// A temporary IModule to be used when indexing unsaved content
-	private TemporaryModule temporaryModule;
 
 	/**
 	 * Constructs a new PHPParser.<br>
@@ -96,7 +88,6 @@ public class PHPParser extends AbstractParser
 	{
 		this.phpVersion = phpVersion;
 		this.parseHTML = parseHTML;
-		this.temporaryModule = new TemporaryModule();
 	}
 
 	/**
@@ -156,9 +147,8 @@ public class PHPParser extends AbstractParser
 				}
 				if (module != null)
 				{
-					temporaryModule.setContent(source);
-					temporaryModule.setDelegateModule(module);
-					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module, temporaryModule);
+					// Pass in the latest source along with the module
+					PHPGlobalIndexer.getInstance().processUnsavedModuleUpdate(program, module, source);
 				}
 				// Recalculate the type bindings
 				TypeBindingBuilder.buildBindings(program, source);
@@ -285,89 +275,6 @@ public class PHPParser extends AbstractParser
 		for (IParseNode child : nodes.getChildren())
 		{
 			root.addChild(child);
-		}
-	}
-
-	/**
-	 * A temporary IModule that proxies another module accept for the content that is taken from a given string.
-	 */
-	private static class TemporaryModule implements IModule
-	{
-
-		private IModule delegateModule;
-		private String content;
-
-		/**
-		 * @param delegateModule
-		 *            the delegateModule to set
-		 */
-		protected void setDelegateModule(IModule module)
-		{
-			this.delegateModule = module;
-		}
-
-		/**
-		 * @param content
-		 *            the content to set
-		 */
-		protected void setContent(String content)
-		{
-			this.content = content;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.aptana.editor.php.internal.core.builder.IBuildPathResource#getFullPath()
-		 */
-		public String getFullPath()
-		{
-			return delegateModule.getFullPath();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.aptana.editor.php.internal.core.builder.IBuildPathResource#getBuildPath()
-		 */
-		public IBuildPath getBuildPath()
-		{
-			return delegateModule.getBuildPath();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.aptana.editor.php.internal.core.builder.IBuildPathResource#getShortName()
-		 */
-		public String getShortName()
-		{
-			return delegateModule.getShortName();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.aptana.editor.php.internal.core.builder.IBuildPathResource#getPath()
-		 */
-		public IPath getPath()
-		{
-			// TODO Auto-generated method stub
-			return delegateModule.getPath();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.aptana.editor.php.internal.core.builder.IModule#getContents()
-		 */
-		public InputStream getContents() throws IOException
-		{
-			return new StringInputStream(content, EncodingUtils.getModuleEncoding(delegateModule));
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.aptana.editor.php.internal.core.builder.IModule#getTimeStamp()
-		 */
-		public long getTimeStamp()
-		{
-			return delegateModule.getTimeStamp();
 		}
 	}
 }

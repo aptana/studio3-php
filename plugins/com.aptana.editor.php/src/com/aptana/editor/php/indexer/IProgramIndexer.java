@@ -12,17 +12,26 @@ import org2.eclipse.php.internal.core.ast.nodes.Program;
 import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
- * 
  * @author Pavel Petrochenko
- *
  */
-public interface IProgramIndexer {
+public interface IProgramIndexer
+{
 
-	
 	/**
 	 * Indexes module contents.
-	 * @param module - module to build index for.
-	 * @param reporter - reporter to report the built index.
+	 * 
+	 * @param module
+	 *            - module to build index for.
+	 * @param reporter
+	 *            - reporter to report the built index.
 	 */
-	void indexModule(Program program,IModule module, IIndexReporter reporter);
+	void indexModule(Program program, IModule module, IIndexReporter reporter);
+
+	/**
+	 * @param program
+	 * @param module
+	 * @param source
+	 * @param iIndexReporter
+	 */
+	void indexModule(Program program, IModule module, String source, IIndexReporter iIndexReporter);
 }
