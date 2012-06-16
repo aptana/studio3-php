@@ -3725,27 +3725,15 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							for (int i = 0; i < currentLine.length(); i++)
 							{
 								char ch = currentLine.charAt(i);
-								if (ch == '\r')
-								{
-									replaceBuffer.append(ch);
-								}
-								else if (ch == '\r')
-								{
-									replaceBuffer.append(ch);
-								}
-								else if (Character.isWhitespace(ch))
+								if (Character.isWhitespace(ch))
 								{
 									replaceBuffer.append(ch);
 								}
 								else
 								{
-									if (ch == '{')
+									if (ch == '{' || ch == '}')
 									{
-										replaceBuffer.append('{');
-									}
-									else if (ch == '}')
-									{
-										replaceBuffer.append('}');
+										replaceBuffer.append(ch);
 									}
 									else
 									{
@@ -3938,11 +3926,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				for (int i = 0; i < currentLine.length(); i++)
 				{
 					char ch = currentLine.charAt(i);
-					if (ch == '\r')
-					{
-						replaceBuffer.append(ch);
-					}
-					else if (ch == '\r')
+					if (ch == '\r' || ch == '\n')
 					{
 						replaceBuffer.append(ch);
 					}
