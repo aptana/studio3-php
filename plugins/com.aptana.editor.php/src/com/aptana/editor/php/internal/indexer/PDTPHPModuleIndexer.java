@@ -1980,7 +1980,16 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				else if (type == ASTNode.INFIX_EXPRESSION)
 				{
 					// This expression may contain nested infix-expressions, so we just grab the text directly.
-					includePath = PDTPHPModuleIndexer.this._contents.substring(subExpr.getStart(), subExpr.getEnd());
+					try
+					{
+						includePath = PDTPHPModuleIndexer.this._contents
+								.substring(subExpr.getStart(), subExpr.getEnd());
+					}
+					catch (Exception e)
+					{
+						IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+								"A problem while visiting an include statement", e); //$NON-NLS-1$
+					}
 				}
 				if (includePath != null)
 				{
