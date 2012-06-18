@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Eclipse Public License (EPL).
+ * Please see the license-epl.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.epl;
 
 import java.util.Hashtable;
@@ -5,6 +12,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -190,9 +198,41 @@ public class PHPEplPlugin extends AbstractUIPlugin
 	/**
 	 * @deprecated Use {@link IdeLog}
 	 */
+	public static void logInfo(String string, Throwable e)
+	{
+		IdeLog.logInfo(getDefault(), string, e, DEBUG_SCOPE);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
 	public static void logError(Throwable e)
 	{
 		IdeLog.logError(getDefault(), e);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
+	public static void logError(String string, Throwable e)
+	{
+		IdeLog.logError(getDefault(), string, e);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
+	public static void logWarning(String message)
+	{
+		IdeLog.logWarning(getDefault(), message);
+	}
+
+	/**
+	 * @deprecated Use {@link IdeLog}
+	 */
+	public static void log(IStatus status)
+	{
+		IdeLog.log(getDefault(), status);
 	}
 
 	public static IWorkspace getWorkspace()

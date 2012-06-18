@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Eclipse Public License (EPL).
  * Please see the license-epl.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -8,8 +8,8 @@
 package com.aptana.editor.php.core;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org2.eclipse.php.internal.core.project.options.PHPProjectOptions;
 
 import com.aptana.core.build.UnifiedBuilder;
 import com.aptana.core.util.ResourceUtil;
@@ -19,7 +19,7 @@ import com.aptana.core.util.ResourceUtil;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public final class PHPNature implements IProjectNature
+public final class PHPNature implements IPHPNature
 {
 
 	/**
@@ -88,5 +88,15 @@ public final class PHPNature implements IProjectNature
 	{
 		this.fProject = project;
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.core.IPHPNature#getOptions()
+	 */
+	public PHPProjectOptions getOptions()
+	{
+		// TODO - Implement that later on.
+		return null;
 	}
 }

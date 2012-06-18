@@ -117,7 +117,7 @@ public class PHTMLOutlineTest extends TestCase
 		try
 		{
 			String source = readContent(filename);
-			IParseRootNode parseRootNode = ParserPoolFactory.parse(IPHPConstants.CONTENT_TYPE_PHP, source);
+			IParseRootNode parseRootNode = ParserPoolFactory.parse(IPHPConstants.CONTENT_TYPE_PHP, source).getRootNode();
 			ParseNodesIterator iterator = new ParseNodesIterator(parseRootNode);
 			StringBuilder builder = new StringBuilder();
 			while (iterator.hasNext())

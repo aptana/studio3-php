@@ -478,7 +478,7 @@ public class DocumentorLexer implements IDocumentorLexer {
         PHPDocBlock rv = null;
 		try
 		{
-			rv = new PHPDocBlock(start, zzMarkedPos - zzPushbackPos, ast, shortDesc, tags);
+			rv = new PHPDocBlock(start, zzMarkedPos - zzPushbackPos, ast, shortDesc, longDesc, tags);
 		}
 		catch (IOException e)
 		{

@@ -2257,7 +2257,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		Image image = null;
 		final IModule module = entry.getModule();
 		final Object val = entry.getValue();
-		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, document, entry);
+		IDocumentationResolver resolver = new EntryDocumentationResolver(proposalContent, index, val, entry);
 		// if (entry.getValue() instanceof NamespacePHPEntryValue)
 		// {
 		image = labelProvider.getImage(val);

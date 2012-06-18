@@ -116,7 +116,6 @@ public class CodeAssistTests extends AbstractPDTTTest
 		super(description);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static Test suite()
 	{
 		Logger.global.entering("Test", "suite");
