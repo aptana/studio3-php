@@ -8,12 +8,14 @@ import org2.eclipse.php.internal.core.ast.scanner.php53.ParserConstants;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.parser.PHPTokenType;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
+import com.aptana.editor.php.internal.ui.editor.scanner.PHPToken;
 
 public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 {
 
-	public IToken mapToken(Symbol sym, PHPCodeScanner scanner)
+	public IToken mapToken(PHPToken token, PHPCodeScanner scanner)
 	{
+		Symbol sym = token.getSymbol();
 		switch (sym.sym)
 		{
 			case T_ECHO:
@@ -103,7 +105,7 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_LOGICAL_XOR:
 				return scanner.getToken(PHPTokenType.KEYWORD_OP_LOGICAL);
 			case T_VARIABLE:
-				String value = scanner.getSymbolValue(sym);
+				String value = scanner.getSymbolValue(token);
 				if (THIS.equals(value))
 				{
 					return scanner.getToken(PHPTokenType.VARIABLE_LANGUAGE);
@@ -131,7 +133,7 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 			case T_CONSTANT_ENCAPSED_STRING:
 				return scanner.getToken(PHPTokenType.STRING_QUOTED);
 			case T_STRING:
-				String tokenContent = scanner.getSymbolValue(sym);
+				String tokenContent = scanner.getSymbolValue(token);
 				if (SELF.equals(tokenContent) || PARENT.equals(tokenContent))
 				{
 					return scanner.getToken(PHPTokenType.VARIABLE_LANGUAGE);
@@ -161,7 +163,7 @@ public class PHP53TokenMapper implements IPHPTokenMapper, ParserConstants
 					}
 				}
 			default: // $codepro.audit.disable nonTerminatedCaseClause
-				return PHPTokenMapperFactory.mapDefaultToken(scanner, sym);
+				return PHPTokenMapperFactory.mapDefaultToken(scanner, token);
 		}
 	}
 }

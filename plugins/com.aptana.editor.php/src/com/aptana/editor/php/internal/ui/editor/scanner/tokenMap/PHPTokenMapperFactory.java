@@ -11,14 +11,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import java_cup.runtime.Symbol;
-
 import org.eclipse.jface.text.rules.IToken;
 import org2.eclipse.php.internal.core.PHPVersion;
 
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.internal.parser.PHPTokenType;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
+import com.aptana.editor.php.internal.ui.editor.scanner.PHPToken;
 
 /**
  * A PHP token mapper factory that returns the right {@link IPHPTokenMapper} according to the given {@link PHPVersion}.
@@ -168,9 +167,9 @@ public class PHPTokenMapperFactory
 	 * @param sym
 	 * @return
 	 */
-	public static IToken mapDefaultToken(PHPCodeScanner scanner, Symbol sym)
+	public static IToken mapDefaultToken(PHPCodeScanner scanner, PHPToken token)
 	{
-		String tokenContent = scanner.getSymbolValue(sym);
+		String tokenContent = scanner.getSymbolValue(token);
 		if (";".equals(tokenContent))
 		{
 			return scanner.getToken(PHPTokenType.PUNCTUATION_TERMINATOR.toString());
