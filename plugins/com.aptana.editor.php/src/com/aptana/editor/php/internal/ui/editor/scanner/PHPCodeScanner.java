@@ -12,8 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import java_cup.runtime.Symbol;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
@@ -36,7 +34,7 @@ import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.PHPTokenMapperF
 public class PHPCodeScanner implements ITokenScanner
 {
 
-	private IPHPTokenScanner fScanner;
+	private final IPHPTokenScanner fScanner;
 	private Queue<QueuedToken> queue;
 	private int fLength;
 	private int fOffset;
@@ -82,10 +80,8 @@ public class PHPCodeScanner implements ITokenScanner
 		{
 			return Token.EOF;
 		}
-		Symbol sym = (Symbol) token.getData();
-
 		IPHPTokenMapper tokenMapper = PHPTokenMapperFactory.getMapper(fScanner.getPHPVersion());
-		token = tokenMapper.mapToken(sym, this);
+		token = tokenMapper.mapToken((PHPToken) token, this);
 		if (scopeEquals(token, PHPTokenType.STORAGE_TYPE_FUNCTION))
 		{
 			inFunctionDeclaration = true;
@@ -140,7 +136,7 @@ public class PHPCodeScanner implements ITokenScanner
 
 			if (!next.isEOF())
 			{
-				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
+				IToken nextMapped = tokenMapper.mapToken((PHPToken) next, this);
 				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
 				{
 					token = getToken(PHPTokenType.META_FUNCTION_CALL_OBJECT);
@@ -179,7 +175,7 @@ public class PHPCodeScanner implements ITokenScanner
 
 			if (!next.isEOF())
 			{
-				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
+				IToken nextMapped = tokenMapper.mapToken((PHPToken) next, this);
 				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
 				{
 					token = getToken(PHPTokenType.META_FUNCTION_CALL);
@@ -238,12 +234,11 @@ public class PHPCodeScanner implements ITokenScanner
 	 * @param sym
 	 * @return A String value extracted from the document
 	 */
-	public String getSymbolValue(Symbol sym)
+	public String getSymbolValue(PHPToken token)
 	{
 		try
 		{
-			return document.get(originalDocumentOffset + sym.left - PHPTokenScanner.PHP_PREFIX.length(), sym.right
-					- sym.left);
+			return token.getSymbolValue();
 		}
 		catch (Exception e)
 		{
