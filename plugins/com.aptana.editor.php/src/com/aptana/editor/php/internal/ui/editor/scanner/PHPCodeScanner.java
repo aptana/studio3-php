@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import java_cup.runtime.Symbol;
+
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
@@ -81,7 +83,7 @@ public class PHPCodeScanner implements ITokenScanner
 			return Token.EOF;
 		}
 		IPHPTokenMapper tokenMapper = PHPTokenMapperFactory.getMapper(fScanner.getPHPVersion());
-		token = tokenMapper.mapToken((PHPToken) token, this);
+		token = tokenMapper.mapToken((Symbol) token.getData(), this);
 		if (scopeEquals(token, PHPTokenType.STORAGE_TYPE_FUNCTION))
 		{
 			inFunctionDeclaration = true;
@@ -136,7 +138,7 @@ public class PHPCodeScanner implements ITokenScanner
 
 			if (!next.isEOF())
 			{
-				IToken nextMapped = tokenMapper.mapToken((PHPToken) next, this);
+				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
 				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
 				{
 					token = getToken(PHPTokenType.META_FUNCTION_CALL_OBJECT);
@@ -175,7 +177,7 @@ public class PHPCodeScanner implements ITokenScanner
 
 			if (!next.isEOF())
 			{
-				IToken nextMapped = tokenMapper.mapToken((PHPToken) next, this);
+				IToken nextMapped = tokenMapper.mapToken((Symbol) next.getData(), this);
 				if (scopeEquals(nextMapped, PHPTokenType.PUNCTUATION_PARAM_LEFT))
 				{
 					token = getToken(PHPTokenType.META_FUNCTION_CALL);
@@ -234,11 +236,16 @@ public class PHPCodeScanner implements ITokenScanner
 	 * @param sym
 	 * @return A String value extracted from the document
 	 */
-	public String getSymbolValue(PHPToken token)
+	public String getSymbolValue(Symbol sym)
 	{
 		try
 		{
-			return token.getSymbolValue();
+			// Note: don't check for null contents because this should only be used
+			// from the scanner while the contents are still available (so, this
+			// situation would really be an error).
+			String contents = fScanner.getContents();
+			
+			return contents.substring(sym.left, sym.right);
 		}
 		catch (Exception e)
 		{

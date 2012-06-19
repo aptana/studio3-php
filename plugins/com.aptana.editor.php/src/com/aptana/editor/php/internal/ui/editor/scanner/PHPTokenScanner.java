@@ -9,7 +9,6 @@ package com.aptana.editor.php.internal.ui.editor.scanner;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.ref.WeakReference;
 
 import java_cup.sym;
 import java_cup.runtime.Symbol;
@@ -151,6 +150,11 @@ public class PHPTokenScanner implements IPHPTokenScanner
 		}
 		origOffset = offset;
 	}
+	
+	public String getContents()
+	{
+		return fContents;
+	}
 
 	/**
 	 * Creates an {@link IToken} from a {@link Symbol}
@@ -166,7 +170,7 @@ public class PHPTokenScanner implements IPHPTokenScanner
 		}
 		else
 		{
-			return new PHPToken(symbol, new WeakReference<String>(fContents));
+			return new Token(symbol);
 		}
 	}
 
