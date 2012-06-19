@@ -3,11 +3,10 @@
  */
 package com.aptana.editor.php.internal.ui.editor.scanner.tokenMap;
 
-import java_cup.runtime.Symbol;
-
 import org.eclipse.jface.text.rules.IToken;
 
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
+import com.aptana.editor.php.internal.ui.editor.scanner.PHPToken;
 
 /**
  * Map a PHP symbol number to an IToken. A mapper that implements this interface should have specific information about
@@ -52,5 +51,5 @@ public interface IPHPTokenMapper
 	 * @param phpCodeScanner
 	 * @return A mapped {@link IToken}
 	 */
-	public IToken mapToken(Symbol sym, PHPCodeScanner phpCodeScanner);
+	public IToken mapToken(PHPToken token, PHPCodeScanner phpCodeScanner);
 }
