@@ -1141,7 +1141,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int includeStart = include.getStart();
 		int keywordLength = Include.getType(include.getIncludeType()).length();
 		boolean firstInLine = include.getParent().getType() != ASTNode.IGNORE_ERROR;
-		pushKeyword(includeStart, keywordLength, firstInLine, false);
+		pushKeyword(includeStart, keywordLength, firstInLine, false, true);
 		// visit the include expression.
 		Expression expression = include.getExpression();
 		expression.accept(this);
@@ -2374,7 +2374,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void pushKeyword(int start, int keywordLength, boolean isFirstInLine, boolean isLastInLine)
 	{
-		pushKeyword(start, keywordLength, isFirstInLine, isLastInLine, true);
+		pushKeyword(start, keywordLength, isFirstInLine, isLastInLine, false);
 	}
 
 	/**
