@@ -1840,16 +1840,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			boolean exactMatch)
 	{
 		List<IElementEntry> varEntries = null;
-		if (exactMatch)
+		if (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.CONST_CATEGORY))
 		{
-			if (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.CONST_CATEGORY))
+			if (exactMatch)
 			{
 				varEntries = index.getEntries(IPHPIndexConstants.CONST_CATEGORY, name);
 			}
-		}
-		else
-		{
-			if (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.CONST_CATEGORY))
+			else
 			{
 				varEntries = index.getEntriesStartingWith(IPHPIndexConstants.CONST_CATEGORY, name);
 			}
