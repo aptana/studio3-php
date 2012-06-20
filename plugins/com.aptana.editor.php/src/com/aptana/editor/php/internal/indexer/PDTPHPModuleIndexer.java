@@ -21,6 +21,7 @@ import java_cup.runtime.Symbol;
 
 import org.apache.tools.ant.filters.StringInputStream;
 import org.eclipse.core.resources.IProject;
+import org2.eclipse.php.core.compiler.IPHPModifiers;
 import org2.eclipse.php.core.compiler.PHPFlags;
 import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
@@ -1120,11 +1121,10 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			VariableInfo info = new VariableInfo(defineName, defineTypes, getGlobalScope(),
 					functionInvocation.getStart(), PHPFlags.NAMED_CONSTANT); // TODO - Shalom - Test if Acc_constant is
 																				// not enough here
-			// (we added the user-defined NAMED_CONSTANT into the
-			// PHPFlags)
+			// (we added the user-defined NAMED_CONSTANT into the PHPFlags)
 			getGlobalScope().addVariable(info);
-			VariablePHPEntryValue entryValue = new VariablePHPEntryValue(0, false, false, true, defineTypes,
-					functionInvocation.getStart(), currentNamespace);
+			VariablePHPEntryValue entryValue = new VariablePHPEntryValue(IPHPModifiers.NAMED_CONSTANT, false, false,
+					true, defineTypes, functionInvocation.getStart(), currentNamespace);
 			reporter.reportEntry(IPHPIndexConstants.CONST_CATEGORY, defineName, entryValue, module);
 			return true;
 		}

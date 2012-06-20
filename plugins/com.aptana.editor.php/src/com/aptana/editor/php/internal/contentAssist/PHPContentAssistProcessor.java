@@ -46,6 +46,7 @@ import org2.eclipse.php.internal.core.documentModel.parser.PhpLexerFactory;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.CommonContentAssistProcessor;
@@ -112,7 +113,6 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private static final int EXTERNAL_DEFAULT_PROPOSAL_RELEVANCE = ICommonCompletionProposal.RELEVANCE_MEDIUM - 25;
 
 	private static final ICompletionProposal[] EMPTY_PROPOSAL = new ICompletionProposal[0];
-	protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	protected static final String DOLLAR_SIGN = "$"; //$NON-NLS-1$
 
 	/**
@@ -615,7 +615,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	// identifier, int offset, boolean collectItemsFromScope)
 	// {
 	// Set<ICompletionProposal> nsProposals = new TreeSet<ICompletionProposal>();
-	// List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY, EMPTY_STRING);
+	// List<IElementEntry> entries = index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY,
+	// StringUtil.EMPTY);
 	// HashSet<String> paths = new HashSet<String>();
 	// for (IElementEntry e : entries)
 	// {
@@ -723,7 +724,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// a simple identifier for that call and add it to our list, so the code assist will suggest completion
 			// for the return type of that call.
 			leftDereferenceEntries.addAll(computeSimpleIdentifierEntries(true, Collections.EMPTY_SET,
-					pathEntryName(entryName), false, index, false, module, false, EMPTY_STRING, Collections.EMPTY_MAP));
+					pathEntryName(entryName), false, index, false, module, false, StringUtil.EMPTY,
+					Collections.EMPTY_MAP));
 		}
 		boolean innerCompletion = false;
 		if (THIS_ACTIVATION_SEQUENCE.equals(callPath.get(0)))
@@ -1544,7 +1546,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			index = getIndexOptimized(content, offset);
 		}
-		String namespaceToUse = ignorIndexNamespace ? EMPTY_STRING : namespace;
+		String namespaceToUse = ignorIndexNamespace ? StringUtil.EMPTY : namespace;
 		List<IElementEntry> entries = computeSimpleIdentifierEntries(reportedScopeIsGlobal, globalImports, name,
 				variableCompletion, index, false, module, filter, currentContext, namespaceToUse, aliases);
 
@@ -1699,7 +1701,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			{
 				name = name.substring(1);
 				List<IElementEntry> entriesStartingWith = index.getEntriesStartingWith(
-						IPHPIndexConstants.NAMESPACE_CATEGORY, EMPTY_STRING);
+						IPHPIndexConstants.NAMESPACE_CATEGORY, StringUtil.EMPTY);
 				for (IElementEntry e : entriesStartingWith)
 				{
 					if (e.getEntryPath().startsWith(name))
@@ -1794,46 +1796,21 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				}
 			}
 
-			List<IElementEntry> defineEntries = null;
 			// searching for defines
-			if (exactMatch)
-			{
-				if (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.VAR_CATEGORY))
-				{
-					defineEntries = index.getEntries(IPHPIndexConstants.VAR_CATEGORY, name);
-				}
-			}
-			else
-			{
-				if (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.VAR_CATEGORY))
-				{
-					defineEntries = index.getEntriesStartingWith(IPHPIndexConstants.VAR_CATEGORY, name);
-				}
-			}
+			Set<IElementEntry> defineEntries = computeDefines(name, index, proposalContext, exactMatch);
 			if (defineEntries != null)
 			{
-				List<IElementEntry> staticVariableEntries = new ArrayList<IElementEntry>();
-				for (IElementEntry entry : defineEntries)
-				{
-					if (entry.getValue() instanceof AbstractPHPEntryValue)
-					{
-						if (PHPFlags.isStatic(((AbstractPHPEntryValue) entry.getValue()).getModifiers()))
-						{
-							staticVariableEntries.add(entry);
-						}
-					}
-				}
-
 				if (entries != null)
 				{
-					entries.addAll(staticVariableEntries);
+					entries.addAll(defineEntries);
 				}
 				else
 				{
-					entries = staticVariableEntries;
+					entries = new ArrayList<IElementEntry>(defineEntries);
 				}
 			}
 		}
+
 		entries.addAll(namespaceEntries);
 		if (filter)
 		{
@@ -1847,6 +1824,52 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		List<IElementEntry> result = new ArrayList<IElementEntry>();
 		result.addAll(filterResult);
 		return result;
+	}
+
+	/**
+	 * Returns the 'DEFINE' entries with the given name.
+	 * 
+	 * @param name
+	 *            The define's name.
+	 * @param index
+	 * @param proposalContext
+	 * @param exactMatch
+	 * @return A {@link List} of define element entries, or <code>null</code>.
+	 */
+	public static Set<IElementEntry> computeDefines(String name, IElementsIndex index, ProposalContext proposalContext,
+			boolean exactMatch)
+	{
+		List<IElementEntry> varEntries = null;
+		if (exactMatch)
+		{
+			if (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.CONST_CATEGORY))
+			{
+				varEntries = index.getEntries(IPHPIndexConstants.CONST_CATEGORY, name);
+			}
+		}
+		else
+		{
+			if (proposalContext == null || proposalContext.acceptModelElementType(IPHPIndexConstants.CONST_CATEGORY))
+			{
+				varEntries = index.getEntriesStartingWith(IPHPIndexConstants.CONST_CATEGORY, name);
+			}
+		}
+		if (varEntries != null)
+		{
+			Set<IElementEntry> staticVariableEntries = new LinkedHashSet<IElementEntry>(5);
+			for (IElementEntry entry : varEntries)
+			{
+				if (entry.getValue() instanceof AbstractPHPEntryValue)
+				{
+					if (PHPFlags.isNamedConstant(((AbstractPHPEntryValue) entry.getValue()).getModifiers()))
+					{
+						staticVariableEntries.add(entry);
+					}
+				}
+			}
+			return staticVariableEntries;
+		}
+		return null;
 	}
 
 	/**
@@ -1890,7 +1913,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	{
 
 		boolean foundAlias = false;
-		String lowerCaseName = (name != null) ? name.toLowerCase() : EMPTY_STRING;
+		String lowerCaseName = (name != null) ? name.toLowerCase() : StringUtil.EMPTY;
 		if (aliases != null)
 		{
 			for (String s : aliases.keySet())
@@ -1919,7 +1942,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		}
 		List<IElementEntry> entriesStartingWith = index.getEntriesStartingWith(IPHPIndexConstants.NAMESPACE_CATEGORY,
-				EMPTY_STRING);
+				StringUtil.EMPTY);
 		for (IElementEntry e : entriesStartingWith)
 		{
 			if (e.getEntryPath().startsWith(name))
@@ -2292,7 +2315,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		IContextInformation contextInformation = null;
 		int objType = 0;
-		String fileOloc = EMPTY_STRING;
+		String fileOloc = StringUtil.EMPTY;
 		if (!(entry.getValue() instanceof NamespacePHPEntryValue))
 		{
 			if (localModule != null && localModule.equals(entry.getModule()))
@@ -2416,7 +2439,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			}
 		};
 		int objType = 0;
-		String fileOloc = EMPTY_STRING;
+		String fileOloc = StringUtil.EMPTY;
 		Image[] images = new Image[3];
 		if (PHPBuiltins.getInstance().existsInPHP4(node))
 		{
@@ -2787,7 +2810,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						// implementation might be incorrect when
 						// the default value is an empty string)
 						if (parameters[i].getDefaultValue() != null && !insertOptionals
-								&& !EMPTY_STRING.equals(parameters[i].getDefaultValue()))
+								&& !StringUtil.EMPTY.equals(parameters[i].getDefaultValue()))
 						{
 							break; // once we have a default value we can stop
 							// (since the optional params are always
@@ -2818,7 +2841,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					// insertion' policy
 					if (insertOptionals || parameters[parameters.length - 1].getDefaultValue() == null
 							|| !insertOptionals
-							&& EMPTY_STRING.equals(parameters[parameters.length - 1].getDefaultValue()))
+							&& StringUtil.EMPTY.equals(parameters[parameters.length - 1].getDefaultValue()))
 					{
 						String name = parameters[parameters.length - 1].getVariableName();
 						if (name != null && !name.startsWith(DOLLAR_SIGN))
@@ -2883,14 +2906,14 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		Object entryValue = entry.getValue();
 		if (entryValue instanceof ClassPHPEntryValue)
 		{
-			return EMPTY_STRING;
+			return StringUtil.EMPTY;
 		}
 		else if (entryValue instanceof FunctionPHPEntryValue)
 		{
 			Set<Object> returnTypes = ((FunctionPHPEntryValue) entryValue).getReturnTypes();
-			if (returnTypes == null || returnTypes.size() == 0)
+			if (CollectionsUtil.isEmpty(returnTypes))
 			{
-				return EMPTY_STRING;
+				return StringUtil.EMPTY;
 			}
 
 			List<String> knownTypes = new ArrayList<String>();
@@ -2920,7 +2943,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			Set<Object> variableTypes = ((VariablePHPEntryValue) entryValue).getTypes();
 			if (variableTypes == null || variableTypes.size() == 0)
 			{
-				return EMPTY_STRING;
+				return StringUtil.EMPTY;
 			}
 
 			List<String> knownTypes = new ArrayList<String>();
@@ -2947,7 +2970,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		else
 		{
-			return EMPTY_STRING;
+			return StringUtil.EMPTY;
 		}
 	}
 
