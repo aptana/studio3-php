@@ -9,17 +9,20 @@ package com.aptana.editor.php.indexer;
 
 import com.aptana.editor.php.internal.core.builder.IModule;
 
-
 /**
  * Abstract module indexer.
+ * 
  * @author Denis Denisenko
  */
 public interface IModuleIndexer
 {
 	/**
 	 * Indexes module contents.
-	 * @param module - module to build index for.
-	 * @param reporter - reporter to report the built index.
+	 * 
+	 * @param module
+	 *            - module to build index for.
+	 * @param reporter
+	 *            - reporter to report the built index.
 	 */
 	void indexModule(IModule module, IIndexReporter reporter);
 }

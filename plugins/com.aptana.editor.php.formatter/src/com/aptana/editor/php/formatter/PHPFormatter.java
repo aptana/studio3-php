@@ -630,6 +630,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * @see com.aptana.formatter.AbstractScriptFormatter#getOutputOnOffRegions(java.lang.String, java.lang.String,
 	 * java.lang.String)
 	 */
+	@Override
 	protected List<IRegion> getOutputOnOffRegions(String output, String formatterOffPattern, String formatterOnPattern)
 	{
 		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);

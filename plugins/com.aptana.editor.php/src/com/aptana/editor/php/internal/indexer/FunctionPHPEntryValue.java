@@ -12,6 +12,8 @@ import gnu.trove.set.hash.THashSet;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -110,7 +112,12 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 			{
 				if (parameterStartPositions == null || parameters.size() < parameterStartPositions.length)
 				{
-					throw new IllegalArgumentException("Illegal parameter start positions: " + parameterStartPositions); //$NON-NLS-1$
+					// Log the problem. This one may happen due to a duplicate argument name in a function declaration.
+					IdeLog.logWarning(
+							PHPEditorPlugin.getDefault(),
+							MessageFormat
+									.format("Illegal parameter start positions: parameters = {0} while the parameterStartPositions = {1}. Check for duplicate arguments in your function declaration.", //$NON-NLS-1$
+									parameters, Arrays.toString(parameterStartPositions)), (String) null);
 				}
 				else if (parameterStartPositions != null && parameters.size() > parameterStartPositions.length)
 				{

@@ -23,12 +23,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org2.eclipse.php.internal.ui.PHPUIMessages;
-import org2.eclipse.php.internal.ui.util.StatusInfo;
 import org2.eclipse.php.internal.ui.util.StatusUtil;
 import org2.eclipse.php.internal.ui.wizard.SelectionButtonDialogField;
 import org2.eclipse.php.internal.ui.wizard.field.DialogField;
 import org2.eclipse.php.internal.ui.wizard.field.IDialogFieldListener;
 import org2.eclipse.php.internal.ui.wizard.field.LayoutUtil;
+import org2.eclipse.php.util.StatusInfo;
 
 /**
  * Base for project property and preference pages

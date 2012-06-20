@@ -20,58 +20,54 @@ import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDoc;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
-public class PHPDocBlock extends Comment implements IPHPDoc {
-
+public class PHPDocBlock extends Comment implements IPHPDoc
+{
 	private String shortDescription;
+	private String longDescription;
 	private IPHPDocTag[] tags;
 
-	public PHPDocBlock(int start, int end, AST ast, String shortDescription, IPHPDocTag[] tags) throws IOException {
+	public PHPDocBlock(int start, int end, AST ast, String shortDescription, String longDescription, IPHPDocTag[] tags)
+			throws IOException
+	{
 		super(start, end, ast, Comment.TYPE_PHPDOC);
 		this.shortDescription = shortDescription;
+		this.longDescription = longDescription;
 		this.tags = tags;
 	}
 
-//	public void traverse(ASTVisitor visitor) throws Exception {
-//		boolean visit = visitor.visit(this);
-//		if (visit) {
-//			for (IPHPDocTag tag : tags) {
-//				tag.traverse(visitor);
-//			}
-//		}
-//		visitor.endvisit(this);
-//	}
-
-	public int getKind() {
+	public int getKind()
+	{
 		return ASTNodeKinds.PHP_DOC_BLOCK;
 	}
 
-	public String getShortDescription() {
+	public String getShortDescription()
+	{
 		return shortDescription;
 	}
 
-	public IPHPDocTag[] getTags() {
+	public String getLongDescription()
+	{
+		return longDescription;
+	}
+
+	public IPHPDocTag[] getTags()
+	{
 		return tags;
 	}
-	
-	public PHPDocTag[] getTags(int kind) {
+
+	public PHPDocTag[] getTags(int kind)
+	{
 		List<IPHPDocTag> res = new LinkedList<IPHPDocTag>();
-		if (tags != null) {
-			for (IPHPDocTag tag : tags) {
-				if (tag.getTagKind() == kind) {
+		if (tags != null)
+		{
+			for (IPHPDocTag tag : tags)
+			{
+				if (tag.getTagKind() == kind)
+				{
 					res.add(tag);
 				}
 			}
 		}
 		return res.toArray(new PHPDocTag[res.size()]);
 	}
-
-//	public void adjustStart(int start){
-//		setStart(sourceStart() + start);
-//		setEnd(sourceEnd() + start);
-//		
-//		for (IPHPDocTag tag : tags) {
-//			tag.adjustStart(start);
-//		}
-//	}
-		
 }

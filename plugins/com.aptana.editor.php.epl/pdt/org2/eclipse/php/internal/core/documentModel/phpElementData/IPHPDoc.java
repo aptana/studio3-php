@@ -1,7 +1,5 @@
 package org2.eclipse.php.internal.core.documentModel.phpElementData;
 
-
-
 /**
  * A very generic description of a PHPDoc block.
  * 
@@ -11,6 +9,7 @@ public interface IPHPDoc
 {
 	String getShortDescription();
 
-	IPHPDocTag[] getTags();
+	String getLongDescription();
 
+	IPHPDocTag[] getTags();
 }

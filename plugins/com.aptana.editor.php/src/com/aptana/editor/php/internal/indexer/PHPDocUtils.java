@@ -25,6 +25,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -204,7 +205,16 @@ public final class PHPDocUtils
 		}
 		FunctionDocumentation result = new FunctionDocumentation();
 
-		result.setDescription(block.getShortDescription());
+		StringBuilder docBuilder = new StringBuilder();
+		docBuilder.append(block.getShortDescription());
+		String longDescription = block.getLongDescription();
+		if (!StringUtil.isEmpty(longDescription))
+		{
+			docBuilder.append('\n');
+			docBuilder.append(longDescription);
+		}
+
+		result.setDescription(docBuilder.toString());
 
 		IPHPDocTag[] tags = block.getTags();
 		if (tags != null)

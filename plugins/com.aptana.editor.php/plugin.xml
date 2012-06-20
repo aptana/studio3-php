@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="indexer" name="%phpIndexerParticipant.name" schema="schema/indexer.exsd"/>
+   <extension-point id="phpTextHovers" name="%phpTextHovers.name" schema="schema/phpTextHovers.exsd"/>
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -170,7 +171,7 @@
             icon="icons/full/obj16/php_wiz.png"
             id="com.aptana.editor.php.NewPHPProjectWizard"
             name="%new-project-wizard.name"
-            preferredPerspectives="com.aptana.ui.WebPerspective"
+            preferredPerspectives="com.aptana.ui.WebPerspective,com.appcelerator.titanium.ui.StudioPerspective"
             project="true">
          <description>
             %new-project-wizard.description
@@ -390,11 +391,20 @@
       </viewer>
    </extension>
    <extension
-         point="com.aptana.editor.common.textHovers">
-      <hover
+         point="com.aptana.editor.php.phpTextHovers">
+      <textHover
+            activatePlugin="false"
             class="com.aptana.editor.php.internal.ui.hover.PHPTextHover"
             id="com.aptana.editor.php.docHover"
-            label="PHP Documentation Hover">
+            name="PHP Doc Hover">
+      </textHover>
+   </extension>
+   <extension
+         point="com.aptana.editor.common.textHovers">
+      <hover
+            class="com.aptana.editor.php.internal.ui.hover.PHPBestMatchHover"
+            id="com.aptana.editor.php.bestMatchHover"
+            label="PHP Best Match Hover">
          <contentType
                type="com.aptana.contenttype.phtml.php">
          </contentType>

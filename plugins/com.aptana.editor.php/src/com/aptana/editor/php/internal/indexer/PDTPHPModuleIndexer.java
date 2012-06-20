@@ -19,6 +19,7 @@ import java.util.Stack;
 
 import java_cup.runtime.Symbol;
 
+import org.apache.tools.ant.filters.StringInputStream;
 import org.eclipse.core.resources.IProject;
 import org2.eclipse.php.core.compiler.PHPFlags;
 import org2.eclipse.php.internal.core.PHPVersion;
@@ -1231,7 +1232,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				entryValue.setReturnTypes(returnTypesSet);
 			}
 			String entryPath = EMPTY_STRING;
-			if (currentClass != null)
+			if (currentClass != null && currentClass.getClassEntry() != null)
 			{
 				entryPath = currentClass.getClassEntry().getEntryPath() + IElementsIndex.DELIMITER;
 			}
@@ -1980,7 +1981,16 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				else if (type == ASTNode.INFIX_EXPRESSION)
 				{
 					// This expression may contain nested infix-expressions, so we just grab the text directly.
-					includePath = PDTPHPModuleIndexer.this._contents.substring(subExpr.getStart(), subExpr.getEnd());
+					try
+					{
+						includePath = PDTPHPModuleIndexer.this._contents
+								.substring(subExpr.getStart(), subExpr.getEnd());
+					}
+					catch (Exception e)
+					{
+						IdeLog.logWarning(PHPEditorPlugin.getDefault(),
+								"A problem while visiting an include statement", e); //$NON-NLS-1$
+					}
 				}
 				if (includePath != null)
 				{
@@ -3725,27 +3735,15 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							for (int i = 0; i < currentLine.length(); i++)
 							{
 								char ch = currentLine.charAt(i);
-								if (ch == '\r')
-								{
-									replaceBuffer.append(ch);
-								}
-								else if (ch == '\r')
-								{
-									replaceBuffer.append(ch);
-								}
-								else if (Character.isWhitespace(ch))
+								if (Character.isWhitespace(ch))
 								{
 									replaceBuffer.append(ch);
 								}
 								else
 								{
-									if (ch == '{')
+									if (ch == '{' || ch == '}')
 									{
-										replaceBuffer.append('{');
-									}
-									else if (ch == '}')
-									{
-										replaceBuffer.append('}');
+										replaceBuffer.append(ch);
 									}
 									else
 									{
@@ -3827,7 +3825,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			try
 			{
 
-				setContents(module);
+				setContents(module, null);
 				program = parse(_contents, module);
 				if (program == null)
 				{
@@ -3878,10 +3876,19 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		}
 	}
 
-	private void setContents(IModule module) throws IOException
+	private void setContents(IModule module, String source) throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(module.getContents(),
-				EncodingUtils.getModuleEncoding(module)));
+		BufferedReader reader;
+		if (source == null)
+		{
+			reader = new BufferedReader(new InputStreamReader(module.getContents(),
+					EncodingUtils.getModuleEncoding(module)));
+		}
+		else
+		{
+			reader = new BufferedReader(new InputStreamReader(new StringInputStream(source),
+					EncodingUtils.getModuleEncoding(module)));
+		}
 
 		StringBuffer moduleData = new StringBuffer();
 		try
@@ -3938,11 +3945,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 				for (int i = 0; i < currentLine.length(); i++)
 				{
 					char ch = currentLine.charAt(i);
-					if (ch == '\r')
-					{
-						replaceBuffer.append(ch);
-					}
-					else if (ch == '\r')
+					if (ch == '\r' || ch == '\n')
 					{
 						replaceBuffer.append(ch);
 					}
@@ -4100,9 +4103,20 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 	public void indexModule(Program program, IModule module, IIndexReporter reporter)
 	{
+		indexModule(program, module, null, reporter);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.editor.php.indexer.IProgramIndexer#indexModule(org2.eclipse.php.internal.core.ast.nodes.Program,
+	 * com.aptana.editor.php.internal.core.builder.IModule, java.lang.String,
+	 * com.aptana.editor.php.indexer.IIndexReporter)
+	 */
+	public void indexModule(Program program, IModule module, String source, IIndexReporter reporter)
+	{
 		try
 		{
-			setContents(module);
+			setContents(module, source);
 		}
 		catch (IOException e)
 		{
@@ -4120,7 +4134,6 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		{
 			v.process(program, reporter, module);
 		}
-
 	}
 
 	public Map<String, String> getAliases()
