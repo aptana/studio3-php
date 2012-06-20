@@ -1140,7 +1140,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the 'include' keyword.
 		int includeStart = include.getStart();
 		int keywordLength = Include.getType(include.getIncludeType()).length();
-		pushKeyword(includeStart, keywordLength, true, false);
+		boolean firstInLine = include.getParent().getType() != ASTNode.IGNORE_ERROR;
+		pushKeyword(includeStart, keywordLength, firstInLine, false);
 		// visit the include expression.
 		Expression expression = include.getExpression();
 		expression.accept(this);
@@ -2373,7 +2374,24 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 */
 	private void pushKeyword(int start, int keywordLength, boolean isFirstInLine, boolean isLastInLine)
 	{
-		FormatterPHPKeywordNode keywordNode = new FormatterPHPKeywordNode(document, isFirstInLine, isLastInLine);
+		pushKeyword(start, keywordLength, isFirstInLine, isLastInLine, true);
+	}
+
+	/**
+	 * Push a keyword (e.g. 'const', 'echo', 'private' etc.)
+	 * 
+	 * @param start
+	 * @param keywordLength
+	 * @param isFirstInLine
+	 * @param isLastInLine
+	 * @param consumeSpaces
+	 *            Consume any spaces before the keyword.
+	 */
+	private void pushKeyword(int start, int keywordLength, boolean isFirstInLine, boolean isLastInLine,
+			boolean consumeSpaces)
+	{
+		FormatterPHPKeywordNode keywordNode = new FormatterPHPKeywordNode(document, isFirstInLine, isLastInLine,
+				consumeSpaces);
 		keywordNode.setBegin(builder.createTextNode(document, start, start + keywordLength));
 		builder.push(keywordNode);
 		builder.checkedPop(keywordNode, -1);

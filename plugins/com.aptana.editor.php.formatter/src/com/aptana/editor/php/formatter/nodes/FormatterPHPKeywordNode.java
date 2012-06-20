@@ -18,7 +18,8 @@ public class FormatterPHPKeywordNode extends FormatterPHPTextNode
 {
 
 	private boolean isFirstInLine;
-	private final boolean isLastInLine;
+	private boolean isLastInLine;
+	private boolean consumeSpaces;
 
 	/**
 	 * Constructs a new FormatterPHPKeywordNode
@@ -34,9 +35,30 @@ public class FormatterPHPKeywordNode extends FormatterPHPTextNode
 	public FormatterPHPKeywordNode(IFormatterDocument document, boolean isFirstInLine, boolean isLastInLine)
 	{
 		// We only consume the previous spaces if this modifier is not the first one in the line.
-		super(document, !isFirstInLine);
+		this(document, isFirstInLine, isLastInLine, false);
+	}
+
+	/**
+	 * Constructs a new FormatterPHPKeywordNode
+	 * 
+	 * @param document
+	 * @param isFirstInLine
+	 *            Flag this keyword as the first in the line. This will the value that the
+	 *            {@link #isAddingBeginNewLine()} returns. When it's false, previous white spaces will be consumed.
+	 * @param isLastInLine
+	 *            Flag this keyword as the last in the line. In case the keyword is both first and last in the line, no
+	 *            terminating spaces will be added.
+	 * @param consumeSpaces
+	 *            Consume any spaces before the keyword. In case the isFirstInLine is false, the node will consume
+	 *            spaces anyway, but will leave one space left to the keyword.
+	 */
+	public FormatterPHPKeywordNode(IFormatterDocument document, boolean isFirstInLine, boolean isLastInLine,
+			boolean consumeSpaces)
+	{
+		super(document, !isFirstInLine || consumeSpaces);
 		this.isFirstInLine = isFirstInLine;
 		this.isLastInLine = isLastInLine;
+		this.consumeSpaces = consumeSpaces;
 	}
 
 	/*
@@ -56,7 +78,7 @@ public class FormatterPHPKeywordNode extends FormatterPHPTextNode
 	@Override
 	public int getSpacesCountBefore()
 	{
-		if (isFirstInLine)
+		if (isFirstInLine || consumeSpaces)
 		{
 			return 0;
 		}
