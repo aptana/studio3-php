@@ -114,6 +114,7 @@ import org2.eclipse.php.internal.core.ast.rewrite.ASTRewriteFlattener;
 import org2.eclipse.php.internal.core.ast.rewrite.RewriteEventStore;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.util.EditorUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -485,7 +486,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		{
 			result = matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), true);
 		}
-		if (!result && FormatterPlugin.getDefault().isDebugging())
+		if (!result && (FormatterPlugin.getDefault().isDebugging() || EclipseUtil.isTesting()))
 		{
 			// Log the failure
 			if (matchWithoutComments)
