@@ -11,6 +11,9 @@
  *******************************************************************************/
 package com.aptana.editor.php.internal.core.builder;
 
+import java.net.URI;
+import java.text.MessageFormat;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -29,6 +32,7 @@ import com.aptana.core.logging.IdeLog;
 import com.aptana.core.resources.IUniformResource;
 import com.aptana.core.resources.MarkerUtils;
 import com.aptana.core.util.EclipseUtil;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
 /**
@@ -43,6 +47,7 @@ public class BuildProblemReporter extends ProblemCollector
 	private final Object resource;
 	private boolean oldMarkersDeleted = false;
 	private boolean isExternal;
+	private String resourceLocation;
 
 	/**
 	 * Constructs a new BuildProblemReporter for a given resource.
@@ -62,6 +67,7 @@ public class BuildProblemReporter extends ProblemCollector
 			throw new IllegalArgumentException(
 					"The given resource is expected to be an IResource or an IUniformResource"); //$NON-NLS-1$
 		}
+		resourceLocation = StringUtil.EMPTY;
 	}
 
 	private static ISchedulingRule getMarkerRule(Object resource)
@@ -91,7 +97,9 @@ public class BuildProblemReporter extends ProblemCollector
 		}
 		catch (CoreException e)
 		{
-			IdeLog.logError(PHPEplPlugin.getDefault(), Messages.BuildProblemReporter_UpdateMarkersError, e);
+			IdeLog.logWarning(PHPEplPlugin.getDefault(),
+					MessageFormat.format(Messages.BuildProblemReporter_UpdateMarkersError, resourceLocation), e,
+					PHPEplPlugin.DEBUG_SCOPE);
 		}
 
 	}
@@ -109,6 +117,11 @@ public class BuildProblemReporter extends ProblemCollector
 			if (isExternal)
 			{
 				externalResource = (IUniformResource) resource;
+				URI uri = externalResource.getURI();
+				if (uri != null)
+				{
+					resourceLocation = uri.getPath();
+				}
 			}
 			else
 			{
@@ -119,6 +132,7 @@ public class BuildProblemReporter extends ProblemCollector
 							"BuildProblemReporter::flush -> Unexpected null or non-accessible resource"); //$NON-NLS-1$
 					return;
 				}
+				resourceLocation = workspaceResource.getLocation().toString();
 			}
 			if (!oldMarkersDeleted)
 			{
@@ -199,7 +213,8 @@ public class BuildProblemReporter extends ProblemCollector
 		catch (CoreException e)
 		{
 			IdeLog.logWarning(PHPEplPlugin.getDefault(),
-					"Error updating PHP error markers", e, PHPEplPlugin.DEBUG_SCOPE); //$NON-NLS-1$
+					MessageFormat.format(Messages.BuildProblemReporter_UpdateMarkersError, resourceLocation), e,
+					PHPEplPlugin.DEBUG_SCOPE);
 		}
 		finally
 		{
