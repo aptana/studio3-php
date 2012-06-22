@@ -3,6 +3,7 @@ package com.aptana.editor.php.internal.ui.editor.outline;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aptana.editor.common.AbstractThemeableEditor;
 import com.aptana.editor.common.outline.CommonOutlineItem;
 import com.aptana.editor.html.outline.HTMLOutlineContentProvider;
 import com.aptana.editor.html.parsing.ast.HTMLTextNode;
@@ -16,6 +17,11 @@ import com.aptana.parsing.ast.IParseNode;
  */
 public class PHTMLOutlineContentProvider extends HTMLOutlineContentProvider
 {
+
+	public PHTMLOutlineContentProvider(AbstractThemeableEditor editor)
+	{
+		super(editor);
+	}
 
 	@Override
 	public CommonOutlineItem getOutlineItem(IParseNode node)

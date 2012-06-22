@@ -17,4 +17,6 @@ public interface IPHPTokenScanner extends ITokenScanner
 	 * @return {@link PHPVersion}
 	 */
 	public PHPVersion getPHPVersion();
+
+	public String getContents();
 }

@@ -36,7 +36,7 @@ import com.aptana.editor.php.internal.ui.editor.scanner.tokenMap.PHPTokenMapperF
 public class PHPCodeScanner implements ITokenScanner
 {
 
-	private IPHPTokenScanner fScanner;
+	private final IPHPTokenScanner fScanner;
 	private Queue<QueuedToken> queue;
 	private int fLength;
 	private int fOffset;
@@ -82,10 +82,8 @@ public class PHPCodeScanner implements ITokenScanner
 		{
 			return Token.EOF;
 		}
-		Symbol sym = (Symbol) token.getData();
-
 		IPHPTokenMapper tokenMapper = PHPTokenMapperFactory.getMapper(fScanner.getPHPVersion());
-		token = tokenMapper.mapToken(sym, this);
+		token = tokenMapper.mapToken((Symbol) token.getData(), this);
 		if (scopeEquals(token, PHPTokenType.STORAGE_TYPE_FUNCTION))
 		{
 			inFunctionDeclaration = true;
@@ -242,8 +240,12 @@ public class PHPCodeScanner implements ITokenScanner
 	{
 		try
 		{
-			return document.get(originalDocumentOffset + sym.left - PHPTokenScanner.PHP_PREFIX.length(), sym.right
-					- sym.left);
+			// Note: don't check for null contents because this should only be used
+			// from the scanner while the contents are still available (so, this
+			// situation would really be an error).
+			String contents = fScanner.getContents();
+			
+			return contents.substring(sym.left, sym.right);
 		}
 		catch (Exception e)
 		{

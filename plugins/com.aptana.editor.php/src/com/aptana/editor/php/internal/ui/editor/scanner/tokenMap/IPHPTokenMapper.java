@@ -52,5 +52,5 @@ public interface IPHPTokenMapper
 	 * @param phpCodeScanner
 	 * @return A mapped {@link IToken}
 	 */
-	public IToken mapToken(Symbol sym, PHPCodeScanner phpCodeScanner);
+	public IToken mapToken(Symbol sim, PHPCodeScanner phpCodeScanner);
 }

@@ -170,6 +170,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.AbstractThemeableEditor#getAST()
 	 */
+	@Override
 	public IParseRootNode getAST()
 	{
 		try
@@ -292,7 +293,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	public ITreeContentProvider getOutlineContentProvider()
 	{
-		return new PHTMLOutlineContentProvider();
+		return new PHTMLOutlineContentProvider(this);
 	}
 
 	@Override
@@ -314,20 +315,24 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	protected Object getOutlineElementAt(int caret)
 	{
-		IParseNode parseResult = getAST();
-		if (parseResult != null)
+		if (hasOutlinePageCreated())
 		{
-			IParseNode node = parseResult.getNodeAtOffset(caret);
-			if (node instanceof PHPExtendsNode)
+			IParseNode parseResult = getOutlinePage().getCurrentAst();
+			if (parseResult != null)
 			{
-				node = node.getParent();
+				IParseNode node = parseResult.getNodeAtOffset(caret);
+				if (node instanceof PHPExtendsNode)
+				{
+					node = node.getParent();
+				}
+				if (node != null)
+				{
+					return new PHPOutlineItem(node.getNameNode().getNameRange(), node);
+				}
 			}
-			if (node != null)
-			{
-				return new PHPOutlineItem(node.getNameNode().getNameRange(), node);
-			}
+			return super.getOutlineElementAt(caret);
 		}
-		return super.getOutlineElementAt(caret);
+		return null;
 	}
 
 	public String getLanguage()

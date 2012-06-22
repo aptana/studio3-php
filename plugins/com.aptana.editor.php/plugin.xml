@@ -415,6 +415,7 @@
       <participant
             class="com.aptana.editor.php.internal.indexer.PHPBuildParticipant"
             id="com.aptana.editor.php.buildParticipant"
+            name="PHP Build Participant"
             priority="50">
          <contentTypeBinding
                contentTypeId="com.aptana.contenttype.phtml.php">
