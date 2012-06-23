@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -837,6 +839,15 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			currentExactMatch = exactMatch;
 		}
+		if (parentCompletion && leftDereferenceEntries.size() == 1)
+		{
+			// Make sure we grab the right namespace scope from the entry itself
+			Object entryValue = leftDereferenceEntries.iterator().next().getValue();
+			if (entryValue instanceof ClassPHPEntryValue)
+			{
+				namespace = ((ClassPHPEntryValue) entryValue).getNameSpace();
+			}
+		}
 		Set<IElementEntry> result = computeStaticDereferenceRightEntries(index, leftDereferenceEntries,
 				pathEntryName(callPath.get(2)), offset, module, currentExactMatch, true, selfCompletion
 						|| staticCompletion, parentCompletion, aliases, namespace);
@@ -1119,11 +1130,17 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			Object clazz = currentClass.getValue();
 			if (clazz instanceof ClassPHPEntryValue)
 			{
-				String superClassname = ((ClassPHPEntryValue) clazz).getSuperClassname();
+				ClassPHPEntryValue classPHPEntryValue = (ClassPHPEntryValue) clazz;
+				String superClassname = classPHPEntryValue.getSuperClassname();
 				if (superClassname != null)
 				{
+					String resolvedSuperclassNamespace = resolveNamespace(superClassname);
+					if (StringUtil.isEmpty(resolvedSuperclassNamespace))
+					{
+						resolvedSuperclassNamespace = namespace;
+					}
 					Set<IElementEntry> superClassEntry = getClassEntries(index, superClassname, module, aliases,
-							namespace, true);
+							resolvedSuperclassNamespace, true);
 					if (superClassEntry != null && superClassEntry.size() == 1)
 					{
 						result.addAll(superClassEntry);
@@ -1137,6 +1154,36 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			return getClassEntries(index, left, module, aliases, namespace, true);
 		}
+	}
+
+	private static String resolveNamespace(String path)
+	{
+		if (StringUtil.isEmpty(path))
+		{
+			return path;
+		}
+		try
+		{
+			IPath p = Path.fromOSString(path);
+			if (p.segmentCount() > 1)
+			{
+				String resolvedNamespace = p.removeLastSegments(1).toString();
+				if (resolvedNamespace.startsWith(GLOBAL_NAMESPACE) || resolvedNamespace.startsWith("/")) //$NON-NLS-1$
+				{
+					resolvedNamespace = resolvedNamespace.substring(1);
+				}
+				return resolvedNamespace;
+			}
+			else
+			{
+				return StringUtil.EMPTY;
+			}
+		}
+		catch (Exception e)
+		{
+			// ignore
+		}
+		return StringUtil.EMPTY;
 	}
 
 	/**
@@ -1210,8 +1257,12 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 
 		List<IElementEntry> namespaceEntries = getNamespaceEntries(clazz, module, aliases);
-		clazz = getNameByAlias(clazz, index, namespace, aliases, namespaceEntries);
 		List<IElementEntry> leftEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, clazz);
+		if (CollectionsUtil.isEmpty(leftEntries))
+		{
+			clazz = getNameByAlias(clazz, index, namespace, aliases, namespaceEntries);
+			leftEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, clazz);
+		}
 		if (leftEntries == null)
 		{
 			leftEntries = new ArrayList<IElementEntry>();
@@ -1914,7 +1965,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		boolean foundAlias = false;
 		String lowerCaseName = (name != null) ? name.toLowerCase() : StringUtil.EMPTY;
-		if (aliases != null)
+		if (!CollectionsUtil.isEmpty(aliases))
 		{
 			for (String s : aliases.keySet())
 			{
