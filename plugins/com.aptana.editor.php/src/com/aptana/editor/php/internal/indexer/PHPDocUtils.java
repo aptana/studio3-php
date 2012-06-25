@@ -25,6 +25,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -204,7 +205,16 @@ public final class PHPDocUtils
 		}
 		FunctionDocumentation result = new FunctionDocumentation();
 
-		result.setDescription(block.getShortDescription());
+		StringBuilder docBuilder = new StringBuilder();
+		docBuilder.append(block.getShortDescription());
+		String longDescription = block.getLongDescription();
+		if (!StringUtil.isEmpty(longDescription))
+		{
+			docBuilder.append('\n');
+			docBuilder.append(longDescription);
+		}
+
+		result.setDescription(docBuilder.toString());
 
 		IPHPDocTag[] tags = block.getTags();
 		if (tags != null)
@@ -319,7 +329,7 @@ public final class PHPDocUtils
 
 		Comment nearestComment = null;
 
-		int commentIndex = findComment(comments, offset);
+		int commentIndex = findUpperComment(comments, offset);
 		if (commentIndex < 0)
 		{
 			// The nearest comment we found should always have a negative value, as it should never overlap with the
@@ -359,9 +369,44 @@ public final class PHPDocUtils
 	}
 
 	/**
+	 * Performs a binary search for a specific comment.
+	 * 
+	 * @return The index of the comment that holds the offset; In case no such comment exists, the return value will be
+	 *         <code>(-(insertion point) - 1)</code>. The insertion point is defined as the point at which a comment
+	 *         would be inserted into the list in case it was matching the offset.
+	 */
+	public static int findComment(List<Comment> comments, int offset)
+	{
+		int low = 0;
+		int high = comments.size() - 1;
+
+		while (low <= high)
+		{
+			int mid = (low + high) >> 1;
+			Comment midVal = comments.get(mid);
+			int cmp;
+			if (offset >= midVal.getStart() && offset < midVal.getEnd())
+			{
+				return mid; // Found the comment!
+			}
+			cmp = midVal.getStart() - offset;
+
+			if (cmp < 0)
+			{
+				low = mid + 1;
+			}
+			else if (cmp > 0)
+			{
+				high = mid - 1;
+			}
+		}
+		return -(low + 1); // Can't find a match
+	}
+
+	/**
 	 * Perform a binary search for a comment that appears right on top of the given offset
 	 */
-	private static int findComment(List<Comment> comments, int offset)
+	private static int findUpperComment(List<Comment> comments, int offset)
 	{
 		int low = 0;
 		int high = comments.size() - 1;
@@ -703,7 +748,7 @@ public final class PHPDocUtils
 		// locate the last comment in the given list and create a result list from all the VarComments on top of it,
 		// till we hit the start offset.
 		// We use a linked list to append comments at the start of the result with better performance.
-		int commentIndex = findComment(comments, end);
+		int commentIndex = findUpperComment(comments, end);
 		if (commentIndex < 0)
 		{
 			// The nearest comment we found should always have a negative value, as it should never overlap with the

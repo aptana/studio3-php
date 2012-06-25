@@ -182,7 +182,7 @@ public final class PHPTypeProcessor
 					StaticPathReference ref = (StaticPathReference) type;
 
 					Set<Object> dispatcherTypes = ref.getDispatcherTypes();
-					procesPathReference(dispatcherTypes, ref.getPath(), result, indexer, depth + 1, true);
+					procesPathReference(dispatcherTypes, ref.getPath(), result, indexer, depth + 1, false);
 				}
 			}
 		}

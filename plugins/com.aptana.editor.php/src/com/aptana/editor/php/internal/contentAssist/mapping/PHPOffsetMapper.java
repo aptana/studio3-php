@@ -236,14 +236,22 @@ public class PHPOffsetMapper
 		{
 			String toFind = callPath.get(callPath.size() - 1);
 			boolean variableCompletion = false;
+			List<IElementEntry> res = new ArrayList<IElementEntry>();
 			if (toFind.length() > 0 && toFind.charAt(0) == '$')
 			{
 				variableCompletion = true;
 				toFind = toFind.substring(1);
 			}
+			else
+			{
+				// Constants first
+				res.addAll(PHPContentAssistProcessor.computeDefines(toFind, index, null, true));
+
+			}
 			toFind = toFind.toLowerCase();
-			List<IElementEntry> res = PHPContentAssistProcessor.computeSimpleIdentifierEntries(reportedStackIsGlobal,
-					globalImports, toFind, variableCompletion, index, true, module, false, namespace, aliases);
+			res.addAll(PHPContentAssistProcessor.computeSimpleIdentifierEntries(reportedStackIsGlobal, globalImports,
+					toFind, variableCompletion, index, true, module, false, namespace, aliases));
+
 			if (res != null)
 			{
 				entries = new LinkedHashSet<IElementEntry>();

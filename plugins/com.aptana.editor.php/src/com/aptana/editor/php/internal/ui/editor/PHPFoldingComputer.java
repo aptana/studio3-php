@@ -31,6 +31,8 @@ import com.aptana.parsing.ast.IParseNode;
 public class PHPFoldingComputer extends AbstractFoldingComputer
 {
 
+	private boolean hasCachedAST;
+
 	public PHPFoldingComputer(AbstractThemeableEditor editor, IDocument document)
 	{
 		super(editor, document);
@@ -116,11 +118,19 @@ public class PHPFoldingComputer extends AbstractFoldingComputer
 	{
 		if (parseNode instanceof PHPParseRootNode)
 		{
-			if (((PHPParseRootNode) parseNode).isCached())
-			{
-				monitor.setCanceled(true);
-			}
+			hasCachedAST = ((PHPParseRootNode) parseNode).isCached();
 		}
 		return super.getPositions(monitor, parseNode);
+	}
+
+	/**
+	 * Returns <code>true</code> if the {@link #getPositions(IProgressMonitor, IParseNode)} call detected that the AST
+	 * that was passed is cached (e.g. there is a parse error that prevented a creation of a new AST).
+	 * 
+	 * @return <code>true</code> if the AST is cached; <code>false</code> otherwise.
+	 */
+	public boolean hasCachedAST()
+	{
+		return hasCachedAST;
 	}
 }

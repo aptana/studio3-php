@@ -1,7 +1,6 @@
 package com.aptana.editor.php.internal.contentAssist;
 
 import static com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor.DOLLAR_SIGN;
-import static com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor.EMPTY_STRING;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
@@ -73,7 +73,7 @@ public class ContentAssistCollectors
 			List<?> items = ContentAssistUtils.selectModelElements(leftType, true);
 			if (items != null && !items.isEmpty())
 			{
-				String lowCaseFuncName = (varName != null) ? varName.toLowerCase() : EMPTY_STRING;
+				String lowCaseFuncName = (varName != null) ? varName.toLowerCase() : StringUtil.EMPTY;
 				for (Object obj : items)
 				{
 					if (obj instanceof PHPClassParseNode)
@@ -113,6 +113,9 @@ public class ContentAssistCollectors
 								{
 									private VariablePHPEntryValue value;
 
+
+
+
 									public int getCategory()
 									{
 										return IPHPIndexConstants.VAR_CATEGORY;
@@ -131,7 +134,7 @@ public class ContentAssistCollectors
 									public String getLowerCaseEntryPath()
 									{
 										String path = getEntryPath();
-										return (path != null) ? path.toLowerCase() : EMPTY_STRING;
+										return (path != null) ? path.toLowerCase() : StringUtil.EMPTY;
 									}
 
 									public IModule getModule()
@@ -210,7 +213,7 @@ public class ContentAssistCollectors
 				List<?> items = ContentAssistUtils.selectModelElements(leftType, true);
 				if (items != null && !items.isEmpty())
 				{
-					String lowCaseConstName = (constName != null) ? constName.toLowerCase() : EMPTY_STRING;
+					String lowCaseConstName = (constName != null) ? constName.toLowerCase() : StringUtil.EMPTY;
 					for (Object obj : items)
 					{
 						if (obj instanceof PHPClassParseNode)
@@ -255,7 +258,7 @@ public class ContentAssistCollectors
 										public String getLowerCaseEntryPath()
 										{
 											String path = getEntryPath();
-											return (path != null) ? path.toLowerCase() : EMPTY_STRING;
+											return (path != null) ? path.toLowerCase() : StringUtil.EMPTY;
 										}
 
 										public IModule getModule()
@@ -393,7 +396,7 @@ public class ContentAssistCollectors
 				List<?> items = ContentAssistUtils.selectModelElements(leftType, true);
 				if (items != null && !items.isEmpty())
 				{
-					String lowCaseFuncName = (funcName != null) ? funcName.toLowerCase() : EMPTY_STRING;
+					String lowCaseFuncName = (funcName != null) ? funcName.toLowerCase() : StringUtil.EMPTY;
 					for (Object obj : items)
 					{
 						if (obj instanceof PHPClassParseNode)
@@ -447,7 +450,7 @@ public class ContentAssistCollectors
 										public String getLowerCaseEntryPath()
 										{
 											String path = getEntryPath();
-											return (path != null) ? path.toLowerCase() : EMPTY_STRING;
+											return (path != null) ? path.toLowerCase() : StringUtil.EMPTY;
 										}
 
 										public IModule getModule()
@@ -491,7 +494,8 @@ public class ContentAssistCollectors
 														types.add(parameterType);
 													}
 													parametersMap.put(nameIdentifier, types);
-													mandatories[i] = EMPTY_STRING.equals(parameter.getDefaultValue());
+													mandatories[i] = StringUtil.EMPTY.equals(parameter
+															.getDefaultValue());
 													// Always set to that, since we have no other information here
 													startPositions.add(functionParseNode.getStartingOffset());
 												}
@@ -503,7 +507,7 @@ public class ContentAssistCollectors
 											}
 											value = new FunctionPHPEntryValue(functionParseNode.getModifiers(), true,
 													parametersMap, startPositionsArray, mandatories, functionParseNode
-															.getStartingOffset(), EMPTY_STRING);
+															.getStartingOffset(), StringUtil.EMPTY);
 											return value;
 										}
 
@@ -540,7 +544,7 @@ public class ContentAssistCollectors
 			List<?> items = ContentAssistUtils.selectModelElements(typeName, true);
 			if (items != null && !items.isEmpty())
 			{
-				String lowCaseClassName = (typeName != null) ? typeName.toLowerCase() : EMPTY_STRING;
+				String lowCaseClassName = (typeName != null) ? typeName.toLowerCase() : StringUtil.EMPTY;
 				for (Object obj : items)
 				{
 					if (obj instanceof PHPClassParseNode)
@@ -580,7 +584,7 @@ public class ContentAssistCollectors
 								public String getLowerCaseEntryPath()
 								{
 									String path = getEntryPath();
-									return (path != null) ? path.toLowerCase() : EMPTY_STRING;
+									return (path != null) ? path.toLowerCase() : StringUtil.EMPTY;
 								}
 
 								public IModule getModule()
@@ -597,7 +601,7 @@ public class ContentAssistCollectors
 									String superClassname = classParseNode.getSuperClassname();
 									List<String> interfaces = classParseNode.getInterfaces();
 									value = new ClassPHPEntryValue(classParseNode.getModifiers(), superClassname,
-											interfaces, EMPTY_STRING);
+											interfaces, StringUtil.EMPTY);
 									return value;
 								}
 
