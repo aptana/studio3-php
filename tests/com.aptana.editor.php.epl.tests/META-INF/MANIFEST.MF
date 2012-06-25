@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PHP EPL Tests
 Bundle-SymbolicName: com.aptana.editor.php.epl.tests
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.3.0.qualifier
 Bundle-Activator: com.aptana.editor.php.epl.tests.Activator
 Bundle-Vendor: Aptana Inc.
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

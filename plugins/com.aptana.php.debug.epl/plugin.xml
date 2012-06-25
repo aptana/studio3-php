@@ -1068,9 +1068,6 @@ ntribution>
                id="org.eclipse.ui.resourcePerspective">
          </perspective>
          <perspective
-         	   id="org2.eclipse.php.perspective">
-         </perspective>
-         <perspective
                id="org.eclipse.debug.ui.DebugPerspective">
          </perspective>
          <configurationType
