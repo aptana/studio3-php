@@ -20,7 +20,7 @@ import com.aptana.core.projects.templates.IProjectTemplate;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.internal.ui.preferences.Messages;
 import com.aptana.editor.php.internal.ui.preferences.PHPVersionConfigurationBlock;
-import com.aptana.projects.internal.wizards.CommonWizardNewProjectCreationPage;
+import com.aptana.projects.wizards.CommonWizardNewProjectCreationPage;
 
 /**
  * New PHP project main creation page.
