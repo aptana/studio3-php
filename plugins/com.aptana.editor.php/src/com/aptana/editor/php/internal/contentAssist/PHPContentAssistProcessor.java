@@ -1164,7 +1164,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		try
 		{
-			IPath p = Path.fromOSString(path);
+			IPath p = Path.fromOSString(path.replaceAll("\\\\", "/")); //$NON-NLS-1$ //$NON-NLS-2$
 			if (p.segmentCount() > 1)
 			{
 				String resolvedNamespace = p.removeLastSegments(1).toString();
@@ -1172,7 +1172,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				{
 					resolvedNamespace = resolvedNamespace.substring(1);
 				}
-				return resolvedNamespace;
+				return resolvedNamespace.replace("/", "\\"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			else
 			{
