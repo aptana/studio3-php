@@ -525,7 +525,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		this.offset = offset;
 		this.content = content;
 
-		List<String> callPath = ParsingUtils.parseCallPath(partition, content, start, OPS, false);
+		List<String> callPath = ParsingUtils.parseCallPath(partition, content, start, OPS, false, document);
 		if (callPath == null || callPath.isEmpty())
 		{
 			return EMPTY_PROPOSAL;
@@ -3365,7 +3365,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			IElementsIndex index = getIndex(content, offset);
 			ITypedRegion partition = viewer.getDocument().getDocumentPartitioner().getPartition(offset);
 			// trying to get dereference entries
-			List<String> callPath = ParsingUtils.parseCallPath(partition, content, info.getNameEndPos(), OPS, false);
+			List<String> callPath = ParsingUtils.parseCallPath(partition, content, info.getNameEndPos(), OPS, false,
+					document);
 			if (callPath == null || callPath.isEmpty())
 			{
 				return EMPTY_CONTEXT_INFO;
