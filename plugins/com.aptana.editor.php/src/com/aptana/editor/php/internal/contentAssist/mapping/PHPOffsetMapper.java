@@ -213,7 +213,9 @@ public class PHPOffsetMapper
 		IElementsIndex index = getIndex(source, offset);
 
 		// trying to get dereference entries
-		List<String> callPath = ParsingUtils.parseCallPath(null, source, offset, PHPContentAssistProcessor.OPS, false);
+		IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
+		List<String> callPath = ParsingUtils.parseCallPath(null, source, offset, PHPContentAssistProcessor.OPS, false,
+				document);
 		if (callPath == null || callPath.isEmpty())
 		{
 			return Collections.EMPTY_SET;
