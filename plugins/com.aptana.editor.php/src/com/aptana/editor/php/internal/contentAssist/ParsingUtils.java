@@ -1,14 +1,27 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.contentAssist;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.TypedRegion;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.common.contentassist.LexemeProvider;
+import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.lexer.Range;
 
 /**
@@ -56,8 +69,7 @@ public final class ParsingUtils
 	 */
 	public static ILexemeProvider<PHPTokenType> createLexemeProvider(IDocument document)
 	{
-		return new LexemeProvider<PHPTokenType>(document, new Range(0, document.getLength() - 1),
-				new PHPScopeScanner())
+		return new LexemeProvider<PHPTokenType>(document, new Range(0, document.getLength() - 1), new PHPScopeScanner())
 		{
 			@Override
 			protected PHPTokenType getTypeFromData(Object data)
@@ -125,7 +137,7 @@ public final class ParsingUtils
 	public static List<String> parseCallPath(ITypedRegion region, String content, int offset,
 			String[] possibleReferenceOperators)
 	{
-		return parseCallPath(region, content, offset, possibleReferenceOperators, false);
+		return parseCallPath(region, content, offset, possibleReferenceOperators, false, null);
 	}
 
 	/**
@@ -146,14 +158,49 @@ public final class ParsingUtils
 	 *         "field2"] The last entry may be an empty string if we are completing right after the reference operator.
 	 */
 	public static List<String> parseCallPath(ITypedRegion region, String content, int offset,
-			String[] possibleReferenceOperators, boolean skipInitialSpaces)
+			String[] possibleReferenceOperators, boolean skipInitialSpaces, IDocument document)
 	{
 		try
 		{
+			// Try to collect more PHP regions that exist before the given region. This resolve a situation where we get
+			// PHP String regions that breaks the default regions into a few parts.
+			if (region != null && document != null)
+			{
+				try
+				{
+					ITypedRegion prevRegion = null;
+					int rOffset = region.getOffset() - 1;
+					int totalLength = region.getLength();
+					while (rOffset > 0)
+					{
+						ITypedRegion partition = document.getPartition(rOffset);
+						if (!partition.getType().startsWith(IPHPConstants.PREFIX))
+						{
+							break;
+						}
+						else
+						{
+							prevRegion = partition;
+							rOffset = prevRegion.getOffset() - 1;
+							totalLength += prevRegion.getLength();
+						}
+					}
+					if (prevRegion != null)
+					{
+						// Wrap all regions as one
+						region = new TypedRegion(prevRegion.getOffset(), totalLength, region.getType());
+					}
+				}
+				catch (BadLocationException e)
+				{
+					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error while parsing the call path", e); //$NON-NLS-1$
+				}
+			}
+
 			List<String> result = new ArrayList<String>();
 			if (content.length() == 0)
 			{
-				result.add(""); //$NON-NLS-1$
+				result.add(StringUtil.EMPTY);
 				return result;
 			}
 			offset = fixOffset(content, offset);
@@ -362,6 +409,7 @@ public final class ParsingUtils
 	/**
 	 * Parses function call from position.
 	 * 
+	 * @param region
 	 * @param content
 	 *            - current content.
 	 * @param offset

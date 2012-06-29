@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="debuggerSupport" name="%phpDebuggerSupport.name" schema="schema/debuggerSupport.exsd"/>
+   <extension-point id="interpreterProvider" name="%interpreterProvider.name" schema="schema/interpreterProvider.exsd"/>
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="com.aptana.editor.php.editorAction"
+            targetID="com.aptana.editor.php">
+         <action
+               actionID="RulerDoubleClick"
+               class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+               id="com.aptana.php.debug.toggleBreakpointAction"
+               label="%toggleBreakpoint.action.label"
+               style="push">
+         </action>
+      </editorContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="com.aptana.php.debug.breakpoints"
+            targetID="com.aptana.editor.php.RulerContext">
+		       <action
+		         label="%disableBreakpoint.action.label"
+		         class="org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
+		         menubarPath="debug"
+		         id="com.aptana.php.debug.breakpoints.toggleBreakpointAction">
+		       </action>
+      </viewerContribution>
+   </extension>
+</plugin>

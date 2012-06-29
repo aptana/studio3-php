@@ -15,6 +15,7 @@ import com.aptana.editor.common.parsing.CompositeParser;
 import com.aptana.editor.html.IHTMLConstants;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.IParseState;
+import com.aptana.parsing.WorkingParseResult;
 import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.ast.ParseNode;
 import com.aptana.parsing.ast.ParseRootNode;
@@ -27,7 +28,7 @@ public class PHTMLParser extends CompositeParser
 	}
 
 	@Override
-	protected IParseNode processEmbeddedlanguage(IParseState parseState) throws Exception // $codepro.audit.disable
+	protected IParseNode processEmbeddedlanguage(IParseState parseState, WorkingParseResult working) throws Exception // $codepro.audit.disable
 																							// declaredExceptions
 	{
 		String source = parseState.getSource();
@@ -73,7 +74,7 @@ public class PHTMLParser extends CompositeParser
 			id = getCurrentSymbol().getId();
 		}
 
-		IParseNode result = getParseResult(IPHPConstants.CONTENT_TYPE_PHP, start, end);
+		IParseNode result = getParseResult(IPHPConstants.CONTENT_TYPE_PHP, start, end).getRootNode();
 		if (result != null)
 		{
 			Symbol endTag = getCurrentSymbol();

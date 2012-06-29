@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -114,6 +114,7 @@ import org2.eclipse.php.internal.core.ast.rewrite.ASTRewriteFlattener;
 import org2.eclipse.php.internal.core.ast.rewrite.RewriteEventStore;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.util.EditorUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -361,7 +362,16 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 						}
 						else
 						{
-							logError(input, output);
+							if (ast.getAST().hasErrors())
+							{
+								// Fatal syntax errors prevented a proper formatting.
+								StatusLineMessageTimerManager.setErrorMessage(
+										FormatterMessages.PHPFormatter_fatalSyntaxErrors, ERROR_DISPLAY_TIMEOUT, true);
+							}
+							else
+							{
+								logError(input, output);
+							}
 						}
 					}
 					else
@@ -369,6 +379,12 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 						return new MultiTextEdit(); // NOP
 					}
 				}
+			}
+			else
+			{
+				// Fatal syntax errors
+				StatusLineMessageTimerManager.setErrorMessage(FormatterMessages.PHPFormatter_fatalSyntaxErrors,
+						ERROR_DISPLAY_TIMEOUT, true);
 			}
 		}
 		catch (FormatterException e)
@@ -470,7 +486,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 		{
 			result = matcher.match(inputAST.getProgramRoot(), outputAST.getProgramRoot(), true);
 		}
-		if (!result && FormatterPlugin.getDefault().isDebugging())
+		if (!result && (FormatterPlugin.getDefault().isDebugging() || EclipseUtil.isTesting()))
 		{
 			// Log the failure
 			if (matchWithoutComments)
@@ -615,6 +631,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 	 * @see com.aptana.formatter.AbstractScriptFormatter#getOutputOnOffRegions(java.lang.String, java.lang.String,
 	 * java.lang.String)
 	 */
+	@Override
 	protected List<IRegion> getOutputOnOffRegions(String output, String formatterOffPattern, String formatterOnPattern)
 	{
 		PHPParser parser = (PHPParser) checkoutParser(IPHPConstants.CONTENT_TYPE_PHP);

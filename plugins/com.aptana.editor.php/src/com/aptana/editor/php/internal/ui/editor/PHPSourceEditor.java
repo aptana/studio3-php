@@ -97,8 +97,8 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	private ISourceModule sourceModule;
 	private boolean isOutOfWorkspace;
 	private String sourceUri;
-	private PHPParseState phpParseState;
 	private PHPOffsetMapper offsetMapper;
+	private PHPVersion phpVersionCache;
 
 	// Mark Occurrences management
 	private OccurrencesUpdater occurrencesUpdater;
@@ -170,12 +170,14 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.AbstractThemeableEditor#getAST()
 	 */
+	@Override
 	public IParseRootNode getAST()
 	{
 		try
 		{
-			phpParseState.setEditState(getDocument().get());
-			return ParserPoolFactory.parse(getContentType(), phpParseState);
+			PHPParseState phpParseState = new PHPParseState(getDocument().get(), 0, phpVersionCache, getModule(),
+					getSourceModule());
+			return ParserPoolFactory.parse(getContentType(), phpParseState).getRootNode();
 		}
 		catch (Exception e)
 		{
@@ -231,46 +233,45 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 		super.doSetInput(input);
 		// Register as a PHP version listener and re-set the document to trigger a refresh and re-parse.
 		IResource resource = (IResource) input.getAdapter(IResource.class);
-		if (phpParseState == null)
+		PHPVersionProvider phpVersionProvider = PHPVersionProvider.getInstance();
+
+		// In case this is the second time we hit that doSetInput, we need to re-register the listeners to make sure
+		// the editor is still in a valid state.
+		boolean shouldRefresh = (sourceUri != null);
+		if (shouldRefresh)
 		{
-			phpParseState = new PHPParseState();
+			module = null;
+			sourceModule = null;
+			project = null;
+			sourceUri = null;
+			phpVersionProvider.removePHPVersionListener(this);
+			phpVersionProvider.removePHPVersionListener(documentProvider);
 		}
+
 		if (resource != null)
 		{
-			// In case this is the second time we hit that doSetInput, we need to re-register the listeners to make sure
-			// the editor is still in a valid state.
-			boolean shouldRefresh = (sourceUri != null);
 			sourceUri = resource.getLocationURI().toString();
 			project = resource.getProject();
-			phpParseState.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
-			documentProvider.phpVersionChanged(PHPVersionProvider.getPHPVersion(project));
-			if (shouldRefresh)
-			{
-				module = null;
-				sourceModule = null;
-				PHPVersionProvider.getInstance().removePHPVersionListener(this);
-				PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
-				PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
-			}
-			PHPVersionProvider.getInstance().addPHPVersionListener(project, phpParseState);
-			PHPVersionProvider.getInstance().addPHPVersionListener(project, documentProvider);
-			PHPVersionProvider.getInstance().addPHPVersionListener(project, this);
+			phpVersionCache = PHPVersionProvider.getPHPVersion(project);
+			documentProvider.phpVersionChanged(phpVersionCache);
+			phpVersionProvider.addPHPVersionListener(project, documentProvider);
+			phpVersionProvider.addPHPVersionListener(project, this);
 
-			// Set the current module into the parse state
-			phpParseState.setModule(getModule());
-			phpParseState.setSourceModule(getSourceModule());
 		}
 		else
 		{
+			// Set the cached version to null (which later when used should mean == default)
+			phpVersionCache = null;
+			documentProvider.phpVersionChanged(null);
+
 			// It's probably a file out of the workspace
 			if (input instanceof FileStoreEditorInput)
 			{
 				FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
 				sourceUri = fsInput.getURI().toString();
-				phpParseState.setModule(getModule());
-				phpParseState.setSourceModule(getSourceModule());
 			}
 		}
+
 	}
 
 	/*
@@ -281,7 +282,6 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	public void dispose()
 	{
 		PHPVersionProvider.getInstance().removePHPVersionListener(this);
-		PHPVersionProvider.getInstance().removePHPVersionListener(phpParseState);
 		PHPVersionProvider.getInstance().removePHPVersionListener(documentProvider);
 		if (occurrencesUpdater != null)
 		{
@@ -293,7 +293,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	public ITreeContentProvider getOutlineContentProvider()
 	{
-		return new PHTMLOutlineContentProvider();
+		return new PHTMLOutlineContentProvider(this);
 	}
 
 	@Override
@@ -315,20 +315,24 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 	@Override
 	protected Object getOutlineElementAt(int caret)
 	{
-		IParseNode parseResult = getAST();
-		if (parseResult != null)
+		if (hasOutlinePageCreated())
 		{
-			IParseNode node = parseResult.getNodeAtOffset(caret);
-			if (node instanceof PHPExtendsNode)
+			IParseNode parseResult = getOutlinePage().getCurrentAst();
+			if (parseResult != null)
 			{
-				node = node.getParent();
+				IParseNode node = parseResult.getNodeAtOffset(caret);
+				if (node instanceof PHPExtendsNode)
+				{
+					node = node.getParent();
+				}
+				if (node != null)
+				{
+					return new PHPOutlineItem(node.getNameNode().getNameRange(), node);
+				}
 			}
-			if (node != null)
-			{
-				return new PHPOutlineItem(node.getNameNode().getNameRange(), node);
-			}
+			return super.getOutlineElementAt(caret);
 		}
-		return super.getOutlineElementAt(caret);
+		return null;
 	}
 
 	public String getLanguage()
@@ -338,6 +342,7 @@ public class PHPSourceEditor extends HTMLEditor implements ILanguageNode, IPHPVe
 
 	public void phpVersionChanged(PHPVersion newVersion)
 	{
+		phpVersionCache = newVersion;
 		Job refreshJob = new UIJob("Refresh document") //$NON-NLS-1$
 		{
 			@Override

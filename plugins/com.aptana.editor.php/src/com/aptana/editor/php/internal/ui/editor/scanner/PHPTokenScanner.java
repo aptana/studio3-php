@@ -21,7 +21,6 @@ import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.editor.html.parsing.HTMLTokenScanner;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.ast.ASTFactory;
@@ -32,7 +31,7 @@ import com.aptana.editor.php.internal.ui.editor.PHPVersionDocumentManager;
  * 
  * @author Shalom Gibly <sgibly@aptana.com>
  */
-public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanner
+public class PHPTokenScanner implements IPHPTokenScanner
 {
 	// We need that prefix for our PHP lexer
 	protected static final String PHP_PREFIX = "<?php\n"; //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
@@ -150,6 +149,11 @@ public class PHPTokenScanner extends HTMLTokenScanner implements IPHPTokenScanne
 			IdeLog.logError(PHPEditorPlugin.getDefault(), "PHP code-scanner - I/O error", e); //$NON-NLS-1$
 		}
 		origOffset = offset;
+	}
+	
+	public String getContents()
+	{
+		return fContents;
 	}
 
 	/**

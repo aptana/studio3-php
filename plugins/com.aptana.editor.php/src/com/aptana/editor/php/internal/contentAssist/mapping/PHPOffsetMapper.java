@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -213,7 +213,9 @@ public class PHPOffsetMapper
 		IElementsIndex index = getIndex(source, offset);
 
 		// trying to get dereference entries
-		List<String> callPath = ParsingUtils.parseCallPath(null, source, offset, PHPContentAssistProcessor.OPS, false);
+		IDocument document = phpSourceEditor.getDocumentProvider().getDocument(phpSourceEditor.getEditorInput());
+		List<String> callPath = ParsingUtils.parseCallPath(null, source, offset, PHPContentAssistProcessor.OPS, false,
+				document);
 		if (callPath == null || callPath.isEmpty())
 		{
 			return Collections.EMPTY_SET;
@@ -236,14 +238,22 @@ public class PHPOffsetMapper
 		{
 			String toFind = callPath.get(callPath.size() - 1);
 			boolean variableCompletion = false;
+			List<IElementEntry> res = new ArrayList<IElementEntry>();
 			if (toFind.length() > 0 && toFind.charAt(0) == '$')
 			{
 				variableCompletion = true;
 				toFind = toFind.substring(1);
 			}
+			else
+			{
+				// Constants first
+				res.addAll(PHPContentAssistProcessor.computeDefines(toFind, index, null, true));
+
+			}
 			toFind = toFind.toLowerCase();
-			List<IElementEntry> res = PHPContentAssistProcessor.computeSimpleIdentifierEntries(reportedStackIsGlobal,
-					globalImports, toFind, variableCompletion, index, true, module, false, namespace, aliases);
+			res.addAll(PHPContentAssistProcessor.computeSimpleIdentifierEntries(reportedStackIsGlobal, globalImports,
+					toFind, variableCompletion, index, true, module, false, namespace, aliases));
+
 			if (res != null)
 			{
 				entries = new LinkedHashSet<IElementEntry>();

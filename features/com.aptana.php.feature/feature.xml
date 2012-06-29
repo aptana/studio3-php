@@ -2,7 +2,7 @@
 <feature
       id="com.aptana.php.feature"
       label="%featureName"
-      version="3.2.0.qualifier"
+      version="3.3.0.qualifier"
       provider-name="%providerName"
       plugin="com.aptana.editor.php">
 
@@ -68,6 +68,20 @@
 
    <plugin
          id="com.aptana.editor.php.formatter"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.aptana.php.debug"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.aptana.php.debug.epl"
          download-size="0"
          install-size="0"
          version="0.0.0"

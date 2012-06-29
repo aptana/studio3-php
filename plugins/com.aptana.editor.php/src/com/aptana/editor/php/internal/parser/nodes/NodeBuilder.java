@@ -10,6 +10,7 @@ package com.aptana.editor.php.internal.parser.nodes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -355,9 +356,8 @@ public class NodeBuilder
 		IParseRootNode htmlParseResult = null;
 		try
 		{
-			ParseState parseState = new HTMLParseState();
-			parseState.setEditState(source, 0);
-			htmlParseResult = ParserPoolFactory.parse(IHTMLConstants.CONTENT_TYPE_HTML, parseState);
+			ParseState parseState = new HTMLParseState(source);
+			htmlParseResult = ParserPoolFactory.parse(IHTMLConstants.CONTENT_TYPE_HTML, parseState).getRootNode();
 		}
 		catch (Exception e)
 		{
@@ -446,6 +446,13 @@ public class NodeBuilder
 						{
 							// Insert the node and the siblings that are nested in the PHP HTML node.
 							IParseNode[] children = parent.getChildren();
+							for (IParseNode child : children)
+							{
+								if (toInsert.contains(child))
+								{
+									toInsert.remove(child);
+								}
+							}
 							int siblingsCount = toInsert.size();
 							IParseNode[] newChildren = new IParseNode[children.length + siblingsCount];
 							System.arraycopy(children, 0, newChildren, 0, nodeIndex);
@@ -498,7 +505,7 @@ public class NodeBuilder
 		phpNode.setParent(newHtmlParent);
 		// We inject the PHP node into the HTML node, replacing the text-node that represents it.
 		IParseNode[] htmlChildren = newHtmlParent.getChildren();
-		List<IParseNode> newChildren = new ArrayList<IParseNode>(htmlChildren.length);
+		Set<IParseNode> newChildren = new LinkedHashSet<IParseNode>(htmlChildren.length);
 		boolean phpChildInserted = false;
 		for (IParseNode child : htmlChildren)
 		{

@@ -171,7 +171,7 @@
             icon="icons/full/obj16/php_wiz.png"
             id="com.aptana.editor.php.NewPHPProjectWizard"
             name="%new-project-wizard.name"
-            preferredPerspectives="com.aptana.ui.WebPerspective"
+            preferredPerspectives="com.aptana.ui.WebPerspective,com.appcelerator.titanium.ui.StudioPerspective"
             project="true">
          <description>
             %new-project-wizard.description
@@ -415,6 +415,7 @@
       <participant
             class="com.aptana.editor.php.internal.indexer.PHPBuildParticipant"
             id="com.aptana.editor.php.buildParticipant"
+            name="PHP Build Participant"
             priority="50">
          <contentTypeBinding
                contentTypeId="com.aptana.contenttype.phtml.php">

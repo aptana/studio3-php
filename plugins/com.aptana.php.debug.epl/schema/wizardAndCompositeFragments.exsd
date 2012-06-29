@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="com.aptana.php.debug.epl" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="com.aptana.php.debug.epl" id="wizardAndCompositeFragments" name="Wizard and Composite Fragments"/>
+      </appinfo>
+      <documentation>
+         The wizard and composite fragments extention supplies a unify way to create wizards for creation of instances that
+         can later be edited using a different view, such as tabs view or any other view that accepts Composites.
+   The extention accepts a factory class that can create a WizardFragment or a CompositeFragment when needed.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="wizardAndCompositeFragment"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="wizardAndCompositeFragment">
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  An implementation of org2.eclipse.php.ui.wizards.ICompositeFragmentFactory
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org2.eclipse.php.internal.debug.ui.wizard.ICompositeFragmentFactory"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  The name of this fragment factory.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The ID of this fragment factory.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="fragmentsGroupID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The fragments group that this fragment is associated with.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="placeAfter" type="string">
+            <annotation>
+               <documentation>
+                  An optional ID for the wizard fragment factory that this factory should follow.
+Note that the use of this indicator will only ensure that this fragment will be placed after the given ID, but it does not ensure that the fragment will be right next to it (another fragment(s) might be positioned in between).
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         0.7
+      </documentation>
+   </annotation>
+
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2001, 2004 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at &lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>
