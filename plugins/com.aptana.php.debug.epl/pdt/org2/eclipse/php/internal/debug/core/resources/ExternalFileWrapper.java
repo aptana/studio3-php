@@ -1251,4 +1251,9 @@ public class ExternalFileWrapper implements IFile, IAdaptable, IResource, ICoreC
 	{
 		// do nothing
 	}
+
+	public void accept(IResourceProxyVisitor visitor, int depth, int memberFlags) throws CoreException
+	{
+		// No op
+	}
 }
