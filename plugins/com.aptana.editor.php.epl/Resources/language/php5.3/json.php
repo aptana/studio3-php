@@ -111,5 +111,19 @@ define ('JSON_ERROR_CTRL_CHAR', 3);
  */
 define ('JSON_ERROR_SYNTAX', 4);
 
+/**
+ * Malformed UTF-8 characters, possibly incorrectly encoded. This 
+ * constant is available as of PHP 5.3.1.
+ * @link http://www.php.net/manual/en/json.constants.php
+ */
+define ('JSON_ERROR_UTF8', 5);
+
+/**
+ * Encodes numeric strings as numbers.
+ * Available since PHP 5.3.3.
+ * @link http://www.php.net/manual/en/json.constants.php
+ */
+define ('JSON_NUMERIC_CHECK', 32);
+
 // End of json v.1.2.1
 ?>
