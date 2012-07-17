@@ -582,10 +582,18 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 		 * @param name
 		 *            - variable name.
 		 * @param importsFromGlobal
-		 *            - set of variables that might be imported from global scope.
+		 *            - set of variables that might be imported from global scope. This set will not be modified during
+		 *            this call.
 		 * @return variable info.
 		 */
 		public VariableInfo getVariable(String name, Set<String> importsFromGlobal)
+		{
+			// Copy the given set to avoid any concurrent modification exception in case the caller is calling this one
+			// in an iteration.
+			return innerGetVariable(name, new HashSet<String>(importsFromGlobal));
+		}
+
+		private VariableInfo innerGetVariable(String name, Set<String> importsFromGlobal)
 		{
 			if (globalImports != null && !globalImports.isEmpty())
 			{
