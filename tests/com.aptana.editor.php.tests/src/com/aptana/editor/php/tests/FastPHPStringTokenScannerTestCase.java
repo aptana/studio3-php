@@ -19,32 +19,37 @@ import com.aptana.editor.php.internal.text.rules.FastPHPStringTokenScanner;
 
 /**
  * @author Max Stepanov
- *
  */
 @SuppressWarnings("nls")
-public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestCase {
+public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestCase
+{
 
 	private IToken defaultToken = getToken("string.quoted.double.php");
 	private IToken punctuationBeginToken = getToken("punctuation.definition.string.begin.php");
 	private IToken punctuationEndToken = getToken("punctuation.definition.string.end.php");
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.aptana.editor.common.tests.AbstractTokenScannerTestCase#createTokenScanner()
 	 */
 	@Override
-	protected ITokenScanner createTokenScanner() {
+	protected ITokenScanner createTokenScanner()
+	{
 		return new FastPHPStringTokenScanner(defaultToken);
 	}
-	
-	private IToken getToken(PHPTokenType... type) {
+
+	private IToken getToken(PHPTokenType... type)
+	{
 		StringBuilder sb = new StringBuilder().append(PHPTokenType.META_STRING_CONTENTS_DOUBLE.toString()).append(' ');
-		for (PHPTokenType i : type) {
+		for (PHPTokenType i : type)
+		{
 			sb.append(i.toString()).append(' ');
 		}
 		return new Token(sb.toString().trim());
 	}
 
-	public void testDefault() {
+	public void testDefault()
+	{
 		String src = " abc ";
 		IDocument document = new Document(src);
 
@@ -52,7 +57,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 0, 5);
 	}
 
-	public void testEscapeSpecial() {
+	public void testEscapeSpecial()
+	{
 		String src = "\\\\ \\\" \\$ \\f \\v \\t \\r \\n";
 		IDocument document = new Document(src);
 
@@ -74,7 +80,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.CHARACTER_ESCAPE), 21, 2); // \n
 	}
 
-	public void testEscapeOct() {
+	public void testEscapeOct()
+	{
 		String src = " \\7 \\77 \\777 \\7777";
 		IDocument document = new Document(src);
 
@@ -90,7 +97,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 17, 1); // 7
 	}
 
-	public void testEscapeHex() {
+	public void testEscapeHex()
+	{
 		String src = " \\xf \\xFF \\xfFF \\xf";
 		IDocument document = new Document(src);
 
@@ -105,7 +113,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.CHARACTER_ESCAPE), 16, 3); // \xf
 	}
 
-	public void testEscapeInvalidChars() {
+	public void testEscapeInvalidChars()
+	{
 		String src = " \\8 \\a ";
 		IDocument document = new Document(src);
 
@@ -117,7 +126,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 5, 2);
 	}
 
-	public void testDoubleQuotes() {
+	public void testDoubleQuotes()
+	{
 		String src = "\"\"";
 		IDocument document = new Document(src);
 
@@ -126,7 +136,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(punctuationEndToken, 1, 1);
 	}
 
-	public void testDollarSign() {
+	public void testDollarSign()
+	{
 		String src = "\"$\"";
 		IDocument document = new Document(src);
 
@@ -136,7 +147,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(punctuationEndToken, 2, 1);
 	}
 
-	public void testSimpleVariable() {
+	public void testSimpleVariable()
+	{
 		String src = " $x. $xyz- $x";
 		IDocument document = new Document(src);
 
@@ -152,7 +164,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 12, 1); // x
 	}
 
-	public void testSimpleVariableClassOperator() {
+	public void testSimpleVariableClassOperator()
+	{
 		String src = "$x-> $x->xyz $x->y->z";
 		IDocument document = new Document(src);
 
@@ -174,7 +187,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 20, 1); // y
 	}
 
-	public void testSimpleVariableArrayNumericKey() {
+	public void testSimpleVariableArrayNumericKey()
+	{
 		String src = "$x[0] $x[123]";
 		IDocument document = new Document(src);
 
@@ -192,7 +206,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 12, 1); // ]
 	}
 
-	public void testSimpleVariableArrayStringKey() {
+	public void testSimpleVariableArrayStringKey()
+	{
 		String src = "$x[a] $x[abc] ";
 		IDocument document = new Document(src);
 
@@ -211,7 +226,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 13, 1);
 	}
 
-	public void testSimpleVariableArrayVariableKey() {
+	public void testSimpleVariableArrayVariableKey()
+	{
 		String src = "$x[$a] $x[$abc] ";
 		IDocument document = new Document(src);
 
@@ -229,7 +245,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 14, 1); // ]
 	}
 
-	public void testSimpleVariablePunctuation() {
+	public void testSimpleVariablePunctuation()
+	{
 		String src = " ${x}. ${xyz}a";
 		IDocument document = new Document(src);
 
@@ -245,7 +262,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 13, 1);
 	}
 
-	public void testComplexVariable() {
+	public void testComplexVariable()
+	{
 		String src = " {$x}. {$xyz}a";
 		IDocument document = new Document(src);
 
@@ -263,7 +281,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 13, 1);
 	}
 
-	public void testComplexVariableIncomplete() {
+	public void testComplexVariableIncomplete()
+	{
 		String src = "{ $x}";
 		IDocument document = new Document(src);
 
@@ -274,7 +293,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 4, 1);
 	}
 
-	public void testComplexVariableLiteral() {
+	public void testComplexVariableLiteral()
+	{
 		String src = "{${$name}}";
 		IDocument document = new Document(src);
 
@@ -287,7 +307,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 9, 1); // }
 	}
 
-	public void testComplexVariableMultiOperation() {
+	public void testComplexVariableMultiOperation()
+	{
 		String src = "{$x[0]->y[abc][1]->z}";
 		IDocument document = new Document(src);
 
@@ -310,7 +331,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 19, 1); // y
 	}
 
-	public void testComplexVariableQuotes() {
+	public void testComplexVariableQuotes()
+	{
 		String src = "{$arr['key']}";
 		IDocument document = new Document(src);
 
@@ -324,7 +346,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 12, 1); // }
 	}
 
-	public void testComplexVariableFunction() {
+	public void testComplexVariableFunction()
+	{
 		String src = "{${getName()}}";
 		IDocument document = new Document(src);
 
@@ -338,7 +361,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 13, 1); // }
 	}
 
-	public void testComplexVariableMethod() {
+	public void testComplexVariableMethod()
+	{
 		String src = "{${$object->getName()}}";
 		IDocument document = new Document(src);
 
@@ -355,7 +379,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 22, 1); // }
 	}
 
-	public void testComplexVariableFunctionIncomplete() {
+	public void testComplexVariableFunctionIncomplete()
+	{
 		String src = "{getName()}";
 		IDocument document = new Document(src);
 
@@ -363,7 +388,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 0, 11);
 	}
 
-	public void testComplexVariableStatic() {
+	public void testComplexVariableStatic()
+	{
 		String src = "{${beers::softdrink}}";
 		IDocument document = new Document(src);
 
@@ -377,7 +403,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 20, 1); // }
 	}
 
-	public void testComplexVariableStatic2() {
+	public void testComplexVariableStatic2()
+	{
 		String src = "{${beers::$ale}}";
 		IDocument document = new Document(src);
 
@@ -392,7 +419,8 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 15, 1); // }
 	}
 
-	public void testComplexVariableStaticIncomplete() {
+	public void testComplexVariableStaticIncomplete()
+	{
 		String src = "{${beers:softdrink}}";
 		IDocument document = new Document(src);
 
@@ -403,6 +431,49 @@ public class FastPHPStringTokenScannerTestCase extends AbstractTokenScannerTestC
 		assertToken(defaultToken, 8, 10);
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 18, 1); // }
 		assertToken(getToken(PHPTokenType.VARIABLE_PUNCTUATION), 19, 1); // }
+	}
+
+	public void testStringArrayVariable()
+	{
+		String src = "$ARRAY[\"text\"]";
+		IDocument document = new Document(src);
+
+		scanner.setRange(document, 0, document.getLength());
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 0, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 1, 5); // ARRAY
+		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 6, 1); // [
+		assertToken(
+				getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE, PHPTokenType.PUNCTUATION_STRING_BEGIN),
+				7, 1); // "
+		assertToken(
+				getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE,
+						PHPTokenType.META_STRING_CONTENTS_DOUBLE), 8, 4); // text
+		assertToken(
+				getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE, PHPTokenType.PUNCTUATION_STRING_END),
+				12, 1); // "
+		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 13, 1); // ]
+	}
+
+	public void testStringArrayVariableWithSyntaxError()
+	{
+		String src = "\"$ARRAY[\"text\"]";
+		IDocument document = new Document(src);
+
+		scanner.setRange(document, 0, document.getLength());
+		assertToken(punctuationBeginToken, 0, 1); // "
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.VARIABLE_PUNCTUATION), 1, 1); // $
+		assertToken(getToken(PHPTokenType.VARIABLE_OTHER), 2, 5); // ARRAY
+		assertToken(getToken(PHPTokenType.PUNCTUATION_LBRACKET), 7, 1); // [
+		assertToken(
+				getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE, PHPTokenType.PUNCTUATION_STRING_BEGIN),
+				8, 1); // "
+		assertToken(
+				getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE,
+						PHPTokenType.META_STRING_CONTENTS_DOUBLE), 9, 4); // text
+		assertToken(
+				getToken(PHPTokenType.VARIABLE_OTHER, PHPTokenType.STRING_DOUBLE, PHPTokenType.PUNCTUATION_STRING_END),
+				13, 1); // "
+		assertToken(getToken(PHPTokenType.PUNCTUATION_RBRACKET), 14, 1); // ]
 	}
 
 }
