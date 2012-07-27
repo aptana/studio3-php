@@ -27,7 +27,7 @@
 	<!-- ===================================================================== -->
 	<!-- Steps to do to publish the build results -->
 	<!-- ===================================================================== -->
-	<target name="publish">
+	<target name="publish" unless="dont.deploy">
 		<delete dir="${deploy.dir}" failonerror="false" />
 		<mkdir dir="${deploy.dir}" />
 		<!-- grab final version -->
