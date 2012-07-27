@@ -15,8 +15,9 @@ class PDOException extends RuntimeException  {
 	/**
 	 * @param message[optional]
 	 * @param code[optional]
+	 * @param previous[optional]
 	 */
-	public function __construct ($message, $code) {}
+	public function __construct ($message, $code, $previous) {}
 
 	final public function getMessage () {}
 
@@ -27,6 +28,8 @@ class PDOException extends RuntimeException  {
 	final public function getLine () {}
 
 	final public function getTrace () {}
+
+	final public function getPrevious () {}
 
 	final public function getTraceAsString () {}
 
@@ -41,7 +44,7 @@ class PDO  {
 	const PARAM_STR = 2;
 	const PARAM_LOB = 3;
 	const PARAM_STMT = 4;
-	const PARAM_INPUT_OUTPUT = -2147483648;
+	const PARAM_INPUT_OUTPUT = 2147483648;
 	const PARAM_EVT_ALLOC = 0;
 	const PARAM_EVT_FREE = 1;
 	const PARAM_EVT_EXEC_PRE = 2;
@@ -108,11 +111,15 @@ class PDO  {
 	const MYSQL_ATTR_USE_BUFFERED_QUERY = 1000;
 	const MYSQL_ATTR_LOCAL_INFILE = 1001;
 	const MYSQL_ATTR_INIT_COMMAND = 1002;
-	const MYSQL_ATTR_READ_DEFAULT_FILE = 1003;
-	const MYSQL_ATTR_READ_DEFAULT_GROUP = 1004;
-	const MYSQL_ATTR_MAX_BUFFER_SIZE = 1005;
-	const MYSQL_ATTR_DIRECT_QUERY = 1006;
-	const PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT = 1000;
+	const MYSQL_ATTR_COMPRESS = 1003;
+	const MYSQL_ATTR_DIRECT_QUERY = 1004;
+	const MYSQL_ATTR_FOUND_ROWS = 1005;
+	const MYSQL_ATTR_IGNORE_SPACE = 1006;
+	const MYSQL_ATTR_SSL_KEY = 1007;
+	const MYSQL_ATTR_SSL_CERT = 1008;
+	const MYSQL_ATTR_SSL_CA = 1009;
+	const MYSQL_ATTR_SSL_CAPATH = 1010;
+	const MYSQL_ATTR_SSL_CIPHER = 1011;
 
 
 	/**
@@ -173,6 +180,13 @@ class PDO  {
 	 * @return bool Returns true on success or false on failure.
 	 */
 	public function rollBack () {}
+
+	/**
+	 * Checks if inside a transaction
+	 * @link http://www.php.net/manual/en/pdo.intransaction.php
+	 * @return bool true if a transaction is currently active, and false if not.
+	 */
+	public function inTransaction () {}
 
 	/**
 	 * Set an attribute
@@ -248,7 +262,7 @@ class PDO  {
 	/**
 	 * Fetch the SQLSTATE associated with the last operation on the database handle
 	 * @link http://www.php.net/manual/en/pdo.errorcode.php
-	 * @return mixed a SQLSTATE, a five characters alphanumeric identifier defined in
+	 * @return mixed an SQLSTATE, a five characters alphanumeric identifier defined in
 	 * the ANSI SQL-92 standard. Briefly, an SQLSTATE consists of a
 	 * two characters class value followed by a three characters subclass value. A
 	 * class value of 01 indicates a warning and is accompanied by a return code
@@ -382,6 +396,12 @@ class PDOStatement implements Traversable {
 	 * you cannot bind two values to a single named parameter in an IN()
 	 * clause.
 	 * </p>
+	 * <p>
+	 * You cannot bind more values than specified; if more keys exist in 
+	 * input_parameters than in the SQL specified 
+	 * in the PDO::prepare, then the statement will 
+	 * fail and an error is emitted.
+	 * </p>
 	 * @return bool Returns true on success or false on failure.
 	 */
 	public function execute (array $input_parameters = null) {}
@@ -392,7 +412,8 @@ class PDOStatement implements Traversable {
 	 * @param fetch_style int[optional] <p>
 	 * Controls how the next row will be returned to the caller. This value
 	 * must be one of the PDO::FETCH_* constants,
-	 * defaulting to PDO::FETCH_BOTH.
+	 * defaulting to value of PDO::ATTR_DEFAULT_FETCH_MODE
+	 * (which defaults to PDO::FETCH_BOTH).
 	 * <p>
 	 * PDO::FETCH_ASSOC: returns an array indexed by column
 	 * name as returned in your result set
@@ -519,6 +540,8 @@ class PDOStatement implements Traversable {
 	 * @param fetch_style int[optional] <p>
 	 * Controls the contents of the returned array as documented in
 	 * PDOStatement::fetch.
+	 * Defaults to value of PDO::ATTR_DEFAULT_FETCH_MODE
+	 * (which defaults to PDO::FETCH_BOTH)
 	 * </p>
 	 * <p>
 	 * To return an array consisting of all values of a single column from
@@ -536,13 +559,16 @@ class PDOStatement implements Traversable {
 	 * column, bitwise-OR PDO::FETCH_COLUMN with
 	 * PDO::FETCH_GROUP.
 	 * </p>
-	 * @param column_index int[optional] <p>
-	 * Returns the indicated 0-indexed column when the value of
-	 * fetch_style is
-	 * PDO::FETCH_COLUMN.
+	 * @param fetch_argument mixed[optional] <p>
+	 * This argument have a different meaning depending on the value of 
+	 * the fetch_style parameter:
+	 * <p>
+	 * PDO::FETCH_COLUMN: Returns the indicated 0-indexed 
+	 * column.
 	 * </p>
 	 * @param ctor_args array[optional] <p>
-	 * Arguments of custom class constructor.
+	 * Arguments of custom class constructor when the fetch_style 
+	 * parameter is PDO::FETCH_CLASS.
 	 * </p>
 	 * @return array PDOStatement::fetchAll returns an array containing
 	 * all of the remaining rows in the result set. The array represents each
@@ -554,10 +580,10 @@ class PDOStatement implements Traversable {
 	 * demand on system and possibly network resources. Rather than retrieving
 	 * all of the data and manipulating it in PHP, consider using the database
 	 * server to manipulate the result sets. For example, use the WHERE and
-	 * SORT BY clauses in SQL to restrict results before retrieving and
+	 * ORDER BY clauses in SQL to restrict results before retrieving and
 	 * processing them with PHP.
 	 */
-	public function fetchAll ($fetch_style = null, $column_index = null, array $ctor_args = null) {}
+	public function fetchAll ($fetch_style = null, $fetch_argument = null, array $ctor_args = null) {}
 
 	/**
 	 * Fetches the next row and returns it as an object.
@@ -720,7 +746,7 @@ class PDOStatement implements Traversable {
 	public function closeCursor () {}
 
 	/**
-	 * Dump a SQL prepared command
+	 * Dump an SQL prepared command
 	 * @link http://www.php.net/manual/en/pdostatement.debugdumpparams.php
 	 * @return bool 
 	 */

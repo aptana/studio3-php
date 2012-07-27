@@ -29,16 +29,6 @@
 function iconv ($in_charset, $out_charset, $str) {}
 
 /**
- * Convert character encoding as output buffer handler
- * @link http://www.php.net/manual/en/function.ob-iconv-handler.php
- * @param contents string 
- * @param status int 
- * @return string See ob_start for information about this handler
- * return values.
- */
-function ob_iconv_handler ($contents, $status) {}
-
-/**
  * Retrieve internal configuration variables of iconv extension
  * @link http://www.php.net/manual/en/function.iconv-get-encoding.php
  * @param type string[optional] <p>
@@ -62,7 +52,7 @@ function iconv_get_encoding ($type = null) {}
  * Set current setting for character encoding conversion
  * @link http://www.php.net/manual/en/function.iconv-set-encoding.php
  * @param type string <p>
- * The value of type can be any one of those:
+ * The value of type can be any one of these:
  * input_encoding
  * output_encoding
  * internal_encoding
@@ -186,8 +176,6 @@ function iconv_strpos ($haystack, $needle, $offset = null, $charset = null) {}
  * </p>
  * @return int the numeric position of the last occurrence of
  * needle in haystack.
- * The characters are counted
- * on the basis of the specified character set charset.
  * </p>
  * <p>
  * If needle is not found,
@@ -253,8 +241,7 @@ function iconv_strrpos ($haystack, $needle, $charset = null) {}
  * <td>string</td>
  * <td>
  * Specifies the character set to use to compose the
- * MIME header. If not given, the same value as
- * input-charset will be used.
+ * MIME header.
  * </td>
  * <td>
  * iconv.internal_encoding
@@ -418,7 +405,7 @@ define ('ICONV_IMPL', "glibc");
  * string
  * @link http://www.php.net/manual/en/iconv.constants.php
  */
-define ('ICONV_VERSION', "2.11.1");
+define ('ICONV_VERSION', 2.13);
 
 /**
  * integer

@@ -63,10 +63,15 @@ function wddx_packet_end ($packet_id) {}
 function wddx_add_vars ($packet_id, $var_name, $_ = null) {}
 
 /**
- * &Alias; <function>wddx_unserialize</function>
+ * Unserializes a WDDX packet
  * @link http://www.php.net/manual/en/function.wddx-deserialize.php
+ * @param packet string <p>
+ * A WDDX packet, as a string or stream.
+ * </p>
+ * @return mixed the deserialized value which can be a string, a number or an
+ * array. Note that structures are deserialized into associative arrays.
  */
-function wddx_deserialize () {}
+function wddx_deserialize ($packet) {}
 
 // End of wddx v.
 ?>

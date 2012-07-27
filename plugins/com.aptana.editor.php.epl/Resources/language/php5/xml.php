@@ -49,8 +49,10 @@ function xml_parser_create_ns ($encoding = null, $separator = null) {}
  * Use XML Parser within an object
  * @link http://www.php.net/manual/en/function.xml-set-object.php
  * @param parser resource <p>
+ * A reference to the XML parser to use inside the object.
  * </p>
  * @param object object <p>
+ * The object where to use the XML parser.
  * </p>
  * @return bool Returns true on success or false on failure.
  */
@@ -60,8 +62,9 @@ function xml_set_object ($parser, &$object) {}
  * Set up start and end element handlers
  * @link http://www.php.net/manual/en/function.xml-set-element-handler.php
  * @param parser resource <p>
+ * A reference to the XML parser to set up start and end element handler functions.
  * </p>
- * @param start_element_handler callback <p>
+ * @param start_element_handler callable <p>
  * The function named by start_element_handler
  * must accept three parameters:
  * start_element_handler
@@ -71,7 +74,7 @@ function xml_set_object ($parser, &$object) {}
  * parser 
  * The first parameter, parser, is a
  * reference to the XML parser calling the handler.
- * @param end_element_handler callback <p>
+ * @param end_element_handler callable <p>
  * The function named by end_element_handler
  * must accept two parameters:
  * end_element_handler
@@ -88,8 +91,9 @@ function xml_set_element_handler ($parser, $start_element_handler, $end_element_
  * Set up character data handler
  * @link http://www.php.net/manual/en/function.xml-set-character-data-handler.php
  * @param parser resource <p>
+ * A reference to the XML parser to set up character data handler function.
  * </p>
- * @param handler callback <p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
@@ -111,8 +115,9 @@ function xml_set_character_data_handler ($parser, $handler) {}
  * Set up processing instruction (PI) handler
  * @link http://www.php.net/manual/en/function.xml-set-processing-instruction-handler.php
  * @param parser resource <p>
+ * A reference to the XML parser to set up processing instruction (PI) handler function.
  * </p>
- * @param handler callback <p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
@@ -135,8 +140,9 @@ function xml_set_processing_instruction_handler ($parser, $handler) {}
  * Set up default handler
  * @link http://www.php.net/manual/en/function.xml-set-default-handler.php
  * @param parser resource <p>
+ * A reference to the XML parser to set up default handler function.
  * </p>
- * @param handler callback <p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
@@ -158,8 +164,9 @@ function xml_set_default_handler ($parser, $handler) {}
  * Set up unparsed entity declaration handler
  * @link http://www.php.net/manual/en/function.xml-set-unparsed-entity-decl-handler.php
  * @param parser resource <p>
+ * A reference to the XML parser to set up unparsed entity declaration handler function.
  * </p>
- * @param handler callback <p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
@@ -186,8 +193,9 @@ function xml_set_unparsed_entity_decl_handler ($parser, $handler) {}
  * Set up notation declaration handler
  * @link http://www.php.net/manual/en/function.xml-set-notation-decl-handler.php
  * @param parser resource <p>
+ * A reference to the XML parser to set up notation declaration handler function.
  * </p>
- * @param handler callback <p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
@@ -211,8 +219,10 @@ function xml_set_notation_decl_handler ($parser, $handler) {}
 /**
  * Set up external entity reference handler
  * @link http://www.php.net/manual/en/function.xml-set-external-entity-ref-handler.php
- * @param parser resource 
- * @param handler callback <p>
+ * @param parser resource <p>
+ * A reference to the XML parser to set up external entity reference handler function.
+ * </p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
@@ -243,21 +253,20 @@ function xml_set_external_entity_ref_handler ($parser, $handler) {}
  * @param parser resource <p>
  * A reference to the XML parser.
  * </p>
- * @param handler callback <p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
  * </p>
  * <p>
  * The function named by handler must accept
- * four parameters, and should return an integer value. If the
+ * three parameters, and should return an integer value. If the
  * value returned from the handler is false (which it will be if no
  * value is returned), the XML parser will stop parsing and
  * xml_get_error_code will return
  * XML_ERROR_EXTERNAL_ENTITY_HANDLING.
  * handler
  * resourceparser
- * stringuser_data
  * stringprefix
  * stringuri
  * parser
@@ -273,21 +282,20 @@ function xml_set_start_namespace_decl_handler ($parser, $handler) {}
  * @param parser resource <p>
  * A reference to the XML parser.
  * </p>
- * @param handler callback <p>
+ * @param handler callable <p>
  * handler is a string containing the name of a
  * function that must exist when xml_parse is called
  * for parser.
  * </p>
  * <p>
  * The function named by handler must accept
- * three parameters, and should return an integer value. If the
+ * two parameters, and should return an integer value. If the
  * value returned from the handler is false (which it will be if no
  * value is returned), the XML parser will stop parsing and
  * xml_get_error_code will return
  * XML_ERROR_EXTERNAL_ENTITY_HANDLING.
  * handler
  * resourceparser
- * stringuser_data
  * stringprefix
  * parser
  * The first parameter, parser, is a
@@ -332,12 +340,16 @@ function xml_parse ($parser, $data, $is_final = null) {}
  * Parse XML data into an array structure
  * @link http://www.php.net/manual/en/function.xml-parse-into-struct.php
  * @param parser resource <p>
+ * A reference to the XML parser.
  * </p>
  * @param data string <p>
+ * A string containing the XML data.
  * </p>
  * @param values array <p>
+ * An array containing the values of the XML data
  * </p>
  * @param index array[optional] <p>
+ * An array containing pointers to the location of the appropriate values in the $values.
  * </p>
  * @return int xml_parse_into_struct returns 0 for failure and 1 for
  * success. This is not the same as false and true, be careful with
