@@ -14,9 +14,6 @@
       %copyright
    </copyright>
 
-   <license url="%licenseURL">
-   </license>
-
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.ui.ide"/>
