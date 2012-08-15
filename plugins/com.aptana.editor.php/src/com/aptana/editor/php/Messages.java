@@ -16,6 +16,8 @@ public class Messages extends NLS
 {
 	private static final String BUNDLE_NAME = "com.aptana.editor.php.messages"; //$NON-NLS-1$
 	public static String OpenDeclarationAction_cannotOpenDeclataion;
+	public static String PHPEditorPlugin_DefaultPHPProjectTemplate_Description;
+	public static String PHPEditorPlugin_DefaultPHPProjectTemplate_Name;
 	public static String PHPEditorPlugin_indexingJobMessage;
 	public static String PHPSourceEditor_markOccurrencesJob_name;
 	public static String openDeclaration_label;
