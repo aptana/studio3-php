@@ -315,9 +315,10 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 			this.initialName = phpExeItem.getName();
 			this.fPHPexeName.setTextWithoutUpdate(phpExeItem.getName());
 			this.fPHPexeName.setEnabled(phpExeItem.isEditable());
-			this.fPHPExePath.setTextWithoutUpdate(phpExeItem.getExecutable().getAbsolutePath());
+			File executable = phpExeItem.getExecutable();
+			this.fPHPExePath.setTextWithoutUpdate(executable != null ? executable.getAbsolutePath() : StringUtil.EMPTY);
 			this.fPHPExePath.setEnabled(phpExeItem.isEditable());
-			this.iniEditor.setPHPExe(phpExeItem.getExecutable().getAbsolutePath());
+			this.iniEditor.setPHPExe(executable != null ? executable.getAbsolutePath() : StringUtil.EMPTY);
 			if (phpExeItem.getINILocation() != null)
 			{
 				this.fPHPIni.setTextWithoutUpdate(phpExeItem.getINILocation().toString());

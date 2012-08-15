@@ -20,7 +20,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org2.eclipse.php.internal.debug.core.interpreter.phpIni.PHPINIUtil;
 
+import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.ProcessUtil;
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.core.interpreter.IInterpreter;
 import com.aptana.php.debug.core.util.FileUtils;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
@@ -33,7 +35,8 @@ import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
  */
 public class PHPexeItem implements IInterpreter
 {
-
+	private static final String LD_LIBRARY_PATH = "LD_LIBRARY_PATH"; //$NON-NLS-1$
+	private static final String DYLD_LIBRARY_PATH = "DYLD_LIBRARY_PATH"; //$NON-NLS-1$
 	public static final String SAPI_CLI = "CLI"; //$NON-NLS-1$
 	public static final String SAPI_CGI = "CGI"; //$NON-NLS-1$
 
@@ -68,7 +71,7 @@ public class PHPexeItem implements IInterpreter
 		this.name = name;
 		this.debuggerID = debuggerID;
 		this.executable = new File(executable);
-		if (config != null && config.length() > 0)
+		if (!StringUtil.isEmpty(config))
 		{
 			this.config = new File(config);
 		}
@@ -398,21 +401,21 @@ public class PHPexeItem implements IInterpreter
 
 		// Detect version and type:
 		Map<String, String> environment = new ProcessBuilder().environment();
-		if (!Platform.OS_WIN32.equals(Platform.getOS()))
+
+		if (Platform.OS_MACOSX.equals(Platform.getOS()))
 		{
-
-			if (Platform.OS_MACOSX.equals(Platform.getOS()))
-			{
-				environment.put("DYLD_LIBRARY_PATH", executable.getParent()); //$NON-NLS-1$
-			}
-			else
-			{
-				environment.put("LD_LIBRARY_PATH", executable.getParent()); //$NON-NLS-1$
-			}
+			environment.put(DYLD_LIBRARY_PATH, executable.getParent());
 		}
-		String output = ProcessUtil.outputForCommand(executable.getName(), Path.fromOSString(executable.getParent()),
-				environment, "-c", tempPHPIni.getParentFile().getAbsolutePath(), "-v"); //$NON-NLS-1$ //$NON-NLS-2$
-
+		else if (!Platform.OS_WIN32.equals(Platform.getOS()))
+		{
+			environment.put(LD_LIBRARY_PATH, executable.getParent());
+		}
+		String output = ProcessUtil.outputForCommand(executable.getAbsolutePath(), Path.fromOSString(executable
+				.getParent()), environment, "-c", tempPHPIni.getParentFile().getAbsolutePath(), "-v"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (PHPDebugEPLPlugin.getDefault().isDebugging())
+		{
+			IdeLog.logInfo(PHPDebugEPLPlugin.getDefault(), output);
+		}
 		Matcher m = PHP_VERSION.matcher(output);
 		if (m.find())
 		{
@@ -446,8 +449,8 @@ public class PHPexeItem implements IInterpreter
 		// Detect default PHP.ini location:
 		if (detectedConfig == null)
 		{
-			output = ProcessUtil.outputForCommand(executable.getName(), Path.fromOSString(executable.getParent()),
-					environment, "-c", tempPHPIni.getParentFile().getAbsolutePath(), "-i"); //$NON-NLS-1$ //$NON-NLS-2$
+			output = ProcessUtil.outputForCommand(executable.getAbsolutePath(), Path.fromOSString(executable
+					.getParent()), environment, "-c", tempPHPIni.getParentFile().getAbsolutePath(), "-i"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (sapiType == SAPI_CLI)
 			{
 				m = PHP_CLI_CONFIG.matcher(output);
@@ -483,11 +486,11 @@ public class PHPexeItem implements IInterpreter
 			boolean isMac = Platform.OS_MACOSX.equals(os);
 			if (isMac)
 			{
-				buf.append("DYLD_LIBRARY_PATH"); //$NON-NLS-1$
+				buf.append(DYLD_LIBRARY_PATH);
 			}
 			else
 			{
-				buf.append("LD_LIBRARY_PATH"); //$NON-NLS-1$
+				buf.append(LD_LIBRARY_PATH);
 			}
 			buf.append('=');
 			buf.append(executable.getParent());
