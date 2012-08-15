@@ -412,7 +412,7 @@ public class PHPexeItem implements IInterpreter
 		}
 		String output = ProcessUtil.outputForCommand(executable.getAbsolutePath(), Path.fromOSString(executable
 				.getParent()), environment, "-c", tempPHPIni.getParentFile().getAbsolutePath(), "-v"); //$NON-NLS-1$ //$NON-NLS-2$
-		if (PHPDebugEPLPlugin.getDefault().isDebugging())
+		if (PHPDebugEPLPlugin.getDefault().isDebugging() || PHPDebugEPLPlugin.DEBUG)
 		{
 			IdeLog.logInfo(PHPDebugEPLPlugin.getDefault(), output);
 		}
