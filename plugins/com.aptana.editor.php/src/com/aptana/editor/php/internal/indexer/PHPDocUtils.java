@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 // $codepro.audit.disable platformSpecificLineSeparator
 package com.aptana.editor.php.internal.indexer;
 
@@ -14,8 +21,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.IDocument;
 import org2.eclipse.php.internal.core.PHPVersion;
+import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org2.eclipse.php.internal.core.ast.nodes.Comment;
+import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
@@ -49,11 +58,22 @@ public final class PHPDocUtils
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private static final Pattern INPUT_TAG_PATTERN = Pattern.compile("<input[^>]*/>|<input\\s*>"); //$NON-NLS-1$
 
+	/**
+	 * Locates a PHPDoc comment above the offset in the document specified. In case the given entry is a parameter
+	 * variable, the search for the documentation will include the documentation of the parameter's wrapping function.
+	 * 
+	 * @param entry
+	 * @param document
+	 * @param offset
+	 * @return A {@link PHPDocBlock}, or <code>null</code>.
+	 */
 	public static PHPDocBlock findFunctionPHPDocComment(IElementEntry entry, IDocument document, int offset)
 	{
+		boolean isParameter = ((entry.getValue() instanceof VariablePHPEntryValue) && ((VariablePHPEntryValue) entry
+				.getValue()).isParameter());
 		if (entry.getModule() != null)
 		{
-			return findFunctionPHPDocComment(entry.getModule(), document, offset);
+			return findFunctionPHPDocComment(entry.getModule(), document, offset, isParameter);
 		}
 		// In case that the entry module is null, it's probably a PHP API documentation item, so
 		// parse the right item.
@@ -67,7 +87,7 @@ public final class PHPDocUtils
 				{
 					BufferedReader reader = new BufferedReader(new InputStreamReader(stream)); // $codepro.audit.disable
 																								// closeWhereCreated
-					return innerParsePHPDoc(offset, reader);
+					return innerParsePHPDoc(offset, reader, isParameter);
 				}
 			}
 		}
@@ -83,12 +103,13 @@ public final class PHPDocUtils
 	 * Finds a PHPDoc comment above the offset in the module specified.
 	 * 
 	 * @param module
-	 *            - module.
 	 * @param offset
-	 *            - offset.
+	 * @param isParameter
+	 *            Indicate that the docs we are looking for are for a parameter.
 	 * @return comment contents or null if not found.
 	 */
-	public static PHPDocBlock findFunctionPHPDocComment(IModule module, IDocument document, int offset)
+	public static PHPDocBlock findFunctionPHPDocComment(IModule module, IDocument document, int offset,
+			boolean isParameter)
 	{
 		try
 		{
@@ -103,7 +124,7 @@ public final class PHPDocUtils
 																													// closeWhereCreated
 			}
 			BufferedReader reader = new BufferedReader(innerReader);
-			return innerParsePHPDoc(offset, reader);
+			return innerParsePHPDoc(offset, reader, isParameter);
 		}
 		catch (Exception ex)
 		{
@@ -116,11 +137,14 @@ public final class PHPDocUtils
 	 * 
 	 * @param offset
 	 * @param reader
+	 * @param isParameter
+	 *            Indicate that the docs we are looking for are for a parameter.
 	 * @return
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	private static PHPDocBlock innerParsePHPDoc(int offset, BufferedReader reader) throws IOException, Exception // $codepro.audit.disable
+	private static PHPDocBlock innerParsePHPDoc(int offset, BufferedReader reader, boolean isParameter)
+			throws IOException, Exception // $codepro.audit.disable
 	{
 		StringBuffer moduleData = new StringBuffer();
 		try
@@ -187,7 +211,66 @@ public final class PHPDocUtils
 		program.accept(commentsVisitor);
 		List<Comment> _comments = commentsVisitor.getComments();
 
-		return findPHPDocComment(_comments, offset, contents);
+		PHPDocBlock docBlock = findPHPDocComment(_comments, offset, contents);
+		if (docBlock == null && isParameter)
+		{
+			// We could not locate a doc right before the given offset, so we traverse up to locate the docs for the
+			// wrapping function. The includeWrappingFunction is true only when the entry we are looking for is a
+			// parameter variable, so there is a function that wraps it.
+			ASTNode node = program.getElementAt(offset);
+			if (node instanceof FunctionDeclaration)
+			{
+				offset = node.getStart();
+				docBlock = findPHPDocComment(_comments, offset, contents);
+			}
+		}
+		return docBlock;
+	}
+
+	/**
+	 * Returns the parameter documentation (as a {@link FunctionDocumentation} instance) from a given
+	 * {@link IPHPDocBlock}.
+	 * 
+	 * @param block
+	 *            - The block to look at when extracting the parameter documetation.
+	 * @param parameterName
+	 * @return FunctionDocumentation or null.
+	 */
+	public static FunctionDocumentation getParameterDocumentation(IPHPDoc block, String parameterName)
+	{
+		if (block == null)
+		{
+			return null;
+		}
+		FunctionDocumentation result = new FunctionDocumentation();
+		IPHPDocTag[] tags = block.getTags();
+		if (tags != null)
+		{
+			for (IPHPDocTag tag : tags)
+			{
+				switch (tag.getTagKind())
+				{
+					case PHPDocTag.PARAM:
+						String value = tag.getValue();
+						if (value == null)
+						{
+							continue;
+						}
+						String[] parsedTag = parseParamTagValue(value);
+						// Support two forms of @params docs:
+						// @param $param1 this is param 1
+						// @param bool $param2 this is param 2
+						if (!StringUtil.isEmpty(parsedTag[2]) && parsedTag[2].startsWith(parameterName)
+								|| !StringUtil.isEmpty(parsedTag[0])
+								&& parsedTag[0].startsWith(removeDollar(parameterName)))
+						{
+							result.setDescription('\n' + value);
+							return result;
+						}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

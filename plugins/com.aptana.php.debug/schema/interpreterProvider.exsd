@@ -81,7 +81,7 @@
          <attribute name="OpSystem" type="string">
             <annotation>
                <documentation>
-                  Operating system the interpreter supports.
+                  Operating system the interpreter supports (leave empty to support all systems).
                </documentation>
             </annotation>
          </attribute>
