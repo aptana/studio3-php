@@ -169,7 +169,7 @@ public class Interpreters
 					{
 						String language = element.getAttribute(LANGUAGE_ATTRIBUTE_NAME);
 						String os = element.getAttribute(OS_ATTRIBUTE_NAME);
-						if (!Platform.getOS().equals(os))
+						if (os != null && !Platform.getOS().equals(os))
 						{
 							continue;
 						}

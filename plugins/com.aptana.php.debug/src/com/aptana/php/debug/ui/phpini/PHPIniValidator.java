@@ -29,6 +29,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.core.util.FileUtil;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
@@ -41,12 +42,16 @@ import com.aptana.php.debug.ui.phpini.PHPIniEntry.VALIDATION;
  * parses the error output to determine which of the extensions is causing an error and which causes warnings. Every
  * error or warning is registered into the PHPIniEntrys that the INIFileModifier is holding.
  * 
- * @author Shalom G
+ * @author sgibly@appcelerator.com
  */
 // $codepro.audit.disable assignmentInCondition
 public class PHPIniValidator
 {
-	private static final String LOADING_ERROR = "unable to load"; //$NON-NLS-1$
+	private static final String PHP = "PHP"; //$NON-NLS-1$
+	private static final String DYLD = "dyld:"; //$NON-NLS-1$
+	private static final String DLL_EXT = ".dll"; //$NON-NLS-1$
+	private static final String SO_EXT = ".so"; //$NON-NLS-1$
+	private static final String PHP_LOADING_ERROR_STRING = "unable to load"; //$NON-NLS-1$
 	private final PHPIniContentProvider provider;
 	private final String phpExePath;
 	private String libraryPath;
@@ -93,11 +98,11 @@ public class PHPIniValidator
 				if (entry.isExtensionEntry())
 				{
 					String extensionValue = entry.getValue();
-					if (extensionValue.endsWith(".so")) //$NON-NLS-1$
+					if (extensionValue.endsWith(SO_EXT))
 					{
 						extensionValue = extensionValue.substring(0, extensionValue.length() - 3);
 					}
-					else if (extensionValue.endsWith(".dll")) //$NON-NLS-1$
+					else if (extensionValue.endsWith(DLL_EXT))
 					{
 						extensionValue = extensionValue.substring(0, extensionValue.length() - 4);
 					}
@@ -304,7 +309,7 @@ public class PHPIniValidator
 					{
 						// Some of the warnings can also indicate errors which are not fatal to the process.
 						// Mark these warnings as errors.
-						if (line.toLowerCase().indexOf(LOADING_ERROR) > -1)
+						if (line.toLowerCase().indexOf(PHP_LOADING_ERROR_STRING) > -1)
 						{
 							iniEntry.setValidationState(VALIDATION.ERROR, line);
 						}
@@ -344,7 +349,7 @@ public class PHPIniValidator
 
 		final Process process = builder.start();
 
-		Job monitorCancelListener = new Job("Validation Cancel Listener") //$NON-NLS-1$
+		Job monitorCancelListener = new Job("Validation Cancel Listener") //$NON-NLS-1$ (system)
 		{
 			protected IStatus run(IProgressMonitor monitor2)
 			{
@@ -381,6 +386,7 @@ public class PHPIniValidator
 				return Status.CANCEL_STATUS;
 			}
 		};
+		monitorCancelListener.setSystem(EclipseUtil.showSystemJobs());
 		monitorCancelListener.setProgressGroup(monitor, IProgressMonitor.UNKNOWN);
 		monitorCancelListener.schedule();
 		// Important - First read the output, then read the errors.
@@ -435,15 +441,19 @@ public class PHPIniValidator
 					// $codepro.audit.disable debuggingCode
 					System.err.println(line);
 				}
-				if (line.startsWith("PHP")) //$NON-NLS-1$
+				if (line.startsWith(PHP))
 				{
 					lines.add(line);
 				}
-				else if (line.startsWith("dyld:") && line.indexOf("error", 4) > -1) //$NON-NLS-1$ //$NON-NLS-2$
+				else if (line.startsWith(DYLD))
 				{
 					StringBuilder stringBuilder = new StringBuilder();
-					// read the next 3 lines
-					int linesCount = 3;
+					// read the next 2 or 3 lines
+					int linesCount = (line.indexOf("error", 4) > -1) ? 3 : 2; //$NON-NLS-1$
+					if (linesCount < 3)
+					{
+						lines.add(line);
+					}
 					while ((line = reader.readLine()) != null && linesCount-- > 0)
 					{
 						if (PHPDebugPlugin.DEBUG)
@@ -452,7 +462,7 @@ public class PHPIniValidator
 							System.err.println(line);
 						}
 						// just to make sure
-						if (line.startsWith("PHP")) //$NON-NLS-1$
+						if (line.startsWith(PHP))
 						{
 							lines.add(line);
 							break;
@@ -491,7 +501,7 @@ public class PHPIniValidator
 		for (String str : processExecutionResults)
 		{
 			String lowerCaseStr = str.toLowerCase();
-			if (lowerCaseStr.indexOf(" fatal ") > -1 || lowerCaseStr.indexOf("dyld:") > -1) //$NON-NLS-1$ //$NON-NLS-2$ $NON-NLS-2$
+			if (lowerCaseStr.indexOf(" fatal ") > -1 || lowerCaseStr.indexOf(DYLD) > -1) //$NON-NLS-1$ // $NON-NLS-2$
 			{
 				errors.add(str);
 			}

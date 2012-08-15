@@ -54,7 +54,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.widgets.FormText;
@@ -65,6 +64,7 @@ import com.aptana.core.util.CollectionsUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.PHPDebugPlugin;
+import com.aptana.ui.UIPlugin;
 import com.aptana.ui.util.SWTUtils;
 import com.jcraft.jsch.IO;
 
@@ -75,6 +75,8 @@ import com.jcraft.jsch.IO;
  */
 public class PHPIniEditor
 {
+	private static final String DELETE_ICON = "/icons/delete.gif"; //$NON-NLS-1$
+	private static final String ADD_ICON = "/icons/add.gif"; //$NON-NLS-1$
 	private static final String ADD_SECTION_ICON_PATH = "/icons/full/obj16/add_section.gif"; //$NON-NLS-1$
 
 	/**
@@ -164,11 +166,6 @@ public class PHPIniEditor
 	 * Value property.
 	 */
 	private static final String VALUE_PROPERTY = Messages.PHPIniEditor_4;
-
-	/**
-	 * Extension valid property.
-	 */
-	private static final String VALID_EXTENSION_PROPERTY = Messages.PHPIniEditor_20;
 
 	/**
 	 * PHP Ini label provider.
@@ -309,61 +306,6 @@ public class PHPIniEditor
 			}
 		}
 		return null;
-	}
-
-	/*
-	 * Returns the image for the entry.
-	 */
-	private Image getEntryValidationTooltipImage(PHPIniEntry entry)
-	{
-		if (entry.isExtensionEntry())
-		{
-			switch (entry.getValidationState())
-			{
-				case OK:
-					return getSWTImage(SWT.ICON_INFORMATION);
-				case ERROR:
-					return getSWTImage(SWT.ICON_ERROR);
-				case WARNING:
-					return getSWTImage(SWT.ICON_WARNING);
-				default:
-					return getSWTImage(SWT.ICON_QUESTION);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Get an <code>Image</code> from the provide SWT image constant.
-	 * 
-	 * @param imageID
-	 *            the SWT image constant
-	 * @return image the image
-	 */
-	private Image getSWTImage(final int imageID)
-	{
-		Shell shell = viewer.getControl().getShell();
-		final Display display;
-		if (shell == null)
-		{
-			display = Display.getCurrent();
-		}
-		else
-		{
-			display = shell.getDisplay();
-		}
-
-		final Image[] image = new Image[1];
-		display.syncExec(new Runnable()
-		{
-			public void run()
-			{
-				image[0] = display.getSystemImage(imageID);
-			}
-		});
-
-		return image[0];
-
 	}
 
 	class PHPIniCellModifier implements ICellModifier
@@ -793,7 +735,7 @@ public class PHPIniEditor
 		addEntryButton.setText(Messages.PHPIniEditor_Entry);
 		addEntryButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		addEntryButton.setToolTipText(Messages.PHPIniEditor_7);
-		addEntryButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/add.gif")); //$NON-NLS-1$
+		addEntryButton.setImage(SWTUtils.getImage(UIPlugin.getDefault(), ADD_ICON));
 		addEntryButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)
@@ -810,7 +752,7 @@ public class PHPIniEditor
 		removeButton.setText(Messages.PHPIniEditor_Delete);
 		removeButton.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false));
 		removeButton.setToolTipText(Messages.PHPIniEditor_8);
-		removeButton.setImage(SWTUtils.getImage(PHPEplPlugin.getDefault(), "/icons/full/obj16/delete.gif")); //$NON-NLS-1$
+		removeButton.setImage(SWTUtils.getImage(UIPlugin.getDefault(), DELETE_ICON));
 		removeButton.addSelectionListener(new SelectionListener()
 		{
 			public void widgetDefaultSelected(SelectionEvent e)

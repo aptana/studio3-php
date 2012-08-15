@@ -13,6 +13,7 @@ package org2.eclipse.php.internal.debug.ui.wizard.exe;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,12 +47,15 @@ import org2.eclipse.php.internal.ui.wizard.field.IStringButtonAdapter;
 import org2.eclipse.php.internal.ui.wizard.field.StringButtonDialogField;
 import org2.eclipse.php.internal.ui.wizard.field.StringDialogField;
 
+import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 import com.aptana.php.debug.ui.phpini.PHPIniEditor;
 
 public class PHPExeCompositeFragment extends CompositeFragment implements IPHPExeCompositeFragment
 {
 
+	private static final String[] EXTENSIONS_FILTERS = new String[] { "*.ini", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String PHP_INI = "php.ini"; //$NON-NLS-1$
 	private PHPexeItem[] existingItems;
 	private StringDialogField fPHPexeName;
 	private StringButtonDialogField fPHPExePath;
@@ -66,8 +70,8 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 	public PHPExeCompositeFragment(Composite parent, IControlHandler handler, boolean isForEditing)
 	{
 		super(parent, handler, isForEditing);
-		this.setDescription("Specify the PHP Interpreter Information");
-		this.setDisplayName("PHP Interpreter");
+		this.setDescription(PHPDebugUIMessages.PHPExeCompositeFragment_description);
+		this.setDisplayName(PHPDebugUIMessages.PHPExeCompositeFragment_displayName);
 		this.controlHandler.setDescription(this.getDescription());
 		this.controlHandler.setImageDescriptor(PHPDebugUIImages.getImageDescriptor(PHPDebugUIImages.IMG_WIZBAN_PHPEXE));
 
@@ -76,7 +80,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		if (handler instanceof PHPExeEditDialog && iniEditor != null)
 		{
 			// Set the validation flag for cases where a validation at initialization is needed.
-			needValidation = ((PHPExeEditDialog)handler).shouldValidate(); 
+			needValidation = ((PHPExeEditDialog) handler).shouldValidate();
 		}
 	}
 
@@ -89,7 +93,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 	{
 		if ((data != null) && !(data instanceof PHPexeItem))
 		{
-			throw new IllegalArgumentException("Data must be instance of PHPExeItem");
+			throw new IllegalArgumentException("Data must be instance of PHPExeItem"); //$NON-NLS-1$
 		}
 		super.setData(data);
 		this.init();
@@ -156,36 +160,38 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 			{
 				FileDialog dialog = new FileDialog(PHPExeCompositeFragment.this.getShell());
 				dialog.setFilterPath(PHPExeCompositeFragment.this.fPHPIni.getText());
-				dialog.setFilterExtensions(new String[] { "*.ini", "*.*" });
+				dialog.setFilterExtensions(EXTENSIONS_FILTERS);
 				dialog.setText(PHPDebugUIMessages.addPHPexeDialog_pickPHPIniDialog_message);
 				String newPath = dialog.open();
 				if (newPath != null)
 				{
 					PHPExeCompositeFragment.this.fPHPIni.setText(newPath);
-					if (newPath != null && !"".equals(newPath))
+					if (newPath != null && !StringUtil.EMPTY.equals(newPath))
 					{
 						try
 						{
 							iniEditor.openFile(newPath);
-						} 
+						}
 						catch (IOException e)
 						{
-							String message = "Error opening '" + iniEditor.getFileName() + "'\n";
+							String message = MessageFormat.format(
+									PHPDebugUIMessages.PHPExeCompositeFragment_errorOpening, iniEditor.getFileName());
 							if (isPermissionProblem(e))
 							{
-								message += "\nYou might not have the permission to open this file";
+								message += PHPDebugUIMessages.PHPExeCompositeFragment_openErrorPermissionMessage;
 							}
-							openError("Error", message, e);
+							openError(PHPDebugUIMessages.PHPExeCompositeFragment_errorTitle, message, e);
 						}
 					}
 				}
 			}
 		});
-		this.fPHPIni.setLabelText(PHPDebugUIMessages.addPHPexeDialog_phpIni + PHPDebugUIMessages.addPHPexeDialog_optional);
+		this.fPHPIni.setLabelText(PHPDebugUIMessages.addPHPexeDialog_phpIni
+				+ PHPDebugUIMessages.addPHPexeDialog_optional);
 		this.fPHPIni.setButtonLabel(PHPDebugUIMessages.addPHPexeDialog_browse1);
 
 		this.fPHPexeName.doFillIntoGrid(parent, 3);
-		this.fPHPExePath.doFillIntoGrid(parent, 3); 
+		this.fPHPExePath.doFillIntoGrid(parent, 3);
 		((GridData) this.fPHPExePath.getTextControl(parent).getLayoutData()).widthHint = pixelConverter
 				.convertWidthInCharsToPixels(50);
 
@@ -212,7 +218,8 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 			String debuggerName = PHPDebuggersRegistry.getDebuggerName(id);
 			this.fDebuggers.add(debuggerName, i);
 		}
-		fDebuggers.addSelectionListener(new SelectionAdapter() {
+		fDebuggers.addSelectionListener(new SelectionAdapter()
+		{
 			public void widgetSelected(SelectionEvent e)
 			{
 				int selectionIndex = fDebuggers.getSelectionIndex();
@@ -221,10 +228,10 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 				iniEditor.setDebuggerID(debuggerID);
 			}
 		});
-		TabFolder settings=new TabFolder(parent,SWT.NONE);
-		//creating ini editor group
-		TabItem iniEditorTab=new TabItem(settings,SWT.NONE);
-		iniEditorTab.setText("PHP Ini File Editor");
+		TabFolder settings = new TabFolder(parent, SWT.NONE);
+		// creating ini editor group
+		TabItem iniEditorTab = new TabItem(settings, SWT.NONE);
+		iniEditorTab.setText(PHPDebugUIMessages.PHPExeCompositeFragment_iniEditorTabText);
 		Composite iniEditorGroup = new Composite(settings, SWT.NONE);
 		iniEditorTab.setControl(iniEditorGroup);
 		GridData grdata = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
@@ -233,7 +240,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		GridLayout iniGroupLayout = new GridLayout();
 		iniGroupLayout.marginWidth = 5;
 		iniEditorGroup.setLayout(iniGroupLayout);
-		//creating ini editor
+		// creating ini editor
 		iniEditor = new PHPIniEditor();
 		Control iniEditorControl = iniEditor.createControl(iniEditorGroup);
 		iniEditorControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -281,9 +288,9 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		PHPexeItem phpExeItem = getPHPExeItem();
 		if ((phpExeItem == null) || (phpExeItem.getName() == null))
 		{
-			this.fPHPexeName.setText(""); //$NON-NLS-1$
-			this.fPHPExePath.setText(""); //$NON-NLS-1$
-			this.fPHPIni.setText(""); //$NON-NLS-1$
+			this.fPHPexeName.setText(StringUtil.EMPTY);
+			this.fPHPExePath.setText(StringUtil.EMPTY);
+			this.fPHPIni.setText(StringUtil.EMPTY);
 			String defaultDebuggerId = PHPDebuggersRegistry.getDefaultDebuggerId();
 			if (defaultDebuggerId != null)
 			{
@@ -301,7 +308,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 					this.hideDebuggersCombo();
 				}
 			}
-			this.setTitle("Add PHP Interpreter");
+			this.setTitle(PHPDebugUIMessages.PHPExeCompositeFragment_addInterpreterTitle);
 		}
 		else
 		{
@@ -316,19 +323,21 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 				this.fPHPIni.setTextWithoutUpdate(phpExeItem.getINILocation().toString());
 			}
 			this.fPHPIni.setEnabled(phpExeItem.isEditable());
-			if (fPHPIni.getText() != null && !"".equals(fPHPIni.getText()))
+			if (fPHPIni.getText() != null && !StringUtil.EMPTY.equals(fPHPIni.getText()))
 			{
 				try
 				{
 					iniEditor.openFile(fPHPIni.getText());
-				} catch (IOException e)
+				}
+				catch (IOException e)
 				{
-					String message = "Error opening '" + iniEditor.getFileName() + "'\n";
+					String message = MessageFormat.format(PHPDebugUIMessages.PHPExeCompositeFragment_errorOpening,
+							iniEditor.getFileName());
 					if (isPermissionProblem(e))
 					{
-						message += "\nYou might not have the permission to open this file";
+						message += PHPDebugUIMessages.PHPExeCompositeFragment_openErrorPermissionMessage;
 					}
-					openError("Error", message, e);
+					openError(PHPDebugUIMessages.PHPExeCompositeFragment_errorTitle, message, e);
 				}
 			}
 
@@ -352,7 +361,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 				}
 			}
 			iniEditor.setDebuggerID(debuggerID);
-			this.setTitle("Edit PHP Interpreter");
+			this.setTitle(PHPDebugUIMessages.PHPExeCompositeFragment_editInterpreterTitle);
 		}
 
 		this.controlHandler.setTitle(this.getTitle());
@@ -374,7 +383,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		PHPexeItem phpExeItem = getPHPExeItem();
 
 		// Check whether we can edit this item
-		if (phpExeItem == null) 
+		if (phpExeItem == null)
 		{
 			this.setMessage(PHPDebugUIMessages.addPHPexeDialog_readOnlyPHPExe, IMessageProvider.INFORMATION);
 			return;
@@ -413,12 +422,13 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 			this.setMessage(PHPDebugUIMessages.addPHPexeDialog_locationNotExists, IMessageProvider.ERROR);
 			return;
 		}
-		boolean iniOptional = new File(executableLocation.getParentFile(), "php.ini").exists();
+		boolean iniOptional = new File(executableLocation.getParentFile(), PHP_INI).exists();
 		if (iniOptional)
 		{
-			this.fPHPIni.setLabelText(PHPDebugUIMessages.addPHPexeDialog_phpIni + PHPDebugUIMessages.addPHPexeDialog_optional); // set the 'optional' label
+			this.fPHPIni.setLabelText(PHPDebugUIMessages.addPHPexeDialog_phpIni
+					+ PHPDebugUIMessages.addPHPexeDialog_optional); // set the 'optional' label
 		}
-		else 
+		else
 		{
 			this.fPHPIni.setLabelText(PHPDebugUIMessages.addPHPexeDialog_phpIni); // not 'optional'
 		}
@@ -429,7 +439,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 			// Check for a php.ini next to the executable
 			if (executableLocation.exists())
 			{
-				iniFile = new File(executableLocation.getParentFile(), "php.ini");
+				iniFile = new File(executableLocation.getParentFile(), PHP_INI);
 				iniLocationName = iniFile.getAbsolutePath();
 			}
 		}
@@ -449,29 +459,36 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 
 		phpExeItem.setName(name);
 		phpExeItem.setExecutable(executableLocation);
+		if (phpExeItem.getExecutable() == null)
+		{
+			// The executable could not be set.
+			this.setMessage(PHPDebugUIMessages.PHPExeCompositeFragment_executableFatalError, IMessageProvider.ERROR);
+			return;
+		}
 		phpExeItem.setDebuggerID(this.debuggersIds.get(this.fDebuggers.getSelectionIndex()));
 		phpExeItem.setINILocation(iniFile);
 		this.setMessage(this.getDescription(), IMessageProvider.NONE);
 
 		if (iniEditor != null)
 		{
-			if (iniLocationName.trim() != null && !"".equals(iniLocationName.trim()))
+			if (iniLocationName.trim() != null && !StringUtil.EMPTY.equals(iniLocationName.trim()))
 			{
 				if (!iniLocationName.equals(iniEditor.getFileName()))
 				{
-					//if editor was displaying other file, we should reopen the file
+					// if editor was displaying other file, we should reopen the file
 					try
 					{
 						iniEditor.openFile(iniLocationName);
-					} 
+					}
 					catch (IOException e)
 					{
-						String message = "Error opening '" + iniLocationName + "'\n";
+						String message = MessageFormat.format(PHPDebugUIMessages.PHPExeCompositeFragment_errorOpening,
+								iniLocationName);
 						if (isPermissionProblem(e))
 						{
-							message += "\nYou might not have the permission to open this file";
+							message += PHPDebugUIMessages.PHPExeCompositeFragment_openErrorPermissionMessage;
 						}
-						openError("Error", message, e);
+						openError(PHPDebugUIMessages.PHPExeCompositeFragment_errorTitle, message, e);
 					}
 				}
 			}
@@ -499,20 +516,23 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 		}
 		catch (IOException e)
 		{
-			String message = "Error saving '" + iniEditor.getFileName() + "'\n";
+			String message = MessageFormat.format(PHPDebugUIMessages.PHPExeCompositeFragment_errorSaving,
+					iniEditor.getFileName());
 			if (isPermissionProblem(e))
 			{
-				message += "\nYou might not have the permission to save this file";
+				message += PHPDebugUIMessages.PHPExeCompositeFragment_saveErrorPermissionMessage;
 			}
-			openError("Saving Error", message, e);
+			openError(PHPDebugUIMessages.PHPExeCompositeFragment_saveErrorTitle, message, e);
 		}
 		return true;
 	}
 
 	private void openError(final String title, final String error, final Throwable t)
 	{
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
 				PHPDebugEPLPlugin.logError(error, t);
 				Display display = Display.getDefault();
 				Shell activeShell = display.getActiveShell();
@@ -525,7 +545,7 @@ public class PHPExeCompositeFragment extends CompositeFragment implements IPHPEx
 	{
 		if (t instanceof FileNotFoundException)
 		{
-			if (t.getMessage() != null && t.getMessage().toLowerCase().contains("permission"))
+			if (t.getMessage() != null && t.getMessage().toLowerCase().contains("permission")) //$NON-NLS-1$
 			{
 				return true;
 			}
