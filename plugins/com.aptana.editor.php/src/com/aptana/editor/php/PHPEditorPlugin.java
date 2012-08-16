@@ -35,6 +35,7 @@ import com.aptana.editor.php.internal.model.ModelManager;
 import com.aptana.editor.php.internal.ui.editor.PHPDocumentProvider;
 import com.aptana.editor.php.util.EditorUtils;
 import com.aptana.projects.ProjectsPlugin;
+import com.aptana.projects.templates.IDefaultProjectTemplate;
 import com.aptana.theme.IThemeManager;
 import com.aptana.theme.ThemePlugin;
 
@@ -59,7 +60,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 
 	private PHPDocumentProvider phpDocumentProvider;
 
-	private static class DefaultPHPProjectTemplate extends ProjectTemplate
+	private static class DefaultPHPProjectTemplate extends ProjectTemplate implements IDefaultProjectTemplate
 	{
 
 		private static final String ID = "com.aptana.php.default"; //$NON-NLS-1$
