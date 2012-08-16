@@ -25,6 +25,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org2.eclipse.php.internal.core.ast.nodes.ASTParser;
 import org2.eclipse.php.internal.core.ast.nodes.Comment;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.Program;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
@@ -221,6 +222,10 @@ public final class PHPDocUtils
 			if (node instanceof FunctionDeclaration)
 			{
 				offset = node.getStart();
+				if (node.getParent() instanceof MethodDeclaration)
+				{
+					offset = node.getParent().getStart();
+				}
 				docBlock = findPHPDocComment(_comments, offset, contents);
 			}
 		}
