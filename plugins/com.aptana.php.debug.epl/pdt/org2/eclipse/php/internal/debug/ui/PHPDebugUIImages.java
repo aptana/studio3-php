@@ -20,7 +20,6 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 
-import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
 
 /**
@@ -92,7 +91,7 @@ public class PHPDebugUIImages {
 	 */
 	private final static void declareRegistryImage(String key, String path) {
 		ImageDescriptor desc = ImageDescriptor.getMissingImageDescriptor();
-		Bundle bundle = Platform.getBundle(PHPEplPlugin.PLUGIN_ID);
+		Bundle bundle = Platform.getBundle(PHPDebugEPLPlugin.PLUGIN_ID);
 		URL url = null;
 		if (bundle != null) {
 			url = FileLocator.find(bundle, new Path(path), null);
