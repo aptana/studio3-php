@@ -95,6 +95,11 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 				.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES, fInitialAutoRemoveLaunches);
 		// close all the tunnel connections
 		SSHTunnelFactory.closeAllConnections();
+		if (fImageDescriptorRegistry != null)
+		{
+			fImageDescriptorRegistry.dispose();
+			fImageDescriptorRegistry = null;
+		}
 	}
 
 	/**

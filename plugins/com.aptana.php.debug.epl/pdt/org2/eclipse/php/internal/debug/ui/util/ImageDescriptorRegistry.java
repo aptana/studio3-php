@@ -44,7 +44,6 @@ public class ImageDescriptorRegistry {
 	public ImageDescriptorRegistry(Display display) {
 		fDisplay = display;
 		Assert.isNotNull(fDisplay);
-		hookDisplay();
 	}
 
 	/**
@@ -78,13 +77,5 @@ public class ImageDescriptorRegistry {
 			image.dispose();
 		}
 		fRegistry.clear();
-	}
-
-	private void hookDisplay() {
-		fDisplay.disposeExec(new Runnable() {
-			public void run() {
-				dispose();
-			}
-		});
 	}
 }
