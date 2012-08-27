@@ -122,7 +122,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				return Status.OK_STATUS;
 			}
 		};
-		loadBuiltins.setSystem(!EclipseUtil.showSystemJobs());
+		EclipseUtil.setSystemForJob(loadBuiltins);
 		loadBuiltins.setPriority(Job.BUILD);
 		loadBuiltins.schedule(2000L);
 		if (DEBUG)
