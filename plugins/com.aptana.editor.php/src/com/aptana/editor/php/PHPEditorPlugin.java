@@ -70,7 +70,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		{
 			super("default.zip", TemplateType.PHP, Messages.PHPEditorPlugin_DefaultPHPProjectTemplate_Name, //$NON-NLS-1$
 					false, Messages.PHPEditorPlugin_DefaultPHPProjectTemplate_Description, null, ID, 1, CollectionsUtil
-							.newList(Messages.PHPEditorPlugin_Tag_PHP));
+							.newList("PHP")); //$NON-NLS-1$
 		}
 
 		@Override
