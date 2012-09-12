@@ -19,6 +19,7 @@ public class Messages extends NLS
 	public static String PHPEditorPlugin_DefaultPHPProjectTemplate_Description;
 	public static String PHPEditorPlugin_DefaultPHPProjectTemplate_Name;
 	public static String PHPEditorPlugin_indexingJobMessage;
+	public static String PHPEditorPlugin_Tag_PHP;
 	public static String PHPSourceEditor_markOccurrencesJob_name;
 	public static String openDeclaration_label;
 	private static ResourceBundle fResourceBundle;
