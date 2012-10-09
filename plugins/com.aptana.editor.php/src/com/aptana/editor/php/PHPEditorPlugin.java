@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -28,6 +28,7 @@ import org.osgi.framework.BundleContext;
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.projects.templates.ProjectTemplate;
 import com.aptana.core.projects.templates.TemplateType;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
@@ -68,7 +69,8 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 		public DefaultPHPProjectTemplate()
 		{
 			super("default.zip", TemplateType.PHP, Messages.PHPEditorPlugin_DefaultPHPProjectTemplate_Name, //$NON-NLS-1$
-					false, Messages.PHPEditorPlugin_DefaultPHPProjectTemplate_Description, null, ID, -1);
+					false, Messages.PHPEditorPlugin_DefaultPHPProjectTemplate_Description, null, ID, 1, CollectionsUtil
+							.newList("PHP")); //$NON-NLS-1$
 		}
 
 		@Override
@@ -122,7 +124,7 @@ public class PHPEditorPlugin extends AbstractUIPlugin
 				return Status.OK_STATUS;
 			}
 		};
-		loadBuiltins.setSystem(!EclipseUtil.showSystemJobs());
+		EclipseUtil.setSystemForJob(loadBuiltins);
 		loadBuiltins.setPriority(Job.BUILD);
 		loadBuiltins.schedule(2000L);
 		if (DEBUG)

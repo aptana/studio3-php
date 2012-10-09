@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -8,10 +8,8 @@
 package com.aptana.editor.php.internal.indexer;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -99,15 +97,17 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 		// To avoid adding elements for different modules to the same entry prefix, we maintain a map
 		// between the entry prefix and the module. This is basically first-come-first serve map, and entries that
 		// appear in a later arriving module will be filtered out.
-		Map<String, IModule> entryToModule = new HashMap<String, IModule>();
+		Set<Integer> visitedEntries = new LinkedHashSet<Integer>();
 		if (activeBuildPaths.size() != 0 || passiveBuildPaths.size() != 0)
 		{
 			for (IElementEntry e : toFilter)
 			{
 				IModule module = e.getModule();
 				boolean added = false;
-				String entryPrefix = ElementsIndexingUtils.getFirstNameInPath(e.getEntryPath());
-				if (!entryToModule.containsKey(entryPrefix) || entryToModule.get(entryPrefix) == module)
+				String entryPath = e.getEntryPath();
+				int pathHash = entryPath != null ? entryPath.hashCode() : 0;
+				int entryHash = pathHash + ((module != null) ? module.hashCode() : 0);
+				if (!visitedEntries.contains(entryHash))
 				{
 					if (activeBuildPaths.size() != 0)
 					{
@@ -115,7 +115,7 @@ public class BuildPathElementEntriesFilter implements IElementEntriesFilter
 						{
 							result.add(e);
 							added = true;
-							entryToModule.put(entryPrefix, module);
+							visitedEntries.add(entryHash);
 						}
 					}
 				}

@@ -1253,7 +1253,7 @@ public final class PHPGlobalIndexer
 					return Status.OK_STATUS;
 				}
 			};
-			savingJob.setSystem(!EclipseUtil.showSystemJobs());
+			EclipseUtil.setSystemForJob(savingJob);
 			savingJob.setPriority(Job.BUILD);
 		}
 	}

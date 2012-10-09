@@ -1,0 +1,1133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="debugCommunicationDaemon" name="Debug Communication Daemon" schema="schema/debugCommunicationDaemon.exsd"/>
+   <extension-point id="phpDebugModelPresentations" name="PHP Debug Model Presentations" schema="schema/phpDebugModelPresentations.exsd"/>
+   <extension-point id="debugServerConnectionTest" name="Debug Server Connection Test" schema="schema/debugServerConnectionTest.exsd"/>
+   <extension-point id="launchConfigurationTabs" name="Launch Configuration Tabs" schema="schema/launchConfigurationTabs.exsd"/>
+   <extension-point id="phpDebugMessages" name="PHP Debug Message" schema="schema/phpDebugMessages.exsd"/>
+   <extension-point id="phpDebugHandlers" name="PHP Debug Handler" schema="schema/phpDebugHandlers.exsd"/>
+   <extension-point id="phpExe" name="PHP exe" schema="schema/phpExe.exsd"/>
+   <extension-point id="phpDebugParametersInitializers" name="phpDebugParametersInitializers" schema="schema/phpDebugParametersInitializer.exsd"/>
+   <extension-point id="phpDebuggers" name="PHP Debuggers" schema="schema/phpDebuggers.exsd"/>
+   <extension-point id="pathEntryFilters" name="PHP Path Entry Filters" schema="schema/pathEntryFilters.exsd"/>
+   <extension-point id="phpDebugStepFilters" name="PHP Debug Step Filters" schema="schema/phpDebugStepFilters.exsd"/>
+   <extension-point id="phpConsoleListeners" name="PHP Console Listener" schema="schema/phpConsoleListeners.exsd"/>
+   <!--<extension-point id="pathEntryFilters" name="PHP Path Entry Filters" schema="schema/pathEntryFilters.exsd"/>-->
+
+	<extension-point
+		id="phpWizardPages"
+		name="PHP Wizard Page"
+		schema="schema/phpWizardPages.exsd" />
+	<extension-point
+		id="phpPreferencePageBlocks"
+		name="PHP Preference Page Block"
+		schema="schema/phpPreferencePageBlocks.exsd" />
+	<extension-point
+		id="wizardAndCompositeFragments"
+		name="Wizard and Composite Fragments"
+		schema="schema/wizardAndCompositeFragments.exsd" />
+	
+	<extension-point id="pathMapper" name="pathMapper" schema="schema/pathMapper.exsd"/>	
+		
+	   <extension
+         point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            name="PHP Source Lookup Director"
+            class="org2.eclipse.php.internal.debug.core.sourcelookup.PHPSourceLookupDirector"
+            id="org2.eclipse.php.debug.core.sourceLookupDirector.php">
+      </sourceLocator>
+   </extension>
+  
+   <extension
+         point="org.eclipse.debug.core.sourceContainerTypes">
+      <sourceContainerType
+            class="org2.eclipse.php.internal.debug.core.sourcelookup.containers.WorkspaceRootSourceContainer"
+            description="This source container is used for searching files in the root"
+            id="org2.eclipse.php.debug.core.containerType.workspaceRoot"
+            name="Workspace Root Source Container">
+      </sourceContainerType>
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            class="org2.eclipse.php.internal.debug.core.sourcelookup.PHPSourcePathComputerDelegate"
+            id="org2.eclipse.php.debug.core.sourcePathComputer.php">
+      </sourcePathComputer>
+   </extension>
+   
+   <extension
+         id="PHPConditionalBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.debug.core.lineBreakpointMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.core.breakpoints">
+      <breakpoint
+            markerType="com.aptana.php.debug.epl.PHPConditionalBreakpointMarker"
+            class="org2.eclipse.php.internal.debug.core.model.PHPConditionalBreakpoint"
+            id="org2.eclipse.php.debug.core.lineBreakpoint">
+      </breakpoint>
+   </extension> 
+  
+  <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            name="PHP Script"
+            delegate="org2.eclipse.php.internal.debug.core.launching.PHPLaunchDelegateProxy"
+            modes="run"
+            id="com.aptana.php.debug.core.launching.PHPExeLaunchConfigurationType">
+      </launchConfigurationType>
+      <launchConfigurationType
+            delegate="org2.eclipse.php.internal.debug.core.launching.PHPLaunchDelegateProxy"
+            id="com.aptana.php.debug.core.launching.webPageLaunch"
+            modes="run"
+            name="PHP Web Page">
+      </launchConfigurationType>
+      <launchConfigurationType
+            delegate="com.aptana.php.debug.core.launch.remote.XDebugJitLaunchConfigurationType"
+            id="com.aptana.php.debug.epl.XDebugJitLaunchConfigurationType"
+            modes="debug"
+            name="Remote Launch"
+            public="false"
+            sourceLocatorId="org2.eclipse.php.debug.core.sourceLookupDirector.php"
+            sourcePathComputerId="org2.eclipse.php.debug.core.sourcePathComputer.php">
+      </launchConfigurationType>
+   </extension>
+   
+   <extension point="org.eclipse.debug.core.launchDelegates">
+     <launchDelegate
+           delegate="org2.eclipse.php.internal.debug.core.launching.PHPLaunchDelegateProxy"
+           id="com.aptana.php.debug.core.launching.launchDelegate.scriptDebug"
+           modes="debug"
+           sourceLocatorId="org2.eclipse.php.debug.core.sourceLookupDirector.php"
+           sourcePathComputerId="org2.eclipse.php.debug.core.sourcePathComputer.php"
+           type="com.aptana.php.debug.core.launching.PHPExeLaunchConfigurationType">
+        <modeCombination
+              modes="debug"
+              perspective="org.eclipse.debug.ui.DebugPerspective">
+        </modeCombination>
+     </launchDelegate>
+     <launchDelegate
+           delegate="org2.eclipse.php.internal.debug.core.launching.PHPLaunchDelegateProxy"
+           id="com.aptana.php.debug.core.launching.launchDelegate.webPageDebug"
+           modes="debug"
+           sourceLocatorId="org2.eclipse.php.debug.core.sourceLookupDirector.php"
+           sourcePathComputerId="org2.eclipse.php.debug.core.sourcePathComputer.php"
+           type="com.aptana.php.debug.core.launching.webPageLaunch">
+        <modeCombination
+              modes="debug"
+              perspective="org.eclipse.debug.ui.DebugPerspective">
+        </modeCombination>
+     </launchDelegate>
+  </extension>
+ 
+  <extension point="org.eclipse.core.runtime.preferences">
+		<initializer
+			class="org2.eclipse.php.internal.debug.core.preferences.PHPDebugCorePreferenceInitializer" />
+  </extension>
+  
+  <extension point="com.aptana.php.debug.epl.phpDebugMessages">
+
+	  <!-- Request Messages -->
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.AddBreakpointRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.AddBreakpointRequest"
+	    name="Add Breakpoint Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.AssignValueRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.AssignValueRequest"
+	    name="Assign Value Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.CancelAllBreakpointsRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.CancelAllBreakpointsRequest"
+	    name="Cancel All Breakpoints Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.CancelBreakpointRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.CancelBreakpointRequest"
+	    name="Cancel Breakpoint Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.EvalRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.EvalRequest"
+	    name="Eval Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCallStackRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.GetCallStackRequest"
+	    name="Get Call Stack Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetStackVariableValueRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.GetStackVariableValueRequest"
+	    name="Get Stack Variable Value Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetVariableValueRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.GetVariableValueRequest"
+	    name="Get Variable Value Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GoRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.GoRequest"
+	    name="Go Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.PauseDebuggerRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.PauseDebuggerRequest"
+	    name="Pause Debugger Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StartRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.StartRequest"
+	    name="Start Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StepIntoRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.StepIntoRequest"
+	    name="Step Into Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StepOutRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.StepOutRequest"
+	    name="Step Out Request"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StepOverRequest"
+            id="org2.eclipse.php.debug.core.debugger.messages.StepOverRequest"
+	    name="Step Over Request"/>
+	  <message
+           class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.SetProtocolRequest"
+           id="org2.eclipse.php.debug.core.debugger.messages.SetProtocolRequest"
+        name="Set Protocol Request"/>
+        
+	  <!-- Response Messages -->
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.AddBreakpointResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.AddBreakpointResponse"
+	    name="Add Breakpoint Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.AssignValueResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.AssignValueResponse"
+	    name="Assign Value Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.CancelAllBreakpointsResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.CancelAllBreakpointsResponse"
+	    name="Cancel All Breakpoints Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.CancelBreakpointResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.CancelBreakpointResponse"
+	    name="Cancel Breakpoint Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.EvalResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.EvalResponse"
+	    name="Eval Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCallStackResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.GetCallStackResponse"
+	    name="Get Call Stack Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetStackVariableValueResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.GetStackVariableValueResponse"
+	    name="Get Stack Variable Value Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetVariableValueResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.GetVariableValueResponse"
+	    name="Get Variable Value Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GoResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.GoResponse"
+	    name="Go Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.PauseDebuggerResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.PauseDebuggerResponse"
+	    name="Pause Debugger Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StartResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.StartResponse"
+	    name="Start Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StepIntoResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.StepIntoResponse"
+	    name="Step Into Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StepOutResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.StepOutResponse"
+	    name="Step Out Response"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StepOverResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.StepOverResponse"
+	    name="Step Over Response"/>
+	  <message
+           class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.SetProtocolResponse"
+           id="org2.eclipse.php.debug.core.debugger.messages.SetProtocolResponse"
+        name="Set Protocol Response"/>
+
+	  <!-- Notification Messages -->
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.DebuggerErrorNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.DebugErrorNotificationHandler"
+            id="org2.eclipse.php.debug.core.debugger.messages.DebuggerErrorNotification"
+            name="Debugger Error Notification"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.DebugScriptEndedNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.ScriptEndedNotificationHandler"
+            id="org2.eclipse.php.debug.core.debugger.messages.DebugScriptEndedNotification"
+            name="Debug Script Ended Notification"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.DebugSessionClosedNotification"
+            id="org2.eclipse.php.debug.core.debugger.messages.DebugSessionClosedNotification"
+	    name="Debug Session Closed Notification"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.DebugSessionStartedNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.SessionStartedNotificationHandler"
+            id="org2.eclipse.php.debug.core.debugger.messages.DebugSessionStartedNotification"
+            name="Debug Session Started Notification"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.HeaderOutputNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.HeaderOutputNotificationHandler"
+            id="org2.eclipse.php.debug.core.debugger.messages.HeaderOutputNotification"
+            name="Header Output Notification"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.OutputNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.OutputNotificationHandler"
+            id="org2.eclipse.php.debug.core.debugger.messages.OutputNotification"
+            name="Output Notification"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.ParsingErrorNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.ParsingErrorNotificationHandler"
+            id="org2.eclipse.php.debug.core.debugger.messages.ParsingErrorNotification"
+            name="Parsing Error Notification"/>
+
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.ReadyNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.ReadyNotificationHandler"
+            id="org2.eclipse.php.debug.core.debugger.messages.ReadyNotification"
+            name="Ready Notification"/>
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.UnknownMessageResponse"
+            id="org2.eclipse.php.debug.core.debugger.messages.UnknownMessageResponse"
+            name="Unknown Message Response"/>
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StartProcessFileNotification"
+            handler="org2.eclipse.php.internal.debug.core.zend.debugger.handlers.StartProcessFileNotificationHandler"
+            id="org2.eclipse.php.internal.debug.core.zend.debugger.messages.StartProcessFileNotification"
+            name="Start Process File Notification">
+      </message>
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.ContinueProcessFileNotification"
+            id="org2.eclipse.php.internal.debug.core.zend.debugger.messages.ContinueProcessFileNotification"
+            name="Continue Process File Notification">
+      </message>
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCWDRequest"
+            id="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCWDRequest"
+            name="Get CWD Request">
+      </message>
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCWDResponse"
+            id="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCWDResponse"
+            name="Get CWD Response">
+      </message>
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCallStackLiteRequest"
+            id="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCallStackLiteRequest"
+            name="Get Call Stack Request (Lite)">
+      </message>
+      <message
+            class="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCallStackLiteResponse"
+            id="org2.eclipse.php.internal.debug.core.zend.debugger.messages.GetCallStackLiteResponse"
+            name="Get Call Stack Response (Lite)">
+      </message>
+
+  </extension>
+  <extension
+        point="com.aptana.php.debug.epl.phpDebugParametersInitializers">
+     <initializer
+           class="org2.eclipse.php.internal.debug.core.zend.debugger.parameters.DefaultDebugParametersInitializer"
+           id="org2.eclipse.php.debug.core.defaultInitializer"
+           name="org2.eclipse.php.debug.core.defaultInitializer"/>
+  </extension>
+  
+  <extension
+        point="com.aptana.php.debug.epl.debugCommunicationDaemon">
+     <daemon
+           class="org2.eclipse.php.internal.debug.core.zend.communication.DebuggerCommunicationDaemon"
+           id="org2.eclipse.php.debug.core.BasicDebugDaemon"
+           name="Basic Zend Debug Daemon"/>
+     <daemon
+           class="org2.eclipse.php.internal.debug.core.xdebug.communication.XDebugCommunicationDaemon"
+           id="org2.eclipse.php.debug.core.BasicXDebugDaemon"
+           name="Basic XDebug Debug Daemon">
+     </daemon>
+  </extension>
+  
+   <extension
+         point="com.aptana.php.debug.epl.phpDebuggers">
+      <phpDebugger
+            debuggerConfiguration="org2.eclipse.php.internal.debug.core.zend.debugger.ZendDebuggerConfiguration"
+            id="org2.eclipse.php.debug.core.zendDebugger"
+            name="Zend Debugger">
+      </phpDebugger>
+      <phpDebugger
+            debuggerConfiguration="org2.eclipse.php.internal.debug.core.xdebug.dbgp.XDebugDebuggerConfiguration"
+            id="org2.eclipse.php.debug.core.xdebugDebugger"
+            name="XDebug">
+      </phpDebugger>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="org2.eclipse.php.internal.debug.ui.presentation.PHPModelPresentationDelegate"
+            id="org2.eclipse.php.debug.core">
+      </debugModelPresentation>
+   </extension>
+    <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
+            class="com.aptana.php.debug.ui.actions.breakpoints.RetargettableActionAdapterFactory">
+         <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
+         
+      </factory>
+      <factory
+            adaptableType="com.aptana.editor.php.internal.ui.editor.PHPSourceEditor"
+            class="org2.eclipse.php.internal.debug.ui.breakpoint.adapter.PHPEditorAdapterFactory">
+         <adapter
+               type="org.eclipse.debug.ui.actions.IRunToLineTarget">
+         </adapter>
+      </factory>
+    </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            name="Debugging PHP"
+            description="Debugging PHP"
+            id="org2.eclipse.php.debug.ui.debugging"
+            parentId="org.eclipse.debug.ui.debugging">
+      </context>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelContextBindings">
+      <modelContextBinding
+            debugModelId="org2.eclipse.php.debug.core"
+            contextId="org2.eclipse.php.debug.ui.debugging">
+      </modelContextBinding>
+   </extension>
+	<extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <!-- launchConfigurationTypeImage
+            icon="icons/full/obj16/server_run.gif"
+            configTypeID="org2.eclipse.php.debug.core.launchConfigurationType.php"
+            id="org2.eclipse.php.debug.ui.launchConfigurationTypeImage">
+      </launchConfigurationTypeImage -->
+      <launchConfigurationTypeImage
+            configTypeID="com.aptana.php.debug.epl.XDebugJitLaunchConfigurationType"
+            icon="icons/full/obj16/remote_debug.gif"
+            id="com.aptana.php.debug.epl.remoteLaunchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
+            configTypeID="com.aptana.php.debug.core.launching.PHPExeLaunchConfigurationType"
+            icon="icons/full/obj16/php_exec.gif"
+            id="com.aptana.php.debug.core.launching.PHPExeLaunchConfigurationType">
+      </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
+            id="org2.eclipse.php.server.ui.launchConfigurationTypeImage"
+            configTypeID="com.aptana.php.debug.core.launching.webPageLaunch"
+            icon="icons/full/obj16/server_run.gif">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            type="com.aptana.php.debug.core.launching.PHPExeLaunchConfigurationType"
+            description="Run PHP Interpreter"
+            class="org2.eclipse.php.internal.debug.ui.launching.exe.PHPExeLaunchConfigurationTabGroup"
+            id="org2.eclipse.php.deubg.ui.launching.launchConfigurationTabGroup.phpexe">
+      </launchConfigurationTabGroup>
+    </extension>
+    <extension point="com.aptana.php.debug.epl.launchConfigurationTabs">
+       <launchConfigurationTab
+          class="org2.eclipse.php.internal.debug.ui.launching.exe.PHPExecutableLaunchTab"
+          id="org2.eclipse.php.debug.ui.launching.exeLaunchConfigurationTab"
+          launchConfigurationTabGroupId="org2.eclipse.php.deubg.ui.launching.launchConfigurationTabGroup.phpexe"/>
+ 	</extension>
+	<!--======================================================================================-->
+	<!-- for breakpoint                                                                       -->
+	<!--======================================================================================-->
+	<!-- <extension point="org.eclipse.wst.sse.ui.breakpoint">
+		<breakpointContribution id="org2.eclipse.php.debug.ui.providers">
+			<provider
+				contentTypes="org2.eclipse.php.core.phpsource"
+				class="org2.eclipse.php.internal.debug.ui.breakpoint.provider.PHPBreakpointProvider:*php"
+				id="org2.eclipse.php.internal.debug.ui.breakpoint.provider.PHPBreakpointProvider" />
+		</breakpointC
+ntribution>
+	</extension> --> 
+	
+	<extension
+       point="org.eclipse.ui.editors.markerUpdaters">
+	    <updater
+	          class="org2.eclipse.php.internal.debug.ui.breakpoint.BreakpointMarkerUpdater"
+	          id="org2.eclipse.php.debug.ui.bpMarkerUpdater"
+	          markerType="com.aptana.php.debug.epl.PHPConditionalBreakpointMarker">
+	    </updater>
+ 	</extension>
+
+	<extension
+         point="org.eclipse.ui.popupMenus">           
+      <viewerContribution
+            id="php.editor.ruler.menuActions"            
+            targetID="com.aptana.editor.php.RulerContext">
+         <action
+               class="org.eclipse.debug.ui.actions.RunToLineActionDelegate"
+               definitionId="org.eclipse.debug.ui.commands.RunToLine"
+               id="php.editor.context.ruler.runToLineAction"
+               label="Run to Line"
+               menubarPath="additions"/>
+         <action
+               class="org2.eclipse.php.internal.debug.ui.actions.PHPWatchAction"
+               enablesFor="+"
+               icon="icons/full/etool16/watch_exp.gif"
+               id="org2.eclipse.php.debug.ui.popup.ruler.WatchAction"
+               label="Watch"
+               menubarPath="additions">
+         </action>
+         <visibility>
+            <systemProperty name="org2.eclipse.php.debug.ui.activeDebugging" value="true" />
+         </visibility>
+      </viewerContribution>
+      <viewerContribution
+         id="php.editor.ruler.breakpointActions"            
+         targetID="com.aptana.editor.php.RulerContext">
+         <action
+	         class="com.aptana.php.debug.ui.actions.breakpoints.PHPBreakpointPropertiesRulerActionDelegate"
+	         id="com.aptana.php.debug.breakpoints.PHPBreakpointPropertiesRulerActionDelegate"
+	         label="Breakpoint P&amp;roperties..."
+	         menubarPath="group.properties">
+	     </action>
+      </viewerContribution>
+      <viewerContribution
+            id="php.editor.menuActions"            
+            targetID="com.aptana.editor.php.EditorContext">
+         <action
+               class="org.eclipse.debug.ui.actions.RunToLineActionDelegate"
+               definitionId="org.eclipse.debug.ui.commands.RunToLine"
+               id="php.editor.context.runToLineAction"
+               label="Run to Line"
+               menubarPath="additions"/>
+         <action
+               class="org2.eclipse.php.internal.debug.ui.actions.PHPWatchAction"
+               enablesFor="+"
+               icon="icons/full/etool16/watch_exp.gif"
+               id="org2.eclipse.php.debug.ui.popup.WatchAction"
+               label="Watch"
+               menubarPath="additions">
+         </action>
+         <action
+               class="com.aptana.php.debug.ui.actions.InspectAction"
+               definitionId="com.aptana.php.debug.ui.command.Inspect"
+               enablesFor="+"
+               icon="icons/full/etool16/inspect.gif"
+               id="com.aptana.php.debug.ui.actions.inspect"
+               label="Inspect"
+               menubarPath="debug">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.ITextSelection">
+               </objectClass>
+            </enablement>
+         </action>
+         <visibility>
+            <systemProperty name="org2.eclipse.php.debug.ui.activeDebugging" value="true" />
+         </visibility>
+      </viewerContribution>
+      <objectContribution
+            objectClass="org2.eclipse.php.internal.debug.core.model.PHPConditionalBreakpoint"
+            id="org2.eclipse.php.debug.PHPBreakpointActions">
+         <action
+               label="Set Condition..."
+               class="org2.eclipse.php.internal.debug.ui.actions.BreakpointSetConditionAction"
+               menubarPath="emptyBreakpointGroup"
+               enablesFor="1"
+               id="org2.eclipse.php.debug.ui.actions.BreakpointSetCondition">
+         </action>
+      </objectContribution>
+   </extension>
+      
+    <extension
+       	point="org.eclipse.debug.ui.variableValueEditors">
+    	<variableValueEditor
+          modelId="org2.eclipse.php.debug.core"
+          class="org2.eclipse.php.internal.debug.ui.actions.PHPVariableValueEditor"/>
+ 	</extension>
+ 	<extension
+         point="org.eclipse.debug.ui.consoleColorProviders">
+      <consoleColorProvider
+            class="org2.eclipse.php.internal.debug.ui.console.PHPConsoleColorProvider"
+            processType="org2.eclipse.php.debug.core.launching.PHPProcess"
+            id="org2.eclipse.php.debug.ui.consoleColorProvider">
+      </consoleColorProvider>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.consoleLineTrackers">
+      <consoleLineTracker
+            class="org2.eclipse.php.internal.debug.ui.console.PHPLineTracker"
+            processType="org2.eclipse.php.debug.core.launching.PHPProcess"
+            id="org2.eclipse.php.debug.ui.console.PHPLineTracker">
+      </consoleLineTracker>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.watchExpressionDelegates">
+         <watchExpressionDelegate
+         	debugModel="org2.eclipse.php.debug.core"
+         	delegateClass="org2.eclipse.php.internal.debug.ui.watch.PHPWatchExpressionDelegate"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <!--  Add ICON icon="icons/full/obj16/xxx.gif" -->
+      <view
+            class="org2.eclipse.php.internal.debug.ui.views.PHPStackView"
+            category="org.eclipse.debug.ui"
+            icon="icons/full/obj16/php_exec.gif"
+            name="Parameter Stack"
+            id="org.eclipse.debug.ui.PHPStackView"/>
+   </extension>
+  
+    <extension
+          point="org.eclipse.ui.perspectiveExtensions">
+       <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+          <view
+                visible="false"
+                relative="org.eclipse.debug.ui.VariableView"
+                relationship="stack"
+                id="org.eclipse.debug.ui.PHPStackView"/>
+       </perspectiveExtension>
+    </extension>  
+    
+    <extension
+	     point="org.eclipse.debug.ui.contextViewBindings">
+	   <contextViewBinding
+	         contextId="org2.eclipse.php.debug.ui.debugging"
+	         viewId="org.eclipse.debug.ui.PHPStackView"/>
+    </extension>
+     
+    <!--<extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org2.eclipse.php.internal.debug.ui.views.DebugOutputView"
+            category="org2.eclipse.php.ui.views"
+            icon="platform:/plugin/org2.eclipse.php.ui/icons/full/obj16/phpfile.gif"
+            name="%debugOutput.name"
+            id="org.eclipse.debug.ui.PHPDebugOutput"/>
+   </extension>-->
+
+<!--   <extension
+	     point="org.eclipse.debug.ui.contextViewBindings">
+	   <contextViewBinding
+	         contextId="org.eclipse.debug.ui.debugging"
+	         viewId="PHPDebugOutput"/>
+    </extension> -->
+
+    <!--<extension point="org.eclipse.ui.perspectiveExtensions"> 
+        <perspectiveExtension 
+            targetID="org.eclipse.debug.ui.DebugPerspective"> 
+            <view id="org.eclipse.debug.ui.PHPDebugOutput" 
+                relative="org.eclipse.ui.console.ConsoleView" 
+                relationship="stack" 
+            />
+            <showInPart id="org.eclipse.ui.views.ResourceNavigator"/> 
+        </perspectiveExtension> 
+    </extension>-->     
+    
+    <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.debug.ui"
+            class="org2.eclipse.php.internal.debug.ui.views.DebugBrowserView"
+            icon="icons/full/obj16/remote_debug.gif"
+            id="org.eclipse.debug.ui.PHPBrowserOutput"
+            name="Browser Output"/>
+   </extension>
+
+    <extension point="org.eclipse.ui.perspectiveExtensions"> 
+        <perspectiveExtension 
+            targetID="org.eclipse.debug.ui.DebugPerspective"> 
+            <view id="org.eclipse.debug.ui.PHPBrowserOutput" 
+                relative="org.eclipse.ui.console.ConsoleView" 
+                relationship="stack" 
+            /> 
+        </perspectiveExtension> 
+    </extension> 
+    
+    <!-- =========================== -->
+	<!-- PHP Editor Text Hovers      -->
+	<!-- =========================== -->
+	<!--<extension point="org2.eclipse.php.ui.phpEditorTextHovers">
+	    <hover
+           class="org2.eclipse.php.internal.debug.ui.hovers.PHPDebugTextHover"
+           description="%phpVariableHoverDescription"
+           id="org2.eclipse.php.debug.ui.hovers.PHPDebugTextHover"
+           label="%phpVariableZendHoverLabel"
+           priority="700">
+    	</hover>
+     <hover
+           class="org2.eclipse.php.internal.debug.ui.hovers.XDebugTextHover"
+           description="%phpVariableHoverDescription"
+           id="org2.eclipse.php.xdebug.ui.hover.XDebugTextHover"
+           label="%phpVariableXDebugHoverLabel"
+           priority="700">
+     </hover>
+    </extension>-->
+    
+    <extension point="org.eclipse.ui.preferencePages">
+<!--		<page
+			category="org2.eclipse.php.ui.preferences.PHPBasePreferencePage"
+			class="org2.eclipse.php.debug.ui.preferences.PhpDebugPreferencePage"
+			id="org2.eclipse.php.debug.ui.preferences.PhpDebugPreferencePage"
+			name="%debugPreferencePageName">
+			<keywordReference id="org2.eclipse.php.debug.ui.debug" />
+		</page> -->
+		<page
+			category="com.aptana.editor.php.preference.PHPPreferencePage"
+			class="org2.eclipse.php.internal.debug.ui.preferences.PHPDebugPropertyPreferencePage"
+			id="org2.eclipse.php.debug.ui.preferences.PhpDebugPreferencePage"
+			name="Debug">
+			<keywordReference id="org2.eclipse.php.debug.ui.debug" />
+		</page>
+        <page
+            name="PHP Interpreters"
+            category="com.aptana.editor.php.preference.PHPPreferencePage"
+            class="org2.eclipse.php.internal.debug.ui.preferences.phps.PHPsPreferencePage"
+            id="org2.eclipse.php.debug.ui.preferencesphps.PHPsPreferencePage">
+         <keywordReference id="org2.eclipse.php.debug.ui.interpreters"/>
+      </page>
+        <page
+              category="com.aptana.editor.php.preference.PHPPreferencePage"
+              class="org2.eclipse.php.internal.debug.ui.preferences.stepFilter.PHPDebugStepFilterPreferencePage"
+              id="org2.eclipse.php.internal.debug.ui.preferences.stepFilter.PHPDebugStepFilterPreferencePage"
+              name="Step Filtering">
+           <keywordReference
+                 id="org2.eclipse.php.debug.ui.stepFiltering">
+           </keywordReference>
+        </page>
+    </extension>
+	<extension point="org.eclipse.ui.propertyPages">
+		<!--<page
+        class="org2.eclipse.php.internal.debug.ui.preferences.PHPDebugPropertyPreferencePage"
+        id="org2.eclipse.php.debug.ui.property.PhpDebugPreferencePage"
+        name="%ProjectPage.name"
+        objectClass="org.eclipse.core.resources.IProject">     
+  		</page>-->
+  		<page
+        	class="org2.eclipse.php.internal.debug.ui.breakpoint.property.PHPBreakpointPropertyPage"
+        	id="org2.eclipse.php.debug.ui.property.PHPConditionalBreakpointPropertyPage"
+        	name="PHP Conditional Breakpoint"
+        	objectClass="org2.eclipse.php.internal.debug.core.model.PHPConditionalBreakpoint"/>
+		
+	</extension>	
+    <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org2.eclipse.php.internal.debug.ui.launching.exe.PHPExeLaunchShortcut"
+            description="PHP internal script"
+            icon="icons/full/obj16/php_exec.gif"
+            id="org2.eclipse.php.deubg.ui.phpexeShortcut"
+            label="PHP Script"
+            modes="run, debug, profile">
+		 
+		 <contextualLaunch>
+		 	<contextLabel mode="run" label="%phpexeApplicationShortcut.label"/>
+		 	<enablement>
+		 		<count value="1"/>
+	 <!-- Pass a 'script' argument for the enablement test -->
+     <test
+           args="script"
+           property="org2.eclipse.php.debug.ui.launchablePHP"
+           value="true"/>
+		 	</enablement>
+		 </contextualLaunch>
+		 <contextualLaunch>
+		 	<contextLabel mode="debug" label="%phpexeApplicationShortcut.label"/>
+		 	<enablement>
+		 		<count value="1"/>
+	 <!-- Pass a 'script' argument for the enablement test -->
+     <test
+           args="script"
+           property="org2.eclipse.php.debug.ui.launchablePHP"
+           value="true"/>
+		 	</enablement>
+		 </contextualLaunch>
+		 
+         <perspective
+               id="org.eclipse.ui.resourcePerspective">
+         </perspective>
+         <perspective
+         	   id="org2.eclipse.php.perspective">
+         </perspective>
+         <perspective
+               id="org.eclipse.debug.ui.DebugPerspective">
+         </perspective>
+         <configurationType
+    		id="com.aptana.php.debug.core.launching.PHPExeLaunchConfigurationType">
+  		 </configurationType>
+ 
+      </shortcut>
+   </extension>
+     <extension
+         point="org.eclipse.ui.commands">
+          <command
+            categoryId="org.eclipse.debug.ui.category.run"
+            description="Debug PHP Script"
+            id="org2.eclipse.php.deubg.ui.phpexeShortcut.debug"
+            name="Debug PHP Script"/>
+          <command
+            categoryId="org.eclipse.debug.ui.category.run"
+            description="Run PHP Script"
+            id="org2.eclipse.php.deubg.ui.phpexeShortcut.run"
+            name="Run PHP Script"/>
+          <command
+            category="org.eclipse.debug.ui.category.run"
+            id="com.aptana.php.debug.ui.command.Inspect"
+            name="Inspect"/>                                  
+   </extension>
+    <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org2.eclipse.php.deubg.ui.phpexeShortcut.run"
+            contextId="org.eclipse.ui.globalScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M3+M2+X H"/>
+      <key
+            commandId="org2.eclipse.php.deubg.ui.phpexeShortcut.debug"
+            contextId="org.eclipse.ui.globalScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M3+M2+D H"/>
+      <key
+            commandId="com.aptana.php.debug.ui.command.Inspect"
+            contextId="com.aptana.editor.php.editorContext"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M3+M2+I"/>         
+    </extension>   
+   
+<!-- Editor -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="PHPSourceNotFoundEditor"
+           icon="platform:/plugin/org.eclipse.debug.ui/icons/full/obj16/stckframe_obj.gif" 
+            class="org2.eclipse.php.internal.debug.ui.sourcelookup.PHPSourceNotFoundEditor"
+            id="org2.eclipse.php.debug.SourceNotFoundEditor">
+      </editor>
+   </extension>
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org2.eclipse.php.internal.debug.ui.propertyTesters.PHPLaunchPropertyTester"
+            id="org2.eclipse.php.debug.ui.launchPropertyTester"
+            namespace="org2.eclipse.php.debug.ui"
+            properties="launchablePHP"
+            type="java.lang.Object"/>
+   
+   </extension>
+ 
+ <!-- <extension point="org.eclipse.core.expressions.propertyTesters">
+   <propertyTester
+      id="org.eclipse.wst.server.ui.propertyTester"
+      namespace="org.eclipse.wst.server.ui"
+      properties="isRunnable"
+      type="org2.eclipse.php.internal.core.phpModel.parser.PHPCodeDataFactory$PHPFileDataImp"
+      class="org2.eclipse.php.internal.debug.ui.PropertyTesters.RunnablePropertyTester">
+   </propertyTester>
+      <propertyTester
+      id="org.eclipse.wst.server.ui.propertyTester"
+      namespace="org.eclipse.wst.server.ui"
+      properties="isRunnable"
+      type="org.eclipse.core.internal.resources.Project"
+      class="org2.eclipse.php.internal.debug.ui.PropertyTesters.RunnablePropertyTester">
+   </propertyTester>
+      <propertyTester
+      id="org.eclipse.wst.server.ui.propertyTester"
+      namespace="org.eclipse.wst.server.ui"
+      properties="isRunnable"
+      type="org.eclipse.core.resources.IFolder"
+      class="org2.eclipse.php.internal.debug.ui.PropertyTesters.RunnablePropertyTester">
+   </propertyTester>
+ </extension> -->
+ 
+  <extension point="com.aptana.php.debug.epl.phpPreferencePageBlocks">
+    <block
+          class="org2.eclipse.php.internal.debug.ui.preferences.PHPDebugPreferencesWorkspaceAddon"
+          id="org2.eclipse.php.debug.ui.debugWorkspacePreferencesAddon"
+          name="PHP Debug Preferences Workspace Addon"
+          pageId="org2.eclipse.php.debug.ui.preferences.PhpDebugPreferencePage"/>
+    <block
+          class="org2.eclipse.php.internal.debug.ui.preferences.PHPDebugPreferencesAddon"
+          id="org2.eclipse.php.debug.ui.debugProjectPreferencesAddon"
+          name="PHP Debug Preferences Addon"
+          pageId="org2.eclipse.php.debug.ui.property.PhpDebugPreferencePage"/>
+ </extension>
+ <extension
+       point="org.eclipse.ui.themes">
+    <themeElementCategory
+          id="org2.eclipse.php.debug.ui.themePHPDebug"
+          label="PHP Debug"/>
+ </extension>
+ <extension
+       point="com.aptana.php.debug.epl.phpDebugModelPresentations">
+    <phpDebugModelPresentation
+          class="org2.eclipse.php.internal.debug.ui.presentation.PHPModelPresentation"
+          id="com.aptana.php.debug.presentation.phpModelPresentation"/>
+ </extension>
+ <extension
+       point="org.eclipse.ui.actionSets">
+    <actionSet
+          id="org2.eclipse.php.debug.ui.actionSet"
+          label="PHP Debug Action Set"
+          visible="false">
+          <menu
+          		label="&amp;Run"
+          		path="additions"
+         		id="org.eclipse.ui.run">
+            	<separator
+                  	name="phpGroup">
+            	</separator>
+          </menu>
+       <action
+             class="org2.eclipse.php.internal.debug.ui.actions.PHPWatchAction"
+             disabledIcon="icons/full/dtool16/watch_exp.gif"
+             enablesFor="+"
+             helpContextId="watch_action_context"
+             hoverIcon="icons/full/etool16/watch_exp.gif"
+             icon="icons/full/etool16/watch_exp.gif"
+             id="org2.eclipse.php.debug.ui.WatchAction"
+             label="Watch"
+             menubarPath="org.eclipse.ui.run/phpGroup"
+             style="push">
+          <enablement>
+          		
+             		<systemProperty
+                   		name="org2.eclipse.php.debug.ui.activeDebugging"
+                   		value="true"/>               
+              	
+          </enablement>
+       </action>
+    </actionSet>
+ </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="org2.eclipse.php.internal.debug.ui.presentation.XDebugModelPresentation"
+            id="org2.eclipse.php.xdebug.core.dbgp.model">
+      </debugModelPresentation>
+   </extension>
+   
+    <extension
+       	point="org.eclipse.debug.ui.variableValueEditors">
+    	<variableValueEditor
+          modelId="org2.eclipse.php.xdebug.core.dbgp.model"
+          class="org2.eclipse.php.internal.debug.ui.actions.XDebugVariableValueEditor"/>
+ 	</extension>   
+  
+<extension
+         point="org.eclipse.debug.core.watchExpressionDelegates">
+         <watchExpressionDelegate
+         	debugModel="org2.eclipse.php.xdebug.core.dbgp.model"
+         	delegateClass="org2.eclipse.php.internal.debug.ui.watch.XDebugWatchExpressionDelegate"/>
+   </extension> 
+   
+ <!--<extension
+       point="org2.eclipse.php.debug.core.pathEntryFilters">
+    <filter
+          class="org2.eclipse.php.internal.debug.ui.pathmapper.PathEntrySelector"
+          id="org2.eclipse.php.debug.ui.pathEntrySelector"
+          name="Path Entry Selector Dialog">
+    </filter>
+ </extension>-->
+ <extension
+       point="com.aptana.php.debug.epl.wizardAndCompositeFragments">
+    <wizardAndCompositeFragment
+          class="org2.eclipse.php.internal.debug.ui.wizard.exe.PHPExeCompositeFragmentFactory"
+          fragmentsGroupID="org2.eclipse.php.debug.ui.phpExeWizardCompositeFragment"
+          id="org2.eclipse.php.internal.debug.ui.preferences.phps.PHPExeCompositeFragmentFactory"
+          name="Basic Fragment">
+    </wizardAndCompositeFragment>
+    <!-- Path Mapper for PHP exe is disabled
+    <wizardAndCompositeFragment
+          class="org2.eclipse.php.internal.debug.ui.wizards.PathMapperFragmentFactory"
+          fragmentsGroupID="org2.eclipse.php.debug.ui.phpExeWizardCompositeFragment"
+          id="org2.eclipse.php.internal.debug.ui.preferences.phps.PathMapperFragmentFactory"
+          name="Path Mapper Fragment"
+          placeAfter="org2.eclipse.php.internal.debug.ui.preferences.phps.PHPExeCompositeFragmentFactory">
+    </wizardAndCompositeFragment>
+    -->
+ </extension>
+ <extension
+       point="com.aptana.php.debug.epl.phpConsoleListeners">
+    <listener
+          class="org2.eclipse.php.internal.debug.ui.console.PHPConsoleListener"
+          id="org2.eclipse.php.internal.debug.ui.console.PHPConsoleListener">
+    </listener>
+ </extension>
+ <extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+    <launchConfigurationTabGroup
+      id="org2.eclipse.php.server.ui.launchConfigurationTabGroup"
+      type="com.aptana.php.debug.core.launching.webPageLaunch"
+      class="org2.eclipse.php.internal.debug.ui.launching.server.ServerLaunchConfigurationTabGroup">
+    </launchConfigurationTabGroup>
+  </extension>
+  
+  <extension
+       point="com.aptana.php.debug.epl.launchConfigurationTabs">
+    <launchConfigurationTab
+          class="org2.eclipse.php.internal.debug.ui.launching.server.PHPWebPageLaunchConfigurationTab"
+          id="org2.eclipse.php.debug.ui.launching.PHPWebPageLaunchConfigurationTab"
+          launchConfigurationTabGroupId="org2.eclipse.php.server.ui.launchConfigurationTabGroup"/>
+    <launchConfigurationTab
+          class="com.aptana.php.debug.ui.launching.HTTPLaunchConfigurationTab"
+          id="com.aptana.php.debug.epl.launching.HTTP"
+          launchConfigurationTabGroupId="org2.eclipse.php.server.ui.launchConfigurationTabGroup"
+          placeAfter="org2.eclipse.php.debug.ui.launching.PHPWebPageLaunchConfigurationTab">
+    </launchConfigurationTab>
+    <launchConfigurationTab
+          class="org2.eclipse.php.internal.debug.ui.launching.server.PHPServerAdvancedTab"
+          id="org2.eclipse.php.debug.ui.launching.PHPServerAdvancedTab"
+          launchConfigurationTabGroupId="org2.eclipse.php.server.ui.launchConfigurationTabGroup"
+          placeAfter="com.aptana.php.debug.epl.launching.HTTP"/>
+    <launchConfigurationTab
+          class="com.aptana.php.debug.ui.launching.PathMappingConfigurationTab"
+          id="com.aptana.php.debug.epl.launching.PHPServerMappingConfigurationTab"
+          launchConfigurationTabGroupId="org2.eclipse.php.server.ui.launchConfigurationTabGroup"
+          placeAfter="org2.eclipse.php.debug.ui.launching.PHPServerAdvancedTab"/>
+ </extension>
+  <extension
+        point="org.eclipse.debug.ui.launchShortcuts">
+     <shortcut
+           class="org2.eclipse.php.internal.debug.ui.launching.server.PHPWebPageLaunchShortcut"
+           icon="icons/full/obj16/server_run.gif"
+           id="org2.eclipse.php.server.ui.phpServerShortcut"
+           label="PHP Server"
+           modes="run, debug, profile">
+            <contextualLaunch>
+		 	<contextLabel mode="run" label="PHP Server"/>
+		 	<enablement>
+		 		<count value="1"/>
+	 <!-- Pass a 'webPage' argument for the enablement test -->
+     <test
+     	   args="webPage"
+           property="org2.eclipse.php.debug.ui.launchablePHP"
+           value="true"/>
+		 	</enablement>
+		 </contextualLaunch>
+         <contextualLaunch>
+            <contextLabel
+                  label="PHP Server"
+                  mode="debug"/>
+            <enablement>
+               <count value="1"/>
+               <!-- Pass a 'webPage' argument for the enablement test -->
+               <test
+                     args="webPage"
+                     property="org2.eclipse.php.debug.ui.launchablePHP"
+                     value="true"/>
+            </enablement>
+         </contextualLaunch>
+		 
+         <perspective
+               id="org.eclipse.ui.resourcePerspective">
+         </perspective>
+         <perspective
+               id="org.eclipse.debug.ui.DebugPerspective">
+         </perspective>
+         <configurationType
+               id="com.aptana.php.debug.core.launching.webPageLaunch">
+         </configurationType>
+      </shortcut>
+  </extension>
+  <extension
+        point="org.eclipse.ui.keywords">
+     <keyword
+           id="org2.eclipse.php.debug.ui.debug"
+           label="Debug php port debugger zend xdebug">
+     </keyword>
+     <keyword
+           id="org2.eclipse.php.debug.ui.interpreters"
+           label="installed debuggers zend xdebug configure port php exe executable binary debug">
+     </keyword>
+     <keyword
+           id="org2.eclipse.php.debug.ui.stepFiltering"
+           label="step filtering filter debug php">
+     </keyword>
+  </extension>
+  <extension
+        point="com.aptana.php.debug.epl.pathEntryFilters">
+     <filter
+           class="org2.eclipse.php.internal.debug.ui.pathmapper.PathEntrySelector"
+           id="org2.eclipse.php.debug.ui.pathEntrySelector"
+           name="Path Entry Selector Dialog">
+     </filter>
+  </extension> 
+  <extension point="com.aptana.php.debug.epl.debugServerConnectionTest">
+		<debugServerTest
+			class="org2.eclipse.php.internal.debug.ui.launching.server.zend.DefaultDebugServerConnectionTest"
+			debuggerTypeName="Zend Debugger" id="org2.eclipse.php.server.ui.defaultZendDebugServerTest">
+		</debugServerTest>
+  </extension>
+  <extension
+        point="com.aptana.php.debug.debuggerSupport">
+     <launchSupport
+           class="com.aptana.php.debug.core.PHPDebugLaunchSupport"
+           id="com.aptana.php.debug.launchSupport"
+           name="PHP Debugger Launch Support">
+     </launchSupport>
+  </extension>
+  <extension
+        point="com.aptana.php.debug.interpreterProvider">
+     <provider
+           class="com.aptana.php.debug.core.preferences.CustomInterpretersProvider"
+           lang="php"
+           priority="1">
+     </provider>
+  </extension>
+  <extension
+        point="com.aptana.editor.php.phpTextHovers">
+     <textHover
+           activatePlugin="false"
+           class="com.aptana.php.debug.ui.hover.PHPDebugHover"
+           id="com.aptana.php.debug.debugHover"
+           name="PHP Debug Hover">
+     </textHover>
+  </extension>
+   
+</plugin>

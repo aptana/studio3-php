@@ -24,8 +24,8 @@ import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.CorePreferenceConstants;
 import com.aptana.editor.php.core.PHPNature;
 import com.aptana.projects.WebProjectNature;
-import com.aptana.projects.internal.wizards.AbstractNewProjectWizard;
-import com.aptana.projects.internal.wizards.IWizardProjectCreationPage;
+import com.aptana.projects.wizards.AbstractNewProjectWizard;
+import com.aptana.projects.wizards.IWizardProjectCreationPage;
 
 /**
  * A new PHP Project Wizard class.

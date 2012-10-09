@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -22,6 +22,7 @@ import org.eclipse.ui.IEditorInput;
 import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -105,7 +106,7 @@ public class PHPOffsetMapper
 	 * @param lexemeProvider
 	 *            The lexeme provider, for cases that require lexeme inspection
 	 */
-	public ICodeLocation findTarget(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
+	public ICodeLocation[] findTargets(Lexeme<PHPTokenType> lexeme, ILexemeProvider<PHPTokenType> lexemeProvider)
 	{
 		String source = null;
 		IEditorInput editorInput = phpSourceEditor.getEditorInput();
@@ -143,10 +144,8 @@ public class PHPOffsetMapper
 
 		String fullPath = null;
 		IFileStore remoteFileStore = null;
-		int startOffset = 0;
-
 		List<IElementEntry> sortedEntries = sortByModule(collectEntries(source, lexeme));
-
+		List<CodeLocation> locations = new ArrayList<CodeLocation>(5);
 		for (IElementEntry entry : sortedEntries)
 		{
 			Object value = entry.getValue();
@@ -167,24 +166,22 @@ public class PHPOffsetMapper
 							fullPath = null;
 						}
 					}
-					AbstractPHPEntryValue phpEntryValue = (AbstractPHPEntryValue) value;
-					startOffset = phpEntryValue.getStartOffset();
+					if (fullPath != null || remoteFileStore != null)
+					{
+						AbstractPHPEntryValue phpEntryValue = (AbstractPHPEntryValue) value;
+						int startOffset = phpEntryValue.getStartOffset();
+						Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(
+								PHPRegionTypes.UNKNOWN_TOKEN), startOffset, startOffset, StringUtil.EMPTY);
+						if (remoteFileStore != null)
+						{
+							locations.add(new CodeLocation(remoteFileStore, startLexeme));
+						}
+						locations.add(new CodeLocation(fullPath, startLexeme));
+					}
 				}
-				break;
 			}
 		}
-		if (fullPath == null && remoteFileStore == null)
-		{
-			return null;
-		}
-
-		Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN),
-				startOffset, startOffset, ""); //$NON-NLS-1$
-		if (remoteFileStore != null)
-		{
-			return new CodeLocation(remoteFileStore, startLexeme);
-		}
-		return new CodeLocation(fullPath, startLexeme);
+		return locations.toArray(new CodeLocation[locations.size()]);
 	}
 
 	/**
@@ -295,7 +292,7 @@ public class PHPOffsetMapper
 	 *            - source.
 	 * @return location or null.
 	 */
-	private ICodeLocation getIncludeLocation(Lexeme<PHPTokenType> lexeme, String source)
+	private ICodeLocation[] getIncludeLocation(Lexeme<PHPTokenType> lexeme, String source)
 	{
 		String moduleName = getIncludeModuleName(lexeme, source);
 		if (moduleName == null)
@@ -331,8 +328,8 @@ public class PHPOffsetMapper
 			}
 
 			Lexeme<PHPTokenType> startLexeme = new Lexeme<PHPTokenType>(new PHPTokenType(PHPRegionTypes.UNKNOWN_TOKEN),
-					0, 0, ""); //$NON-NLS-1$
-			return new CodeLocation(includedModule.getFullPath(), startLexeme);
+					0, 0, StringUtil.EMPTY);
+			return new CodeLocation[] { new CodeLocation(includedModule.getFullPath(), startLexeme) };
 		}
 		catch (Throwable th) // $codepro.audit.disable emptyCatchClause
 		{

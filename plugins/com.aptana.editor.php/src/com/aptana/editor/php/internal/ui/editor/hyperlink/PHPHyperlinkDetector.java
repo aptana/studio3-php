@@ -1,6 +1,14 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.ui.editor.hyperlink;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +16,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
@@ -17,6 +26,8 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
+import com.aptana.core.util.ArrayUtil;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.internal.contentAssist.PHPTokenType;
 import com.aptana.editor.php.internal.contentAssist.ParsingUtils;
@@ -28,7 +39,8 @@ import com.aptana.parsing.lexer.Lexeme;
 
 public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 {
-	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
+
+	private static final String LINK_TEXT_FORMAT = "{0} [{1}]"; //$NON-NLS-1$
 
 	/*
 	 * (non-Javadoc)
@@ -71,12 +83,26 @@ public class PHPHyperlinkDetector extends AbstractHyperlinkDetector
 		}
 		List<IHyperlink> result = new ArrayList<IHyperlink>();
 		PHPOffsetMapper offsetMapper = editor.getOffsetMapper();
-		ICodeLocation codeLocation = offsetMapper.findTarget(lexeme, lexemeProvider);
-		if (codeLocation != null)
+		ICodeLocation[] codeLocations = offsetMapper.findTargets(lexeme, lexemeProvider);
+		if (!ArrayUtil.isEmpty(codeLocations))
 		{
 			IRegion linkRegion = new Region(lexeme.getStartingOffset(), lexeme.getLength());
-			IHyperlink link = new PHPHyperLink(codeLocation, linkRegion, EMPTY_STRING, EMPTY_STRING);
-			result.add(link);
+			for (ICodeLocation codeLocation : codeLocations)
+			{
+				String hyperLinkText = lexeme.getText();
+				if (!StringUtil.isEmpty(codeLocation.getFullPath()))
+				{
+					hyperLinkText = MessageFormat.format(LINK_TEXT_FORMAT, hyperLinkText,
+							Path.fromOSString(codeLocation.getFullPath()).lastSegment());
+				}
+				else if (codeLocation.getRemoteFileStore() != null)
+				{
+					hyperLinkText = MessageFormat.format(LINK_TEXT_FORMAT, hyperLinkText, codeLocation
+							.getRemoteFileStore().getName());
+				}
+				IHyperlink link = new PHPHyperLink(codeLocation, linkRegion, hyperLinkText, StringUtil.EMPTY);
+				result.add(link);
+			}
 		}
 		if (!result.isEmpty())
 		{

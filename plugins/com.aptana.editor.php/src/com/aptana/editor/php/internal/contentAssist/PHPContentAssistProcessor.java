@@ -1,8 +1,8 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Eclipse Public License (EPL).
- * Please see the license-epl.html included with this distribution for details.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
  */
 package com.aptana.editor.php.internal.contentAssist;
@@ -1574,7 +1574,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 			if (!(EXTENDS_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType())
 					|| IMPLEMENTS_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType()) || NEW_PROPOSAL_CONTEXT_TYPE
-					.equals(currentContext.getType())))
+						.equals(currentContext.getType())))
 			{
 				return new ICompletionProposal[] {};
 			}
@@ -2128,7 +2128,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		}
 		String lowerCase = name.toLowerCase();
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-		Set<String> usedNames = new LinkedHashSet<String>();
+		Set<Integer> usedProposalHash = new LinkedHashSet<Integer>();
 		Map<Object, PHPCompletionProposal> itemsToProposals = new HashMap<Object, PHPCompletionProposal>();
 		for (Object item : items)
 		{
@@ -2140,7 +2140,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				if (firstName.startsWith(lowerCase)
 						|| (applyDollarSymbol && firstName.substring(1).startsWith(lowerCase)))
 				{
-					if (!usedNames.contains(firstName))
+					int itemHash = firstName.hashCode() + item.hashCode();
+					if (!usedProposalHash.contains(itemHash))
 					{
 						if (node.getNodeName().charAt(0) == '$')
 						{
@@ -2153,7 +2154,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 						if (proposal != null)
 						{
-							usedNames.add(firstName);
+							usedProposalHash.add(itemHash);
 						}
 					}
 				}
@@ -2172,6 +2173,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					firstName = entry.getEntryPath().replaceAll(String.valueOf(IElementsIndex.DELIMITER),
 							STATIC_DEREFERENCE_OP);
 				}
+				int itemHash = firstName.hashCode() + item.hashCode();
 				if (entry.getValue() instanceof NamespacePHPEntryValue)
 				{
 					name = origName;
@@ -2181,7 +2183,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 					{
 						firstName = GLOBAL_NAMESPACE + firstName; // $codepro.audit.disable stringConcatenationInLoop
 					}
-					else if (!usedNames.contains(firstName))
+					else if (!usedProposalHash.contains(firstName))
 					{
 						String k = firstName;
 						int p = k.indexOf(name);
@@ -2193,13 +2195,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						{
 							if (firstName != null && firstName.toLowerCase().startsWith(lowerCase))
 							{
-								if (!usedNames.contains(firstName))
+								if (!usedProposalHash.contains(firstName))
 								{
 									proposal = createProposal(entry, offset, name, firstName, module,
 											applyDollarSymbol, index, newInstanceCompletion);
 									if (proposal != null)
 									{
-										usedNames.add(firstName);
+										usedProposalHash.add(itemHash);
 										result.add(proposal);
 										itemsToProposals.put(item, proposal);
 									}
@@ -2212,11 +2214,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 								newInstanceCompletion);
 						if (proposal != null)
 						{
-							usedNames.add(firstName.toLowerCase());
+							usedProposalHash.add(itemHash);
 						}
 					}
 				}
-				else if (currentContext != null && !usedNames.contains(firstName)
+				else if (currentContext != null && !usedProposalHash.contains(firstName)
 						&& NAMESPACE_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType())
 						&& entry.getValue() instanceof ClassPHPEntryValue)
 				{
@@ -2234,7 +2236,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 									applyDollarSymbol, index, newInstanceCompletion);
 							if (proposal != null)
 							{
-								usedNames.add(firstName);
+								usedProposalHash.add(itemHash);
 								result.add(proposal);
 								itemsToProposals.put(item, proposal);
 							}
@@ -2247,7 +2249,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 						&& (lowerCaseFirstName.startsWith(lowerCase) || entry.getEntryPath().toLowerCase()
 								.startsWith(lowerCase)))
 				{
-					if (!usedNames.contains(firstName))
+					if (!usedProposalHash.contains(firstName))
 					{
 						String n = name;
 						if (!lowerCaseFirstName.startsWith(lowerCase))
@@ -2260,7 +2262,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 								newInstanceCompletion);
 						if (proposal != null)
 						{
-							usedNames.add(firstName);
+							usedProposalHash.add(itemHash);
 						}
 					}
 				}
