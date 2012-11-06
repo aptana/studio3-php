@@ -21,7 +21,6 @@ import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.indexer.PHPGlobalIndexer;
-import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.model.utils.ModelUtils;
 import com.aptana.editor.php.internal.parser.nodes.NodeBuilder;
@@ -202,13 +201,12 @@ public class PHPParser extends AbstractParser
 		if (ast != null)
 		{
 
-			ParseRootNode root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, ast.getStart(),
-					ast.getEnd());
+			ParseRootNode root = new PHPParseRootNode(NO_CHILDREN, ast.getStart(), ast.getEnd());
 			// We have to pass in the source itself to support accurate PHPDoc display.
 			processChildren(ast, root, input);
 			return root;
 		}
-		return new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, NO_CHILDREN, 0, 0);
+		return new PHPParseRootNode(NO_CHILDREN, 0, 0);
 	}
 
 	/**
