@@ -32,7 +32,7 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode()
 	{
-		super(IPHPConstants.CONTENT_TYPE_PHP);
+		super();
 		name = EMPTY;
 	}
 
@@ -47,13 +47,18 @@ public class PHPBaseParseNode extends ParseNode implements IPHPParseNode
 	 */
 	public PHPBaseParseNode(short nodeType, int modifiers, int startOffset, int endOffset, String name)
 	{
-		super(IPHPConstants.CONTENT_TYPE_PHP);
+		super();
 		this.nodeType = nodeType;
 		this.name = (name.length() != 0) ? name : " "; //$NON-NLS-1$
 		// this.startOffset = startOffset;
 		// this.endOffset = endOffset >= startOffset ? endOffset : startOffset;
 		this.setLocation(startOffset, (endOffset >= startOffset) ? endOffset : startOffset);
 		this.modifiers = modifiers;
+	}
+
+	public String getLanguage()
+	{
+		return IPHPConstants.CONTENT_TYPE_PHP;
 	}
 
 	/**

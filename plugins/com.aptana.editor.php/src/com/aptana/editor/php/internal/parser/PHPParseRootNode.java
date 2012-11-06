@@ -31,7 +31,12 @@ public class PHPParseRootNode extends ParseRootNode
 	 */
 	public PHPParseRootNode(Symbol[] children, int start, int end)
 	{
-		super(IPHPConstants.CONTENT_TYPE_PHP, children, start, end);
+		super(children, start, end);
+	}
+
+	public String getLanguage()
+	{
+		return IPHPConstants.CONTENT_TYPE_PHP;
 	}
 
 	/**

@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -18,7 +18,6 @@ import com.aptana.parsing.IParseState;
 import com.aptana.parsing.WorkingParseResult;
 import com.aptana.parsing.ast.IParseNode;
 import com.aptana.parsing.ast.ParseNode;
-import com.aptana.parsing.ast.ParseRootNode;
 
 public class PHTMLParser extends CompositeParser
 {
@@ -29,7 +28,7 @@ public class PHTMLParser extends CompositeParser
 
 	@Override
 	protected IParseNode processEmbeddedlanguage(IParseState parseState, WorkingParseResult working) throws Exception // $codepro.audit.disable
-																							// declaredExceptions
+	// declaredExceptions
 	{
 		String source = parseState.getSource();
 		int sourceLength = source.length();
@@ -46,8 +45,8 @@ public class PHTMLParser extends CompositeParser
 				case PHTMLTokens.PHP:
 					if (root == null)
 					{
-						root = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, PHPParser.NO_CHILDREN, startingOffset,
-								startingOffset + sourceLength - 1);
+						root = new PHPParseRootNode(PHPParser.NO_CHILDREN, startingOffset, startingOffset
+								+ sourceLength - 1);
 					}
 					processPHPBlock(root, sourceLength);
 					break;
@@ -78,7 +77,7 @@ public class PHTMLParser extends CompositeParser
 		if (result != null)
 		{
 			Symbol endTag = getCurrentSymbol();
-			ParseNode phpNode = new ParseNode(IPHPConstants.CONTENT_TYPE_PHP);
+			ParseNode phpNode = new PHPParseNode();
 			int endOffset;
 			if ("?>".equals(endTag.value)) //$NON-NLS-1$
 			{
