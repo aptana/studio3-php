@@ -119,6 +119,7 @@ import com.aptana.core.util.StringUtil;
 import com.aptana.editor.common.util.EditorUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.core.IPHPConstants;
+import com.aptana.editor.php.internal.parser.PHPParseRootNode;
 import com.aptana.editor.php.internal.parser.PHPParser;
 import com.aptana.editor.php.internal.parser.nodes.PHPASTWrappingNode;
 import com.aptana.formatter.AbstractScriptFormatter;
@@ -137,7 +138,6 @@ import com.aptana.formatter.ui.FormatterMessages;
 import com.aptana.formatter.ui.ScriptFormattingContextProperties;
 import com.aptana.parsing.ast.IParseRootNode;
 import com.aptana.parsing.ast.ParseNode;
-import com.aptana.parsing.ast.ParseRootNode;
 import com.aptana.ui.util.StatusLineMessageTimerManager;
 
 /**
@@ -255,8 +255,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 			if (ast != null)
 			{
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0],
-						ast.getStart(), ast.getEnd());
+				IParseRootNode rootNode = new PHPParseRootNode(new ParseNode[0], ast.getStart(), ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				final PHPFormatterNodeBuilder builder = new PHPFormatterNodeBuilder();
 				final FormatterDocument formatterDocument = createFormatterDocument(source, offset);
@@ -330,8 +329,7 @@ public class PHPFormatter extends AbstractScriptFormatter implements IScriptForm
 				String suffix = (beginsWithCloseTag(source, offset + length)) ? " " : StringUtil.EMPTY; //$NON-NLS-1$
 
 				// we wrap the Program with a parser root node to match the API
-				IParseRootNode rootNode = new ParseRootNode(IPHPConstants.CONTENT_TYPE_PHP, new ParseNode[0],
-						ast.getStart(), ast.getEnd());
+				IParseRootNode rootNode = new PHPParseRootNode(new ParseNode[0], ast.getStart(), ast.getEnd());
 				rootNode.addChild(new PHPASTWrappingNode(ast));
 				String output = format(input, rootNode, indentationLevel, offsetIncludedOpenTag, isSelection, suffix,
 						indentSufix);
