@@ -30,7 +30,6 @@ import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
 import com.aptana.editor.css.ICSSConstants;
 import com.aptana.editor.html.HTMLSourceConfiguration;
 import com.aptana.editor.html.IHTMLConstants;
-import com.aptana.editor.js.IJSConstants;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;
@@ -39,6 +38,7 @@ import com.aptana.editor.php.internal.text.rules.DoubleQuotedStringRule;
 import com.aptana.editor.php.internal.text.rules.FastPHPStringTokenScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPCodeScanner;
 import com.aptana.editor.php.internal.ui.editor.scanner.PHPDocScanner;
+import com.aptana.js.core.IJSConstants;
 
 public class PHPSourceConfiguration implements IPartitioningConfiguration, ISourceViewerConfiguration, IPHPConstants
 {
