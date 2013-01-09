@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2011 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -43,6 +43,7 @@ import com.aptana.editor.php.internal.contentAssist.mapping.PHPOffsetMapper;
 import com.aptana.editor.php.internal.core.builder.IModule;
 import com.aptana.editor.php.internal.indexer.AbstractPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
+import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 import com.aptana.editor.php.internal.parser.nodes.PHPBaseParseNode;
 import com.aptana.editor.php.internal.parser.phpdoc.FunctionDocumentation;
 import com.aptana.editor.php.internal.ui.editor.PHPSourceEditor;
@@ -119,7 +120,24 @@ public class PHPTextHover extends AbstractPHPTextHover
 				}
 			}
 			PHPDocBlock comment = PHPDocUtils.findFunctionPHPDocComment(entry, document, startOffset);
-			FunctionDocumentation documentation = PHPDocUtils.getFunctionDocumentation(comment);
+			FunctionDocumentation documentation;
+			if (phpValue instanceof VariablePHPEntryValue && ((VariablePHPEntryValue) phpValue).isParameter())
+			{
+				try
+				{
+					documentation = PHPDocUtils.getParameterDocumentation(comment,
+							document.get(hoverRegion.getOffset(), hoverRegion.getLength()));
+				}
+				catch (BadLocationException e)
+				{
+					IdeLog.logError(PHPEditorPlugin.getDefault(), e);
+					documentation = null;
+				}
+			}
+			else
+			{
+				documentation = PHPDocUtils.getFunctionDocumentation(comment);
+			}
 			computedDocumentation = PHPDocUtils.computeDocumentation(documentation, document, entry.getEntryPath());
 		}
 		else if (element instanceof PHPBaseParseNode)

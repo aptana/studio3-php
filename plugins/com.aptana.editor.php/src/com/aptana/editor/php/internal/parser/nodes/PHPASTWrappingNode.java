@@ -31,8 +31,13 @@ public class PHPASTWrappingNode extends ParseNode
 	 */
 	public PHPASTWrappingNode(Program ast)
 	{
-		super(IPHPConstants.CONTENT_TYPE_PHP);
+		super();
 		this.ast = ast;
+	}
+
+	public String getLanguage()
+	{
+		return IPHPConstants.CONTENT_TYPE_PHP;
 	}
 
 	/**

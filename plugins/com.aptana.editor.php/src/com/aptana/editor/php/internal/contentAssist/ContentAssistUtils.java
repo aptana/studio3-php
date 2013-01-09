@@ -76,9 +76,9 @@ public class ContentAssistUtils
 		if (index == null || index.isEmpty())
 		{
 			Collection<Object> builtins = PHPBuiltins.getInstance().getBuiltins();
-			if (builtins == null)
+			if (builtins == null || PHPBuiltins.getInstance().isInitializing())
 			{
-				// The built-ins are probably loading now
+				// The built-ins are loading now
 				return null;
 			}
 			initializeBuiltinsIndex(builtins);

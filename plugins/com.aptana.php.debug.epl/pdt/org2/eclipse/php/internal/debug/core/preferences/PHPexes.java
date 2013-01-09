@@ -106,7 +106,7 @@ public class PHPexes
 			items.put(debuggerId, map);
 		}
 		// Set the default item.
-		if (map.isEmpty() && item.isDefault())
+		if (map.isEmpty() && (item.isDefault() || allItems.size() == 1))
 		{
 			setDefaultItem(item);
 		}
@@ -258,8 +258,9 @@ public class PHPexes
 					boolean iniEquals = true;
 					if (iniFilePath != null)
 					{
-						iniEquals = exeItem.getINILocation() == null ? iniFilePath == null || iniFilePath.equals(StringUtil.EMPTY)
-								: iniFilePath.equals(exeItem.getINILocation().toString());
+						iniEquals = exeItem.getINILocation() == null ? iniFilePath == null
+								|| iniFilePath.equals(StringUtil.EMPTY) : iniFilePath.equals(exeItem.getINILocation()
+								.toString());
 					}
 					if (iniEquals && exeFilePath != null && exeFilePath.equals(exeItem.getExecutable().toString()))
 					{
@@ -452,7 +453,14 @@ public class PHPexes
 		}
 		if (removedItem != null && removedItem.isDefault())
 		{
-			defaultItem = null;
+			if (allItems.isEmpty())
+			{
+				defaultItem = null;
+			}
+			else
+			{
+				setDefaultItem(allItems.get(0));
+			}
 		}
 
 		// Notify

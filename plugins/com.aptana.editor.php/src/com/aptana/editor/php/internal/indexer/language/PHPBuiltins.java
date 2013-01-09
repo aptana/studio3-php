@@ -321,6 +321,8 @@ public final class PHPBuiltins
 	}
 
 	/**
+	 * Returns the Built-in PHP index. This method will no block, and a Job will be started to collect the built-ins.
+	 * 
 	 * @return builtins object
 	 */
 	public Collection<Object> getBuiltins()
@@ -731,5 +733,15 @@ public final class PHPBuiltins
 		{
 			phpNames.put(version, new HashSet<String>());
 		}
+	}
+
+	/**
+	 * Returns true if the PHP built-ins are being initialized.
+	 * 
+	 * @return <code>true</code> if the built-ins are currently initialized. <code>false</code> otherwise.
+	 */
+	public synchronized boolean isInitializing()
+	{
+		return initializing;
 	}
 }

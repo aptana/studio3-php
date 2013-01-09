@@ -12,10 +12,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -38,6 +36,7 @@ import org2.eclipse.php.internal.debug.core.xdebug.dbgp.DBGpProxyHandler;
 import org2.eclipse.php.internal.debug.ui.util.ImageDescriptorRegistry;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.EclipseUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.php.debug.IDebugScopes;
 import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
@@ -81,7 +80,14 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	{
 		XDebugLaunchListener.shutdown();
 		DBGpProxyHandler.instance.unregister();
-		new InstanceScope().getNode(PLUGIN_ID).flush();
+		try
+		{
+			EclipseUtil.instanceScope().getNode(PLUGIN_ID).flush();
+		}
+		catch (Exception e)
+		{
+			IdeLog.logError(plugin, e);
+		}
 		// DaemonPlugin.getDefault().stopDaemons(null); // TODO: SG - Check if the daemons are shutting down
 		super.stop(context);
 		plugin = null;
@@ -89,6 +95,11 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 				.setValue(IDebugUIConstants.PREF_AUTO_REMOVE_OLD_LAUNCHES, fInitialAutoRemoveLaunches);
 		// close all the tunnel connections
 		SSHTunnelFactory.closeAllConnections();
+		if (fImageDescriptorRegistry != null)
+		{
+			fImageDescriptorRegistry.dispose();
+			fImageDescriptorRegistry = null;
+		}
 	}
 
 	/**
@@ -315,7 +326,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static IEclipsePreferences getInstancePreferences()
 	{
-		return new InstanceScope().getNode(PLUGIN_ID);
+		return EclipseUtil.instanceScope().getNode(PLUGIN_ID);
 	}
 
 	//
@@ -438,6 +449,6 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 
 	private static IScopeContext[] getPreferenceContexts()
 	{
-		return new IScopeContext[] { new InstanceScope(), new DefaultScope() };
+		return new IScopeContext[] { EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
 	}
 }

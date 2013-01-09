@@ -72,6 +72,8 @@ public class PHPDebugUIMessages extends NLS {
 	public static String InstalledPHPsBlock_8;
 	public static String InstalledPHPsBlock_9;
 	public static String InstalledPHPsBlock_setDefault;
+
+	public static String InstalledPHPsBlock_unknown;
 	public static String launch_failure_exec_msg_text;
 	public static String launch_failure_msg_title;
 	public static String launch_failure_no_config;
@@ -146,6 +148,30 @@ public class PHPDebugUIMessages extends NLS {
 
 	public static String PHPDebugStepFilterPreferencePage_useStepFilters;
 	public static String PHPexe_Run_With_Debug_Info;
+	public static String PHPExeCompositeFragment_addInterpreterTitle;
+
+	public static String PHPExeCompositeFragment_description;
+
+	public static String PHPExeCompositeFragment_displayName;
+
+	public static String PHPExeCompositeFragment_editInterpreterTitle;
+
+	public static String PHPExeCompositeFragment_errorOpening;
+
+	public static String PHPExeCompositeFragment_errorSaving;
+
+	public static String PHPExeCompositeFragment_errorTitle;
+
+	public static String PHPExeCompositeFragment_executableFatalError;
+
+	public static String PHPExeCompositeFragment_iniEditorTabText;
+
+	public static String PHPExeCompositeFragment_openErrorPermissionMessage;
+
+	public static String PHPExeCompositeFragment_saveErrorPermissionMessage;
+
+	public static String PHPExeCompositeFragment_saveErrorTitle;
+
 	public static String PHPExecutableLaunchTab_isNotPHPFile;
 	public static String PHPexesComboBlock_3;
 	public static String PHPLaunchingPreferencePage_Always;

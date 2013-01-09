@@ -344,12 +344,17 @@ public class FastPHPStringTokenScanner extends QueuedTokenScanner {
 	}
 
 	private void readDoubleQuotedString(int offset) {
-		queueToken(TOKEN_BEGIN_QUOTE_INNER, offset, fScanner.getOffset() - offset);
+		int firstOffset = offset;
+		int firstLength = fScanner.getOffset() - offset;
 		offset = fScanner.getOffset();
 		int ch = fScanner.read();
 		while (ch != '"' && ch != ICharacterScanner.EOF) {
 			ch = fScanner.read();
 		}
+		if (ch == ICharacterScanner.EOF) {
+			return;
+		}
+		queueToken(TOKEN_BEGIN_QUOTE_INNER, firstOffset, firstLength);
 		queueToken(TOKEN_DOUBLE_QUOTED_INNER, offset, fScanner.getOffset() - 1 - offset);
 		queueToken(TOKEN_END_QUOTE_INNER, fScanner.getOffset() - 1, 1);
 	}

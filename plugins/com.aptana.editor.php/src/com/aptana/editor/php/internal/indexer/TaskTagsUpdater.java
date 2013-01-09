@@ -200,7 +200,8 @@ public class TaskTagsUpdater
 		Collection<Task> tasks = new ArrayList<Task>();
 		// Explicitly make copies of substrings here and with message to avoid holding ref to underlying char[] for
 		// entire source string (or full line for message)!
-		String text = new String(source.substring(commentNode.getStart(), commentNode.getEnd() + 1));
+		String text = new String(source.substring(commentNode.getStart(),
+				Math.min(source.length(), commentNode.getEnd() + 1)));
 		if (!isCaseSensitive)
 		{
 			text = text.toLowerCase();

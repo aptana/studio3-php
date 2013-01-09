@@ -153,7 +153,7 @@ public final class PHPGlobalIndexer
 
 	private static final int SAVING_INTERVAL = 10000;
 
-	Thread saverThread = new Thread()
+	Thread saverThread = new Thread("PHPGlobalIndexer saver") //$NON-NLS-1$
 	{
 		public void run()
 		{
@@ -1253,7 +1253,7 @@ public final class PHPGlobalIndexer
 					return Status.OK_STATUS;
 				}
 			};
-			savingJob.setSystem(!EclipseUtil.showSystemJobs());
+			EclipseUtil.setSystemForJob(savingJob);
 			savingJob.setPriority(Job.BUILD);
 		}
 	}
