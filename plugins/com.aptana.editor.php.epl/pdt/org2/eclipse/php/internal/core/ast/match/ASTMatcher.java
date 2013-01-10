@@ -99,6 +99,8 @@ import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org2.eclipse.php.internal.core.ast.nodes.Variable;
 import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
 
+import com.aptana.core.util.ObjectUtil;
+
 /**
  * Concrete superclass and default implementation of an AST subtree matcher.
  * <p>
@@ -1128,7 +1130,7 @@ public class ASTMatcher {
 
 		return safeSubtreeMatch(node.getTraitMethod(), o.getTraitMethod())
 				&& node.getModifier() == o.getModifier()
-				&& node.getFunctionName().equals(o.getFunctionName());
+				&& ObjectUtil.areEqual(node.getFunctionName(), o.getFunctionName());
 	}
 
 	public boolean match(FullyQualifiedTraitMethodReference node, Object other) {

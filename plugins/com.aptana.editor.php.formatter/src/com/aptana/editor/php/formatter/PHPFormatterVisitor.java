@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.IRegion;
+import org2.eclipse.php.core.compiler.PHPFlags;
 import org2.eclipse.php.internal.core.ast.nodes.ASTError;
 import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
@@ -1974,8 +1975,54 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(TraitAlias node)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(node);
+		// @formatter:off
+		// For example, each line in this block is a TraitAliasStatement node:
+		// use A {
+		//   B::foo as C;
+		//   myFunc as protected;
+		// }
+		// @formatter:on
+
+		// Wrap this one with a node
+		FormatterPHPTraitPrecedenceWrapperNode wrapperNode = new FormatterPHPTraitPrecedenceWrapperNode(document);
+		int start = node.getStart();
+		int end = node.getEnd();
+		wrapperNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, start, start));
+		builder.push(wrapperNode);
+
+		// Visit the method
+		Expression traitMethod = node.getTraitMethod();
+		traitMethod.accept(this);
+
+		// push the 'as' keyword. Start by looking for the functionName. In case it's null, check if it's a nodifier
+		// alias.
+		Identifier functionName = node.getFunctionName();
+		int traitMethodEndOffset = traitMethod.getEnd();
+		String txt = document.get(traitMethodEndOffset,
+				functionName != null ? functionName.getStart() : node.getModifierOffset());
+		int asStart = traitMethodEndOffset + txt.toLowerCase().indexOf("as"); //$NON-NLS-1$
+		visitTextNode(asStart, asStart + 2, true, 1, 1);
+
+		// Visit the function name or push the modifier string
+		if (functionName != null)
+		{
+			functionName.accept(this);
+		}
+		else
+		{
+			String modifier = PHPFlags.toString(node.getModifier());
+			int modifierOffset = node.getModifierOffset();
+			visitTextNode(modifierOffset, modifierOffset + modifier.length(), true, 1, 0);
+		}
+
+		// Close the wrapper
+		wrapperNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, end, end));
+		builder.checkedPop(wrapperNode, -1);
+
+		// Push a semicolon and make sure it's a line-terminating one.
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, node.getEnd() - 1, false, true);
+
+		return false;
 	}
 
 	/*
@@ -1986,7 +2033,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(TraitAliasStatement node)
 	{
-		// TODO Auto-generated method stub
+		// XXX - Remove and let the TraitAlias visit deal with this
 		return super.visit(node);
 	}
 
@@ -2019,11 +2066,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// @formatter:on
 
 		// Wrap this one with a node
-		FormatterPHPTraitPrecedenceWrapperNode expressionNode = new FormatterPHPTraitPrecedenceWrapperNode(document);
+		FormatterPHPTraitPrecedenceWrapperNode wrapperNode = new FormatterPHPTraitPrecedenceWrapperNode(document);
 		int start = node.getStart();
 		int end = node.getEnd();
-		expressionNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, start, start));
-		builder.push(expressionNode);
+		wrapperNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, start, start));
+		builder.push(wrapperNode);
 
 		// Visit the fully-qualified trait reference that appears before the 'insteadof' keyword.
 		FullyQualifiedTraitMethodReference methodReference = node.getMethodReference();
@@ -2040,8 +2087,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		visitNodeLists(trList, null, null, TypePunctuation.COMMA);
 
 		// Close the wrapper
-		expressionNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, end, end));
-		builder.checkedPop(expressionNode, -1);
+		wrapperNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, end, end));
+		builder.checkedPop(wrapperNode, -1);
 
 		// Push a semicolon and make sure it's a line-terminating one.
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, trList.get(trList.size() - 1).getEnd() - 1, false, true);
