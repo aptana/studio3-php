@@ -2135,26 +2135,35 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push of the ParethesisExpression, which should handle the rest.
 		boolean pushParenthesisNode = parameters.size() != 1 || parameters.size() == 1
 				&& parameters.get(0).getType() != ASTNode.PARENTHESIS_EXPRESSION;
+
+		int openParenOffset = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
 		if (needsMatchingBracketVerification && pushParenthesisNode)
 		{
-			// We make sure that the expression starts and ends with a matching parentheses that wraps it.
-			pushParenthesisNode = isWrappedInMatchingBrackets(bracketsType, declarationEndOffset, expressionEndOffset,
-					document);
+			// This check will handle different cases, like:
+			// echo 1;
+			// echo (new IDE) -> first();
+			// echo ('hello');
+			if (openParenOffset > -1 && document.charAt(openParenOffset) == bracketsType.getLeft().charAt(0))
+			{
+				// We make sure that the expression starts and ends with a matching parentheses that wraps it.
+				pushParenthesisNode = isWrappedInMatchingBrackets(bracketsType, declarationEndOffset,
+						expressionEndOffset, document);
+			}
 		}
 		FormatterPHPParenthesesNode parenthesesNode = null;
 		if (pushParenthesisNode)
 		{
-			int openParen = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
-			if (bracketsType.getLeft().charAt(0) == document.charAt(openParen))
+			if (bracketsType.getLeft().charAt(0) == document.charAt(openParenOffset))
 			{
 				parenthesesNode = new FormatterPHPParenthesesNode(document, false, parameters.size(), bracketsType);
-				parenthesesNode.setBegin(AbstractFormatterNodeBuilder
-						.createTextNode(document, openParen, openParen + 1));
+				parenthesesNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openParenOffset,
+						openParenOffset + 1));
 			}
 			else
 			{
 				parenthesesNode = new FormatterPHPParenthesesNode(document, true, parameters.size(), bracketsType);
-				parenthesesNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openParen, openParen));
+				parenthesesNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openParenOffset,
+						openParenOffset));
 			}
 			builder.push(parenthesesNode);
 		}
@@ -2179,8 +2188,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int closeParenEnd = expressionEndOffset;
 			if (!parenthesesNode.isAsWrapper())
 			{
-				closeParenStart = PHPFormatterNodeBuilder.locateCharBackward(document, ')', expressionEndOffset - 1,
-						comments);
+				closeParenStart = PHPFormatterNodeBuilder.locateCharBackward(document, bracketsType.getRight()
+						.charAt(0), expressionEndOffset - 1, comments);
 				closeParenEnd = closeParenStart + 1;
 			}
 			if (hasSingleLineCommentBefore(closeParenStart))
