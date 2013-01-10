@@ -93,6 +93,7 @@ import org2.eclipse.php.internal.core.ast.nodes.TraitAliasStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
 import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
@@ -129,6 +130,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPParenthesesNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPTraitPrecedenceWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.formatter.FormatterDocument;
@@ -777,7 +779,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				right.accept(this);
 			}
 			// add a separator if needed
-			if (i + 1 < leftNodes.size())
+			if (pairsSeparator != null && i + 1 < leftNodes.size())
 			{
 				int startIndex = left.getEnd();
 				String text = document.get(startIndex, leftNodes.get(i + 1).getStart());
@@ -1268,8 +1270,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			{
 				// push a 'static' keyword node
 				FormatterPHPKeywordNode staticNode = new FormatterPHPKeywordNode(document, false, false);
-				staticNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, staticStart,
-						staticStart + 6));
+				staticNode
+						.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, staticStart, staticStart + 6));
 				builder.push(staticNode);
 				builder.checkedPop(staticNode, -1);
 			}
@@ -1922,8 +1924,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(FullyQualifiedTraitMethodReference node)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(node);
+		// e.g. B::foo in a trait 'use' expression.
+		visitLeftRightExpression(node, node.getClassName(), node.getFunctionName(),
+				TypeOperator.STATIC_INVOCATION.toString());
+		return false;
 	}
 
 	/**
@@ -2006,8 +2010,42 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(TraitPrecedence node)
 	{
-		// TODO Auto-generated method stub
-		return super.visit(node);
+		// @formatter:off
+		// For example, each line in this block is a TraitPrecedence node:
+		// use A {
+		//   B::foo insteadof A, B, C;
+		//   A::fii insteadof D;
+		// }
+		// @formatter:on
+
+		// Wrap this one with a node
+		FormatterPHPTraitPrecedenceWrapperNode expressionNode = new FormatterPHPTraitPrecedenceWrapperNode(document);
+		int start = node.getStart();
+		int end = node.getEnd();
+		expressionNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, start, start));
+		builder.push(expressionNode);
+
+		// Visit the fully-qualified trait reference that appears before the 'insteadof' keyword.
+		FullyQualifiedTraitMethodReference methodReference = node.getMethodReference();
+		methodReference.accept(this);
+
+		// push the 'insteadof' keyword.
+		List<NamespaceName> trList = node.getTrList();
+		int exprEnd = methodReference.getEnd();
+		String txt = document.get(exprEnd, trList.get(0).getStart());
+		int insteadofStart = exprEnd + txt.toLowerCase().indexOf("insteadof"); //$NON-NLS-1$
+		visitTextNode(insteadofStart, insteadofStart + 9, true, 1, 1);
+
+		// Visit the list of trait names that appear after the 'insteadof' keyword.
+		visitNodeLists(trList, null, null, TypePunctuation.COMMA);
+
+		// Close the wrapper
+		expressionNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, end, end));
+		builder.checkedPop(expressionNode, -1);
+
+		// Push a semicolon and make sure it's a line-terminating one.
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, trList.get(trList.size() - 1).getEnd() - 1, false, true);
+		return false;
 	}
 
 	/*
@@ -2018,7 +2056,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(TraitPrecedenceStatement node)
 	{
-		// TODO Auto-generated method stub
+		// XXX - Remove this. It's being handled at the TraitPrecedence visit.
 		return super.visit(node);
 	}
 
@@ -2035,6 +2073,42 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<NamespaceName> traitList = traitUse.getTraitList();
 		visitNodeLists(traitList, null, null, TypePunctuation.COMMA);
 		// This will visit the NamespaceName nodes that exist as the TraitUseStatement children.
+
+		// visit any 'conflict-resolution' block (e.g. B::foo insteadof A;)
+		List<TraitStatement> tsList = traitUse.getTsList();
+		if (tsList != null)
+		{
+			// look for curly brackets. Note that there is no easy way to tell if the list is empty because it does not
+			// exist, or it's empty because we have an empty block.
+			int lastTraitListOffset = traitList.get(traitList.size() - 1).getEnd() - 1;
+			int openCurlyOffset = PHPFormatterNodeBuilder.locateCharForward(document, '{', lastTraitListOffset,
+					comments);
+			FormatterPHPBlockNode blockNode = null;
+			if (openCurlyOffset != lastTraitListOffset)
+			{
+				blockNode = new FormatterPHPBlockNode(document, false);
+				blockNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openCurlyOffset,
+						openCurlyOffset + 1));
+				builder.push(blockNode);
+			}
+			if (!tsList.isEmpty())
+			{
+				for (TraitStatement statement : tsList)
+				{
+					statement.accept(this);
+				}
+			}
+			if (blockNode != null)
+			{
+				// locate the closin curly and push it.
+				int closeCurlyOffset = PHPFormatterNodeBuilder.locateCharBackward(document, '}', traitUse.getEnd(),
+						comments);
+				blockNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, closeCurlyOffset,
+						closeCurlyOffset + 1));
+				builder.checkedPop(blockNode, traitUse.getEnd());
+			}
+
+		}
 		return false;
 	}
 
@@ -2642,10 +2716,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				comments);
 		if (punctuationOffset != offsetToSearch || document.charAt(punctuationOffset) == punctuationType)
 		{
-			String segment = document.get(offsetToSearch, punctuationOffset);
-			if (!ignoreNonWhitespace && segment.trim().length() > 0)
+			if (offsetToSearch + 1 < punctuationOffset)
 			{
-				return;
+				// Check this when the punctuation type was found a few characters ahead (not off by one).
+				String segment = document.get(offsetToSearch, punctuationOffset);
+				if (!ignoreNonWhitespace && segment.trim().length() > 0)
+				{
+					return;
+				}
 			}
 			if (isLineTerminating)
 			{
