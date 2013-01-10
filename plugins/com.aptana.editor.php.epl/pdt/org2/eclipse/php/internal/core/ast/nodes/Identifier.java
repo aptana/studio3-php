@@ -19,6 +19,8 @@ import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.match.ASTMatcher;
 import org2.eclipse.php.internal.core.ast.visitor.Visitor;
 
+import com.aptana.core.util.ObjectUtil;
+
 /**
  * Holds an identifier.<br>
  * uses for variable name, function name and class name.
@@ -99,7 +101,7 @@ public class Identifier extends Expression {
 		if (getClass() != obj.getClass())
 			return false;
 		final Identifier other = (Identifier) obj;
-		return this.name == other.name;
+		return ObjectUtil.areEqual(this.name ,other.name);
 	}
 
 	public int getType() {
