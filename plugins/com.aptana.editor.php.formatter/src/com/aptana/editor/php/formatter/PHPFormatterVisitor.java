@@ -860,7 +860,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions, TypePunctuation.COMMA, false,
 				TypeBracket.INVOCATION_PARENTHESIS, true);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
-		int end = expressions.get(expressions.size() - 1).getEnd();
+		int end = Math.max(echoStatement.getEnd() - 1, expressions.get(expressions.size() - 1).getEnd());
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
 		return false;
 	}
@@ -1259,6 +1259,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
+		if (lambdaFunctionDeclaration.isStatic())
+		{
+			// Unfortunately, the only way to get to the 'static' keyword is by traversing back and look for the 's'.
+			int lambdaStart = lambdaFunctionDeclaration.getStart();
+			int staticStart = PHPFormatterNodeBuilder.locateCharBackward(document, 's', lambdaStart);
+			if (lambdaStart != staticStart)
+			{
+				// push a 'static' keyword node
+				FormatterPHPKeywordNode staticNode = new FormatterPHPKeywordNode(document, false, false);
+				staticNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, staticStart,
+						staticStart + 6));
+				builder.push(staticNode);
+				builder.checkedPop(staticNode, -1);
+			}
+		}
 		visitFunctionDeclaration(lambdaFunctionDeclaration, null, lambdaFunctionDeclaration.formalParameters(),
 				lambdaFunctionDeclaration.lexicalVariables(), lambdaFunctionDeclaration.getBody());
 		return false;
@@ -1289,7 +1304,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(MethodDeclaration methodDeclaration)
 	{
 		FunctionDeclaration function = methodDeclaration.getFunction();
-		visitModifiers(methodDeclaration, function);
+		visitModifiers(methodDeclaration.getStart(), function.getStart());
 		function.accept(this);
 		return false;
 	}
@@ -1305,7 +1320,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// A class field declaration is treated in a similar way we treat a class method declaration
 		Variable[] variableNames = fieldsDeclaration.getVariableNames();
 		Variable firstVariable = variableNames[0];
-		visitModifiers(fieldsDeclaration, firstVariable);
+		visitModifiers(fieldsDeclaration.getStart(), firstVariable.getStart());
 		// visit the variables and their values
 		Expression[] initialValues = fieldsDeclaration.getInitialValues();
 		// visit the variables and their initial values
@@ -2247,12 +2262,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param nextNode
 	 *            The next node that appears right after the modifiers.
 	 */
-	private void visitModifiers(ASTNode node, ASTNode nextNode)
+	private void visitModifiers(int startOffset, int endOffset)
 	{
 		// The gap between the start and the function holds the modifiers (if exist).
 		// We create a node for each of these modifiers to remove any extra spaces they have between them.
-		int startOffset = node.getStart();
-		String modifiers = document.get(startOffset, nextNode.getStart());
+		String modifiers = document.get(startOffset, endOffset);
 		Matcher matcher = WORD_PATTERN.matcher(modifiers);
 		boolean isFirst = true;
 		while (matcher.find())
