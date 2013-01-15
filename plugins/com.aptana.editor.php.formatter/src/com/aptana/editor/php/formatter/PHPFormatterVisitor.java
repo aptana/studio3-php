@@ -1980,6 +1980,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// use A {
 		//   B::foo as C;
 		//   myFunc as protected;
+		//   sayHello as private myPrivateHello;
 		// }
 		// @formatter:on
 
@@ -1994,8 +1995,10 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		Expression traitMethod = node.getTraitMethod();
 		traitMethod.accept(this);
 
-		// push the 'as' keyword. Start by looking for the functionName. In case it's null, check if it's a nodifier
-		// alias.
+		// push the 'as' keyword. Start by looking for the functionName and a possible modifier. Note that in case the
+		// modifer is 'public', we have to check for an actual 'public' keyword. The default modifier is 'public',
+		// however, it's not neccessary to include the keyword in the PHP code.
+		String modifier = PHPFlags.toString(node.getModifier());
 		Identifier functionName = node.getFunctionName();
 		int traitMethodEndOffset = traitMethod.getEnd();
 		String txt = document.get(traitMethodEndOffset,
@@ -2003,16 +2006,16 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int asStart = traitMethodEndOffset + txt.toLowerCase().indexOf("as"); //$NON-NLS-1$
 		visitTextNode(asStart, asStart + 2, true, 1, 1);
 
+		// Visit any modifier we have
+		int modifierOffset = node.getModifierOffset();
+		if (txt.indexOf(modifier) > -1 || functionName == null)
+		{
+			visitTextNode(modifierOffset, modifierOffset + modifier.length(), true, 1, functionName != null ? 1 : 0);
+		}
 		// Visit the function name or push the modifier string
 		if (functionName != null)
 		{
 			functionName.accept(this);
-		}
-		else
-		{
-			String modifier = PHPFlags.toString(node.getModifier());
-			int modifierOffset = node.getModifierOffset();
-			visitTextNode(modifierOffset, modifierOffset + modifier.length(), true, 1, 0);
 		}
 
 		// Close the wrapper
@@ -2131,7 +2134,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int openCurlyOffset = PHPFormatterNodeBuilder.locateCharForward(document, '{', lastTraitListOffset,
 					comments);
 			FormatterPHPBlockNode blockNode = null;
-			if (openCurlyOffset != lastTraitListOffset)
+			if (openCurlyOffset != lastTraitListOffset && openCurlyOffset < traitUse.getEnd())
 			{
 				blockNode = new FormatterPHPBlockNode(document, false);
 				blockNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openCurlyOffset,
