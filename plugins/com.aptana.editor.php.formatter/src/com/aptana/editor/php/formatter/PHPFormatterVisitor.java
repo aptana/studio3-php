@@ -90,10 +90,8 @@ import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TraitAlias;
-import org2.eclipse.php.internal.core.ast.nodes.TraitAliasStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
-import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TraitStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
@@ -2031,18 +2029,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	/*
 	 * (non-Javadoc)
 	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
-	 * TraitAliasStatement)
-	 */
-	@Override
-	public boolean visit(TraitAliasStatement node)
-	{
-		// XXX - Remove and let the TraitAlias visit deal with this
-		return super.visit(node);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
 	 * TraitDeclaration)
 	 */
 	@Override
@@ -2096,18 +2082,6 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// Push a semicolon and make sure it's a line-terminating one.
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, trList.get(trList.size() - 1).getEnd() - 1, false, true);
 		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
-	 * TraitPrecedenceStatement)
-	 */
-	@Override
-	public boolean visit(TraitPrecedenceStatement node)
-	{
-		// XXX - Remove this. It's being handled at the TraitPrecedence visit.
-		return super.visit(node);
 	}
 
 	/*
