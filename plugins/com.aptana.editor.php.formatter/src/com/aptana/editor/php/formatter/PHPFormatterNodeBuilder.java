@@ -202,6 +202,10 @@ public class PHPFormatterNodeBuilder extends AbstractFormatterNodeBuilder
 					nextComment = null;
 				}
 			}
+			if (offset >= length)
+			{
+				break;
+			}
 			if (document.charAt(offset) == c)
 			{
 
