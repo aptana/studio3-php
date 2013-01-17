@@ -1280,7 +1280,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			if (isStaticDereferencing || module == null || module.equals(entry.getModule()))
 			{
 				ClassPHPEntryValue value = (ClassPHPEntryValue) entry.getValue();
-				if (TypeHierarchyUtils.isInNamespace(value, namespace))
+				if (!ContentAssistUtils.isFilterByNamespace() || TypeHierarchyUtils.isInNamespace(value, namespace))
 				{
 					result.add(entry);
 				}
@@ -1524,7 +1524,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		for (IElementEntry entry : leftEntries)
 		{
 			VariablePHPEntryValue value = (VariablePHPEntryValue) entry.getValue();
-			if (TypeHierarchyUtils.isInNamespace(value, namespace))
+			if (!ContentAssistUtils.isFilterByNamespace() || TypeHierarchyUtils.isInNamespace(value, namespace))
 			{
 				result.add(entry);
 			}
