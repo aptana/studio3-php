@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009-2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Zend Technologies
+ *     Appcelerator Inc.
  *******************************************************************************/
 package org2.eclipse.php.internal.ui.preferences;
 
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org2.eclipse.php.internal.core.IPHPEplCoreConstants;
 import org2.eclipse.php.internal.ui.PHPUIMessages;
 
 import com.aptana.core.util.EclipseUtil;
@@ -222,4 +224,17 @@ public final class PHPPreferencePage extends CommonEditorPreferencePage
 		return foldingGroup;
 	}
 
+	@Override
+	protected Composite createContentAssistOptions(Composite parent)
+	{
+		IPreferenceStore s = getChainedEditorPreferenceStore();
+		if (s.contains(IPHPEplCoreConstants.STRICT_NS_CODE_ASSIST))
+		{
+			Label stringNsLabel = new Label(parent, SWT.WRAP);
+			stringNsLabel.setText(PHPUIMessages.getString("PHPPreferencePage.strictNsInfo")); //$NON-NLS-1$
+			addField(new BooleanFieldEditor(IPHPEplCoreConstants.STRICT_NS_CODE_ASSIST,
+					PHPUIMessages.getString("PHPPreferencePage.strictNSContentAssist"), parent)); //$NON-NLS-1$
+		}
+		return parent;
+	}
 }

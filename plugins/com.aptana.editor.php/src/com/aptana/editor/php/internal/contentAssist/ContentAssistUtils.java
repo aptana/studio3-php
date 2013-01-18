@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2013 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.contentAssist;
 
 import java.util.ArrayList;
@@ -8,10 +15,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org2.eclipse.php.internal.core.IPHPEplCoreConstants;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 
 import com.aptana.core.util.StringUtil;
+import com.aptana.editor.php.epl.PHPEplPlugin;
 import com.aptana.editor.php.internal.indexer.language.PHPBuiltins;
 import com.aptana.editor.php.internal.parser.nodes.IPHPParseNode;
 import com.aptana.editor.php.internal.parser.nodes.PHPFunctionParseNode;
@@ -45,6 +56,8 @@ public class ContentAssistUtils
 	 * Index of built-ins. Key is the first name character.
 	 */
 	private static Map<Character, List<BuiltinInfo>> index = null;
+
+	private static Boolean filterByNamespace;
 
 	/**
 	 * Clean the PHP built-ins content assist index.
@@ -272,6 +285,34 @@ public class ContentAssistUtils
 			content = strippingPattern.matcher(content).replaceAll(htmlStrippingMap.get(strippingPattern));
 		}
 		return content;
+	}
+
+	/**
+	 * Returns <code>true</code> in case the preferences are set to filter the content assist by looking at the call
+	 * namespace; <code>false</code> otherwise.
+	 */
+	public static boolean isFilterByNamespace()
+	{
+		// This method is called very frequently, so we add a preferences listener that will exist through the entire
+		// Studio session and will monitor any change in the STRICT_NS_ASSIST property.
+		if (filterByNamespace == null)
+		{
+			filterByNamespace = PHPEplPlugin.getDefault().getPreferenceStore()
+					.getBoolean(IPHPEplCoreConstants.STRICT_NS_CODE_ASSIST);
+			// add a listener for the STRICT_NS_ASSIST property
+			PHPEplPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener()
+			{
+				public void propertyChange(PropertyChangeEvent event)
+				{
+					if (IPHPEplCoreConstants.STRICT_NS_CODE_ASSIST.equals(event.getProperty()))
+					{
+						filterByNamespace = (Boolean) event.getNewValue();
+					}
+
+				}
+			});
+		}
+		return filterByNamespace;
 	}
 
 	/**

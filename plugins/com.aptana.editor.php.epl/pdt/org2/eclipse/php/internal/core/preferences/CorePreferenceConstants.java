@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 IBM Corporation and others.
+ * Copyright (c) 2009-2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Zend Technologies
+ *     Appcelerator Inc.
  *******************************************************************************/
 package org2.eclipse.php.internal.core.preferences;
 
@@ -45,10 +46,9 @@ public class CorePreferenceConstants
 		store.setDefault(IPHPEplCoreConstants.TASK_TAGS, IPHPEplCoreConstants.DEFAULT_TASK_TAGS);
 		store.setDefault(IPHPEplCoreConstants.TASK_PRIORITIES, IPHPEplCoreConstants.DEFAULT_TASK_PRIORITIES);
 		store.setDefault(IPHPEplCoreConstants.TASK_CASE_SENSITIVE, IPHPEplCoreConstants.ENABLED);
-		store
-				.setDefault(IPHPEplCoreConstants.FORMATTER_INDENTATION_SIZE,
-						IPHPEplCoreConstants.DEFAULT_INDENTATION_SIZE);
+		store.setDefault(IPHPEplCoreConstants.FORMATTER_INDENTATION_SIZE, IPHPEplCoreConstants.DEFAULT_INDENTATION_SIZE);
 		store.setDefault(IPHPEplCoreConstants.FORMATTER_USE_TABS, true);
+		store.setDefault(IPHPEplCoreConstants.STRICT_NS_CODE_ASSIST, true);
 		/*
 		 * IEclipsePreferences node = EclipseUtil.defaultScope().getNode(PHPCorePlugin.ID); node.put(Keys.PHP_VERSION,
 		 * PHPVersion.PHP5.getAlias()); node .put(PHPCoreConstants.TASK_TAGS, PHPCoreConstants.DEFAULT_TASK_TAGS);

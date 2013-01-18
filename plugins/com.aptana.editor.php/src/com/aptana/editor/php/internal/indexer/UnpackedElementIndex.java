@@ -27,6 +27,7 @@ import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IElementsIndex;
+import com.aptana.editor.php.internal.contentAssist.ContentAssistUtils;
 import com.aptana.editor.php.internal.core.builder.IModule;
 
 /**
@@ -137,6 +138,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 	{
 		int indexOf = path.lastIndexOf('\\');
 		String namespace = null;
+		boolean filterByNamespace = ContentAssistUtils.isFilterByNamespace();
 		if (indexOf != -1)
 		{
 			namespace = path.substring(0, indexOf);
@@ -281,50 +283,53 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 				}
 			}
 		}
-		if (namespace != null)
+		if (filterByNamespace)
 		{
-			List<IElementEntry> filter = new ArrayList<IElementEntry>();
-			for (IElementEntry e : toReturn)
+			if (namespace != null)
 			{
-				Object value = e.getValue();
-				if (value instanceof AbstractPHPEntryValue)
+				List<IElementEntry> filter = new ArrayList<IElementEntry>();
+				for (IElementEntry e : toReturn)
 				{
-					AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
-					String nameSpace2 = m.getNameSpace();
-					if (nameSpace2 != null && nameSpace2.equals(namespace))
+					Object value = e.getValue();
+					if (value instanceof AbstractPHPEntryValue)
 					{
-						filter.add(e);
-					}
-				}
-			}
-			return filter;
-		}
-		else
-		{
-			List<IElementEntry> filter = new ArrayList<IElementEntry>();
-			for (IElementEntry e : toReturn)
-			{
-				Object value = e.getValue();
-				if (value instanceof AbstractPHPEntryValue)
-				{
-					AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
-					if (m instanceof NamespacePHPEntryValue)
-					{
-						filter.add(e);
-					}
-					else
-					{
+						AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
 						String nameSpace2 = m.getNameSpace();
-						if (nameSpace2 == null || nameSpace2.length() == 0)
+						if (nameSpace2 != null && nameSpace2.equals(namespace))
 						{
 							filter.add(e);
 						}
 					}
 				}
+				return filter;
 			}
-			return filter;
+			else
+			{
+				List<IElementEntry> filter = new ArrayList<IElementEntry>();
+				for (IElementEntry e : toReturn)
+				{
+					Object value = e.getValue();
+					if (value instanceof AbstractPHPEntryValue)
+					{
+						AbstractPHPEntryValue m = (AbstractPHPEntryValue) value;
+						if (m instanceof NamespacePHPEntryValue)
+						{
+							filter.add(e);
+						}
+						else
+						{
+							String nameSpace2 = m.getNameSpace();
+							if (nameSpace2 == null || nameSpace2.length() == 0)
+							{
+								filter.add(e);
+							}
+						}
+					}
+				}
+				return filter;
+			}
 		}
-
+		return toReturn;
 	}
 
 	/**
@@ -388,6 +393,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 	public synchronized List<IElementEntry> getEntries(int category, String path)
 	{
 		int indexOf = path.lastIndexOf('\\');
+		boolean filterByNamespace = ContentAssistUtils.isFilterByNamespace();
 		String namespace = null;
 		if (indexOf != -1)
 		{
@@ -423,7 +429,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 					return true;
 				}
 			});
-			if (namespace != null)
+			if (filterByNamespace && namespace != null)
 			{
 				List<IElementEntry> filter = new ArrayList<IElementEntry>();
 				for (IElementEntry e : result)
@@ -467,7 +473,7 @@ public class UnpackedElementIndex implements IModifiableElementsIndex
 			{
 				result.add((IElementEntry) resultObject);
 			}
-			if (namespace != null)
+			if (filterByNamespace && namespace != null)
 			{
 				List<IElementEntry> filter = new ArrayList<IElementEntry>();
 				for (IElementEntry e : result)

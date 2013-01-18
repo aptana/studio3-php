@@ -1,6 +1,25 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2013 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.contentAssist.preferences;
 
-import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.*;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.AUTO_ACTIVATE_ON_IDENTIFIERS;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.CONTENT_ASSIST_FILTER_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.CONTENT_ASSIST_INCLUDE_ALL;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_FUNCTION_PARAMETERS;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_MODE;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_MODE_INSERT;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_OPTIONAL_FUNCTION_PARAMETERS;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_PARENTHESES_AFTER_METHOD_CALLS;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_PARENTHESES_AFTER_NEW_INSTANCE;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_SEMICOLON_AFTER_METHOD_CALLS;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.INSERT_SEMICOLON_AFTER_NEW_INSTANCE;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.PARAMETRS_TAB_JUMP;
+import static com.aptana.editor.php.internal.contentAssist.preferences.IContentAssistPreferencesConstants.PARSE_UNSAVED_MODULE_ON_IDENTIFIERS_COMPLETION;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
