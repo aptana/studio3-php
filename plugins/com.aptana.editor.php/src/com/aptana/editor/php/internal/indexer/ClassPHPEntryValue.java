@@ -39,6 +39,8 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue
 	 */
 	private int endOffset;
 
+	private List<String> traits;
+
 	/**
 	 * ClassPHPEntryValue constructor.
 	 * 
@@ -113,6 +115,26 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue
 	public List<String> getInterfaces()
 	{
 		return interfaces;
+	}
+
+	/**
+	 * Sets the class traits names.
+	 * 
+	 * @param traits
+	 */
+	public void setTraits(List<String> traits)
+	{
+		this.traits = traits;
+	}
+
+	/**
+	 * Returns the class traits names.
+	 * 
+	 * @return The traits names (can be <code>null</code>).
+	 */
+	public List<String> getTraits()
+	{
+		return traits;
 	}
 
 	/**
@@ -253,5 +275,4 @@ public class ClassPHPEntryValue extends AbstractPHPEntryValue
 			interfaces = s;
 		}
 	}
-
 }

@@ -83,6 +83,7 @@ public class PHPTokenMapperFactory
 		LOGICAL_OPERATORS.add("or");
 		LOGICAL_OPERATORS.add("xor");
 		LOGICAL_OPERATORS.add("as");
+		LOGICAL_OPERATORS.add("insteadof");
 	}
 
 	private static Set<String> INC_DEC_OPERATORS = new HashSet<String>();

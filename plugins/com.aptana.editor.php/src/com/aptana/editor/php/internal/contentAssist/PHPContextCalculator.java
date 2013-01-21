@@ -1,3 +1,10 @@
+/**
+ * Aptana Studio
+ * Copyright (c) 2005-2013 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
+ * Please see the license.html included with this distribution for details.
+ * Any modifications to this file must keep this entire header intact.
+ */
 package com.aptana.editor.php.internal.contentAssist;
 
 import java.io.IOException;
@@ -56,6 +63,11 @@ public class PHPContextCalculator
 	protected static final String NAMESPACE_PROPOSAL_CONTEXT_TYPE = "NAMESPACE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
 
 	/**
+	 * Trait "use" proposal context type.
+	 */
+	protected static final String TRAIT_USE_PROPOSAL_CONTEXT_TYPE = "TRAIT_USE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
+
+	/**
 	 * Variable-type proposal context type.
 	 */
 	protected static final String VARIABLE_TYPE_PROPOSAL_CONTEXT_TYPE = "VARIABLE_TYPE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
@@ -76,11 +88,15 @@ public class PHPContextCalculator
 	 * 
 	 * @param lexemeProvider
 	 * @param offset
+	 * @param reportedScopeIsUnderClass
+	 *            Indicate that the reported scope is under a class type. That hint can help the context calculation
+	 *            when dealing with ambiguous statement that can be resolved to several contexts, such as "use".
 	 * @return
 	 */
-	public ProposalContext calculateCompletionContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset)
+	public ProposalContext calculateCompletionContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
+			boolean reportedScopeIsUnderClass)
 	{
-		internalCalculateContext(lexemeProvider, offset);
+		internalCalculateContext(lexemeProvider, offset, reportedScopeIsUnderClass);
 		return currentContext;
 	}
 
@@ -96,14 +112,17 @@ public class PHPContextCalculator
 	 * @param insertedChar
 	 *            A char that is currently being inserted into the given offset, but is not yet reflected in the
 	 *            LexemeProvider.
+	 * @param reportedScopeIsUnderClass
+	 *            Indicate that the reported scope is under a class type. That hint can help the context calculation
+	 *            when dealing with ambiguous statement that can be resolved to several contexts, such as "use".
 	 * @return A Proposal Context.
 	 */
 	public ProposalContext calculateCompletionContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
-			char insertedChar)
+			char insertedChar, boolean reportedScopeIsUnderClass)
 	{
 		// auto-box it
 		this.insertedChar = insertedChar;
-		ProposalContext context = calculateCompletionContext(lexemeProvider, offset);
+		ProposalContext context = calculateCompletionContext(lexemeProvider, offset, reportedScopeIsUnderClass);
 		// reset the char after the computation
 		this.insertedChar = null;
 		return context;
@@ -112,7 +131,8 @@ public class PHPContextCalculator
 	/*
 	 * Do the actual calculation
 	 */
-	private void internalCalculateContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset)
+	private void internalCalculateContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
+			boolean reportedScopeIsUnderClass)
 	{
 		currentContext = new ProposalContext(new AcceptAllContextFilter(), true, true, null);
 		int lexemePosition = lexemeProvider.getLexemeFloorIndex(offset - 1);
@@ -165,10 +185,21 @@ public class PHPContextCalculator
 			return;
 		}
 
-		// checking for namespace Use statement
-		if (checkNamespaceUseContext(lexemeProvider, offset, lexemePosition))
+		if (reportedScopeIsUnderClass)
 		{
-			return;
+			// checking for traits Use statement
+			if (checkTraitUseContext(lexemeProvider, offset, lexemePosition))
+			{
+				return;
+			}
+		}
+		else
+		{
+			// checking for namespace Use statement
+			if (checkNamespaceUseContext(lexemeProvider, offset, lexemePosition))
+			{
+				return;
+			}
 		}
 	}
 
@@ -798,6 +829,50 @@ public class PHPContextCalculator
 		};
 		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.NAMESPACE_CATEGORY });
 		currentContext.setType(NAMESPACE_PROPOSAL_CONTEXT_TYPE);
+		return true;
+	}
+
+	/**
+	 * Checks for trait 'use' context.
+	 * 
+	 * @param lexemeProvider
+	 *            - lexeme provider.
+	 * @param lexemePosition
+	 *            - lexeme position.
+	 * @return true if context is recognized and set, false otherwise
+	 */
+	private boolean checkTraitUseContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset, int lexemePosition)
+	{
+		Lexeme<PHPTokenType> nearestUseKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
+				PHPRegionTypes.PHP_USE, new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_NS_SEPARATOR,
+						PHPRegionTypes.PHP_STRING });
+		if (nearestUseKeyWord == null)
+		{
+			return false;
+		}
+
+		IContextFilter filter = new IContextFilter()
+		{
+
+			public boolean acceptBuiltin(Object builtinElement)
+			{
+				return builtinElement instanceof PHPNamespaceNode;
+			}
+
+			public boolean acceptElementEntry(IElementEntry element)
+			{
+				Object value = element.getValue();
+				return value instanceof NamespacePHPEntryValue || value instanceof ClassPHPEntryValue;
+			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
+		};
+		// FIXME - Need to create a TRAIT_CATEGORY
+		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.CLASS_CATEGORY });
+		currentContext.setType(TRAIT_USE_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
 

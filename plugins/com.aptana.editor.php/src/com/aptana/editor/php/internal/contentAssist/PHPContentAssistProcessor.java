@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -78,6 +78,7 @@ import com.aptana.editor.php.internal.indexer.NamespacePHPEntryValue;
 import com.aptana.editor.php.internal.indexer.PDTPHPModuleIndexer;
 import com.aptana.editor.php.internal.indexer.PHPTypeProcessor;
 import com.aptana.editor.php.internal.indexer.PublicsOnlyEntryFilter;
+import com.aptana.editor.php.internal.indexer.TraitPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.UnpackedElementIndex;
 import com.aptana.editor.php.internal.indexer.UnpackedEntry;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
@@ -251,7 +252,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// ignore it and just use the lexemeProvider
 		}
 		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c);
+		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c, reportedScopeIsUnderClass);
 		if (!currentContext.acceptModelsElements() && !currentContext.isAutoActivateCAAfterApply())
 		{
 			return false;
@@ -356,7 +357,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		// Calculates and sets completion context
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
+		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, reportedScopeIsUnderClass);
 
 		String content = document.get();
 
@@ -841,13 +842,22 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			currentExactMatch = exactMatch;
 		}
-		if (parentCompletion && leftDereferenceEntries.size() == 1)
+		if (leftDereferenceEntries.size() == 1)
 		{
-			// Make sure we grab the right namespace scope from the entry itself
-			Object entryValue = leftDereferenceEntries.iterator().next().getValue();
-			if (entryValue instanceof ClassPHPEntryValue)
+			if (parentCompletion)
 			{
-				namespace = ((ClassPHPEntryValue) entryValue).getNameSpace();
+				// Make sure we grab the right namespace scope from the entry itself
+				Object entryValue = leftDereferenceEntries.iterator().next().getValue();
+				if (entryValue instanceof ClassPHPEntryValue)
+				{
+					namespace = ((ClassPHPEntryValue) entryValue).getNameSpace();
+				}
+			}
+			else
+			{
+				// In case the left side is a trait, we would like to treat it as a 'parent' completion.
+				// For example: B::smallTalk insteadof A;
+				parentCompletion = leftDereferenceEntries.iterator().next().getValue() instanceof TraitPHPEntryValue;
 			}
 		}
 		Set<IElementEntry> result = computeStaticDereferenceRightEntries(index, leftDereferenceEntries,

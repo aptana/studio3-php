@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
@@ -429,7 +430,7 @@ public final class TypeHierarchyUtils
 		}
 
 		List<String> interfaces = entryValue.getInterfaces();
-		if (interfaces != null && !interfaces.isEmpty())
+		if (!CollectionsUtil.isEmpty(interfaces))
 		{
 			for (String interfaceName : interfaces)
 			{
@@ -448,6 +449,23 @@ public final class TypeHierarchyUtils
 				// Collect the ancestors. The collectAncestors method will make recursive calls to this one in order to
 				// keep on collecting up the hierarchy.
 				collectAncestors(toFill, index, namespace, classEntryBuildPath, aliasReplacement, classEntries);
+			}
+		}
+
+		// Add the traits
+		List<String> traits = entryValue.getTraits();
+		if (!CollectionsUtil.isEmpty(traits))
+		{
+			for (String trait : traits)
+			{
+				if (trait.startsWith(PHPContentAssistProcessor.GLOBAL_NAMESPACE))
+				{
+					trait = trait.substring(1);
+				}
+				List<IElementEntry> classEntries = index.getEntries(IPHPIndexConstants.CLASS_CATEGORY, trait);
+				// Collect the ancestors. The collectAncestors method will make recursive calls to this one in order to
+				// keep on collecting up the hierarchy.
+				collectAncestors(toFill, index, namespace, classEntryBuildPath, false, classEntries);
 			}
 		}
 	}
