@@ -2,20 +2,20 @@ package com.aptana.editor.php.internal.parser.phpdoc;
 
 import java.util.ArrayList;
 
-import com.aptana.editor.common.contentassist.UserAgentManager.UserAgent;
+import com.aptana.core.IUserAgent;
+import com.aptana.core.IUserAgentManager;
 
 /**
  * Documentation available for properties or functions.
  */
 public class PropertyDocumentation extends DocumentationBase
 {
-	private static final UserAgent[] EMPTY_USER_AGENTS = new UserAgent[0];
 	private TypedDescription fReturns = new TypedDescription();
 	private TypedDescription fMember = new TypedDescription();
 	private TypedDescription fAlias = new TypedDescription();
 	private String fDeprecatedDescription = ""; //$NON-NLS-1$
 	private String fSince = ""; //$NON-NLS-1$
-	private ArrayList<UserAgent> fUserAgents;
+	private ArrayList<IUserAgent> fUserAgents;
 
 	private boolean fIsDeprecated = false;
 	private boolean fIsPrivate = false;
@@ -32,11 +32,11 @@ public class PropertyDocumentation extends DocumentationBase
 	 * @param value
 	 *            The full name (including namespaces, if any) of type to add.
 	 */
-	public void addUserAgent(UserAgent value)
+	public void addUserAgent(IUserAgent value)
 	{
 		if (fUserAgents == null)
 		{
-			fUserAgents = new ArrayList<UserAgent>();
+			fUserAgents = new ArrayList<IUserAgent>();
 		}
 		//		if(!value.getPlatform().equals("")) //$NON-NLS-1$
 		// {
@@ -49,14 +49,14 @@ public class PropertyDocumentation extends DocumentationBase
 	 * 
 	 * @return Returns a list of new user agents
 	 */
-	public UserAgent[] getUserAgents()
+	public IUserAgent[] getUserAgents()
 	{
 		if (fUserAgents == null)
 		{
-			return EMPTY_USER_AGENTS;
+			return IUserAgentManager.NO_USER_AGENTS;
 		}
 
-		return fUserAgents.toArray(new UserAgent[fUserAgents.size()]);
+		return fUserAgents.toArray(new IUserAgent[fUserAgents.size()]);
 	}
 
 	/**
