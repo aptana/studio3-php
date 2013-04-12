@@ -425,4 +425,12 @@
          </projectNatureBinding>
       </participant>
    </extension>
+   <extension
+         point="com.aptana.scripting.applicationBundlePaths">
+      <bundlePath
+            id="com.aptana.php.bundles"
+            name="Default Application Bundles"
+            path="bundles/">
+      </bundlePath>
+   </extension>
 </plugin>
