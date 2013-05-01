@@ -13,7 +13,7 @@
     </description>
 
 	<property file="build_local.properties" />
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
 		<classpath>
 			<pathelement location="${basedir}/ant-contrib/ant-contrib.jar" />
 		</classpath>
@@ -64,63 +64,42 @@
 	</target>
 
 	<!-- ================================= 
-	      target: clean              
+	      target: clean
 	     ================================= -->
 	<target name="clean" depends="generate.build.properties" description="Clean up temp and build files">
-		<delete failonerror="false">
-			<fileset dir="${buildDirectory}" defaultexcludes="true">
-				<include name="assemble.*" />
-				<include name="finalFeaturesVersions.*" />
-				<include name="finalPluginsVersions.*" />
-				<include name="package.*" />
-			</fileset>
-		</delete>
-		<delete dir="${coverageDirectory}" failonerror="false" />
-		<delete dir="${testResultsDirectory}" failonerror="false" />
-		<delete dir="${buildDirectory}/${buildLabel}" failonerror="false" />
-		<delete dir="${baseLocation}" />
-		<delete dir="${buildDirectory}/features/org.eclipse.pde.build.container.feature" failonerror="false" />
-		<delete file="build.properties" failonerror="false" />
-	</target>
-
-	<!-- - - - - - - - - - - - - - - - - - 
-	      target: clean.after                      
-	     - - - - - - - - - - - - - - - - - -->
-	<target name="clean.after" if="cleanAfter">
-		<antcall target="clean" />
+		<delete dir="${buildDirectory}" failonerror="false" />
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
           target: generate.base                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="generate.base" depends="copy.base.windows,copy.base">
-		<!-- Wipe the non-test plugins-->
-		<antcall target="wipe.plugins" />
-		<!-- Copy test plugins into plugins dir -->
+		<!-- Copy test fragments into plugins dir -->
+		<echo message="Copying test fragments" level="info" />
+		<mkdir dir="${buildDirectory}/plugins" />
 		<copy todir="${buildDirectory}/plugins">
-			<fileset dir="${buildDirectory}/tests">
+			<fileset dir="${workspace}/tests">
 				<include name="**/*" />
+			</fileset>
+		</copy>
+		<!-- copy features -->
+		<echo message="Copying features" level="info" />
+		<copy todir="${buildDirectory}">
+			<fileset dir="${workspace}" defaultexcludes="true">
+				<include name="features/**" />
 			</fileset>
 		</copy>
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
-          target: wipe.plugins                      
-         - - - - - - - - - - - - - - - - - -->
-	<target name="wipe.plugins" unless="dont.wipe.plugins">
-		<delete verbose="false">
-			<fileset dir="${buildDirectory}/plugins">
-				<include name="**/*" />
-			</fileset>
-		</delete>
-	</target>
-
-	<!-- - - - - - - - - - - - - - - - - - 
-          target: copy.base                      
+          target: copy.base
+          On non-Windows machines, copy eclipse and plugins/features directories to buildDirectory to set up for build
          - - - - - - - - - - - - - - - - - -->
 	<target name="copy.base" unless="is.windows">
+		<mkdir dir="${buildDirectory}" />
 		<!-- Copy over the original base eclipse to a new location.
-						Have to use exec cp to retain permissions on *nix, Mac -->
+								Have to use exec cp to retain permissions on *nix, Mac -->
+		<echo message="Copying eclipse" level="info" />
 		<exec executable="cp">
 			<arg line="-R ${vanilla.eclipse} ${baseLocation}" />
 		</exec>
@@ -130,6 +109,8 @@
           target: copy.base.windows                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="copy.base.windows" if="is.windows">
+		<mkdir dir="${buildDirectory}" />
+		<!-- copy eclipse -->
 		<copy todir="${baseLocation}">
 			<fileset dir="${vanilla.eclipse}" includes="**/*" defaultexcludes="false" />
 		</copy>
@@ -167,21 +148,23 @@
 			<property name="includes" value="com*.xml" />
 			<property name="output-file" value="test-results.xml" />
 		</ant>
+		<mkdir dir="${testResultsDirectory}"/>
 		<move file="${baseLocation}/test-results.xml" todir="${testResultsDirectory}" />
 	</target>
 
 	<target name="-instrument" description="Instrument the code using EMMA. Call before running tests. Call '-coverage' to produce reports after.">
 		<emma enabled="true">
-			<instr instrpathref="instrument.classpath" mode="overwrite" metadatafile="${coverageDirectory}/metadata.emma">
+			<instr instrpathref="instrument.classpath" mode="overwrite" metadatafile="${buildDirectory}/metadata.emma">
 				<filter file="emma-filters.txt" />
 			</instr>
 		</emma>
 	</target>
 
 	<target name="-coverage" description="Produce coverage analysis docs using EMMA. Assumes '-instrument' was called before running the tests.">
+		<mkdir dir="${coverageDirectory}"/>
 		<emma enabled="true">
 			<report>
-				<fileset dir="${coverageDirectory}">
+				<fileset dir="${buildDirectory}">
 					<include name="*.emma" />
 				</fileset>
 
@@ -208,7 +191,32 @@
 
 		<antcall target="-post-test" />
 		<antcall target="-coverage" />
-		<antcall target="clean.after" />
+	</target>
+
+	<target name="performance" depends="generate.build.properties,copy.base.windows,copy.base">
+		<antcall target="-pre-test" />
+
+		<!-- Don't build, assume unit test built already ran and we can just re-use it! -->
+		<!-- Grab the version number of build we're testing -->
+		<pathconvert property="studio.version">
+			<dirset dir="${baseLocation}/features">
+				<include name="com.aptana.php.feature_*" />
+			</dirset>
+			<chainedmapper>
+				<flattenmapper />
+				<regexpmapper from="^com\.aptana\.php\.feature_([\d\.]+)\-.*$$" to="\1" />
+			</chainedmapper>
+		</pathconvert>
+
+		<echo message="Running performance tests on Studio ${studio.version}, on host: ${computer.hostname}, java version: ${java.version}" />
+
+		<!-- Run the tests. -->
+		<antcall target="run-perf-test">
+			<param name="test.plugin" value="com.aptana.radrails.tests.all" />
+			<param name="test.classname" value="com.aptana.radrails.tests.all.PerformanceTests" />
+		</antcall>
+
+		<antcall target="-post-test" />
 	</target>
 
 	<target name="run-ui-test">
@@ -223,7 +231,7 @@
 			<property name="data-dir" value="${baseLocation}/junit-workspace -clean" />
 			<property name="plugin-name" value="${test.plugin}" />
 			<property name="classname" value="${test.classname}" />
-			<property name="extraVMargs" value="-Demma.coverage.out.file=${coverageDirectory}/coverage.emma -Dosgi.dev=${basedir}/lib/emma.jar" />
+			<property name="extraVMargs" value="-Demma.coverage.out.file=${buildDirectory}/coverage.emma -Dosgi.dev=${basedir}/lib/emma.jar" />
 		</ant>
 	</target>
 
@@ -240,6 +248,21 @@
 			<property name="plugin-name" value="${test.plugin}" />
 			<property name="classname" value="${test.classname}" />
 			<property name="extraVMargs" value="-Demma.coverage.out.file=${coverageDirectory}/coverage.emma -Dosgi.dev=${basedir}/lib/emma.jar" />
+		</ant>
+	</target>
+
+	<target name="run-perf-test">
+		<ant target="ui-test" antfile="${library-file}" dir="${baseLocation}">
+			<property name="timeout" value="${test.timeout}" />
+			<property name="test.target" value="performance" />
+			<property name="os" value="${baseos}" />
+			<property name="ws" value="${basews}" />
+			<property name="arch" value="${basearch}" />
+			<property name="eclipse-home" value="${baseLocation}" />
+			<property name="data-dir" value="${baseLocation}/junit-workspace -clean" />
+			<property name="plugin-name" value="${test.plugin}" />
+			<property name="classname" value="${test.classname}" />
+			<property name="extraVMargs" value="-XX:MaxPermSize=384m -Djunit.properties=${basedir}/build.properties -Declipse.perf.dbloc=${perf.db} -Declipse.perf.config=build=${studio.version};host=${computer.hostname};jvm=${java.version} -Dsetup.override.eclipseArgs=vm=/usr/bin/java ${extraPerfArgs}" />
 		</ant>
 	</target>
 </project>
