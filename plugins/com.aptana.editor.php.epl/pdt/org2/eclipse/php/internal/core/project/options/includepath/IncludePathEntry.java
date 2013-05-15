@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.internal.resources.XMLWriter;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -36,6 +35,7 @@ import org.w3c.dom.Element;
 import org2.eclipse.php.internal.core.CoreMessages;
 import org2.eclipse.php.internal.core.project.IIncludePathEntry;
 import org2.eclipse.php.internal.core.project.options.PHPProjectOptions;
+import org2.eclipse.php.internal.core.project.options.XMLWriter;
 import org2.eclipse.php.internal.core.util.preferences.XMLPreferencesReader;
 
 import com.aptana.core.util.StringUtil;
