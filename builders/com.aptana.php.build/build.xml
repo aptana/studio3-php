@@ -19,7 +19,7 @@
 		<os family="windows" />
 	</condition>
 
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
 		<classpath>
 			<pathelement location="ant-contrib/ant-contrib.jar" />
 		</classpath>
@@ -85,22 +85,16 @@
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
-          target: get.revision                      
-         - - - - - - - - - - - - - - - - - -->
-	<target name="get.revision">
-		<!-- Force to use the timestamp, so we always get a new qualifier! -->
-		<tstamp>
-	      	<format property="build.timestamp" pattern="yyyyMMddkkmm"/>
-		</tstamp>
-		<property name="build.revision" value="${build.timestamp}" />
-		<echo message="Revision timestamp: ${build.revision}" level="info" />
-	</target>
-
-	<!-- - - - - - - - - - - - - - - - - - 
           target: generate.base                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="generate.base" depends="copy.base.windows,copy.base" />
-
+	<target name="generate.base" depends="copy.base.windows,copy.base" >
+		<!-- Delete the test feature, only build the PHP feature and its plugins! -->
+		<delete>
+			<fileset dir="${buildDirectory}" defaultexcludes="true">
+				<include name="features/com.aptana.php.tests/**/*" />
+			</fileset>
+		</delete>
+	</target>
 	<!-- - - - - - - - - - - - - - - - - - 
 	          target: copy.base                      
 	         - - - - - - - - - - - - - - - - - -->
@@ -121,17 +115,30 @@
 		</copy>
 	</target>
 
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: get.revision                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="get.revision">
+		<!-- Force to use the timestamp, so we always get a new qualifier! -->
+		<tstamp>
+	      	<format property="build.timestamp" pattern="yyyyMMddkkmm"/>
+		</tstamp>
+		<property name="build.revision" value="${build.timestamp}" />
+		<echo message="Revision timestamp: ${build.revision}" level="info" />
+	</target>
+
 	<!-- - - - - - - - - - - - - - - - - -
 	      target: replace.versions
 	     - - - - - - - - - - - - - - - - - -->
 	<target name="replace.versions" description="Replaces all the qualifiers for plugins/features with the last changed rev for that plugin/feature.">
 		<!-- Iterate through every plugin and feature directory and replace qualifier in
 		        build.properties with qualifier for just that plugin/feature! -->
-		<for param="file">
+		<for param="file" parallel="true">
 			<path>
 				<dirset dir="${buildDirectory}" defaultexcludes="true">
 					<include name="plugins/*" />
 					<include name="features/*" />
+					<exclude name="plugins/com.aptana.editor.php" />
 					<exclude name="${topLevelElementType}s/${topLevelElementId}" />
 				</dirset>
 			</path>
@@ -141,18 +148,18 @@
 					<arg value="${git.executable} log --max-count=1 --pretty=format:'%ct' ." />
 				</exec>
 				<echo message="Replacing qualifier for @{file} with ${@{file}.committed.max}" />
-				<exec executable="grep" dir="@{file}" outputproperty="@{file}.hasQualifierLine" logerror="false" failifexecutionfails="false" failonerror="false">
+				<exec executable="grep" dir="@{file}" resultproperty="@{file}.hasQualifierLine" logerror="false" failifexecutionfails="false" failonerror="false">
 					<arg line="qualifier ./build.properties" />
 				</exec>
 				<if>
-					<equals arg1="${@{file}.hasQualifierLine}" arg2="" />
+					<equals arg1="${@{file}.hasQualifierLine}" arg2="0" />
 					<then>
-						<echo message="no qualifier property, adding one" />
-						<concat append="true" destfile="@{file}/build.properties">qualifier = ${@{file}.committed.max}</concat>
+						<!-- <echo message="replacing qualifier value" /> -->
+						<replaceregexp file="@{file}/build.properties" match="qualifier\s*=\s*context" replace="qualifier = ${@{file}.committed.max}" byline="true" />
 					</then>
 					<else>
-						<echo message="replacing qualifier value" />
-						<replaceregexp file="@{file}/build.properties" match="qualifier\s*=\s*context" replace="qualifier = ${@{file}.committed.max}" byline="true" />
+						<!-- <echo message="no qualifier property, adding one" /> -->
+						<concat append="true" destfile="@{file}/build.properties">qualifier = ${@{file}.committed.max}</concat>
 					</else>
 				</if>
 			</sequential>
