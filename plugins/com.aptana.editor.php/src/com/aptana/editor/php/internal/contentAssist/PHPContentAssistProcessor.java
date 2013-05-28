@@ -1829,7 +1829,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 					// Check for traits vs. classes/interfaces here. In case we are in a trait 'use', or trait 'use'
 					// block, we would like to see only trait types.
-					if (PHPContextCalculator.TRAIT_USE_PROPOSAL_CONTEXT_TYPE.equals(proposalContext.getType())
+					if (proposalContext != null && PHPContextCalculator.TRAIT_USE_PROPOSAL_CONTEXT_TYPE.equals(proposalContext.getType())
 							|| PHPContextCalculator.TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE.equals(proposalContext
 									.getType()))
 					{
