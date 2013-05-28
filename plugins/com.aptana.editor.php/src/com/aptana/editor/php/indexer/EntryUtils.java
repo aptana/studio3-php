@@ -11,6 +11,7 @@ import org2.eclipse.php.core.compiler.PHPFlags;
 
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.FunctionPHPEntryValue;
+import com.aptana.editor.php.internal.indexer.TraitPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
 
 /**
@@ -77,6 +78,23 @@ public class EntryUtils
 	public static boolean isType(IElementEntry entry)
 	{
 		if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY && entry.getValue() instanceof ClassPHPEntryValue)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets whether the entry is a trait entry.
+	 * 
+	 * @param entry
+	 *            - entry.
+	 * @return whether the entry is a trait entry.
+	 */
+	public static boolean isTrait(IElementEntry entry)
+	{
+		if (entry.getCategory() == IPHPIndexConstants.CLASS_CATEGORY && entry.getValue() instanceof TraitPHPEntryValue)
 		{
 			return true;
 		}

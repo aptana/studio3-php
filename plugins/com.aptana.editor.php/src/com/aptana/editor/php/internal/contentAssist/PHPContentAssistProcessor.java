@@ -11,6 +11,8 @@ import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.IMPLEMENTS_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NAMESPACE_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NEW_PROPOSAL_CONTEXT_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.TRAIT_USE_PROPOSAL_CONTEXT_TYPE;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -179,6 +181,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	// other char in the isValidAutoActivationLocation()
 	private static char[] autoactivationCharacters = new char[] { '>', '@', ':', '\\', ' ' };
 	private static final char[] contextInformationActivationChars = { '(', ',' };
+
+	// When the current context scope is one of these types, we allow identifiers with empty name (see
+	// simpleIdentifierCompletion());
+	private static final Set<String> TYPES_ACCEPTING_EMPTY_IDENTIFIERS = CollectionsUtil.newSet(
+			EXTENDS_PROPOSAL_CONTEXT_TYPE, IMPLEMENTS_PROPOSAL_CONTEXT_TYPE, NEW_PROPOSAL_CONTEXT_TYPE,
+			TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE, TRAIT_USE_PROPOSAL_CONTEXT_TYPE);
+
 	private static PHPDecoratingLabelProvider labelProvider = new PHPDecoratingLabelProvider();
 	private ITextViewer viewer;
 	private int offset;
@@ -252,7 +261,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// ignore it and just use the lexemeProvider
 		}
 		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c, reportedScopeIsUnderClass);
+		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c,
+				reportedScopeIsUnderClass);
 		if (!currentContext.acceptModelsElements() && !currentContext.isAutoActivateCAAfterApply())
 		{
 			return false;
@@ -357,7 +367,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		// Calculates and sets completion context
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, reportedScopeIsUnderClass);
+		// Call to get the index. This will update the reported scope.
+		getIndex(content, offset);
+		currentContext = contextCalculator
+				.calculateCompletionContext(lexemeProvider, offset, reportedScopeIsUnderClass);
 
 		String content = document.get();
 
@@ -1575,8 +1588,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return new ICompletionProposal[] {};
 		}
 
-		// only allowing empty names for "extends" and "implements" proposal
-		// types
+		// only allowing empty names for "extends", "implements" and traits proposals types
 		if (name.length() == 0)
 		{
 			if (currentContext == null)
@@ -1584,13 +1596,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				return new ICompletionProposal[] {};
 			}
 
-			if (!(EXTENDS_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType())
-					|| IMPLEMENTS_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType()) || NEW_PROPOSAL_CONTEXT_TYPE
-						.equals(currentContext.getType())))
+			if (!TYPES_ACCEPTING_EMPTY_IDENTIFIERS.contains(currentContext.getType()))
 			{
 				return new ICompletionProposal[] {};
 			}
-
 		}
 
 		boolean variableCompletion = false;
@@ -1815,7 +1824,29 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				if (proposalContext == null
 						|| proposalContext.acceptModelElementType(IPHPIndexConstants.CLASS_CATEGORY))
 				{
-					entries.addAll(index.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, name));
+					List<IElementEntry> classTypeEntries = index.getEntriesStartingWith(
+							IPHPIndexConstants.CLASS_CATEGORY, name);
+
+					// Check for traits vs. classes/interfaces here. In case we are in a trait 'use', or trait 'use'
+					// block, we would like to see only trait types.
+					if (PHPContextCalculator.TRAIT_USE_PROPOSAL_CONTEXT_TYPE.equals(proposalContext.getType())
+							|| PHPContextCalculator.TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE.equals(proposalContext
+									.getType()))
+					{
+						IContextFilter contextFilter = proposalContext.getContextFilter();
+						for (IElementEntry elementEntry : classTypeEntries)
+						{
+							if (contextFilter.acceptElementEntry(elementEntry))
+							{
+								entries.add(elementEntry);
+							}
+						}
+					}
+					else
+					{
+						// TODO - Check if we need to filter out the traits out of the type entries.
+						entries.addAll(classTypeEntries);
+					}
 				}
 
 				if (proposalContext == null
@@ -2707,6 +2738,18 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private ProposalEnhancement getFunctionEntryEnhancement(IElementEntry elementEntry, String proposalContent)
 	{
 		ProposalEnhancement result = null;
+		// In case we are in a trait 'use' block, we don't want any special enhancements on the function name (e.g. no
+		// brackets). We only add a trailing space.
+		if (PHPContextCalculator.TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType()))
+		{
+			result = new ProposalEnhancement();
+			result.replaceString = proposalContent;
+			result.caretExitOffset = result.replaceString.length();
+			result.cursorShift = 0;
+			result.positions = new ArrayList<Position>();
+			return result;
+		}
+
 		// if (!(elementEntry.getValue() instanceof FunctionPHPEntryValue)) {
 		//			throw new IllegalArgumentException("Only functions are accepted."); //$NON-NLS-1$
 		// }

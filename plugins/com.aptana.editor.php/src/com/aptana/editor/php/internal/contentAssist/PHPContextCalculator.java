@@ -26,6 +26,7 @@ import org2.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionType
 import com.aptana.core.logging.IdeLog;
 import com.aptana.editor.common.contentassist.ILexemeProvider;
 import com.aptana.editor.php.PHPEditorPlugin;
+import com.aptana.editor.php.indexer.EntryUtils;
 import com.aptana.editor.php.indexer.IElementEntry;
 import com.aptana.editor.php.indexer.IPHPIndexConstants;
 import com.aptana.editor.php.internal.indexer.ClassPHPEntryValue;
@@ -63,9 +64,20 @@ public class PHPContextCalculator
 	protected static final String NAMESPACE_PROPOSAL_CONTEXT_TYPE = "NAMESPACE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
 
 	/**
-	 * Trait "use" proposal context type.
+	 * Trait "use" proposal context type. This context will appear when the content assist is on a trait 'use' call,
+	 * _before_ any 'use' block.
+	 * 
+	 * @see #TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE
 	 */
 	protected static final String TRAIT_USE_PROPOSAL_CONTEXT_TYPE = "TRAIT_USE_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
+
+	/**
+	 * Trait "use" block proposal context type. This context will appear when the content assist is on a trait 'use'
+	 * block.
+	 * 
+	 * @see #TRAIT_USE_PROPOSAL_CONTEXT_TYPE
+	 */
+	protected static final String TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE = "TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE"; //$NON-NLS-1$
 
 	/**
 	 * Variable-type proposal context type.
@@ -187,20 +199,32 @@ public class PHPContextCalculator
 
 		if (reportedScopeIsUnderClass)
 		{
-			// checking for traits Use statement
+			// checking for trait 'use' statement context (e.g. use A, B)
 			if (checkTraitUseContext(lexemeProvider, offset, lexemePosition))
 			{
 				return;
 			}
 		}
-		else
+		// checking for trait 'use' block context (e.g. use A, B { B::foo insteadof boo; })
+		// Order of calls is important here!
+		if (checkTraitUseBlockContext(lexemeProvider, offset, lexemePosition))
 		{
-			// checking for namespace Use statement
-			if (checkNamespaceUseContext(lexemeProvider, offset, lexemePosition))
+			// refine the context filter for an offset that is set right after an 'insteadof' or an 'as' keywords.
+			// in case we are before a keyword context, check if we are in a context that should only offer a
+			// keyword (e.g. 'insteadof' or 'as').
+			if (checkTraitUseAfterKeywordContext(lexemeProvider, offset, lexemePosition)
+					|| checkTraitUseBeforeKeywordContext(lexemeProvider, offset, lexemePosition))
 			{
 				return;
 			}
 		}
+
+		// checking for namespace Use statement
+		if (checkNamespaceUseContext(lexemeProvider, offset, lexemePosition))
+		{
+			return;
+		}
+
 	}
 
 	/**
@@ -845,7 +869,7 @@ public class PHPContextCalculator
 	{
 		Lexeme<PHPTokenType> nearestUseKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
 				PHPRegionTypes.PHP_USE, new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_NS_SEPARATOR,
-						PHPRegionTypes.PHP_STRING });
+						PHPRegionTypes.PHP_STRING, PHPRegionTypes.PHP_TOKEN });
 		if (nearestUseKeyWord == null)
 		{
 			return false;
@@ -861,8 +885,7 @@ public class PHPContextCalculator
 
 			public boolean acceptElementEntry(IElementEntry element)
 			{
-				Object value = element.getValue();
-				return value instanceof NamespacePHPEntryValue || value instanceof ClassPHPEntryValue;
+				return EntryUtils.isTrait(element);
 			}
 
 			public boolean acceptExternalProposals()
@@ -870,9 +893,140 @@ public class PHPContextCalculator
 				return false;
 			}
 		};
-		// FIXME - Need to create a TRAIT_CATEGORY
 		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.CLASS_CATEGORY });
 		currentContext.setType(TRAIT_USE_PROPOSAL_CONTEXT_TYPE);
+		return true;
+	}
+
+	/**
+	 * Checks for trait 'use' block context.
+	 * 
+	 * @param lexemeProvider
+	 *            - lexeme provider.
+	 * @param lexemePosition
+	 *            - lexeme position.
+	 * @return true if context is recognized and set, false otherwise
+	 */
+	private boolean checkTraitUseBlockContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
+			int lexemePosition)
+	{
+		Lexeme<PHPTokenType> nearestUseKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
+				PHPRegionTypes.PHP_USE, new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_NS_SEPARATOR,
+						PHPRegionTypes.PHP_STRING, PHPRegionTypes.PHP_PAAMAYIM_NEKUDOTAYIM,
+						PHPRegionTypes.PHP_INSTEADOF, PHPRegionTypes.PHP_AS, PHPRegionTypes.PHP_SEMICOLON,
+						PHPRegionTypes.PHP_CURLY_OPEN, PHPRegionTypes.PHP_TOKEN });
+		if (nearestUseKeyWord == null)
+		{
+			return false;
+		}
+		IContextFilter filter = new IContextFilter()
+		{
+
+			public boolean acceptBuiltin(Object builtinElement)
+			{
+				return false;
+			}
+
+			public boolean acceptElementEntry(IElementEntry element)
+			{
+				return EntryUtils.isTrait(element)
+						|| (EntryUtils.isFunction(element) && ((FunctionPHPEntryValue) element.getValue())
+								.isTraitMethod());
+			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
+		};
+		currentContext = new ProposalContext(filter, false, true, new int[] { IPHPIndexConstants.CLASS_CATEGORY });
+		currentContext.setType(TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE);
+		return true;
+	}
+
+	private boolean checkTraitUseBeforeKeywordContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
+			int lexemePosition)
+	{
+		// Since this method is always called after the checkTraitUseBlockContext call, we already know there is a "use"
+		// keyword. Now we just look back till we hit the PAAMAYIM_NEKUDOTAYIM, as we can be inside one of the internal
+		// statement of the use block.
+		Lexeme<PHPTokenType> lexeme = findLexemeBackward(lexemeProvider, lexemePosition, PHPRegionTypes.PHP_STRING,
+				new String[] { PHPRegionTypes.WHITESPACE });
+
+		if (lexeme == null)
+		{
+			return false;
+		}
+		lexeme = findLexemeBackward(lexemeProvider, lexemePosition - 1, PHPRegionTypes.PHP_PAAMAYIM_NEKUDOTAYIM,
+				new String[] { PHPRegionTypes.WHITESPACE, PHPRegionTypes.PHP_STRING });
+		if (lexeme == null || !lexeme.getType().getType().equals(PHPRegionTypes.PHP_PAAMAYIM_NEKUDOTAYIM))
+		{
+			return false;
+		}
+		IContextFilter filter = new IContextFilter()
+		{
+
+			public boolean acceptBuiltin(Object builtinElement)
+			{
+				return ("insteadof".equals(((IPHPParseNode) builtinElement).getNodeName()) //$NON-NLS-1$
+				|| "as".equals(((IPHPParseNode) builtinElement).getNodeName())); //$NON-NLS-1$
+
+			}
+
+			public boolean acceptElementEntry(IElementEntry element)
+			{
+				// Accept only trait methods when we assist before the "insteadof" or "as".
+				return EntryUtils.isFunction(element) && ((FunctionPHPEntryValue) element.getValue()).isTraitMethod();
+			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
+		};
+		currentContext = new ProposalContext(filter, true, true, null);
+		currentContext.setType(TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE);
+		return true;
+	}
+
+	private boolean checkTraitUseAfterKeywordContext(ILexemeProvider<PHPTokenType> lexemeProvider, int offset,
+			int lexemePosition)
+	{
+		// Since this method is always called after the checkTraitUseBlockContext call, we already know there is a "use"
+		// keyword. Now we just look back till we hit the "insteadof" or the "as" keywords.
+		Lexeme<PHPTokenType> nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition,
+				PHPRegionTypes.PHP_INSTEADOF, new String[] { PHPRegionTypes.WHITESPACE });
+		if (nearestKeyWord == null)
+		{
+			nearestKeyWord = findLexemeBackward(lexemeProvider, lexemePosition, PHPRegionTypes.PHP_AS,
+					new String[] { PHPRegionTypes.WHITESPACE });
+		}
+		if (nearestKeyWord == null)
+		{
+			return false;
+		}
+		IContextFilter filter = new IContextFilter()
+		{
+
+			public boolean acceptBuiltin(Object builtinElement)
+			{
+				return false;
+			}
+
+			public boolean acceptElementEntry(IElementEntry element)
+			{
+				return EntryUtils.isTrait(element)
+						|| (EntryUtils.isFunction(element) && ((FunctionPHPEntryValue) element.getValue())
+								.isTraitMethod());
+			}
+
+			public boolean acceptExternalProposals()
+			{
+				return false;
+			}
+		};
+		currentContext = new ProposalContext(filter, true, true, new int[] { IPHPIndexConstants.CLASS_CATEGORY });
+		currentContext.setType(TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE);
 		return true;
 	}
 
