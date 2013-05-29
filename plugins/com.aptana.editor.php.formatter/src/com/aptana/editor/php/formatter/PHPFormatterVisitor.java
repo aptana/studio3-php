@@ -1683,8 +1683,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// APSTUD-3382 - Check if we have a comment right before the end of this switch.
 		if (hasAnyCommentBefore(endingOffset))
 		{
-			Comment comment = PHPDocUtils.getCommentByType(comments, endingOffset, document.getText(),
-					Comment.TYPE_MULTILINE | Comment.TYPE_PHPDOC | Comment.TYPE_SINGLE_LINE);
+			Comment comment = PHPDocUtils.getCommentByType(comments, endingOffset, document.getText(), -1);
 			if (comment != null)
 			{
 				// push a text node for that comment
