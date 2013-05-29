@@ -1809,7 +1809,25 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		pushKeyword(throwStatement.getStart(), 5, true, false);
 		Expression expression = throwStatement.getExpression();
-		expression.accept(this);
+		if (expression instanceof ParenthesisExpression)
+		{
+			expression.accept(this);
+		}
+		else
+		{
+			// Unlike PHP 5.3, the PHP 5.4 parser does not give us a ParenthesisExpression when there is an expression
+			// like "throw (new Exception());"
+			// We need to manually check for parenthesis that wrap the expression.
+			String text = document.get(throwStatement.getStart() + 5, expression.getStart());
+			if (text.trim().startsWith("(")) { //$NON-NLS-1$
+				pushNodeInParentheses('(', ')', throwStatement.getStart() + 5, expression.getEnd(), expression,
+						TypeBracket.PARENTHESIS);
+			}
+			else
+			{
+				expression.accept(this);
+			}
+		}
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, expression.getEnd(), false, true);
 		return false;
 	}
