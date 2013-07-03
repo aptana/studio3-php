@@ -108,6 +108,10 @@ function openssl_pkey_get_public ($certificate) {}
  * OPENSSL_KEYTYPE_DSA,
  * OPENSSL_KEYTYPE_DH,
  * OPENSSL_KEYTYPE_EC or -1 meaning unknown).
+ * </p>
+ * <p>
+ * Depending on the key type used, additional details may be returned. Note that 
+ * some elements may not always be available.
  */
 function openssl_pkey_get_details ($key) {}
 
@@ -123,14 +127,17 @@ function openssl_free_key ($key_identifier) {}
 /**
  * &Alias; <function>openssl_pkey_get_private</function>
  * @link http://www.php.net/manual/en/function.openssl-get-privatekey.php
+ * @param key
+ * @param passphrase[optional]
  */
-function openssl_get_privatekey () {}
+function openssl_get_privatekey ($key, $passphrase) {}
 
 /**
  * &Alias; <function>openssl_pkey_get_public</function>
  * @link http://www.php.net/manual/en/function.openssl-get-publickey.php
+ * @param cert
  */
-function openssl_get_publickey () {}
+function openssl_get_publickey ($cert) {}
 
 /**
  * Parse an X.509 certificate and return a resource identifier for
@@ -395,6 +402,14 @@ function openssl_pkcs12_read ($pkcs12, array &$certs, $pass) {}
  * <td>encrypt_key</td>
  * <td>Should an exported key (with passphrase) be encrypted?</td>
  * </tr>
+ * <tr valign="top">
+ * <td>encrypt_key_cipher</td>
+ * <td>integer</td>
+ * <td>none</td>
+ * <td>
+ * One of cipher constants.
+ * </td>
+ * </tr>
  * </table>
  * </p>
  * @param extraattribs array[optional] <p>
@@ -486,6 +501,80 @@ function openssl_csr_get_subject ($csr, $use_shortnames = null) {}
 function openssl_csr_get_public_key ($csr, $use_shortnames = null) {}
 
 /**
+ * Computes a digest
+ * @link http://www.php.net/manual/en/function.openssl-digest.php
+ * @param data string <p>
+ * The data.
+ * </p>
+ * @param method string <p>
+ * The digest method.
+ * </p>
+ * @param raw_output bool[optional] <p>
+ * Setting to true will return as raw output data, otherwise the return
+ * value is binhex encoded.
+ * </p>
+ * @return string the digested hash value on success&return.falseforfailure;.
+ */
+function openssl_digest ($data, $method, $raw_output = null) {}
+
+/**
+ * Encrypts data
+ * @link http://www.php.net/manual/en/function.openssl-encrypt.php
+ * @param data string <p>
+ * The data.
+ * </p>
+ * @param method string <p>
+ * The cipher method.
+ * </p>
+ * @param password string <p>
+ * The password.
+ * </p>
+ * @param raw_output bool[optional] <p>
+ * Setting to true will return as raw output data, otherwise the return
+ * value is base64 encoded.
+ * </p>
+ * @param iv string[optional] <p>
+ * A non-NULL Initialization Vector.
+ * </p>
+ * @return string the encrypted string on success&return.falseforfailure;.
+ */
+function openssl_encrypt ($data, $method, $password, $raw_output = null, $iv = null) {}
+
+/**
+ * Decrypts data
+ * @link http://www.php.net/manual/en/function.openssl-decrypt.php
+ * @param data string <p>
+ * The data.
+ * </p>
+ * @param method string <p>
+ * The cipher method.
+ * </p>
+ * @param password string <p>
+ * The password.
+ * </p>
+ * @param raw_input bool[optional] <p>
+ * Setting to true will take a raw encoded string,
+ * otherwise a base64 string is assumed for the
+ * data parameter.
+ * </p>
+ * @param iv string[optional] <p>
+ * A non-NULL Initialization Vector. 
+ * </p>
+ * @return string The decrypted string on success&return.falseforfailure;.
+ */
+function openssl_decrypt ($data, $method, $password, $raw_input = null, $iv = null) {}
+
+/**
+ * Gets the cipher iv length
+ * @link http://www.php.net/manual/en/function.openssl-cipher-iv-length.php
+ * @param method string <p>
+ * The method.
+ * </p>
+ * @return int the cipher length on success, or false on failure.
+ */
+function openssl_cipher_iv_length ($method) {}
+
+/**
  * Generate signature
  * @link http://www.php.net/manual/en/function.openssl-sign.php
  * @param data string <p>
@@ -531,12 +620,13 @@ function openssl_verify ($data, $signature, $pub_key_id, $signature_alg = null) 
  * </p>
  * @param pub_key_ids array <p>
  * </p>
+ * @param method string[optional] 
  * @return int the length of the sealed data on success, or false on error.
  * If successful the sealed data is returned in
  * sealed_data, and the envelope keys in
  * env_keys.
  */
-function openssl_seal ($data, &$sealed_data, array &$env_keys, array $pub_key_ids) {}
+function openssl_seal ($data, &$sealed_data, array &$env_keys, array $pub_key_ids, $method = null) {}
 
 /**
  * Open sealed data
@@ -551,9 +641,10 @@ function openssl_seal ($data, &$sealed_data, array &$env_keys, array $pub_key_id
  * </p>
  * @param priv_key_id mixed <p>
  * </p>
+ * @param method string[optional] 
  * @return bool Returns true on success or false on failure.
  */
-function openssl_open ($sealed_data, &$open_data, $env_key, $priv_key_id) {}
+function openssl_open ($sealed_data, &$open_data, $env_key, $priv_key_id, $method = null) {}
 
 /**
  * Verifies the signature of an S/MIME signed message
@@ -663,7 +754,7 @@ function openssl_pkcs7_sign ($infilename, $outfilename, $signcert, $privkey, arr
  * constants.
  * </p>
  * @param cipherid int[optional] <p>
- * Cipher can be selected with cipherid.
+ * One of cipher constants.
  * </p>
  * @return bool Returns true on success or false on failure.
  */
@@ -752,6 +843,57 @@ function openssl_public_encrypt ($data, &$crypted, $key, $padding = null) {}
 function openssl_public_decrypt ($data, &$decrypted, $key, $padding = null) {}
 
 /**
+ * Gets available digest methods
+ * @link http://www.php.net/manual/en/function.openssl-get-md-methods.php
+ * @param aliases bool[optional] <p>
+ * Set to true if digest aliases should be included within the
+ * returned array.
+ * </p>
+ * @return array An array of available digest methods.
+ */
+function openssl_get_md_methods ($aliases = null) {}
+
+/**
+ * Gets available cipher methods
+ * @link http://www.php.net/manual/en/function.openssl-get-cipher-methods.php
+ * @param aliases bool[optional] <p>
+ * Set to true if cipher aliases should be included within the
+ * returned array.
+ * </p>
+ * @return array An array of available cipher methods.
+ */
+function openssl_get_cipher_methods ($aliases = null) {}
+
+/**
+ * Computes shared secret for public value of remote DH key and local DH key
+ * @link http://www.php.net/manual/en/function.openssl-dh-compute-key.php
+ * @param pub_key string <p>
+ * Public key
+ * </p>
+ * @param dh_key resource <p>
+ * DH key
+ * </p>
+ * @return string computed key on success&return.falseforfailure;.
+ */
+function openssl_dh_compute_key ($pub_key, $dh_key) {}
+
+/**
+ * Generate a pseudo-random string of bytes
+ * @link http://www.php.net/manual/en/function.openssl-random-pseudo-bytes.php
+ * @param length int <p>
+ * The length of the desired string of bytes. Must be a positive integer. PHP will
+ * try to cast this parameter to a non-null integer to use it. 
+ * </p>
+ * @param crypto_strong bool[optional] <p>
+ * If passed into the function, this will hold a boolean value that determines
+ * if the algorithm used was "cryptographically strong", e.g., safe for usage with GPG, 
+ * passwords, etc. true if it did, otherwise false
+ * </p>
+ * @return string the generated &string; of bytes on success, &return.falseforfailure;.
+ */
+function openssl_random_pseudo_bytes ($length, &$crypto_strong = null) {}
+
+/**
  * Return openSSL error message
  * @link http://www.php.net/manual/en/function.openssl-error-string.php
  * @return string an error message string, or false if there are no more error
@@ -759,8 +901,8 @@ function openssl_public_decrypt ($data, &$decrypted, $key, $padding = null) {}
  */
 function openssl_error_string () {}
 
-define ('OPENSSL_VERSION_TEXT', "OpenSSL 0.9.8n 24 Mar 2010");
-define ('OPENSSL_VERSION_NUMBER', 9470191);
+define ('OPENSSL_VERSION_TEXT', "OpenSSL 1.0.1c 10 May 2012");
+define ('OPENSSL_VERSION_NUMBER', 268439615);
 define ('X509_PURPOSE_SSL_CLIENT', 1);
 define ('X509_PURPOSE_SSL_SERVER', 2);
 define ('X509_PURPOSE_NS_SSL_SERVER', 3);
@@ -869,10 +1011,21 @@ define ('OPENSSL_CIPHER_RC2_128', 1);
 define ('OPENSSL_CIPHER_RC2_64', 2);
 define ('OPENSSL_CIPHER_DES', 3);
 define ('OPENSSL_CIPHER_3DES', 4);
+define ('OPENSSL_CIPHER_AES_128_CBC', 5);
+define ('OPENSSL_CIPHER_AES_192_CBC', 6);
+define ('OPENSSL_CIPHER_AES_256_CBC', 7);
 define ('OPENSSL_KEYTYPE_RSA', 0);
 define ('OPENSSL_KEYTYPE_DSA', 1);
 define ('OPENSSL_KEYTYPE_DH', 2);
 define ('OPENSSL_KEYTYPE_EC', 3);
+define ('OPENSSL_RAW_DATA', 1);
+define ('OPENSSL_ZERO_PADDING', 2);
+
+/**
+ * Whether SNI support is available or not.
+ * @link http://www.php.net/manual/en/openssl.constants.php
+ */
+define ('OPENSSL_TLSEXT_SERVER_NAME', 1);
 
 // End of openssl v.
 ?>

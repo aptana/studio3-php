@@ -2,11 +2,148 @@
 
 // Start of session v.
 
+interface SessionHandlerInterface  {
+
+	/**
+	 * Initialize session
+	 * @link http://www.php.net/manual/en/sessionhandlerinterface.open.php
+	 * @param save_path string <p>
+	 * The path where to store/retrieve the session.
+	 * </p>
+	 * @param session_id string <p>
+	 * The session id.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	abstract public function open ($save_path, $session_id) {}
+
+	/**
+	 * Close the session
+	 * @link http://www.php.net/manual/en/sessionhandlerinterface.close.php
+	 * @return bool &returns.session.storage.retval;
+	 */
+	abstract public function close () {}
+
+	/**
+	 * Read session data
+	 * @link http://www.php.net/manual/en/sessionhandlerinterface.read.php
+	 * @param session_id string <p>
+	 * The session id.
+	 * </p>
+	 * @return string an encoded string of the read data. If nothing was read, it must return an empty string. Note this value is returned internally to PHP for processing.
+	 */
+	abstract public function read ($session_id) {}
+
+	/**
+	 * Write session data
+	 * @link http://www.php.net/manual/en/sessionhandlerinterface.write.php
+	 * @param session_id string <p>
+	 * The session id.
+	 * </p>
+	 * @param session_data string <p>
+	 * The encoded session data. This data is the result of the PHP internally encoding the $_SESSION superglobal to a serialized
+	 * string and passing it as this parameter. Please note sessions use an alternative serialization method.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	abstract public function write ($session_id, $session_data) {}
+
+	/**
+	 * Destroy a session
+	 * @link http://www.php.net/manual/en/sessionhandlerinterface.destroy.php
+	 * @param session_id string <p>
+	 * The session ID being destroyed.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	abstract public function destroy ($session_id) {}
+
+	/**
+	 * Cleanup old sessions
+	 * @link http://www.php.net/manual/en/sessionhandlerinterface.gc.php
+	 * @param maxlifetime string <p>
+	 * Sessions that have not updated for the last maxlifetime seconds will be removed.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	abstract public function gc ($maxlifetime) {}
+
+}
+
+class SessionHandler implements SessionHandlerInterface {
+
+	/**
+	 * Initialize session
+	 * @link http://www.php.net/manual/en/sessionhandler.open.php
+	 * @param save_path string <p>
+	 * The path where to store/retrieve the session.
+	 * </p>
+	 * @param session_id string <p>
+	 * The session id.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	public function open ($save_path, $session_id) {}
+
+	/**
+	 * Close the session
+	 * @link http://www.php.net/manual/en/sessionhandler.close.php
+	 * @return bool &returns.session.storage.retval;
+	 */
+	public function close () {}
+
+	/**
+	 * Read session data
+	 * @link http://www.php.net/manual/en/sessionhandler.read.php
+	 * @param session_id string <p>
+	 * The session id to read data for.
+	 * </p>
+	 * @return string an encoded string of the read data. If nothing was read, it must return an empty string. Note this value is returned internally to PHP for processing.
+	 */
+	public function read ($session_id) {}
+
+	/**
+	 * Write session data
+	 * @link http://www.php.net/manual/en/sessionhandler.write.php
+	 * @param session_id string <p>
+	 * The session id.
+	 * </p>
+	 * @param session_data string <p>
+	 * The encoded session data. This data is the result of the PHP internally encoding the $_SESSION superglobal to a serialized
+	 * string and passing it as this parameter. Please note sessions use an alternative serialization method.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	public function write ($session_id, $session_data) {}
+
+	/**
+	 * Destroy a session
+	 * @link http://www.php.net/manual/en/sessionhandler.destroy.php
+	 * @param session_id string <p>
+	 * The session ID being destroyed.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	public function destroy ($session_id) {}
+
+	/**
+	 * Cleanup old sessions
+	 * @link http://www.php.net/manual/en/sessionhandler.gc.php
+	 * @param maxlifetime int <p>
+	 * Sessions that have not updated for the last maxlifetime seconds will be removed.
+	 * </p>
+	 * @return bool &returns.session.storage.retval;
+	 */
+	public function gc ($maxlifetime) {}
+
+}
+
 /**
  * Get and/or set the current session name
  * @link http://www.php.net/manual/en/function.session-name.php
  * @param name string[optional] <p>
- * The session name references the session id in cookies and URLs. It
+ * The session name references the name of the session, which is 
+ * used in cookies and URLs (e.g. PHPSESSID). It
  * should contain only alphanumeric characters; it should be short and
  * descriptive (i.e. for users with enabled cookie warnings).
  * If name is specified, the name of the current
@@ -84,7 +221,7 @@ function session_id ($id = null) {}
 function session_regenerate_id ($delete_old_session = null) {}
 
 /**
- * Decodes session data from a string
+ * Decodes session data from a session encoded string
  * @link http://www.php.net/manual/en/function.session-decode.php
  * @param data string <p>
  * The encoded data to be stored.
@@ -94,48 +231,14 @@ function session_regenerate_id ($delete_old_session = null) {}
 function session_decode ($data) {}
 
 /**
- * Register one or more global variables with the current session
- * @link http://www.php.net/manual/en/function.session-register.php
- * @param name mixed <p>
- * A string holding the name of a variable or an array consisting of
- * variable names or other arrays.
- * </p>
- * @param _ mixed[optional] 
- * @return bool Returns true on success or false on failure.
- */
-function session_register ($name, $_ = null) {}
-
-/**
- * Unregister a global variable from the current session
- * @link http://www.php.net/manual/en/function.session-unregister.php
- * @param name string <p>
- * The variable name.
- * </p>
- * @return bool Returns true on success or false on failure.
- */
-function session_unregister ($name) {}
-
-/**
- * Find out whether a global variable is registered in a session
- * @link http://www.php.net/manual/en/function.session-is-registered.php
- * @param name string <p>
- * The variable name.
- * </p>
- * @return bool session_is_registered returns true if there is a
- * global variable with the name name registered in
- * the current session, false otherwise.
- */
-function session_is_registered ($name) {}
-
-/**
- * Encodes the current session data as a string
+ * Encodes the current session data as a session encoded string
  * @link http://www.php.net/manual/en/function.session-encode.php
  * @return string the contents of the current session encoded.
  */
 function session_encode () {}
 
 /**
- * Initialize session data
+ * Start new or resume existing session
  * @link http://www.php.net/manual/en/function.session-start.php
  * @return bool This function returns true if a session was successfully started,
  * otherwise false.
@@ -159,40 +262,12 @@ function session_unset () {}
 /**
  * Sets user-level session storage functions
  * @link http://www.php.net/manual/en/function.session-set-save-handler.php
- * @param open callback <p>
- * Open function, this works like a constructor in classes and is 
- * executed when the session is being opened. The open function 
- * expects two parameters, where the first is the save path and 
- * the second is the session name.
- * </p>
- * @param close callback <p>
- * Close function, this works like a destructor in classes and is 
- * executed when the session operation is done.
- * </p>
- * @param read callback <p>
- * Read function must return string value always to make save handler
- * work as expected. Return empty string if there is no data to read.
- * Return values from other handlers are converted to boolean expression.
- * true for success, false for failure.
- * </p>
- * @param write callback <p>
- * <p>
- * The "write" handler is not executed until after the output stream is
- * closed. Thus, output from debugging statements in the "write"
- * handler will never be seen in the browser. If debugging output is
- * necessary, it is suggested that the debug output be written to a
- * file instead.
- * </p>
- * </p>
- * @param destroy callback <p>
- * The destroy handler, this is executed when a session is destroyed with 
- * session_destroy and takes the session id as its 
- * only parameter.
- * </p>
- * @param gc callback <p>
- * The garbage collector, this is executed when the session garbage collector 
- * is executed and takes the max session lifetime as its only parameter.
- * </p>
+ * @param open callable 
+ * @param close callable 
+ * @param read callable 
+ * @param write callable 
+ * @param destroy callable 
+ * @param gc callable 
  * @return bool Returns true on success or false on failure.
  */
 function session_set_save_handler ($open, $close, $read, $write, $destroy, $gc) {}
@@ -308,10 +383,44 @@ function session_get_cookie_params () {}
 function session_write_close () {}
 
 /**
+ * Returns the current session status
+ * @link http://www.php.net/manual/en/function.session-status.php
+ */
+function session_status () {}
+
+/**
+ * Session shutdown function
+ * @link http://www.php.net/manual/en/function.session-register-shutdown.php
+ * @return void Returns true on success or false on failure.
+ */
+function session_register_shutdown () {}
+
+/**
  * &Alias; <function>session_write_close</function>
  * @link http://www.php.net/manual/en/function.session-commit.php
  */
 function session_commit () {}
+
+
+/**
+ * Since PHP 5.4.0. Return value of session_status if sessions are disabled.
+ * @link http://www.php.net/manual/en/session.constants.php
+ */
+define ('PHP_SESSION_DISABLED', 0);
+
+/**
+ * Since PHP 5.4.0. Return value of session_status if sessions are enabled,
+ * but no session exists.
+ * @link http://www.php.net/manual/en/session.constants.php
+ */
+define ('PHP_SESSION_NONE', 1);
+
+/**
+ * Since PHP 5.4.0. Return value of session_status if sessions are enabled,
+ * and a session exists.
+ * @link http://www.php.net/manual/en/session.constants.php
+ */
+define ('PHP_SESSION_ACTIVE', 2);
 
 // End of session v.
 ?>

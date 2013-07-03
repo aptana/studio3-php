@@ -40,8 +40,8 @@ class XMLReader  {
 	 * @param name string <p>
 	 * The name of the attribute.
 	 * </p>
-	 * @return string The value of the attribute, or an empty string if no attribute with the
-	 * given name is found or not positioned of element.
+	 * @return string The value of the attribute, or &null; if no attribute with the given
+	 * name is found or not positioned on an element node.
 	 */
 	public function getAttribute ($name) {}
 
@@ -167,7 +167,8 @@ class XMLReader  {
 	 * A bitmask of the LIBXML_* 
 	 * constants.
 	 * </p>
-	 * @return bool Returns true on success or false on failure.
+	 * @return bool Returns true on success or false on failure. If called statically, returns an
+	 * XMLReader&return.falseforfailure;.
 	 */
 	public function open ($URI, $encoding = null, $options = null) {}
 
@@ -203,7 +204,7 @@ class XMLReader  {
 	public function readOuterXml () {}
 
 	/**
-	 * Reads the contents of the current node as an string
+	 * Reads the contents of the current node as a string
 	 * @link http://www.php.net/manual/en/xmlreader.readstring.php
 	 * @return string the content of the current node as a string. Empty string on
 	 * failure.
@@ -221,7 +222,7 @@ class XMLReader  {
 	public function setSchema ($filename) {}
 
 	/**
-	 * Set or Unset parser options
+	 * Set parser options
 	 * @link http://www.php.net/manual/en/xmlreader.setparserproperty.php
 	 * @param property int <p>
 	 * One of the parser option 
@@ -268,16 +269,18 @@ class XMLReader  {
 	 * A bitmask of the LIBXML_* 
 	 * constants.
 	 * </p>
-	 * @return bool Returns true on success or false on failure.
+	 * @return bool Returns true on success or false on failure. If called statically, returns an
+	 * XMLReader&return.falseforfailure;.
 	 */
 	public function XML ($source, $encoding = null, $options = null) {}
 
 	/**
 	 * Returns a copy of the current node as a DOM object
 	 * @link http://www.php.net/manual/en/xmlreader.expand.php
+	 * @param basenode DOMNode[optional] 
 	 * @return DOMNode The resulting DOMNode or false on error.
 	 */
-	public function expand () {}
+	public function expand (DOMNode $basenode = null) {}
 
 }
 // End of xmlreader v.0.1

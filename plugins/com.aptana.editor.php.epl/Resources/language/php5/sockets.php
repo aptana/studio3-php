@@ -499,9 +499,8 @@ function socket_strerror ($errno) {}
  * </p>
  * @param port int[optional] <p>
  * The port parameter is only used when
- * connecting to an AF_INET socket, and
- * designates the port on the remote host to which a connection
- * should be made.
+ * binding an AF_INET socket, and designates
+ * the port on which to listen for connections.
  * </p>
  * @return bool Returns true on success or false on failure.
  * </p>
@@ -963,6 +962,165 @@ function socket_sendto ($socket, $buf, $len, $flags, $addr, $port = null) {}
  * int
  * </td>
  * </tr>
+ * <tr valign="top">
+ * <td>MCAST_JOIN_GROUP</td>
+ * <td>
+ * Joins a multicast group. (added in PHP 5.4)
+ * </td>
+ * <td>
+ * array with keys "group", specifying
+ * a string with an IPv4 or IPv6 multicast address and
+ * "interface", specifying either an interface
+ * number (type int) or a string with
+ * the interface name, like "eth0".
+ * 0 can be specified to indicate the interface
+ * should be selected using routing rules. (can only be used in
+ * socket_set_option)
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>MCAST_LEAVE_GROUP</td>
+ * <td>
+ * Leaves a multicast group. (added in PHP 5.4)
+ * </td>
+ * <td>
+ * array. See MCAST_JOIN_GROUP for
+ * more information. (can only be used in
+ * socket_set_option)
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>MCAST_BLOCK_SOURCE</td>
+ * <td>
+ * Blocks packets arriving from a specific source to a specific
+ * multicast group, which must have been previously joined.
+ * (added in PHP 5.4)
+ * </td>
+ * <td>
+ * array with the same keys as
+ * MCAST_JOIN_GROUP, plus one extra key,
+ * source, which maps to a string
+ * specifying an IPv4 or IPv6 address of the source to be blocked.
+ * (can only be used in socket_set_option)
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>MCAST_UNBLOCK_SOURCE</td>
+ * <td>
+ * Unblocks (start receiving again) packets arriving from a specific
+ * source address to a specific multicast group, which must have been
+ * previously joined. (added in PHP 5.4)
+ * </td>
+ * <td>
+ * array with the same format as
+ * MCAST_BLOCK_SOURCE.
+ * (can only be used in socket_set_option)
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>MCAST_JOIN_SOURCE_GROUP</td>
+ * <td>
+ * Receive packets destined to a specific multicast group whose source
+ * address matches a specific value. (added in PHP 5.4)
+ * </td>
+ * <td>
+ * array with the same format as
+ * MCAST_BLOCK_SOURCE.
+ * (can only be used in socket_set_option)
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>MCAST_LEAVE_SOURCE_GROUP</td>
+ * <td>
+ * Stop receiving packets destined to a specific multicast group whose
+ * soure address matches a specific value. (added in PHP 5.4)
+ * </td>
+ * <td>
+ * array with the same format as
+ * MCAST_BLOCK_SOURCE.
+ * (can only be used in socket_set_option)
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>IP_MULTICAST_IF</td>
+ * <td>
+ * The outgoing interface for IPv4 multicast packets.
+ * (added in PHP 5.4)
+ * </td>
+ * <td>
+ * Either int specifying the interface number or a
+ * string with an interface name, like
+ * eth0. The value 0 can be used to
+ * indicate the routing table is to used in the interface selection.
+ * The function socket_get_option returns an
+ * interface index.
+ * Note that, unlike the C API, this option does NOT take an IP
+ * address. This eliminates the interface difference between
+ * IP_MULTICAST_IF and
+ * IPV6_MULTICAST_IF.
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>IPV6_MULTICAST_IF</td>
+ * <td>
+ * The outgoing interface for IPv6 multicast packets.
+ * (added in PHP 5.4)
+ * </td>
+ * <td>
+ * The same as IP_MULTICAST_IF.
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>IP_MULTICAST_LOOP</td>
+ * <td>
+ * The multicast loopback policy for IPv4 packets, which
+ * determines whether multicast packets sent by this socket also reach
+ * receivers in the same host that have joined the same multicast group
+ * on the outgoing interface used by this socket. This is the case by
+ * default.
+ * (added in PHP 5.4)
+ * </td>
+ * <td>
+ * int (either 0 or
+ * 1). For socket_set_option
+ * any value will be accepted and will be converted to a boolean
+ * following the usual PHP rules.
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>IPV6_MULTICAST_LOOP</td>
+ * <td>
+ * Analogous to IP_MULTICAST_LOOP, but for IPv6.
+ * (added in PHP 5.4)
+ * </td>
+ * <td>
+ * int. See IP_MULTICAST_LOOP.
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>IP_MULTICAST_TTL</td>
+ * <td>
+ * The time-to-live of outgoing IPv4 multicast packets. This should be
+ * a value between 0 (don't leave the interface) and 255. The default
+ * value is 1 (only the local network is reached).
+ * (added in PHP 5.4)
+ * </td>
+ * <td>
+ * int between 0 and 255.
+ * </td>
+ * </tr>
+ * <tr valign="top">
+ * <td>IPV6_MULTICAST_HOPS</td>
+ * <td>
+ * Analogous to IP_MULTICAST_TTL, but for IPv6
+ * packets. The value -1 is also accepted, meaning the route default
+ * should be used.
+ * (added in PHP 5.4)
+ * </td>
+ * <td>
+ * int between -1 and 255.
+ * </td>
+ * </tr>
  * </table>
  * @return mixed the value of the given option, or false on errors.
  */
@@ -1049,9 +1207,30 @@ function socket_last_error ($socket = null) {}
  */
 function socket_clear_error ($socket = null) {}
 
-function socket_getopt () {}
+/**
+ * Import a stream
+ * @link http://www.php.net/manual/en/function.socket-import-stream.php
+ * @param stream resource <p>
+ * The stream resource to import.
+ * </p>
+ * @return void false or &null; on failure.
+ */
+function socket_import_stream ($stream) {}
 
-function socket_setopt () {}
+/**
+ * @param socket
+ * @param level
+ * @param optname
+ */
+function socket_getopt ($socket, $level, $optname) {}
+
+/**
+ * @param socket
+ * @param level
+ * @param optname
+ * @param optval
+ */
+function socket_setopt ($socket, $level, $optname, $optval) {}
 
 define ('AF_UNIX', 1);
 define ('AF_INET', 2);
@@ -1109,6 +1288,18 @@ define ('SOMAXCONN', 128);
 define ('TCP_NODELAY', 1);
 define ('PHP_NORMAL_READ', 1);
 define ('PHP_BINARY_READ', 2);
+define ('MCAST_JOIN_GROUP', 42);
+define ('MCAST_LEAVE_GROUP', 45);
+define ('MCAST_BLOCK_SOURCE', 43);
+define ('MCAST_UNBLOCK_SOURCE', 44);
+define ('MCAST_JOIN_SOURCE_GROUP', 46);
+define ('MCAST_LEAVE_SOURCE_GROUP', 47);
+define ('IP_MULTICAST_IF', 32);
+define ('IP_MULTICAST_TTL', 33);
+define ('IP_MULTICAST_LOOP', 34);
+define ('IPV6_MULTICAST_IF', 17);
+define ('IPV6_MULTICAST_HOPS', 18);
+define ('IPV6_MULTICAST_LOOP', 19);
 
 /**
  * Operation not permitted.
@@ -1705,6 +1896,8 @@ define ('SOCKET_ENOMEDIUM', 123);
  * @link http://www.php.net/manual/en/sockets.constants.php
  */
 define ('SOCKET_EMEDIUMTYPE', 124);
+define ('IPPROTO_IP', 0);
+define ('IPPROTO_IPV6', 41);
 define ('SOL_TCP', 6);
 define ('SOL_UDP', 17);
 

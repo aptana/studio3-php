@@ -22,8 +22,7 @@ function token_get_all ($source) {}
  * @param token int <p>
  * The token value.
  * </p>
- * @return string The symbolic name of the given token. The returned
- * name returned matches the name of the matching token constant.
+ * @return string The symbolic name of the given token.
  */
 function token_name ($token) {}
 
@@ -102,50 +101,59 @@ define ('T_CASE', 329);
 define ('T_DEFAULT', 330);
 define ('T_BREAK', 331);
 define ('T_CONTINUE', 332);
-define ('T_FUNCTION', 333);
-define ('T_CONST', 334);
-define ('T_RETURN', 335);
-define ('T_TRY', 336);
-define ('T_CATCH', 337);
-define ('T_THROW', 338);
-define ('T_USE', 339);
-define ('T_GLOBAL', 340);
-define ('T_PUBLIC', 341);
-define ('T_PROTECTED', 342);
-define ('T_PRIVATE', 343);
-define ('T_FINAL', 344);
-define ('T_ABSTRACT', 345);
-define ('T_STATIC', 346);
-define ('T_VAR', 347);
-define ('T_UNSET', 348);
-define ('T_ISSET', 349);
-define ('T_EMPTY', 350);
-define ('T_HALT_COMPILER', 351);
-define ('T_CLASS', 352);
-define ('T_INTERFACE', 353);
-define ('T_EXTENDS', 354);
-define ('T_IMPLEMENTS', 355);
-define ('T_OBJECT_OPERATOR', 356);
-define ('T_DOUBLE_ARROW', 357);
-define ('T_LIST', 358);
-define ('T_ARRAY', 359);
-define ('T_CLASS_C', 360);
-define ('T_METHOD_C', 361);
-define ('T_FUNC_C', 362);
-define ('T_LINE', 363);
-define ('T_FILE', 364);
-define ('T_COMMENT', 365);
-define ('T_DOC_COMMENT', 366);
-define ('T_OPEN_TAG', 367);
-define ('T_OPEN_TAG_WITH_ECHO', 368);
-define ('T_CLOSE_TAG', 369);
-define ('T_WHITESPACE', 370);
-define ('T_START_HEREDOC', 371);
-define ('T_END_HEREDOC', 372);
-define ('T_DOLLAR_OPEN_CURLY_BRACES', 373);
-define ('T_CURLY_OPEN', 374);
-define ('T_PAAMAYIM_NEKUDOTAYIM', 375);
-define ('T_DOUBLE_COLON', 375);
+define ('T_GOTO', 333);
+define ('T_FUNCTION', 334);
+define ('T_CONST', 335);
+define ('T_RETURN', 336);
+define ('T_TRY', 337);
+define ('T_CATCH', 338);
+define ('T_THROW', 339);
+define ('T_USE', 340);
+define ('T_INSTEADOF', 341);
+define ('T_GLOBAL', 342);
+define ('T_PUBLIC', 343);
+define ('T_PROTECTED', 344);
+define ('T_PRIVATE', 345);
+define ('T_FINAL', 346);
+define ('T_ABSTRACT', 347);
+define ('T_STATIC', 348);
+define ('T_VAR', 349);
+define ('T_UNSET', 350);
+define ('T_ISSET', 351);
+define ('T_EMPTY', 352);
+define ('T_HALT_COMPILER', 353);
+define ('T_CLASS', 354);
+define ('T_TRAIT', 355);
+define ('T_INTERFACE', 356);
+define ('T_EXTENDS', 357);
+define ('T_IMPLEMENTS', 358);
+define ('T_OBJECT_OPERATOR', 359);
+define ('T_DOUBLE_ARROW', 360);
+define ('T_LIST', 361);
+define ('T_ARRAY', 362);
+define ('T_CALLABLE', 363);
+define ('T_CLASS_C', 364);
+define ('T_TRAIT_C', 365);
+define ('T_METHOD_C', 366);
+define ('T_FUNC_C', 367);
+define ('T_LINE', 368);
+define ('T_FILE', 369);
+define ('T_COMMENT', 370);
+define ('T_DOC_COMMENT', 371);
+define ('T_OPEN_TAG', 372);
+define ('T_OPEN_TAG_WITH_ECHO', 373);
+define ('T_CLOSE_TAG', 374);
+define ('T_WHITESPACE', 375);
+define ('T_START_HEREDOC', 376);
+define ('T_END_HEREDOC', 377);
+define ('T_DOLLAR_OPEN_CURLY_BRACES', 378);
+define ('T_CURLY_OPEN', 379);
+define ('T_PAAMAYIM_NEKUDOTAYIM', 380);
+define ('T_NAMESPACE', 381);
+define ('T_NS_C', 382);
+define ('T_DIR', 383);
+define ('T_NS_SEPARATOR', 384);
+define ('T_DOUBLE_COLON', 380);
 
 // End of tokenizer v.0.1
 ?>

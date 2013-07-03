@@ -176,7 +176,10 @@ function ftp_chmod ($ftp_stream, $mode, $filename) {}
  * @param filesize int <p>
  * The number of bytes to allocate.
  * </p>
- * @param result string[optional] 
+ * @param result string[optional] <p>
+ * A textual representation of the servers response will be returned by 
+ * reference in result if a variable is provided.
+ * </p>
  * @return bool Returns true on success or false on failure.
  */
 function ftp_alloc ($ftp_stream, $filesize, &$result = null) {}
@@ -205,7 +208,8 @@ function ftp_nlist ($ftp_stream, $directory) {}
  * The link identifier of the FTP connection.
  * </p>
  * @param directory string <p>
- * The directory path.
+ * The directory path. May include arguments for the LIST
+ * command.
  * </p>
  * @param recursive bool[optional] <p>
  * If set to true, the issued command will be LIST -R.
@@ -304,7 +308,7 @@ function ftp_fget ($ftp_stream, $handle, $remote_file, $mode, $resumepos = null)
  * The transfer mode. Must be either FTP_ASCII or
  * FTP_BINARY.
  * </p>
- * @param startpos int[optional] <p></p>
+ * @param startpos int[optional] <p>The position in the remote file to start uploading to.</p>
  * @return bool Returns true on success or false on failure.
  */
 function ftp_put ($ftp_stream, $remote_file, $local_file, $mode, $startpos = null) {}
@@ -325,7 +329,7 @@ function ftp_put ($ftp_stream, $remote_file, $local_file, $mode, $startpos = nul
  * The transfer mode. Must be either FTP_ASCII or
  * FTP_BINARY.
  * </p>
- * @param startpos int[optional] <p></p>
+ * @param startpos int[optional] <p>The position in the remote file to start uploading to.</p>
  * @return bool Returns true on success or false on failure.
  */
 function ftp_fput ($ftp_stream, $remote_file, $handle, $mode, $startpos = null) {}
@@ -496,7 +500,7 @@ function ftp_get_option ($ftp_stream, $option) {}
  * The transfer mode. Must be either FTP_ASCII or
  * FTP_BINARY.
  * </p>
- * @param resumepos int[optional] <p></p>
+ * @param resumepos int[optional] <p>The position in the remote file to start downloading from.</p>
  * @return int FTP_FAILED or FTP_FINISHED
  * or FTP_MOREDATA.
  */
@@ -518,7 +522,7 @@ function ftp_nb_fget ($ftp_stream, $handle, $remote_file, $mode, $resumepos = nu
  * The transfer mode. Must be either FTP_ASCII or
  * FTP_BINARY.
  * </p>
- * @param resumepos int[optional] <p></p>
+ * @param resumepos int[optional] <p>The position in the remote file to start downloading from.</p>
  * @return int FTP_FAILED or FTP_FINISHED
  * or FTP_MOREDATA.
  */
@@ -551,7 +555,7 @@ function ftp_nb_continue ($ftp_stream) {}
  * The transfer mode. Must be either FTP_ASCII or
  * FTP_BINARY.
  * </p>
- * @param startpos int[optional] <p></p>
+ * @param startpos int[optional] <p>The position in the remote file to start uploading to.</p>
  * @return int FTP_FAILED or FTP_FINISHED
  * or FTP_MOREDATA.
  */
@@ -573,7 +577,7 @@ function ftp_nb_put ($ftp_stream, $remote_file, $local_file, $mode, $startpos = 
  * The transfer mode. Must be either FTP_ASCII or
  * FTP_BINARY.
  * </p>
- * @param startpos int[optional] <p></p>
+ * @param startpos int[optional] <p>The position in the remote file to start uploading to.</p>
  * @return int FTP_FAILED or FTP_FINISHED
  * or FTP_MOREDATA.
  */

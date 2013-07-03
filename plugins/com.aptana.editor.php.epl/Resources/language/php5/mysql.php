@@ -107,7 +107,7 @@ function mysql_select_db ($database_name, $link_identifier = null) {}
  * Send a MySQL query
  * @link http://www.php.net/manual/en/function.mysql-query.php
  * @param query string <p>
- * A SQL query
+ * An SQL query
  * </p>
  * <p>
  * The query string should not end with a semicolon.
@@ -166,7 +166,7 @@ function mysql_query ($query, $link_identifier = null) {}
 function mysql_unbuffered_query ($query, $link_identifier = null) {}
 
 /**
- * Send a MySQL query
+ * Selects a database and executes a query on it
  * @link http://www.php.net/manual/en/function.mysql-db-query.php
  * @param database string <p>
  * The name of the database that will be selected.
@@ -282,6 +282,11 @@ function mysql_errno ($link_identifier = null) {}
  * The REPLACE statement first deletes the record with the same primary key 
  * and then inserts the new record. This function returns the number of 
  * deleted records plus the number of inserted records.
+ * </p> 
+ * <p>
+ * In the case of "INSERT ... ON DUPLICATE KEY UPDATE" queries, the 
+ * return value will be 1 if an insert was performed, 
+ * or 2 for an update of an existing row.
  */
 function mysql_affected_rows ($link_identifier = null) {}
 
@@ -339,7 +344,7 @@ function mysql_num_fields ($result) {}
  * Get a result row as an enumerated array
  * @link http://www.php.net/manual/en/function.mysql-fetch-row.php
  * @param result resource 
- * @return array an numerical array of strings that corresponds to the fetched row, or 
+ * @return array an numerical array of strings that corresponds to the fetched row, or
  * false if there are no more rows.
  * </p>
  * <p>
@@ -382,7 +387,7 @@ function mysql_fetch_array ($result, $result_type = null) {}
  * Fetch a result row as an associative array
  * @link http://www.php.net/manual/en/function.mysql-fetch-assoc.php
  * @param result resource 
- * @return array an associative array of strings that corresponds to the fetched row, or 
+ * @return array an associative array of strings that corresponds to the fetched row, or
  * false if there are no more rows.
  * </p>
  * <p>
@@ -446,8 +451,7 @@ function mysql_fetch_lengths ($result) {}
  * </p>
  * <p>
  * name - column name
- * table - name of the table the column belongs to
- * def - default value of the column
+ * table - name of the table the column belongs to, which is the alias name if one is defined
  * max_length - maximum length of the column
  * not_null - 1 if the column cannot be &null;
  * primary_key - 1 if the column is a primary key
@@ -553,7 +557,7 @@ function mysql_field_flags ($result, $field_offset) {}
 function mysql_escape_string ($unescaped_string) {}
 
 /**
- * Escapes special characters in a string for use in a SQL statement
+ * Escapes special characters in a string for use in an SQL statement
  * @link http://www.php.net/manual/en/function.mysql-real-escape-string.php
  * @param unescaped_string string <p>
  * The string that is to be escaped.
@@ -610,7 +614,7 @@ function mysql_get_client_info () {}
  * Get MySQL host info
  * @link http://www.php.net/manual/en/function.mysql-get-host-info.php
  * @param link_identifier resource[optional] 
- * @return string a string describing the type of MySQL connection in use for the 
+ * @return string a string describing the type of MySQL connection in use for the
  * connection&return.falseforfailure;.
  */
 function mysql_get_host_info ($link_identifier = null) {}
@@ -653,34 +657,84 @@ function mysql_info ($link_identifier = null) {}
  */
 function mysql_set_charset ($charset, $link_identifier = null) {}
 
-function mysql () {}
-
-function mysql_fieldname () {}
-
-function mysql_fieldtable () {}
-
-function mysql_fieldlen () {}
-
-function mysql_fieldtype () {}
-
-function mysql_fieldflags () {}
-
-function mysql_selectdb () {}
-
-function mysql_freeresult () {}
-
-function mysql_numfields () {}
-
-function mysql_numrows () {}
-
-function mysql_listdbs () {}
-
-function mysql_listtables () {}
-
-function mysql_listfields () {}
+/**
+ * @param database_name
+ * @param query
+ * @param link_identifier[optional]
+ */
+function mysql ($database_name, $query, $link_identifier) {}
 
 /**
- * Get result data
+ * @param result
+ * @param field_index
+ */
+function mysql_fieldname ($result, $field_index) {}
+
+/**
+ * @param result
+ * @param field_offset
+ */
+function mysql_fieldtable ($result, $field_offset) {}
+
+/**
+ * @param result
+ * @param field_offset
+ */
+function mysql_fieldlen ($result, $field_offset) {}
+
+/**
+ * @param result
+ * @param field_offset
+ */
+function mysql_fieldtype ($result, $field_offset) {}
+
+/**
+ * @param result
+ * @param field_offset
+ */
+function mysql_fieldflags ($result, $field_offset) {}
+
+/**
+ * @param database_name
+ * @param link_identifier[optional]
+ */
+function mysql_selectdb ($database_name, $link_identifier) {}
+
+/**
+ * @param result
+ */
+function mysql_freeresult ($result) {}
+
+/**
+ * @param result
+ */
+function mysql_numfields ($result) {}
+
+/**
+ * @param result
+ */
+function mysql_numrows ($result) {}
+
+/**
+ * @param link_identifier[optional]
+ */
+function mysql_listdbs ($link_identifier) {}
+
+/**
+ * @param database_name
+ * @param link_identifier[optional]
+ */
+function mysql_listtables ($database_name, $link_identifier) {}
+
+/**
+ * @param database_name
+ * @param table_name
+ * @param link_identifier[optional]
+ */
+function mysql_listfields ($database_name, $table_name, $link_identifier) {}
+
+/**
+ * Retrieves database name from the call to <function>mysql_list_dbs</function>
  * @link http://www.php.net/manual/en/function.mysql-db-name.php
  * @param result resource <p>
  * The result pointer from a call to mysql_list_dbs.
@@ -697,7 +751,12 @@ function mysql_listfields () {}
  */
 function mysql_db_name ($result, $row, $field = null) {}
 
-function mysql_dbname () {}
+/**
+ * @param result
+ * @param row
+ * @param field[optional]
+ */
+function mysql_dbname ($result, $row, $field) {}
 
 /**
  * Get table name of field
@@ -718,7 +777,12 @@ function mysql_dbname () {}
  */
 function mysql_tablename ($result, $i) {}
 
-function mysql_table_name () {}
+/**
+ * @param result
+ * @param row
+ * @param field[optional]
+ */
+function mysql_table_name ($result, $row, $field) {}
 
 
 /**

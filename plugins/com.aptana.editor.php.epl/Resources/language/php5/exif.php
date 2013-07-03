@@ -1,6 +1,6 @@
 <?php
 
-// Start of exif v.1.4 $Id: exif.php,v 1.11 2010/08/10 01:43:36 qiwang Exp $
+// Start of exif v.1.4 $Id$
 
 /**
  * Reads the <acronym>EXIF</acronym> headers from <acronym>JPEG</acronym> or <acronym>TIFF</acronym>
@@ -91,10 +91,10 @@ function read_exif_data ($filename, $sections_needed, $sub_arrays, $read_thumbna
  * Get the header name for an index
  * @link http://www.php.net/manual/en/function.exif-tagname.php
  * @param index int <p>
- * The image index
+ * The Tag ID for which a Tag Name will be looked up.
  * </p>
  * @return string the header name, or false if index is
- * undefined.
+ * not a defined EXIF tag id.
  */
 function exif_tagname ($index) {}
 
@@ -131,7 +131,7 @@ function exif_thumbnail ($filename, &$width = null, &$height = null, &$imagetype
  */
 function exif_imagetype ($filename) {}
 
-define ('EXIF_USE_MBSTRING', 0);
+define ('EXIF_USE_MBSTRING', 1);
 
-// End of exif v.1.4 $Id: exif.php,v 1.11 2010/08/10 01:43:36 qiwang Exp $
+// End of exif v.1.4 $Id$
 ?>

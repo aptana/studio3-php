@@ -2,16 +2,11 @@
 
 // Start of dom v.20031129
 
-/**
- * DOM operations raise exceptions under particular circumstances, i.e.,
- * when an operation is impossible to perform for logical reasons.
- * @link http://www.php.net/manual/en/class.domexception.php
- */
 class DOMException extends Exception  {
 	protected $message;
-	public $code;
 	protected $file;
 	protected $line;
+	public $code;
 
 
 	final private function __clone () {}
@@ -19,8 +14,9 @@ class DOMException extends Exception  {
 	/**
 	 * @param message[optional]
 	 * @param code[optional]
+	 * @param previous[optional]
 	 */
-	public function __construct ($message, $code) {}
+	public function __construct ($message, $code, $previous) {}
 
 	final public function getMessage () {}
 
@@ -31,6 +27,8 @@ class DOMException extends Exception  {
 	final public function getLine () {}
 
 	final public function getTrace () {}
+
+	final public function getPrevious () {}
 
 	final public function getTraceAsString () {}
 
@@ -47,9 +45,6 @@ class DOMStringList  {
 
 }
 
-/**
- * @link http://www.php.net/manual/en/class.domnamelist.php
- */
 class DOMNameList  {
 
 	/**
@@ -87,20 +82,7 @@ class DOMImplementationSource  {
 
 }
 
-/**
- * The DOMImplementation interface provides a number
- * of methods for performing operations that are independent of any 
- * particular instance of the document object model.
- * @link http://www.php.net/manual/en/class.domimplementation.php
- */
 class DOMImplementation  {
-
-	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domimplementation.php#domimplementation.props.name
-	 */
-	public $name;
 
 	/**
 	 * @param feature
@@ -161,130 +143,7 @@ class DOMImplementation  {
 
 }
 
-/**
- * @link http://www.php.net/manual/en/class.domnode.php
- */
 class DOMNode  {
-
-	/**
-	 * Returns the most accurate name for the current node type
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.nodename
-	 */
-	public $nodeName;
-
-	/**
-	 * The value of this node, depending on its type
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.nodevalue
-	 */
-	public $nodeValue;
-
-	/**
-	 * Gets the type of the node. One of the predefined XML_xxx_NODE constants
-	 * @var int
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.nodetype
-	 */
-	public $nodeType;
-
-	/**
-	 * The parent of this node
-	 * @var DOMNode
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.parentnode
-	 */
-	public $parentNode;
-
-	/**
-	 * A DOMNodeList that contains all
-	 * children of this node. If there are no children, this is an empty
-	 * DOMNodeList.
-	 * @var DOMNodeList
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.childnodes
-	 */
-	public $childNodes;
-
-	/**
-	 * The first child of this node. If there is no such node, this
-	 * returns &null;.
-	 * @var DOMNode
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.firstchild
-	 */
-	public $firstChild;
-
-	/**
-	 * The last child of this node. If there is no such node, this returns &null;.
-	 * @var DOMNode
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.lastchild
-	 */
-	public $lastChild;
-
-	/**
-	 * The node immediately preceding this node. If there is no such
-	 * node, this returns &null;.
-	 * @var DOMNode
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.previoussibling
-	 */
-	public $previousSibling;
-
-	/**
-	 * The node immediately following this node. If there is no such
-	 * node, this returns &null;.
-	 * @var DOMNode
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.nextsibling
-	 */
-	public $nextSibling;
-
-	/**
-	 * A DOMNamedNodeMap containing the
-	 * attributes of this node (if it is a DOMElement)
-	 * or &null; otherwise.
-	 * @var DOMNamedNodeMap
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.attributes
-	 */
-	public $attributes;
-
-	/**
-	 * The DOMDocument object associated with this node.
-	 * @var DOMDocument
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.ownerdocument
-	 */
-	public $ownerDocument;
-
-	/**
-	 * The namespace URI of this node, or &null; if it is unspecified.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.namespaceuri
-	 */
-	public $namespaceURI;
-
-	/**
-	 * The namespace prefix of this node, or &null; if it is unspecified.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.prefix
-	 */
-	public $prefix;
-
-	/**
-	 * Returns the local part of the qualified name of this node.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.localname
-	 */
-	public $localName;
-
-	/**
-	 * The absolute base URI of this node or &null; if the implementation
-	 * wasn't able to obtain an absolute URI.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.baseuri
-	 */
-	public $baseURI;
-
-	/**
-	 * This attribute returns the text content of this node and its descendants.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnode.php#domnode.props.textcontent
-	 */
-	public $textContent;
 
 	/**
 	 * Adds a new child before a reference node
@@ -321,7 +180,7 @@ class DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -451,42 +310,69 @@ class DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
 class DOMNameSpaceNode  {
 }
 
-/**
- * Extends DOMNode.
- * @link http://www.php.net/manual/en/class.domdocumentfragment.php
- */
 class DOMDocumentFragment extends DOMNode  {
-
-	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocumentfragment.php#domdocumentfragment.props.name
-	 */
-	public $name;
 
 	public function __construct () {}
 
@@ -535,7 +421,7 @@ class DOMDocumentFragment extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -665,192 +551,66 @@ class DOMDocumentFragment extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMNode.
- * @link http://www.php.net/manual/en/class.domdocument.php
- */
 class DOMDocument extends DOMNode  {
-
-	/**
-	 * Deprecated. Actual encoding of the document,
-	 * is a readonly equivalent to
-	 * encoding.
-	 * @var string
-	 * @deprecated 
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.actualencoding
-	 */
-	public $actualEncoding;
-
-	/**
-	 * Deprecated. Configuration used when
-	 * DOMDocument::normalizeDocument is
-	 * invoked.
-	 * @var DOMConfiguration
-	 * @deprecated 
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.config
-	 */
-	public $config;
-
-	/**
-	 * The Document Type Declaration associated with this document.
-	 * @var DOMDocumentType
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.doctype
-	 */
-	public $doctype;
-
-	/**
-	 * This is a convenience attribute that allows direct access to the
-	 * child node that is the document element of the document.
-	 * @var DOMElement
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.documentelement
-	 */
-	public $documentElement;
-
-	/**
-	 * The location of the document or &null; if undefined.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.documenturi
-	 */
-	public $documentURI;
-
-	/**
-	 * Encoding of the document, as specified by the XML declaration. This
-	 * attribute is not present in the final DOM Level 3 specification, but
-	 * is the only way of manipulating XML document encoding in this
-	 * implementation.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.encoding
-	 */
-	public $encoding;
-
-	/**
-	 * Nicely formats output with indentation and extra space.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.formatoutput
-	 */
-	public $formatOutput;
-
-	/**
-	 * The DOMImplementation object that handles 
-	 * this document.
-	 * @var DOMImplementation
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.implementation
-	 */
-	public $implementation;
-
-	/**
-	 * Do not remove redundant white space. Default to true.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.preservewhitespace
-	 */
-	public $preserveWhiteSpace;
-
-	/**
-	 * Proprietary. Enables recovery mode, i.e. trying
-	 * to parse non-well formed documents. This attribute is not part of
-	 * the DOM specification and is specific to libxml.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.recover
-	 */
-	public $recover;
-
-	/**
-	 * Set it to true to load external entities from a doctype 
-	 * declaration. This is useful for including character entities in
-	 * your XML document.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.resolveexternals
-	 */
-	public $resolveExternals;
-
-	/**
-	 * Deprecated. Whether or not the document is
-	 * standalone, as specified by the XML declaration, corresponds to
-	 * xmlStandalone.
-	 * @var bool
-	 * @deprecated 
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.standalone
-	 */
-	public $standalone;
-
-	/**
-	 * Throws DOMException on errors. Default to true.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.stricterrorchecking
-	 */
-	public $strictErrorChecking;
-
-	/**
-	 * Proprietary. Whether or not to substitute
-	 * entities. This attribute is not part of
-	 * the DOM specification and is specific to libxml.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.substituteentities
-	 */
-	public $substituteEntities;
-
-	/**
-	 * Loads and validates against the DTD. Default to false.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.validateonparse
-	 */
-	public $validateOnParse;
-
-	/**
-	 * Deprecated. Version of XML, corresponds to
-	 * xmlVersion
-	 * @var string
-	 * @deprecated 
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.version
-	 */
-	public $version;
-
-	/**
-	 * An attribute specifying, as part of the XML declaration, the
-	 * encoding of this document. This is &null; when unspecified or when it
-	 * is not known, such as when the Document was created in memory.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.xmlencoding
-	 */
-	public $xmlEncoding;
-
-	/**
-	 * An attribute specifying, as part of the XML declaration, whether
-	 * this document is standalone. This is false when unspecified.
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.xmlstandalone
-	 */
-	public $xmlStandalone;
-
-	/**
-	 * An attribute specifying, as part of the XML declaration, the
-	 * version number of this document. If there is no declaration and if
-	 * this document supports the "XML" feature, the value is "1.0".
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocument.php#domdocument.props.xmlversion
-	 */
-	public $xmlVersion;
 
 	/**
 	 * Create new element node
@@ -860,7 +620,7 @@ class DOMDocument extends DOMNode  {
 	 * </p>
 	 * @param value string[optional] <p>
 	 * The value of the element. By default, an empty element will be created.
-	 * The value can also be set later with DOMElement->nodeValue.
+	 * The value can also be set later with DOMElement::$nodeValue.
 	 * </p>
 	 * @return DOMElement a new instance of class DOMElement or false
 	 * if an error occured.
@@ -941,11 +701,11 @@ class DOMDocument extends DOMNode  {
 	public function createEntityReference ($name) {}
 
 	/**
-	 * Searches for all elements with given tag name
+	 * Searches for all elements with given local tag name
 	 * @link http://www.php.net/manual/en/domdocument.getelementsbytagname.php
 	 * @param name string <p>
-	 * The name of the tag to match on. The special value *
-	 * matches all tags.
+	 * The local name (without namespace) of the tag to match on. The special value *
+	 * matches all tags. 
 	 * </p>
 	 * @return DOMNodeList A new DOMNodeList object containing all the matched 
 	 * elements.
@@ -980,7 +740,7 @@ class DOMDocument extends DOMNode  {
 	 * </p>
 	 * @param value string[optional] <p>
 	 * The value of the element. By default, an empty element will be created.
-	 * You can also set the value later with DOMElement->nodeValue.
+	 * You can also set the value later with DOMElement::$nodeValue.
 	 * </p>
 	 * @return DOMElement The new DOMElement or false if an error occured.
 	 */
@@ -1056,8 +816,7 @@ class DOMDocument extends DOMNode  {
 	 * of the libxml option constants.
 	 * </p>
 	 * @return mixed Returns true on success or false on failure. If called statically, returns a
-	 * DOMDocument and issues E_STRICT
-	 * warning.
+	 * DOMDocument&return.falseforfailure;.
 	 */
 	public function load ($filename, $options = null) {}
 
@@ -1085,8 +844,7 @@ class DOMDocument extends DOMNode  {
 	 * of the libxml option constants.
 	 * </p>
 	 * @return mixed Returns true on success or false on failure. If called statically, returns a
-	 * DOMDocument and issues E_STRICT
-	 * warning.
+	 * DOMDocument&return.falseforfailure;.
 	 */
 	public function loadXML ($source, $options = null) {}
 
@@ -1127,7 +885,8 @@ class DOMDocument extends DOMNode  {
 	 * libxml parameters. Available
 	 * since PHP 5.1.0 and Libxml 2.6.7.
 	 * </p>
-	 * @return int the number of XIncludes in the document.
+	 * @return int the number of XIncludes in the document, -1 if some processing failed,
+	 * or false if there were no substitutions.
 	 */
 	public function xinclude ($options = null) {}
 
@@ -1138,8 +897,7 @@ class DOMDocument extends DOMNode  {
 	 * The HTML string.
 	 * </p>
 	 * @return bool Returns true on success or false on failure. If called statically, returns a
-	 * DOMDocument and issues E_STRICT
-	 * warning.
+	 * DOMDocument&return.falseforfailure;.
 	 */
 	public function loadHTML ($source) {}
 
@@ -1150,17 +908,19 @@ class DOMDocument extends DOMNode  {
 	 * The path to the HTML file.
 	 * </p>
 	 * @return bool Returns true on success or false on failure. If called statically, returns a
-	 * DOMDocument and issues E_STRICT
-	 * warning.
+	 * DOMDocument&return.falseforfailure;.
 	 */
 	public function loadHTMLFile ($filename) {}
 
 	/**
 	 * Dumps the internal document into a string using HTML formatting
 	 * @link http://www.php.net/manual/en/domdocument.savehtml.php
+	 * @param node DOMNode[optional] <p>
+	 * Optional parameter to output a subset of the document.
+	 * </p>
 	 * @return string the HTML, or false if an error occurred.
 	 */
-	public function saveHTML () {}
+	public function saveHTML (DOMNode $node = null) {}
 
 	/**
 	 * Dumps the internal document into a file using HTML formatting
@@ -1263,7 +1023,7 @@ class DOMDocument extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -1393,39 +1153,66 @@ class DOMDocument extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * @link http://www.php.net/manual/en/class.domnodelist.php
- */
-class DOMNodeList  {
-
-	/**
-	 * The number of nodes in the list. The range of valid child node 
-	 * indices is 0 to length - 1 inclusive.
-	 * @var int
-	 * @link http://www.php.net/manual/en/class.domnodelist.php#domnodelist.props.length
-	 */
-	public $length;
+class DOMNodeList implements Traversable {
 
 	/**
 	 * Retrieves a node specified by index
@@ -1441,17 +1228,7 @@ class DOMNodeList  {
 
 }
 
-/**
- * @link http://www.php.net/manual/en/class.domnamednodemap.php
- */
-class DOMNamedNodeMap  {
-
-	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnamednodemap.php#domnamednodemap.props.name
-	 */
-	public $name;
+class DOMNamedNodeMap implements Traversable {
 
 	/**
 	 * Retrieves a node specified by name
@@ -1513,25 +1290,7 @@ class DOMNamedNodeMap  {
 
 }
 
-/**
- * Extends DOMNode.
- * @link http://www.php.net/manual/en/class.domcharacterdata.php
- */
 class DOMCharacterData extends DOMNode  {
-
-	/**
-	 * The contents of the node.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domcharacterdata.php#domcharacterdata.props.data
-	 */
-	public $data;
-
-	/**
-	 * The length of the contents.
-	 * @var int
-	 * @link http://www.php.net/manual/en/class.domcharacterdata.php#domcharacterdata.props.length
-	 */
-	public $length;
 
 	/**
 	 * Extracts a range of data from the node
@@ -1639,7 +1398,7 @@ class DOMCharacterData extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -1769,68 +1528,66 @@ class DOMCharacterData extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMNode. The DOMAttr
- * interface represents an attribute in an DOMElement object.
- * @link http://www.php.net/manual/en/class.domattr.php
- */
 class DOMAttr extends DOMNode  {
-
-	/**
-	 * The name of the attribute
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domattr.php#domattr.props.name
-	 */
-	public $name;
-
-	/**
-	 * The element which contains the attribute
-	 * @var DOMElement
-	 * @link http://www.php.net/manual/en/class.domattr.php#domattr.props.ownerelement
-	 */
-	public $ownerElement;
-
-	/**
-	 * Not implemented yet, always is &null;
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domattr.php#domattr.props.schematypeinfo
-	 */
-	public $schemaTypeInfo;
-
-	/**
-	 * Not implemented yet, always is &null;
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domattr.php#domattr.props.specified
-	 */
-	public $specified;
-
-	/**
-	 * The value of the attribute
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domattr.php#domattr.props.value
-	 */
-	public $value;
 
 	/**
 	 * Checks if attribute is a defined ID
@@ -1882,7 +1639,7 @@ class DOMAttr extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -2012,46 +1769,66 @@ class DOMAttr extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMNode.
- * @link http://www.php.net/manual/en/class.domelement.php
- */
 class DOMElement extends DOMNode  {
-
-	/**
-	 * Not implemented yet, always return &null;
-	 * @var bool
-	 * @link http://www.php.net/manual/en/class.domelement.php#domelement.props.schematypeinfo
-	 */
-	public $schemaTypeInfo;
-
-	/**
-	 * The element name
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domelement.php#domelement.props.tagname
-	 */
-	public $tagName;
 
 	/**
 	 * Returns value of attribute
@@ -2324,7 +2101,7 @@ class DOMElement extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -2454,40 +2231,66 @@ class DOMElement extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMCharacterData.
- * @link http://www.php.net/manual/en/class.domtext.php
- */
 class DOMText extends DOMCharacterData  {
-
-	/**
-	 * Holds all the text of logically-adjacent (not separated by Element, 
-	 * Comment or Processing Instruction) Text nodes.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domtext.php#domtext.props.wholetext
-	 */
-	public $wholeText;
 
 	/**
 	 * Breaks this node into two nodes at the specified offset
@@ -2627,7 +2430,7 @@ class DOMText extends DOMCharacterData  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -2757,31 +2560,65 @@ class DOMText extends DOMCharacterData  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMCharacterData.
- * @link http://www.php.net/manual/en/class.domcomment.php
- */
 class DOMComment extends DOMCharacterData  {
 
 	/**
@@ -2897,7 +2734,7 @@ class DOMComment extends DOMCharacterData  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -3027,24 +2864,62 @@ class DOMComment extends DOMCharacterData  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
@@ -3096,6 +2971,8 @@ class DOMConfiguration  {
 class DOMCdataSection extends DOMText  {
 
 	/**
+	 * Constructs a new DOMCdataSection object
+	 * @link http://www.php.net/manual/en/domcdatasection.construct.php
 	 * @param value
 	 */
 	public function __construct ($value) {}
@@ -3231,7 +3108,7 @@ class DOMCdataSection extends DOMText  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -3361,81 +3238,68 @@ class DOMCdataSection extends DOMText  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMNode
- * @link http://www.php.net/manual/en/class.domdocumenttype.php
- */
 class DOMDocumentType extends DOMNode  {
 
 	/**
-	 * The public identifier of the external subset.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocumenttype.php#domdocumenttype.props.publicid
-	 */
-	public $publicId;
-
-	/**
-	 * The system identifier of the external subset. This may be an
-	 * absolute URI or not.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocumenttype.php#domdocumenttype.props.systemid
-	 */
-	public $systemId;
-
-	/**
-	 * The name of DTD; i.e., the name immediately following the
-	 * DOCTYPE keyword.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocumenttype.php#domdocumenttype.props.name
-	 */
-	public $name;
-
-	/**
-	 * A DOMNamedNodeMap containing the general 
-	 * entities, both external and internal, declared in the DTD.
-	 * @var DOMNamedNodeMap
-	 * @link http://www.php.net/manual/en/class.domdocumenttype.php#domdocumenttype.props.entities
-	 */
-	public $entities;
-
-	/**
-	 * A DOMNamedNodeMap containing the notations
-	 * declared in the DTD.
-	 * @var DOMNamedNodeMap
-	 * @link http://www.php.net/manual/en/class.domdocumenttype.php#domdocumenttype.props.notations
-	 */
-	public $notations;
-
-	/**
-	 * The internal subset as a string, or null if there is none. This is
-	 * does not contain the delimiting square brackets.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domdocumenttype.php#domdocumenttype.props.internalsubset
-	 */
-	public $internalSubset;
-
-	/**
 	 * Adds a new child before a reference node
 	 * @link http://www.php.net/manual/en/domnode.insertbefore.php
 	 * @param newnode DOMNode <p>
@@ -3470,7 +3334,7 @@ class DOMDocumentType extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -3600,107 +3464,294 @@ class DOMDocumentType extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMNode
- * @link http://www.php.net/manual/en/class.domnotation.php
- */
-class DOMNotation  {
+class DOMNotation extends DOMNode  {
 
 	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnotation.php#domnotation.props.publicid
+	 * Adds a new child before a reference node
+	 * @link http://www.php.net/manual/en/domnode.insertbefore.php
+	 * @param newnode DOMNode <p>
+	 * The new node.
+	 * </p>
+	 * @param refnode DOMNode[optional] <p>
+	 * The reference node. If not supplied, newnode is
+	 * appended to the children.
+	 * </p>
+	 * @return DOMNode The inserted node.
 	 */
-	public $publicId;
+	public function insertBefore (DOMNode $newnode, DOMNode $refnode = null) {}
 
 	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domnotation.php#domnotation.props.systemid
+	 * Replaces a child
+	 * @link http://www.php.net/manual/en/domnode.replacechild.php
+	 * @param newnode DOMNode <p>
+	 * The new node. It must be a member of the target document, i.e.
+	 * created by one of the DOMDocument->createXXX() methods or imported in
+	 * the document by .
+	 * </p>
+	 * @param oldnode DOMNode <p>
+	 * The old node.
+	 * </p>
+	 * @return DOMNode The old node or false if an error occur.
 	 */
-	public $systemId;
+	public function replaceChild (DOMNode $newnode, DOMNode $oldnode) {}
+
+	/**
+	 * Removes child from list of children
+	 * @link http://www.php.net/manual/en/domnode.removechild.php
+	 * @param oldnode DOMNode <p>
+	 * The removed child.
+	 * </p>
+	 * @return DOMNode If the child could be removed the function returns the old child.
+	 */
+	public function removeChild (DOMNode $oldnode) {}
+
+	/**
+	 * Adds new child at the end of the children
+	 * @link http://www.php.net/manual/en/domnode.appendchild.php
+	 * @param newnode DOMNode <p>
+	 * The appended child.
+	 * </p>
+	 * @return DOMNode The node added.
+	 */
+	public function appendChild (DOMNode $newnode) {}
+
+	/**
+	 * Checks if node has children
+	 * @link http://www.php.net/manual/en/domnode.haschildnodes.php
+	 * @return bool Returns true on success or false on failure.
+	 */
+	public function hasChildNodes () {}
+
+	/**
+	 * Clones a node
+	 * @link http://www.php.net/manual/en/domnode.clonenode.php
+	 * @param deep bool[optional] <p>
+	 * Indicates whether to copy all descendant nodes. This parameter is 
+	 * defaulted to false.
+	 * </p>
+	 * @return DOMNode The cloned node.
+	 */
+	public function cloneNode ($deep = null) {}
+
+	/**
+	 * Normalizes the node
+	 * @link http://www.php.net/manual/en/domnode.normalize.php
+	 * @return void 
+	 */
+	public function normalize () {}
+
+	/**
+	 * Checks if feature is supported for specified version
+	 * @link http://www.php.net/manual/en/domnode.issupported.php
+	 * @param feature string <p>
+	 * The feature to test. See the example of 
+	 * DOMImplementation::hasFeature for a
+	 * list of features.
+	 * </p>
+	 * @param version string <p>
+	 * The version number of the feature to test.
+	 * </p>
+	 * @return bool Returns true on success or false on failure.
+	 */
+	public function isSupported ($feature, $version) {}
+
+	/**
+	 * Checks if node has attributes
+	 * @link http://www.php.net/manual/en/domnode.hasattributes.php
+	 * @return bool Returns true on success or false on failure.
+	 */
+	public function hasAttributes () {}
+
+	/**
+	 * @param other DOMNode
+	 */
+	public function compareDocumentPosition (DOMNode $other) {}
+
+	/**
+	 * Indicates if two nodes are the same node
+	 * @link http://www.php.net/manual/en/domnode.issamenode.php
+	 * @param node DOMNode <p>
+	 * The compared node.
+	 * </p>
+	 * @return bool Returns true on success or false on failure.
+	 */
+	public function isSameNode (DOMNode $node) {}
+
+	/**
+	 * Gets the namespace prefix of the node based on the namespace URI
+	 * @link http://www.php.net/manual/en/domnode.lookupprefix.php
+	 * @param namespaceURI string <p>
+	 * The namespace URI.
+	 * </p>
+	 * @return string The prefix of the namespace.
+	 */
+	public function lookupPrefix ($namespaceURI) {}
+
+	/**
+	 * Checks if the specified namespaceURI is the default namespace or not
+	 * @link http://www.php.net/manual/en/domnode.isdefaultnamespace.php
+	 * @param namespaceURI string <p>
+	 * The namespace URI to look for.
+	 * </p>
+	 * @return bool Return true if namespaceURI is the default
+	 * namespace, false otherwise.
+	 */
+	public function isDefaultNamespace ($namespaceURI) {}
+
+	/**
+	 * Gets the namespace URI of the node based on the prefix
+	 * @link http://www.php.net/manual/en/domnode.lookupnamespaceuri.php
+	 * @param prefix string <p>
+	 * The prefix of the namespace.
+	 * </p>
+	 * @return string The namespace URI of the node.
+	 */
+	public function lookupNamespaceUri ($prefix) {}
+
+	/**
+	 * @param arg DOMNode
+	 */
+	public function isEqualNode (DOMNode $arg) {}
+
+	/**
+	 * @param feature
+	 * @param version
+	 */
+	public function getFeature ($feature, $version) {}
+
+	/**
+	 * @param key
+	 * @param data
+	 * @param handler
+	 */
+	public function setUserData ($key, $data, $handler) {}
+
+	/**
+	 * @param key
+	 */
+	public function getUserData ($key) {}
+
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
+	public function getNodePath () {}
+
+	/**
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
+	 */
+	public function getLineNo () {}
+
+	/**
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
+	 */
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
 }
 
-/**
- * Extends DOMNode
- * @link http://www.php.net/manual/en/class.domentity.php
- */
 class DOMEntity extends DOMNode  {
 
 	/**
-	 * The public identifier associated with the entity if specified, and
-	 * &null; otherwise.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domentity.php#domentity.props.publicid
-	 */
-	public $publicId;
-
-	/**
-	 * The system identifier associated with the entity if specified, and
-	 * &null; otherwise. This may be an absolute URI or not.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domentity.php#domentity.props.systemid
-	 */
-	public $systemId;
-
-	/**
-	 * For unparsed entities, the name of the notation for the entity. For
-	 * parsed entities, this is &null;.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domentity.php#domentity.props.notationname
-	 */
-	public $notationName;
-
-	/**
-	 * An attribute specifying the encoding used for this entity at the
-	 * time of parsing, when it is an external parsed entity. This is
-	 * &null; if it an entity from the internal subset or if it is not 
-	 * known.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domentity.php#domentity.props.actualencoding
-	 */
-	public $actualEncoding;
-
-	/**
-	 * An attribute specifying, as part of the text declaration, the
-	 * encoding of this entity, when it is an external parsed entity. This
-	 * is &null; otherwise.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domentity.php#domentity.props.encoding
-	 */
-	public $encoding;
-
-	/**
-	 * An attribute specifying, as part of the text declaration, the
-	 * version number of this entity, when it is an external parsed
-	 * entity. This is &null; otherwise.
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domentity.php#domentity.props.version
-	 */
-	public $version;
-
-	/**
 	 * Adds a new child before a reference node
 	 * @link http://www.php.net/manual/en/domnode.insertbefore.php
 	 * @param newnode DOMNode <p>
@@ -3735,7 +3786,7 @@ class DOMEntity extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -3865,39 +3916,66 @@ class DOMEntity extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMNode.
- * @link http://www.php.net/manual/en/class.domentityreference.php
- */
 class DOMEntityReference extends DOMNode  {
-
-	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domentityreference.php#domentityreference.props.name
-	 */
-	public $name;
 
 	/**
 	 * Creates a new DOMEntityReference object
@@ -3941,7 +4019,7 @@ class DOMEntityReference extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -4071,46 +4149,66 @@ class DOMEntityReference extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
-/**
- * Extends DOMNode.
- * @link http://www.php.net/manual/en/class.domprocessinginstruction.php
- */
 class DOMProcessingInstruction extends DOMNode  {
-
-	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domprocessinginstruction.php#domprocessinginstruction.props.target
-	 */
-	public $target;
-
-	/**
-	 * Prop description
-	 * @var string
-	 * @link http://www.php.net/manual/en/class.domprocessinginstruction.php#domprocessinginstruction.props.data
-	 */
-	public $data;
 
 	/**
 	 * Creates a new <classname>DOMProcessingInstruction</classname> object
@@ -4155,7 +4253,7 @@ class DOMProcessingInstruction extends DOMNode  {
 	 * @param oldnode DOMNode <p>
 	 * The removed child.
 	 * </p>
-	 * @return DOMNode If the child could be removed the functions returns the old child.
+	 * @return DOMNode If the child could be removed the function returns the old child.
 	 */
 	public function removeChild (DOMNode $oldnode) {}
 
@@ -4285,24 +4383,62 @@ class DOMProcessingInstruction extends DOMNode  {
 	 */
 	public function getUserData ($key) {}
 
+	/**
+	 * Get an XPath for a node
+	 * @link http://www.php.net/manual/en/domnode.getnodepath.php
+	 * @return string a string containing the XPath, or &null; in case of an error.
+	 */
 	public function getNodePath () {}
 
 	/**
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Get line number for a node
+	 * @link http://www.php.net/manual/en/domnode.getlineno.php
+	 * @return int Always returns the line number where the node was defined in.
 	 */
-	public function C14N ($exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function getLineNo () {}
 
 	/**
-	 * @param uri
-	 * @param exclusive[optional]
-	 * @param with_comments[optional]
-	 * @param xpath[optional]
-	 * @param ns_prefixes[optional]
+	 * Canonicalize nodes to a string
+	 * @link http://www.php.net/manual/en/domnode.c14n.php
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return string canonicalized nodes as a string&return.falseforfailure;
 	 */
-	public function C14NFile ($uri, $exclusive, $with_commentsarray , $xpath = nullarray , $ns_prefixes = null) {}
+	public function C14N ($exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
+
+	/**
+	 * Canonicalize nodes to a file
+	 * @link http://www.php.net/manual/en/domnode.c14nfile.php
+	 * @param uri string <p>
+	 * Path to write the output to.
+	 * </p>
+	 * @param exclusive bool[optional] <p>
+	 * Enable exclusive parsing of only the nodes matched by the provided
+	 * xpath or namespace prefixes.
+	 * </p>
+	 * @param with_comments bool[optional] <p>
+	 * Retain comments in output.
+	 * </p>
+	 * @param xpath array[optional] <p>
+	 * An array of xpaths to filter the nodes by.
+	 * </p>
+	 * @param ns_prefixes array[optional] <p>
+	 * An array of namespace prefixes to filter the nodes by.
+	 * </p>
+	 * @return int Number of bytes written&return.falseforfailure;
+	 */
+	public function C14NFile ($uri, $exclusive = null, $with_comments = null, array $xpath = null, array $ns_prefixes = null) {}
 
 }
 
@@ -4320,17 +4456,7 @@ class DOMStringExtend  {
 
 }
 
-/**
- * @link http://www.php.net/manual/en/class.domxpath.php
- */
 class DOMXPath  {
-
-	/**
-	 * Prop description
-	 * @var DOMDocument
-	 * @link http://www.php.net/manual/en/class.domxpath.php#domxpath.props.document
-	 */
-	public $document;
 
 	/**
 	 * Creates a new <classname>DOMXPath</classname> object
@@ -4363,14 +4489,24 @@ class DOMXPath  {
 	 * doing relative XPath queries. By default, the queries are relative to 
 	 * the root element.
 	 * </p>
-	 * @return DOMNodeList a DOMNodeList containing all nodes matching 
-	 * the given XPath expression. Any expression which do
-	 * not return nodes will return an empty DOMNodeList.
+	 * @param registerNodeNS bool[optional] <p>
+	 * The optional registerNodeNS can be specified to 
+	 * disable automatic registration of the context node.
+	 * </p>
+	 * @return DOMNodeList a DOMNodeList containing all nodes matching
+	 * the given XPath expression. Any expression which
+	 * does not return nodes will return an empty
+	 * DOMNodeList.
+	 * </p>
+	 * <p>
+	 * If the expression is malformed or the
+	 * contextnode is invalid,
+	 * DOMXPath::query returns false.
 	 */
-	public function query ($expression, DOMNode $contextnode = null) {}
+	public function query ($expression, DOMNode $contextnode = null, $registerNodeNS = null) {}
 
 	/**
-	 * Evaluates the given XPath expression and returns a typed result if possible.
+	 * Evaluates the given XPath expression and returns a typed result if possible
 	 * @link http://www.php.net/manual/en/domxpath.evaluate.php
 	 * @param expression string <p>
 	 * The XPath expression to execute.
@@ -4380,10 +4516,33 @@ class DOMXPath  {
 	 * doing relative XPath queries. By default, the queries are relative to 
 	 * the root element.
 	 * </p>
+	 * @param registerNodeNS bool[optional] <p>
+	 * The optional registerNodeNS can be specified to 
+	 * disable automatic registration of the context node.
+	 * </p>
 	 * @return mixed a typed result if possible or a DOMNodeList 
-	 * containing all nodes matching the given XPath expression.
+	 * containing all nodes matching the given XPath expression. 
+	 * </p>
+	 * <p>
+	 * If the expression is malformed or the
+	 * contextnode is invalid,
+	 * DOMXPath::evaluate returns false.
 	 */
-	public function evaluate ($expression, DOMNode $contextnode = null) {}
+	public function evaluate ($expression, DOMNode $contextnode = null, $registerNodeNS = null) {}
+
+	/**
+	 * Register PHP functions as XPath functions
+	 * @link http://www.php.net/manual/en/domxpath.registerphpfunctions.php
+	 * @param restrict mixed[optional] <p>
+	 * Use this parameter to only allow certain functions to be called from XPath.
+	 * </p>
+	 * <p>
+	 * This parameter can be either a string (a function name) or 
+	 * an array of function names.
+	 * </p>
+	 * @return void 
+	 */
+	public function registerPhpFunctions ($restrict = null) {}
 
 }
 
@@ -4400,50 +4559,75 @@ function dom_import_simplexml (SimpleXMLElement $node) {}
 
 
 /**
- * Node is an element
- * @link http://www.php.net/manual/en/domxml.constants.php
+ * Node is a DOMElement
+ * @link http://www.php.net/manual/en/dom.constants.php
  */
 define ('XML_ELEMENT_NODE', 1);
 
 /**
- * Node is an attribute
- * @link http://www.php.net/manual/en/domxml.constants.php
+ * Node is a DOMAttr
+ * @link http://www.php.net/manual/en/dom.constants.php
  */
 define ('XML_ATTRIBUTE_NODE', 2);
 
 /**
- * Node is a piece of text
- * @link http://www.php.net/manual/en/domxml.constants.php
+ * Node is a DOMText
+ * @link http://www.php.net/manual/en/dom.constants.php
  */
 define ('XML_TEXT_NODE', 3);
+
+/**
+ * Node is a DOMCharacterData
+ * @link http://www.php.net/manual/en/dom.constants.php
+ */
 define ('XML_CDATA_SECTION_NODE', 4);
+
+/**
+ * Node is a DOMEntityReference
+ * @link http://www.php.net/manual/en/dom.constants.php
+ */
 define ('XML_ENTITY_REF_NODE', 5);
 
 /**
- * Node is an entity like &amp;nbsp;
- * @link http://www.php.net/manual/en/domxml.constants.php
+ * Node is a DOMEntity
+ * @link http://www.php.net/manual/en/dom.constants.php
  */
 define ('XML_ENTITY_NODE', 6);
 
 /**
- * Node is a processing instruction
- * @link http://www.php.net/manual/en/domxml.constants.php
+ * Node is a DOMProcessingInstruction
+ * @link http://www.php.net/manual/en/dom.constants.php
  */
 define ('XML_PI_NODE', 7);
 
 /**
- * Node is a comment
- * @link http://www.php.net/manual/en/domxml.constants.php
+ * Node is a DOMComment
+ * @link http://www.php.net/manual/en/dom.constants.php
  */
 define ('XML_COMMENT_NODE', 8);
 
 /**
- * Node is a document
- * @link http://www.php.net/manual/en/domxml.constants.php
+ * Node is a DOMDocument
+ * @link http://www.php.net/manual/en/dom.constants.php
  */
 define ('XML_DOCUMENT_NODE', 9);
+
+/**
+ * Node is a DOMDocumentType
+ * @link http://www.php.net/manual/en/dom.constants.php
+ */
 define ('XML_DOCUMENT_TYPE_NODE', 10);
+
+/**
+ * Node is a DOMDocumentFragment
+ * @link http://www.php.net/manual/en/dom.constants.php
+ */
 define ('XML_DOCUMENT_FRAG_NODE', 11);
+
+/**
+ * Node is a DOMNotation
+ * @link http://www.php.net/manual/en/dom.constants.php
+ */
 define ('XML_NOTATION_NODE', 12);
 define ('XML_HTML_DOCUMENT_NODE', 13);
 define ('XML_DTD_NODE', 14);
