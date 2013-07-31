@@ -27,7 +27,8 @@ function bzopen ($filename, $mode) {}
  * </p>
  * @param length int[optional] <p>
  * If not specified, bzread will read 1024 
- * (uncompressed) bytes at a time.
+ * (uncompressed) bytes at a time. A maximum of 8192
+ * uncompressed bytes will be read at a time.
  * </p>
  * @return string the uncompressed data, or false on error.
  */
@@ -129,7 +130,7 @@ function bzerror ($bz) {}
  * Regardless of the workfactor, the generated 
  * output is the same.
  * </p>
- * @return mixed The compressed string or number of error in case of error.
+ * @return mixed The compressed string, or an error number if an error occurred.
  */
 function bzcompress ($source, $blocksize = null, $workfactor = null) {}
 
@@ -148,7 +149,7 @@ function bzcompress ($source, $blocksize = null, $workfactor = null) {}
  * See the bzip2 documentation for more 
  * information about this feature.
  * </p>
- * @return mixed The decompressed string or number of error in case of error.
+ * @return mixed The decompressed string, or an error number if an error occurred.
  */
 function bzdecompress ($source, $small = null) {}
 

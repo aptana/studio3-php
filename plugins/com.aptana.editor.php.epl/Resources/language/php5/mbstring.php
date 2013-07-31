@@ -122,8 +122,7 @@ function mb_http_output ($encoding = null) {}
  * @link http://www.php.net/manual/en/function.mb-detect-order.php
  * @param encoding_list mixed[optional] <p>
  * encoding_list is an array or 
- * comma separated list of character encoding. ("auto" is expanded to
- * "ASCII, JIS, UTF-8, EUC-JP, SJIS")
+ * comma separated list of character encoding. See supported encodings.
  * </p>
  * <p>
  * If encoding_list is omitted, it returns
@@ -231,7 +230,9 @@ function mb_strlen ($str, $encoding = null) {}
  * The string being checked.
  * </p>
  * @param needle string <p>
- * The position counted from the beginning of haystack.
+ * The string to find in haystack. In contrast
+ * with strpos, numeric values are not applied
+ * as the ordinal value of a character.
  * </p>
  * @param offset int[optional] <p>
  * The search offset. If it is not specified, 0 is used.
@@ -324,13 +325,13 @@ function mb_strripos ($haystack, $needle, $offset = null, $encoding = null) {}
  * @param needle string <p>
  * The string to find in haystack
  * </p>
- * @param part bool[optional] <p>
+ * @param before_needle bool[optional] <p>
  * Determines which portion of haystack
  * this function returns. 
  * If set to true, it returns all of haystack
- * from the beginning to the first occurrence of needle.
+ * from the beginning to the first occurrence of needle (excluding needle).
  * If set to false, it returns all of haystack
- * from the first occurrence of needle to the end,
+ * from the first occurrence of needle to the end (including needle).
  * </p>
  * @param encoding string[optional] <p>
  * Character encoding name to use.
@@ -339,7 +340,7 @@ function mb_strripos ($haystack, $needle, $offset = null, $encoding = null) {}
  * @return string the portion of haystack,
  * or false if needle is not found.
  */
-function mb_strstr ($haystack, $needle, $part = null, $encoding = null) {}
+function mb_strstr ($haystack, $needle, $before_needle = null, $encoding = null) {}
 
 /**
  * Finds the last occurrence of a character in a string within another
@@ -378,13 +379,13 @@ function mb_strrchr ($haystack, $needle, $part = null, $encoding = null) {}
  * @param needle string <p>
  * The string to find in haystack
  * </p>
- * @param part bool[optional] <p>
+ * @param before_needle bool[optional] <p>
  * Determines which portion of haystack
  * this function returns. 
  * If set to true, it returns all of haystack
- * from the beginning to the first occurrence of needle.
+ * from the beginning to the first occurrence of needle (including needle).
  * If set to false, it returns all of haystack
- * from the first occurrence of needle to the end,
+ * from the first occurrence of needle to the end (excluding needle).
  * </p>
  * @param encoding string[optional] <p>
  * Character encoding name to use.
@@ -393,7 +394,7 @@ function mb_strrchr ($haystack, $needle, $part = null, $encoding = null) {}
  * @return string the portion of haystack,
  * or false if needle is not found.
  */
-function mb_stristr ($haystack, $needle, $part = null, $encoding = null) {}
+function mb_stristr ($haystack, $needle, $before_needle = null, $encoding = null) {}
 
 /**
  * Finds the last occurrence of a character in a string within another, case insensitive
@@ -442,13 +443,13 @@ function mb_substr_count ($haystack, $needle, $encoding = null) {}
  * Get part of string
  * @link http://www.php.net/manual/en/function.mb-substr.php
  * @param str string <p>
- * The string being checked.
+ * The string to extract the substring from.
  * </p>
  * @param start int <p>
- * The first position used in str.
+ * Position of first character to use from str.
  * </p>
  * @param length int[optional] <p>
- * The maximum length of the returned string.
+ * Maximum number of characters to use from str.
  * </p>
  * @param encoding string[optional] &mbstring.encoding.parameter;
  * @return string mb_substr returns the portion of
@@ -465,10 +466,10 @@ function mb_substr ($str, $start, $length = null, $encoding = null) {}
  * The string being cut.
  * </p>
  * @param start int <p>
- * The position that begins the cut.
+ * Starting position in bytes.
  * </p>
  * @param length int[optional] <p>
- * The string being decoded.
+ * Length in bytes.
  * </p>
  * @param encoding string[optional] &mbstring.encoding.parameter;
  * @return string mb_strcut returns the portion of
@@ -528,8 +529,8 @@ function mb_strimwidth ($str, $start, $width, $trimmarker = null, $encoding = nu
  * encoding will be used.
  * </p>
  * <p>
- * "auto" may be used, which expands to 
- * "ASCII,JIS,UTF-8,EUC-JP,SJIS".
+ * See supported
+ * encodings.
  * </p>
  * @return string The encoded string.
  */
@@ -566,6 +567,17 @@ function mb_detect_encoding ($str, $encoding_list = null, $strict = null) {}
  * @return array a numerically indexed array.
  */
 function mb_list_encodings () {}
+
+/**
+ * Get aliases of a known encoding type
+ * @link http://www.php.net/manual/en/function.mb-encoding-aliases.php
+ * @param encoding string <p>
+ * The encoding type being checked, for aliases.
+ * </p>
+ * @return array a numerically indexed array of encoding aliases on success,
+ * &return.falseforfailure;
+ */
+function mb_encoding_aliases ($encoding) {}
 
 /**
  * Convert "kana" one from another ("zen-kaku", "han-kaku" and more)
@@ -1024,6 +1036,50 @@ function mb_ereg_replace ($pattern, $replacement, $string, $option = null) {}
 function mb_eregi_replace ($pattern, $replace, $string, $option = null) {}
 
 /**
+ * Perform a regular expresssion seach and replace with multibyte support using a callback
+ * @link http://www.php.net/manual/en/function.mb-ereg-replace-callback.php
+ * @param pattern string <p>
+ * The regular expression pattern.
+ * </p>
+ * <p>
+ * Multibyte characters may be used in pattern.
+ * </p>
+ * @param callback callable <p>
+ * A callback that will be called and passed an array of matched elements
+ * in the subject string. The callback should
+ * return the replacement string.
+ * </p>
+ * <p>
+ * You'll often need the callback function
+ * for a mb_ereg_replace_callback in just one place.
+ * In this case you can use an
+ * anonymous function (since
+ * PHP 5.3.0) or create_function to
+ * declare an anonymous function as callback within the call to
+ * mb_ereg_replace_callback. By doing it this way
+ * you have all information for the call in one place and do not
+ * clutter the function namespace with a callback function's name
+ * not used anywhere else. 
+ * </p>
+ * @param string string <p>
+ * The string being checked.
+ * </p>
+ * @param option string[optional] <p>
+ * Matching condition can be set by option
+ * parameter. If i is specified for this
+ * parameter, the case will be ignored. If x is
+ * specified, white space will be ignored. If m
+ * is specified, match will be executed in multiline mode and line
+ * break will be included in '.'. If p is
+ * specified, match will be executed in POSIX mode, line break 
+ * will be considered as normal character. Note that e
+ * cannot be used for mb_ereg_replace_callback.
+ * </p>
+ * @return string The resultant string on success, or false on error.
+ */
+function mb_ereg_replace_callback ($pattern, $callback, $string, $option = null) {}
+
+/**
  * Split multibyte string using regular expression
  * @link http://www.php.net/manual/en/function.mb-split.php
  * @param pattern string <p>
@@ -1133,33 +1189,87 @@ function mb_ereg_search_getpos () {}
  */
 function mb_ereg_search_setpos ($position) {}
 
-function mbregex_encoding () {}
+/**
+ * @param encoding[optional]
+ */
+function mbregex_encoding ($encoding) {}
 
-function mbereg () {}
+/**
+ * @param pattern
+ * @param string
+ * @param registers[optional]
+ */
+function mbereg ($pattern, $string, &$registers) {}
 
-function mberegi () {}
+/**
+ * @param pattern
+ * @param string
+ * @param registers[optional]
+ */
+function mberegi ($pattern, $string, &$registers) {}
 
-function mbereg_replace () {}
+/**
+ * @param pattern
+ * @param replacement
+ * @param string
+ * @param option[optional]
+ */
+function mbereg_replace ($pattern, $replacement, $string, $option) {}
 
-function mberegi_replace () {}
+/**
+ * @param pattern
+ * @param replacement
+ * @param string
+ */
+function mberegi_replace ($pattern, $replacement, $string) {}
 
-function mbsplit () {}
+/**
+ * @param pattern
+ * @param string
+ * @param limit[optional]
+ */
+function mbsplit ($pattern, $string, $limit) {}
 
-function mbereg_match () {}
+/**
+ * @param pattern
+ * @param string
+ * @param option[optional]
+ */
+function mbereg_match ($pattern, $string, $option) {}
 
-function mbereg_search () {}
+/**
+ * @param pattern[optional]
+ * @param option[optional]
+ */
+function mbereg_search ($pattern, $option) {}
 
-function mbereg_search_pos () {}
+/**
+ * @param pattern[optional]
+ * @param option[optional]
+ */
+function mbereg_search_pos ($pattern, $option) {}
 
-function mbereg_search_regs () {}
+/**
+ * @param pattern[optional]
+ * @param option[optional]
+ */
+function mbereg_search_regs ($pattern, $option) {}
 
-function mbereg_search_init () {}
+/**
+ * @param string
+ * @param pattern[optional]
+ * @param option[optional]
+ */
+function mbereg_search_init ($string, $pattern, $option) {}
 
 function mbereg_search_getregs () {}
 
 function mbereg_search_getpos () {}
 
-function mbereg_search_setpos () {}
+/**
+ * @param position
+ */
+function mbereg_search_setpos ($position) {}
 
 define ('MB_OVERLOAD_MAIL', 1);
 define ('MB_OVERLOAD_STRING', 2);

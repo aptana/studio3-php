@@ -1,6 +1,6 @@
 <?php
 
-// Start of zlib v.1.1
+// Start of zlib v.2.0
 
 /**
  * Output a gz-file
@@ -217,8 +217,11 @@ function gzwrite ($zp, $string, $length = null) {}
 /**
  * &Alias; <function>gzwrite</function>
  * @link http://www.php.net/manual/en/function.gzputs.php
+ * @param fp
+ * @param str
+ * @param length[optional]
  */
-function gzputs () {}
+function gzputs ($fp, $str, $length) {}
 
 /**
  * Read entire gz-file into an array
@@ -243,6 +246,9 @@ function gzfile ($filename, $use_include_path = null) {}
  * @param level int[optional] <p>
  * The level of compression. Can be given as 0 for no compression up to 9
  * for maximum compression.
+ * </p>
+ * <p>
+ * If -1 is used, the default compression of the zlib library is used which is 6.
  * </p>
  * @return string The compressed string or false if an error occurred.
  */
@@ -324,6 +330,51 @@ function gzinflate ($data, $length = null) {}
 function gzencode ($data, $level = null, $encoding_mode = null) {}
 
 /**
+ * Decodes a gzip compressed string
+ * @link http://www.php.net/manual/en/function.gzdecode.php
+ * @param data string <p>
+ * The data to decode, encoded by gzencode.
+ * </p>
+ * @param length int[optional] <p>
+ * The maximum length of data to decode.
+ * </p>
+ * @return string The decoded string, or false if an error occurred.
+ */
+function gzdecode ($data, $length = null) {}
+
+/**
+ * Compress data with the specified encoding
+ * @link http://www.php.net/manual/en/function.zlib-encode.php
+ * @param data string <p>
+ * </p>
+ * @param encoding string <p>
+ * </p>
+ * @param level string[optional] <p>
+ * </p>
+ * @return string 
+ */
+function zlib_encode ($data, $encoding, $level = null) {}
+
+/**
+ * Uncompress any raw/gzip/zlib encoded data
+ * @link http://www.php.net/manual/en/function.zlib-decode.php
+ * @param data string <p>
+ * </p>
+ * @param max_decoded_len string[optional] <p>
+ * </p>
+ * @return string 
+ */
+function zlib_decode ($data, $max_decoded_len = null) {}
+
+/**
+ * Returns the coding type used for output compression
+ * @link http://www.php.net/manual/en/function.zlib-get-coding-type.php
+ * @return string Possible return values are gzip, deflate,
+ * or false.
+ */
+function zlib_get_coding_type () {}
+
+/**
  * ob_start callback function to gzip output buffer
  * @link http://www.php.net/manual/en/function.ob-gzhandler.php
  * @param buffer string <p>
@@ -334,16 +385,11 @@ function gzencode ($data, $level = null, $encoding_mode = null) {}
  */
 function ob_gzhandler ($buffer, $mode) {}
 
-/**
- * Returns the coding type used for output compression
- * @link http://www.php.net/manual/en/function.zlib-get-coding-type.php
- * @return string Possible return values are gzip, deflate,
- * or false.
- */
-function zlib_get_coding_type () {}
+define ('FORCE_GZIP', 31);
+define ('FORCE_DEFLATE', 15);
+define ('ZLIB_ENCODING_RAW', -15);
+define ('ZLIB_ENCODING_GZIP', 31);
+define ('ZLIB_ENCODING_DEFLATE', 15);
 
-define ('FORCE_GZIP', 1);
-define ('FORCE_DEFLATE', 2);
-
-// End of zlib v.1.1
+// End of zlib v.2.0
 ?>

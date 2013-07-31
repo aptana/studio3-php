@@ -7,8 +7,10 @@ class SoapClient  {
 	/**
 	 * SoapClient constructor
 	 * @link http://www.php.net/manual/en/soapclient.soapclient.php
+	 * @param wsdl
+	 * @param options[optional]
 	 */
-	public function SoapClient () {}
+	public function SoapClient ($wsdl, $options) {}
 
 	/**
 	 * Calls a SOAP function (deprecated)
@@ -90,14 +92,15 @@ class SoapClient  {
 	/**
 	 * Returns list of available SOAP functions
 	 * @link http://www.php.net/manual/en/soapclient.getfunctions.php
-	 * @return array The list of SOAP functions.
+	 * @return array The array of SOAP function prototypes, detailing the return type,
+	 * the function name and type-hinted paramaters.
 	 */
 	public function __getFunctions () {}
 
 	/**
 	 * Returns a list of SOAP types
 	 * @link http://www.php.net/manual/en/soapclient.gettypes.php
-	 * @return array An array of SOAP types.
+	 * @return array The array of SOAP types, detailing all structures and types.
 	 */
 	public function __getTypes () {}
 
@@ -166,8 +169,14 @@ class SoapVar  {
 	/**
 	 * SoapVar constructor
 	 * @link http://www.php.net/manual/en/soapvar.soapvar.php
+	 * @param data
+	 * @param encoding
+	 * @param type_name[optional]
+	 * @param type_namespace[optional]
+	 * @param node_name[optional]
+	 * @param node_namespace[optional]
 	 */
-	public function SoapVar () {}
+	public function SoapVar ($data, $encoding, $type_name, $type_namespace, $node_name, $node_namespace) {}
 
 }
 
@@ -176,20 +185,26 @@ class SoapServer  {
 	/**
 	 * SoapServer constructor
 	 * @link http://www.php.net/manual/en/soapserver.soapserver.php
+	 * @param wsdl
+	 * @param options[optional]
 	 */
-	public function SoapServer () {}
+	public function SoapServer ($wsdl, $options) {}
 
 	/**
 	 * Sets SoapServer persistence mode
 	 * @link http://www.php.net/manual/en/soapserver.setpersistence.php
-	 * @param mode string <p>
+	 * @param mode int <p>
 	 * One of the SOAP_PERSISTENCE_XXX constants.
 	 * </p>
 	 * <p>
-	 * SOAP_PERSISTENCE_REQUEST - persist the object for the duration of a request.
+	 * SOAP_PERSISTENCE_REQUEST - SoapServer data does not persist between
+	 * requests. This is the default behavior of any SoapServer
+	 * object after setClass is called. 
 	 * </p>
 	 * <p>
-	 * SOAP_PERSISTENCE_SESSION - persist the object for the duration of a session.
+	 * SOAP_PERSISTENCE_SESSION - SoapServer data does persists between requests.
+	 * This is accomplished by serializing the SoapServer class data into $_SESSION['_bogus_session_name'],
+	 * because of this session_start must be called before this persistence mode is set. 
 	 * </p>
 	 * @return void 
 	 */
@@ -201,18 +216,19 @@ class SoapServer  {
 	 * @param class_name string <p>
 	 * The name of the exported class.
 	 * </p>
-	 * @param args string[optional] <p>
+	 * @param args mixed[optional] <p>
 	 * These optional parameters will be passed to the default class constructor
 	 * during object creation. 
 	 * </p>
+	 * @param _ mixed[optional] 
 	 * @return void 
 	 */
-	public function setClass ($class_name, $args = null) {}
+	public function setClass ($class_name, $args = null, $_ = null) {}
 
 	/**
 	 * Sets the object which will be used to handle SOAP requests
 	 * @link http://www.php.net/manual/en/soapserver.setobject.php
-	 * @param object string <p>
+	 * @param object object <p>
 	 * The object to handle the requests.
 	 * </p>
 	 * @return void 
@@ -222,7 +238,7 @@ class SoapServer  {
 	/**
 	 * Adds one or more functions to handle SOAP requests
 	 * @link http://www.php.net/manual/en/soapserver.addfunction.php
-	 * @param functions string <p>
+	 * @param functions mixed <p>
 	 * To export one function, pass the function name into this parameter as
 	 * a string.
 	 * </p>
@@ -304,8 +320,14 @@ class SoapFault extends Exception  {
 	/**
 	 * SoapFault constructor
 	 * @link http://www.php.net/manual/en/soapfault.soapfault.php
+	 * @param faultcode
+	 * @param faultstring
+	 * @param faultactor[optional]
+	 * @param detail[optional]
+	 * @param faultname[optional]
+	 * @param headerfault[optional]
 	 */
-	public function SoapFault () {}
+	public function SoapFault ($faultcode, $faultstring, $faultactor, $detail, $faultname, $headerfault) {}
 
 	/**
 	 * Obtain a string representation of a SoapFault
@@ -319,8 +341,9 @@ class SoapFault extends Exception  {
 	/**
 	 * @param message[optional]
 	 * @param code[optional]
+	 * @param previous[optional]
 	 */
-	public function __construct ($message, $code) {}
+	public function __construct ($message, $code, $previous) {}
 
 	final public function getMessage () {}
 
@@ -332,6 +355,8 @@ class SoapFault extends Exception  {
 
 	final public function getTrace () {}
 
+	final public function getPrevious () {}
+
 	final public function getTraceAsString () {}
 
 }
@@ -341,8 +366,10 @@ class SoapParam  {
 	/**
 	 * SoapParam constructor
 	 * @link http://www.php.net/manual/en/soapparam.soapparam.php
+	 * @param data
+	 * @param name
 	 */
-	public function SoapParam () {}
+	public function SoapParam ($data, $name) {}
 
 }
 
@@ -351,8 +378,13 @@ class SoapHeader  {
 	/**
 	 * SoapHeader constructor
 	 * @link http://www.php.net/manual/en/soapheader.soapheader.php
+	 * @param namespace
+	 * @param name
+	 * @param data[optional]
+	 * @param mustunderstand[optional]
+	 * @param actor[optional]
 	 */
-	public function SoapHeader () {}
+	public function SoapHeader ($namespace, $name, $data, $mustunderstand, $actor) {}
 
 }
 
@@ -362,7 +394,7 @@ class SoapHeader  {
  * @param handler bool[optional] <p>
  * Set to true to send error details to clients.
  * </p>
- * @return bool Returns true on success or false on failure.
+ * @return bool the original value.
  */
 function use_soap_error_handler ($handler = null) {}
 
