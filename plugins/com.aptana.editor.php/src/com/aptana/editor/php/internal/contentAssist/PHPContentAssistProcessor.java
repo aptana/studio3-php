@@ -714,8 +714,28 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			IModule module, boolean exactMatch, Map<String, String> aliases, String namespace)
 	{
 		String entryName = callPath.get(0);
-		Set<IElementEntry> leftDereferenceEntries = computeDereferenceLeftEntries(index, pathEntryName(entryName),
-				offset, module, aliases, namespace);
+		
+		
+
+		Set<IElementEntry> leftDereferenceEntries = null;
+		
+		
+		/*
+		 * fix self::$x->
+		 * firas abd alrahman doonfrs@gmail.com
+		 * check if entryname is static to use computeStaticDereferenceLeftEntries instead of computeDereferenceLeftEntries
+		 */
+		if( STATIC_DEREFERENCE_OP.equals(callPath.get(1)) || SELF_ACTIVATION_SEQUENCE.equals(entryName) || STATIC_ACTIVATION_SEQUENCE.equals(entryName))
+		{
+			leftDereferenceEntries = computeStaticDereferenceLeftEntries(index, pathEntryName(entryName),
+					offset, module, aliases, namespace);
+		}else
+		{
+			leftDereferenceEntries = computeDereferenceLeftEntries(index, pathEntryName(entryName),
+					offset, module, aliases, namespace);
+		}
+		
+		
 		if (leftDereferenceEntries == null)
 		{
 			return null;
