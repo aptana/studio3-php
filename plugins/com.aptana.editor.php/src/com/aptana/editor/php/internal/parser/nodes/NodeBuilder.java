@@ -24,7 +24,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
-import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.html.core.IHTMLConstants;
 import com.aptana.editor.html.parsing.HTMLParseState;
 import com.aptana.editor.html.parsing.ast.HTMLElementNode;
 import com.aptana.editor.html.parsing.ast.HTMLTextNode;
