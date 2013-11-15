@@ -50,7 +50,7 @@ public class PHPVersionProviderTest extends ProjectBasedTestCase
 
 	public void testGetDefaultPHPVersion()
 	{
-		assertTrue(PHPVersion.PHP5_3.equals(PHPVersionProvider.getDefaultPHPVersion()));
+		assertTrue(PHPVersion.getLatest().equals(PHPVersionProvider.getDefaultPHPVersion()));
 	}
 
 	public void testInitialProjectVersion()
@@ -58,6 +58,7 @@ public class PHPVersionProviderTest extends ProjectBasedTestCase
 		assertTrue(PHPVersionProvider.isPHP53(project));
 		assertFalse(PHPVersionProvider.isPHP5(project));
 		assertFalse(PHPVersionProvider.isPHP4(project));
+		assertFalse(PHPVersionProvider.isPHP54(project));
 	}
 
 	public void testProjectVersionChange() throws BackingStoreException
@@ -69,5 +70,6 @@ public class PHPVersionProviderTest extends ProjectBasedTestCase
 		assertTrue(PHPVersionProvider.isPHP5(project));
 		assertFalse(PHPVersionProvider.isPHP53(project));
 		assertFalse(PHPVersionProvider.isPHP4(project));
+		assertFalse(PHPVersionProvider.isPHP54(project));
 	}
 }

@@ -100,6 +100,11 @@ public interface IPHPParseNode extends IParseNode
 	 * IF_ELSE_NODE
 	 */
 	public static final short IF_ELSE_NODE = 4518;
+	
+	/**
+	 * TRAIT_NODE
+	 */
+	public static final short TRAIT_NODE = 4519;
 
 	public void setDocumentation(IPHPDocBlock docInfo);
 

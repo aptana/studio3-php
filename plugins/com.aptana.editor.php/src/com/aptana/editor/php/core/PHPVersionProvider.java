@@ -124,6 +124,19 @@ public class PHPVersionProvider
 	}
 
 	/**
+	 * A continent method to check if the current version is 5.4
+	 * 
+	 * @param project
+	 *            Optional project that might contain specific version which is different from the workspace default.
+	 * @return True, if and only if the version is PHP 5.4
+	 */
+	public static boolean isPHP54(IProject project)
+	{
+		PHPVersion version = getPHPVersion(project);
+		return PHPVersion.PHP5_4.equals(version);
+	}
+	
+	/**
 	 * A continent method to check if the current version is 5.3
 	 * 
 	 * @param project
@@ -174,12 +187,12 @@ public class PHPVersionProvider
 		{
 			contexts = new IScopeContext[] { EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
 		}
-		String versionAlias = service.getString(preferencesQualifier, prefKey, PHPVersion.PHP5_3.getAlias(), contexts);
+		String versionAlias = service.getString(preferencesQualifier, prefKey, PHPVersion.getLatest().getAlias(), contexts);
 		return PHPVersion.byAlias(versionAlias);
 	}
 
 	public static PHPVersion getDefaultPHPVersion()
 	{
-		return PHPVersion.PHP5_3;
+		return PHPVersion.getLatest();
 	}
 }

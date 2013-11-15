@@ -12,7 +12,7 @@ import java.io.IOException;
 import beaver.Symbol;
 
 import com.aptana.editor.common.parsing.CompositeParser;
-import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.html.core.IHTMLConstants;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.parsing.IParseState;
 import com.aptana.parsing.WorkingParseResult;

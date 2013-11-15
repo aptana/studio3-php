@@ -43,6 +43,8 @@ public class Messages extends NLS
 	public static String ElementSelectionDialog_extraBarText;
 	public static String ElementSelectionDialog_functions;
 
+	public static String ElementSelectionDialog_traits;
+
 	static
 	{
 		// initialize resource bundle

@@ -12,7 +12,10 @@
 
 package org2.eclipse.php.internal.core.ast.nodes;
 
+import org2.eclipse.dltk.ast.Modifiers;
+
 import com.aptana.editor.php.core.model.IModelElement;
+
 
 /**
  * A binding represents a named entity in the PHP language. The world of

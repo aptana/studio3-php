@@ -373,7 +373,8 @@ public class FormalParameter extends ASTNode {
 	 *    resolved
 	 */
 	public final ITypeBinding resolveTypeBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveTypeParameter(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveTypeParameter(this);
 		return null;
 	}
 

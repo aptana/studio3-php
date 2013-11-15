@@ -15,6 +15,7 @@ public class Messages extends NLS
 	public static String PHPDevelopmentPage_php4;
 	public static String PHPDevelopmentPage_php5;
 	public static String PHPDevelopmentPage_php53;
+	public static String PHPDevelopmentPage_php54;
 	public static String PHPDevelopmentPage_phpVersion;
 	public static String PHPDevelopmentPage_compatibility;
 	public static String LibrariesPage_deselectAll;

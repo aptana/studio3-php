@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocTag;
 import org2.eclipse.php.internal.core.documentModel.phpElementData.PHPDocBlockImp;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.epl.PHPEplPlugin;
@@ -58,16 +60,18 @@ public final class PHPBuiltins
 	public static final String PHP4_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "4"; //$NON-NLS-1$
 	public static final String PHP5_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "5"; //$NON-NLS-1$
 	public static final String PHP53_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "5.3"; //$NON-NLS-1$
+	public static final String PHP54_LANGUAGE_LIBRARY_PATH = LANGUAGE_LIBRARY_PATH_BASE + "5.4"; //$NON-NLS-1$
 
 	private static final int INITIAL_CAPACITY = 5000;
 	private static final IPHPDocTag[] NO_TAGS = new IPHPDocTag[0];
 	private static final PHPBuiltins instance = new PHPBuiltins();
+	@SuppressWarnings("nls")
+	private static final Set<String> PHP4_RESTRICTED = CollectionsUtil.newSet("namespace", "using", "goto", "use");
 
 	private Object mutex = new Object();
 
-	private Set<Object> php4Names = new HashSet<Object>();
-	private Set<Object> php5Names = new HashSet<Object>();
-	private Set<Object> php53Names = new HashSet<Object>();
+	private Map<PHPVersion, Set<String>> phpNames;
+
 	// Holds a function name map to the resource name that contains it
 	private Map<String, String> builtInFunctions = new HashMap<String, String>();
 	// Holds a Class/Constant name map to the resource name that contains it
@@ -190,6 +194,10 @@ public final class PHPBuiltins
 		addKeyword("namespace", "namespace", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("goto", "goto", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
 		addKeyword("use", "use", PHPVersion.PHP5_3); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("trait", "trait", PHPVersion.PHP5_4); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("callable", "callable", PHPVersion.PHP5_4); //$NON-NLS-1$ //$NON-NLS-2$
+		addKeyword("insteadof", "insteadof", PHPVersion.PHP5_4); //$NON-NLS-1$ //$NON-NLS-2$
+
 		// not in Zend's lexer grammar
 		addKeyword("false", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 		//addKeyword("from", "from"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -241,26 +249,16 @@ public final class PHPBuiltins
 		{
 			for (PHPVersion version : phpVersions)
 			{
-				if (version == PHPVersion.PHP5_3)
-				{
-					php53Names.add(string);
-				}
-				else if (version == PHPVersion.PHP5)
-				{
-					php5Names.add(string);
-				}
-				else
-				{
-					php4Names.add(string);
-				}
+				phpNames.get(version).add(string);
 			}
 		}
 		else
 		{
 			// add to all versions
-			php53Names.add(string);
-			php5Names.add(string);
-			php4Names.add(string);
+			for (PHPVersion version : EnumSet.allOf(PHPVersion.class))
+			{
+				phpNames.get(version).add(string);
+			}
 		}
 	}
 
@@ -353,37 +351,28 @@ public final class PHPBuiltins
 	}
 
 	/**
-	 * @param func
-	 * @return is this function exists in php4 built ins
+	 * Returns <code>true</code> in case the given parse-node name exists in the built-in PHP name elements for the
+	 * given version.
+	 * 
+	 * @param version
+	 * @param node
+	 * @return <code>true</code> in case the given parse-node name exists in the built-ins; <code>false</code>
+	 *         otherwise.
 	 */
-	public boolean existsInPHP4(IPHPParseNode func)
+	public boolean existsIn(PHPVersion version, IPHPParseNode node)
 	{
-		if (func.getClass() == PHPBaseParseNode.class)
+		if (node == null || version == null)
 		{
-			if (func.getNodeName().equals("namespace") || func.getNodeName().equals("using") || func.getNodeName().equals("goto")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return false;
+		}
+		if (version.equals(PHPVersion.PHP4) && node.getClass() == PHPBaseParseNode.class)
+		{
+			if (PHP4_RESTRICTED.contains(node.getNodeName()))
 			{
 				return false;
 			}
 		}
-		return php4Names.contains(func.getNodeName());
-	}
-
-	/**
-	 * @param func
-	 * @return is this function exists in php5 built ins
-	 */
-	public boolean existsInPHP5(IPHPParseNode func)
-	{
-		return php5Names.contains(func.getNodeName());
-	}
-
-	/**
-	 * @param func
-	 * @return is this function exists in php5.3 built ins
-	 */
-	public boolean existsInPHP53(IPHPParseNode func)
-	{
-		return php53Names.contains(func.getNodeName());
+		return phpNames.get(version).contains(node.getNodeName());
 	}
 
 	public boolean isBuiltinFunction(String name)
@@ -448,6 +437,11 @@ public final class PHPBuiltins
 		return null;
 	}
 
+	/**
+	 * Built-ins initialization entry point.
+	 * 
+	 * @param monitor
+	 */
 	private void initBuiltins(IProgressMonitor monitor)
 	{
 		try
@@ -464,57 +458,33 @@ public final class PHPBuiltins
 					{
 						return node0.getNodeName().toLowerCase().compareTo(node1.getNodeName().toLowerCase());
 					}
-					int res = node0.getNodeName().compareTo(node1.getNodeName());
-					if (res == 0)
-					{
-						res = 0;
-					}
-					return res;
+					return node0.getNodeName().compareTo(node1.getNodeName());
 				}
 			});
+
 			Map<Object, Object> builtins = new HashMap<Object, Object>(INITIAL_CAPACITY);
-			monitor.setTaskName(Messages.PHPBuiltins_addingPhp4);
-			PHPParser parser = new PHPParser(PHPVersion.PHP4, false);
-			long timeMillis = System.currentTimeMillis();
-			initPHP4Builtins(parser, builtins);
-			if (PHPEditorPlugin.INDEXER_DEBUG)
+			long start = System.currentTimeMillis();
+			for (PHPVersion version : EnumSet.allOf(PHPVersion.class))
 			{
-				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP4 built-ins (" //$NON-NLS-1$
-						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
-				timeMillis = System.currentTimeMillis();
-			}
-			monitor.setTaskName(Messages.PHPBuiltins_addingPhp5);
-			parser = new PHPParser(PHPVersion.PHP5, false);
-			initPHP5Builtins(parser, builtins);
-			if (PHPEditorPlugin.INDEXER_DEBUG)
-			{
-				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP5 built-ins (" //$NON-NLS-1$
-						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
-				timeMillis = System.currentTimeMillis();
-			}
-			monitor.setTaskName(Messages.PHPBuiltins_addingPhp53);
-			parser = new PHPParser(PHPVersion.PHP5_3, false);
-			initPHP53Builtins(parser, builtins);
-			if (PHPEditorPlugin.INDEXER_DEBUG)
-			{
-				IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Parsed PHP5.3 built-ins (" //$NON-NLS-1$
-						+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
-				timeMillis = System.currentTimeMillis();
+				long timeMillis = System.currentTimeMillis();
+				monitor.setTaskName(MessageFormat.format(Messages.PHPBuiltins_languageSupportTaskName,
+						version.getAlias()));
+				initPHPBuiltins(version, builtins);
+				if (PHPEditorPlugin.INDEXER_DEBUG)
+				{
+					IdeLog.logInfo(PHPEditorPlugin.getDefault(),
+							MessageFormat.format("Parsed {0} built-ins ({1}ms)", version.getAlias(), //$NON-NLS-1$
+									(System.currentTimeMillis() - timeMillis)), null, PHPEditorPlugin.INDEXER_SCOPE);
+					timeMillis = System.currentTimeMillis();
+				}
 			}
 			this.builtins.addAll(builtins.values());
-			/*
-			 * // Keep that block to generate the php lexer types when needed. Iterator<Object> iterator =
-			 * this.builtins.iterator(); int count = 0; while (iterator.hasNext()) { Object obj = iterator.next(); if
-			 * (!(obj instanceof PHPParseNode)) { continue; } int typeIndex = ((PHPParseNode)obj).getTypeIndex(); if
-			 * (typeIndex == PHPParseNode.KEYWORD_NODE || typeIndex == PHPParseNode.CONST_NODE || obj instanceof
-			 * PHPConstantNode) { String nodeName = ((PHPParseNode)obj).getNodeName(); String string =
-			 * builtInClasses.get(nodeName); if (string != null && (string.endsWith("basic.php") ||
-			 * string.endsWith("standard.php"))) { System.out.println("<string case-insensitive=\"true\">"
-			 * +nodeName+"</string>"); count++; } } }
-			 */
 			addKeywords();
-			IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Loaded all built-ins (" //$NON-NLS-1$
-					+ (System.currentTimeMillis() - timeMillis) + "ms)", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+
+			IdeLog.logInfo(
+					PHPEditorPlugin.getDefault(),
+					MessageFormat.format("Loaded all PHP built-ins ({0}ms)", (System.currentTimeMillis() - start)), null, //$NON-NLS-1$
+					PHPEditorPlugin.INDEXER_SCOPE);
 		}
 		catch (Throwable t)
 		{
@@ -522,36 +492,45 @@ public final class PHPBuiltins
 		}
 	}
 
-	private void initPHP4Builtins(PHPParser parser, Map<Object, Object> builtins)
+	/**
+	 * Initialized the built-ins for a given {@link PHPVersion}.
+	 * 
+	 * @param version
+	 *            A {@link PHPVersion}
+	 * @param builtins
+	 *            A map that will be loaded with the detected built-ins.
+	 */
+	private void initPHPBuiltins(PHPVersion version, Map<Object, Object> builtins)
 	{
+		PHPParser parser = new PHPParser(version, false);
 		try
 		{
-			URL[] urls = getBuiltinsURLs(PHP4_LANGUAGE_LIBRARY_PATH);
+			URL[] urls = getBuiltinsURLs(getLibraryPath(version));
 			for (URL url : urls)
 			{
 				try
 				{
-					IParseNode php4 = parser.parse(url.openStream());
-					for (int a = 0; a < php4.getChildCount(); a++)
+					IParseNode parseNode = parser.parse(url.openStream());
+					Set<String> names = phpNames.get(version);
+					for (IParseNode node : parseNode)
 					{
-						IParseNode child = (IParseNode) php4.getChild(a);
-						String name = child.getNameNode().getName().intern();
-						php4Names.add(name);
-						if (child instanceof PHPFunctionParseNode)
+						String name = node.getNameNode().getName().intern();
+						names.add(name);
+						if (node instanceof PHPFunctionParseNode)
 						{
 							builtInFunctions.put(name, url.toString().intern());
 						}
 						else
 						{
-							addBuiltinClassOrConstant(child, url);
+							addBuiltinClassOrConstant(node, url);
 						}
 						// Since the constant nodes are inserted to the
 						// built-ins directly, don't deal with them here.
 						// (they were already dealt with on the
 						// addBuiltinClassOrConstant call above)
-						if (!(child instanceof PHPConstantNode))
+						if (!(node instanceof PHPConstantNode))
 						{
-							builtins.put(name, child);
+							builtins.put(name, node);
 						}
 					}
 				}
@@ -568,98 +547,27 @@ public final class PHPBuiltins
 		}
 	}
 
-	private void initPHP5Builtins(PHPParser parser, Map<Object, Object> builtins)
+	/**
+	 * Returns the library path for a given {@link PHPVersion}.
+	 * 
+	 * @param version
+	 * @return A library path.
+	 */
+	private String getLibraryPath(PHPVersion version)
 	{
-		try
+		switch (version)
 		{
-			URL[] urls = getBuiltinsURLs(PHP5_LANGUAGE_LIBRARY_PATH);
-			for (URL url : urls)
-			{
-				try
-				{
-					IParseNode php5 = parser.parse(url.openStream());
-					for (int a = 0; a < php5.getChildCount(); a++)
-					{
-						IParseNode child = (IParseNode) php5.getChild(a);
-						String name = child.getNameNode().getName().intern();
-						php5Names.add(name);
-						if (child instanceof PHPFunctionParseNode)
-						{
-							builtInFunctions.put(name, url.toString().intern());
-						}
-						else
-						{
-							addBuiltinClassOrConstant(child, url);
-						}
-						// Since the constant nodes are inserted to the
-						// built-ins directly, don't deal with them here.
-						// (they were already dealt with on the
-						// addBuiltinClassOrConstant call above)
-						if (!(child instanceof PHPConstantNode))
-						{
-							builtins.put(name, child);
-						}
-					}
-				}
-				catch (Exception e)
-				{
-					IdeLog.logError(PHPEditorPlugin.getDefault(),
-							"Error loading the built-in PHP API for " + url.getFile(), //$NON-NLS-1$
-							e);
-				}
-			}
+			case PHP4:
+				return PHP4_LANGUAGE_LIBRARY_PATH;
+			case PHP5:
+				return PHP5_LANGUAGE_LIBRARY_PATH;
+			case PHP5_3:
+				return PHP53_LANGUAGE_LIBRARY_PATH;
+			case PHP5_4:
+				return PHP54_LANGUAGE_LIBRARY_PATH;
 		}
-		catch (Exception e)
-		{
-			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API", e); //$NON-NLS-1$
-		}
-	}
-
-	private void initPHP53Builtins(PHPParser parser, Map<Object, Object> builtins)
-	{
-		try
-		{
-			URL[] urls = getBuiltinsURLs(PHP53_LANGUAGE_LIBRARY_PATH);
-			for (URL url : urls)
-			{
-				try
-				{
-					IParseNode php53 = parser.parse(url.openStream());
-					for (int a = 0; a < php53.getChildCount(); a++)
-					{
-						IParseNode child = (IParseNode) php53.getChild(a);
-						String name = child.getNameNode().getName().intern();
-						php53Names.add(name);
-						if (child instanceof PHPFunctionParseNode)
-						{
-							builtInFunctions.put(name, url.toString().intern());
-						}
-						else
-						{
-							addBuiltinClassOrConstant(child, url);
-						}
-						// Since the constant nodes are inserted to the
-						// built-ins directly, don't deal with them here.
-						// (they were already dealt with on the
-						// addBuiltinClassOrConstant call above)
-						if (!(child instanceof PHPConstantNode))
-						{
-							builtins.put(name, child);
-						}
-					}
-				}
-				catch (Exception e)
-				{
-					IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
-							+ url.getFile(), e);
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			IdeLog.logError(PHPEditorPlugin.getDefault(), "Error loading the built-in PHP API for " //$NON-NLS-1$
-					, e);
-		}
+		IdeLog.logError(PHPEditorPlugin.getDefault(), "Unknows PHPVersion " + version); //$NON-NLS-1$
+		return null;
 	}
 
 	/**
@@ -777,6 +685,8 @@ public final class PHPBuiltins
 
 	private PHPBuiltins()
 	{
+		// initiate empty values
+		initNames();
 	}
 
 	/**
@@ -797,9 +707,7 @@ public final class PHPBuiltins
 	{
 		long start = System.currentTimeMillis();
 		initializing = true;
-		this.php4Names = new HashSet<Object>();
-		this.php5Names = new HashSet<Object>();
-		this.php53Names = new HashSet<Object>();
+		initNames();
 		this.builtInFunctions = new HashMap<String, String>();
 		this.builtInClasses = new HashMap<String, String>();
 		this.builtInConstants = new HashMap<String, String>();
@@ -816,6 +724,15 @@ public final class PHPBuiltins
 		initializing = false;
 		IdeLog.logInfo(PHPEditorPlugin.getDefault(), "Built-ins clean: " //$NON-NLS-1$
 				+ (System.currentTimeMillis() - start) + "ms", null, PHPEditorPlugin.INDEXER_SCOPE); //$NON-NLS-1$
+	}
+
+	private void initNames()
+	{
+		phpNames = new HashMap<PHPVersion, Set<String>>();
+		for (PHPVersion version : EnumSet.allOf(PHPVersion.class))
+		{
+			phpNames.put(version, new HashSet<String>());
+		}
 	}
 
 	/**

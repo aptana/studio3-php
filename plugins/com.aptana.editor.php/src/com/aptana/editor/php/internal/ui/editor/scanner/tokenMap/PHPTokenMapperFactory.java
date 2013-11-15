@@ -32,6 +32,7 @@ public class PHPTokenMapperFactory
 	private static PHP4TokenMapper php4TokenMapper;
 	private static PHP5TokenMapper php5TokenMapper;
 	private static PHP53TokenMapper php53TokenMapper;
+	private static PHP54TokenMapper php54TokenMapper;
 
 	private static final Pattern CONSTANT_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
 
@@ -82,6 +83,7 @@ public class PHPTokenMapperFactory
 		LOGICAL_OPERATORS.add("or");
 		LOGICAL_OPERATORS.add("xor");
 		LOGICAL_OPERATORS.add("as");
+		LOGICAL_OPERATORS.add("insteadof");
 	}
 
 	private static Set<String> INC_DEC_OPERATORS = new HashSet<String>();
@@ -156,6 +158,12 @@ public class PHPTokenMapperFactory
 					php53TokenMapper = new PHP53TokenMapper();
 				}
 				return php53TokenMapper;
+			case PHP5_4:
+				if (php54TokenMapper == null)
+				{
+					php54TokenMapper = new PHP54TokenMapper();
+				}
+				return php54TokenMapper;
 
 		}
 		throw new IllegalArgumentException("Unknown PHP version " + phpVersion.getAlias()); //$NON-NLS-1$

@@ -20,7 +20,7 @@ function libxml_set_streams_context ($streams_context) {}
  * Disable libxml errors and allow user to fetch error information as needed
  * @link http://www.php.net/manual/en/function.libxml-use-internal-errors.php
  * @param use_errors bool[optional] <p>
- * Whether to enable user error handling.
+ * Enable (true) user error handling or disable (false) user error handling. Disabling will also clear any existing libxml errors.
  * </p>
  * @return bool This function returns the previous value of
  * use_errors.
@@ -58,22 +58,36 @@ function libxml_get_errors () {}
  * , 
  * and ) to load external entities.
  * </p>
- * @return ReturnType the previous value.
+ * @return bool the previous value.
  */
 function libxml_disable_entity_loader ($disable = null) {}
+
+/**
+ * Changes the default external entity loader
+ * @link http://www.php.net/manual/en/function.libxml-set-external-entity-loader.php
+ * @param resolver_function callable <p>
+ * A callable that takes three arguments. Two strings, a public id
+ * and system id, and a context (an array with four keys) as the third argument.
+ * This callback should return a resource, a string from which a resource can be
+ * opened, or &null;.
+ * </p>
+ * @return void 
+ */
+function libxml_set_external_entity_loader ($resolver_function) {}
 
 
 /**
  * libxml version like 20605 or 20617
  * @link http://www.php.net/manual/en/libxml.constants.php
  */
-define ('LIBXML_VERSION', 20632);
+define ('LIBXML_VERSION', 20800);
 
 /**
  * libxml version like 2.6.5 or 2.6.17
  * @link http://www.php.net/manual/en/libxml.constants.php
  */
-define ('LIBXML_DOTTED_VERSION', "2.6.32");
+define ('LIBXML_DOTTED_VERSION', "2.8.0");
+define ('LIBXML_LOADED_VERSION', 20800);
 
 /**
  * Substitute entities
@@ -140,6 +154,7 @@ define ('LIBXML_NOCDATA', 16384);
  * @link http://www.php.net/manual/en/libxml.constants.php
  */
 define ('LIBXML_NONET', 2048);
+define ('LIBXML_PEDANTIC', 128);
 
 /**
  * Activate small nodes allocation optimization. This may speed up your
@@ -161,6 +176,17 @@ define ('LIBXML_COMPACT', 65536);
 define ('LIBXML_NOXMLDECL', 2);
 
 /**
+ * Sets XML_PARSE_HUGE flag, which relaxes any hardcoded limit from the parser. This affects 
+ * limits like maximum depth of a document or the entity recursion, as well as limits of the 
+ * size of text nodes.
+ * <p>
+ * Only available in Libxml &gt;= 2.7.0 (as of PHP &gt;= 5.3.2 and PHP &gt;= 5.2.12)
+ * </p>
+ * @link http://www.php.net/manual/en/libxml.constants.php
+ */
+define ('LIBXML_PARSEHUGE', 524288);
+
+/**
  * Expand empty tags (e.g. &lt;br/&gt; to
  * &lt;br&gt;&lt;/br&gt;)
  * <p>
@@ -171,6 +197,8 @@ define ('LIBXML_NOXMLDECL', 2);
  * @link http://www.php.net/manual/en/libxml.constants.php
  */
 define ('LIBXML_NOEMPTYTAG', 4);
+define ('LIBXML_HTML_NOIMPLIED', 8192);
+define ('LIBXML_HTML_NODEFDTD', 4);
 
 /**
  * No errors

@@ -1246,6 +1246,7 @@ public class PhpAstLexer implements org2.eclipse.php.internal.core.ast.scanner.A
 	
 	
 	protected IDocumentorLexer getDocumentorLexer(java.io.Reader  reader) {
+		// Aptana Mod.
 		return new DocumentorLexer(reader, ast);
 	}
 	

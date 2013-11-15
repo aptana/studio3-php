@@ -245,6 +245,9 @@ public class Include extends Expression {
 	 *    resolved
 	 */	
 	public IBinding resolveBinding() {
-		return (IBinding) getBinding();
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveInclude(this);
+		return getBinding();
 	}
+
 }

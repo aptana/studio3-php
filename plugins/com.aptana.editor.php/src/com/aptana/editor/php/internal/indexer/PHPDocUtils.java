@@ -405,7 +405,8 @@ public final class PHPDocUtils
 	 * @param offset
 	 * @param content
 	 * @param type
-	 *            The comment's type (e.g. Comment.TYPE_PHPDOC, Comment.TYPE_PHPDOC | Comment.TYPE_SINGLE_LINE etc.)
+	 *            The comment's type (e.g. Comment.TYPE_PHPDOC, Comment.TYPE_PHPDOC, Comment.TYPE_SINGLE_LINE). -1 for
+	 *            any type.
 	 * @return A comment, or null if none was found.
 	 */
 	public static Comment getCommentByType(List<Comment> comments, int offset, String content, int type)
@@ -429,7 +430,7 @@ public final class PHPDocUtils
 			return null;
 		}
 
-		if ((nearestComment.getCommentType() & type) == 0)
+		if (type != -1 && (nearestComment.getCommentType() & type) == 0)
 		{
 			return null;
 		}

@@ -185,7 +185,8 @@ public class StaticFieldAccess extends StaticDispatch {
 	 *    resolved
 	 */	
 	public IVariableBinding resolveFieldBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveField(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveField(this);
 		return null;
 	}
 

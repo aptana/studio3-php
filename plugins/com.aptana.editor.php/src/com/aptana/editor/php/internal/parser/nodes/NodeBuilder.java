@@ -24,7 +24,7 @@ import org2.eclipse.php.internal.core.documentModel.phpElementData.IPHPDocBlock;
 
 import com.aptana.core.logging.IdeLog;
 import com.aptana.core.util.StringUtil;
-import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.html.core.IHTMLConstants;
 import com.aptana.editor.html.parsing.HTMLParseState;
 import com.aptana.editor.html.parsing.ast.HTMLElementNode;
 import com.aptana.editor.html.parsing.ast.HTMLTextNode;
@@ -151,6 +151,27 @@ public class NodeBuilder
 	}
 
 	/**
+	 * Handle a Trait declaration.
+	 * 
+	 * @param traitName
+	 * @param modifier
+	 * @param docInfo
+	 * @param startPosition
+	 * @param endPosition
+	 * @param lineNumber
+	 */
+	public void handleTraitDeclaration(String traitName, int modifier, IPHPDocBlock docInfo, int startPosition,
+			int endPosition, int lineNumber)
+	{
+		PHPTraitParseNode pn = new PHPTraitParseNode(modifier, startPosition, endPosition, traitName);
+		if (docInfo != null)
+		{
+			pn.setDocumentation(docInfo);
+		}
+		pushNode(pn);
+	}
+
+	/**
 	 * Handle the 'extends' section in the class declaration part.
 	 * 
 	 * @param superClassName
@@ -167,6 +188,26 @@ public class NodeBuilder
 			PHPExtendsNode superClass = new PHPExtendsNode(0, startPosition, endPosition, decodeClassName);
 			superClass.setNameNode(decodeClassName, startPosition, endPosition);
 			classNode.addChild(superClass);
+		}
+	}
+
+	/**
+	 * Handle the 'extends' section in a Trait declaration part.
+	 * 
+	 * @param superClassName
+	 * @param startPosition
+	 * @param endPosition
+	 */
+	public void handleTraitSuperclass(String superClassName, int startPosition, int endPosition)
+	{
+		if (superClassName != null)
+		{
+			String decodeClassName = decodeClassName(superClassName);
+			PHPTraitParseNode traitNode = (PHPTraitParseNode) current;
+			traitNode.setSuperClassName(decodeClassName);
+			PHPExtendsNode superClass = new PHPExtendsNode(0, startPosition, endPosition, decodeClassName);
+			superClass.setNameNode(decodeClassName, startPosition, endPosition);
+			traitNode.addChild(superClass);
 		}
 	}
 

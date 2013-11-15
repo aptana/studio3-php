@@ -7,16 +7,15 @@
  * @link http://www.php.net/manual/en/function.filter-input.php
  * @param type int <p>
  * One of INPUT_GET, INPUT_POST,
- * INPUT_COOKIE, INPUT_SERVER,
- * INPUT_ENV, INPUT_SESSION (not
- * implemented yet) or INPUT_REQUEST (not
- * implemented yet).
+ * INPUT_COOKIE, INPUT_SERVER, or
+ * INPUT_ENV.
  * </p>
  * @param variable_name string <p>
  * Name of a variable to get.
  * </p>
  * @param filter int[optional] <p>
- * Filter to apply.
+ * The ID of the filter to apply. The 
+ * manual page lists the available filters.
  * </p>
  * @param options mixed[optional] <p>
  * Associative array of options or bitwise disjunction of flags. If filter
@@ -36,12 +35,13 @@ function filter_input ($type, $variable_name, $filter = null, $options = null) {
  * Value to filter.
  * </p>
  * @param filter int[optional] <p>
- * ID of a filter to use (see the manual page).
+ * The ID of the filter to apply. The 
+ * manual page lists the available filters.
  * </p>
  * @param options mixed[optional] <p>
  * Associative array of options or bitwise disjunction of flags. If filter
  * accepts options, flags can be provided in "flags" field of array. For
- * the "callback" filter, callback type should be passed. The
+ * the "callback" filter, callable type should be passed. The
  * callback must accept one argument, the value to be filtered, and return
  * the value after filtering/sanitizing it.
  * </p>
@@ -59,15 +59,21 @@ function filter_input ($type, $variable_name, $filter = null, $options = null) {
  * // for filter that only accept flags, you can also pass as an array
  * $var = filter_var('oops', FILTER_VALIDATE_BOOLEAN,
  * array('flags' => FILTER_NULL_ON_FAILURE));
- * // callback filter
+ * // callback validate filter
  * function foo($value)
  * {
- * $ret = new stdClass;
- * $ret->value = filter_var($value, FILTER_VALIDATE_BOOLEAN,
- * array('flags' => FILTER_NULL_ON_FAILURE));
- * return $ret;
+ * // Expected format: Surname, GivenNames
+ * if (strpos($value, ", ") === false) return false;
+ * list($surname, $givennames) = explode(", ", $value, 2);
+ * $empty = (empty($surname) || empty($givennames));
+ * $notstrings = (!is_string($surname) || !is_string($givennames));
+ * if ($empty || $notstrings) {
+ * return false;
+ * } else {
+ * return $value;
  * }
- * $var = filter_var('yes', FILTER_CALLBACK, array('options' => 'foo'));
+ * }
+ * $var = filter_var('Doe, Jane Sue', FILTER_CALLBACK, array('options' => 'foo'));
  * ?>
  * ]]>
  * </p>
@@ -80,20 +86,18 @@ function filter_var ($variable, $filter = null, $options = null) {}
  * @link http://www.php.net/manual/en/function.filter-input-array.php
  * @param type int <p>
  * One of INPUT_GET, INPUT_POST,
- * INPUT_COOKIE, INPUT_SERVER,
- * INPUT_ENV, INPUT_SESSION (not implemented yet), or
- * INPUT_REQUEST (not implemented yet).
+ * INPUT_COOKIE, INPUT_SERVER, or
+ * INPUT_ENV.
  * </p>
  * @param definition mixed[optional] <p>
  * An array defining the arguments. A valid key is a string
- * containing a variable name and a valid value is either a filter type,
- * or an array optionally specifying the filter, flags and
- * options. If the value is an array, valid keys are
- * filter which specifies the filter type,
+ * containing a variable name and a valid value is either a filter type, or an array
+ * optionally specifying the filter, flags and options. If the value is an
+ * array, valid keys are filter which specifies the
+ * filter type,
  * flags which specifies any flags that apply to the
- * filter, and options which specifies any options
- * that apply to the filter. See the example below for a better
- * understanding.
+ * filter, and options which specifies any options that
+ * apply to the filter. See the example below for a better understanding.
  * </p>
  * <p>
  * This parameter can be also an integer holding a filter constant. Then all values in the
@@ -115,14 +119,14 @@ function filter_input_array ($type, $definition = null) {}
  * </p>
  * @param definition mixed[optional] <p>
  * An array defining the arguments. A valid key is a string
- * containing a variable name and a valid value is either a filter type,
- * or an array optionally specifying the filter, flags and
- * options. If the value is an array, valid keys are
- * filter which specifies the filter type,
+ * containing a variable name and a valid value is either a
+ * filter type, or an
+ * array optionally specifying the filter, flags and options.
+ * If the value is an array, valid keys are filter
+ * which specifies the filter type,
  * flags which specifies any flags that apply to the
- * filter, and options which specifies any options
- * that apply to the filter. See the example below for a better
- * understanding.
+ * filter, and options which specifies any options that
+ * apply to the filter. See the example below for a better understanding.
  * </p>
  * <p>
  * This parameter can be also an integer holding a filter constant. Then all values in the
@@ -148,7 +152,7 @@ function filter_list () {}
  * @link http://www.php.net/manual/en/function.filter-has-var.php
  * @param type int <p>
  * One of INPUT_GET, INPUT_POST,
- * INPUT_COOKIE, INPUT_SERVER,
+ * INPUT_COOKIE, INPUT_SERVER, or
  * INPUT_ENV.
  * </p>
  * @param variable_name string <p>
@@ -164,7 +168,7 @@ function filter_has_var ($type, $variable_name) {}
  * @param filtername string <p>
  * Name of a filter to get.
  * </p>
- * @return int ID of a filter on success or &null; if filter doesn't exist.
+ * @return int ID of a filter on success or false if filter doesn't exist.
  */
 function filter_id ($filtername) {}
 
@@ -320,6 +324,7 @@ define ('FILTER_SANITIZE_ENCODED', 514);
  * @link http://www.php.net/manual/en/filter.constants.php
  */
 define ('FILTER_SANITIZE_SPECIAL_CHARS', 515);
+define ('FILTER_SANITIZE_FULL_SPECIAL_CHARS', 515);
 
 /**
  * ID of "email" filter.
@@ -380,6 +385,7 @@ define ('FILTER_FLAG_STRIP_LOW', 4);
  * @link http://www.php.net/manual/en/filter.constants.php
  */
 define ('FILTER_FLAG_STRIP_HIGH', 8);
+define ('FILTER_FLAG_STRIP_BACKTICK', 512);
 
 /**
  * Encode characters with ASCII value less than 32.
@@ -429,17 +435,7 @@ define ('FILTER_FLAG_ALLOW_THOUSAND', 8192);
  * @link http://www.php.net/manual/en/filter.constants.php
  */
 define ('FILTER_FLAG_ALLOW_SCIENTIFIC', 16384);
-
-/**
- * Require scheme in "validate_url" filter.
- * @link http://www.php.net/manual/en/filter.constants.php
- */
 define ('FILTER_FLAG_SCHEME_REQUIRED', 65536);
-
-/**
- * Require host in "validate_url" filter.
- * @link http://www.php.net/manual/en/filter.constants.php
- */
 define ('FILTER_FLAG_HOST_REQUIRED', 131072);
 
 /**

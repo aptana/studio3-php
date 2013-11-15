@@ -29,7 +29,7 @@ import com.aptana.editor.common.text.rules.PartitionerSwitchingIgnoreRule;
 import com.aptana.editor.common.text.rules.SubPartitionScanner;
 import com.aptana.editor.common.text.rules.ThemeingDamagerRepairer;
 import com.aptana.editor.html.HTMLSourceConfiguration;
-import com.aptana.editor.html.IHTMLConstants;
+import com.aptana.editor.html.core.IHTMLConstants;
 import com.aptana.editor.php.internal.contentAssist.PHPContentAssistProcessor;
 import com.aptana.editor.php.internal.core.IPHPConstants;
 import com.aptana.editor.php.internal.parser.HeredocRule;

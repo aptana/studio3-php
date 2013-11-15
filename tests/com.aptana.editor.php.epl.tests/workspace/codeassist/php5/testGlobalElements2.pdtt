@@ -1,6 +1,9 @@
 --TEST--
 Test Global Variable
 --FILE--
-<? $myGlobalVar = 0; $myG| ?>
+<?
+$myGlobalVar = 0;
+$myG| 
+?>
 --EXPECT--
 field($myGlobalVar)

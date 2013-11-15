@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 
+import com.aptana.editor.php.internal.search.IElementNode;
+import com.aptana.editor.php.internal.search.ITypeNode;
 import com.aptana.editor.php.internal.search.PHPSearchEngine;
 
 /**
@@ -33,6 +35,8 @@ public class ElementSelectionDialog extends TypeSelectionDialog
 	private static final String CONSTANTS = "constants"; //$NON-NLS-1$
 	private static final String FUNCTIONS = "functions"; //$NON-NLS-1$
 	private static final String CLASSES = "classes"; //$NON-NLS-1$
+	private static final String TRAITS = "traits"; //$NON-NLS-1$
+	private boolean addTraits;
 	private boolean addClasses;
 	private boolean addFunctions;
 	private boolean addConstants;
@@ -42,6 +46,7 @@ public class ElementSelectionDialog extends TypeSelectionDialog
 	 */
 	protected void storeDialog(IDialogSettings settings)
 	{
+		settings.put(TRAITS, addTraits);
 		settings.put(CLASSES, addClasses);
 		settings.put(FUNCTIONS, addFunctions);
 		settings.put(CONSTANTS, addConstants);
@@ -57,12 +62,16 @@ public class ElementSelectionDialog extends TypeSelectionDialog
 	protected void fillContentProvider(AbstractContentProvider contentProvider, ItemsFilter itemsFilter,
 			IProgressMonitor progressMonitor) throws CoreException
 	{
-		if (addClasses)
+		if (addClasses || addTraits)
 		{
-			Collection<?> allKnownTypes = PHPSearchEngine.getInstance().getAllKnownTypes();
-			for (Object o : allKnownTypes)
+			Collection<ITypeNode> allKnownTypes = PHPSearchEngine.getInstance().getAllKnownTypes();
+			for (ITypeNode typeNode : allKnownTypes)
 			{
-				contentProvider.add(o, itemsFilter);
+				if ((addTraits && typeNode.getKind() == IElementNode.TRAIT)
+						|| (addClasses && typeNode.getKind() == IElementNode.CLASS))
+				{
+					contentProvider.add(typeNode, itemsFilter);
+				}
 			}
 		}
 		if (addFunctions)
@@ -99,7 +108,16 @@ public class ElementSelectionDialog extends TypeSelectionDialog
 	protected void createExtras(Composite content)
 	{
 		IDialogSettings dialogSettings = getDialogSettings();
-		String string = dialogSettings.get(CLASSES);
+		String string = dialogSettings.get(TRAITS);
+		if (string != null)
+		{
+			addTraits = Boolean.parseBoolean(string);
+		}
+		else
+		{
+			addTraits = true;
+		}
+		string = dialogSettings.get(CLASSES);
 		if (string != null)
 		{
 			addClasses = Boolean.parseBoolean(string);
@@ -127,11 +145,14 @@ public class ElementSelectionDialog extends TypeSelectionDialog
 			addConstants = true;
 		}
 		Group extraBar = new Group(content, SWT.NONE);
-		extraBar.setLayout(new GridLayout(3, false));
+		extraBar.setLayout(new GridLayout(4, false));
+		final Button traits = new Button(extraBar, SWT.CHECK);
 		final Button classes = new Button(extraBar, SWT.CHECK);
 		final Button functions = new Button(extraBar, SWT.CHECK);
 		final Button constants = new Button(extraBar, SWT.CHECK);
 		extraBar.setText(Messages.ElementSelectionDialog_extraBarText);
+		traits.setText(Messages.ElementSelectionDialog_traits);
+		traits.setSelection(addTraits);
 		classes.setText(Messages.ElementSelectionDialog_classes);
 		classes.setSelection(addClasses);
 		functions.setText(Messages.ElementSelectionDialog_functions);
@@ -148,6 +169,7 @@ public class ElementSelectionDialog extends TypeSelectionDialog
 
 			public void widgetSelected(SelectionEvent e)
 			{
+				addTraits = traits.getSelection();
 				addClasses = classes.getSelection();
 				addFunctions = functions.getSelection();
 				addConstants = constants.getSelection();
@@ -155,6 +177,7 @@ public class ElementSelectionDialog extends TypeSelectionDialog
 			}
 
 		};
+		traits.addSelectionListener(selectionListener);
 		classes.addSelectionListener(selectionListener);
 		functions.addSelectionListener(selectionListener);
 		constants.addSelectionListener(selectionListener);

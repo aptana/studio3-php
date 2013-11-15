@@ -52,13 +52,20 @@ public class TypeSelectionDialog extends CustomFilteredItemsSelectionDialog
 			if (element instanceof ITypeNode)
 			{
 				ITypeNode node = (ITypeNode) element;
-				int modifiers = node.getModifiers();
-				if (PHPFlags.isInterface(modifiers))
+				if (node.getKind() == IElementNode.TRAIT)
 				{
-					return PHPOutlineLabelProvider.INTERFACE_ICON;
+					return PHPOutlineLabelProvider.TRAIT_ICON;
 				}
-				return PHPOutlineLabelProvider.CLASS_ICON;
-				// return super.getImage(element);
+				else
+				{
+
+					int modifiers = node.getModifiers();
+					if (PHPFlags.isInterface(modifiers))
+					{
+						return PHPOutlineLabelProvider.INTERFACE_ICON;
+					}
+					return PHPOutlineLabelProvider.CLASS_ICON;
+				}
 			}
 			if (element instanceof IElementNode)
 			{

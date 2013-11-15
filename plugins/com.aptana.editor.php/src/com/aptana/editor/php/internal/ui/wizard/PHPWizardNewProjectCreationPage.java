@@ -58,7 +58,7 @@ public class PHPWizardNewProjectCreationPage extends CommonWizardNewProjectCreat
 		fPHPVersions = new Combo(group, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
 		fPHPVersions.setItems(PHPVersionConfigurationBlock.PHP_VERSION_NAMES
 				.toArray(new String[PHPVersionConfigurationBlock.PHP_VERSION_NAMES.size()]));
-		selectedAlias = PHPVersion.PHP5_3.getAlias();
+		selectedAlias = PHPVersion.getLatest().getAlias();
 		setSelectedVersion(selectedAlias);
 		// Update the 'selectedAlias' on combo selection changes.
 		// We do that to avoid a 'widget dispose' errors when accessing this field after the page was disposed.

@@ -213,6 +213,8 @@ public class MethodDeclaration extends BodyDeclaration {
 	 *    resolved
 	 */
 	public IMethodBinding resolveMethodBinding() {
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveMethod(this);
 		return (IMethodBinding) this.getBinding();
 	}
 }
