@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -13,10 +13,12 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.IRegion;
+import org2.eclipse.php.core.compiler.PHPFlags;
 import org2.eclipse.php.internal.core.ast.nodes.ASTError;
 import org2.eclipse.php.internal.core.ast.nodes.ASTNode;
 import org2.eclipse.php.internal.core.ast.nodes.ArrayAccess;
@@ -28,6 +30,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Block;
 import org2.eclipse.php.internal.core.ast.nodes.BreakStatement;
 import org2.eclipse.php.internal.core.ast.nodes.CastExpression;
 import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall;
 import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org2.eclipse.php.internal.core.ast.nodes.ClassName;
@@ -37,6 +40,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
 import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
 import org2.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DereferenceNode;
 import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EchoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EmptyStatement;
@@ -47,6 +51,7 @@ import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
 import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
@@ -67,6 +72,7 @@ import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList;
 import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PostfixExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PrefixExpression;
@@ -83,6 +89,11 @@ import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAlias;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
+import org2.eclipse.php.internal.core.ast.nodes.TraitStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
@@ -118,6 +129,7 @@ import com.aptana.editor.php.formatter.nodes.FormatterPHPParenthesesNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPPunctuationNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPSwitchNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTextNode;
+import com.aptana.editor.php.formatter.nodes.FormatterPHPTraitPrecedenceWrapperNode;
 import com.aptana.editor.php.formatter.nodes.FormatterPHPTypeBodyNode;
 import com.aptana.editor.php.internal.indexer.PHPDocUtils;
 import com.aptana.formatter.FormatterDocument;
@@ -391,17 +403,25 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(ArrayCreation arrayCreation)
 	{
+		// PHP 5.4 introduced a short-syntax for array creations.
+		// for example: $args = ['superman', 'foo' => 'bar', 'batman', 'spiderman'];
+		boolean isShortSyntax = !arrayCreation.isHasArrayKey();
 		// we need to make sure we do not add a new line in front of the 'array' in some cases,
 		// therefore, we push a common declaration. We set the 'hasBlockedBody' to true to avoid
 		// indentation.
-		int declarationEndOffset = arrayCreation.getStart() + 5;
-		visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
+		int declarationEndOffset = arrayCreation.getStart();
+		if (!isShortSyntax)
+		{
+			declarationEndOffset += 5;
+			visitCommonDeclaration(arrayCreation, declarationEndOffset, true);
+		}
 		List<ArrayElement> elements = arrayCreation.elements();
 		// It's possible to have an extra comma at the end of the array creation. This comma is not
 		// included in the elements given to us by the arrayCreation so we have to look for it by passing 'true'
 		// as the value of 'lookForExtraComma'.
+		TypeBracket bracketType = isShortSyntax ? TypeBracket.ARRAY_SQUARE : TypeBracket.ARRAY_PARENTHESIS;
 		pushParametersInParentheses(declarationEndOffset, arrayCreation.getEnd(), elements,
-				TypePunctuation.ARRAY_COMMA, true, TypeBracket.ARRAY_PARENTHESIS);
+				TypePunctuation.ARRAY_COMMA, true, bracketType, false);
 		return false;
 	}
 
@@ -612,10 +632,16 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			// create a constructor node
 			List<Expression> ctorParams = classInstanceCreation.ctorParams();
 			pushParametersInParentheses(className.getEnd(), classInstanceCreation.getEnd(), ctorParams,
-					TypePunctuation.COMMA, false, TypeBracket.DECLARATION_PARENTHESIS);
+					TypePunctuation.COMMA, false, TypeBracket.DECLARATION_PARENTHESIS, false);
 		}
-		// check and push a semicolon (if appears after the end of this instance creation)
-		// pushSemicolon(creationEnd, false, true);
+		// PHP 5.4 - chainingInstanceCall
+		ChainingInstanceCall chainingInstanceCall = classInstanceCreation.getChainingInstanceCall();
+		if (chainingInstanceCall != null)
+		{
+			// This is the only place that we can call the visit for the ChainingInstanceCall.
+			// It's not being called by the regular AST visitor, so we need to call it here.
+			chainingInstanceCall.accept(this);
+		}
 		return false;
 	}
 
@@ -647,7 +673,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		List<ASTNode> expressionInList = new ArrayList<ASTNode>(1);
 		expressionInList.add(cloneExpression.getExpression());
 		pushParametersInParentheses(cloneStart + 5, cloneExpression.getEnd(), expressionInList, TypePunctuation.COMMA,
-				false, TypeBracket.INVOCATION_PARENTHESIS);
+				false, TypeBracket.INVOCATION_PARENTHESIS, true);
 		return false;
 	}
 
@@ -752,7 +778,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				right.accept(this);
 			}
 			// add a separator if needed
-			if (i + 1 < leftNodes.size())
+			if (pairsSeparator != null && i + 1 < leftNodes.size())
 			{
 				int startIndex = left.getEnd();
 				String text = document.get(startIndex, leftNodes.get(i + 1).getStart());
@@ -833,9 +859,9 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the expressions one at a time, with comma nodes between them.
 		List<Expression> expressions = echoStatement.expressions();
 		pushParametersInParentheses(echoStart + 4, echoStatement.getEnd(), expressions, TypePunctuation.COMMA, false,
-				TypeBracket.INVOCATION_PARENTHESIS);
+				TypeBracket.INVOCATION_PARENTHESIS, true);
 		// locate the semicolon at the end of the expression. If exists, push it as a node.
-		int end = expressions.get(expressions.size() - 1).getEnd();
+		int end = Math.max(echoStatement.getEnd() - 1, expressions.get(expressions.size() - 1).getEnd());
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, end, false, true);
 		return false;
 	}
@@ -1234,6 +1260,21 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	@Override
 	public boolean visit(LambdaFunctionDeclaration lambdaFunctionDeclaration)
 	{
+		if (lambdaFunctionDeclaration.isStatic())
+		{
+			// Unfortunately, the only way to get to the 'static' keyword is by traversing back and look for the 's'.
+			int lambdaStart = lambdaFunctionDeclaration.getStart();
+			int staticStart = PHPFormatterNodeBuilder.locateCharBackward(document, 's', lambdaStart);
+			if (lambdaStart != staticStart)
+			{
+				// push a 'static' keyword node
+				FormatterPHPKeywordNode staticNode = new FormatterPHPKeywordNode(document, false, false);
+				staticNode
+						.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, staticStart, staticStart + 6));
+				builder.push(staticNode);
+				builder.checkedPop(staticNode, -1);
+			}
+		}
 		visitFunctionDeclaration(lambdaFunctionDeclaration, null, lambdaFunctionDeclaration.formalParameters(),
 				lambdaFunctionDeclaration.lexicalVariables(), lambdaFunctionDeclaration.getBody());
 		return false;
@@ -1251,7 +1292,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		int start = listVariable.getStart();
 		pushFunctionInvocationName(listVariable, start, start + 4);
 		pushParametersInParentheses(start + 4, listVariable.getEnd(), variables, TypePunctuation.COMMA, false,
-				TypeBracket.DECLARATION_PARENTHESIS);
+				TypeBracket.DECLARATION_PARENTHESIS, false);
 		return false;
 	}
 
@@ -1264,7 +1305,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	public boolean visit(MethodDeclaration methodDeclaration)
 	{
 		FunctionDeclaration function = methodDeclaration.getFunction();
-		visitModifiers(methodDeclaration, function);
+		visitModifiers(methodDeclaration.getStart(), function.getStart());
 		function.accept(this);
 		return false;
 	}
@@ -1280,7 +1321,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// A class field declaration is treated in a similar way we treat a class method declaration
 		Variable[] variableNames = fieldsDeclaration.getVariableNames();
 		Variable firstVariable = variableNames[0];
-		visitModifiers(fieldsDeclaration, firstVariable);
+		visitModifiers(fieldsDeclaration.getStart(), firstVariable.getStart());
 		// visit the variables and their values
 		Expression[] initialValues = fieldsDeclaration.getInitialValues();
 		// visit the variables and their initial values
@@ -1642,8 +1683,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// APSTUD-3382 - Check if we have a comment right before the end of this switch.
 		if (hasAnyCommentBefore(endingOffset))
 		{
-			Comment comment = PHPDocUtils.getCommentByType(comments, endingOffset, document.getText(),
-					Comment.TYPE_MULTILINE | Comment.TYPE_PHPDOC | Comment.TYPE_SINGLE_LINE);
+			Comment comment = PHPDocUtils.getCommentByType(comments, endingOffset, document.getText(), -1);
 			if (comment != null)
 			{
 				// push a text node for that comment
@@ -1768,7 +1808,25 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	{
 		pushKeyword(throwStatement.getStart(), 5, true, false);
 		Expression expression = throwStatement.getExpression();
-		expression.accept(this);
+		if (expression instanceof ParenthesisExpression)
+		{
+			expression.accept(this);
+		}
+		else
+		{
+			// Unlike PHP 5.3, the PHP 5.4 parser does not give us a ParenthesisExpression when there is an expression
+			// like "throw (new Exception());"
+			// We need to manually check for parenthesis that wrap the expression.
+			String text = document.get(throwStatement.getStart() + 5, expression.getStart());
+			if (text.trim().startsWith("(")) { //$NON-NLS-1$
+				pushNodeInParentheses('(', ')', throwStatement.getStart() + 5, expression.getEnd(), expression,
+						TypeBracket.PARENTHESIS);
+			}
+			else
+			{
+				expression.accept(this);
+			}
+		}
 		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, expression.getEnd(), false, true);
 		return false;
 	}
@@ -1859,6 +1917,242 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		return false;
 	}
 
+	// ### PHP 5.4 nodes ### //
+
+	/**
+	 * ChainingInstanceCall visit. For example: <code>$X = (new foo)->setX(20)->getX();</code>
+	 * 
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 *      ChainingInstanceCall)
+	 */
+	@Override
+	public boolean visit(ChainingInstanceCall chainingCall)
+	{
+		// We skip this one. It's being covered by the method/function visits.
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * FullyQualifiedTraitMethodReference)
+	 */
+	@Override
+	public boolean visit(FullyQualifiedTraitMethodReference node)
+	{
+		// e.g. B::foo in a trait 'use' expression.
+		visitLeftRightExpression(node, node.getClassName(), node.getFunctionName(),
+				TypeOperator.STATIC_INVOCATION.toString());
+		return false;
+	}
+
+	/**
+	 * PHPArrayDereferenceList visit. For example:
+	 * 
+	 * <pre>
+	 * function cars() {
+	 *   return ['Honda', 'Toyota', 'Lotus'];
+	 * }
+	 * echo cars()[2]; // Outputs: Lotus
+	 * </pre>
+	 * 
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 *      PHPArrayDereferenceList)
+	 */
+	@Override
+	public boolean visit(PHPArrayDereferenceList dereferenceList)
+	{
+		// Drill down to the DereferenceNode visit...
+		return super.visit(dereferenceList);
+	}
+
+	/**
+	 * DereferenceNode visit for the square brackets we have at the PHPArrayDereferenceList expression.
+	 * 
+	 * @see PHPArrayDereferenceList
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 *      DereferenceNode)
+	 */
+	@Override
+	public boolean visit(DereferenceNode dereferenceNode)
+	{
+		pushNodeInParentheses('[', ']', dereferenceNode.getStart(), dereferenceNode.getEnd(),
+				dereferenceNode.getName(), TypeBracket.ARRAY_SQUARE);
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.TraitAlias
+	 * )
+	 */
+	@Override
+	public boolean visit(TraitAlias node)
+	{
+		// @formatter:off
+		// For example, each line in this block is a TraitAliasStatement node:
+		// use A {
+		//   B::foo as C;
+		//   myFunc as protected;
+		//   sayHello as private myPrivateHello;
+		// }
+		// @formatter:on
+
+		// Wrap this one with a node
+		FormatterPHPTraitPrecedenceWrapperNode wrapperNode = new FormatterPHPTraitPrecedenceWrapperNode(document);
+		int start = node.getStart();
+		int end = node.getEnd();
+		wrapperNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, start, start));
+		builder.push(wrapperNode);
+
+		// Visit the method
+		Expression traitMethod = node.getTraitMethod();
+		traitMethod.accept(this);
+
+		// push the 'as' keyword. Start by looking for the functionName and a possible modifier. Note that in case the
+		// modifer is 'public', we have to check for an actual 'public' keyword. The default modifier is 'public',
+		// however, it's not neccessary to include the keyword in the PHP code.
+		String modifier = PHPFlags.toString(node.getModifier());
+		Identifier functionName = node.getFunctionName();
+		int traitMethodEndOffset = traitMethod.getEnd();
+		String txt = document.get(traitMethodEndOffset,
+				functionName != null ? functionName.getStart() : node.getModifierOffset());
+		int asStart = traitMethodEndOffset + txt.toLowerCase().indexOf("as"); //$NON-NLS-1$
+		visitTextNode(asStart, asStart + 2, true, 1, 1);
+
+		// Visit any modifier we have
+		int modifierOffset = node.getModifierOffset();
+		if (txt.indexOf(modifier) > -1 || functionName == null)
+		{
+			visitTextNode(modifierOffset, modifierOffset + modifier.length(), true, 1, functionName != null ? 1 : 0);
+		}
+		// Visit the function name or push the modifier string
+		if (functionName != null)
+		{
+			functionName.accept(this);
+		}
+
+		// Close the wrapper
+		wrapperNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, end, end));
+		builder.checkedPop(wrapperNode, -1);
+
+		// Push a semicolon and make sure it's a line-terminating one.
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, node.getEnd() - 1, false, true);
+
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitDeclaration)
+	 */
+	@Override
+	public boolean visit(TraitDeclaration traitDeclaration)
+	{
+		visitTypeDeclaration(traitDeclaration);
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitPrecedence)
+	 */
+	@Override
+	public boolean visit(TraitPrecedence node)
+	{
+		// @formatter:off
+		// For example, each line in this block is a TraitPrecedence node:
+		// use A {
+		//   B::foo insteadof A, B, C;
+		//   A::fii insteadof D;
+		// }
+		// @formatter:on
+
+		// Wrap this one with a node
+		FormatterPHPTraitPrecedenceWrapperNode wrapperNode = new FormatterPHPTraitPrecedenceWrapperNode(document);
+		int start = node.getStart();
+		int end = node.getEnd();
+		wrapperNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, start, start));
+		builder.push(wrapperNode);
+
+		// Visit the fully-qualified trait reference that appears before the 'insteadof' keyword.
+		FullyQualifiedTraitMethodReference methodReference = node.getMethodReference();
+		methodReference.accept(this);
+
+		// push the 'insteadof' keyword.
+		List<NamespaceName> trList = node.getTrList();
+		int exprEnd = methodReference.getEnd();
+		String txt = document.get(exprEnd, trList.get(0).getStart());
+		int insteadofStart = exprEnd + txt.toLowerCase().indexOf("insteadof"); //$NON-NLS-1$
+		visitTextNode(insteadofStart, insteadofStart + 9, true, 1, 1);
+
+		// Visit the list of trait names that appear after the 'insteadof' keyword.
+		visitNodeLists(trList, null, null, TypePunctuation.COMMA);
+
+		// Close the wrapper
+		wrapperNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, end, end));
+		builder.checkedPop(wrapperNode, -1);
+
+		// Push a semicolon and make sure it's a line-terminating one.
+		findAndPushPunctuationNode(TypePunctuation.SEMICOLON, trList.get(trList.size() - 1).getEnd() - 1, false, true);
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitUseStatement)
+	 */
+	@Override
+	public boolean visit(TraitUseStatement traitUse)
+	{
+		pushKeyword(traitUse.getStart(), 3, true, false);
+		// Push the trait list
+		List<NamespaceName> traitList = traitUse.getTraitList();
+		visitNodeLists(traitList, null, null, TypePunctuation.COMMA);
+		// This will visit the NamespaceName nodes that exist as the TraitUseStatement children.
+
+		// visit any 'conflict-resolution' block (e.g. B::foo insteadof A;)
+		List<TraitStatement> tsList = traitUse.getTsList();
+		if (tsList != null)
+		{
+			// look for curly brackets. Note that there is no easy way to tell if the list is empty because it does not
+			// exist, or it's empty because we have an empty block.
+			int lastTraitListOffset = traitList.get(traitList.size() - 1).getEnd() - 1;
+			int openCurlyOffset = PHPFormatterNodeBuilder.locateCharForward(document, '{', lastTraitListOffset,
+					comments);
+			FormatterPHPBlockNode blockNode = null;
+			if (openCurlyOffset != lastTraitListOffset && openCurlyOffset < traitUse.getEnd())
+			{
+				blockNode = new FormatterPHPBlockNode(document, false);
+				blockNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openCurlyOffset,
+						openCurlyOffset + 1));
+				builder.push(blockNode);
+			}
+			if (!tsList.isEmpty())
+			{
+				for (TraitStatement statement : tsList)
+				{
+					statement.accept(this);
+				}
+			}
+			if (blockNode != null)
+			{
+				// locate the closin curly and push it.
+				int closeCurlyOffset = PHPFormatterNodeBuilder.locateCharBackward(document, '}', traitUse.getEnd(),
+						comments);
+				blockNode.setEnd(AbstractFormatterNodeBuilder.createTextNode(document, closeCurlyOffset,
+						closeCurlyOffset + 1));
+				builder.checkedPop(blockNode, traitUse.getEnd());
+			}
+
+		}
+		return false;
+	}
+
 	// ###################### Helper Methods ###################### //
 
 	/**
@@ -1917,7 +2211,13 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		// push the parenthesis and the parameters (if exist)
 		List<Expression> invocationParameters = functionInvocation.parameters();
 		pushParametersInParentheses(functionName.getEnd(), functionInvocation.getEnd(), invocationParameters,
-				TypePunctuation.COMMA, false, TypeBracket.INVOCATION_PARENTHESIS);
+				TypePunctuation.COMMA, false, TypeBracket.INVOCATION_PARENTHESIS, false);
+		// PHP 5.4
+		PHPArrayDereferenceList arrayDereferenceList = functionInvocation.getArrayDereferenceList();
+		if (arrayDereferenceList != null)
+		{
+			arrayDereferenceList.accept(this);
+		}
 	}
 
 	/**
@@ -1951,30 +2251,49 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 *            it was found.
 	 * @param bracketsType
 	 *            The type of parentheses to push.
+	 * @param needsMatchingBracketVerification
+	 *            Indicate that a brackets check needs to be done in order to determine if a parentheses node is to be
+	 *            added. This is needed in some special cases where the brackets are optional (like with 'echo'
+	 *            statements).
 	 */
 	private void pushParametersInParentheses(int declarationEndOffset, int expressionEndOffset,
 			List<? extends ASTNode> parameters, TypePunctuation punctuationType, boolean lookForExtraComma,
-			TypeBracket bracketsType)
+			TypeBracket bracketsType, boolean needsMatchingBracketVerification)
 	{
 		// in some cases, we get a ParethesisExpression inside a single parameter.
 		// for those cases, we skip the parentheses node push and go straight to the
 		// push of the ParethesisExpression, which should handle the rest.
 		boolean pushParenthesisNode = parameters.size() != 1 || parameters.size() == 1
 				&& parameters.get(0).getType() != ASTNode.PARENTHESIS_EXPRESSION;
+
+		int openParenOffset = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
+		if (needsMatchingBracketVerification && pushParenthesisNode)
+		{
+			// This check will handle different cases, like:
+			// echo 1;
+			// echo (new IDE) -> first();
+			// echo ('hello');
+			if (openParenOffset > -1 && document.charAt(openParenOffset) == bracketsType.getLeft().charAt(0))
+			{
+				// We make sure that the expression starts and ends with a matching parentheses that wraps it.
+				pushParenthesisNode = isWrappedInMatchingBrackets(bracketsType, declarationEndOffset,
+						expressionEndOffset, document);
+			}
+		}
 		FormatterPHPParenthesesNode parenthesesNode = null;
 		if (pushParenthesisNode)
 		{
-			int openParen = builder.getNextNonWhiteCharOffset(document, declarationEndOffset);
-			if (document.charAt(openParen) == '(')
+			if (bracketsType.getLeft().charAt(0) == document.charAt(openParenOffset))
 			{
 				parenthesesNode = new FormatterPHPParenthesesNode(document, false, parameters.size(), bracketsType);
-				parenthesesNode.setBegin(AbstractFormatterNodeBuilder
-						.createTextNode(document, openParen, openParen + 1));
+				parenthesesNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openParenOffset,
+						openParenOffset + 1));
 			}
 			else
 			{
 				parenthesesNode = new FormatterPHPParenthesesNode(document, true, parameters.size(), bracketsType);
-				parenthesesNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openParen, openParen));
+				parenthesesNode.setBegin(AbstractFormatterNodeBuilder.createTextNode(document, openParenOffset,
+						openParenOffset));
 			}
 			builder.push(parenthesesNode);
 		}
@@ -1999,8 +2318,8 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			int closeParenEnd = expressionEndOffset;
 			if (!parenthesesNode.isAsWrapper())
 			{
-				closeParenStart = PHPFormatterNodeBuilder.locateCharBackward(document, ')', expressionEndOffset - 1,
-						comments);
+				closeParenStart = PHPFormatterNodeBuilder.locateCharBackward(document, bracketsType.getRight()
+						.charAt(0), expressionEndOffset - 1, comments);
 				closeParenEnd = closeParenStart + 1;
 			}
 			if (hasSingleLineCommentBefore(closeParenStart))
@@ -2058,12 +2377,11 @@ public class PHPFormatterVisitor extends AbstractVisitor
 	 * @param nextNode
 	 *            The next node that appears right after the modifiers.
 	 */
-	private void visitModifiers(ASTNode node, ASTNode nextNode)
+	private void visitModifiers(int startOffset, int endOffset)
 	{
 		// The gap between the start and the function holds the modifiers (if exist).
 		// We create a node for each of these modifiers to remove any extra spaces they have between them.
-		int startOffset = node.getStart();
-		String modifiers = document.get(startOffset, nextNode.getStart());
+		String modifiers = document.get(startOffset, endOffset);
 		Matcher matcher = WORD_PATTERN.matcher(modifiers);
 		boolean isFirst = true;
 		while (matcher.find())
@@ -2260,7 +2578,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 		}
 		// push the function parameters
 		pushParametersInParentheses(declarationEnd, parametersEnd, formalParameters, TypePunctuation.COMMA, false,
-				TypeBracket.DECLARATION_PARENTHESIS);
+				TypeBracket.DECLARATION_PARENTHESIS, false);
 		// In case we have 'lexical' parameters, like we get with a lambda-function, we push them after pushing the
 		// 'use' keyword (for example: function($aaa) use ($bbb, $ccc)...)
 		if (hasLexicalParams)
@@ -2270,7 +2588,7 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			pushKeyword(useKeywordStart, 3, false, false);
 			// Push the lexical parameters
 			pushParametersInParentheses(useKeywordStart + 3, body.getStart(), lexicalParameters, TypePunctuation.COMMA,
-					false, TypeBracket.DECLARATION_PARENTHESIS);
+					false, TypeBracket.DECLARATION_PARENTHESIS, false);
 		}
 
 		// Then, push the body
@@ -2439,10 +2757,14 @@ public class PHPFormatterVisitor extends AbstractVisitor
 				comments);
 		if (punctuationOffset != offsetToSearch || document.charAt(punctuationOffset) == punctuationType)
 		{
-			String segment = document.get(offsetToSearch, punctuationOffset);
-			if (!ignoreNonWhitespace && segment.trim().length() > 0)
+			if (offsetToSearch + 1 < punctuationOffset)
 			{
-				return;
+				// Check this when the punctuation type was found a few characters ahead (not off by one).
+				String segment = document.get(offsetToSearch, punctuationOffset);
+				if (!ignoreNonWhitespace && segment.trim().length() > 0)
+				{
+					return;
+				}
 			}
 			if (isLineTerminating)
 			{
@@ -2541,5 +2863,49 @@ public class PHPFormatterVisitor extends AbstractVisitor
 			}
 		}
 		return offset;
+	}
+
+	/**
+	 * Check if the document range is wrapped in matching brackets. Not only that the brackets have to be balanced, they
+	 * also need to wrap the range (excluding whitespaces).
+	 * 
+	 * @param bracketsType
+	 * @param startOffset
+	 * @param endOffset
+	 * @param document
+	 * @return <code>true</code> iff the range is wrapped with the bracket-type open and close chars; <code>false</code>
+	 *         otherwise.
+	 */
+	private static boolean isWrappedInMatchingBrackets(TypeBracket bracketsType, int startOffset, int endOffset,
+			FormatterDocument document)
+	{
+		endOffset = Math.min(endOffset, document.getLength() - 1);
+		if (document.charAt(endOffset) == ';')
+		{
+			endOffset--;
+		}
+		char openChar = bracketsType.getLeft().charAt(0);
+		char closeChar = bracketsType.getRight().charAt(0);
+		Stack<Character> brackets = new Stack<Character>();
+		for (; startOffset <= endOffset; startOffset++)
+		{
+			char c = document.charAt(startOffset);
+			if (c == openChar)
+			{
+				brackets.push(c);
+			}
+			else if (c == closeChar)
+			{
+				if (brackets.isEmpty() || brackets.pop().charValue() != openChar)
+				{
+					return false;
+				}
+			}
+			else if (!Character.isWhitespace(c) && brackets.isEmpty())
+			{
+				return false;
+			}
+		}
+		return brackets.isEmpty();
 	}
 }

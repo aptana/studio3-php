@@ -26,6 +26,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Block;
 import org2.eclipse.php.internal.core.ast.nodes.BreakStatement;
 import org2.eclipse.php.internal.core.ast.nodes.CastExpression;
 import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall;
 import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org2.eclipse.php.internal.core.ast.nodes.ClassName;
@@ -35,6 +36,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
 import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
 import org2.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DereferenceNode;
 import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EchoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EmptyStatement;
@@ -45,6 +47,7 @@ import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
 import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
@@ -65,6 +68,7 @@ import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList;
 import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PostfixExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PrefixExpression;
@@ -83,6 +87,10 @@ import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAlias;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
+import org2.eclipse.php.internal.core.ast.nodes.TraitStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
@@ -90,6 +98,8 @@ import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
 import org2.eclipse.php.internal.core.ast.nodes.Variable;
 import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
+
+import com.aptana.core.util.ObjectUtil;
 
 /**
  * Concrete superclass and default implementation of an AST subtree matcher.
@@ -149,7 +159,6 @@ public class ASTMatcher {
 	 * @param matchDocTags
 	 *            <code>true</code> if doc comment tags are to be compared by
 	 *            default, and <code>false</code> otherwise
-	 * @see #match(Javadoc,Object)
 	 * @since 3.0
 	 */
 	public ASTMatcher(boolean matchDocTags) {
@@ -353,7 +362,7 @@ public class ASTMatcher {
 
 		return (safeSubtreeMatch(node.getName(), o.getName())
 				&& safeSubtreeMatch(node.getIndex(), o.getIndex()) && safeEquals(
-				node.getArrayType(), o.getArrayType()));
+					node.getArrayType(), o.getArrayType()));
 	}
 
 	public boolean match(ArrayCreation node, Object other) {
@@ -382,9 +391,9 @@ public class ASTMatcher {
 		Assignment o = (Assignment) other;
 
 		return (safeEquals(node.getOperator(), o.getOperator())
-				&& safeSubtreeMatch(node.getRightHandSide(), o
-						.getRightHandSide()) && safeSubtreeMatch(node
-				.getLeftHandSide(), o.getLeftHandSide()));
+				&& safeSubtreeMatch(node.getRightHandSide(),
+						o.getRightHandSide()) && safeSubtreeMatch(
+					node.getLeftHandSide(), o.getLeftHandSide()));
 	}
 
 	public boolean match(ASTError node, Object other) {
@@ -438,17 +447,9 @@ public class ASTMatcher {
 
 		return (safeSubtreeMatch(node.getClassName(), o.getClassName())
 				&& safeSubtreeMatch(node.getVariable(), o.getVariable()) && safeSubtreeMatch(
-				node.getBody(), o.getBody()));
+					node.getBody(), o.getBody()));
 	}
 
-	public boolean match(ThrowStatement node, Object other) {
-		if (!(other instanceof ThrowStatement)) {
-			return false;
-		}
-		ThrowStatement o = (ThrowStatement) other;
-		return (safeSubtreeMatch(node.getExpression(), o.getExpression()));
-	}
-	
 	public boolean match(ConstantDeclaration node, Object other) {
 		if (!(other instanceof ConstantDeclaration)) {
 			return false;
@@ -467,7 +468,7 @@ public class ASTMatcher {
 
 		return (safeEquals(node.getModifier(), o.getModifier())
 				&& safeSubtreeMatch(node.getSuperClass(), o.getSuperClass()) && match(
-				(TypeDeclaration) node, (TypeDeclaration) o));
+					(TypeDeclaration) node, (TypeDeclaration) o));
 	}
 
 	private boolean match(TypeDeclaration node, Object other) {
@@ -478,7 +479,7 @@ public class ASTMatcher {
 
 		return (safeSubtreeMatch(node.getName(), o.getName())
 				&& safeSubtreeMatch(node.getBody(), o.getBody()) && safeSubtreeListMatch(
-				node.interfaces(), o.interfaces()));
+					node.interfaces(), o.interfaces()));
 	}
 
 	public boolean match(ClassInstanceCreation node, Object other) {
@@ -522,7 +523,7 @@ public class ASTMatcher {
 
 		return (safeSubtreeMatch(node.getCondition(), o.getCondition())
 				&& safeSubtreeMatch(node.getIfTrue(), o.getIfTrue()) && safeSubtreeMatch(
-				node.getIfFalse(), o.getIfFalse()));
+					node.getIfFalse(), o.getIfFalse()));
 	}
 
 	public boolean match(ContinueStatement node, Object other) {
@@ -541,9 +542,9 @@ public class ASTMatcher {
 		DeclareStatement o = (DeclareStatement) other;
 
 		return (safeSubtreeMatch(node.getBody(), o.getBody())
-				&& safeSubtreeListMatch(node.directiveNames(), o
-						.directiveNames()) && safeSubtreeListMatch(node
-				.directiveValues(), o.directiveValues()));
+				&& safeSubtreeListMatch(node.directiveNames(),
+						o.directiveNames()) && safeSubtreeListMatch(
+					node.directiveValues(), o.directiveValues()));
 	}
 
 	public boolean match(DoStatement node, Object other) {
@@ -601,9 +602,9 @@ public class ASTMatcher {
 		FieldsDeclaration o = (FieldsDeclaration) other;
 
 		return (safeEquals(node.getModifier(), o.getModifier())
-				&& safeSubtreeListMatch(node.getInitialValues(), o
-						.getInitialValues()) && safeSubtreeListMatch(node
-				.getVariableNames(), o.getVariableNames()));
+				&& safeSubtreeListMatch(node.getInitialValues(),
+						o.getInitialValues()) && safeSubtreeListMatch(
+					node.getVariableNames(), o.getVariableNames()));
 	}
 
 	public boolean match(ForEachStatement node, Object other) {
@@ -615,7 +616,7 @@ public class ASTMatcher {
 		return (safeSubtreeMatch(node.getExpression(), o.getExpression())
 				&& safeSubtreeMatch(node.getKey(), o.getKey())
 				&& safeSubtreeMatch(node.getValue(), o.getValue()) && safeSubtreeMatch(
-				node.getStatement(), o.getStatement()));
+					node.getStatement(), o.getStatement()));
 	}
 
 	public boolean match(FormalParameter node, Object other) {
@@ -625,11 +626,11 @@ public class ASTMatcher {
 		FormalParameter o = (FormalParameter) other;
 
 		return (safeEquals(node.isMandatory(), o.isMandatory())
-				&& safeSubtreeMatch(node.getParameterType(), o
-						.getParameterType())
-				&& safeSubtreeMatch(node.getParameterName(), o
-						.getParameterName()) && safeSubtreeMatch(node
-				.getDefaultValue(), o.getDefaultValue()));
+				&& safeSubtreeMatch(node.getParameterType(),
+						o.getParameterType())
+				&& safeSubtreeMatch(node.getParameterName(),
+						o.getParameterName()) && safeSubtreeMatch(
+					node.getDefaultValue(), o.getDefaultValue()));
 	}
 
 	public boolean match(ForStatement node, Object other) {
@@ -641,7 +642,7 @@ public class ASTMatcher {
 		return (safeSubtreeMatch(node.getBody(), o.getBody())
 				&& safeSubtreeListMatch(node.initializers(), o.initializers())
 				&& safeSubtreeListMatch(node.conditions(), o.conditions()) && safeSubtreeListMatch(
-				node.updaters(), o.updaters()));
+					node.updaters(), o.updaters()));
 	}
 
 	public boolean match(FunctionDeclaration node, Object other) {
@@ -653,7 +654,7 @@ public class ASTMatcher {
 		return (safeEquals(node.isReference(), o.isReference())
 				&& safeSubtreeMatch(node.getBody(), o.getBody())
 				&& safeSubtreeMatch(node.getFunctionName(), o.getFunctionName()) && safeSubtreeListMatch(
-				node.formalParameters(), o.formalParameters()));
+					node.formalParameters(), o.formalParameters()));
 	}
 
 	public boolean match(FunctionInvocation node, Object other) {
@@ -662,8 +663,10 @@ public class ASTMatcher {
 		}
 		FunctionInvocation o = (FunctionInvocation) other;
 
-		return (safeSubtreeMatch(node.getFunctionName(), o.getFunctionName()) && safeSubtreeListMatch(
-				node.parameters(), o.parameters()));
+		// Aptana Mod - Added a matching for the PHPArrayDereferenceList
+		return (safeSubtreeMatch(node.getFunctionName(), o.getFunctionName())
+				&& safeSubtreeListMatch(node.parameters(), o.parameters()) && safeSubtreeMatch(
+				node.getArrayDereferenceList(), o.getArrayDereferenceList()));
 	}
 
 	public boolean match(FunctionName node, Object other) {
@@ -700,9 +703,9 @@ public class ASTMatcher {
 		IfStatement o = (IfStatement) other;
 
 		return (safeSubtreeMatch(node.getCondition(), o.getCondition())
-				&& safeSubtreeMatch(node.getTrueStatement(), o
-						.getTrueStatement()) && safeSubtreeMatch(node
-				.getFalseStatement(), o.getFalseStatement()));
+				&& safeSubtreeMatch(node.getTrueStatement(),
+						o.getTrueStatement()) && safeSubtreeMatch(
+					node.getFalseStatement(), o.getFalseStatement()));
 	}
 
 	public boolean match(IgnoreError node, Object other) {
@@ -732,7 +735,7 @@ public class ASTMatcher {
 
 		return (safeEquals(node.getOperator(), o.getOperator())
 				&& safeSubtreeMatch(node.getRight(), o.getRight()) && safeSubtreeMatch(
-				node.getLeft(), o.getLeft()));
+					node.getLeft(), o.getLeft()));
 	}
 
 	// TODO - need to check the contents of the html
@@ -940,7 +943,7 @@ public class ASTMatcher {
 
 		return (safeEquals(node.isDefault(), o.isDefault())
 				&& safeSubtreeMatch(node.getValue(), o.getValue()) && safeSubtreeListMatch(
-				node.getActions(), o.getActions()));
+					node.getActions(), o.getActions()));
 	}
 
 	public boolean match(SwitchStatement node, Object other) {
@@ -951,6 +954,17 @@ public class ASTMatcher {
 
 		return (safeSubtreeMatch(node.getExpr(), o.getExpr()) && safeSubtreeMatch(
 				node.getStatement(), o.getStatement()));
+	}
+
+	public boolean match(ThrowStatement node, Object other) {
+		if (!(other instanceof ThrowStatement)) {
+			return false;
+		}
+		ThrowStatement o = (ThrowStatement) other;
+
+		// return false;
+		// Aptana Mod
+		return (safeSubtreeMatch(node.getExpression(), o.getExpression()));
 	}
 
 	public boolean match(TryStatement node, Object other) {
@@ -1052,9 +1066,93 @@ public class ASTMatcher {
 		LambdaFunctionDeclaration o = (LambdaFunctionDeclaration) other;
 
 		return (safeEquals(node.isReference(), o.isReference())
+				&& safeEquals(node.isStatic(), o.isStatic())
 				&& safeSubtreeMatch(node.getBody(), o.getBody())
-				&& safeSubtreeListMatch(node.formalParameters(), o
-						.formalParameters()) && safeSubtreeListMatch(node
-				.lexicalVariables(), o.lexicalVariables()));
+				&& safeSubtreeListMatch(node.formalParameters(),
+						o.formalParameters()) && safeSubtreeListMatch(
+					node.lexicalVariables(), o.lexicalVariables()));
 	}
+
+	public boolean match(PHPArrayDereferenceList node, Object other) {
+		if (!(other instanceof PHPArrayDereferenceList)) {
+			return false;
+		}
+		PHPArrayDereferenceList o = (PHPArrayDereferenceList) other;
+
+		return (safeSubtreeListMatch(node.getDereferences(),
+				o.getDereferences()));
+	}
+
+	public boolean match(DereferenceNode node, Object other) {
+		if (!(other instanceof DereferenceNode)) {
+			return false;
+		}
+		DereferenceNode o = (DereferenceNode) other;
+
+		return safeSubtreeMatch(node.getName(), o.getName());
+	}
+
+	public boolean match(TraitUseStatement node, Object other) {
+		if (!(other instanceof TraitUseStatement)) {
+			return false;
+		}
+		TraitUseStatement o = (TraitUseStatement) other;
+
+		return (safeSubtreeListMatch(node.getTraitList(), o.getTraitList()))
+				&& (safeSubtreeListMatch(node.getTsList(), o.getTsList()));
+	}
+
+	public boolean match(TraitStatement node, Object other) {
+		if (!(other instanceof TraitStatement)) {
+			return false;
+		}
+		TraitStatement o = (TraitStatement) other;
+
+		return safeSubtreeMatch(node.getExp(), o.getExp());
+	}
+
+	public boolean match(TraitPrecedence node, Object other) {
+		if (!(other instanceof TraitPrecedence)) {
+			return false;
+		}
+		TraitPrecedence o = (TraitPrecedence) other;
+
+		return (safeSubtreeMatch(node.getMethodReference(),
+				o.getMethodReference()))
+				&& (safeSubtreeListMatch(node.getTrList(), o.getTrList()));
+	}
+
+	public boolean match(TraitAlias node, Object other) {
+		if (!(other instanceof TraitAlias)) {
+			return false;
+		}
+		TraitAlias o = (TraitAlias) other;
+
+		return safeSubtreeMatch(node.getTraitMethod(), o.getTraitMethod())
+				&& node.getModifier() == o.getModifier()
+				&& ObjectUtil.areEqual(node.getFunctionName(), o.getFunctionName());
+	}
+
+	public boolean match(FullyQualifiedTraitMethodReference node, Object other) {
+		if (!(other instanceof FullyQualifiedTraitMethodReference)) {
+			return false;
+		}
+		FullyQualifiedTraitMethodReference o = (FullyQualifiedTraitMethodReference) other;
+
+		return safeSubtreeMatch(node.getClassName(), o.getClassName())
+				&& node.getFunctionName().equals(o.getFunctionName());
+	}
+
+	public boolean match(ChainingInstanceCall node, Object other) {
+		if (!(other instanceof ChainingInstanceCall)) {
+			return false;
+		}
+		ChainingInstanceCall o = (ChainingInstanceCall) other;
+
+		return (safeSubtreeMatch(node.getArrayDereferenceList(),
+				o.getArrayDereferenceList()))
+				&& (safeSubtreeMatch(node.getChainingMethodOrProperty(),
+						o.getChainingMethodOrProperty()));
+	}
+
 }

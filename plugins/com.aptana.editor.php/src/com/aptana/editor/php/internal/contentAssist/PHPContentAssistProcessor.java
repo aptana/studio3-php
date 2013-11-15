@@ -1,6 +1,6 @@
 /**
  * Aptana Studio
- * Copyright (c) 2005-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2005-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the GNU Public License (GPL) v3 (with exceptions).
  * Please see the license.html included with this distribution for details.
  * Any modifications to this file must keep this entire header intact.
@@ -11,6 +11,8 @@ import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.IMPLEMENTS_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NAMESPACE_PROPOSAL_CONTEXT_TYPE;
 import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.NEW_PROPOSAL_CONTEXT_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE;
+import static com.aptana.editor.php.internal.contentAssist.PHPContextCalculator.TRAIT_USE_PROPOSAL_CONTEXT_TYPE;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -78,6 +80,7 @@ import com.aptana.editor.php.internal.indexer.NamespacePHPEntryValue;
 import com.aptana.editor.php.internal.indexer.PDTPHPModuleIndexer;
 import com.aptana.editor.php.internal.indexer.PHPTypeProcessor;
 import com.aptana.editor.php.internal.indexer.PublicsOnlyEntryFilter;
+import com.aptana.editor.php.internal.indexer.TraitPHPEntryValue;
 import com.aptana.editor.php.internal.indexer.UnpackedElementIndex;
 import com.aptana.editor.php.internal.indexer.UnpackedEntry;
 import com.aptana.editor.php.internal.indexer.VariablePHPEntryValue;
@@ -165,9 +168,11 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 	private static final IRange EMPTY_RANGE = new Range(0, 0);
 
+	private static Image fIcon54 = PHPEditorPlugin.getImage("icons/full/obj16/v54.png"); //$NON-NLS-1$
 	private static Image fIcon53 = PHPEditorPlugin.getImage("icons/full/obj16/v53.png"); //$NON-NLS-1$
 	private static Image fIcon5 = PHPEditorPlugin.getImage("icons/full/obj16/v5.png"); //$NON-NLS-1$
 	private static Image fIcon4 = PHPEditorPlugin.getImage("icons/full/obj16/v4.png"); //$NON-NLS-1$
+	private static Image fIcon54off = PHPEditorPlugin.getImage("icons/full/obj16/v54_off.png"); //$NON-NLS-1$
 	private static Image fIcon53off = PHPEditorPlugin.getImage("icons/full/obj16/v53_off.png"); //$NON-NLS-1$
 	private static Image fIcon5off = PHPEditorPlugin.getImage("icons/full/obj16/v5_off.png"); //$NON-NLS-1$
 	private static Image fIcon4off = PHPEditorPlugin.getImage("icons/full/obj16/v4_off.png"); //$NON-NLS-1$
@@ -176,6 +181,13 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	// other char in the isValidAutoActivationLocation()
 	private static char[] autoactivationCharacters = new char[] { '>', '@', ':', '\\', ' ' };
 	private static final char[] contextInformationActivationChars = { '(', ',' };
+
+	// When the current context scope is one of these types, we allow identifiers with empty name (see
+	// simpleIdentifierCompletion());
+	private static final Set<String> TYPES_ACCEPTING_EMPTY_IDENTIFIERS = CollectionsUtil.newSet(
+			EXTENDS_PROPOSAL_CONTEXT_TYPE, IMPLEMENTS_PROPOSAL_CONTEXT_TYPE, NEW_PROPOSAL_CONTEXT_TYPE,
+			TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE, TRAIT_USE_PROPOSAL_CONTEXT_TYPE);
+
 	private static PHPDecoratingLabelProvider labelProvider = new PHPDecoratingLabelProvider();
 	private ITextViewer viewer;
 	private int offset;
@@ -249,7 +261,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			// ignore it and just use the lexemeProvider
 		}
 		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c);
+		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset, c,
+				reportedScopeIsUnderClass);
 		if (!currentContext.acceptModelsElements() && !currentContext.isAutoActivateCAAfterApply())
 		{
 			return false;
@@ -354,7 +367,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 
 		ILexemeProvider<PHPTokenType> lexemeProvider = ParsingUtils.createLexemeProvider(document, offset);
 		// Calculates and sets completion context
-		currentContext = contextCalculator.calculateCompletionContext(lexemeProvider, offset);
+		// Call to get the index. This will update the reported scope.
+		getIndex(content, offset);
+		currentContext = contextCalculator
+				.calculateCompletionContext(lexemeProvider, offset, reportedScopeIsUnderClass);
 
 		String content = document.get();
 
@@ -859,13 +875,22 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			currentExactMatch = exactMatch;
 		}
-		if (parentCompletion && leftDereferenceEntries.size() == 1)
+		if (leftDereferenceEntries.size() == 1)
 		{
-			// Make sure we grab the right namespace scope from the entry itself
-			Object entryValue = leftDereferenceEntries.iterator().next().getValue();
-			if (entryValue instanceof ClassPHPEntryValue)
+			if (parentCompletion)
 			{
-				namespace = ((ClassPHPEntryValue) entryValue).getNameSpace();
+				// Make sure we grab the right namespace scope from the entry itself
+				Object entryValue = leftDereferenceEntries.iterator().next().getValue();
+				if (entryValue instanceof ClassPHPEntryValue)
+				{
+					namespace = ((ClassPHPEntryValue) entryValue).getNameSpace();
+				}
+			}
+			else
+			{
+				// In case the left side is a trait, we would like to treat it as a 'parent' completion.
+				// For example: B::smallTalk insteadof A;
+				parentCompletion = leftDereferenceEntries.iterator().next().getValue() instanceof TraitPHPEntryValue;
 			}
 		}
 		Set<IElementEntry> result = computeStaticDereferenceRightEntries(index, leftDereferenceEntries,
@@ -1583,8 +1608,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 			return new ICompletionProposal[] {};
 		}
 
-		// only allowing empty names for "extends" and "implements" proposal
-		// types
+		// only allowing empty names for "extends", "implements" and traits proposals types
 		if (name.length() == 0)
 		{
 			if (currentContext == null)
@@ -1592,13 +1616,10 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				return new ICompletionProposal[] {};
 			}
 
-			if (!(EXTENDS_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType())
-					|| IMPLEMENTS_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType()) || NEW_PROPOSAL_CONTEXT_TYPE
-						.equals(currentContext.getType())))
+			if (!TYPES_ACCEPTING_EMPTY_IDENTIFIERS.contains(currentContext.getType()))
 			{
 				return new ICompletionProposal[] {};
 			}
-
 		}
 
 		boolean variableCompletion = false;
@@ -1823,7 +1844,29 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 				if (proposalContext == null
 						|| proposalContext.acceptModelElementType(IPHPIndexConstants.CLASS_CATEGORY))
 				{
-					entries.addAll(index.getEntriesStartingWith(IPHPIndexConstants.CLASS_CATEGORY, name));
+					List<IElementEntry> classTypeEntries = index.getEntriesStartingWith(
+							IPHPIndexConstants.CLASS_CATEGORY, name);
+
+					// Check for traits vs. classes/interfaces here. In case we are in a trait 'use', or trait 'use'
+					// block, we would like to see only trait types.
+					if (proposalContext != null
+							&& (PHPContextCalculator.TRAIT_USE_PROPOSAL_CONTEXT_TYPE.equals(proposalContext.getType()) || PHPContextCalculator.TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE
+									.equals(proposalContext.getType())))
+					{
+						IContextFilter contextFilter = proposalContext.getContextFilter();
+						for (IElementEntry elementEntry : classTypeEntries)
+						{
+							if (contextFilter.acceptElementEntry(elementEntry))
+							{
+								entries.add(elementEntry);
+							}
+						}
+					}
+					else
+					{
+						// TODO - Check if we need to filter out the traits out of the type entries.
+						entries.addAll(classTypeEntries);
+					}
 				}
 
 				if (proposalContext == null
@@ -2513,8 +2556,8 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		};
 		int objType = 0;
 		String fileOloc = StringUtil.EMPTY;
-		Image[] images = new Image[3];
-		if (PHPBuiltins.getInstance().existsInPHP4(node))
+		Image[] images = new Image[4];
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP4, node))
 		{
 			images[0] = fIcon4;
 		}
@@ -2522,7 +2565,7 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			images[0] = fIcon4off;
 		}
-		if (PHPBuiltins.getInstance().existsInPHP5(node))
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP5, node))
 		{
 			images[1] = fIcon5;
 		}
@@ -2530,13 +2573,21 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 		{
 			images[1] = fIcon5off;
 		}
-		if (PHPBuiltins.getInstance().existsInPHP53(node))
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP5_3, node))
 		{
 			images[2] = fIcon53;
 		}
 		else
 		{
 			images[2] = fIcon53off;
+		}
+		if (PHPBuiltins.getInstance().existsIn(PHPVersion.PHP5_4, node))
+		{
+			images[3] = fIcon54;
+		}
+		else
+		{
+			images[3] = fIcon54off;
 		}
 		PHPCompletionProposal cp = null;
 		if ((currentContext != null && currentContext.isAutoActivateCAAfterApply()) || autoActivateAfterProposal(node))
@@ -2707,6 +2758,18 @@ public class PHPContentAssistProcessor extends CommonContentAssistProcessor impl
 	private ProposalEnhancement getFunctionEntryEnhancement(IElementEntry elementEntry, String proposalContent)
 	{
 		ProposalEnhancement result = null;
+		// In case we are in a trait 'use' block, we don't want any special enhancements on the function name (e.g. no
+		// brackets). We only add a trailing space.
+		if (PHPContextCalculator.TRAIT_USE_BLOCK_PROPOSAL_CONTEXT_TYPE.equals(currentContext.getType()))
+		{
+			result = new ProposalEnhancement();
+			result.replaceString = proposalContent;
+			result.caretExitOffset = result.replaceString.length();
+			result.cursorShift = 0;
+			result.positions = new ArrayList<Position>();
+			return result;
+		}
+
 		// if (!(elementEntry.getValue() instanceof FunctionPHPEntryValue)) {
 		//			throw new IllegalArgumentException("Only functions are accepted."); //$NON-NLS-1$
 		// }

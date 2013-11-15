@@ -189,7 +189,8 @@ public class StaticMethodInvocation extends StaticDispatch {
 	 *    resolved
 	 */	
 	public IMethodBinding resolveMethodBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveMethod(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveMethod(this);
 		return null;
 	}
 }

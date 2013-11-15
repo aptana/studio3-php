@@ -37,6 +37,11 @@ public class PHPOutlineLabelProvider extends LabelProvider
 	public static final Image CLASS_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_class.png"); //$NON-NLS-1$
 
 	/**
+	 * TRAIT_ICON
+	 */
+	public static final Image TRAIT_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_trait.png"); //$NON-NLS-1$
+
+	/**
 	 * INTERFACE_ICON
 	 */
 	public static final Image INTERFACE_ICON = PHPEditorPlugin.getImage("icons/full/obj16/php_interface.png"); //$NON-NLS-1$
@@ -165,6 +170,9 @@ public class PHPOutlineLabelProvider extends LabelProvider
 					break;
 				case IPHPParseNode.CLASS_NODE:
 					result = getClassNodeImage(modifiers);
+					break;
+				case IPHPParseNode.TRAIT_NODE:
+					result = TRAIT_ICON;
 					break;
 				default:
 					result = getDefaultImage(element);

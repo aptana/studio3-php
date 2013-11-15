@@ -26,7 +26,6 @@ import org2.eclipse.php.internal.core.ast.visitor.Visitor;
  * public $a = 3;
  * final private static $var;
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class FieldsDeclaration extends BodyDeclaration {
 
 	private final ASTNode.NodeList<SingleFieldDeclaration> fields = new ASTNode.NodeList<SingleFieldDeclaration>(FIELDS_PROPERTY);
@@ -202,7 +201,8 @@ public class FieldsDeclaration extends BodyDeclaration {
 	 *    resolved
 	 */
 	public final IVariableBinding resolveTypeBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveVariable(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveVariable(this);
 		return null;
 	}
 }

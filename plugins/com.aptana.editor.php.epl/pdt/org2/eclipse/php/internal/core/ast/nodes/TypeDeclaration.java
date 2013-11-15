@@ -12,6 +12,7 @@
 package org2.eclipse.php.internal.core.ast.nodes;
 
 import java.util.List;
+
 import com.aptana.editor.php.core.typebinding.ITypeBinding;
 
 /**
@@ -148,7 +149,6 @@ public abstract class TypeDeclaration extends Statement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == getInterfacesProperty()) {
 			return interfaces();
@@ -164,6 +164,8 @@ public abstract class TypeDeclaration extends Statement {
 	 *    resolved
 	 */
 	public final ITypeBinding resolveTypeBinding() {
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveType(this);
 		return (ITypeBinding)getBinding();
 	}
 }

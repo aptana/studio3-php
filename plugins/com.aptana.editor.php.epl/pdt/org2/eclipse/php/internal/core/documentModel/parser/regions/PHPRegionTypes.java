@@ -72,6 +72,12 @@ public interface PHPRegionTypes {
 
 	static final String PHP_CLASS = "PHP_CLASS"; //$NON-NLS-1$
 
+	static final String PHP_TRAIT = "PHP_TRAIT"; //$NON-NLS-1$
+
+	static final String PHP_INSTEADOF = "PHP_INSTEADOF"; //$NON-NLS-1$
+
+	static final String PHP_CALLABLE = "PHP_CALLABLE"; //$NON-NLS-1$
+
 	// static final String PHP_END_HEREDOC = "PHP_END_HEREDOC";
 
 	static final String PHP_FOR = "PHP_FOR"; //$NON-NLS-1$
@@ -406,6 +412,8 @@ public interface PHPRegionTypes {
 	static final String PHPDOC_COPYRIGHT = "PHPDOC_COPYRIGHT"; //$NON-NLS-1$
 
 	static final String PHPDOC_STATICVAR = "PHPDOC_STATICVAR"; //$NON-NLS-1$
+
+	static final String PHPDOC_NAMESPACE = "PHPDOC_NAMESPACE"; //$NON-NLS-1$
 
 	static final String PHPDOC_DEPRECATED = "PHPDOC_DEPRECATED"; //$NON-NLS-1$
 

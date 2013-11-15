@@ -24,7 +24,6 @@ import org2.eclipse.php.internal.core.ast.visitor.Visitor;
  * <pre>e.g.<pre> echo "hello",
  * echo "hello", "world"
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class EchoStatement extends Statement {
 
 	private ASTNode.NodeList<Expression> expressions = new ASTNode.NodeList<Expression>(EXPRESSIONS_PROPERTY);

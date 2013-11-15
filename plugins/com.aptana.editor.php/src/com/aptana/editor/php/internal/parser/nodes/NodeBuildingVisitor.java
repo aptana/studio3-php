@@ -30,6 +30,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Scalar;
 import org2.eclipse.php.internal.core.ast.nodes.Statement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.UseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.UseStatementPart;
@@ -86,6 +87,34 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 		handleInterfaces(interfaces);
 		nodeBuilder.setNodeName(nameIdentifier);
 		return super.visit(interfaceDeclaration);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitDeclaration)
+	 */
+	@Override
+	public boolean visit(TraitDeclaration traitDeclaration)
+	{
+		Identifier nameIdentifier = traitDeclaration.getName();
+		String name = nameIdentifier.getName();
+		org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock docComment = PHPDocUtils.findPHPDocComment(
+				traitDeclaration.getProgramRoot().comments(), traitDeclaration.getStart(), source);
+		PHPDocBlockImp docBlock = convertToDocBlock(docComment);
+		nodeBuilder.handleTraitDeclaration(name, traitDeclaration.getModifier(), docBlock, traitDeclaration.getStart(),
+				traitDeclaration.getEnd() - 1, -1);
+		Expression superClass = traitDeclaration.getSuperClass();
+		if (superClass != null && superClass.getType() == ASTNode.IDENTIFIER)
+		{
+			Identifier superClassName = (Identifier) superClass;
+			nodeBuilder.handleTraitSuperclass(superClassName.getName(), superClassName.getStart(),
+					superClassName.getEnd() - 1);
+		}
+		List<Identifier> interfaces = traitDeclaration.interfaces();
+		handleInterfaces(interfaces);
+		nodeBuilder.setNodeName(nameIdentifier);
+		return super.visit(traitDeclaration);
 	}
 
 	@Override
@@ -548,7 +577,7 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	@Override
 	public void endVisit(IfStatement ifStatement)
 	{
-		if (ifStatement.getTrueStatement() != null && ifStatement.getTrueStatement() .getType() != ASTNode.IF_STATEMENT)
+		if (ifStatement.getTrueStatement() != null && ifStatement.getTrueStatement().getType() != ASTNode.IF_STATEMENT)
 		{
 			nodeBuilder.handleCommonDeclarationEnd();
 		}
@@ -602,6 +631,18 @@ public final class NodeBuildingVisitor extends AbstractVisitor
 	 */
 	@Override
 	public void endVisit(WhileStatement whileStatement)
+	{
+		nodeBuilder.handleCommonDeclarationEnd();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#endVisit(org2.eclipse.php.internal.core.ast.nodes.
+	 * TraitDeclaration)
+	 */
+	@Override
+	public void endVisit(TraitDeclaration traitDeclaration)
 	{
 		nodeBuilder.handleCommonDeclarationEnd();
 	}

@@ -95,6 +95,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Variable;
 import org2.eclipse.php.internal.core.ast.nodes.VariableBase;
 import org2.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
+
 @SuppressWarnings({"nls", "deprecation", "rawtypes"})
 public class ASTRewriteFlattener extends AbstractVisitor {
 

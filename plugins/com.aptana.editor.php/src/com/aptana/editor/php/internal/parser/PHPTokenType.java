@@ -68,6 +68,7 @@ public enum PHPTokenType
 	STORAGE_MODIFIER_STATIC("storage.modifier.static.php"),
 	STORAGE_TYPE("storage.type.php"),
 	STORAGE_TYPE_CLASS("storage.type.class.php"),
+	STORAGE_TYPE_TRAIT("storage.type.trait.php"),
 	STORAGE_TYPE_FUNCTION("storage.type.function.php"),
 	STRING_DOUBLE("string.quoted.double.php"),
 	STRING_QUOTED("string.quoted.php"),

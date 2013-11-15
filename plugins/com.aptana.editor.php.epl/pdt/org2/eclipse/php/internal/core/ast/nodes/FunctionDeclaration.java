@@ -30,7 +30,6 @@ import org2.eclipse.php.internal.core.ast.visitor.Visitor;
  * 
  * function foo(); -abstract function in class declaration
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class FunctionDeclaration extends Statement {
 
 	private boolean isReference;
@@ -301,7 +300,7 @@ public class FunctionDeclaration extends Statement {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-
+	
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == FORMAL_PARAMETERS_PROPERTY) {
 			return formalParameters();
@@ -341,7 +340,8 @@ public class FunctionDeclaration extends Statement {
 	 *    resolved
 	 */	
 	public IFunctionBinding resolveFunctionBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveFunction(this);
+		//  Aptana Mod
+		// return this.ast.getBindingResolver().resolveFunction(this);
 		return null;
 	}
 }

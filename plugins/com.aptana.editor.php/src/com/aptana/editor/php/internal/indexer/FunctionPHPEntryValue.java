@@ -44,6 +44,11 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	private boolean isMethod;
 
 	/**
+	 * Whether this function is a method in a trait.
+	 */
+	private boolean isTraitMethod;
+
+	/**
 	 * Parameters names.
 	 */
 	private String[] parameterNames;
@@ -117,7 +122,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 							PHPEditorPlugin.getDefault(),
 							MessageFormat
 									.format("Illegal parameter start positions: parameters = {0} while the parameterStartPositions = {1}. Check for duplicate arguments in your function declaration.", //$NON-NLS-1$
-									parameters, Arrays.toString(parameterStartPositions)), (String) null);
+											parameters, Arrays.toString(parameterStartPositions)), (String) null);
 				}
 				else if (parameterStartPositions != null && parameters.size() > parameterStartPositions.length)
 				{
@@ -288,6 +293,29 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	}
 
 	/**
+	 * Returns true if this function is a method in a trait type.
+	 * 
+	 * @return <code>true</code> if this function entry is a method in a trait type. Otherwise, return
+	 *         <code>false</code> to signal that this is either a regular function, or a method in a class or interface.
+	 * @see FunctionPHPEntryValue#isMethod()
+	 */
+	public boolean isTraitMethod()
+	{
+		return isTraitMethod;
+	}
+
+	/**
+	 * Mark this function as a method in a trait type.
+	 * 
+	 * @param isTraitMethod
+	 *            <code>true</code> to set this function as a trait method;
+	 */
+	public void setIsTraitMethod(boolean isTraitMethod)
+	{
+		this.isTraitMethod = isTraitMethod;
+	}
+
+	/**
 	 * Gets function parameters.
 	 * 
 	 * @return function parameters.
@@ -332,6 +360,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + (isMethod ? 1231 : 1237);
+		result = prime * result + (isTraitMethod ? 1231 : 1237);
 		return result;
 	}
 
@@ -342,14 +371,22 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
+		{
 			return true;
+		}
 		if (!super.equals(obj))
+		{
 			return false;
+		}
 		if (getClass() != obj.getClass())
+		{
 			return false;
+		}
 		final FunctionPHPEntryValue other = (FunctionPHPEntryValue) obj;
-		if (isMethod != other.isMethod)
+		if (isMethod != other.isMethod || isTraitMethod != other.isTraitMethod)
+		{
 			return false;
+		}
 		return true;
 	}
 
@@ -373,6 +410,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	protected void internalWrite(DataOutputStream da) throws IOException
 	{
 		da.writeBoolean(isMethod);
+		da.writeBoolean(isTraitMethod);
 		IndexPersistence.writeType(returnTypes, da);
 		int len = (parameterNames == null) ? 0 : parameterNames.length;
 		da.writeInt(len);
@@ -389,6 +427,7 @@ public class FunctionPHPEntryValue extends AbstractPHPEntryValue implements IPHP
 	protected void internalRead(DataInputStream di) throws IOException
 	{
 		isMethod = di.readBoolean();
+		isTraitMethod = di.readBoolean();
 		returnTypes = IndexPersistence.readType(di);
 		int pc = di.readInt();
 		if (pc > 0)

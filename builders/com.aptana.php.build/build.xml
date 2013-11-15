@@ -65,23 +65,10 @@
 	</target>
 
 	<!-- ================================= 
-          target: clean              
-         ================================= -->
+	      target: clean
+	     ================================= -->
 	<target name="clean" depends="generate.build.properties" description="Clean up temp and build files">
-		<delete failonerror="false">
-			<fileset dir="${buildDirectory}" defaultexcludes="true">
-				<include name="assemble.*" />
-				<include name="finalFeaturesVersions.*" />
-				<include name="finalPluginsVersions.*" />
-				<include name="package.*" />
-			</fileset>
-		</delete>
-		<delete dir="${buildDirectory}/${buildLabel}" failonerror="false" />
-		<java jar="${baseLocation}/plugins/${launcher.plugin}.jar" fork="true" failonerror="false">
-			<arg line="-application org.eclipse.ant.core.antRunner -buildfile ${baseLocation}/plugins/${builder.plugin}/scripts/build.xml -Dbuilder=${basedir} -nosplash clean" />
-		</java>
-		<delete dir="${baseLocation}" />
-		<delete dir="${buildDirectory}/features/org.eclipse.pde.build.container.feature" failonerror="false" />
+		<delete dir="${buildDirectory}" failonerror="false" />
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
@@ -96,22 +83,43 @@
 		</delete>
 	</target>
 	<!-- - - - - - - - - - - - - - - - - - 
-	          target: copy.base                      
-	         - - - - - - - - - - - - - - - - - -->
+          target: copy.base
+          On non-Windows machines, copy eclipse and plugins/features directories to buildDirectory to set up for build
+         - - - - - - - - - - - - - - - - - -->
 	<target name="copy.base" unless="is.windows">
+		<mkdir dir="${buildDirectory}" />
 		<!-- Copy over the original base eclipse to a new location.
-						Have to use exec cp to retain permissions on *nix, Mac -->
+								Have to use exec cp to retain permissions on *nix, Mac -->
+		<echo message="Copying eclipse" level="info" />
 		<exec executable="cp">
 			<arg line="-R ${vanilla.eclipse} ${baseLocation}" />
+		</exec>
+		<!-- copy plugins and features -->
+		<echo message="Copying plugins" level="info" />
+		<exec executable="cp">
+			<arg line="-R ${workspace}/plugins ${buildDirectory}/plugins" />
+		</exec>
+		<echo message="Copying features" level="info" />
+		<exec executable="cp">
+			<arg line="-R ${workspace}/features ${buildDirectory}/features" />
 		</exec>
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
           target: copy.base.windows                      
-         - - - - - - - - - - - - - - - - - -->
+	     - - - - - - - - - - - - - - - - - -->
 	<target name="copy.base.windows" if="is.windows">
+		<mkdir dir="${buildDirectory}" />
+		<!-- copy eclipse -->
 		<copy todir="${baseLocation}">
 			<fileset dir="${vanilla.eclipse}" includes="**/*" defaultexcludes="false" />
+		</copy>
+		<!-- copy plugins and features -->
+		<copy todir="${buildDirectory}">
+			<fileset dir="${workspace}" defaultexcludes="true">
+				<include name="plugins/**" />
+				<include name="features/**" />
+			</fileset>
 		</copy>
 	</target>
 
@@ -135,7 +143,7 @@
 		        build.properties with qualifier for just that plugin/feature! -->
 		<for param="file" parallel="true">
 			<path>
-				<dirset dir="${buildDirectory}" defaultexcludes="true">
+				<dirset dir="${workspace}" defaultexcludes="true">
 					<include name="plugins/*" />
 					<include name="features/*" />
 					<exclude name="plugins/com.aptana.editor.php" />
@@ -147,18 +155,18 @@
 					<arg value="-c" />
 					<arg value="${git.executable} log --max-count=1 --pretty=format:'%ct' ." />
 				</exec>
-				<echo message="Replacing qualifier for @{file} with ${@{file}.committed.max}" />
+				<echo message="Replacing qualifier for @{file} with ${@{file}.committed.max}" level="info" />
 				<exec executable="grep" dir="@{file}" resultproperty="@{file}.hasQualifierLine" logerror="false" failifexecutionfails="false" failonerror="false">
 					<arg line="qualifier ./build.properties" />
 				</exec>
 				<if>
 					<equals arg1="${@{file}.hasQualifierLine}" arg2="0" />
 					<then>
-						<!-- <echo message="replacing qualifier value" /> -->
+						<echo message="replacing qualifier value" level="debug" />
 						<replaceregexp file="@{file}/build.properties" match="qualifier\s*=\s*context" replace="qualifier = ${@{file}.committed.max}" byline="true" />
 					</then>
 					<else>
-						<!-- <echo message="no qualifier property, adding one" /> -->
+						<echo message="no qualifier property, adding one" level="debug" />
 						<concat append="true" destfile="@{file}/build.properties">qualifier = ${@{file}.committed.max}</concat>
 					</else>
 				</if>
@@ -175,6 +183,6 @@
 		</exec>
 	</target>
 	<target name="link.check">
-		<available file="${env.WORKSPACE}/build-artifacts"  property="link.exists"/>
+		<available file="${env.WORKSPACE}/build-artifacts" property="link.exists" />
 	</target>
 </project>

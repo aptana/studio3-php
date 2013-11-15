@@ -269,7 +269,8 @@ public class Variable extends VariableBase {
 	 * @since 3.0
 	 */
 	public IVariableBinding resolveVariableBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveVariable(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveVariable(this);
 		return null;
 	}
 	

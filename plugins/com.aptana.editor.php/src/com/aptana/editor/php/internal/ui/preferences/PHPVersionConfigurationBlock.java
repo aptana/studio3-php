@@ -32,9 +32,9 @@ public class PHPVersionConfigurationBlock extends PHPCoreOptionsConfigurationBlo
 {
 
 	public static final List<String> PHP_ALIASES = Arrays.asList(PHPVersion.PHP4.getAlias(),
-			PHPVersion.PHP5.getAlias(), PHPVersion.PHP5_3.getAlias());
+			PHPVersion.PHP5.getAlias(), PHPVersion.PHP5_3.getAlias(), PHPVersion.PHP5_4.getAlias());
 	public static final List<String> PHP_VERSION_NAMES = Arrays.asList(Messages.PHPDevelopmentPage_php4,
-			Messages.PHPDevelopmentPage_php5, Messages.PHPDevelopmentPage_php53);
+			Messages.PHPDevelopmentPage_php5, Messages.PHPDevelopmentPage_php53, Messages.PHPDevelopmentPage_php54);
 	private static final Key PREF_PHP_VERSION = getPHPCoreKey(Keys.PHP_VERSION);
 
 	private Combo fPHPVersions;

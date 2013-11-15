@@ -66,6 +66,8 @@ import org2.eclipse.php.internal.core.ast.nodes.StaticDispatch;
 import org2.eclipse.php.internal.core.ast.nodes.StaticFieldAccess;
 import org2.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
@@ -80,6 +82,7 @@ import org2.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org2.eclipse.php.internal.core.compiler.ast.nodes.VarComment;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.CollectionsUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 import com.aptana.editor.php.core.PHPVersionProvider;
 import com.aptana.editor.php.core.ast.ASTFactory;
@@ -989,6 +992,44 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			return super.visit(node);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes
+		 * .TraitDeclaration)
+		 */
+		@Override
+		public boolean visit(TraitDeclaration traitDeclaration)
+		{
+			List<Identifier> interfaces = traitDeclaration.interfaces();
+			List<String> interfaceNames = new ArrayList<String>(interfaces.size());
+			for (Identifier interfaceName : interfaces)
+			{
+				interfaceNames.add(interfaceName.getName());
+			}
+
+			Expression superClassIdentifier = traitDeclaration.getSuperClass();
+			String superClassName = null;
+			if (superClassIdentifier != null
+					&& (superClassIdentifier.getType() == ASTNode.NAMESPACE_NAME || superClassIdentifier.getType() == ASTNode.IDENTIFIER))
+			{
+				superClassName = ((Identifier) superClassIdentifier).getName();
+			}
+
+			TraitPHPEntryValue value = new TraitPHPEntryValue(traitDeclaration.getModifier(), superClassName,
+					interfaceNames, currentNamespace);
+
+			value.setStartOffset(traitDeclaration.getStart());
+			value.setEndOffset(traitDeclaration.getEnd());
+
+			String className = traitDeclaration.getName().getName();
+			// We keep this Trait as a CLASS_CATEGORY
+			IElementEntry currentClassEntry = reporter.reportEntry(IPHPIndexConstants.CLASS_CATEGORY, className, value,
+					module);
+			currentClass = new ClassScopeInfo(currentClassEntry);
+			return true;
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -1049,6 +1090,30 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 
 			currentClass = new ClassScopeInfo(currentClassEntry);
 			return true;
+		}
+
+		/**
+		 * Visit a Trait 'use' statement. We want to add those trait items just like we add interfaces to a class
+		 * declaration.
+		 * 
+		 * @see org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement)
+		 */
+		@Override
+		public boolean visit(TraitUseStatement node)
+		{
+			List<NamespaceName> traitList = node.getTraitList();
+			if (!CollectionsUtil.isEmpty(traitList) && currentClass != null && currentClass.getClassEntry() != null
+					&& currentClass.getClassEntry().getValue() instanceof ClassPHPEntryValue)
+			{
+				ClassPHPEntryValue classValue = (ClassPHPEntryValue) currentClass.getClassEntry().getValue();
+				List<String> traits = new ArrayList<String>(traitList.size());
+				for (NamespaceName name : traitList)
+				{
+					traits.add(name.getName());
+				}
+				classValue.setTraits(traits);
+			}
+			return super.visit(node);
 		}
 
 		/**
@@ -1478,7 +1543,13 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 			String entryPath = EMPTY_STRING;
 			if (currentClass != null && currentClass.getClassEntry() != null)
 			{
-				entryPath = currentClass.getClassEntry().getEntryPath() + IElementsIndex.DELIMITER;
+				IElementEntry classEntry = currentClass.getClassEntry();
+				entryPath = classEntry.getEntryPath() + IElementsIndex.DELIMITER;
+				if (classEntry.getValue() instanceof TraitPHPEntryValue)
+				{
+					// Mark this method as a trait method.
+					entryValue.setIsTraitMethod(true);
+				}
 			}
 
 			entryPath += functionName;
@@ -3691,7 +3762,7 @@ public class PDTPHPModuleIndexer implements IModuleIndexer, IProgramIndexer
 							Reader reader = new StringReader(bld.toString()); // $codepro.audit.disable
 																				// closeWhereCreated
 							// TODO - Shalom: Get the right version from the module
-							AstLexer lexer = ASTFactory.getAstLexer(PHPVersion.PHP5_3, reader);
+							AstLexer lexer = ASTFactory.getAstLexer(PHPVersion.getLatest(), reader);
 
 							// IsInCommentChecker isInCommentChecker = new
 							// IsInCommentChecker(offset);

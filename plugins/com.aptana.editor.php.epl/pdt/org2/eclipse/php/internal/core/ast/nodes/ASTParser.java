@@ -28,6 +28,7 @@ import org2.eclipse.php.internal.core.PHPVersion;
 import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.core.model.ISourceModule;
 import com.aptana.editor.php.epl.PHPEplPlugin;
 
@@ -44,7 +45,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 public class ASTParser {
 
 	// version tags
-	private static final Reader EMPTY_STRING_READER = new StringReader(""); //$NON-NLS-1$
+	private static final Reader EMPTY_STRING_READER = new StringReader(StringUtil.EMPTY);
 
 	/**
 	 * THREAD SAFE AST PARSER STARTS HERE
@@ -70,17 +71,17 @@ public class ASTParser {
 		this.ast = new AST(reader, phpVersion, useASPTags, useShortTags, resource);
 		this.ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 
+		// Aptana mod - Commented out.
 		// set resolve binding property and the binding resolver
-		// TODO: Shalom - Binding resolver
-//		if (sourceModule != null) {
-//			this.ast.setFlag(AST.RESOLVED_BINDINGS);
-//			// try {
-//			this.ast.setBindingResolver(new DefaultBindingResolver(
-//					sourceModule, sourceModule.getOwner()));
-//			// } catch (ModelException e) {
-//			// throw new IOException("ModelException " + e.getMessage());
-//			// }
-//		}
+		// if (sourceModule != null) {
+		// 	this.ast.setFlag(AST.RESOLVED_BINDINGS);
+	    // try {
+		//	this.ast.setBindingResolver(new DefaultBindingResolver(
+		//			sourceModule, sourceModule.getOwner()));
+		// } catch (ModelException e) {
+		// throw new IOException("ModelException " + e.getMessage());
+		// }
+		//}
 	}
 
 	/**
@@ -88,7 +89,7 @@ public class ASTParser {
 	 */
 	public static ASTParser newParser(PHPVersion version, boolean useShortTags) {
 		try {
-			return new ASTParser(new StringReader(""), version, false, //$NON-NLS-1$
+			return new ASTParser(new StringReader(StringUtil.EMPTY), version, false,
 					useShortTags);
 		} catch (IOException e) {
 			assert false;
@@ -107,12 +108,13 @@ public class ASTParser {
 	/**
 	 * Factory methods for ASTParser
 	 */
-//	public static ASTParser newParser(ISourceModule sourceModule) {
-//		PHPVersion phpVersion = ProjectOptions.getPhpVersion(sourceModule
-//				.getScriptProject().getProject());
-//
-//		return newParser(phpVersion, sourceModule);
-//	}
+	// Aptana Mod - Commented out.
+	//	public static ASTParser newParser(ISourceModule sourceModule) {
+	//		PHPVersion phpVersion = ProjectOptions.getPhpVersion(sourceModule
+	//				.getScriptProject().getProject());
+	//
+	//		return newParser(phpVersion, sourceModule);
+	//	}
 
 	public static ASTParser newParser(PHPVersion version,
 			ISourceModule sourceModule) {
@@ -121,7 +123,7 @@ public class ASTParser {
 					"ASTParser - Can't parser with null ISourceModule"); //$NON-NLS-1$
 		}
 		try {
-			// use short tags by default (TODO - add a preference for that)
+			// Aptana Mod - use short tags by default (TODO - add a preference for that)
 			final ASTParser parser = new ASTParser(new StringReader(""), //$NON-NLS-1$
 					version, false, true, sourceModule);
 			parser.setSource(sourceModule.getSourceAsCharArray());
@@ -144,7 +146,7 @@ public class ASTParser {
 
 	public static ASTParser newParser(Reader reader, PHPVersion version,
 			boolean useASPTags, ISourceModule sourceModule) throws IOException {
-		// use short tags by default (TODO - add a preference for that)
+		// Aptana Mod - use short tags by default (TODO - add a preference for that)
 		return new ASTParser(reader, version, useASPTags,
 				true, sourceModule);
 	}
@@ -172,9 +174,9 @@ public class ASTParser {
 	 * Set the source from source module
 	 * 
 	 * @throws IOException
-	 * @throws ModelException
+	 * @throws CoreException
 	 */
-	public void setSource(ISourceModule sourceModule) throws IOException,CoreException {
+	public void setSource(ISourceModule sourceModule) throws IOException, CoreException {
 		this.ast.setSource(new CharArrayReader(sourceModule
 				.getSourceAsCharArray()));
 	}
@@ -206,6 +208,7 @@ public class ASTParser {
 		}
 		Program p = (Program) symbol.value;
 		AST ast = p.getAST();
+
 		p.setSourceModule(sourceModule);
 
 		// now reset the ast default node flag back to differntate between
@@ -233,6 +236,17 @@ public class ASTParser {
 	private static org2.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer createEmptyLexer_53() {
 		return new org2.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer(
 				ASTParser.EMPTY_STRING_READER);
+	}
+
+	// php 5.4 analysis
+	private static org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstLexer createEmptyLexer_54() {
+		return new org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstLexer(
+				ASTParser.EMPTY_STRING_READER);
+	}
+
+	private static org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstParser createEmptyParser_54() {
+		return new org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstParser(
+				createEmptyLexer_54());
 	}
 
 	private static org2.eclipse.php.internal.core.ast.scanner.php53.PhpAstParser createEmptyParser_53() {
@@ -276,13 +290,13 @@ public class ASTParser {
 	public static AstLexer getLexer(AST ast, Reader reader,
 			PHPVersion phpVersion, boolean aspTagsAsPhp, boolean useShortTags, boolean createAST)
 			throws IOException {
-		// Appcelerator mod
+		// Aptana mod
 		if (ast == null) {
 			ast = new AST(reader, phpVersion, aspTagsAsPhp, useShortTags);
 			ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 			return ast.lexer();
 		}
-		// end Appcelerator mod
+		// end Aptana mod
 		if (PHPVersion.PHP4 == phpVersion) {
 			final org2.eclipse.php.internal.core.ast.scanner.php4.PhpAstLexer lexer4 = getLexer4(reader);
 			lexer4.setUseAspTagsAsPhp(aspTagsAsPhp);
@@ -301,6 +315,12 @@ public class ASTParser {
 			lexer53.setUseShortTags(useShortTags);
 			lexer53.setAST(ast);
 			return lexer53;
+		} else if (PHPVersion.PHP5_4 == phpVersion) {
+			final org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstLexer lexer54 = getLexer54(reader);
+			lexer54.setUseAspTagsAsPhp(aspTagsAsPhp);
+			lexer54.setUseShortTags(useShortTags);
+			lexer54.setAST(ast);
+			return lexer54;
 		} else {
 			throw new IllegalArgumentException(
 					CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
@@ -322,6 +342,10 @@ public class ASTParser {
 			org2.eclipse.php.internal.core.ast.scanner.php53.PhpAstParser parser = createEmptyParser_53();
 			parser.setAST(ast);
 			return parser;
+		} else if (PHPVersion.PHP5_4 == phpVersion) {
+			org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstParser parser = createEmptyParser_54();
+			parser.setAST(ast);
+			return parser;
 		} else {
 			throw new IllegalArgumentException(
 					CoreMessages.getString("ASTParser_1") + phpVersion); //$NON-NLS-1$
@@ -340,6 +364,19 @@ public class ASTParser {
 		phpAstLexer53.yyreset(reader);
 		phpAstLexer53.resetCommentList();
 		return phpAstLexer53;
+	}
+
+	/**
+	 * @param reader
+	 * @return the singleton
+	 *         {@link org2.eclipse.php.internal.core.ast.scanner.php53.PhpAstLexer}
+	 */
+	private static org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstLexer getLexer54(
+			Reader reader) throws IOException {
+		final org2.eclipse.php.internal.core.ast.scanner.php54.PhpAstLexer phpAstLexer54 = createEmptyLexer_54();
+		phpAstLexer54.yyreset(reader);
+		phpAstLexer54.resetCommentList();
+		return phpAstLexer54;
 	}
 
 	/**

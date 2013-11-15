@@ -189,7 +189,8 @@ public class FieldAccess extends Dispatch {
 	 *    resolved
 	 */			
 	public IVariableBinding resolveFieldBinding() {
-		// TODO: Shalom - return this.ast.getBindingResolver().resolveField(this);
+		// Aptana Mod
+		// return this.ast.getBindingResolver().resolveField(this);
 		return null;
 	}
 }

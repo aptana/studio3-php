@@ -51,6 +51,7 @@ import org2.eclipse.php.internal.core.ast.nodes.Block;
 import org2.eclipse.php.internal.core.ast.nodes.BreakStatement;
 import org2.eclipse.php.internal.core.ast.nodes.CastExpression;
 import org2.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org2.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall;
 import org2.eclipse.php.internal.core.ast.nodes.ChildListPropertyDescriptor;
 import org2.eclipse.php.internal.core.ast.nodes.ChildPropertyDescriptor;
 import org2.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
@@ -62,6 +63,7 @@ import org2.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
 import org2.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ContinueStatement;
 import org2.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org2.eclipse.php.internal.core.ast.nodes.DereferenceNode;
 import org2.eclipse.php.internal.core.ast.nodes.DoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EchoStatement;
 import org2.eclipse.php.internal.core.ast.nodes.EmptyStatement;
@@ -72,6 +74,7 @@ import org2.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ForEachStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ForStatement;
 import org2.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org2.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org2.eclipse.php.internal.core.ast.nodes.FunctionName;
@@ -91,8 +94,10 @@ import org2.eclipse.php.internal.core.ast.nodes.LambdaFunctionDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.ListVariable;
 import org2.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.MethodInvocation;
+import org2.eclipse.php.internal.core.ast.nodes.MethodStub;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org2.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList;
 import org2.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PostfixExpression;
 import org2.eclipse.php.internal.core.ast.nodes.PrefixExpression;
@@ -112,6 +117,12 @@ import org2.eclipse.php.internal.core.ast.nodes.StructuralPropertyDescriptor;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org2.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org2.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAlias;
+import org2.eclipse.php.internal.core.ast.nodes.TraitAliasStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
+import org2.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement;
+import org2.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org2.eclipse.php.internal.core.ast.nodes.TypeDeclaration;
 import org2.eclipse.php.internal.core.ast.nodes.UnaryOperation;
@@ -130,7 +141,9 @@ import org2.eclipse.php.internal.core.ast.scanner.AstLexer;
 import org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor;
 
 import com.aptana.core.logging.IdeLog;
+import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.epl.PHPEplPlugin;
+
 
 /**
  * Infrastructure to support code modifications. Existing code must stay
@@ -143,6 +156,7 @@ import com.aptana.editor.php.epl.PHPEplPlugin;
 @SuppressWarnings({"unchecked", "nls", "unused", "rawtypes"})
 public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
+	private static final String CURLY_CLOSE = "}"; 
 	TextEdit currentEdit;
 	final RewriteEventStore eventStore; // used from inner classes
 
@@ -216,7 +230,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			try {
 				this.tokenScanner = new TokenScanner(scanner, content);
 			} catch (IOException e) {
-				IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating a PHP token scanner", e); //$NON-NLS-1$
+				IdeLog.logError(PHPEplPlugin.getDefault(), "Error creating a PHP token scanner", e); 
 			}
 		}
 		return this.tokenScanner;
@@ -517,7 +531,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 	private void changeNotSupported(ASTNode node) {
 		Assert.isTrue(false,
-				"Change not supported in " + node.getClass().getName()); //$NON-NLS-1$
+				"Change not supported in " + node.getClass().getName()); 
 	}
 
 	class ListRewriter {
@@ -611,6 +625,16 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				}
 				if (currMark != RewriteEvent.REMOVED) {
 					lastNonDelete = i;
+				}
+			}
+			if (isInsertUseStatement) {
+				if (parent instanceof Block) {
+					Block block = (Block) parent;
+					if (block.isCurly()) {
+						currPos = offset + getSeparatorString(0).length();
+					} else {
+						currPos = offset;
+					}
 				}
 			}
 
@@ -895,7 +919,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				TextEditGroup editGroup = getEditGroup(event);
 				doTextInsert(startPos, node, getIndent(startPos), true,
 						editGroup);
-				doTextInsert(startPos, ".", editGroup); //$NON-NLS-1$
+				doTextInsert(startPos, ".", editGroup); 
 				return startPos;
 			}
 			case RewriteEvent.REMOVED: {
@@ -1100,7 +1124,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					pos = posBeforeOpenBracket;
 				}
 				pos = new ListRewriter().rewriteList(parent, property, pos,
-						String.valueOf('<'), ", "); //$NON-NLS-1$
+						String.valueOf('<'), ", "); 
 				if (isAllRemoved) { // all removed: remove right and space up to
 					// next element
 					int endPos = getScanner().getTokenEndOffset(
@@ -1170,7 +1194,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup = getEditGroup(event);
 			if ((Boolean) event.getNewValue()) {
 				// Add a dollar sign to the variable
-				this.doTextInsert(variable.getStart(), "$", editGroup);
+				this.doTextInsert(variable.getStart(), "$", editGroup); 
 			} else {
 				// Remove the dollar sign from the variable
 				this.doTextRemove(variable.getStart(), 1, editGroup);
@@ -1342,6 +1366,12 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		}
 		if (currPos < formatted.length()) {
 			String insertStr = formatted.substring(currPos);
+			if (node instanceof MethodStub && insertStr.startsWith(CURLY_CLOSE)) {
+				doTextInsert(insertOffset, getLineDelimiter(), editGroup);
+				String destIndentString = this.formatter
+						.getIndentString(getCurrentLine(formatted, currPos));
+				doTextInsert(insertOffset, destIndentString, editGroup);
+			}
 			doTextInsert(insertOffset, insertStr, editGroup);
 		}
 	}
@@ -1388,12 +1418,12 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			// prepare the modifiers 'syms'
 			PHPVersion phpVersion = this.scanner.getPHPVersion();
 			int modifiers[] = new int[] {
-					SymbolsProvider.getModifierSym("public", phpVersion),
-					SymbolsProvider.getModifierSym("private", phpVersion),
-					SymbolsProvider.getModifierSym("protected", phpVersion),
-					SymbolsProvider.getModifierSym("static", phpVersion),
-					SymbolsProvider.getModifierSym("abstract", phpVersion),
-					SymbolsProvider.getModifierSym("final", phpVersion) };
+					SymbolsProvider.getModifierSym("public", phpVersion), 
+					SymbolsProvider.getModifierSym("private", phpVersion), 
+					SymbolsProvider.getModifierSym("protected", phpVersion), 
+					SymbolsProvider.getModifierSym("static", phpVersion), 
+					SymbolsProvider.getModifierSym("abstract", phpVersion), 
+					SymbolsProvider.getModifierSym("final", phpVersion) }; 
 			loop: while (true) {
 				if (TokenScanner.isComment(tok)) {
 					tok = scanner.readNext(/* true */); // next non-comment
@@ -1499,7 +1529,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		// else
 		// formatterPrefix = this.formatter.ANNOTATION_SEPARATION;
 		//
-		//		int endPos = new ModifierRewriter(formatterPrefix).rewriteList(node, property, pos, "", " "); //$NON-NLS-1$ //$NON-NLS-2$
+		//		int endPos = new ModifierRewriter(formatterPrefix).rewriteList(node, property, pos, StringUtil.EMPTY, " ");  
 		//
 		// try {
 		// int nextPos = getScanner().getNextStartOffset(endPos/*, false*/);
@@ -1553,7 +1583,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				} else {
 					throw new CoreException(new Status(IStatus.ERROR,
 							PHPEplPlugin.PLUGIN_ID,
-							"The node must be an IOperationNode")); //$NON-NLS-1$
+							"The node must be an IOperationNode")); 
 				}
 				TextEditGroup editGroup = getEditGroup(event);
 				getScanner().readNext(posBeforeOperation/* , true */);
@@ -1634,7 +1664,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		int pos = content.length; // TODO - Check if this is right (using 0
 		// cause for the code to be inserted before
 		// the <?php section).
-		rewriteNodeList(node, Program.STATEMENTS_PROPERTY, pos, "", "");
+		rewriteNodeList(node, Program.STATEMENTS_PROPERTY, pos, StringUtil.EMPTY, 
+				getLineDelimiter());
 		// int startPos = rewriteNode(node, Program.PACKAGE_PROPERTY, 0,
 		// ASTRewriteFormatter.NONE);
 		//
@@ -1693,7 +1724,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		// if (isConstructor || !returnTypeExists) { // insert
 		// doTextInsert(nextStart, newReturnType, getIndent(nextStart), true,
 		// editGroup);
-		//				doTextInsert(nextStart, " ", editGroup); //$NON-NLS-1$
+		//				doTextInsert(nextStart, " ", editGroup); 
 		// } else { // remove up to the method name
 		// int offset = getExtendedOffset(originalReturnType);
 		// doTextRemoveAndVisit(offset, nextStart - offset, originalReturnType,
@@ -1748,21 +1779,21 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			} else if (propertyDescriptor == WhileStatement.BODY_PROPERTY) {
 				Symbol symbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_WHILE_ID, scanner.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endwhile", symbol);
+				rewriteBlock(node, editGroup, shouldBeCurly, "endwhile", symbol); 
 			} else if (propertyDescriptor == ForStatement.BODY_PROPERTY) {
 				Symbol symbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_FOR_ID, scanner.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endfor", symbol);
+				rewriteBlock(node, editGroup, shouldBeCurly, "endfor", symbol); 
 			} else if (propertyDescriptor == ForEachStatement.STATEMENT_PROPERTY) {
 				Symbol symbol = SymbolsProvider
 						.getSymbol(SymbolsProvider.END_FOREACH_ID,
 								scanner.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endforeach",
+				rewriteBlock(node, editGroup, shouldBeCurly, "endforeach", 
 						symbol);
 			} else if (propertyDescriptor == SwitchStatement.BODY_PROPERTY) {
 				Symbol symbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_SWITCH_ID, scanner.getPHPVersion());
-				rewriteBlock(node, editGroup, shouldBeCurly, "endswitch",
+				rewriteBlock(node, editGroup, shouldBeCurly, "endswitch", 
 						symbol);
 			}
 		}
@@ -1790,10 +1821,10 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		if (propertyDescriptor == IfStatement.TRUE_STATEMENT_PROPERTY) {
 			if (shouldBeCurly) {
 				// Change the if's open block char to the opening brace char
-				doTextReplace(blockStart, 1, "{", editGroup);
+				doTextReplace(blockStart, 1, "{", editGroup); 
 				// Change the closing mark to be a closing brace
 
-				doTextInsert(blockEnd + 1, "\n}", editGroup);
+				doTextInsert(blockEnd + 1, "\n}", editGroup); 
 				// remove the endif token at this stage
 				Symbol endIfSymbol = SymbolsProvider.getSymbol(
 						SymbolsProvider.END_IF_ID, scanner.getPHPVersion());
@@ -1810,11 +1841,11 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					handleException(e);
 				}
 			} else {
-				doTextReplace(blockStart, 1, ":", editGroup);
+				doTextReplace(blockStart, 1, ":", editGroup); 
 				// In case that we don't have a false statement, add the endif
 				// word
 				if (ifStatement.getFalseStatement() == null) {
-					doTextReplace(blockEnd, 1, "endif;", editGroup);
+					doTextReplace(blockEnd, 1, "endif;", editGroup); 
 				} else {
 					doTextRemove(blockEnd, 1, editGroup);
 				}
@@ -1824,13 +1855,13 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			// brace
 			if (shouldBeCurly) {
 				// replace the opening colon char to a brace char
-				doTextReplace(blockStart, 1, "{", editGroup);
+				doTextReplace(blockStart, 1, "{", editGroup); 
 				// close the block with a brace
-				doTextInsert(blockEnd + 1, "\n}", editGroup);
+				doTextInsert(blockEnd + 1, "\n}", editGroup); 
 			} else {
-				doTextReplace(blockStart, 1, ":", editGroup);
+				doTextReplace(blockStart, 1, ":", editGroup); 
 				// End the if statement
-				doTextReplace(blockEnd, 1, "endif;", editGroup);
+				doTextReplace(blockEnd, 1, "endif;", editGroup); 
 			}
 		}
 	}
@@ -1857,9 +1888,9 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		// }
 		if (shouldBeCurly) {
 			// Change the if's open block char to the opening brace char
-			doTextReplace(blockStart, 1, "{", editGroup);
+			doTextReplace(blockStart, 1, "{", editGroup); 
 			// Change the closing mark to be a closing brace
-			doTextInsert(blockEnd + 1, "\n}", editGroup);
+			doTextInsert(blockEnd + 1, "\n}", editGroup); 
 			try {
 				// We scan for the Block end position by looking for the
 				// symbol's start offset.
@@ -1879,7 +1910,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				handleException(e);
 			}
 		} else {
-			doTextReplace(blockStart, 1, ":", editGroup);
+			doTextReplace(blockStart, 1, ":", editGroup); 
 			// In case that we don't have a false statement, add the keyword
 			doTextReplace(blockEnd - 1, 1, keyword + ';', editGroup);
 		}
@@ -1963,8 +1994,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 							.getStart());
 					int closePos = arrayAccess.getEnd() - 1;
 					TextEditGroup editGroup = getEditGroup(event);
-					doTextReplace(openPos, 1, "{", editGroup);
-					doTextReplace(closePos, 1, "}", editGroup);
+					doTextReplace(openPos, 1, "{", editGroup); 
+					doTextReplace(closePos, 1, CURLY_CLOSE, editGroup);
 				} else {
 					// the modification was from a variable hashtable to a
 					// variable array.
@@ -1972,8 +2003,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 							.getStart());
 					int closePos = arrayAccess.getEnd() - 1;
 					TextEditGroup editGroup = getEditGroup(event);
-					doTextReplace(openPos, 1, "[", editGroup);
-					doTextReplace(closePos, 1, "]", editGroup);
+					doTextReplace(openPos, 1, "[", editGroup); 
+					doTextReplace(closePos, 1, "]", editGroup); 
 				}
 			} catch (CoreException ce) {
 				handleException(ce);
@@ -1991,7 +2022,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(node);
 		}
 		rewriteNodeList(node, ArrayCreation.ELEMENTS_PROPERTY, node.getStart(),
-				"", ", ");
+				StringUtil.EMPTY, ", ");  
 		return false;
 	}
 
@@ -2107,11 +2138,17 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			try {
 				int pos = getLeftParenthesesStartPosition(node.getStart()) + 1;
 				rewriteNodeList(node,
-						ClassInstanceCreation.CTOR_PARAMS_PROPERTY, pos, "",
-						", ");
+						ClassInstanceCreation.CTOR_PARAMS_PROPERTY, pos, StringUtil.EMPTY, 
+						", "); 
 			} catch (Exception e) {
 				handleException(e);
 			}
+		}
+		if (isChanged(node,
+				ClassInstanceCreation.CHAINING_INSTANCE_CALL_PROPERTY)) {
+
+			rewriteRequiredNodeVisit(node,
+					ClassInstanceCreation.CHAINING_INSTANCE_CALL_PROPERTY);
 		}
 		return false;
 	}
@@ -2233,7 +2270,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		rewriteModifiers(node, FieldsDeclaration.MODIFIER_PROPERTY,
 				node.getStart());
 		rewriteNodeList(node, FieldsDeclaration.FIELDS_PROPERTY,
-				node.getStart() + node.getModifierString().length(), "", ", ");
+				node.getStart() + node.getModifierString().length(), StringUtil.EMPTY, ", ");  
 		return false;
 	}
 
@@ -2241,7 +2278,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.SingleFieldDeclaration)
 	 */
 	public boolean visit(SingleFieldDeclaration singleFieldDeclaration) {
@@ -2283,7 +2320,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			break;
 		case RewriteEvent.INSERTED:
 			ASTNode newNode = (ASTNode) event.getNewValue();
-			doTextInsert(pos, " = ", editGroup);
+			doTextInsert(pos, " = ", editGroup); 
 			doTextInsert(pos, newNode, 0, false, editGroup);
 			break;
 		case RewriteEvent.REMOVED:
@@ -2313,7 +2350,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				// position after opening parent
 				int startOffset = getLeftParenthesesStartPosition(pos) + 1;
 				pos = rewriteNodeList(node, ForStatement.INITIALIZERS_PROPERTY,
-						startOffset, "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+						startOffset, StringUtil.EMPTY, ", ");  
 			} else {
 				pos = doVisit(node, ForStatement.INITIALIZERS_PROPERTY, pos);
 			}
@@ -2324,13 +2361,13 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			pos = getScanner().getTokenEndOffset(semicolonSym, pos);
 
 			pos = rewriteNodeList(node, ForStatement.EXPRESSION_PROPERTY, pos,
-					"", ", ");
+					StringUtil.EMPTY, ", ");  
 
 			if (isChanged(node, ForStatement.UPDATERS_PROPERTY)) {
 				int startOffset = getScanner().getTokenEndOffset(semicolonSym,
 						pos);
 				pos = rewriteNodeList(node, ForStatement.UPDATERS_PROPERTY,
-						startOffset, "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+						startOffset, StringUtil.EMPTY, ", ");  
 			} else {
 				pos = doVisit(node, ForStatement.UPDATERS_PROPERTY, pos);
 			}
@@ -2501,7 +2538,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	// return doVisitUnchangedChildren(node);
 	// }
 	// int startPos= node.getStart() + 3;
-	//		String separator= getLineDelimiter() + getIndentAtOffset(node.getStart())  + " * "; //$NON-NLS-1$
+	//		String separator= getLineDelimiter() + getIndentAtOffset(node.getStart())  + " * "; 
 	//
 	// rewriteNodeList(node, Javadoc.TAGS_PROPERTY, startPos, separator,
 	// separator);
@@ -2586,7 +2623,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					pos = valueEnd;
 				}
 			}
-			rewriteNodeList(node, SwitchCase.ACTIONS_PROPERTY, pos, "", "");
+			rewriteNodeList(node, SwitchCase.ACTIONS_PROPERTY, pos, StringUtil.EMPTY, StringUtil.EMPTY);  
 		}
 		return rewriteRequiredNodeVisit(node, SwitchCase.VALUE_PROPERTY);
 	}
@@ -2683,7 +2720,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			int indent = getIndent(node.getStart());
 			// String prefix = this.formatter.CATCH_BLOCK.getPrefix(indent);
 			// TODO - Get the formatter prefix for the catch clause indentation
-			String prefix = "";
+			String prefix = StringUtil.EMPTY; 
 			pos = rewriteNodeList(node, TryStatement.CATCH_CLAUSES_PROPERTY,
 					pos, prefix, prefix);
 		} else {
@@ -2723,7 +2760,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 	final void handleException(Throwable e) {
 		IllegalArgumentException runtimeException = new IllegalArgumentException(
-				"Document does not match the AST"); //$NON-NLS-1$
+				"Document does not match the AST"); 
 		runtimeException.initCause(e);
 		throw runtimeException;
 	}
@@ -2732,7 +2769,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ArrayElement)
 	 */
 	public boolean visit(ArrayElement arrayElement) {
@@ -2774,7 +2811,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				start = ((ForEachStatement) node).getValue().getStart();
 			}
 			doTextInsert(start, newValue, 0, false, editGroup);
-			doTextInsert(start, "=>", editGroup);
+			doTextInsert(start, "=>", editGroup); 
 			break;
 		case RewriteEvent.REMOVED:
 			Expression removedExpression = (Expression) event
@@ -2803,7 +2840,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ASTError)
 	 */
 	@Override
@@ -2819,7 +2856,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.BackTickExpression)
 	 */
 	public boolean visit(BackTickExpression backTickExpression) {
@@ -2828,7 +2865,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		}
 		rewriteNodeList(backTickExpression,
 				BackTickExpression.EXPRESSIONS_PROPERTY,
-				backTickExpression.getStart(), "", "");
+				backTickExpression.getStart(), StringUtil.EMPTY, StringUtil.EMPTY);  
 		return false;
 	}
 
@@ -2836,7 +2873,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ClassConstantDeclaration)
 	 */
 	@Override
@@ -2854,7 +2891,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ClassDeclaration)
 	 */
 	@Override
@@ -2875,8 +2912,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				pos = classDeclaration.getSuperClass().getEnd();
 			}
 			rewriteNodeList(classDeclaration,
-					ClassDeclaration.INTERFACES_PROPERTY, pos, " implements ",
-					", ");
+					ClassDeclaration.INTERFACES_PROPERTY, pos, " implements ", 
+					", "); 
 			// Rewrite the name and the body
 			return rewriteRequiredNodeVisit(classDeclaration,
 					ClassDeclaration.NAME_PROPERTY,
@@ -2935,7 +2972,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			case RewriteEvent.INSERTED:
 				Identifier superClass = (Identifier) event.getNewValue();
 				int insertionPos = classDeclaration.getName().getEnd();
-				String extendsKeyword = " extends ";
+				String extendsKeyword = " extends "; 
 				doTextInsert(insertionPos, extendsKeyword, editGroup);
 				doTextInsert(insertionPos, superClass, 0, false, editGroup);
 				break;
@@ -2955,7 +2992,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				int deletionStart = classDeclaration.getName().getEnd();
 				doTextRemove(deletionStart, deletionEnd - deletionStart,
 						editGroup);
-				doTextInsert(deletionStart, " ", editGroup);
+				doTextInsert(deletionStart, " ", editGroup); 
 				break;
 			case RewriteEvent.REPLACED:
 				rewriteRequiredNode(classDeclaration,
@@ -2978,7 +3015,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ClassName)
 	 */
 	public boolean visit(ClassName className) {
@@ -2989,7 +3026,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.CloneExpression)
 	 */
 	public boolean visit(CloneExpression cloneExpression) {
@@ -3001,7 +3038,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.Comment)
 	 */
 	@Override
@@ -3014,7 +3051,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.DeclareStatement)
 	 */
 	@Override
@@ -3032,7 +3069,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.EchoStatement)
 	 */
 	public boolean visit(EchoStatement echoStatement) {
@@ -3040,7 +3077,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(echoStatement);
 		}
 		rewriteNodeList(echoStatement, EchoStatement.EXPRESSIONS_PROPERTY,
-				echoStatement.getStart(), "", ", ");
+				echoStatement.getStart(), StringUtil.EMPTY, ", ");  
 		return false;
 	}
 
@@ -3048,7 +3085,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ForEachStatement)
 	 */
 	@Override
@@ -3072,7 +3109,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.FormalParameter)
 	 */
 	public boolean visit(FormalParameter formalParameter) {
@@ -3083,7 +3120,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				if (formalParameter.getAST().apiLevel() == PHPVersion.PHP5) {
 					throw new CoreException(
 							new Status(IStatus.ERROR, PHPEplPlugin.PLUGIN_ID,
-									"Could not set a FormalParameter 'isMandatory' property for PHP5 AST"));
+									"Could not set a FormalParameter 'isMandatory' property for PHP5 AST")); 
 				}
 				// Rewrite the isMandatory field
 				RewriteEvent event = getEvent(formalParameter,
@@ -3097,7 +3134,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 						// characters including the space)
 						doTextRemove(formalParameter.getStart(), 6, editGroup);
 					} else {
-						doTextInsert(formalParameter.getStart(), "const ",
+						doTextInsert(formalParameter.getStart(), "const ", 
 								editGroup);
 					}
 				}
@@ -3132,14 +3169,14 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				ASTNode originalValue = (ASTNode) event.getOriginalValue();
 				if (originalValue == null || originalValue.getLength() == 0) {
 					// Add another space to split the type from the name
-					doTextInsert(pos, " ", getEditGroup(event));
+					doTextInsert(pos, " ", getEditGroup(event)); 
 				}
 				break;
 			case RewriteEvent.INSERTED:
 				Identifier identifier = (Identifier) event.getNewValue();
 				String name = identifier.getName();
 				if (name != null) {
-					if (!name.endsWith(" ") && !name.endsWith("\t")) {
+					if (!name.endsWith(" ") && !name.endsWith("\t")) {  
 						name += ' ';
 					}
 					doTextInsert(formalParameter.getStart(), name,
@@ -3174,7 +3211,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				Scalar scalar = (Scalar) event.getNewValue();
 				String scalarValue = scalar.getStringValue();
 				if (scalar != null) {
-					doTextInsert(formalParameter.getStart(), " = "
+					doTextInsert(formalParameter.getStart(), " = " 
 							+ scalarValue, getEditGroup(event));
 				}
 				break;
@@ -3192,7 +3229,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.FunctionDeclaration)
 	 */
 	public boolean visit(FunctionDeclaration functionDeclaration) {
@@ -3211,7 +3248,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				int startOffset = getLeftParenthesesStartPosition(pos) + 1;
 				rewriteNodeList(functionDeclaration,
 						FunctionDeclaration.FORMAL_PARAMETERS_PROPERTY,
-						startOffset, "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+						startOffset, StringUtil.EMPTY, ", ");  
 			} catch (CoreException e) {
 				handleException(e);
 			}
@@ -3246,9 +3283,9 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					editGroup);
 			if (isReference) {
 				// we need to insert the &
-				doTextInsert(startDeletionFrom, " &", editGroup);
+				doTextInsert(startDeletionFrom, " &", editGroup); 
 			} else {
-				doTextInsert(startDeletionFrom, " ", editGroup);
+				doTextInsert(startDeletionFrom, " ", editGroup); 
 			}
 		}
 	}
@@ -3257,7 +3294,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.FunctionInvocation)
 	 */
 	public boolean visit(FunctionInvocation functionInvocation) {
@@ -3273,7 +3310,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				int startOffset = getLeftParenthesesStartPosition(pos) + 1;
 				rewriteNodeList(functionInvocation,
 						FunctionInvocation.PARAMETERS_PROPERTY, startOffset,
-						"", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+						StringUtil.EMPTY, ", ");  
 			} catch (CoreException e) {
 				handleException(e);
 			}
@@ -3288,7 +3325,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.FunctionName)
 	 */
 	public boolean visit(FunctionName functionName) {
@@ -3300,7 +3337,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.GlobalStatement)
 	 */
 	public boolean visit(GlobalStatement globalStatement) {
@@ -3308,7 +3345,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(globalStatement);
 		}
 		rewriteNodeList(globalStatement, GlobalStatement.VARIABLES_PROPERTY,
-				globalStatement.getStart(), "", ", ");
+				globalStatement.getStart(), StringUtil.EMPTY, ", ");  
 		return false;
 	}
 
@@ -3316,7 +3353,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.Identifier)
 	 */
 	public boolean visit(Identifier node) {
@@ -3333,7 +3370,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.IgnoreError)
 	 */
 	public boolean visit(IgnoreError ignoreError) {
@@ -3345,7 +3382,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.Include)
 	 */
 	public boolean visit(Include include) {
@@ -3385,7 +3422,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				// the new node is not a parenthesis, and if not - add a blank
 				if (typeEndOffset + offsetGap == originalNode.getStart()
 						&& newNode.getType() != ASTNode.PARENTHESIS_EXPRESSION) {
-					doTextInsert(offsetGap + typeEndOffset, " ", editGroup); //$NON-NLS-1$
+					doTextInsert(offsetGap + typeEndOffset, " ", editGroup); 
 					rewriteRequiredNode(include, Include.EXPRESSION_PROPERTY);
 				} else {
 					rewriteRequiredNode(include, Include.EXPRESSION_PROPERTY);
@@ -3399,7 +3436,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.InLineHtml)
 	 */
 	@Override
@@ -3415,7 +3452,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.InstanceOfExpression)
 	 */
 	public boolean visit(InstanceOfExpression instanceOfExpression) {
@@ -3428,7 +3465,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.InterfaceDeclaration)
 	 */
 	@Override
@@ -3440,7 +3477,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			// Rewrite the extended interfaces
 			rewriteNodeList(interfaceDeclaration,
 					InterfaceDeclaration.INTERFACES_PROPERTY,
-					interfaceDeclaration.getName().getEnd(), " extends ", ", ");
+					interfaceDeclaration.getName().getEnd(), " extends ", ", ");  
 			// Rewrite the name and the body
 			return rewriteRequiredNodeVisit(interfaceDeclaration,
 					InterfaceDeclaration.NAME_PROPERTY,
@@ -3455,7 +3492,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ListVariable)
 	 */
 	public boolean visit(ListVariable listVariable) {
@@ -3463,7 +3500,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(listVariable);
 		}
 		rewriteNodeList(listVariable, ListVariable.VARIABLES_PROPERTY,
-				listVariable.getStart(), "", ",");
+				listVariable.getStart(), StringUtil.EMPTY, ",");  
 		return false;
 	}
 
@@ -3471,7 +3508,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ParenthesisExpression)
 	 */
 	public boolean visit(ParenthesisExpression parenthesisExpression) {
@@ -3483,7 +3520,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.Quote)
 	 */
 	public boolean visit(Quote quote) {
@@ -3521,8 +3558,8 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			break;
 
 		}
-		rewriteNodeList(quote, Quote.EXPRESSIONS_PROPERTY, expressionStart, "",
-				"");
+		rewriteNodeList(quote, Quote.EXPRESSIONS_PROPERTY, expressionStart, StringUtil.EMPTY, 
+				StringUtil.EMPTY); 
 		// In case that the original expressions list was empty, we should add a
 		// new line
 		List originalValue = (List) getOriginalValue(quote,
@@ -3530,7 +3567,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		List newValue = (List) getNewValue(quote, Quote.EXPRESSIONS_PROPERTY);
 		if ((originalValue == null || originalValue.size() == 0)
 				&& newValue != null && newValue.size() > 0) {
-			doTextInsert(expressionStart, "\n",
+			doTextInsert(expressionStart, "\n", 
 					getEditGroup(quote, Quote.EXPRESSIONS_PROPERTY));
 		}
 	}
@@ -3570,24 +3607,24 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 					}
 
 					int newType = (Integer) event.getNewValue();
-					String newStart = "";
-					String newEnd = "";
+					String newStart = StringUtil.EMPTY; 
+					String newEnd = StringUtil.EMPTY; 
 					switch (newType) {
 					case Quote.QT_SINGLE:
-						newStart = "'";
-						newEnd = "'";
+						newStart = "'"; 
+						newEnd = "'"; 
 						break;
 					case Quote.QT_QUOTE:
-						newStart = "\"";
-						newEnd = "\"";
+						newStart = "\""; 
+						newEnd = "\""; 
 						break;
 					case Quote.QT_NOWDOC:
-						newStart = "<<<'Heredoc'\n";
-						newEnd = "\nHeredoc;\n";
+						newStart = "<<<'Heredoc'\n"; 
+						newEnd = "\nHeredoc;\n"; 
 						break;
 					case Quote.QT_HEREDOC:
-						newStart = "<<<Heredoc\n";
-						newEnd = "\nHeredoc;\n";
+						newStart = "<<<Heredoc\n"; 
+						newEnd = "\nHeredoc;\n"; 
 						break;
 					}
 					doTextReplace(quoteStart, expressionsStart - quoteStart,
@@ -3603,7 +3640,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.Reference)
 	 */
 	public boolean visit(Reference reference) {
@@ -3615,7 +3652,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.ReflectionVariable)
 	 */
 	public boolean visit(ReflectionVariable reflectionVariable) {
@@ -3630,7 +3667,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.Scalar)
 	 */
 	public boolean visit(Scalar scalar) {
@@ -3640,7 +3677,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		if (event != null) {
 			String newValue = (String) event.getNewValue();
 			if (newValue == null) {
-				newValue = "";
+				newValue = StringUtil.EMPTY; 
 			}
 			if (event != null) {
 				int kind = event.getChangeKind();
@@ -3667,7 +3704,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.StaticConstantAccess)
 	 */
 	public boolean visit(StaticConstantAccess classConstantAccess) {
@@ -3680,7 +3717,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.StaticFieldAccess)
 	 */
 	public boolean visit(StaticFieldAccess staticFieldAccess) {
@@ -3693,7 +3730,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.StaticMethodInvocation)
 	 */
 	public boolean visit(StaticMethodInvocation staticMethodInvocation) {
@@ -3706,7 +3743,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.StaticStatement)
 	 */
 	public boolean visit(StaticStatement staticStatement) {
@@ -3714,7 +3751,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(staticStatement);
 		}
 		rewriteNodeList(staticStatement, StaticStatement.EXPRESSIONS_PROPERTY,
-				staticStatement.getStart(), "", ", ");
+				staticStatement.getStart(), StringUtil.EMPTY, ", ");  
 		return false;
 	}
 
@@ -3722,7 +3759,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.UnaryOperation)
 	 */
 	public boolean visit(UnaryOperation unaryOperation) {
@@ -3736,7 +3773,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org2.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
+	 * org.eclipse.php.internal.core.ast.visitor.AbstractVisitor#visit(org.eclipse
 	 * .php.internal.core.ast.nodes.Variable)
 	 */
 	public boolean visit(Variable variable) {
@@ -3760,6 +3797,29 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			return doVisitUnchangedChildren(lambdaFunctionDeclaration);
 		}
 
+		// static FIXME
+		// RewriteEvent staticEvent = getEvent(lambdaFunctionDeclaration,
+		// LambdaFunctionDeclaration.IS_STATIC);
+		// if (staticEvent != null && staticEvent.getChangeKind() ==
+		// RewriteEvent.REPLACED) {
+		// boolean isStatic = (Boolean) staticEvent.getNewValue();
+		//
+		// try {
+		// TextEditGroup editGroup = getEditGroup(staticEvent);
+		// int startDeletionFrom = lambdaFunctionDeclaration.getStart() + 8;
+		// int startOffset = getLeftParenthesesStartPosition(startDeletionFrom);
+		// doTextRemove(startDeletionFrom,
+		// startOffset - startDeletionFrom, editGroup);
+		// if (isStatic) {
+		// doTextInsert(startDeletionFrom, " & ", editGroup);
+		// } else {
+		// doTextInsert(startDeletionFrom, " ", editGroup);
+		// }
+		// } catch (CoreException e) {
+		// handleException(e);
+		// }
+		// }
+
 		// Reference
 		RewriteEvent event = getEvent(lambdaFunctionDeclaration,
 				LambdaFunctionDeclaration.IS_REFERENCE_PROPERTY);
@@ -3782,9 +3842,9 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 						startOffset - startDeletionFrom, editGroup);
 				if (isReference) {
 					// we need to insert the &
-					doTextInsert(startDeletionFrom, " & ", editGroup);
+					doTextInsert(startDeletionFrom, " & ", editGroup); 
 				} else {
-					doTextInsert(startDeletionFrom, " ", editGroup);
+					doTextInsert(startDeletionFrom, " ", editGroup); 
 				}
 			} catch (CoreException e) {
 				handleException(e);
@@ -3804,7 +3864,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				int startOffset = getLeftParenthesesStartPosition(startDeletionFrom);
 				rewriteNodeList(lambdaFunctionDeclaration,
 						LambdaFunctionDeclaration.FORMAL_PARAMETERS_PROPERTY,
-						startOffset, "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+						startOffset, StringUtil.EMPTY, ", ");  
 			} catch (CoreException e) {
 				handleException(e);
 			}
@@ -3826,7 +3886,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 				int startOffset = getRightBraceStartPosition(startDeletionFrom) + 1;
 				rewriteNodeList(lambdaFunctionDeclaration,
 						LambdaFunctionDeclaration.LEXICAL_VARIABLES_PROPERTY,
-						startOffset, " as ", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+						startOffset, " as ", ", ");  
 			} catch (CoreException e) {
 				handleException(e);
 			}
@@ -3858,7 +3918,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup = getEditGroup(event);
 			if ((Boolean) event.getNewValue()) {
 				// Add the '\' to the namespace name
-				this.doTextInsert(namespaceName.getStart(), "\\", editGroup);
+				this.doTextInsert(namespaceName.getStart(), "\\", editGroup); 
 			} else {
 				// Remove the '\' from the namespace name
 				this.doTextRemove(namespaceName.getStart(), 1, editGroup);
@@ -3869,7 +3929,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 			TextEditGroup editGroup = getEditGroup(event);
 			if ((Boolean) event.getNewValue()) {
 				// Add the 'namespace' to the namespace name
-				this.doTextInsert(namespaceName.getStart(), "namespace\\",
+				this.doTextInsert(namespaceName.getStart(), "namespace\\", 
 						editGroup);
 			} else {
 				// Remove the 'namespace' from the namespace name
@@ -3887,7 +3947,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 		if (isChanged(namespaceName, NamespaceName.ELEMENTS_PROPERTY)) {
 			rewriteNodeList(namespaceName, NamespaceName.ELEMENTS_PROPERTY,
-					pos, "", "\\");
+					pos, StringUtil.EMPTY, "\\");  
 		} else {
 			voidVisit(namespaceName, NamespaceName.ELEMENTS_PROPERTY);
 		}
@@ -3897,7 +3957,7 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 
 	public boolean visit(UseStatement useStatement) {
 		rewriteNodeList(useStatement, UseStatement.PARTS_PROPERTY,
-				useStatement.getStart(), "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+				useStatement.getStart(), StringUtil.EMPTY, ", ");  
 		return false;
 	}
 
@@ -3935,4 +3995,130 @@ public final class ASTRewriteAnalyzer extends AbstractVisitor {
 		}
 		return false;
 	}
+
+	// php5.4 starts
+
+	public boolean visit(ChainingInstanceCall node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteRequiredNode(node, ChainingInstanceCall.ARRAY_DEREFERENCE_LIST);
+		// rewriteNodeList(node,
+		// ChainingInstanceCall.CHAINING_METHOD_OR_PROPERTY,
+		// node.getStart(), StringUtil.EMPTY, StringUtil.EMPTY);
+		return false;
+	}
+
+	public boolean visit(DereferenceNode node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteRequiredNode(node, ChainingInstanceCall.ARRAY_DEREFERENCE_LIST);
+		return false;
+	}
+
+	public boolean visit(FullyQualifiedTraitMethodReference node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteRequiredNode(node, FullyQualifiedTraitMethodReference.CLASS_NAME);
+		rewriteRequiredNode(node,
+				FullyQualifiedTraitMethodReference.FUNCTION_NAME);
+		return false;
+	}
+
+	public boolean visit(PHPArrayDereferenceList node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteNodeList(node, PHPArrayDereferenceList.DEREFERENCES_PROPERTY,
+				node.getStart(), StringUtil.EMPTY, StringUtil.EMPTY);  
+		return false;
+	}
+
+	public boolean visit(TraitAlias node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteRequiredNode(node, TraitAlias.TRAIT_METHOD);
+		rewriteModifiers(node, TraitAlias.MODIFIER, node.getModifierOffset());
+		rewriteRequiredNode(node, TraitAlias.FUNCTION_NAME);
+		return false;
+	}
+
+	public boolean visit(TraitAliasStatement node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteRequiredNode(node, TraitAliasStatement.EXP);
+		return false;
+	}
+
+	public boolean visit(TraitDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		try {
+			// Rewrite the modifier property
+			// rewriteClassDeclarationModifier(classDeclaration);
+			// Rewrite the super-class property
+			// rewriteClassDeclarationSuperClass(classDeclaration);
+			// Rewrite the interfaces
+			// int pos;
+			// if (classDeclaration.getSuperClass() == null) {
+			// pos = classDeclaration.getName().getEnd();
+			// } else {
+			// pos = classDeclaration.getSuperClass().getEnd();
+			// }
+			// rewriteNodeList(classDeclaration,
+			// ClassDeclaration.INTERFACES_PROPERTY, pos, " implements ",
+			// ", ");
+			// Rewrite the name and the body
+			return rewriteRequiredNodeVisit(node,
+					ClassDeclaration.NAME_PROPERTY,
+					ClassDeclaration.BODY_PROPERTY);
+		} catch (Exception e) {
+			handleException(e);
+		}
+		return false;
+	}
+
+	public boolean visit(TraitPrecedence node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteRequiredNode(node, TraitPrecedence.METHOD_REFERENCE);
+		rewriteNodeList(node, TraitPrecedence.TRAIT_REFERENCE_LIST,
+				node.getStart(), StringUtil.EMPTY, ", "); 
+		return false;
+	}
+
+	public boolean visit(TraitPrecedenceStatement node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteRequiredNode(node, TraitPrecedenceStatement.EXP);
+		return false;
+	}
+
+	public boolean visit(TraitUseStatement node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		rewriteNodeList(node, TraitUseStatement.TRAIT, node.getStart(), StringUtil.EMPTY,
+				", "); 
+		rewriteNodeList(node, TraitUseStatement.TRAIT_STATEMENT,
+				node.getStart(), StringUtil.EMPTY, ", ");  
+		return false;
+	}
+
+	// php5.4 ends
+
+	private boolean isInsertUseStatement;
+
+	public void setInsertUseStatement(boolean isInsertUseStatement) {
+		// TODO Auto-generated method stub
+		this.isInsertUseStatement = isInsertUseStatement;
+	}
+
 }
