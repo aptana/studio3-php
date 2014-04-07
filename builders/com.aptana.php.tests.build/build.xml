@@ -7,7 +7,7 @@
                    
      cwilliams                                                                
      ====================================================================== -->
-<project name="PHP" default="test">
+<project name="PHP" default="test" xmlns:jacoco="antlib:org.jacoco.ant">
 	<description>
             Tests the PHP feature
     </description>
@@ -19,12 +19,14 @@
 		</classpath>
 	</taskdef>
 
-	<!-- Set up EMMA location and instrumentation path -->
-	<path id="emma.lib">
-		<pathelement location="lib/emma.jar" />
-		<pathelement location="lib/emma_ant.jar" />
+	<!-- Set up JACOCO location and instrumentation path -->
+	<path id="jacoco.lib">
+		<pathelement location="lib/jacocoagent.jar" />
+		<pathelement location="lib/jacocoant.jar" />
 	</path>
-	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+		<classpath refid="jacoco.lib" />
+	</taskdef>
 
 	<path id="instrument.classpath">
 		<fileset dir="${baseLocation}/plugins">
@@ -131,8 +133,10 @@
 	</target>
 
 	<target name="-pre-test" description="Install test features and do pre-test setup.">
-		<!-- Unzip Eclipse Testing Framework and... -->
-		<unzip src="eclipse-test-framework-3.6.zip" dest="${baseLocation}/dropins" />
+		<!-- Unzip the eclipse test framework zipfile -->
+		<property name="eclipse.tests.p2.repo.dir" location="${basedir}/eclipse-test-framework-4.3.1" />
+		<unzip src="${basedir}/eclipse-test-framework-4.3.1.zip" dest="${eclipse.tests.p2.repo.dir}" />
+		<property name="eclipse.tests.p2.repo" value="file:${eclipse.tests.p2.repo.dir}" />
 		<!-- Install the test feature we just built along with eclipse test framework -->
 		<antcall target="run.director">
 			<param name="p2.installIU" value="com.aptana.feature.feature.group,com.aptana.php.feature.feature.group,com.aptana.studio.tests.feature.group,${topLevelElementId}.feature.group" />
@@ -153,32 +157,19 @@
 		<move file="${baseLocation}/test-results.xml" todir="${testResultsDirectory}" />
 	</target>
 
-	<target name="-instrument" description="Instrument the code using EMMA. Call before running tests. Call '-coverage' to produce reports after.">
-		<emma enabled="true">
-			<instr instrpathref="instrument.classpath" mode="overwrite" metadatafile="${buildDirectory}/metadata.emma">
-				<filter file="emma-filters.txt" />
-			</instr>
-		</emma>
-	</target>
-
-	<target name="-coverage" description="Produce coverage analysis docs using EMMA. Assumes '-instrument' was called before running the tests.">
-		<mkdir dir="${coverageDirectory}"/>
-		<emma enabled="true">
-			<report>
-				<fileset dir="${buildDirectory}">
-					<include name="*.emma" />
-				</fileset>
-
-				<txt outfile="${coverageDirectory}/coverage.txt" />
-				<html outfile="${coverageDirectory}/coverage.html" encoding="UTF-8" />
-				<xml outfile="${coverageDirectory}/coverage.xml" depth="method" />
-			</report>
-		</emma>
-	</target>
-
 	<target name="test" depends="build">
 		<antcall target="-pre-test" />
-		<antcall target="-instrument" />
+		
+		<if>
+			<isset property="instrument.code" />
+			<then>
+				<mkdir dir="${coverageDirectory}" />
+				<property name="agentvmparam" value="-javaagent:${basedir}/lib/jacocoagent.jar=destfile=${coverageDirectory}/coverage.exec,excludes=${jacoco.excludes}" />
+			</then>
+			<else>
+				<property name="agentvmparam" value="" />
+			</else>
+		</if>
 
 		<!-- Run the tests. -->
 		<antcall target="run-core-test">
@@ -191,7 +182,6 @@
 		</antcall>
 
 		<antcall target="-post-test" />
-		<antcall target="-coverage" />
 	</target>
 
 	<target name="performance" depends="generate.build.properties,copy.base.windows,copy.base">
@@ -222,8 +212,7 @@
 
 	<target name="run-ui-test">
 		<ant target="ui-test" antfile="${library-file}" dir="${baseLocation}">
-			<reference refid="emma.lib" />
-			<property name="extra.java-test.classpath" value="emma.lib" />
+			<reference refid="jacoco.lib" />
 			<property name="timeout" value="${test.timeout}" />
 			<property name="os" value="${baseos}" />
 			<property name="ws" value="${basews}" />
@@ -232,14 +221,13 @@
 			<property name="data-dir" value="${baseLocation}/junit-workspace -clean" />
 			<property name="plugin-name" value="${test.plugin}" />
 			<property name="classname" value="${test.classname}" />
-			<property name="extraVMargs" value="-Demma.coverage.out.file=${buildDirectory}/coverage.emma -Dosgi.dev=${basedir}/lib/emma.jar" />
+			<property name="extraVMargs" value="-Djunit.properties=${basedir}/build.properties ${agentvmparam}" />
 		</ant>
 	</target>
 
 	<target name="run-core-test">
 		<ant target="core-test" antfile="${library-file}" dir="${baseLocation}">
-			<reference refid="emma.lib" />
-			<property name="extra.java-test.classpath" value="emma.lib" />
+			<reference refid="jacoco.lib" />
 			<property name="timeout" value="${test.timeout}" />
 			<property name="os" value="${baseos}" />
 			<property name="ws" value="${basews}" />
@@ -248,7 +236,7 @@
 			<property name="data-dir" value="${baseLocation}/junit-workspace -clean" />
 			<property name="plugin-name" value="${test.plugin}" />
 			<property name="classname" value="${test.classname}" />
-			<property name="extraVMargs" value="-Demma.coverage.out.file=${coverageDirectory}/coverage.emma -Dosgi.dev=${basedir}/lib/emma.jar" />
+			<property name="extraVMargs" value="-Djunit.properties=${basedir}/build.properties ${agentvmparam}" />
 		</ant>
 	</target>
 

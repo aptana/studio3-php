@@ -1,5 +1,0 @@
--*Test*
--*Application*
--*Messages
--net.contentobjects.*
--com.aptana.php.tests.all.*
