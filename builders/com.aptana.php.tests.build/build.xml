@@ -139,8 +139,8 @@
 		<property name="eclipse.tests.p2.repo" value="file:${eclipse.tests.p2.repo.dir}" />
 		<!-- Install the test feature we just built along with eclipse test framework -->
 		<antcall target="run.director">
-			<param name="p2.installIU" value="com.aptana.feature.feature.group,com.aptana.php.feature.feature.group,com.aptana.studio.tests.feature.group,${topLevelElementId}.feature.group" />
-			<param name="p2.repo" value="${studio3.p2.repo},${php.p2.repo},${studio3.test.p2.repo},file:${deploy.dir}" />
+			<param name="p2.installIU" value="org.eclipse.test.feature.group,com.aptana.feature.feature.group,com.aptana.php.feature.feature.group,com.aptana.studio.tests.feature.group,${topLevelElementId}.feature.group" />
+			<param name="p2.repo" value="${eclipse.tests.p2.repo},${studio3.p2.repo},${php.p2.repo},${studio3.test.p2.repo},file:${deploy.dir}" />
 		</antcall>
 		<!-- Modify the plugin_custimization.ini to set initial properties for tests! -->
 		<concat append="true" destfile="${baseLocation}/plugins/org.eclipse.sdk_3.6.0.v201006080911/plugin_customization.ini">
