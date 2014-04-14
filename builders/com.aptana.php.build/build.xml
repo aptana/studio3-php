@@ -74,14 +74,8 @@
 	<!-- - - - - - - - - - - - - - - - - - 
           target: generate.base                      
          - - - - - - - - - - - - - - - - - -->
-	<target name="generate.base" depends="copy.base.windows,copy.base" >
-		<!-- Delete the test feature, only build the PHP feature and its plugins! -->
-		<delete>
-			<fileset dir="${buildDirectory}" defaultexcludes="true">
-				<include name="features/com.aptana.php.tests/**/*" />
-			</fileset>
-		</delete>
-	</target>
+	<target name="generate.base" depends="copy.base.windows,copy.base" />
+
 	<!-- - - - - - - - - - - - - - - - - - 
           target: copy.base
           On non-Windows machines, copy eclipse and plugins/features directories to buildDirectory to set up for build
