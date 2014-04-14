@@ -85,13 +85,6 @@
 				<include name="**/*" />
 			</fileset>
 		</copy>
-		<!-- Wipe features -->
-		<echo message="Wiping features to only one we're building" level="info" />
-		<delete>
-			<fileset dir="${buildDirectory}/features">
-			    <exclude name="${topLevelElementId}"/>
-			</fileset>
-		</delete>
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
