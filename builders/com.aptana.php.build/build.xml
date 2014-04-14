@@ -88,15 +88,6 @@
 		<exec executable="cp">
 			<arg line="-R ${vanilla.eclipse} ${baseLocation}" />
 		</exec>
-		<!-- copy plugins and features -->
-		<echo message="Copying plugins" level="info" />
-		<exec executable="cp">
-			<arg line="-R ${workspace}/plugins ${buildDirectory}/plugins" />
-		</exec>
-		<echo message="Copying features" level="info" />
-		<exec executable="cp">
-			<arg line="-R ${workspace}/features ${buildDirectory}/features" />
-		</exec>
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
@@ -107,13 +98,6 @@
 		<!-- copy eclipse -->
 		<copy todir="${baseLocation}">
 			<fileset dir="${vanilla.eclipse}" includes="**/*" defaultexcludes="false" />
-		</copy>
-		<!-- copy plugins and features -->
-		<copy todir="${buildDirectory}">
-			<fileset dir="${workspace}" defaultexcludes="true">
-				<include name="plugins/**" />
-				<include name="features/**" />
-			</fileset>
 		</copy>
 	</target>
 
