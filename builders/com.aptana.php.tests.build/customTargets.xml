@@ -11,11 +11,9 @@
 	<!-- ===================================================================== -->
 	<target name="preProcessRepos">
 		<p2.mirror destination="file:${repoBaseLocation}/mirrored">
-			<source location="${windowtester.p2.repo}" />
 			<source location="${studio3.p2.repo}" />
 			<source location="${php.p2.repo}" />
 			<source location="${studio3.test.p2.repo}" />
-			<iu id="com.windowtester.runtime.feature.group" />
 			<iu id="com.aptana.feature.feature.group" />
 			<iu id="com.aptana.php.feature.feature.group" />
 			<iu id="com.aptana.studio.tests.feature.group" />
