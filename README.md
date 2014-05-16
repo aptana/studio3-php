@@ -1,4 +1,4 @@
-[![Build Status](http://studio-jenkins.appcelerator.org/job/studio3-php-development/badge/icon)](http://studio-jenkins.appcelerator.org/job/studio3-php-development)
+[![Build Status](http://studio-jenkins.appcelerator.org/job/studio3-php-master/badge/icon)](http://studio-jenkins.appcelerator.org/job/studio3-php-master)
 
 Aptana Studio 3: PHP
 ========================
