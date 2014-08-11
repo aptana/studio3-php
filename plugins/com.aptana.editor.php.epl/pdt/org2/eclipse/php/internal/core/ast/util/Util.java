@@ -20,12 +20,14 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
+
 import org2.eclipse.dltk.compiler.CharOperation;
 import org2.eclipse.dltk.compiler.util.ScannerHelper;
 
@@ -35,22 +37,23 @@ import com.aptana.core.util.EclipseUtil;
  * Provides convenient utility methods to other types in this package.<br>
  * Note: [Shalom] Some of this class functionalities were stripped in the migration process.
  */
-public class Util {
+public class Util
+{
 
 	private static final String SYSTEM_LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
-	public interface Comparable {
+	public interface Comparable
+	{
 		/**
-		 * Returns 0 if this and c are equal, >0 if this is greater than c, or
-		 * <0 if this is less than c.
+		 * Returns 0 if this and c are equal, >0 if this is greater than c, or <0 if this is less than c.
 		 */
 		int compareTo(Comparable c);
 	}
 
-	public interface Comparer {
+	public interface Comparer
+	{
 		/**
-		 * Returns 0 if a and b are equal, >0 if a is greater than b, or <0 if a
-		 * is less than b.
+		 * Returns 0 if a and b are equal, >0 if a is greater than b, or <0 if a is less than b.
 		 */
 		int compare(Object a, Object b);
 	}
@@ -72,14 +75,14 @@ public class Util {
 	private static final char[] VOID = "void".toCharArray(); //$NON-NLS-1$
 	private static final char[] INIT = "<init>".toCharArray(); //$NON-NLS-1$
 
-	private Util() {
+	private Util()
+	{
 		// cannot be instantiated
 	}
 
 	/**
-	 * Returns a new array adding the second array at the end of first array. It
-	 * answers null if the first and second are null. If the first array is null
-	 * or if it is empty, then a new array is created with second. If the second
+	 * Returns a new array adding the second array at the end of first array. It answers null if the first and second
+	 * are null. If the first array is null or if it is empty, then a new array is created with second. If the second
 	 * array is null, then the first array is returned. <br>
 	 * <br>
 	 * For example:
@@ -91,7 +94,6 @@ public class Util {
 	 *    second = &quot;a&quot;
 	 *    =&gt; result = {&quot;a&quot;}
 	 * </pre>
-	 * 
 	 * <li>
 	 * 
 	 * <pre>
@@ -116,17 +118,18 @@ public class Util {
 	 *            the first array to concatenate
 	 * @param second
 	 *            the array to add at the end of the first array
-	 * @return a new array adding the second array at the end of first array, or
-	 *         null if the two arrays are null.
+	 * @return a new array adding the second array at the end of first array, or null if the two arrays are null.
 	 */
-	public static final String[] arrayConcat(String[] first, String second) {
+	public static final String[] arrayConcat(String[] first, String second)
+	{
 		if (second == null)
 			return first;
 		if (first == null)
 			return new String[] { second };
 
 		int length = first.length;
-		if (first.length == 0) {
+		if (first.length == 0)
+		{
 			return new String[] { second };
 		}
 
@@ -137,49 +140,50 @@ public class Util {
 	}
 
 	/**
-	 * Checks the type signature in String sig, starting at start and ending
-	 * before end (end is not included). Returns the index of the character
-	 * immediately after the signature if valid, or -1 if not valid.
+	 * Checks the type signature in String sig, starting at start and ending before end (end is not included). Returns
+	 * the index of the character immediately after the signature if valid, or -1 if not valid.
 	 */
-	private static int checkTypeSignature(String sig, int start, int end,
-			boolean allowVoid) {
+	private static int checkTypeSignature(String sig, int start, int end, boolean allowVoid)
+	{
 		if (start >= end)
 			return -1;
 		int i = start;
 		char c = sig.charAt(i++);
 		int nestingDepth = 0;
-		while (c == '[') {
+		while (c == '[')
+		{
 			++nestingDepth;
 			if (i >= end)
 				return -1;
 			c = sig.charAt(i++);
 		}
-		switch (c) {
-		case 'B':
-		case 'C':
-		case 'D':
-		case 'F':
-		case 'I':
-		case 'J':
-		case 'S':
-		case 'Z':
-			break;
-		case 'V':
-			if (!allowVoid)
+		switch (c)
+		{
+			case 'B':
+			case 'C':
+			case 'D':
+			case 'F':
+			case 'I':
+			case 'J':
+			case 'S':
+			case 'Z':
+				break;
+			case 'V':
+				if (!allowVoid)
+					return -1;
+				// array of void is not allowed
+				if (nestingDepth != 0)
+					return -1;
+				break;
+			case 'L':
+				int semicolon = sig.indexOf(';', i);
+				// Must have at least one character between L and ;
+				if (semicolon <= i || semicolon >= end)
+					return -1;
+				i = semicolon + 1;
+				break;
+			default:
 				return -1;
-			// array of void is not allowed
-			if (nestingDepth != 0)
-				return -1;
-			break;
-		case 'L':
-			int semicolon = sig.indexOf(';', i);
-			// Must have at least one character between L and ;
-			if (semicolon <= i || semicolon >= end)
-				return -1;
-			i = semicolon + 1;
-			break;
-		default:
-			return -1;
 		}
 		return i;
 	}
@@ -187,17 +191,18 @@ public class Util {
 	/**
 	 * Combines two hash codes to make a new one.
 	 */
-	public static int combineHashCodes(int hashCode1, int hashCode2) {
+	public static int combineHashCodes(int hashCode1, int hashCode2)
+	{
 		return hashCode1 * 17 + hashCode2;
 	}
 
 	/**
-	 * Compares two byte arrays. Returns <0 if a byte in a is less than the
-	 * corresponding byte in b, or if a is shorter, or if a is null. Returns >0
-	 * if a byte in a is greater than the corresponding byte in b, or if a is
-	 * longer, or if b is null. Returns 0 if they are equal or both null.
+	 * Compares two byte arrays. Returns <0 if a byte in a is less than the corresponding byte in b, or if a is shorter,
+	 * or if a is null. Returns >0 if a byte in a is greater than the corresponding byte in b, or if a is longer, or if
+	 * b is null. Returns 0 if they are equal or both null.
 	 */
-	public static int compare(byte[] a, byte[] b) {
+	public static int compare(byte[] a, byte[] b)
+	{
 		if (a == b)
 			return 0;
 		if (a == null)
@@ -205,7 +210,8 @@ public class Util {
 		if (b == null)
 			return 1;
 		int len = Math.min(a.length, b.length);
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0; i < len; ++i)
+		{
 			int diff = a[i] - b[i];
 			if (diff != 0)
 				return diff;
@@ -218,23 +224,25 @@ public class Util {
 	}
 
 	/**
-	 * Compares two strings lexicographically. The comparison is based on the
-	 * Unicode value of each character in the strings.
+	 * Compares two strings lexicographically. The comparison is based on the Unicode value of each character in the
+	 * strings.
 	 * 
-	 * @return the value <code>0</code> if the str1 is equal to str2; a value
-	 *         less than <code>0</code> if str1 is lexicographically less than
-	 *         str2; and a value greater than <code>0</code> if str1 is
-	 *         lexicographically greater than str2.
+	 * @return the value <code>0</code> if the str1 is equal to str2; a value less than <code>0</code> if str1 is
+	 *         lexicographically less than str2; and a value greater than <code>0</code> if str1 is lexicographically
+	 *         greater than str2.
 	 */
-	public static int compare(char[] str1, char[] str2) {
+	public static int compare(char[] str1, char[] str2)
+	{
 		int len1 = str1.length;
 		int len2 = str2.length;
 		int n = Math.min(len1, len2);
 		int i = 0;
-		while (n-- != 0) {
+		while (n-- != 0)
+		{
 			char c1 = str1[i];
 			char c2 = str2[i++];
-			if (c1 != c2) {
+			if (c1 != c2)
+			{
 				return c1 - c2;
 			}
 		}
@@ -246,7 +254,8 @@ public class Util {
 	 * 
 	 * @see #concat(String, String)
 	 */
-	public static String concat(String s1, char c, String s2) {
+	public static String concat(String s1, char c, String s2)
+	{
 		if (s1 == null)
 			s1 = "null"; //$NON-NLS-1$
 		if (s2 == null)
@@ -261,13 +270,12 @@ public class Util {
 	}
 
 	/**
-	 * Concatenate two strings. Much faster than using +, which: - creates a
-	 * StringBuffer, - which is synchronized, - of default size, so the
-	 * resulting char array is often larger than needed. This implementation
-	 * creates an extra char array, since the String constructor copies its
-	 * argument, but there's no way around this.
+	 * Concatenate two strings. Much faster than using +, which: - creates a StringBuffer, - which is synchronized, - of
+	 * default size, so the resulting char array is often larger than needed. This implementation creates an extra char
+	 * array, since the String constructor copies its argument, but there's no way around this.
 	 */
-	public static String concat(String s1, String s2) {
+	public static String concat(String s1, String s2)
+	{
 		if (s1 == null)
 			s1 = "null"; //$NON-NLS-1$
 		if (s2 == null)
@@ -281,8 +289,7 @@ public class Util {
 	}
 
 	/**
-	 * Returns the concatenation of the given array parts using the given
-	 * separator between each part. <br>
+	 * Returns the concatenation of the given array parts using the given separator between each part. <br>
 	 * <br>
 	 * For example:<br>
 	 * <ol>
@@ -310,12 +317,13 @@ public class Util {
 	 *            the given array
 	 * @param separator
 	 *            the given separator
-	 * @return the concatenation of the given array parts using the given
-	 *         separator between each part
+	 * @return the concatenation of the given array parts using the given separator between each part
 	 */
-	public static final String concatWith(String[] array, char separator) {
+	public static final String concatWith(String[] array, char separator)
+	{
 		StringBuffer buffer = new StringBuffer();
-		for (int i = 0, length = array.length; i < length; i++) {
+		for (int i = 0, length = array.length; i < length; i++)
+		{
 			buffer.append(array[i]);
 			if (i < length - 1)
 				buffer.append(separator);
@@ -324,8 +332,8 @@ public class Util {
 	}
 
 	/**
-	 * Returns the concatenation of the given array parts using the given
-	 * separator between each part and appending the given name at the end. <br>
+	 * Returns the concatenation of the given array parts using the given separator between each part and appending the
+	 * given name at the end. <br>
 	 * <br>
 	 * For example:<br>
 	 * <ol>
@@ -367,19 +375,19 @@ public class Util {
 	 *            the given name
 	 * @param separator
 	 *            the given separator
-	 * @return the concatenation of the given array parts using the given
-	 *         separator between each part and appending the given name at the
-	 *         end
+	 * @return the concatenation of the given array parts using the given separator between each part and appending the
+	 *         given name at the end
 	 */
-	public static final String concatWith(String[] array, String name,
-			char separator) {
+	public static final String concatWith(String[] array, String name, char separator)
+	{
 
 		if (array == null || array.length == 0)
 			return name;
 		if (name == null || name.length() == 0)
 			return concatWith(array, separator);
 		StringBuffer buffer = new StringBuffer();
-		for (int i = 0, length = array.length; i < length; i++) {
+		for (int i = 0, length = array.length; i < length; i++)
+		{
 			buffer.append(array[i]);
 			buffer.append(separator);
 		}
@@ -393,7 +401,8 @@ public class Util {
 	 * 
 	 * @see #concat(String, String)
 	 */
-	public static String concat(String s1, String s2, String s3) {
+	public static String concat(String s1, String s2, String s3)
+	{
 		if (s1 == null)
 			s1 = "null"; //$NON-NLS-1$
 		if (s2 == null)
@@ -411,53 +420,59 @@ public class Util {
 	}
 
 	/**
-	 * Converts a type signature from the IBinaryType representation to the DC
-	 * representation.
+	 * Converts a type signature from the IBinaryType representation to the DC representation.
 	 */
-	public static String convertTypeSignature(char[] sig, int start, int length) {
+	public static String convertTypeSignature(char[] sig, int start, int length)
+	{
 		return new String(sig, start, length).replace('/', '.');
 	}
 
 	/*
-	 * Returns the default java extension (".java"). To be used when the
-	 * extension is not known.
+	 * Returns the default java extension (".java"). To be used when the extension is not known.
 	 */
-	public static String defaultPhpExtension() {
+	public static String defaultPhpExtension()
+	{
 		return "php"; //$NON-NLS-1$
 	}
 
 	/**
-	 * Apply the given edit on the given string and return the updated string.
-	 * Return the given string if anything wrong happen while applying the edit.
+	 * Apply the given edit on the given string and return the updated string. Return the given string if anything wrong
+	 * happen while applying the edit.
 	 * 
 	 * @param original
 	 *            the given string
 	 * @param edit
 	 *            the given edit
-	 * 
 	 * @return the updated string
 	 */
-	public final static String editedString(String original, TextEdit edit) {
-		if (edit == null) {
+	public final static String editedString(String original, TextEdit edit)
+	{
+		if (edit == null)
+		{
 			return original;
 		}
 		Document document = new Document(original);
-		try {
+		try
+		{
 			edit.apply(document, TextEdit.NONE);
 			return document.get();
-		} catch (MalformedTreeException e) {
+		}
+		catch (MalformedTreeException e)
+		{
 			e.printStackTrace();
-		} catch (BadLocationException e) {
+		}
+		catch (BadLocationException e)
+		{
 			e.printStackTrace();
 		}
 		return original;
 	}
 
 	/**
-	 * Returns true iff str.toLowerCase().endsWith(end.toLowerCase())
-	 * implementation is not creating extra strings.
+	 * Returns true iff str.toLowerCase().endsWith(end.toLowerCase()) implementation is not creating extra strings.
 	 */
-	public final static boolean endsWithIgnoreCase(String str, String end) {
+	public final static boolean endsWithIgnoreCase(String str, String end)
+	{
 
 		int strLength = str == null ? 0 : str.length();
 		int endLength = end == null ? 0 : end.length();
@@ -468,9 +483,10 @@ public class Util {
 
 		// return false if any character of the end are
 		// not the same in lower case.
-		for (int i = 1; i <= endLength; i++) {
-			if (ScannerHelper.toLowerCase(end.charAt(endLength - i)) != ScannerHelper
-					.toLowerCase(str.charAt(strLength - i)))
+		for (int i = 1; i <= endLength; i++)
+		{
+			if (ScannerHelper.toLowerCase(end.charAt(endLength - i)) != ScannerHelper.toLowerCase(str.charAt(strLength
+					- i)))
 				return false;
 		}
 
@@ -478,20 +494,24 @@ public class Util {
 	}
 
 	/**
-	 * Compares two arrays using equals() on the elements. Neither can be null.
-	 * Only the first len elements are compared. Return false if either array is
-	 * shorter than len.
+	 * Compares two arrays using equals() on the elements. Neither can be null. Only the first len elements are
+	 * compared. Return false if either array is shorter than len.
 	 */
-	public static boolean equalArrays(Object[] a, Object[] b, int len) {
+	public static boolean equalArrays(Object[] a, Object[] b, int len)
+	{
 		if (a == b)
 			return true;
 		if (a.length < len || b.length < len)
 			return false;
-		for (int i = 0; i < len; ++i) {
-			if (a[i] == null) {
+		for (int i = 0; i < len; ++i)
+		{
+			if (a[i] == null)
+			{
 				if (b[i] != null)
 					return false;
-			} else {
+			}
+			else
+			{
 				if (!a[i].equals(b[i]))
 					return false;
 			}
@@ -500,12 +520,12 @@ public class Util {
 	}
 
 	/**
-	 * Compares two arrays using equals() on the elements. Either or both arrays
-	 * may be null. Returns true if both are null. Returns false if only one is
-	 * null. If both are arrays, returns true iff they have the same length and
-	 * all elements are equal.
+	 * Compares two arrays using equals() on the elements. Either or both arrays may be null. Returns true if both are
+	 * null. Returns false if only one is null. If both are arrays, returns true iff they have the same length and all
+	 * elements are equal.
 	 */
-	public static boolean equalArraysOrNull(int[] a, int[] b) {
+	public static boolean equalArraysOrNull(int[] a, int[] b)
+	{
 		if (a == b)
 			return true;
 		if (a == null || b == null)
@@ -513,7 +533,8 @@ public class Util {
 		int len = a.length;
 		if (len != b.length)
 			return false;
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0; i < len; ++i)
+		{
 			if (a[i] != b[i])
 				return false;
 		}
@@ -521,12 +542,12 @@ public class Util {
 	}
 
 	/**
-	 * Compares two arrays using equals() on the elements. Either or both arrays
-	 * may be null. Returns true if both are null. Returns false if only one is
-	 * null. If both are arrays, returns true iff they have the same length and
-	 * all elements compare true with equals.
+	 * Compares two arrays using equals() on the elements. Either or both arrays may be null. Returns true if both are
+	 * null. Returns false if only one is null. If both are arrays, returns true iff they have the same length and all
+	 * elements compare true with equals.
 	 */
-	public static boolean equalArraysOrNull(Object[] a, Object[] b) {
+	public static boolean equalArraysOrNull(Object[] a, Object[] b)
+	{
 		if (a == b)
 			return true;
 		if (a == null || b == null)
@@ -537,11 +558,15 @@ public class Util {
 			return false;
 		// walk array from end to beginning as this optimizes package name cases
 		// where the first part is always the same (e.g. org.eclipse.jdt)
-		for (int i = len - 1; i >= 0; i--) {
-			if (a[i] == null) {
+		for (int i = len - 1; i >= 0; i--)
+		{
+			if (a[i] == null)
+			{
 				if (b[i] != null)
 					return false;
-			} else {
+			}
+			else
+			{
 				if (!a[i].equals(b[i]))
 					return false;
 			}
@@ -550,15 +575,13 @@ public class Util {
 	}
 
 	/**
-	 * Compares two arrays using equals() on the elements. The arrays are first
-	 * sorted. Either or both arrays may be null. Returns true if both are null.
-	 * Returns false if only one is null. If both are arrays, returns true iff
-	 * they have the same length and iff, after sorting both arrays, all
-	 * elements compare true with equals. The original arrays are left
-	 * untouched.
+	 * Compares two arrays using equals() on the elements. The arrays are first sorted. Either or both arrays may be
+	 * null. Returns true if both are null. Returns false if only one is null. If both are arrays, returns true iff they
+	 * have the same length and iff, after sorting both arrays, all elements compare true with equals. The original
+	 * arrays are left untouched.
 	 */
-	public static boolean equalArraysOrNullSortFirst(Comparable[] a,
-			Comparable[] b) {
+	public static boolean equalArraysOrNullSortFirst(Comparable[] a, Comparable[] b)
+	{
 		if (a == b)
 			return true;
 		if (a == null || b == null)
@@ -566,11 +589,13 @@ public class Util {
 		int len = a.length;
 		if (len != b.length)
 			return false;
-		if (len >= 2) { // only need to sort if more than two items
+		if (len >= 2)
+		{ // only need to sort if more than two items
 			a = sortCopy(a);
 			b = sortCopy(b);
 		}
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0; i < len; ++i)
+		{
 			if (!a[i].equals(b[i]))
 				return false;
 		}
@@ -578,14 +603,13 @@ public class Util {
 	}
 
 	/**
-	 * Compares two String arrays using equals() on the elements. The arrays are
-	 * first sorted. Either or both arrays may be null. Returns true if both are
-	 * null. Returns false if only one is null. If both are arrays, returns true
-	 * iff they have the same length and iff, after sorting both arrays, all
-	 * elements compare true with equals. The original arrays are left
-	 * untouched.
+	 * Compares two String arrays using equals() on the elements. The arrays are first sorted. Either or both arrays may
+	 * be null. Returns true if both are null. Returns false if only one is null. If both are arrays, returns true iff
+	 * they have the same length and iff, after sorting both arrays, all elements compare true with equals. The original
+	 * arrays are left untouched.
 	 */
-	public static boolean equalArraysOrNullSortFirst(String[] a, String[] b) {
+	public static boolean equalArraysOrNullSortFirst(String[] a, String[] b)
+	{
 		if (a == b)
 			return true;
 		if (a == null || b == null)
@@ -593,11 +617,13 @@ public class Util {
 		int len = a.length;
 		if (len != b.length)
 			return false;
-		if (len >= 2) { // only need to sort if more than two items
+		if (len >= 2)
+		{ // only need to sort if more than two items
 			a = sortCopy(a);
 			b = sortCopy(b);
 		}
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0; i < len; ++i)
+		{
 			if (!a[i].equals(b[i]))
 				return false;
 		}
@@ -605,45 +631,41 @@ public class Util {
 	}
 
 	/**
-	 * Compares two objects using equals(). Either or both array may be null.
-	 * Returns true if both are null. Returns false if only one is null.
-	 * Otherwise, return the result of comparing with equals().
+	 * Compares two objects using equals(). Either or both array may be null. Returns true if both are null. Returns
+	 * false if only one is null. Otherwise, return the result of comparing with equals().
 	 */
-	public static boolean equalOrNull(Object a, Object b) {
-		if (a == b) {
+	public static boolean equalOrNull(Object a, Object b)
+	{
+		if (a == b)
+		{
 			return true;
 		}
-		if (a == null || b == null) {
+		if (a == null || b == null)
+		{
 			return false;
 		}
 		return a.equals(b);
 	}
 
 	/*
-	 * Returns whether the given file name equals to the given string ignoring
-	 * the java like extension of the file name. Returns false if it is not a
-	 * java like file name.
+	 * Returns whether the given file name equals to the given string ignoring the java like extension of the file name.
+	 * Returns false if it is not a java like file name.
 	 */
 	/*
-	 * public static boolean equalsIgnoreJavaLikeExtension(String fileName,
-	 * String string) { int fileNameLength = fileName.length(); int stringLength
-	 * = string.length(); if (fileNameLength < stringLength) return false; for
-	 * (int i = 0; i < stringLength; i ++) { if (fileName.charAt(i) !=
-	 * string.charAt(i)) { return false; } } char[][] javaLikeExtensions =
-	 * getJavaLikeExtensions(); suffixes: for (int i = 0, length =
-	 * javaLikeExtensions.length; i < length; i++) { char[] suffix =
-	 * javaLikeExtensions[i]; int extensionStart = stringLength+1; if
-	 * (extensionStart + suffix.length != fileNameLength) continue; if
-	 * (fileName.charAt(stringLength) != '.') continue; for (int j =
-	 * extensionStart; j < fileNameLength; j++) { if (fileName.charAt(j) !=
-	 * suffix[j-extensionStart]) continue suffixes; } return true; } return
-	 * false; }
+	 * public static boolean equalsIgnoreJavaLikeExtension(String fileName, String string) { int fileNameLength =
+	 * fileName.length(); int stringLength = string.length(); if (fileNameLength < stringLength) return false; for (int
+	 * i = 0; i < stringLength; i ++) { if (fileName.charAt(i) != string.charAt(i)) { return false; } } char[][]
+	 * javaLikeExtensions = getJavaLikeExtensions(); suffixes: for (int i = 0, length = javaLikeExtensions.length; i <
+	 * length; i++) { char[] suffix = javaLikeExtensions[i]; int extensionStart = stringLength+1; if (extensionStart +
+	 * suffix.length != fileNameLength) continue; if (fileName.charAt(stringLength) != '.') continue; for (int j =
+	 * extensionStart; j < fileNameLength; j++) { if (fileName.charAt(j) != suffix[j-extensionStart]) continue suffixes;
+	 * } return true; } return false; }
 	 */
 	/**
-	 * Given a qualified name, extract the last component. If the input is not
-	 * qualified, the same string is answered.
+	 * Given a qualified name, extract the last component. If the input is not qualified, the same string is answered.
 	 */
-	public static String extractLastName(String qualifiedName) {
+	public static String extractLastName(String qualifiedName)
+	{
 		int i = qualifiedName.lastIndexOf('.');
 		if (i == -1)
 			return qualifiedName;
@@ -653,7 +675,8 @@ public class Util {
 	/**
 	 * Extracts the parameter types from a method signature.
 	 */
-	public static String[] extractParameterTypes(char[] sig) {
+	public static String[] extractParameterTypes(char[] sig)
+	{
 		int count = getParameterCount(sig);
 		String[] result = new String[count];
 		if (count == 0)
@@ -662,20 +685,26 @@ public class Util {
 		count = 0;
 		int len = sig.length;
 		int start = i;
-		for (;;) {
+		for (;;)
+		{
 			if (i == len)
 				break;
 			char c = sig[i];
 			if (c == ')')
 				break;
-			if (c == '[') {
+			if (c == '[')
+			{
 				++i;
-			} else if (c == 'L') {
+			}
+			else if (c == 'L')
+			{
 				i = CharOperation.indexOf(';', sig, i + 1) + 1;
 				Assert.isTrue(i != 0);
 				result[count++] = convertTypeSignature(sig, start, i - start);
 				start = i;
-			} else {
+			}
+			else
+			{
 				++i;
 				result[count++] = convertTypeSignature(sig, start, i - start);
 				start = i;
@@ -687,50 +716,54 @@ public class Util {
 	/**
 	 * Extracts the return type from a method signature.
 	 */
-	public static String extractReturnType(String sig) {
+	public static String extractReturnType(String sig)
+	{
 		int i = sig.lastIndexOf(')');
 		Assert.isTrue(i != -1);
 		return sig.substring(i + 1);
 	}
 
-	
 	/**
 	 * Finds the first line separator used by the given text.
 	 * 
-	 * @return </code>"\n"</code> or </code>"\r"</code> or </code>"\r\n"</code>,
-	 *         or <code>null</code> if none found
+	 * @return </code>"\n"</code> or </code>"\r"</code> or </code>"\r\n"</code>, or <code>null</code> if none found
 	 */
-	public static String findLineSeparator(char[] text) {
+	public static String findLineSeparator(char[] text)
+	{
 		// find the first line separator
 		int length = text.length;
-		if (length > 0) {
+		if (length > 0)
+		{
 			char nextChar = text[0];
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < length; i++)
+			{
 				char currentChar = nextChar;
 				nextChar = i < length - 1 ? text[i + 1] : ' ';
-				switch (currentChar) {
-				case '\n':
-					return "\n"; //$NON-NLS-1$
-				case '\r':
-					return nextChar == '\n' ? "\r\n" : "\r"; //$NON-NLS-1$ //$NON-NLS-2$
+				switch (currentChar)
+				{
+					case '\n':
+						return "\n"; //$NON-NLS-1$
+					case '\r':
+						return nextChar == '\n' ? "\r\n" : "\r"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
 		// not found
 		return null;
 	}
-	
+
 	/**
-	 * Returns the line separator found in the given text. If it is null, or not
-	 * found return the line delimitor for the given project. If the project is
-	 * null, returns the line separator for the workspace. If still null, return
-	 * the system line separator.
+	 * Returns the line separator found in the given text. If it is null, or not found return the line delimitor for the
+	 * given project. If the project is null, returns the line separator for the workspace. If still null, return the
+	 * system line separator.
 	 */
-	public static String getLineSeparator(String text, IProject project) {
+	public static String getLineSeparator(String text, IProject project)
+	{
 		String lineSeparator = null;
 
 		// line delimiter in given text
-		if (text != null && text.length() != 0) {
+		if (text != null && text.length() != 0)
+		{
 			lineSeparator = findLineSeparator(text.toCharArray());
 			if (lineSeparator != null)
 				return lineSeparator;
@@ -738,21 +771,19 @@ public class Util {
 
 		// line delimiter in project preference
 		IScopeContext[] scopeContext;
-		if (project != null) {
-			scopeContext = new IScopeContext[] { new ProjectScope(project
-					.getProject()) };
-			lineSeparator = Platform.getPreferencesService().getString(
-					Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR, null,
-					scopeContext);
+		if (project != null)
+		{
+			scopeContext = new IScopeContext[] { new ProjectScope(project.getProject()) };
+			lineSeparator = Platform.getPreferencesService().getString(Platform.PI_RUNTIME,
+					Platform.PREF_LINE_SEPARATOR, null, scopeContext);
 			if (lineSeparator != null)
 				return lineSeparator;
 		}
 
 		// line delimiter in workspace preference
-		scopeContext = new IScopeContext[] { EclipseUtil.instanceScope() };
-		lineSeparator = Platform.getPreferencesService().getString(
-				Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR, null,
-				scopeContext);
+		scopeContext = new IScopeContext[] { InstanceScope.INSTANCE };
+		lineSeparator = Platform.getPreferencesService().getString(Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR,
+				null, scopeContext);
 		if (lineSeparator != null)
 			return lineSeparator;
 
@@ -761,18 +792,20 @@ public class Util {
 	}
 
 	/**
-	 * Returns the line separator used by the given buffer. Uses the given text
-	 * if none found.
+	 * Returns the line separator used by the given buffer. Uses the given text if none found.
 	 * 
 	 * @return </code>"\n"</code> or </code>"\r"</code> or </code>"\r\n"</code>
 	 */
-	private static String getLineSeparator(char[] text, char[] buffer) {
+	private static String getLineSeparator(char[] text, char[] buffer)
+	{
 		// search in this buffer's contents first
 		String lineSeparator = findLineSeparator(buffer);
-		if (lineSeparator == null) {
+		if (lineSeparator == null)
+		{
 			// search in the given text
 			lineSeparator = findLineSeparator(text);
-			if (lineSeparator == null) {
+			if (lineSeparator == null)
+			{
 				// default to system line separator
 				return getLineSeparator((String) null, (IProject) null);
 			}
@@ -783,24 +816,31 @@ public class Util {
 	/**
 	 * Returns the number of parameter types in a method signature.
 	 */
-	public static int getParameterCount(char[] sig) {
+	public static int getParameterCount(char[] sig)
+	{
 		int i = CharOperation.indexOf('(', sig) + 1;
 		Assert.isTrue(i != 0);
 		int count = 0;
 		int len = sig.length;
-		for (;;) {
+		for (;;)
+		{
 			if (i == len)
 				break;
 			char c = sig[i];
 			if (c == ')')
 				break;
-			if (c == '[') {
+			if (c == '[')
+			{
 				++i;
-			} else if (c == 'L') {
+			}
+			else if (c == 'L')
+			{
 				++count;
 				i = CharOperation.indexOf(';', sig, i + 1) + 1;
 				Assert.isTrue(i != 0);
-			} else {
+			}
+			else
+			{
 				++count;
 				++i;
 			}
@@ -811,19 +851,24 @@ public class Util {
 	/**
 	 * Put all the arguments in one String.
 	 */
-	public static String getProblemArgumentsForMarker(String[] arguments) {
+	public static String getProblemArgumentsForMarker(String[] arguments)
+	{
 		StringBuffer args = new StringBuffer(10);
 
 		args.append(arguments.length);
 		args.append(':');
 
-		for (int j = 0; j < arguments.length; j++) {
+		for (int j = 0; j < arguments.length; j++)
+		{
 			if (j != 0)
 				args.append(ARGUMENTS_DELIMITER);
 
-			if (arguments[j].length() == 0) {
+			if (arguments[j].length() == 0)
+			{
 				args.append(EMPTY_ARGUMENT);
-			} else {
+			}
+			else
+			{
 				args.append(arguments[j]);
 			}
 		}
@@ -832,10 +877,10 @@ public class Util {
 	}
 
 	/**
-	 * Separate all the arguments of a String made by
-	 * getProblemArgumentsForMarker
+	 * Separate all the arguments of a String made by getProblemArgumentsForMarker
 	 */
-	public static String[] getProblemArgumentsFromMarker(String argumentsString) {
+	public static String[] getProblemArgumentsFromMarker(String argumentsString)
+	{
 		if (argumentsString == null)
 			return null;
 		int index = argumentsString.indexOf(':');
@@ -844,9 +889,12 @@ public class Util {
 
 		int length = argumentsString.length();
 		int numberOfArg;
-		try {
+		try
+		{
 			numberOfArg = Integer.parseInt(argumentsString.substring(0, index));
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e)
+		{
 			return null;
 		}
 		argumentsString = argumentsString.substring(index + 1, length);
@@ -854,9 +902,9 @@ public class Util {
 		String[] args = new String[length];
 		int count = 0;
 
-		StringTokenizer tokenizer = new StringTokenizer(argumentsString,
-				ARGUMENTS_DELIMITER);
-		while (tokenizer.hasMoreTokens()) {
+		StringTokenizer tokenizer = new StringTokenizer(argumentsString, ARGUMENTS_DELIMITER);
+		while (tokenizer.hasMoreTokens())
+		{
 			String argument = tokenizer.nextToken();
 			if (argument.equals(EMPTY_ARGUMENT))
 				argument = ""; //$NON-NLS-1$
@@ -869,31 +917,36 @@ public class Util {
 		System.arraycopy(args, 0, args = new String[count], 0, count);
 		return args;
 	}
+
 	/**
 	 * Returns a trimmed version the simples names returned by Signature.
 	 */
-	public static String[] getTrimmedSimpleNames(String name) {
+	public static String[] getTrimmedSimpleNames(String name)
+	{
 		String[] result = Signature.getSimpleNames(name);
-		for (int i = 0, length = result.length; i < length; i++) {
+		for (int i = 0, length = result.length; i < length; i++)
+		{
 			result[i] = result[i].trim();
 		}
 		return result;
 	}
 
 	/*
-	 * Returns the index of the most specific argument paths which is strictly
-	 * enclosing the path to check
+	 * Returns the index of the most specific argument paths which is strictly enclosing the path to check
 	 */
-	public static int indexOfEnclosingPath(IPath checkedPath, IPath[] paths,
-			int pathCount) {
+	public static int indexOfEnclosingPath(IPath checkedPath, IPath[] paths, int pathCount)
+	{
 
 		int bestMatch = -1, bestLength = -1;
-		for (int i = 0; i < pathCount; i++) {
+		for (int i = 0; i < pathCount; i++)
+		{
 			if (paths[i].equals(checkedPath))
 				continue;
-			if (paths[i].isPrefixOf(checkedPath)) {
+			if (paths[i].isPrefixOf(checkedPath))
+			{
 				int currentLength = paths[i].segmentCount();
-				if (currentLength > bestLength) {
+				if (currentLength > bestLength)
+				{
 					bestLength = currentLength;
 					bestMatch = i;
 				}
@@ -903,13 +956,13 @@ public class Util {
 	}
 
 	/*
-	 * Returns the index of the first argument paths which is equal to the path
-	 * to check
+	 * Returns the index of the first argument paths which is equal to the path to check
 	 */
-	public static int indexOfMatchingPath(IPath checkedPath, IPath[] paths,
-			int pathCount) {
+	public static int indexOfMatchingPath(IPath checkedPath, IPath[] paths, int pathCount)
+	{
 
-		for (int i = 0; i < pathCount; i++) {
+		for (int i = 0; i < pathCount; i++)
+		{
 			if (paths[i].equals(checkedPath))
 				return i;
 		}
@@ -917,13 +970,13 @@ public class Util {
 	}
 
 	/*
-	 * Returns the index of the first argument paths which is strictly nested
-	 * inside the path to check
+	 * Returns the index of the first argument paths which is strictly nested inside the path to check
 	 */
-	public static int indexOfNestedPath(IPath checkedPath, IPath[] paths,
-			int pathCount) {
+	public static int indexOfNestedPath(IPath checkedPath, IPath[] paths, int pathCount)
+	{
 
-		for (int i = 0; i < pathCount; i++) {
+		for (int i = 0; i < pathCount; i++)
+		{
 			if (checkedPath.equals(paths[i]))
 				continue;
 			if (checkedPath.isPrefixOf(paths[i]))
@@ -935,7 +988,8 @@ public class Util {
 	/**
 	 * Returns true if the given method signature is valid, false if it is not.
 	 */
-	public static boolean isValidMethodSignature(String sig) {
+	public static boolean isValidMethodSignature(String sig)
+	{
 		int len = sig.length();
 		if (len == 0)
 			return false;
@@ -945,7 +999,8 @@ public class Util {
 			return false;
 		if (i >= len)
 			return false;
-		while (sig.charAt(i) != ')') {
+		while (sig.charAt(i) != ')')
+		{
 			// Void is not allowed as a parameter type.
 			i = checkTypeSignature(sig, i, len, false);
 			if (i == -1)
@@ -961,41 +1016,38 @@ public class Util {
 	/**
 	 * Returns true if the given type signature is valid, false if it is not.
 	 */
-	public static boolean isValidTypeSignature(String sig, boolean allowVoid) {
+	public static boolean isValidTypeSignature(String sig, boolean allowVoid)
+	{
 		int len = sig.length();
 		return checkTypeSignature(sig, 0, len, allowVoid) == len;
 	}
 
 	/*
-	 * Returns the simple name of a local type from the given binary type name.
-	 * The last '$' is at lastDollar. The last character of the type name is at
-	 * end-1.
+	 * Returns the simple name of a local type from the given binary type name. The last '$' is at lastDollar. The last
+	 * character of the type name is at end-1.
 	 */
-	public static String localTypeName(String binaryTypeName, int lastDollar,
-			int end) {
+	public static String localTypeName(String binaryTypeName, int lastDollar, int end)
+	{
 		if (lastDollar > 0 && binaryTypeName.charAt(lastDollar - 1) == '$')
 			// local name starts with a dollar sign
 			// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=103466)
 			return binaryTypeName;
 		int nameStart = lastDollar + 1;
-		while (nameStart < end
-				&& Character.isDigit(binaryTypeName.charAt(nameStart)))
+		while (nameStart < end && Character.isDigit(binaryTypeName.charAt(nameStart)))
 			nameStart++;
 		return binaryTypeName.substring(nameStart, end);
 	}
 
 	/*
-	 * public static ClassFileReader newClassFileReader(IResource resource)
-	 * throws CoreException, ClassFormatException, IOException { InputStream in
-	 * = null; try { in = ((IFile) resource).getContents(true); return
-	 * ClassFileReader.read(in, resource.getFullPath().toString()); } finally {
-	 * if (in != null) in.close(); } }
+	 * public static ClassFileReader newClassFileReader(IResource resource) throws CoreException, ClassFormatException,
+	 * IOException { InputStream in = null; try { in = ((IFile) resource).getContents(true); return
+	 * ClassFileReader.read(in, resource.getFullPath().toString()); } finally { if (in != null) in.close(); } }
 	 */
 	/**
-	 * Normalizes the cariage returns in the given text. They are all changed to
-	 * use the given buffer's line separator.
+	 * Normalizes the cariage returns in the given text. They are all changed to use the given buffer's line separator.
 	 */
-	public static char[] normalizeCRs(char[] text, char[] buffer) {
+	public static char[] normalizeCRs(char[] text, char[] buffer)
+	{
 		CharArrayBuffer result = new CharArrayBuffer();
 		int lineStart = 0;
 		int length = text.length;
@@ -1003,47 +1055,57 @@ public class Util {
 			return text;
 		String lineSeparator = getLineSeparator(text, buffer);
 		char nextChar = text[0];
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i++)
+		{
 			char currentChar = nextChar;
 			nextChar = i < length - 1 ? text[i + 1] : ' ';
-			switch (currentChar) {
-			case '\n':
-				int lineLength = i - lineStart;
-				char[] line = new char[lineLength];
-				System.arraycopy(text, lineStart, line, 0, lineLength);
-				result.append(line);
-				result.append(lineSeparator);
-				lineStart = i + 1;
-				break;
-			case '\r':
-				lineLength = i - lineStart;
-				if (lineLength >= 0) {
-					line = new char[lineLength];
+			switch (currentChar)
+			{
+				case '\n':
+					int lineLength = i - lineStart;
+					char[] line = new char[lineLength];
 					System.arraycopy(text, lineStart, line, 0, lineLength);
 					result.append(line);
 					result.append(lineSeparator);
-					if (nextChar == '\n') {
-						nextChar = ' ';
-						lineStart = i + 2;
-					} else {
+					lineStart = i + 1;
+					break;
+				case '\r':
+					lineLength = i - lineStart;
+					if (lineLength >= 0)
+					{
+						line = new char[lineLength];
+						System.arraycopy(text, lineStart, line, 0, lineLength);
+						result.append(line);
+						result.append(lineSeparator);
+						if (nextChar == '\n')
+						{
+							nextChar = ' ';
+							lineStart = i + 2;
+						}
+						else
+						{
+							// when line separator are mixed in the same file
+							// \r might not be followed by a \n. If not, we should
+							// increment
+							// lineStart by one and not by two.
+							lineStart = i + 1;
+						}
+					}
+					else
+					{
 						// when line separator are mixed in the same file
-						// \r might not be followed by a \n. If not, we should
-						// increment
-						// lineStart by one and not by two.
+						// we need to prevent NegativeArraySizeException
 						lineStart = i + 1;
 					}
-				} else {
-					// when line separator are mixed in the same file
-					// we need to prevent NegativeArraySizeException
-					lineStart = i + 1;
-				}
-				break;
+					break;
 			}
 		}
 		char[] lastLine;
-		if (lineStart > 0) {
+		if (lineStart > 0)
+		{
 			int lastLineLength = length - lineStart;
-			if (lastLineLength > 0) {
+			if (lastLineLength > 0)
+			{
 				lastLine = new char[lastLineLength];
 				System.arraycopy(text, lineStart, lastLine, 0, lastLineLength);
 				result.append(lastLine);
@@ -1054,17 +1116,15 @@ public class Util {
 	}
 
 	/**
-	 * Normalizes the cariage returns in the given text. They are all changed to
-	 * use given buffer's line sepatator.
+	 * Normalizes the cariage returns in the given text. They are all changed to use given buffer's line sepatator.
 	 */
-	public static String normalizeCRs(String text, String buffer) {
-		return new String(
-				normalizeCRs(text.toCharArray(), buffer.toCharArray()));
+	public static String normalizeCRs(String text, String buffer)
+	{
+		return new String(normalizeCRs(text.toCharArray(), buffer.toCharArray()));
 	}
 
 	/**
-	 * Converts the given relative path into a package name. Returns null if the
-	 * path is not a valid package name.
+	 * Converts the given relative path into a package name. Returns null if the path is not a valid package name.
 	 * 
 	 * @param pkgPath
 	 *            the package path
@@ -1074,19 +1134,17 @@ public class Util {
 	 *            the compliance level
 	 */
 	/*
-	 * public static String packageName(IPath pkgPath, String sourceLevel,
-	 * String complianceLevel) { StringBuffer pkgName = new
-	 * StringBuffer(IPackageFragment.DEFAULT_PACKAGE_NAME); for (int j = 0, max
-	 * = pkgPath.segmentCount(); j < max; j++) { String segment =
-	 * pkgPath.segment(j); if (!isValidFolderNameForPackage(segment,
-	 * sourceLevel, complianceLevel)) { return null; } pkgName.append(segment);
-	 * if (j < pkgPath.segmentCount() - 1) { pkgName.append("." ); //$NON-NLS-1$
-	 * } } return pkgName.toString(); }
+	 * public static String packageName(IPath pkgPath, String sourceLevel, String complianceLevel) { StringBuffer
+	 * pkgName = new StringBuffer(IPackageFragment.DEFAULT_PACKAGE_NAME); for (int j = 0, max = pkgPath.segmentCount();
+	 * j < max; j++) { String segment = pkgPath.segment(j); if (!isValidFolderNameForPackage(segment, sourceLevel,
+	 * complianceLevel)) { return null; } pkgName.append(segment); if (j < pkgPath.segmentCount() - 1) {
+	 * pkgName.append("." ); //$NON-NLS-1$ } } return pkgName.toString(); }
 	 */
 	/**
 	 * Returns the length of the common prefix between s1 and s2.
 	 */
-	public static int prefixLength(char[] s1, char[] s2) {
+	public static int prefixLength(char[] s1, char[] s2)
+	{
 		int len = 0;
 		int max = Math.min(s1.length, s2.length);
 		for (int i = 0; i < max && s1[i] == s2[i]; ++i)
@@ -1097,7 +1155,8 @@ public class Util {
 	/**
 	 * Returns the length of the common prefix between s1 and s2.
 	 */
-	public static int prefixLength(String s1, String s2) {
+	public static int prefixLength(String s1, String s2)
+	{
 		int len = 0;
 		int max = Math.min(s1.length(), s2.length());
 		for (int i = 0; i < max && s1.charAt(i) == s2.charAt(i); ++i)
@@ -1105,29 +1164,37 @@ public class Util {
 		return len;
 	}
 
-	private static void quickSort(char[][] list, int left, int right) {
+	private static void quickSort(char[][] list, int left, int right)
+	{
 		int original_left = left;
 		int original_right = right;
 		char[] mid = list[left + (right - left) / 2];
-		do {
-			while (compare(list[left], mid) < 0) {
+		do
+		{
+			while (compare(list[left], mid) < 0)
+			{
 				left++;
 			}
-			while (compare(mid, list[right]) < 0) {
+			while (compare(mid, list[right]) < 0)
+			{
 				right--;
 			}
-			if (left <= right) {
+			if (left <= right)
+			{
 				char[] tmp = list[left];
 				list[left] = list[right];
 				list[right] = tmp;
 				left++;
 				right--;
 			}
-		} while (left <= right);
-		if (original_left < right) {
+		}
+		while (left <= right);
+		if (original_left < right)
+		{
 			quickSort(list, original_left, right);
 		}
-		if (left < original_right) {
+		if (left < original_right)
+		{
 			quickSort(list, left, original_right);
 		}
 	}
@@ -1135,57 +1202,72 @@ public class Util {
 	/**
 	 * Sort the comparable objects in the given collection.
 	 */
-	private static void quickSort(Comparable[] sortedCollection, int left,
-			int right) {
+	private static void quickSort(Comparable[] sortedCollection, int left, int right)
+	{
 		int original_left = left;
 		int original_right = right;
 		Comparable mid = sortedCollection[left + (right - left) / 2];
-		do {
-			while (sortedCollection[left].compareTo(mid) < 0) {
+		do
+		{
+			while (sortedCollection[left].compareTo(mid) < 0)
+			{
 				left++;
 			}
-			while (mid.compareTo(sortedCollection[right]) < 0) {
+			while (mid.compareTo(sortedCollection[right]) < 0)
+			{
 				right--;
 			}
-			if (left <= right) {
+			if (left <= right)
+			{
 				Comparable tmp = sortedCollection[left];
 				sortedCollection[left] = sortedCollection[right];
 				sortedCollection[right] = tmp;
 				left++;
 				right--;
 			}
-		} while (left <= right);
-		if (original_left < right) {
+		}
+		while (left <= right);
+		if (original_left < right)
+		{
 			quickSort(sortedCollection, original_left, right);
 		}
-		if (left < original_right) {
+		if (left < original_right)
+		{
 			quickSort(sortedCollection, left, original_right);
 		}
 	}
 
-	private static void quickSort(int[] list, int left, int right) {
+	private static void quickSort(int[] list, int left, int right)
+	{
 		int original_left = left;
 		int original_right = right;
 		int mid = list[left + (right - left) / 2];
-		do {
-			while (list[left] < mid) {
+		do
+		{
+			while (list[left] < mid)
+			{
 				left++;
 			}
-			while (mid < list[right]) {
+			while (mid < list[right])
+			{
 				right--;
 			}
-			if (left <= right) {
+			if (left <= right)
+			{
 				int tmp = list[left];
 				list[left] = list[right];
 				list[right] = tmp;
 				left++;
 				right--;
 			}
-		} while (left <= right);
-		if (original_left < right) {
+		}
+		while (left <= right);
+		if (original_left < right)
+		{
 			quickSort(list, original_left, right);
 		}
-		if (left < original_right) {
+		if (left < original_right)
+		{
 			quickSort(list, left, original_right);
 		}
 	}
@@ -1193,30 +1275,37 @@ public class Util {
 	/**
 	 * Sort the objects in the given collection using the given comparer.
 	 */
-	private static void quickSort(Object[] sortedCollection, int left,
-			int right, Comparer comparer) {
+	private static void quickSort(Object[] sortedCollection, int left, int right, Comparer comparer)
+	{
 		int original_left = left;
 		int original_right = right;
 		Object mid = sortedCollection[left + (right - left) / 2];
-		do {
-			while (comparer.compare(sortedCollection[left], mid) < 0) {
+		do
+		{
+			while (comparer.compare(sortedCollection[left], mid) < 0)
+			{
 				left++;
 			}
-			while (comparer.compare(mid, sortedCollection[right]) < 0) {
+			while (comparer.compare(mid, sortedCollection[right]) < 0)
+			{
 				right--;
 			}
-			if (left <= right) {
+			if (left <= right)
+			{
 				Object tmp = sortedCollection[left];
 				sortedCollection[left] = sortedCollection[right];
 				sortedCollection[right] = tmp;
 				left++;
 				right--;
 			}
-		} while (left <= right);
-		if (original_left < right) {
+		}
+		while (left <= right);
+		if (original_left < right)
+		{
 			quickSort(sortedCollection, original_left, right, comparer);
 		}
-		if (left < original_right) {
+		if (left < original_right)
+		{
 			quickSort(sortedCollection, left, original_right, comparer);
 		}
 	}
@@ -1224,47 +1313,57 @@ public class Util {
 	/**
 	 * Sort the strings in the given collection.
 	 */
-	private static void quickSort(String[] sortedCollection, int left, int right) {
+	private static void quickSort(String[] sortedCollection, int left, int right)
+	{
 		int original_left = left;
 		int original_right = right;
 		String mid = sortedCollection[left + (right - left) / 2];
-		do {
-			while (sortedCollection[left].compareTo(mid) < 0) {
+		do
+		{
+			while (sortedCollection[left].compareTo(mid) < 0)
+			{
 				left++;
 			}
-			while (mid.compareTo(sortedCollection[right]) < 0) {
+			while (mid.compareTo(sortedCollection[right]) < 0)
+			{
 				right--;
 			}
-			if (left <= right) {
+			if (left <= right)
+			{
 				String tmp = sortedCollection[left];
 				sortedCollection[left] = sortedCollection[right];
 				sortedCollection[right] = tmp;
 				left++;
 				right--;
 			}
-		} while (left <= right);
-		if (original_left < right) {
+		}
+		while (left <= right);
+		if (original_left < right)
+		{
 			quickSort(sortedCollection, original_left, right);
 		}
-		if (left < original_right) {
+		if (left < original_right)
+		{
 			quickSort(sortedCollection, left, original_right);
 		}
 	}
 
 	/**
-	 * Returns the toString() of the given full path minus the first given
-	 * number of segments. The returned string is always a relative path (it has
-	 * no leading slash)
+	 * Returns the toString() of the given full path minus the first given number of segments. The returned string is
+	 * always a relative path (it has no leading slash)
 	 */
-	public static String relativePath(IPath fullPath, int skipSegmentCount) {
+	public static String relativePath(IPath fullPath, int skipSegmentCount)
+	{
 		boolean hasTrailingSeparator = fullPath.hasTrailingSeparator();
 		String[] segments = fullPath.segments();
 
 		// compute length
 		int length = 0;
 		int max = segments.length;
-		if (max > skipSegmentCount) {
-			for (int i1 = skipSegmentCount; i1 < max; i1++) {
+		if (max > skipSegmentCount)
+		{
+			for (int i1 = skipSegmentCount; i1 < max; i1++)
+			{
 				length += segments[i1].length();
 			}
 			// add the separator lengths
@@ -1276,9 +1375,11 @@ public class Util {
 		char[] result = new char[length];
 		int offset = 0;
 		int len = segments.length - 1;
-		if (len >= skipSegmentCount) {
+		if (len >= skipSegmentCount)
+		{
 			// append all but the last segment, with separators
-			for (int i = skipSegmentCount; i < len; i++) {
+			for (int i = skipSegmentCount; i < len; i++)
+			{
 				int size = segments[i].length();
 				segments[i].getChars(0, size, result, offset);
 				offset += size;
@@ -1295,8 +1396,8 @@ public class Util {
 	}
 
 	/**
-	 * Return a new array which is the split of the given string using the given
-	 * divider. The given end is exclusive and the given start is inclusive. <br>
+	 * Return a new array which is the split of the given string using the given divider. The given end is exclusive and
+	 * the given start is inclusive. <br>
 	 * <br>
 	 * For example:
 	 * <ol>
@@ -1321,14 +1422,12 @@ public class Util {
 	 *            the given starting index
 	 * @param end
 	 *            the given ending index
-	 * @return a new array which is the split of the given string using the
-	 *         given divider
+	 * @return a new array which is the split of the given string using the given divider
 	 * @throws ArrayIndexOutOfBoundsException
-	 *             if start is lower than 0 or end is greater than the array
-	 *             length
+	 *             if start is lower than 0 or end is greater than the array length
 	 */
-	public static final String[] splitOn(char divider, String string,
-			int start, int end) {
+	public static final String[] splitOn(char divider, String string, int start, int end)
+	{
 		int length = string == null ? 0 : string.length();
 		if (length == 0 || start > end)
 			return CharOperation.NO_STRINGS;
@@ -1339,8 +1438,10 @@ public class Util {
 				wordCount++;
 		String[] split = new String[wordCount];
 		int last = start, currentWord = 0;
-		for (int i = start; i < end; i++) {
-			if (string.charAt(i) == divider) {
+		for (int i = start; i < end; i++)
+		{
+			if (string.charAt(i) == divider)
+			{
 				split[currentWord++] = string.substring(last, i);
 				last = i + 1;
 			}
@@ -1349,7 +1450,8 @@ public class Util {
 		return split;
 	}
 
-	public static void sort(char[][] list) {
+	public static void sort(char[][] list)
+	{
 		if (list.length > 1)
 			quickSort(list, 0, list.length - 1);
 	}
@@ -1357,21 +1459,23 @@ public class Util {
 	/**
 	 * Sorts an array of Comparable objects in place.
 	 */
-	public static void sort(Comparable[] objects) {
+	public static void sort(Comparable[] objects)
+	{
 		if (objects.length > 1)
 			quickSort(objects, 0, objects.length - 1);
 	}
 
-	public static void sort(int[] list) {
+	public static void sort(int[] list)
+	{
 		if (list.length > 1)
 			quickSort(list, 0, list.length - 1);
 	}
 
 	/**
-	 * Sorts an array of objects in place. The given comparer compares pairs of
-	 * items.
+	 * Sorts an array of objects in place. The given comparer compares pairs of items.
 	 */
-	public static void sort(Object[] objects, Comparer comparer) {
+	public static void sort(Object[] objects, Comparer comparer)
+	{
 		if (objects.length > 1)
 			quickSort(objects, 0, objects.length - 1, comparer);
 	}
@@ -1379,16 +1483,18 @@ public class Util {
 	/**
 	 * Sorts an array of strings in place using quicksort.
 	 */
-	public static void sort(String[] strings) {
+	public static void sort(String[] strings)
+	{
 		if (strings.length > 1)
 			quickSort(strings, 0, strings.length - 1);
 	}
 
 	/**
-	 * Sorts an array of Comparable objects, returning a new array with the
-	 * sorted items. The original array is left untouched.
+	 * Sorts an array of Comparable objects, returning a new array with the sorted items. The original array is left
+	 * untouched.
 	 */
-	public static Comparable[] sortCopy(Comparable[] objects) {
+	public static Comparable[] sortCopy(Comparable[] objects)
+	{
 		int len = objects.length;
 		Comparable[] copy = new Comparable[len];
 		System.arraycopy(objects, 0, copy, 0, len);
@@ -1397,10 +1503,10 @@ public class Util {
 	}
 
 	/**
-	 * Sorts an array of Strings, returning a new array with the sorted items.
-	 * The original array is left untouched.
+	 * Sorts an array of Strings, returning a new array with the sorted items. The original array is left untouched.
 	 */
-	public static Object[] sortCopy(Object[] objects, Comparer comparer) {
+	public static Object[] sortCopy(Object[] objects, Comparer comparer)
+	{
 		int len = objects.length;
 		Object[] copy = new Object[len];
 		System.arraycopy(objects, 0, copy, 0, len);
@@ -1409,10 +1515,10 @@ public class Util {
 	}
 
 	/**
-	 * Sorts an array of Strings, returning a new array with the sorted items.
-	 * The original array is left untouched.
+	 * Sorts an array of Strings, returning a new array with the sorted items. The original array is left untouched.
 	 */
-	public static String[] sortCopy(String[] objects) {
+	public static String[] sortCopy(String[] objects)
+	{
 		int len = objects.length;
 		String[] copy = new String[len];
 		System.arraycopy(objects, 0, copy, 0, len);
@@ -1421,31 +1527,30 @@ public class Util {
 	}
 
 	/*
-	 * Returns whether the given compound name starts with the given prefix.
-	 * Returns true if the n first elements of the prefix are equals and the
-	 * last element of the prefix is a prefix of the corresponding element in
-	 * the compound name.
+	 * Returns whether the given compound name starts with the given prefix. Returns true if the n first elements of the
+	 * prefix are equals and the last element of the prefix is a prefix of the corresponding element in the compound
+	 * name.
 	 */
-	public static boolean startsWithIgnoreCase(String[] compoundName,
-			String[] prefix, boolean partialMatch) {
+	public static boolean startsWithIgnoreCase(String[] compoundName, String[] prefix, boolean partialMatch)
+	{
 		int prefixLength = prefix.length;
 		int nameLength = compoundName.length;
 		if (prefixLength > nameLength)
 			return false;
-		for (int i = 0; i < prefixLength - 1; i++) {
+		for (int i = 0; i < prefixLength - 1; i++)
+		{
 			if (!compoundName[i].equalsIgnoreCase(prefix[i]))
 				return false;
 		}
 		return (partialMatch || prefixLength == nameLength)
-				&& compoundName[prefixLength - 1].toLowerCase().startsWith(
-						prefix[prefixLength - 1].toLowerCase());
+				&& compoundName[prefixLength - 1].toLowerCase().startsWith(prefix[prefixLength - 1].toLowerCase());
 	}
 
 	/*
 	 * Returns whether the given compound name matches the given pattern.
 	 */
-	public static boolean matchesWithIgnoreCase(String[] compoundName,
-			String pattern) {
+	public static boolean matchesWithIgnoreCase(String[] compoundName, String pattern)
+	{
 		if (pattern.equals("*"))return true; //$NON-NLS-1$
 		int nameLength = compoundName.length;
 		if (pattern.length() == 0)
@@ -1453,12 +1558,14 @@ public class Util {
 		if (nameLength == 0)
 			return false;
 		int length = nameLength - 1;
-		for (int i = 0; i < nameLength; i++) {
+		for (int i = 0; i < nameLength; i++)
+		{
 			length += compoundName[i].length();
 		}
 		char[] compoundChars = new char[length];
 		int pos = 0;
-		for (int i = 0; i < nameLength; i++) {
+		for (int i = 0; i < nameLength; i++)
+		{
 			if (pos > 0)
 				compoundChars[pos++] = '.';
 			char[] array = compoundName[i].toCharArray();
@@ -1472,12 +1579,14 @@ public class Util {
 	/**
 	 * Converts a String[] to char[][].
 	 */
-	public static char[][] toCharArrays(String[] a) {
+	public static char[][] toCharArrays(String[] a)
+	{
 		int len = a.length;
 		if (len == 0)
 			return CharOperation.NO_CHAR_CHAR;
 		char[][] result = new char[len][];
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0; i < len; ++i)
+		{
 			result[i] = a[i].toCharArray();
 		}
 		return result;
@@ -1486,18 +1595,22 @@ public class Util {
 	/**
 	 * Converts a String to char[][], where segments are separate by '.'.
 	 */
-	public static char[][] toCompoundChars(String s) {
+	public static char[][] toCompoundChars(String s)
+	{
 		int len = s.length();
-		if (len == 0) {
+		if (len == 0)
+		{
 			return CharOperation.NO_CHAR_CHAR;
 		}
 		int segCount = 1;
-		for (int off = s.indexOf('.'); off != -1; off = s.indexOf('.', off + 1)) {
+		for (int off = s.indexOf('.'); off != -1; off = s.indexOf('.', off + 1))
+		{
 			++segCount;
 		}
 		char[][] segs = new char[segCount][];
 		int start = 0;
-		for (int i = 0; i < segCount; ++i) {
+		for (int i = 0; i < segCount; ++i)
+		{
 			int dot = s.indexOf('.', start);
 			int end = (dot == -1 ? s.length() : dot);
 			segs[i] = new char[end - start];
@@ -1510,9 +1623,11 @@ public class Util {
 	/**
 	 * Converts a char[][] to String, where segments are separated by '.'.
 	 */
-	public static String toString(char[][] c) {
+	public static String toString(char[][] c)
+	{
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0, max = c.length; i < max; ++i) {
+		for (int i = 0, max = c.length; i < max; ++i)
+		{
 			if (i != 0)
 				sb.append('.');
 			sb.append(c[i]);
@@ -1521,14 +1636,15 @@ public class Util {
 	}
 
 	/**
-	 * Converts a char[][] and a char[] to String, where segments are separated
-	 * by '.'.
+	 * Converts a char[][] and a char[] to String, where segments are separated by '.'.
 	 */
-	public static String toString(char[][] c, char[] d) {
+	public static String toString(char[][] c, char[] d)
+	{
 		if (c == null)
 			return new String(d);
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0, max = c.length; i < max; ++i) {
+		for (int i = 0, max = c.length; i < max; ++i)
+		{
 			sb.append(c[i]);
 			sb.append('.');
 		}
@@ -1539,32 +1655,38 @@ public class Util {
 	/*
 	 * Converts a char[][] to String[].
 	 */
-	public static String[] toStrings(char[][] a) {
+	public static String[] toStrings(char[][] a)
+	{
 		int len = a.length;
 		String[] result = new String[len];
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0; i < len; ++i)
+		{
 			result[i] = new String(a[i]);
 		}
 		return result;
 	}
 
-	private static void appendArrayTypeSignature(char[] string, int start,
-			StringBuffer buffer, boolean compact) {
+	private static void appendArrayTypeSignature(char[] string, int start, StringBuffer buffer, boolean compact)
+	{
 		int length = string.length;
 		// need a minimum 2 char
-		if (start >= length - 1) {
+		if (start >= length - 1)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		if (c != Signature.C_ARRAY) {
+		if (c != Signature.C_ARRAY)
+		{
 			throw new IllegalArgumentException();
 		}
 
 		int index = start;
 		c = string[++index];
-		while (c == Signature.C_ARRAY) {
+		while (c == Signature.C_ARRAY)
+		{
 			// need a minimum 2 char
-			if (index >= length - 1) {
+			if (index >= length - 1)
+			{
 				throw new IllegalArgumentException();
 			}
 			c = string[++index];
@@ -1572,100 +1694,108 @@ public class Util {
 
 		appendTypeSignature(string, index, buffer, compact);
 
-		for (int i = 0, dims = index - start; i < dims; i++) {
+		for (int i = 0, dims = index - start; i < dims; i++)
+		{
 			buffer.append('[').append(']');
 		}
 	}
 
-	private static void appendClassTypeSignature(char[] string, int start,
-			StringBuffer buffer, boolean compact) {
+	private static void appendClassTypeSignature(char[] string, int start, StringBuffer buffer, boolean compact)
+	{
 		char c = string[start];
-		if (c != Signature.C_RESOLVED) {
+		if (c != Signature.C_RESOLVED)
+		{
 			return;
 		}
 		int p = start + 1;
 		int checkpoint = buffer.length();
-		while (true) {
+		while (true)
+		{
 			c = string[p];
-			switch (c) {
-			case Signature.C_SEMICOLON:
-				// all done
-				return;
-			case Signature.C_DOT:
-			case '/':
-				// erase package prefix
-				if (compact) {
-					buffer.setLength(checkpoint);
-				} else {
+			switch (c)
+			{
+				case Signature.C_SEMICOLON:
+					// all done
+					return;
+				case Signature.C_DOT:
+				case '/':
+					// erase package prefix
+					if (compact)
+					{
+						buffer.setLength(checkpoint);
+					}
+					else
+					{
+						buffer.append('.');
+					}
+					break;
+				case Signature.C_DOLLAR:
+					/**
+					 * Convert '$' in resolved type signatures into '.'. NOTE: This assumes that the type signature is
+					 * an inner type signature. This is true in most cases, but someone can define a non-inner type name
+					 * containing a '$'.
+					 */
 					buffer.append('.');
-				}
-				break;
-			case Signature.C_DOLLAR:
-				/**
-				 * Convert '$' in resolved type signatures into '.'. NOTE: This
-				 * assumes that the type signature is an inner type signature.
-				 * This is true in most cases, but someone can define a
-				 * non-inner type name containing a '$'.
-				 */
-				buffer.append('.');
-				break;
-			default:
-				buffer.append(c);
+					break;
+				default:
+					buffer.append(c);
 			}
 			p++;
 		}
 	}
 
-	static void appendTypeSignature(char[] string, int start,
-			StringBuffer buffer, boolean compact) {
+	static void appendTypeSignature(char[] string, int start, StringBuffer buffer, boolean compact)
+	{
 		char c = string[start];
-		switch (c) {
-		case Signature.C_ARRAY:
-			appendArrayTypeSignature(string, start, buffer, compact);
-			break;
-		case Signature.C_RESOLVED:
-			appendClassTypeSignature(string, start, buffer, compact);
-			break;
-		case Signature.C_TYPE_VARIABLE:
-			int e = Util.scanTypeVariableSignature(string, start);
-			buffer.append(string, start + 1, e - start - 1);
-			break;
-		case Signature.C_BOOLEAN:
-			buffer.append(BOOLEAN);
-			break;
-		case Signature.C_BYTE:
-			buffer.append(BYTE);
-			break;
-		case Signature.C_CHAR:
-			buffer.append(CHAR);
-			break;
-		case Signature.C_DOUBLE:
-			buffer.append(DOUBLE);
-			break;
-		case Signature.C_FLOAT:
-			buffer.append(FLOAT);
-			break;
-		case Signature.C_INT:
-			buffer.append(INT);
-			break;
-		case Signature.C_LONG:
-			buffer.append(LONG);
-			break;
-		case Signature.C_SHORT:
-			buffer.append(SHORT);
-			break;
-		case Signature.C_VOID:
-			buffer.append(VOID);
-			break;
+		switch (c)
+		{
+			case Signature.C_ARRAY:
+				appendArrayTypeSignature(string, start, buffer, compact);
+				break;
+			case Signature.C_RESOLVED:
+				appendClassTypeSignature(string, start, buffer, compact);
+				break;
+			case Signature.C_TYPE_VARIABLE:
+				int e = Util.scanTypeVariableSignature(string, start);
+				buffer.append(string, start + 1, e - start - 1);
+				break;
+			case Signature.C_BOOLEAN:
+				buffer.append(BOOLEAN);
+				break;
+			case Signature.C_BYTE:
+				buffer.append(BYTE);
+				break;
+			case Signature.C_CHAR:
+				buffer.append(CHAR);
+				break;
+			case Signature.C_DOUBLE:
+				buffer.append(DOUBLE);
+				break;
+			case Signature.C_FLOAT:
+				buffer.append(FLOAT);
+				break;
+			case Signature.C_INT:
+				buffer.append(INT);
+				break;
+			case Signature.C_LONG:
+				buffer.append(LONG);
+				break;
+			case Signature.C_SHORT:
+				buffer.append(SHORT);
+				break;
+			case Signature.C_VOID:
+				buffer.append(VOID);
+				break;
 		}
 	}
 
-	public static String toString(char[] declaringClass, char[] methodName,
-			char[] methodSignature, boolean includeReturnType, boolean compact) {
+	public static String toString(char[] declaringClass, char[] methodName, char[] methodSignature,
+			boolean includeReturnType, boolean compact)
+	{
 		final boolean isConstructor = CharOperation.equals(methodName, INIT);
-		int firstParen = CharOperation.indexOf(Signature.C_PARAM_START,
-				methodSignature);
-		if (firstParen == -1) {
+		int firstParen = CharOperation.indexOf(Signature.C_PARAM_START, methodSignature);
+		if (firstParen == -1)
+		{
 			return ""; //$NON-NLS-1$
 		}
 
@@ -1673,29 +1803,37 @@ public class Util {
 
 		// decode declaring class name
 		// it can be either an array signature or a type signature
-		if (declaringClass.length > 0) {
+		if (declaringClass.length > 0)
+		{
 			char[] declaringClassSignature = null;
-			if (declaringClass[0] == Signature.C_ARRAY) {
+			if (declaringClass[0] == Signature.C_ARRAY)
+			{
 				CharOperation.replace(declaringClass, '/', '.');
 				declaringClassSignature = Signature.toCharArray(declaringClass);
-			} else {
+			}
+			else
+			{
 				CharOperation.replace(declaringClass, '/', '.');
 				declaringClassSignature = declaringClass;
 			}
-			int lastIndexOfSlash = CharOperation.lastIndexOf('.',
-					declaringClassSignature);
-			if (compact && lastIndexOfSlash != -1) {
-				buffer.append(declaringClassSignature, lastIndexOfSlash + 1,
-						declaringClassSignature.length - lastIndexOfSlash - 1);
-			} else {
+			int lastIndexOfSlash = CharOperation.lastIndexOf('.', declaringClassSignature);
+			if (compact && lastIndexOfSlash != -1)
+			{
+				buffer.append(declaringClassSignature, lastIndexOfSlash + 1, declaringClassSignature.length
+						- lastIndexOfSlash - 1);
+			}
+			else
+			{
 				buffer.append(declaringClassSignature);
 			}
 		}
 
 		// selector
-		if (!isConstructor) {
+		if (!isConstructor)
+		{
 			buffer.append('.');
-			if (methodName != null) {
+			if (methodName != null)
+			{
 				buffer.append(methodName);
 			}
 		}
@@ -1703,19 +1841,23 @@ public class Util {
 		// parameters
 		buffer.append('(');
 		char[][] pts = Signature.getParameterTypes(methodSignature);
-		for (int i = 0, max = pts.length; i < max; i++) {
+		for (int i = 0, max = pts.length; i < max; i++)
+		{
 			appendTypeSignature(pts[i], 0, buffer, compact);
-			if (i != pts.length - 1) {
+			if (i != pts.length - 1)
+			{
 				buffer.append(',');
 				buffer.append(' ');
 			}
 		}
 		buffer.append(')');
 
-		if (!isConstructor) {
+		if (!isConstructor)
+		{
 			buffer.append(" : "); //$NON-NLS-1$
 			// return type
-			if (includeReturnType) {
+			if (includeReturnType)
+			{
 				char[] rts = Signature.getReturnType(methodSignature);
 				appendTypeSignature(rts, 0, buffer, compact);
 			}
@@ -1724,50 +1866,53 @@ public class Util {
 	}
 
 	/*
-	 * Returns the unresolved type signature of the given type reference, e.g.
-	 * "QString;", "[int", "[[Qjava.util.Vector;"
+	 * Returns the unresolved type signature of the given type reference, e.g. "QString;", "[int",
+	 * "[[Qjava.util.Vector;"
 	 */
 	/*
-	 * public static String typeSignature(TypeReference type) { char[][]
-	 * compoundName = type.getParameterizedTypeName(); char[] typeName
-	 * =CharOperation.concatWith(compoundName, '.'); String signature =
-	 * Signature.createTypeSignature(typeName, falsedon't resolve); return
-	 * signature; }
+	 * public static String typeSignature(TypeReference type) { char[][] compoundName = type.getParameterizedTypeName();
+	 * char[] typeName =CharOperation.concatWith(compoundName, '.'); String signature =
+	 * Signature.createTypeSignature(typeName, falsedon't resolve); return signature; }
 	 */
 	/**
 	 * Asserts that the given method signature is valid.
 	 */
-	public static void validateMethodSignature(String sig) {
+	public static void validateMethodSignature(String sig)
+	{
 		Assert.isTrue(isValidMethodSignature(sig));
 	}
 
 	/**
 	 * Asserts that the given type signature is valid.
 	 */
-	public static void validateTypeSignature(String sig, boolean allowVoid) {
+	public static void validateTypeSignature(String sig, boolean allowVoid)
+	{
 		Assert.isTrue(isValidTypeSignature(sig, allowVoid));
 	}
 
-	public static void verbose(String log) {
+	public static void verbose(String log)
+	{
 		verbose(log, System.out);
 	}
 
-	public static synchronized void verbose(String log, PrintStream printStream) {
+	public static synchronized void verbose(String log, PrintStream printStream)
+	{
 		int start = 0;
-		do {
+		do
+		{
 			int end = log.indexOf('\n', start);
 			printStream.print(Thread.currentThread());
 			printStream.print(" "); //$NON-NLS-1$
-			printStream.print(log.substring(start, end == -1 ? log.length()
-					: end + 1));
+			printStream.print(log.substring(start, end == -1 ? log.length() : end + 1));
 			start = end + 1;
-		} while (start != 0);
+		}
+		while (start != 0);
 		printStream.println();
 	}
 
 	/**
-	 * Scans the given string for a type signature starting at the given index
-	 * and returns the index of the last character.
+	 * Scans the given string for a type signature starting at the given index and returns the index of the last
+	 * character.
 	 * 
 	 * <pre>
 	 * TypeSignature:
@@ -1785,44 +1930,47 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a type signature
 	 */
-	public static int scanTypeSignature(char[] string, int start) {
+	public static int scanTypeSignature(char[] string, int start)
+	{
 		// need a minimum 1 char
-		if (start >= string.length) {
+		if (start >= string.length)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		switch (c) {
-		case Signature.C_ARRAY:
-			return scanArrayTypeSignature(string, start);
-		case Signature.C_RESOLVED:
-		case Signature.C_UNRESOLVED:
-			return scanClassTypeSignature(string, start);
-		case Signature.C_TYPE_VARIABLE:
-			return scanTypeVariableSignature(string, start);
-		case Signature.C_BOOLEAN:
-		case Signature.C_BYTE:
-		case Signature.C_CHAR:
-		case Signature.C_DOUBLE:
-		case Signature.C_FLOAT:
-		case Signature.C_INT:
-		case Signature.C_LONG:
-		case Signature.C_SHORT:
-		case Signature.C_VOID:
-			return scanBaseTypeSignature(string, start);
-		case Signature.C_CAPTURE:
-			return scanCaptureTypeSignature(string, start);
-		case Signature.C_EXTENDS:
-		case Signature.C_SUPER:
-		case Signature.C_STAR:
-			return scanTypeBoundSignature(string, start);
-		default:
-			throw new IllegalArgumentException();
+		switch (c)
+		{
+			case Signature.C_ARRAY:
+				return scanArrayTypeSignature(string, start);
+			case Signature.C_RESOLVED:
+			case Signature.C_UNRESOLVED:
+				return scanClassTypeSignature(string, start);
+			case Signature.C_TYPE_VARIABLE:
+				return scanTypeVariableSignature(string, start);
+			case Signature.C_BOOLEAN:
+			case Signature.C_BYTE:
+			case Signature.C_CHAR:
+			case Signature.C_DOUBLE:
+			case Signature.C_FLOAT:
+			case Signature.C_INT:
+			case Signature.C_LONG:
+			case Signature.C_SHORT:
+			case Signature.C_VOID:
+				return scanBaseTypeSignature(string, start);
+			case Signature.C_CAPTURE:
+				return scanCaptureTypeSignature(string, start);
+			case Signature.C_EXTENDS:
+			case Signature.C_SUPER:
+			case Signature.C_STAR:
+				return scanTypeBoundSignature(string, start);
+			default:
+				throw new IllegalArgumentException();
 		}
 	}
 
 	/**
-	 * Scans the given string for a base type signature starting at the given
-	 * index and returns the index of the last character.
+	 * Scans the given string for a base type signature starting at the given index and returns the index of the last
+	 * character.
 	 * 
 	 * <pre>
 	 * BaseTypeSignature:
@@ -1830,9 +1978,8 @@ public class Util {
 	 *   | &lt;b&gt;J&lt;/b&gt; | &lt;b&gt;S&lt;/b&gt; | &lt;b&gt;V&lt;/b&gt; | &lt;b&gt;Z&lt;/b&gt;
 	 * </pre>
 	 * 
-	 * Note that although the base type "V" is only allowed in method return
-	 * types, there is no syntactic ambiguity. This method will accept them
-	 * anywhere without complaint.
+	 * Note that although the base type "V" is only allowed in method return types, there is no syntactic ambiguity.
+	 * This method will accept them anywhere without complaint.
 	 * 
 	 * @param string
 	 *            the signature string
@@ -1842,22 +1989,26 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a base type signature
 	 */
-	public static int scanBaseTypeSignature(char[] string, int start) {
+	public static int scanBaseTypeSignature(char[] string, int start)
+	{
 		// need a minimum 1 char
-		if (start >= string.length) {
+		if (start >= string.length)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
 		if ("BCDFIJSVZ".indexOf(c) >= 0) { //$NON-NLS-1$
 			return start;
-		} else {
+		}
+		else
+		{
 			throw new IllegalArgumentException();
 		}
 	}
 
 	/**
-	 * Scans the given string for an array type signature starting at the given
-	 * index and returns the index of the last character.
+	 * Scans the given string for an array type signature starting at the given index and returns the index of the last
+	 * character.
 	 * 
 	 * <pre>
 	 * ArrayTypeSignature:
@@ -1872,21 +2023,26 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not an array type signature
 	 */
-	public static int scanArrayTypeSignature(char[] string, int start) {
+	public static int scanArrayTypeSignature(char[] string, int start)
+	{
 		int length = string.length;
 		// need a minimum 2 char
-		if (start >= length - 1) {
+		if (start >= length - 1)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		if (c != Signature.C_ARRAY) {
+		if (c != Signature.C_ARRAY)
+		{
 			throw new IllegalArgumentException();
 		}
 
 		c = string[++start];
-		while (c == Signature.C_ARRAY) {
+		while (c == Signature.C_ARRAY)
+		{
 			// need a minimum 2 char
-			if (start >= length - 1) {
+			if (start >= length - 1)
+			{
 				throw new IllegalArgumentException();
 			}
 			c = string[++start];
@@ -1895,8 +2051,8 @@ public class Util {
 	}
 
 	/**
-	 * Scans the given string for a capture of a wildcard type signature
-	 * starting at the given index and returns the index of the last character.
+	 * Scans the given string for a capture of a wildcard type signature starting at the given index and returns the
+	 * index of the last character.
 	 * 
 	 * <pre>
 	 * CaptureTypeSignature:
@@ -1911,21 +2067,24 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a capture type signature
 	 */
-	public static int scanCaptureTypeSignature(char[] string, int start) {
+	public static int scanCaptureTypeSignature(char[] string, int start)
+	{
 		// need a minimum 2 char
-		if (start >= string.length - 1) {
+		if (start >= string.length - 1)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		if (c != Signature.C_CAPTURE) {
+		if (c != Signature.C_CAPTURE)
+		{
 			throw new IllegalArgumentException();
 		}
 		return scanTypeBoundSignature(string, start + 1);
 	}
 
 	/**
-	 * Scans the given string for a type variable signature starting at the
-	 * given index and returns the index of the last character.
+	 * Scans the given string for a type variable signature starting at the given index and returns the index of the
+	 * last character.
 	 * 
 	 * <pre>
 	 * TypeVariableSignature:
@@ -1940,29 +2099,34 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a type variable signature
 	 */
-	public static int scanTypeVariableSignature(char[] string, int start) {
+	public static int scanTypeVariableSignature(char[] string, int start)
+	{
 		// need a minimum 3 chars "Tx;"
-		if (start >= string.length - 2) {
+		if (start >= string.length - 2)
+		{
 			throw new IllegalArgumentException();
 		}
 		// must start in "T"
 		char c = string[start];
-		if (c != Signature.C_TYPE_VARIABLE) {
+		if (c != Signature.C_TYPE_VARIABLE)
+		{
 			throw new IllegalArgumentException();
 		}
 		int id = scanIdentifier(string, start + 1);
 		c = string[id + 1];
-		if (c == Signature.C_SEMICOLON) {
+		if (c == Signature.C_SEMICOLON)
+		{
 			return id + 1;
-		} else {
+		}
+		else
+		{
 			throw new IllegalArgumentException();
 		}
 	}
 
 	/**
-	 * Scans the given string for an identifier starting at the given index and
-	 * returns the index of the last character. Stop characters are: ";", ":",
-	 * "&lt;", "&gt;", "/", ".".
+	 * Scans the given string for an identifier starting at the given index and returns the index of the last character.
+	 * Stop characters are: ";", ":", "&lt;", "&gt;", "/", ".".
 	 * 
 	 * @param string
 	 *            the signature string
@@ -1972,28 +2136,32 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not an identifier
 	 */
-	public static int scanIdentifier(char[] string, int start) {
+	public static int scanIdentifier(char[] string, int start)
+	{
 		// need a minimum 1 char
-		if (start >= string.length) {
+		if (start >= string.length)
+		{
 			throw new IllegalArgumentException();
 		}
 		int p = start;
-		while (true) {
+		while (true)
+		{
 			char c = string[p];
-			if (c == '<' || c == '>' || c == ':' || c == ';' || c == '.'
-					|| c == '/') {
+			if (c == '<' || c == '>' || c == ':' || c == ';' || c == '.' || c == '/')
+			{
 				return p - 1;
 			}
 			p++;
-			if (p == string.length) {
+			if (p == string.length)
+			{
 				return p - 1;
 			}
 		}
 	}
 
 	/**
-	 * Scans the given string for a class type signature starting at the given
-	 * index and returns the index of the last character.
+	 * Scans the given string for a class type signature starting at the given index and returns the index of the last
+	 * character.
 	 * 
 	 * <pre>
 	 * ClassTypeSignature:
@@ -2002,9 +2170,8 @@ public class Util {
 	 *           &lt;b&gt;;&lt;/b&gt;
 	 * </pre>
 	 * 
-	 * Note that although all "/"-identifiers most come before "."-identifiers,
-	 * there is no syntactic ambiguity. This method will accept them without
-	 * complaint.
+	 * Note that although all "/"-identifiers most come before "."-identifiers, there is no syntactic ambiguity. This
+	 * method will accept them without complaint.
 	 * 
 	 * @param string
 	 *            the signature string
@@ -2014,29 +2181,39 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a class type signature
 	 */
-	public static int scanClassTypeSignature(char[] string, int start) {
+	public static int scanClassTypeSignature(char[] string, int start)
+	{
 		// need a minimum 3 chars "Lx;"
-		if (start >= string.length - 2) {
+		if (start >= string.length - 2)
+		{
 			throw new IllegalArgumentException();
 		}
 		// must start in "L" or "Q"
 		char c = string[start];
-		if (c != Signature.C_RESOLVED && c != Signature.C_UNRESOLVED) {
+		if (c != Signature.C_RESOLVED && c != Signature.C_UNRESOLVED)
+		{
 			return -1;
 		}
 		int p = start + 1;
-		while (true) {
-			if (p >= string.length) {
+		while (true)
+		{
+			if (p >= string.length)
+			{
 				throw new IllegalArgumentException();
 			}
 			c = string[p];
-			if (c == Signature.C_SEMICOLON) {
+			if (c == Signature.C_SEMICOLON)
+			{
 				// all done
 				return p;
-			} else if (c == Signature.C_GENERIC_START) {
+			}
+			else if (c == Signature.C_GENERIC_START)
+			{
 				int e = scanTypeArgumentSignatures(string, p);
 				p = e;
-			} else if (c == Signature.C_DOT || c == '/') {
+			}
+			else if (c == Signature.C_DOT || c == '/')
+			{
 				int id = scanIdentifier(string, p + 1);
 				p = id;
 			}
@@ -2045,8 +2222,8 @@ public class Util {
 	}
 
 	/**
-	 * Scans the given string for a type bound signature starting at the given
-	 * index and returns the index of the last character.
+	 * Scans the given string for a type bound signature starting at the given index and returns the index of the last
+	 * character.
 	 * 
 	 * <pre>
 	 * TypeBoundSignature:
@@ -2062,60 +2239,64 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a type variable signature
 	 */
-	public static int scanTypeBoundSignature(char[] string, int start) {
+	public static int scanTypeBoundSignature(char[] string, int start)
+	{
 		// need a minimum 1 char for wildcard
-		if (start >= string.length) {
+		if (start >= string.length)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		switch (c) {
-		case Signature.C_STAR:
-			return start;
-		case Signature.C_SUPER:
-		case Signature.C_EXTENDS:
-			// need a minimum 3 chars "+[I"
-			if (start >= string.length - 2) {
+		switch (c)
+		{
+			case Signature.C_STAR:
+				return start;
+			case Signature.C_SUPER:
+			case Signature.C_EXTENDS:
+				// need a minimum 3 chars "+[I"
+				if (start >= string.length - 2)
+				{
+					throw new IllegalArgumentException();
+				}
+				break;
+			default:
+				// must start in "+/-"
 				throw new IllegalArgumentException();
-			}
-			break;
-		default:
-			// must start in "+/-"
-			throw new IllegalArgumentException();
 
 		}
 		c = string[++start];
-		switch (c) {
-		case Signature.C_CAPTURE:
-			return scanCaptureTypeSignature(string, start);
-		case Signature.C_SUPER:
-		case Signature.C_EXTENDS:
-			return scanTypeBoundSignature(string, start);
-		case Signature.C_RESOLVED:
-		case Signature.C_UNRESOLVED:
-			return scanClassTypeSignature(string, start);
-		case Signature.C_TYPE_VARIABLE:
-			return scanTypeVariableSignature(string, start);
-		case Signature.C_ARRAY:
-			return scanArrayTypeSignature(string, start);
-		case Signature.C_STAR:
-			return start;
-		default:
-			throw new IllegalArgumentException();
+		switch (c)
+		{
+			case Signature.C_CAPTURE:
+				return scanCaptureTypeSignature(string, start);
+			case Signature.C_SUPER:
+			case Signature.C_EXTENDS:
+				return scanTypeBoundSignature(string, start);
+			case Signature.C_RESOLVED:
+			case Signature.C_UNRESOLVED:
+				return scanClassTypeSignature(string, start);
+			case Signature.C_TYPE_VARIABLE:
+				return scanTypeVariableSignature(string, start);
+			case Signature.C_ARRAY:
+				return scanArrayTypeSignature(string, start);
+			case Signature.C_STAR:
+				return start;
+			default:
+				throw new IllegalArgumentException();
 		}
 	}
 
 	/**
-	 * Scans the given string for a list of type argument signatures starting at
-	 * the given index and returns the index of the last character.
+	 * Scans the given string for a list of type argument signatures starting at the given index and returns the index
+	 * of the last character.
 	 * 
 	 * <pre>
 	 * TypeArgumentSignatures:
 	 *     &lt;b&gt;&lt;&lt;/b&gt; TypeArgumentSignature* &lt;b&gt;&gt;&lt;/b&gt;
 	 * </pre>
 	 * 
-	 * Note that although there is supposed to be at least one type argument,
-	 * there is no syntactic ambiguity if there are none. This method will
-	 * accept zero type argument signatures without complaint.
+	 * Note that although there is supposed to be at least one type argument, there is no syntactic ambiguity if there
+	 * are none. This method will accept zero type argument signatures without complaint.
 	 * 
 	 * @param string
 	 *            the signature string
@@ -2125,22 +2306,28 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a list of type arguments signatures
 	 */
-	public static int scanTypeArgumentSignatures(char[] string, int start) {
+	public static int scanTypeArgumentSignatures(char[] string, int start)
+	{
 		// need a minimum 2 char "<>"
-		if (start >= string.length - 1) {
+		if (start >= string.length - 1)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		if (c != Signature.C_GENERIC_START) {
+		if (c != Signature.C_GENERIC_START)
+		{
 			throw new IllegalArgumentException();
 		}
 		int p = start + 1;
-		while (true) {
-			if (p >= string.length) {
+		while (true)
+		{
+			if (p >= string.length)
+			{
 				throw new IllegalArgumentException();
 			}
 			c = string[p];
-			if (c == Signature.C_GENERIC_END) {
+			if (c == Signature.C_GENERIC_END)
+			{
 				return p;
 			}
 			int e = scanTypeArgumentSignature(string, p);
@@ -2149,8 +2336,8 @@ public class Util {
 	}
 
 	/**
-	 * Scans the given string for a type argument signature starting at the
-	 * given index and returns the index of the last character.
+	 * Scans the given string for a type argument signature starting at the given index and returns the index of the
+	 * last character.
 	 * 
 	 * <pre>
 	 * TypeArgumentSignature:
@@ -2160,8 +2347,8 @@ public class Util {
 	 *  |  TypeSignature
 	 * </pre>
 	 * 
-	 * Note that although base types are not allowed in type arguments, there is
-	 * no syntactic ambiguity. This method will accept them without complaint.
+	 * Note that although base types are not allowed in type arguments, there is no syntactic ambiguity. This method
+	 * will accept them without complaint.
 	 * 
 	 * @param string
 	 *            the signature string
@@ -2171,94 +2358,81 @@ public class Util {
 	 * @exception IllegalArgumentException
 	 *                if this is not a type argument signature
 	 */
-	public static int scanTypeArgumentSignature(char[] string, int start) {
+	public static int scanTypeArgumentSignature(char[] string, int start)
+	{
 		// need a minimum 1 char
-		if (start >= string.length) {
+		if (start >= string.length)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		switch (c) {
-		case Signature.C_STAR:
-			return start;
-		case Signature.C_EXTENDS:
-		case Signature.C_SUPER:
-			return scanTypeBoundSignature(string, start);
-		default:
-			return scanTypeSignature(string, start);
+		switch (c)
+		{
+			case Signature.C_STAR:
+				return start;
+			case Signature.C_EXTENDS:
+			case Signature.C_SUPER:
+				return scanTypeBoundSignature(string, start);
+			default:
+				return scanTypeSignature(string, start);
 		}
 	}
 
 	/**
-	 * Get all type arguments from an array of signatures.
+	 * Get all type arguments from an array of signatures. Example: For following type X<Y<Z>,V<W>,U>.A<B> signatures
+	 * is: [ ['L','X', '<','L','Y','<','L','Z',';'>',';','L','V','<','L','W',';'>',';','L' ,'U',';',>',';'],
+	 * ['L','A','<','L','B',';','>',';'] ]
 	 * 
-	 * Example: For following type X<Y<Z>,V<W>,U>.A<B> signatures is: [
-	 * ['L','X',
-	 * '<','L','Y','<','L','Z',';'>',';','L','V','<','L','W',';'>',';','L'
-	 * ,'U',';',>',';'], ['L','A','<','L','B',';','>',';'] ]
-	 * 
-	 * @see #splitTypeLevelsSignature(String) Then, this method returns: [ [
-	 *      ['L','Y','<','L','Z',';'>',';'], ['L','V','<','L','W',';'>',';'],
-	 *      ['L','U',';'] ], [ ['L','B',';'] ] ]
-	 * 
+	 * @see #splitTypeLevelsSignature(String) Then, this method returns: [ [ ['L','Y','<','L','Z',';'>',';'],
+	 *      ['L','V','<','L','W',';'>',';'], ['L','U',';'] ], [ ['L','B',';'] ] ]
 	 * @param typeSignatures
 	 *            Array of signatures (one per each type levels)
 	 * @throws IllegalArgumentException
 	 *             If one of provided signature is malformed
 	 * @return char[][][] Array of type arguments for each signature
 	 */
-	public final static char[][][] getAllTypeArguments(char[][] typeSignatures) {
+	public final static char[][][] getAllTypeArguments(char[][] typeSignatures)
+	{
 		if (typeSignatures == null)
 			return null;
 		int length = typeSignatures.length;
 		char[][][] typeArguments = new char[length][][];
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i++)
+		{
 			typeArguments[i] = Signature.getTypeArguments(typeSignatures[i]);
 		}
 		return typeArguments;
 	}
 
 	/*
-	 * Creates a member value from the given constant, and sets the valueKind on
-	 * the given memberValuePair
+	 * Creates a member value from the given constant, and sets the valueKind on the given memberValuePair
 	 */
 	/*
-	 * public static Object getAnnotationMemberValue(MemberValuePair
-	 * memberValuePair, Constant constant) { switch (constant.typeID()) { case
-	 * TypeIds.T_int : memberValuePair.valueKind = IMemberValuePair.K_INT;
-	 * return new Integer(constant.intValue()); case TypeIds.T_byte :
-	 * memberValuePair.valueKind = IMemberValuePair.K_BYTE; return new
-	 * Byte(constant.byteValue()); case TypeIds.T_short :
-	 * memberValuePair.valueKind = IMemberValuePair.K_SHORT; return new
-	 * Short(constant.shortValue()); case TypeIds.T_char :
-	 * memberValuePair.valueKind = IMemberValuePair.K_CHAR; return new
-	 * Character(constant.charValue()); case TypeIds.T_float :
-	 * memberValuePair.valueKind = IMemberValuePair.K_FLOAT; return new
-	 * Float(constant.floatValue()); case TypeIds.T_double :
-	 * memberValuePair.valueKind = IMemberValuePair.K_DOUBLE; return new
-	 * Double(constant.doubleValue()); case TypeIds.T_boolean :
-	 * memberValuePair.valueKind = IMemberValuePair.K_BOOLEAN; return
-	 * Boolean.valueOf(constant.booleanValue()); case TypeIds.T_long :
-	 * memberValuePair.valueKind = IMemberValuePair.K_LONG; return new
-	 * Long(constant.longValue()); case TypeIds.T_JavaLangString :
-	 * memberValuePair.valueKind = IMemberValuePair.K_STRING; return
-	 * constant.stringValue(); default: memberValuePair.valueKind =
-	 * IMemberValuePair.K_UNKNOWN; return null; } }
+	 * public static Object getAnnotationMemberValue(MemberValuePair memberValuePair, Constant constant) { switch
+	 * (constant.typeID()) { case TypeIds.T_int : memberValuePair.valueKind = IMemberValuePair.K_INT; return new
+	 * Integer(constant.intValue()); case TypeIds.T_byte : memberValuePair.valueKind = IMemberValuePair.K_BYTE; return
+	 * new Byte(constant.byteValue()); case TypeIds.T_short : memberValuePair.valueKind = IMemberValuePair.K_SHORT;
+	 * return new Short(constant.shortValue()); case TypeIds.T_char : memberValuePair.valueKind =
+	 * IMemberValuePair.K_CHAR; return new Character(constant.charValue()); case TypeIds.T_float :
+	 * memberValuePair.valueKind = IMemberValuePair.K_FLOAT; return new Float(constant.floatValue()); case
+	 * TypeIds.T_double : memberValuePair.valueKind = IMemberValuePair.K_DOUBLE; return new
+	 * Double(constant.doubleValue()); case TypeIds.T_boolean : memberValuePair.valueKind = IMemberValuePair.K_BOOLEAN;
+	 * return Boolean.valueOf(constant.booleanValue()); case TypeIds.T_long : memberValuePair.valueKind =
+	 * IMemberValuePair.K_LONG; return new Long(constant.longValue()); case TypeIds.T_JavaLangString :
+	 * memberValuePair.valueKind = IMemberValuePair.K_STRING; return constant.stringValue(); default:
+	 * memberValuePair.valueKind = IMemberValuePair.K_UNKNOWN; return null; } }
 	 *//**
-	 * Split signatures of all levels from a type unique key.
-	 * 
-	 * Example: For following type X<Y<Z>,V<W>,U>.A<B>, unique key is:
-	 * "LX<LY<LZ;>;LV<LW;>;LU;>.LA<LB;>;"
-	 * 
-	 * The return splitted signatures array is: [
-	 * ['L','X','<','L','Y','<','L','Z'
-	 * ,';'>',';','L','V','<','L','W',';'>',';','L','U','>',';'],
+	 * Split signatures of all levels from a type unique key. Example: For following type X<Y<Z>,V<W>,U>.A<B>, unique
+	 * key is: "LX<LY<LZ;>;LV<LW;>;LU;>.LA<LB;>;" The return splitted signatures array is: [
+	 * ['L','X','<','L','Y','<','L','Z' ,';'>',';','L','V','<','L','W',';'>',';','L','U','>',';'],
 	 * ['L','A','<','L','B',';','>',';']
 	 * 
 	 * @param typeSignature
 	 *            ParameterizedSourceType type signature
 	 * @return char[][] Array of signatures for each level of given unique key
 	 */
-	public final static char[][] splitTypeLevelsSignature(String typeSignature) {
+	public final static char[][] splitTypeLevelsSignature(String typeSignature)
+	{
 		// In case of IJavaElement signature, replace '$' by '.'
 		char[] source = Signature.removeCapture(typeSignature.toCharArray());
 		CharOperation.replace(source, '$', '.');
@@ -2271,54 +2445,59 @@ public class Util {
 		int paramOpening = 0;
 
 		// Scan each signature character
-		for (int idx = 0, ln = source.length; idx < ln; idx++) {
-			switch (source[idx]) {
-			case '>':
-				paramOpening--;
-				if (paramOpening == 0) {
-					if (signaturesCount == signatures.length) {
-						System.arraycopy(signatures, 0,
-								signatures = new char[signaturesCount + 10][],
-								0, signaturesCount);
+		for (int idx = 0, ln = source.length; idx < ln; idx++)
+		{
+			switch (source[idx])
+			{
+				case '>':
+					paramOpening--;
+					if (paramOpening == 0)
+					{
+						if (signaturesCount == signatures.length)
+						{
+							System.arraycopy(signatures, 0, signatures = new char[signaturesCount + 10][], 0,
+									signaturesCount);
+						}
+						typeArgsCount = 0;
 					}
-					typeArgsCount = 0;
-				}
-				break;
-			case '<':
-				paramOpening++;
-				if (paramOpening == 1) {
-					typeArgsCount = 1;
-				}
-				break;
-			case '*':
-			case ';':
-				if (paramOpening == 1)
-					typeArgsCount++;
-				break;
-			case '.':
-				if (paramOpening == 0) {
-					if (signaturesCount == signatures.length) {
-						System.arraycopy(signatures, 0,
-								signatures = new char[signaturesCount + 10][],
-								0, signaturesCount);
+					break;
+				case '<':
+					paramOpening++;
+					if (paramOpening == 1)
+					{
+						typeArgsCount = 1;
 					}
-					signatures[signaturesCount] = new char[idx + 1];
-					System.arraycopy(source, 0, signatures[signaturesCount], 0,
-							idx);
-					signatures[signaturesCount][idx] = Signature.C_SEMICOLON;
-					signaturesCount++;
-				}
-				break;
-			case '/':
-				source[idx] = '.';
-				break;
+					break;
+				case '*':
+				case ';':
+					if (paramOpening == 1)
+						typeArgsCount++;
+					break;
+				case '.':
+					if (paramOpening == 0)
+					{
+						if (signaturesCount == signatures.length)
+						{
+							System.arraycopy(signatures, 0, signatures = new char[signaturesCount + 10][], 0,
+									signaturesCount);
+						}
+						signatures[signaturesCount] = new char[idx + 1];
+						System.arraycopy(source, 0, signatures[signaturesCount], 0, idx);
+						signatures[signaturesCount][idx] = Signature.C_SEMICOLON;
+						signaturesCount++;
+					}
+					break;
+				case '/':
+					source[idx] = '.';
+					break;
 			}
 		}
 
 		// Resize signatures array
 		char[][] typeSignatures = new char[signaturesCount + 1][];
 		typeSignatures[0] = source;
-		for (int i = 1, j = signaturesCount - 1; i <= signaturesCount; i++, j--) {
+		for (int i = 1, j = signaturesCount - 1; i <= signaturesCount; i++, j--)
+		{
 			typeSignatures[i] = signatures[j];
 		}
 		return typeSignatures;
@@ -2327,41 +2506,49 @@ public class Util {
 	/*
 	 * Can throw IllegalArgumentException or ArrayIndexOutOfBoundsException
 	 */
-	public static String toAnchor(char[] methodSignature, String methodName,
-			boolean isVarArgs) {
-		try {
-			return new String(toAnchor(methodSignature, methodName
-					.toCharArray(), isVarArgs));
-		} catch (IllegalArgumentException e) {
+	public static String toAnchor(char[] methodSignature, String methodName, boolean isVarArgs)
+	{
+		try
+		{
+			return new String(toAnchor(methodSignature, methodName.toCharArray(), isVarArgs));
+		}
+		catch (IllegalArgumentException e)
+		{
 			return null;
 		}
 	}
 
-	private static char[] toAnchor(char[] methodSignature, char[] methodName,
-			boolean isVargArgs) {
-		int firstParen = CharOperation.indexOf(Signature.C_PARAM_START,
-				methodSignature);
-		if (firstParen == -1) {
+	private static char[] toAnchor(char[] methodSignature, char[] methodName, boolean isVargArgs)
+	{
+		int firstParen = CharOperation.indexOf(Signature.C_PARAM_START, methodSignature);
+		if (firstParen == -1)
+		{
 			throw new IllegalArgumentException();
 		}
 
 		StringBuffer buffer = new StringBuffer(methodSignature.length + 10);
 
 		// selector
-		if (methodName != null) {
+		if (methodName != null)
+		{
 			buffer.append(methodName);
 		}
 
 		// parameters
 		buffer.append('(');
 		char[][] pts = Signature.getParameterTypes(methodSignature);
-		for (int i = 0, max = pts.length; i < max; i++) {
-			if (i == max - 1) {
+		for (int i = 0, max = pts.length; i < max; i++)
+		{
+			if (i == max - 1)
+			{
 				appendTypeSignatureForAnchor(pts[i], 0, buffer, isVargArgs);
-			} else {
+			}
+			else
+			{
 				appendTypeSignatureForAnchor(pts[i], 0, buffer, false);
 			}
-			if (i != pts.length - 1) {
+			if (i != pts.length - 1)
+			{
 				buffer.append(',');
 				buffer.append(' ');
 			}
@@ -2372,140 +2559,149 @@ public class Util {
 		return result;
 	}
 
-	private static int appendTypeSignatureForAnchor(char[] string, int start,
-			StringBuffer buffer, boolean isVarArgs) {
+	private static int appendTypeSignatureForAnchor(char[] string, int start, StringBuffer buffer, boolean isVarArgs)
+	{
 		// need a minimum 1 char
-		if (start >= string.length) {
+		if (start >= string.length)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		if (isVarArgs) {
-			switch (c) {
-			case Signature.C_ARRAY:
-				return appendArrayTypeSignatureForAnchor(string, start, buffer,
-						true);
-			case Signature.C_RESOLVED:
-			case Signature.C_TYPE_VARIABLE:
-			case Signature.C_BOOLEAN:
-			case Signature.C_BYTE:
-			case Signature.C_CHAR:
-			case Signature.C_DOUBLE:
-			case Signature.C_FLOAT:
-			case Signature.C_INT:
-			case Signature.C_LONG:
-			case Signature.C_SHORT:
-			case Signature.C_VOID:
-			case Signature.C_STAR:
-			case Signature.C_EXTENDS:
-			case Signature.C_SUPER:
-			case Signature.C_CAPTURE:
-			default:
-				throw new IllegalArgumentException(); // a var args is an array
-				// type
+		if (isVarArgs)
+		{
+			switch (c)
+			{
+				case Signature.C_ARRAY:
+					return appendArrayTypeSignatureForAnchor(string, start, buffer, true);
+				case Signature.C_RESOLVED:
+				case Signature.C_TYPE_VARIABLE:
+				case Signature.C_BOOLEAN:
+				case Signature.C_BYTE:
+				case Signature.C_CHAR:
+				case Signature.C_DOUBLE:
+				case Signature.C_FLOAT:
+				case Signature.C_INT:
+				case Signature.C_LONG:
+				case Signature.C_SHORT:
+				case Signature.C_VOID:
+				case Signature.C_STAR:
+				case Signature.C_EXTENDS:
+				case Signature.C_SUPER:
+				case Signature.C_CAPTURE:
+				default:
+					throw new IllegalArgumentException(); // a var args is an array
+					// type
 			}
-		} else {
-			switch (c) {
-			case Signature.C_ARRAY:
-				return appendArrayTypeSignatureForAnchor(string, start, buffer,
-						false);
-			case Signature.C_RESOLVED:
-				return appendClassTypeSignatureForAnchor(string, start, buffer);
-			case Signature.C_TYPE_VARIABLE:
-				int e = Util.scanTypeVariableSignature(string, start);
-				buffer.append(string, start + 1, e - start - 1);
-				return e;
-			case Signature.C_BOOLEAN:
-				buffer.append(BOOLEAN);
-				return start;
-			case Signature.C_BYTE:
-				buffer.append(BYTE);
-				return start;
-			case Signature.C_CHAR:
-				buffer.append(CHAR);
-				return start;
-			case Signature.C_DOUBLE:
-				buffer.append(DOUBLE);
-				return start;
-			case Signature.C_FLOAT:
-				buffer.append(FLOAT);
-				return start;
-			case Signature.C_INT:
-				buffer.append(INT);
-				return start;
-			case Signature.C_LONG:
-				buffer.append(LONG);
-				return start;
-			case Signature.C_SHORT:
-				buffer.append(SHORT);
-				return start;
-			case Signature.C_VOID:
-				buffer.append(VOID);
-				return start;
-			case Signature.C_CAPTURE:
-				return appendCaptureTypeSignatureForAnchor(string, start,
-						buffer);
-			case Signature.C_STAR:
-			case Signature.C_EXTENDS:
-			case Signature.C_SUPER:
-				return appendTypeArgumentSignatureForAnchor(string, start,
-						buffer);
-			default:
-				throw new IllegalArgumentException();
+		}
+		else
+		{
+			switch (c)
+			{
+				case Signature.C_ARRAY:
+					return appendArrayTypeSignatureForAnchor(string, start, buffer, false);
+				case Signature.C_RESOLVED:
+					return appendClassTypeSignatureForAnchor(string, start, buffer);
+				case Signature.C_TYPE_VARIABLE:
+					int e = Util.scanTypeVariableSignature(string, start);
+					buffer.append(string, start + 1, e - start - 1);
+					return e;
+				case Signature.C_BOOLEAN:
+					buffer.append(BOOLEAN);
+					return start;
+				case Signature.C_BYTE:
+					buffer.append(BYTE);
+					return start;
+				case Signature.C_CHAR:
+					buffer.append(CHAR);
+					return start;
+				case Signature.C_DOUBLE:
+					buffer.append(DOUBLE);
+					return start;
+				case Signature.C_FLOAT:
+					buffer.append(FLOAT);
+					return start;
+				case Signature.C_INT:
+					buffer.append(INT);
+					return start;
+				case Signature.C_LONG:
+					buffer.append(LONG);
+					return start;
+				case Signature.C_SHORT:
+					buffer.append(SHORT);
+					return start;
+				case Signature.C_VOID:
+					buffer.append(VOID);
+					return start;
+				case Signature.C_CAPTURE:
+					return appendCaptureTypeSignatureForAnchor(string, start, buffer);
+				case Signature.C_STAR:
+				case Signature.C_EXTENDS:
+				case Signature.C_SUPER:
+					return appendTypeArgumentSignatureForAnchor(string, start, buffer);
+				default:
+					throw new IllegalArgumentException();
 			}
 		}
 	}
 
-	private static int appendTypeArgumentSignatureForAnchor(char[] string,
-			int start, StringBuffer buffer) {
+	private static int appendTypeArgumentSignatureForAnchor(char[] string, int start, StringBuffer buffer)
+	{
 		// need a minimum 1 char
-		if (start >= string.length) {
+		if (start >= string.length)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		switch (c) {
-		case Signature.C_STAR:
-			return start;
-		case Signature.C_EXTENDS:
-			return appendTypeSignatureForAnchor(string, start + 1, buffer,
-					false);
-		case Signature.C_SUPER:
-			return appendTypeSignatureForAnchor(string, start + 1, buffer,
-					false);
-		default:
-			return appendTypeSignatureForAnchor(string, start, buffer, false);
+		switch (c)
+		{
+			case Signature.C_STAR:
+				return start;
+			case Signature.C_EXTENDS:
+				return appendTypeSignatureForAnchor(string, start + 1, buffer, false);
+			case Signature.C_SUPER:
+				return appendTypeSignatureForAnchor(string, start + 1, buffer, false);
+			default:
+				return appendTypeSignatureForAnchor(string, start, buffer, false);
 		}
 	}
 
-	private static int appendCaptureTypeSignatureForAnchor(char[] string,
-			int start, StringBuffer buffer) {
+	private static int appendCaptureTypeSignatureForAnchor(char[] string, int start, StringBuffer buffer)
+	{
 		// need a minimum 2 char
-		if (start >= string.length - 1) {
+		if (start >= string.length - 1)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		if (c != Signature.C_CAPTURE) {
+		if (c != Signature.C_CAPTURE)
+		{
 			throw new IllegalArgumentException();
 		}
 		return appendTypeArgumentSignatureForAnchor(string, start + 1, buffer);
 	}
 
-	private static int appendArrayTypeSignatureForAnchor(char[] string,
-			int start, StringBuffer buffer, boolean isVarArgs) {
+	private static int appendArrayTypeSignatureForAnchor(char[] string, int start, StringBuffer buffer,
+			boolean isVarArgs)
+	{
 		int length = string.length;
 		// need a minimum 2 char
-		if (start >= length - 1) {
+		if (start >= length - 1)
+		{
 			throw new IllegalArgumentException();
 		}
 		char c = string[start];
-		if (c != Signature.C_ARRAY) {
+		if (c != Signature.C_ARRAY)
+		{
 			throw new IllegalArgumentException();
 		}
 
 		int index = start;
 		c = string[++index];
-		while (c == Signature.C_ARRAY) {
+		while (c == Signature.C_ARRAY)
+		{
 			// need a minimum 2 char
-			if (index >= length - 1) {
+			if (index >= length - 1)
+			{
 				throw new IllegalArgumentException();
 			}
 			c = string[++index];
@@ -2513,106 +2709,122 @@ public class Util {
 
 		int e = appendTypeSignatureForAnchor(string, index, buffer, false);
 
-		for (int i = 1, dims = index - start; i < dims; i++) {
+		for (int i = 1, dims = index - start; i < dims; i++)
+		{
 			buffer.append('[').append(']');
 		}
 
-		if (isVarArgs) {
+		if (isVarArgs)
+		{
 			buffer.append('.').append('.').append('.');
-		} else {
+		}
+		else
+		{
 			buffer.append('[').append(']');
 		}
 		return e;
 	}
 
-	private static int appendClassTypeSignatureForAnchor(char[] string,
-			int start, StringBuffer buffer) {
+	private static int appendClassTypeSignatureForAnchor(char[] string, int start, StringBuffer buffer)
+	{
 		// need a minimum 3 chars "Lx;"
-		if (start >= string.length - 2) {
+		if (start >= string.length - 2)
+		{
 			throw new IllegalArgumentException();
 		}
 		// must start in "L" or "Q"
 		char c = string[start];
-		if (c != Signature.C_RESOLVED && c != Signature.C_UNRESOLVED) {
+		if (c != Signature.C_RESOLVED && c != Signature.C_UNRESOLVED)
+		{
 			throw new IllegalArgumentException();
 		}
 		int p = start + 1;
-		while (true) {
-			if (p >= string.length) {
+		while (true)
+		{
+			if (p >= string.length)
+			{
 				throw new IllegalArgumentException();
 			}
 			c = string[p];
-			switch (c) {
-			case Signature.C_SEMICOLON:
-				// all done
-				return p;
-			case Signature.C_GENERIC_START:
-				int e = scanGenericEnd(string, p + 1);
-				// once we hit type arguments there are no more package prefixes
-				p = e;
-				break;
-			case Signature.C_DOT:
-				buffer.append('.');
-				break;
-			case '/':
-				buffer.append('/');
-				break;
-			case Signature.C_DOLLAR:
-				// once we hit "$" there are no more package prefixes
-				/**
-				 * Convert '$' in resolved type signatures into '.'. NOTE: This
-				 * assumes that the type signature is an inner type signature.
-				 * This is true in most cases, but someone can define a
-				 * non-inner type name containing a '$'.
-				 */
-				buffer.append('.');
-				break;
-			default:
-				buffer.append(c);
+			switch (c)
+			{
+				case Signature.C_SEMICOLON:
+					// all done
+					return p;
+				case Signature.C_GENERIC_START:
+					int e = scanGenericEnd(string, p + 1);
+					// once we hit type arguments there are no more package prefixes
+					p = e;
+					break;
+				case Signature.C_DOT:
+					buffer.append('.');
+					break;
+				case '/':
+					buffer.append('/');
+					break;
+				case Signature.C_DOLLAR:
+					// once we hit "$" there are no more package prefixes
+					/**
+					 * Convert '$' in resolved type signatures into '.'. NOTE: This assumes that the type signature is
+					 * an inner type signature. This is true in most cases, but someone can define a non-inner type name
+					 * containing a '$'.
+					 */
+					buffer.append('.');
+					break;
+				default:
+					buffer.append(c);
 			}
 			p++;
 		}
 	}
 
-	private static int scanGenericEnd(char[] string, int start) {
-		if (string[start] == Signature.C_GENERIC_END) {
+	private static int scanGenericEnd(char[] string, int start)
+	{
+		if (string[start] == Signature.C_GENERIC_END)
+		{
 			return start;
 		}
 		int length = string.length;
 		int balance = 1;
 		start++;
-		while (start <= length) {
-			switch (string[start]) {
-			case Signature.C_GENERIC_END:
-				balance--;
-				if (balance == 0) {
-					return start;
-				}
-				break;
-			case Signature.C_GENERIC_START:
-				balance++;
-				break;
+		while (start <= length)
+		{
+			switch (string[start])
+			{
+				case Signature.C_GENERIC_END:
+					balance--;
+					if (balance == 0)
+					{
+						return start;
+					}
+					break;
+				case Signature.C_GENERIC_START:
+					balance++;
+					break;
 			}
 			start++;
 		}
 		return start;
 	}
 
-	public static int[] lineEndTable(IDocument document) {
+	public static int[] lineEndTable(IDocument document)
+	{
 		int numberOfLines = document.getNumberOfLines();
 		int[] result = new int[numberOfLines];
 		int i = 0;
-		while (i < numberOfLines) {
-			try {
+		while (i < numberOfLines)
+		{
+			try
+			{
 				String lineDelimiter = (i == numberOfLines - 1 ? "" : document //$NON-NLS-1$
 						.getLineDelimiter(i));
 				IRegion lineInformation = document.getLineInformation(i);
-				result[i] = lineInformation.getOffset()
-						+ lineInformation.getLength() + lineDelimiter.length();
-			} catch (BadLocationException e) {
+				result[i] = lineInformation.getOffset() + lineInformation.getLength() + lineDelimiter.length();
+			}
+			catch (BadLocationException e)
+			{
 				assert false;
-				throw new IllegalStateException(
-						"PhpReconcilingStrategy#lineEndTable(document"); //$NON-NLS-1$
+				throw new IllegalStateException("PhpReconcilingStrategy#lineEndTable(document"); //$NON-NLS-1$
 			}
 			i++;
 		}
