@@ -12,8 +12,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -25,6 +27,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
 import org2.eclipse.php.internal.debug.core.daemon.DebugDaemon;
 import org2.eclipse.php.internal.debug.core.debugger.AbstractDebuggerConfiguration;
 import org2.eclipse.php.internal.debug.core.launching.XDebugLaunchListener;
@@ -82,7 +85,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 		DBGpProxyHandler.instance.unregister();
 		try
 		{
-			EclipseUtil.instanceScope().getNode(PLUGIN_ID).flush();
+			InstanceScope.INSTANCE.getNode(PLUGIN_ID).flush();
 		}
 		catch (Exception e)
 		{
@@ -326,7 +329,7 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 	 */
 	public static IEclipsePreferences getInstancePreferences()
 	{
-		return EclipseUtil.instanceScope().getNode(PLUGIN_ID);
+		return InstanceScope.INSTANCE.getNode(PLUGIN_ID);
 	}
 
 	//
@@ -449,6 +452,6 @@ public class PHPDebugEPLPlugin extends AbstractUIPlugin
 
 	private static IScopeContext[] getPreferenceContexts()
 	{
-		return new IScopeContext[] { EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
+		return new IScopeContext[] { InstanceScope.INSTANCE, DefaultScope.INSTANCE };
 	}
 }

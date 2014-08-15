@@ -8,11 +8,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org2.eclipse.php.internal.core.PHPVersion;
 
-import com.aptana.core.util.EclipseUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 
 /**
@@ -50,6 +51,7 @@ public class PHPVersionProvider
 
 	/**
 	 * An option to set the preferences qualifier from which the PHP project settings will be read.
+	 * 
 	 * @param qualifier
 	 */
 	public void setPreferencesQualifier(String qualifier)
@@ -135,7 +137,7 @@ public class PHPVersionProvider
 		PHPVersion version = getPHPVersion(project);
 		return PHPVersion.PHP5_4.equals(version);
 	}
-	
+
 	/**
 	 * A continent method to check if the current version is 5.3
 	 * 
@@ -181,13 +183,14 @@ public class PHPVersionProvider
 		IScopeContext[] contexts;
 		if (project != null)
 		{
-			contexts = new IScopeContext[] { new ProjectScope(project), EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
+			contexts = new IScopeContext[] { new ProjectScope(project), InstanceScope.INSTANCE, DefaultScope.INSTANCE };
 		}
 		else
 		{
-			contexts = new IScopeContext[] { EclipseUtil.instanceScope(), EclipseUtil.defaultScope() };
+			contexts = new IScopeContext[] { InstanceScope.INSTANCE, DefaultScope.INSTANCE };
 		}
-		String versionAlias = service.getString(preferencesQualifier, prefKey, PHPVersion.getLatest().getAlias(), contexts);
+		String versionAlias = service.getString(preferencesQualifier, prefKey, PHPVersion.getLatest().getAlias(),
+				contexts);
 		return PHPVersion.byAlias(versionAlias);
 	}
 
