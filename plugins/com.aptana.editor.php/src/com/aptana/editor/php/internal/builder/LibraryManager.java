@@ -12,10 +12,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.aptana.core.logging.IdeLog;
-import com.aptana.core.util.EclipseUtil;
 import com.aptana.core.util.StringUtil;
 import com.aptana.editor.php.PHPEditorPlugin;
 
@@ -215,7 +215,7 @@ public final class LibraryManager
 	 */
 	private void saveToPreferences(String key, String value)
 	{
-		IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode(PHPEditorPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PHPEditorPlugin.PLUGIN_ID);
 		prefs.put(key, value);
 		try
 		{
@@ -229,7 +229,7 @@ public final class LibraryManager
 
 	private String readFromPreferences(String key)
 	{
-		IEclipsePreferences prefs = EclipseUtil.instanceScope().getNode(PHPEditorPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PHPEditorPlugin.PLUGIN_ID);
 		return prefs.get(key, StringUtil.EMPTY);
 	}
 }

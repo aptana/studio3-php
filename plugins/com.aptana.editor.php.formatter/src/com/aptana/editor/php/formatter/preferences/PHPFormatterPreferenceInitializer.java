@@ -92,6 +92,7 @@ import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENT
 import static com.aptana.editor.php.formatter.PHPFormatterConstants.WRAP_COMMENTS_LENGTH;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -117,7 +118,7 @@ public class PHPFormatterPreferenceInitializer extends AbstractPreferenceInitial
 	@Override
 	public void initializeDefaultPreferences()
 	{
-		IEclipsePreferences store = EclipseUtil.defaultScope().getNode(PHPCodeFormatterPlugin.PLUGIN_ID);
+		IEclipsePreferences store = DefaultScope.INSTANCE.getNode(PHPCodeFormatterPlugin.PLUGIN_ID);
 
 		store.put(FORMATTER_TAB_CHAR, CodeFormatterConstants.EDITOR);
 		store.put(FORMATTER_TAB_SIZE, Integer.toString(EditorUtil.getSpaceIndentSize(PHPEplPlugin.getDefault()

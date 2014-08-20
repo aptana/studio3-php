@@ -3,6 +3,7 @@ package com.aptana.editor.php.internal.ui.preferences;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -32,7 +33,7 @@ public class PhpUIPreferencesInitializer extends AbstractPreferenceInitializer
 		store.setDefault(IPhpPreferenceConstants.PHPEDITOR_INITIAL_PROJECT_FILE_CREATE, true);
 		store.setDefault(IPhpPreferenceConstants.PHPEDITOR_INITIAL_CONTENTS, "<?php\n    phpinfo();\n?>"); //$NON-NLS-1$ // $codepro.audit.disable platformSpecificLineSeparator
 
-		IEclipsePreferences prefs = EclipseUtil.defaultScope().getNode(CommonEditorPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = DefaultScope.INSTANCE.getNode(CommonEditorPlugin.PLUGIN_ID);
 		prefs.putBoolean(MessageFormat.format("{0}:{1}", IPHPConstants.CONTENT_TYPE_HTML_PHP, //$NON-NLS-1$
 				IPreferenceConstants.PARSE_ERROR_ENABLED), true);
 	}
