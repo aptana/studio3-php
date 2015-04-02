@@ -10,9 +10,10 @@ How to Contribute
 ----------
  1. Fork this repo. 
  2. [Download Eclipse 4.3.x](http://eclipse.org/downloads/)
- 3. Install a built version of our studio3-core plugins into it (you can grab the latest by using [http://studio-jenkins.appcelerator.org/job/studio3-feature-development/lastSuccessfulBuild/artifact/dist/](http://studio-jenkins.appcelerator.org/job/studio3-feature-development/lastSuccessfulBuild/artifact/dist/) as an update site in Eclipse)
- 4. Then import the features, plugins, and test plugins from this repo into your workspace. _File > Import > Existing Projects into workspace_ (no need to select the "copy" checkbox).
- 5. Make your changes on your fork, then submit a Pull Request.
+ 3. Install Eclipse SDK from The Eclipse Project Updates update site.
+ 4. Install a built version of our studio3-core plugins into it (you can grab the latest by using [http://studio-jenkins.appcelerator.org/job/studio3-feature-development/lastSuccessfulBuild/artifact/dist/](http://studio-jenkins.appcelerator.org/job/studio3-feature-development/lastSuccessfulBuild/artifact/dist/) as an update site in Eclipse)
+ 5. Then import the features, plugins, and test plugins from this repo into your workspace. _File > Import > Existing Projects into workspace_ (no need to select the "copy" checkbox).
+ 6. Make your changes on your fork, then submit a Pull Request.
 
 License
 -------
