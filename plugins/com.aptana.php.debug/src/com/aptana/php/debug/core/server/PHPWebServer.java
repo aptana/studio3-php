@@ -24,7 +24,6 @@ public class PHPWebServer extends ExternalWebServer
 	/**
 	 * Server name attribute.
 	 */
-	public static final String NAME_ATTR = "serverName"; //$NON-NLS-1$
 
 	private static final String HTTP = "http"; //$NON-NLS-1$
 	private static final String HTTPS = "https"; //$NON-NLS-1$
