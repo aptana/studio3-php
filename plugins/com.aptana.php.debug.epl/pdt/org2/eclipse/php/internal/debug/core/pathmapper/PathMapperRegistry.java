@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.ILaunchConfiguration;
+
 import org2.eclipse.php.debug.core.debugger.pathmapper.PathMapper;
 import org2.eclipse.php.internal.core.util.preferences.IXMLPreferencesStorable;
 import org2.eclipse.php.internal.core.util.preferences.XMLPreferencesReader;
@@ -27,6 +28,7 @@ import org2.eclipse.php.internal.debug.core.preferences.IPHPExesListener;
 import org2.eclipse.php.internal.debug.core.preferences.PHPExesEvent;
 import org2.eclipse.php.internal.debug.core.preferences.PHPexes;
 
+import com.aptana.php.debug.core.IPHPDebugCorePreferenceKeys;
 import com.aptana.php.debug.core.server.PHPServersManager;
 import com.aptana.php.debug.core.server.PHPWebServer;
 import com.aptana.php.debug.epl.PHPDebugEPLPlugin;
@@ -134,7 +136,7 @@ public class PathMapperRegistry implements IXMLPreferencesStorable, IPHPExesList
 		PathMapper pathMapper = null;
 		try
 		{
-			String serverName = launchConfiguration.getAttribute(PHPWebServer.NAME_ATTR, (String) null);
+			String serverName = launchConfiguration.getAttribute(IPHPDebugCorePreferenceKeys.ATTR_SERVER_NAME, (String) null);
 			if (serverName != null)
 			{
 				pathMapper = getByServer(PHPServersManager.getServer(serverName));
