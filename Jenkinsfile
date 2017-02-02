@@ -12,7 +12,7 @@ node('linux && ant && eclipse && jdk && vncserver') {
 		}
 
 		testPlugin {
-			builder = 'com.aptana.radrails.tests.build'
+			builder = 'com.aptana.php.tests.build'
 			properties = [
 				'studio3.p2.repo': studio3Repo,
 				'studio3.test.p2.repo': studio3TestRepo,
