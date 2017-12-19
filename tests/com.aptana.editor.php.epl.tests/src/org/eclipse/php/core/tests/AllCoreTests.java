@@ -16,8 +16,8 @@ public class AllCoreTests
 		// $JUnit-BEGIN$
 		suite.addTest(DomParserTests.suite());
 		suite.addTest(MarkOccurrenceTests.suite());
-		suite.addTest(CodeAssistTests.suite());
-		suite.addTestSuite(PHPContentAssistProcessorTests.class);
+//		suite.addTest(CodeAssistTests.suite()); // UI tests!
+//		suite.addTestSuite(PHPContentAssistProcessorTests.class); // UI tests!
 		// $JUnit-END$
 		return suite;
 	}
