@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.aptana.php.feature_3.4.2.qualifier.jar" id="com.aptana.php.feature" version="3.4.2.qualifier">
+      <category name="com.aptana.studio.php"/>
+   </feature>
+   <category-def name="com.aptana.studio.php" label="Aptana Studio PHP Support"/>
+</site>

@@ -16,4 +16,11 @@ build/
 *.mode1v3
 *.mode2v3
 
-!/plugins/com.aptana.terminal/cygwin/bin/
+# tycho/maven
+target/
+.polyglot.build.properties
+workspace/
+
+# rubles/bundles
+bundles/com.aptana.editor.php/bundles/*.ruble
+bundles/com.aptana.editor.php/bundle_timestamps.txt
