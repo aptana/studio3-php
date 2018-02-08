@@ -21,8 +21,8 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org2.eclipse.php.internal.core.PHPVersion;
 
-import com.aptana.core.tests.TestProject;
 import com.aptana.editor.php.core.PHPNature;
+import com.aptana.testing.utils.TestProject;
 
 public abstract class ProjectBasedTestCase extends TestCase
 {
