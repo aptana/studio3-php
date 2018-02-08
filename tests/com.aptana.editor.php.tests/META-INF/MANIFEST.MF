@@ -2,11 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PHP Tests
 Bundle-SymbolicName: com.aptana.editor.php.tests
-Bundle-Version: 3.3.0.qualifier
+Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Aptana Inc.
 Fragment-Host: com.aptana.editor.php
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.junit,
- com.aptana.ui
+ com.aptana.ui,
+ com.aptana.testing.utils;bundle-version="1.0.0"
 Export-Package: com.aptana.editor.php.core,
  com.aptana.editor.php.tests

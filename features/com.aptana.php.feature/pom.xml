@@ -1,0 +1,13 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.aptana.studio.php</groupId>
+	<artifactId>com.aptana.php.feature</artifactId>
+	<version>3.4.2-SNAPSHOT</version>
+	<packaging>eclipse-feature</packaging>
+
+	<parent>
+		<groupId>com.aptana.studio.php</groupId>
+		<artifactId>com.aptana.studio.php.features</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+</project>
