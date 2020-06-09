@@ -168,4 +168,10 @@ public class NewPHPProjectWizard extends AbstractNewProjectWizard implements IEx
 	{
 		return "project.create.php"; //$NON-NLS-1$
 	}
+
+	@Override
+ 	protected boolean isCLISessionInvalid(String errorMessage)
+ 	{
+ 		return false;
+ 	}
 }
