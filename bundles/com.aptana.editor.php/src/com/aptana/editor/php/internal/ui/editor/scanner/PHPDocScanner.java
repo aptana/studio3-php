@@ -66,20 +66,21 @@ public class PHPDocScanner extends CommentScanner
 		super(new Token(PHPTokenType.COMMENT_PHPDOC.toString()));
 	}
 
-	protected List<IRule> createRules()
-	{
-		List<IRule> rules = super.createRules();
-
-		WordRule wordRule = new WordRule(new PHPTagDetector(), Token.UNDEFINED, true);
-		IToken tagToken = new Token(PHPTokenType.KEYWORD_OTHER.toString());
-		for (String tag : TAGS)
-		{
-			wordRule.addWord(tag, tagToken);
-		}
-		rules.add(wordRule);
-
-		return rules;
-	}
+	// FIXME: CommentScanner no longer allows for modifying rules, it uses a regexp to find task tags
+//	protected List<IRule> createRules()
+//	{
+//		List<IRule> rules = super.createRules();
+//
+//		WordRule wordRule = new WordRule(new PHPTagDetector(), Token.UNDEFINED, true);
+//		IToken tagToken = new Token(PHPTokenType.KEYWORD_OTHER.toString());
+//		for (String tag : TAGS)
+//		{
+//			wordRule.addWord(tag, tagToken);
+//		}
+//		rules.add(wordRule);
+//
+//		return rules;
+//	}
 
 	/**
 	 * Detects PHPDoc tags
