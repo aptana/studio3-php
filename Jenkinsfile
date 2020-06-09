@@ -6,34 +6,11 @@ properties([
   	copyArtifactPermission("/aptana-studio-sync/sync-nightlies-aptana-${env.BRANCH_NAME},../studio3-rcp/${env.BRANCH_NAME}"),
 ])
 
-<<<<<<< HEAD
-// Keep logs/reports/etc of last 3 builds, only keep build artifacts of last build
-properties([
-	buildDiscarder(logRotator(numToKeepStr: '3', artifactNumToKeepStr: '1')),
-	// specify projects to allow to copy artifacts with a comma-separated list.
-  	copyArtifactPermission("/aptana-studio-sync/sync-nightlies-aptana-${env.BRANCH_NAME},../studio3-rcp/${env.BRANCH_NAME}"),
-])
-
-timestamps() {
-	node('linux && ant && eclipse && jdk && vncserver') {
-		try {
-			stage('Checkout') {
-				checkout scm
-			}
-
-			def studio3Repo = "file://${env.WORKSPACE}/studio3-core/dist/"
-			def studio3TestRepo = "file://${env.WORKSPACE}/studio3-core/dist-tests/"
-			def phpRepo = "file://${env.WORKSPACE}/dist/"
-			def eclipseHome = '/usr/local/eclipse-4.7.1a'
-			def launcherPlugin = 'org.eclipse.equinox.launcher_1.4.0.v20161219-1356'
-			def builderPlugin = 'org.eclipse.pde.build_3.9.300.v20170515-0912'
-=======
 timestamps {
 	def studio3RepoURL = ''
 	def studio3TestRepoURL = ''
 	def targetBranch = 'development'
 	def isPR = false
->>>>>>> 774ca145... Move to tycho for builds
 
 	// node('((linux && vncserver) || osx) && jdk') {
 	node('linux && vncserver && jdk') {
