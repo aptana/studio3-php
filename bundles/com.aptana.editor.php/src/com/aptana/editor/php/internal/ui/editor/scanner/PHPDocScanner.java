@@ -7,15 +7,10 @@
  */
 package com.aptana.editor.php.internal.ui.editor.scanner;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.eclipse.jface.text.rules.IRule;
-import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.jface.text.rules.WordRule;
 
 import com.aptana.editor.common.text.rules.CommentScanner;
 import com.aptana.editor.php.internal.parser.PHPTokenType;
@@ -24,82 +19,45 @@ import com.aptana.editor.php.internal.parser.PHPTokenType;
 public class PHPDocScanner extends CommentScanner
 {
 
-	private static Set<String> TAGS = new HashSet<String>();
+	private static Map<String, String> TAGS = new HashMap<String, String>();
 	static
 	{
-		TAGS.add("@abstract");
-		TAGS.add("@access");
-		TAGS.add("@author");
-		TAGS.add("@category");
-		TAGS.add("@copyright");
-		TAGS.add("@deprecated");
-		TAGS.add("@example");
-		TAGS.add("@filesource");
-		TAGS.add("@final");
-		TAGS.add("@global");
-		TAGS.add("@ignore");
-		TAGS.add("@internal");
-		TAGS.add("@license");
-		TAGS.add("@link");
-		TAGS.add("@method");
-		TAGS.add("@name");
-		TAGS.add("@package");
-		TAGS.add("@param");
-		TAGS.add("@property");
-		TAGS.add("@return");
-		TAGS.add("@see");
-		TAGS.add("@since");
-		TAGS.add("@static");
-		TAGS.add("@staticvar");
-		TAGS.add("@subpackage");
-		TAGS.add("@throws");
-		TAGS.add("@todo");
-		TAGS.add("@tutorial");
-		TAGS.add("@uses");
-		TAGS.add("@var");
-		TAGS.add("@version");
-		TAGS.add("@xlink");
+		TAGS.put("@abstract", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@access", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@author", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@category", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@copyright", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@deprecated", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@example", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@filesource", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@final", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@global", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@ignore", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@internal", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@license", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@link", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@method", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@name", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@package", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@param", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@property", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@return", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@see", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@since", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@static", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@staticvar", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@subpackage", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@throws", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@todo", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@tutorial", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@uses", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@var", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@version", PHPTokenType.KEYWORD_OTHER.toString());
+		TAGS.put("@xlink", PHPTokenType.KEYWORD_OTHER.toString());
 	}
 
 	public PHPDocScanner()
 	{
-		super(new Token(PHPTokenType.COMMENT_PHPDOC.toString()));
+		super(new Token(PHPTokenType.COMMENT_PHPDOC.toString()), TAGS);
 	}
-
-	// FIXME: CommentScanner no longer allows for modifying rules, it uses a regexp to find task tags
-//	protected List<IRule> createRules()
-//	{
-//		List<IRule> rules = super.createRules();
-//
-//		WordRule wordRule = new WordRule(new PHPTagDetector(), Token.UNDEFINED, true);
-//		IToken tagToken = new Token(PHPTokenType.KEYWORD_OTHER.toString());
-//		for (String tag : TAGS)
-//		{
-//			wordRule.addWord(tag, tagToken);
-//		}
-//		rules.add(wordRule);
-//
-//		return rules;
-//	}
-
-	/**
-	 * Detects PHPDoc tags
-	 * 
-	 * @author cwilliams
-	 */
-	private static class PHPTagDetector implements IWordDetector
-	{
-
-		public boolean isWordStart(char c)
-		{
-			return c == '@';
-		}
-
-		public boolean isWordPart(char c)
-		{
-			return Character.isLetter(c);
-		}
-
-	}
-
 }
